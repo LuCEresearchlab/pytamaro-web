@@ -1,0 +1,10 @@
+{
+    "variants": [
+        {
+            "title": "Swiss Flag",
+            "language": "en",
+            "target": "student"
+        }
+    ],
+    "previewImage": "flag.png"
+}
