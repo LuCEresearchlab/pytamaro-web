@@ -3,7 +3,8 @@
         {
             "title": "Swiss Flag",
             "language": "en",
-            "target": "student"
+            "target": "student",
+            "description": "overlay, rotate"
         }
     ],
     "previewImage": "flag.png"

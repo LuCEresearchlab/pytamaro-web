@@ -1,0 +1,11 @@
+{
+  "variants": [
+      {
+          "title": "Farben-Blume",
+          "language": "de",
+          "target": "student",
+          "description": "hsl_farbe, fixiere, drehe, kombiniere"
+      }
+  ],
+  "previewImage": "color-flower.png"
+}
