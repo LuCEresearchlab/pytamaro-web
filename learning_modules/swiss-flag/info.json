@@ -5,6 +5,12 @@
             "language": "en",
             "target": "student",
             "description": "overlay, rotate"
+        },
+        {
+            "title": "Schweizerfahne",
+            "language": "de",
+            "target": "student",
+            "description": "ueberlagere, drehe"
         }
     ],
     "previewImage": "flag.png"
