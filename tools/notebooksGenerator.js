@@ -58,11 +58,17 @@ async function main() {
             const revisionHashes = notebookRevisions.map(revision => revision.hash);
             revisionHashes.push(CURRENT_VERSION_REVISION_NAME);
             revisionHashes.forEach(async revisionHash => {
-                const notebookContentAtRevision = await (revisionHash === CURRENT_VERSION_REVISION_NAME
-                                                    ? fs.readFile(notebookPath)
-                                                    : simpleGit().show([`${revisionHash}:${notebookPath}`]));
-                const generatedNotebookFileName = `${slug}-${notebook.language}-${notebook.target}-${revisionHash}.ipynb`;
-                await fs.writeFile(path.join(GENERATED_NOTEBOOKS_DIR, slug, generatedNotebookFileName), notebookContentAtRevision);
+                try {
+                    const notebookContentAtRevision = await (revisionHash === CURRENT_VERSION_REVISION_NAME
+                        ? fs.readFile(notebookPath)
+                        : simpleGit().show([`${revisionHash}:${notebookPath}`]));
+                    const generatedNotebookFileName = `${slug}-${notebook.language}-${notebook.target}-${revisionHash}.ipynb`;
+                    await fs.writeFile(path.join(GENERATED_NOTEBOOKS_DIR, slug, generatedNotebookFileName), notebookContentAtRevision);
+                } catch (e) {
+                    console.log("Error generating notebook:", e);
+                    console.log("Notebook:", notebook);
+                    console.log("Revision hash:", revisionHash);
+                }
             })
         });
     });
