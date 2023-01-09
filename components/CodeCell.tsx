@@ -72,7 +72,7 @@ export default function CodeCell({ source, kernelId }: { source: string, kernelI
               highlightActiveLine={false}
             />
           </CardContent>
-          <CardActions disableSpacing sx={{ pt: 0 }}>
+          <CardActions disableSpacing sx={{ pt: 0, display: process.env.ALLOW_CODE_EXECUTION === 'true' ? 'inline' : 'none' }}>
             <IconButton
               aria-label="execute code"
               onClick={executeCode}
