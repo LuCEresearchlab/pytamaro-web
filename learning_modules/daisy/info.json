@@ -1,0 +1,11 @@
+{
+  "variants": [
+      {
+          "title": "Margritli",
+          "language": "de",
+          "target": "student",
+          "description": "fixiere, drehe, kombiniere"
+      }
+  ],
+  "previewImage": "daisy.png"
+}

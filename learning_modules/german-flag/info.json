@@ -1,0 +1,11 @@
+{
+  "variants": [
+      {
+          "title": "Deutsche Flagge",
+          "language": "de",
+          "target": "student",
+          "description": "rgb_farbe, ueber, Liste und Schleife"
+      }
+  ],
+  "previewImage": "flag.png"
+}

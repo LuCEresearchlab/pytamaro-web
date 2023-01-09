@@ -16,6 +16,7 @@ export interface NotebookVariant {
   title: string,
   language: string,
   target: string,
+  description: string,
 }
 
 export interface Module {
