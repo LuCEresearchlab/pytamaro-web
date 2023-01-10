@@ -1,5 +1,5 @@
 import {
-  Card, Typography, Container, Button, CardContent, CardActions,
+  Card, Typography, Container, Button, CardContent, CardActions, Paper,
 } from '@mui/material';
 import Image from 'next/image';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -18,6 +18,11 @@ export default function Home() {
   return (
     <Container maxWidth="lg">
       <Image src="/PyTamaro-horizontal.png" alt="PyTamaro logo" width="945" height="284" />
+      <Paper elevation={3} sx={{ bgcolor: '#222222', marginBottom: 4 }}>
+        <Typography variant="h4" align="center" sx={{ fontFamily: 'monospace', color: 'white' }}>
+          pip install pytamaro
+        </Typography>
+      </Paper>
       <Grid container spacing={4}>
         <Grid xs={6}>
           <InfoCard>
