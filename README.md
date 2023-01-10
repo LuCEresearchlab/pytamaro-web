@@ -65,3 +65,9 @@ We mostly follow the structure prescribed by Next.js:
 - `src` contains "business logic"
 - `public` contains public assets
 - `tools` contains extra utilities meant to be executed as scripts
+
+## Deployment
+
+- Create an appropriate `.env.production` in the root folder
+- Navigate into the `docker` folder and execute `docker compose build` to build both the NextJS and the Jupyter containers,
+and finally `docker compose up` to start them.
