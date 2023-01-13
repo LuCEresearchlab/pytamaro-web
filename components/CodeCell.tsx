@@ -1,6 +1,5 @@
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
-import axios from 'axios';
 import { useTheme, styled } from '@mui/material/styles';
 import {
   Card, CardActions, CardContent, Collapse, IconButton, Paper,
@@ -9,6 +8,7 @@ import {
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { IconButtonProps } from '@mui/material/IconButton';
+import LoadingButton from '@mui/lab/LoadingButton';
 import OutputArea from './OutputArea';
 
 const AceEditor = dynamic(
@@ -40,15 +40,18 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
   }),
 }));
 
-export default function CodeCell({ source, kernelId }: { source: string, kernelId: string }) {
+export default function CodeCell({ source, onSourceChanged, compile }:
+{ source: string, onSourceChanged: (newSource: string) => void, compile: () => Promise<any> }) {
   const theme = useTheme();
-  const [editorSource, setEditorSource] = useState(source);
   const [executionResponse, setExecutionResponse] = useState<any>(undefined);
   const [showOutputArea, setShowOutputArea] = useState(false);
+  const [executing, setExecuting] = useState(false);
   const outputAreaBgColor = theme.palette.grey[executionResponse?.type === 'error' ? 400 : 100];
   const executeCode = async () => {
-    const response = (await axios.post('/api/execute', { code: editorSource, kernelId })).data;
+    setExecuting(true);
+    const response = await compile();
     setExecutionResponse(response);
+    setExecuting(false);
     setShowOutputArea(true);
   };
   const handleShowOutputArea = () => {
@@ -62,8 +65,8 @@ export default function CodeCell({ source, kernelId }: { source: string, kernelI
             <AceEditor
               mode="python"
               theme="github"
-              defaultValue={editorSource}
-              onChange={setEditorSource}
+              defaultValue={source}
+              onChange={onSourceChanged}
               maxLines={Infinity}
               fontSize={theme.typography.fontSize}
               width="100%"
@@ -72,13 +75,16 @@ export default function CodeCell({ source, kernelId }: { source: string, kernelI
               highlightActiveLine={false}
             />
           </CardContent>
-          <CardActions disableSpacing sx={{ pt: 0, display: process.env.ALLOW_CODE_EXECUTION === 'true' ? 'inline' : 'none' }}>
-            <IconButton
-              aria-label="execute code"
+          <CardActions disableSpacing sx={{ padding: 2, display: 'flex' }}>
+            <LoadingButton
               onClick={executeCode}
+              endIcon={<PlayCircleFilledIcon />}
+              loading={executing}
+              loadingPosition="end"
+              variant="contained"
             >
-              <PlayCircleFilledIcon fontSize="large" color="primary" />
-            </IconButton>
+              <span>Run</span>
+            </LoadingButton>
             <ExpandMore
               expand={showOutputArea}
               onClick={handleShowOutputArea}

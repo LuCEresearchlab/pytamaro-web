@@ -51,7 +51,6 @@ From the root folder of this repository:
 As an extra requirement,
 if you want to be able to execute PyTamaro solutions,
 you also need to install `pytamaro` (using the same Python environment your Jupyter server uses).
-The environment variable `ALLOW_CODE_EXECUTION` must be set to `true` to enable execution.
 
 ## Coding guidelines
 

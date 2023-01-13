@@ -1,9 +1,10 @@
 import ReactMarkdown, { uriTransformer } from 'react-markdown';
 import axios from 'axios';
 import Container from '@mui/material/Container';
+import DownloadIcon from '@mui/icons-material/Download';
 
-import { useEffect, useState } from 'react';
-import { Box } from '@mui/material';
+import { useState } from 'react';
+import { Box, Button } from '@mui/material';
 import {
   getNotebookContent, NotebookCell,
 } from '../../../../../../src/NotebooksManager';
@@ -25,30 +26,30 @@ function attachmentsTransformer(src: string, cell: NotebookCell) {
   return uriTransformer(src);
 }
 
-async function requestNewKernel() {
-  return axios.post('/api/newKernel').then((response) => response.data.kernelId);
+function replaceAt<T>(array: T[], index: number, value: T) {
+  const ret = array.slice(0);
+  ret[index] = value;
+  return ret;
 }
 
-const NO_KERNEL = '';
-
 export default function NotebookPage({ title, cells }: { title : string, cells: NotebookCell[] }) {
-  const [kernelId, setKernelId] = useState(NO_KERNEL);
-  useEffect(() => {
-    const updateKernelId = async () => {
-      setKernelId(await requestNewKernel());
-    };
-    // Wait 1 second before requesting a new kernel to avoid
-    // spawning a new one when the user (or a bot) is just
-    // visiting the page.
-    if (kernelId === NO_KERNEL) {
-      setTimeout(updateKernelId, 1000);
-    }
-  }, [kernelId]);
+  const originalCodeFragments = cells.map((cell) => (cell.cell_type === 'code' ? cell.source : ''));
+  const [codeFragments, setCodeFragments] = useState<string[]>(originalCodeFragments);
+
+  const downloadCode = () => {
+    const element = document.createElement('a');
+    const file = new Blob([codeFragments.filter((f) => f.length > 0).join('\n')], { type: 'text/plain' });
+    element.href = URL.createObjectURL(file);
+    element.download = 'main.py';
+    document.body.appendChild(element);
+    element.click();
+  };
+
   return (
     <Box>
       <NavigationBar title={title} />
       <Container>
-        {cells.map((cell: NotebookCell) => {
+        {cells.map((cell: NotebookCell, idx) => {
           if (cell.cell_type === 'markdown') {
             return (
               <ReactMarkdown
@@ -59,8 +60,24 @@ export default function NotebookPage({ title, cells }: { title : string, cells: 
               </ReactMarkdown>
             );
           }
-          return <CodeCell key={cell.id} source={cell.source} kernelId={kernelId} />;
+          return (
+            <CodeCell
+              key={cell.id}
+              source={codeFragments[idx]}
+              onSourceChanged={
+                (newSource: string) => setCodeFragments(replaceAt(codeFragments, idx, newSource))
+              }
+              compile={async () => (await axios.post('/api/execute', {
+                code: codeFragments.slice(0, idx + 1).join('\n'),
+              })).data}
+            />
+          );
         })}
+        <Box textAlign="center" sx={{ m: 4 }} onClick={downloadCode}>
+          <Button variant="contained" color="success" startIcon={<DownloadIcon />}>
+            Download code as Python source
+          </Button>
+        </Box>
       </Container>
 
     </Box>
