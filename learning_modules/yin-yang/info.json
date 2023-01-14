@@ -1,0 +1,11 @@
+{
+    "variants": [
+        {
+            "title": "Yin e Yang",
+            "language": "it",
+            "target": "student",
+            "description": "ellipse"
+        }
+    ],
+    "previewImage": "yinyang.png"
+}
