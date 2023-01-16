@@ -46,14 +46,12 @@ export default function NotebookPage({ title, cells }: { title : string, cells: 
     element.click();
   };
 
+  const pageTitle = `${title} - PyTamaro`;
+
   return (
     <div>
       <Head>
-        <title>
-          {title}
-          {' '}
-          - PyTamaro
-        </title>
+        <title>{pageTitle}</title>
       </Head>
 
       <Box>
