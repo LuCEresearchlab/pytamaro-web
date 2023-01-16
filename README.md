@@ -41,16 +41,10 @@ When creating a notebook, embed resources (such as images) as attachments.
 
 From the root folder of this repository:
 
-1. Install a version of Jupyter Notebook on your system (e.g., `brew install jupyter`)
-2. Install the dependencies of this project: `npm install`
-3. Generate the various versions of the notebooks: `node tools/notebooksGenerator.js`
-4. Start a Jupyter server: `jupyter server --ServerApp.root_dir='generated_notebooks' --ServerApp.token='75cb9deea88415f4c7c7d8b95b1534b9660d83b8961effd1'`
-5. Start the Next.js server: `npm run dev`
-6. Browse at [http://localhost:3000](http://localhost:3000)
-
-As an extra requirement,
-if you want to be able to execute PyTamaro solutions,
-you also need to install `pytamaro` (using the same Python environment your Jupyter server uses).
+1. Install the dependencies of this project: `npm install`
+2. Generate the various versions of the notebooks: `node tools/notebooksGenerator.js`
+3. Start the Next.js server: `npm run dev`
+4. Browse at [http://localhost:3000](http://localhost:3000)
 
 ## Coding guidelines
 
@@ -68,5 +62,5 @@ We mostly follow the structure prescribed by Next.js:
 ## Deployment
 
 - Create an appropriate `.env.production` in the root folder
-- Navigate into the `docker` folder and execute `docker compose build` to build both the NextJS and the Jupyter containers,
+- Navigate into the `docker` folder and execute `docker compose build` to build the NextJS container,
 and finally `docker compose up` to start them.

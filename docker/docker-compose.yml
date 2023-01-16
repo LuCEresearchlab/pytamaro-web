@@ -6,14 +6,3 @@ services:
       dockerfile: docker/web/Dockerfile
     ports:
       - "9009:3000"
-    depends_on:
-      - jupyter
-  jupyter:
-    build: 
-      context: jupyter
-      platforms:
-        - "linux/amd64"
-    volumes:
-      - ../generated_notebooks:/notebooks
-    env_file:
-      - ../.env.production
