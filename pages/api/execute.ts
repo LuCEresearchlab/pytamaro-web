@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { ExecutionResponse } from '../../src/NotebooksManager';
+import { ExecutionResponse } from '../../src/CodeExecution';
 
 export default async function handler(
   req: NextApiRequest,

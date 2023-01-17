@@ -16,11 +16,6 @@ export interface NotebookCell {
   attachments?: any,
 }
 
-export interface ExecutionResponse {
-  type: string,
-  content: any
-}
-
 export async function getNotebookContent(
   slug: string,
   language: string,

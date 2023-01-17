@@ -1,4 +1,4 @@
-import { ExecutionResponse } from '../src/NotebooksManager';
+import { ExecutionResponse } from '../src/CodeExecution';
 
 export default function OutputArea(
   { executionResponse }: { executionResponse: ExecutionResponse },

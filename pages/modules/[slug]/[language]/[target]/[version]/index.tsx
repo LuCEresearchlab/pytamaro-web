@@ -1,10 +1,8 @@
 import ReactMarkdown, { uriTransformer } from 'react-markdown';
-import axios from 'axios';
 import Container from '@mui/material/Container';
-import DownloadIcon from '@mui/icons-material/Download';
 
 import { useState } from 'react';
-import { Box, Button } from '@mui/material';
+import { Box } from '@mui/material';
 import Head from 'next/head';
 import {
   getNotebookContent, NotebookCell,
@@ -14,6 +12,8 @@ import {
   variantInfo,
 } from '../../../../../../src/Modules';
 import NavigationBar from '../../../../../../components/NavigationBar';
+import { executeCode } from '../../../../../../src/CodeExecution';
+import DownloadCodeButton from '../../../../../../components/CodeDownloadButton';
 
 function attachmentsTransformer(src: string, cell: NotebookCell) {
   const attachmentPrefix = 'attachment:';
@@ -37,14 +37,7 @@ export default function NotebookPage({ title, cells }: { title : string, cells: 
   const originalCodeFragments = cells.map((cell) => (cell.cell_type === 'code' ? cell.source : ''));
   const [codeFragments, setCodeFragments] = useState<string[]>(originalCodeFragments);
 
-  const downloadCode = () => {
-    const element = document.createElement('a');
-    const file = new Blob([codeFragments.filter((f) => f.length > 0).join('\n')], { type: 'text/plain' });
-    element.href = URL.createObjectURL(file);
-    element.download = 'main.py';
-    document.body.appendChild(element);
-    element.click();
-  };
+  const getWholeSource = () => codeFragments.filter((f) => f.length > 0).join('\n');
 
   const pageTitle = `${title} - PyTamaro`;
 
@@ -75,17 +68,11 @@ export default function NotebookPage({ title, cells }: { title : string, cells: 
                 onSourceChanged={
                 (newSource: string) => setCodeFragments(replaceAt(codeFragments, idx, newSource))
               }
-                compile={async () => (await axios.post('/api/execute', {
-                  code: codeFragments.slice(0, idx + 1).join('\n'),
-                })).data}
+                compile={() => executeCode(codeFragments.slice(0, idx + 1).join('\n'))}
               />
             );
           })}
-          <Box textAlign="center" sx={{ m: 4 }} onClick={downloadCode}>
-            <Button variant="contained" color="success" startIcon={<DownloadIcon />}>
-              Download code as Python source
-            </Button>
-          </Box>
+          <DownloadCodeButton getSource={getWholeSource} />
         </Container>
 
       </Box>
