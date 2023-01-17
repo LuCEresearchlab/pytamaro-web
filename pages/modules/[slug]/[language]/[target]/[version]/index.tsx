@@ -9,6 +9,8 @@ import {
 } from '../../../../../../src/NotebooksManager';
 import CodeCell from '../../../../../../components/CodeCell';
 import {
+  listModules,
+  NotebookVariant,
   variantInfo,
 } from '../../../../../../src/Modules';
 import NavigationBar from '../../../../../../components/NavigationBar';
@@ -81,7 +83,7 @@ export default function NotebookPage({ title, cells }: { title : string, cells: 
   );
 }
 
-export async function getServerSideProps(
+export async function getStaticProps(
   context: { params: { slug: string, language: string, target: string, version: string } },
 ) {
   const {
@@ -92,5 +94,14 @@ export async function getServerSideProps(
       title: (await variantInfo(slug, language, target)).title,
       cells: await getNotebookContent(slug, language, target, version),
     },
+  };
+}
+
+export async function getStaticPaths() {
+  const modules = await listModules();
+  const allVariantPaths = modules.flatMap((module) => module.variants.map((notebook: NotebookVariant) => `/modules/${module.slug}/${notebook.language}/${notebook.target}/latest`));
+  return {
+    paths: allVariantPaths,
+    fallback: false,
   };
 }
