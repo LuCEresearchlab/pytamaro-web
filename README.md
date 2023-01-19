@@ -63,8 +63,16 @@ We mostly follow the structure prescribed by Next.js:
 - `public` contains public assets
 - `tools` contains extra utilities meant to be executed as scripts
 
-## Deployment
+## How to deploy
 
+Pushes to the `live` branch trigger an automatic re-deployment.
+One liner from the `main` branch:
+```sh
+git checkout live && git merge main && git push && git checkout main
+```
+
+## Configure Deployment
+
+- Set up an instance of `glot` (see the `pytamaro-docker` repo)
 - Create an appropriate `.env.production` in the root folder
-- Navigate into the `docker` folder and execute `docker compose build` to build the NextJS container,
-and finally `docker compose up` to start them.
+- Navigate into the `docker` folder; execute `docker compose build` to build the NextJS container and `docker compose up` to start it
