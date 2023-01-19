@@ -12,6 +12,7 @@
             "target": "student",
             "description": "overlay, rotate"
         }
-   ],
-    "previewImage": "flag.png"
+    ],
+    "previewImage": "flag.png",
+    "visibility": "visible"
 }

@@ -1,17 +1,18 @@
 {
   "variants": [
-      {
-          "title": "Balken-Diagramm",
-          "language": "de",
-          "target": "student",
-          "description": "fixiere, kombiniere"
-      },
-      {
-        "title": "Bar Chart",
-        "language": "en",
-        "target": "student",
-        "description": "pin, compose"
+    {
+      "title": "Balken-Diagramm",
+      "language": "de",
+      "target": "student",
+      "description": "fixiere, kombiniere"
+    },
+    {
+      "title": "Bar Chart",
+      "language": "en",
+      "target": "student",
+      "description": "pin, compose"
     }
-],
-  "previewImage": "bar-chart.png"
+  ],
+  "previewImage": "bar-chart.png",
+  "visibility": "draft"
 }

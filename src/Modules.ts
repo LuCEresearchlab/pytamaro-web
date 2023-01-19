@@ -22,6 +22,7 @@ export interface NotebookVariant {
 export interface Module {
   slug: string,
   previewImage: string,
+  visibility: 'visible' | 'draft' | 'hidden',
   variants: NotebookVariant[],
 }
 
