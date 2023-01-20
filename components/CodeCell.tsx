@@ -9,6 +9,7 @@ import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { IconButtonProps } from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
+import DoneIcon from '@mui/icons-material/Done';
 import OutputArea from './OutputArea';
 
 const AceEditor = dynamic(
@@ -46,12 +47,14 @@ export default function CodeCell({ source, onSourceChanged, compile }:
   const [executionResponse, setExecutionResponse] = useState<any>(undefined);
   const [showOutputArea, setShowOutputArea] = useState(false);
   const [executing, setExecuting] = useState(false);
+  const [executed, setExecuted] = useState(false);
   const outputAreaBgColor = theme.palette.grey[executionResponse?.type === 'error' ? 400 : 100];
   const executeCode = async () => {
     setExecuting(true);
     const response = await compile();
     setExecutionResponse(response);
     setExecuting(false);
+    setExecuted(true);
     setShowOutputArea(true);
   };
   const handleShowOutputArea = () => {
@@ -66,7 +69,7 @@ export default function CodeCell({ source, onSourceChanged, compile }:
               mode="python"
               theme="github"
               defaultValue={source}
-              onChange={onSourceChanged}
+              onChange={(newSource: string) => { setExecuted(false); onSourceChanged(newSource); }}
               maxLines={Infinity}
               fontSize={theme.typography.fontSize}
               width="100%"
@@ -82,9 +85,11 @@ export default function CodeCell({ source, onSourceChanged, compile }:
               loading={executing}
               loadingPosition="end"
               variant="contained"
+              sx={{ marginRight: 2 }}
             >
               <span>Run</span>
             </LoadingButton>
+            <DoneIcon color="success" fontSize="large" sx={{ visibility: executed ? 'visible' : 'hidden' }} />
             <ExpandMore
               expand={showOutputArea}
               onClick={handleShowOutputArea}
