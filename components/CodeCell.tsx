@@ -55,7 +55,9 @@ export default function CodeCell({ source, onSourceChanged, compile }:
     setExecutionResponse(response);
     setExecuting(false);
     setExecuted(true);
-    setShowOutputArea(true);
+    if (response.content.length > 0) {
+      setShowOutputArea(true);
+    }
   };
   const handleShowOutputArea = () => {
     setShowOutputArea(!showOutputArea);
