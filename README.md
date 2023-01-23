@@ -75,4 +75,4 @@ git checkout live && git merge main && git push && git checkout main
 
 - Set up an instance of `glot` (see the `pytamaro-docker` repo)
 - Create an appropriate `.env.production` in the root folder
-- Navigate into the `docker` folder; execute `docker compose build` to build the NextJS container and `docker compose up` to start it
+- Navigate into the `docker` folder; execute `docker-compose --env-file ../.env.production build` to build the NextJS and Redis containers, and `docker compose --env-file ../.env.production up` to start them.

@@ -6,3 +6,11 @@ services:
       dockerfile: docker/web/Dockerfile
     ports:
       - "9009:3000"
+    depends_on:
+      - redis
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD}
