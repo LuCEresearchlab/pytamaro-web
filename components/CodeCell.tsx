@@ -69,7 +69,7 @@ export default function CodeCell({ source, onSourceChanged, compile }:
           <CardContent>
             <AceEditor
               mode="python"
-              theme="github"
+              theme="xcode"
               defaultValue={source}
               onChange={(newSource: string) => { setExecuted(false); onSourceChanged(newSource); }}
               maxLines={Infinity}
