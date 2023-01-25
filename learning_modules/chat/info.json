@@ -1,0 +1,12 @@
+{
+    "variants": [
+        {
+            "title": "Chat",
+            "language": "en",
+            "target": "student",
+            "description": "tuple, pin, compose"
+        }
+    ],
+    "previewImage": "chat.png",
+    "visibility": "draft"
+}
