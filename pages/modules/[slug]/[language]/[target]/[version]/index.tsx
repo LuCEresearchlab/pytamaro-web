@@ -4,6 +4,7 @@ import Container from '@mui/material/Container';
 import { useState } from 'react';
 import { Box } from '@mui/material';
 import Head from 'next/head';
+import produce from 'immer';
 import {
   getNotebookContent, NotebookCell,
 } from '../../../../../../src/NotebooksManager';
@@ -29,17 +30,17 @@ function attachmentsTransformer(src: string, cell: NotebookCell) {
   return uriTransformer(src);
 }
 
-function replaceAt<T>(array: T[], index: number, value: T) {
-  const ret = array.slice(0);
-  ret[index] = value;
-  return ret;
-}
-
 export default function NotebookPage({ title, cells }: { title : string, cells: NotebookCell[] }) {
   const originalCodeFragments = cells.map((cell) => (cell.cell_type === 'code' ? cell.source : ''));
   const [codeFragments, setCodeFragments] = useState<string[]>(originalCodeFragments);
 
   const getWholeSource = () => codeFragments.filter((f) => f.length > 0).join('\n');
+
+  const handleSourceChanged = (newSource: string, idx: number) => setCodeFragments(
+    produce(codeFragments, (draft) => {
+      draft[idx] = newSource;
+    }),
+  );
 
   const pageTitle = `${title} - PyTamaro`;
 
@@ -67,9 +68,7 @@ export default function NotebookPage({ title, cells }: { title : string, cells: 
               <CodeCell
                 key={cell.id}
                 source={codeFragments[idx]}
-                onSourceChanged={
-                (newSource: string) => setCodeFragments(replaceAt(codeFragments, idx, newSource))
-              }
+                onSourceChanged={(newSource) => handleSourceChanged(newSource, idx)}
                 compile={() => executeCode(codeFragments.slice(0, idx + 1).join('\n'))}
               />
             );
