@@ -63,7 +63,7 @@ export default function CodeCell({ source, onSourceChanged, compile }:
     setShowOutputArea(!showOutputArea);
   };
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md" sx={{ mb: 2 }}>
       <Paper elevation={8}>
         <Card>
           <CardContent>
