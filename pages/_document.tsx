@@ -63,6 +63,7 @@ MyDocument.getInitialProps = async (ctx) => {
   const cache = createEmotionCache();
   const { extractCriticalToChunks } = createEmotionServer(cache);
 
+  // eslint-disable-next-line no-param-reassign
   ctx.renderPage = () => originalRenderPage({
     enhanceApp: (App: any) => function EnhanceApp(props) {
       // eslint-disable-next-line react/jsx-props-no-spreading
