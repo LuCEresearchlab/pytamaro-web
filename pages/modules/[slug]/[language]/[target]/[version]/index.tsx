@@ -34,13 +34,31 @@ export default function NotebookPage({ title, cells }: { title : string, cells: 
   const originalCodeFragments = cells.map((cell) => (cell.cell_type === 'code' ? cell.source : ''));
   const [codeFragments, setCodeFragments] = useState<string[]>(originalCodeFragments);
 
-  const getWholeSource = () => codeFragments.filter((f) => f.length > 0).join('\n');
+  const getSourceFirstNCodeCells = (n: number) => codeFragments.slice(0, n).filter((f) => f.length > 0).join('\n');
+
+  const getWholeSource = () => getSourceFirstNCodeCells(codeFragments.length);
 
   const handleSourceChanged = (newSource: string, idx: number) => setCodeFragments(
     produce(codeFragments, (draft) => {
       draft[idx] = newSource;
     }),
   );
+
+  const indentSource = (source: string) => source.split('\n').map((line) => `\t${line}`).join('\n');
+
+  const codeFirstNCells = (n: number) => {
+    // Creates a Python source with all the previous cells embedded within a
+    // context manager that redirects stdout and stderr to None, so that the
+    // only the stdout/stderr of the current cell is considered.
+    const currentCellSource = codeFragments[n];
+    const previousCellsSource = getSourceFirstNCodeCells(n);
+    return `
+from contextlib import redirect_stdout, redirect_stderr
+with redirect_stdout(None), redirect_stderr(None):
+${previousCellsSource ? indentSource(previousCellsSource) : '\tpass'}
+
+${currentCellSource}`;
+  };
 
   const pageTitle = `${title} - PyTamaro`;
 
@@ -69,7 +87,7 @@ export default function NotebookPage({ title, cells }: { title : string, cells: 
                 key={cell.id}
                 source={codeFragments[idx]}
                 onSourceChanged={(newSource) => handleSourceChanged(newSource, idx)}
-                compile={() => executeCode(codeFragments.slice(0, idx + 1).join('\n'))}
+                compile={() => executeCode(codeFirstNCells(idx))}
               />
             );
           })}
