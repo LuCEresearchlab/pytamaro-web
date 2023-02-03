@@ -6,6 +6,9 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { styled } from '@mui/material/styles';
 import TypeIt from 'typeit-react';
 import { useState } from 'react';
+import SchoolIcon from '@mui/icons-material/School';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import TerminalIcon from '@mui/icons-material/Terminal';
 
 const InfoCard = styled(Card)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -22,13 +25,13 @@ export default function Home() {
   return (
     <Container maxWidth="lg">
       <Image src="/PyTamaro-horizontal.png" alt="PyTamaro logo" width="945" height="284" />
-      <Paper elevation={3} sx={{ bgcolor: '#222222', marginBottom: 4 }}>
+      <Paper elevation={2} sx={{ bgcolor: '#222222', marginBottom: 4 }}>
         <Typography variant="h4" align="center" sx={{ fontFamily: 'monospace', color: 'white' }}>
           pip install pytamaro
         </Typography>
       </Paper>
       <Grid container spacing={4}>
-        <Grid xs={6}>
+        <Grid xs={12}>
           <InfoCard>
             <CardContent>
               <Typography variant="h5">
@@ -37,11 +40,11 @@ export default function Home() {
               </Typography>
             </CardContent>
             <CenteredCardAction>
-              <Button variant="contained" href="/modules">Browse modules</Button>
+              <Button startIcon={<SchoolIcon />} variant="contained" href="/modules">Learning modules</Button>
             </CenteredCardAction>
           </InfoCard>
         </Grid>
-        <Grid xs={6}>
+        <Grid xs={12}>
           <InfoCard>
             <CardContent>
               <Typography variant="h5">
@@ -49,7 +52,7 @@ export default function Home() {
               </Typography>
             </CardContent>
             <CenteredCardAction>
-              <Button variant="contained" href="https://pytamaro.readthedocs.org">Browse documentation</Button>
+              <Button startIcon={<MenuBookIcon />} variant="contained" href="https://pytamaro.readthedocs.org">Browse documentation</Button>
             </CenteredCardAction>
           </InfoCard>
         </Grid>
@@ -87,7 +90,7 @@ export default function Home() {
               </Typography>
             </CardContent>
             <CenteredCardAction>
-              <Button variant="contained" href="/playground">Start programming</Button>
+              <Button startIcon={<TerminalIcon />} variant="contained" href="/playground">Start programming</Button>
             </CenteredCardAction>
           </InfoCard>
         </Grid>
