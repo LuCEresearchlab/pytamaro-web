@@ -1,6 +1,8 @@
 import produce from 'immer';
 import { useConfirm } from 'material-ui-confirm';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import useLocalStorageState from 'use-local-storage-state';
+
 import { executeCode } from './CodeExecution';
 
 export interface CodeCellState {
@@ -25,8 +27,13 @@ export function createCodeCell(source: string, originalIndex: number): CodeCellS
   };
 }
 
-export function useCodeState(initialCodeCells: CodeState) {
-  const [codeCells, setCodeCells] = useState<CodeState>(initialCodeCells);
+export function useCodeState(initialCodeCells: CodeState, moduleVariantId: string) {
+  const KEY = `pytamaro_web_${moduleVariantId}_codeCells`;
+  const [codeCells, setCodeCells] = useLocalStorageState(KEY, { defaultValue: initialCodeCells });
+  const [cellsModified, setCellsModified] = useState(false);
+  useEffect(() => {
+    setCellsModified(JSON.stringify(codeCells) !== JSON.stringify(initialCodeCells));
+  }, [codeCells, initialCodeCells]);
 
   const getSourceFirstNCodeCells = (n: number) => codeCells.map((cell) => cell.source).slice(0, n).join('\n');
 
@@ -110,6 +117,7 @@ ${currentCellSource}`;
 
   return {
     codeCells,
+    cellsModified,
     handleSourceChanged,
     handleExecute,
     handleToggleOutputArea,

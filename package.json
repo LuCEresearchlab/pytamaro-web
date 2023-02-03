@@ -28,7 +28,8 @@
     "react-markdown": "^8.0.3",
     "redis": "^4.5.1",
     "sharp": "^0.31.3",
-    "typeit-react": "^2.6.4"
+    "typeit-react": "^2.6.4",
+    "use-local-storage-state": "^18.1.2"
   },
   "devDependencies": {
     "@types/node": "18.11.6",

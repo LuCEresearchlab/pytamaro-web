@@ -1,9 +1,9 @@
 import ReactMarkdown, { uriTransformer } from 'react-markdown';
 import Container from '@mui/material/Container';
 
-import { Box, Button, Grid } from '@mui/material';
+import { Box } from '@mui/material';
 import Head from 'next/head';
-import { RestartAlt } from '@mui/icons-material';
+import { useRouter } from 'next/router';
 import {
   getNotebookContent, NotebookCell,
 } from '../../../../../../src/NotebooksManager';
@@ -16,6 +16,7 @@ import {
 import NavigationBar from '../../../../../../components/NavigationBar';
 import DownloadCodeButton from '../../../../../../components/CodeDownloadButton';
 import { createCodeCell, useCodeState } from '../../../../../../src/codeState';
+import ResetButton from '../../../../../../components/ResetButton';
 
 function attachmentsTransformer(src: string, cell: NotebookCell) {
   const attachmentPrefix = 'attachment:';
@@ -30,6 +31,12 @@ function attachmentsTransformer(src: string, cell: NotebookCell) {
 }
 
 export default function NotebookPage({ title, cells }: { title : string, cells: NotebookCell[] }) {
+  const router = useRouter();
+  const {
+    slug, language, target, version,
+  } = router.query;
+  const moduleVariantId = `${slug}-${language}-${target}-${version}`;
+
   const initialCodeCells = cells
     .filter((cell) => cell.cell_type === 'code')
     .map((cell) => createCodeCell(cell.source, parseInt(cell.id, 10)));
@@ -37,13 +44,11 @@ export default function NotebookPage({ title, cells }: { title : string, cells: 
   initialCodeCells.forEach((cell, idx) => originalIdxToCodeCellIdx.set(cell.originalIndex, idx));
 
   const {
-    codeCells, handleSourceChanged, handleExecute,
+    codeCells, cellsModified, handleSourceChanged, handleExecute,
     handleToggleOutputArea, handleResetState, getWholeSource,
-  } = useCodeState(initialCodeCells);
+  } = useCodeState(initialCodeCells, moduleVariantId);
 
   const pageTitle = `${title} - PyTamaro`;
-
-  const initialContentModified = JSON.stringify(initialCodeCells) !== JSON.stringify(codeCells);
 
   return (
     <div>
@@ -53,17 +58,7 @@ export default function NotebookPage({ title, cells }: { title : string, cells: 
 
       <Box>
         <NavigationBar title={title} />
-        <Grid container justifyContent="flex-end">
-          <Button
-            variant="contained"
-            color="error"
-            endIcon={<RestartAlt />}
-            sx={{ m: 2, mb: -6, visibility: initialContentModified ? 'visible' : 'hidden' }}
-            onClick={handleResetState}
-          >
-            Reset
-          </Button>
-        </Grid>
+        <ResetButton visible={cellsModified} onReset={handleResetState} />
         <Container>
           {cells.map((cell: NotebookCell, idx) => {
             if (cell.cell_type === 'markdown') {
