@@ -1,10 +1,9 @@
 import ReactMarkdown, { uriTransformer } from 'react-markdown';
 import Container from '@mui/material/Container';
 
-import { useState } from 'react';
-import { Box } from '@mui/material';
+import { Box, Button, Grid } from '@mui/material';
 import Head from 'next/head';
-import produce from 'immer';
+import { RestartAlt } from '@mui/icons-material';
 import {
   getNotebookContent, NotebookCell,
 } from '../../../../../../src/NotebooksManager';
@@ -15,8 +14,8 @@ import {
   variantInfo,
 } from '../../../../../../src/Modules';
 import NavigationBar from '../../../../../../components/NavigationBar';
-import { executeCode } from '../../../../../../src/CodeExecution';
 import DownloadCodeButton from '../../../../../../components/CodeDownloadButton';
+import { createCodeCell, useCodeState } from '../../../../../../src/codeState';
 
 function attachmentsTransformer(src: string, cell: NotebookCell) {
   const attachmentPrefix = 'attachment:';
@@ -31,36 +30,20 @@ function attachmentsTransformer(src: string, cell: NotebookCell) {
 }
 
 export default function NotebookPage({ title, cells }: { title : string, cells: NotebookCell[] }) {
-  const originalCodeFragments = cells.map((cell) => (cell.cell_type === 'code' ? cell.source : ''));
-  const [codeFragments, setCodeFragments] = useState<string[]>(originalCodeFragments);
+  const initialCodeCells = cells
+    .filter((cell) => cell.cell_type === 'code')
+    .map((cell) => createCodeCell(cell.source, parseInt(cell.id, 10)));
+  const originalIdxToCodeCellIdx = new Map<number, number>();
+  initialCodeCells.forEach((cell, idx) => originalIdxToCodeCellIdx.set(cell.originalIndex, idx));
 
-  const getSourceFirstNCodeCells = (n: number) => codeFragments.slice(0, n).filter((f) => f.length > 0).join('\n');
-
-  const getWholeSource = () => getSourceFirstNCodeCells(codeFragments.length);
-
-  const handleSourceChanged = (newSource: string, idx: number) => setCodeFragments(
-    produce(codeFragments, (draft) => {
-      draft[idx] = newSource;
-    }),
-  );
-
-  const indentSource = (source: string) => source.split('\n').map((line) => `\t${line}`).join('\n');
-
-  const codeFirstNCells = (n: number) => {
-    // Creates a Python source with all the previous cells embedded within a
-    // context manager that redirects stdout and stderr to None, so that the
-    // only the stdout/stderr of the current cell is considered.
-    const currentCellSource = codeFragments[n];
-    const previousCellsSource = getSourceFirstNCodeCells(n);
-    return `
-from contextlib import redirect_stdout, redirect_stderr
-with redirect_stdout(None), redirect_stderr(None):
-${previousCellsSource ? indentSource(previousCellsSource) : '\tpass'}
-
-${currentCellSource}`;
-  };
+  const {
+    codeCells, handleSourceChanged, handleExecute,
+    handleToggleOutputArea, handleResetState, getWholeSource,
+  } = useCodeState(initialCodeCells);
 
   const pageTitle = `${title} - PyTamaro`;
+
+  const initialContentModified = JSON.stringify(initialCodeCells) !== JSON.stringify(codeCells);
 
   return (
     <div>
@@ -70,6 +53,17 @@ ${currentCellSource}`;
 
       <Box>
         <NavigationBar title={title} />
+        <Grid container justifyContent="flex-end">
+          <Button
+            variant="contained"
+            color="error"
+            endIcon={<RestartAlt />}
+            sx={{ m: 2, mb: -6, visibility: initialContentModified ? 'visible' : 'hidden' }}
+            onClick={handleResetState}
+          >
+            Reset
+          </Button>
+        </Grid>
         <Container>
           {cells.map((cell: NotebookCell, idx) => {
             if (cell.cell_type === 'markdown') {
@@ -82,20 +76,21 @@ ${currentCellSource}`;
                 </ReactMarkdown>
               );
             }
+            const cellIdx = originalIdxToCodeCellIdx.get(idx) as number;
+            const currentCodeCell = codeCells[cellIdx];
             return (
               <CodeCell
                 key={cell.id}
-                source={codeFragments[idx]}
-                onSourceChanged={(newSource) => handleSourceChanged(newSource, idx)}
-                compile={() => executeCode(codeFirstNCells(idx))}
+                codeCellState={currentCodeCell}
+                onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
+                onExecutionRequested={() => handleExecute(cellIdx)}
+                onOutputAreaToggled={() => handleToggleOutputArea(cellIdx)}
               />
             );
           })}
           <DownloadCodeButton getSource={getWholeSource} />
         </Container>
-
       </Box>
-
     </div>
   );
 }
