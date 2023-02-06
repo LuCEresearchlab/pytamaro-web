@@ -4,6 +4,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import { ConfirmProvider } from 'material-ui-confirm';
+import PlausibleProvider from 'next-plausible';
 import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
 
@@ -26,11 +27,13 @@ export default function MyApp(props: MyAppProps) {
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
-        <ConfirmProvider>
-          <Component // eslint-disable-next-line react/jsx-props-no-spreading
-            {...pageProps}
-          />
-        </ConfirmProvider>
+        <PlausibleProvider domain={process.env.DOMAIN as string} selfHosted>
+          <ConfirmProvider>
+            <Component // eslint-disable-next-line react/jsx-props-no-spreading
+              {...pageProps}
+            />
+          </ConfirmProvider>
+        </PlausibleProvider>
       </ThemeProvider>
     </CacheProvider>
   );
