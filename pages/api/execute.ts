@@ -16,7 +16,10 @@ async function connectToRedisIfNeeded() {
     try {
       await redisClient.connect();
     } catch (e) {
-      // could not connect to redis, ignore
+      // could not connect to redis, ignore (as we can execute anyway),
+      // but log this error for easier inspection
+      // eslint-disable-next-line no-console
+      console.log('Could not connect to redis', e);
     }
   }
 }
