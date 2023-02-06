@@ -4,7 +4,8 @@
             "title": "Chat",
             "language": "en",
             "target": "student",
-            "description": "tuple, pin, compose"
+            "description": "tuple, pin, compose",
+            "latestVersion": "v1"
         }
     ],
     "previewImage": "chat.png",

@@ -4,7 +4,8 @@
             "title": "Yin e Yang",
             "language": "it",
             "target": "student",
-            "description": "ellipse"
+            "description": "ellipse",
+            "latestVersion": "v1"
         }
     ],
     "previewImage": "yinyang.png",

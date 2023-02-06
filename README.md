@@ -24,16 +24,18 @@ See `learning_modules/swiss-flag/info.json` for an example.
 Each variant is described by an object containing:
 - the localized `title`,
 - the natural language `language` in the ISO 639-1 format,
-- the `target` person (`"student"` or `"teacher"`).
+- the `target` person (`"student"` or `"teacher"`),
+- the `latestVersion`.
 
 These pieces of information prescribe the name of the Jupyter notebook file
-for that variant (`slug-language-target.ipynb`).
+for that variant (`slug-language-target-version.ipynb`).
 
-Each module variant causes the generation of a separate notebook.
-In addition, revisions to each Jupyter notebook are tracked using `git`:
-a separate notebook is generated for each revision,
-named after the hash of the commit that modified the file.
-Finally, a `latest` version is always generated with the current content of the file.
+Small changes (such as fixing a typo, or improving the wording of a markdown cell in a notebook)
+should not be created in a new version.
+On the other hand, major changes, including all the ones that involve the addition/removal of cells
+should be created in a new version.
+
+Note that user edits are persisted in the browser's local storage only with respect to a specific version.
 
 When creating a notebook, embed resources (such as images) as attachments.
 
@@ -46,7 +48,7 @@ Additionally, the object describing a module contains the following fields:
 From the root folder of this repository:
 
 1. Install the dependencies of this project: `npm install`
-2. Generate the various versions of the notebooks: `node tools/notebooksGenerator.js`
+2. Populate the `public` folder with notebooks-related assets: `node tools/createNotebookAssets.js`
 3. Start the Next.js server: `npm run dev`
 4. Browse at [http://localhost:3000](http://localhost:3000)
 

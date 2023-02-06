@@ -13,11 +13,13 @@ import {
   Chip,
 } from '@mui/material';
 import { HourglassBottom } from '@mui/icons-material';
-import { listModules, Module, NotebookVariant } from '../../src/Modules';
+import {
+  listModules, Module, NotebookVariant,
+} from '../../src/Modules';
 import NavigationBar from '../../components/NavigationBar';
+import { notebookVersionUrl } from '../../src/urlUtils';
 
 const DEFAULT_TARGET = 'student';
-const DEFAULT_VERSION = 'latest';
 
 export default function ModulesPage({ modules }: { modules: Module[] }) {
   const router = useRouter();
@@ -41,7 +43,7 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
             (v) => v.target === DEFAULT_TARGET,
           ) as NotebookVariant;
           function variantUrl(language: string) {
-            return `${router.asPath}/${module.slug}/${language}/${variant.target}/${DEFAULT_VERSION}`;
+            return `${router.asPath}/${notebookVersionUrl(module.slug, language, variant.target, variant.latestVersion)}`;
           }
           const isDraft = module.visibility === 'draft';
           return (

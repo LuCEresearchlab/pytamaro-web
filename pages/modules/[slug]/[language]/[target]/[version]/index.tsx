@@ -6,17 +6,21 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import {
   getNotebookContent, NotebookCell,
-} from '../../../../../../src/NotebooksManager';
+} from '../../../../../../src/Notebook';
 import CodeCell from '../../../../../../components/CodeCell';
 import {
+  findLanguages,
+  findVersions,
+  LanguageWithLatestVersion,
   listModules,
-  NotebookVariant,
   variantInfo,
 } from '../../../../../../src/Modules';
 import NavigationBar from '../../../../../../components/NavigationBar';
 import DownloadCodeButton from '../../../../../../components/CodeDownloadButton';
 import { createCodeCell, useCodeState } from '../../../../../../src/codeState';
 import ResetButton from '../../../../../../components/ResetButton';
+import { notebookVersionUrl } from '../../../../../../src/urlUtils';
+import VariantSelector from '../../../../../../components/VariantsSelector';
 
 function attachmentsTransformer(src: string, cell: NotebookCell) {
   const attachmentPrefix = 'attachment:';
@@ -30,12 +34,17 @@ function attachmentsTransformer(src: string, cell: NotebookCell) {
   return uriTransformer(src);
 }
 
-export default function NotebookPage({ title, cells }: { title : string, cells: NotebookCell[] }) {
+export default function NotebookPage({
+  title, cells, versions, languages,
+}:
+{ title : string, cells: NotebookCell[], versions: string[],
+  languages: LanguageWithLatestVersion[] }) {
   const router = useRouter();
   const {
     slug, language, target, version,
-  } = router.query;
-  const moduleVariantId = `${slug}-${language}-${target}-${version}`;
+  } = router.query as { slug: string, language: string, target: string, version: string };
+  const moduleVariantId = `${slug}-${language}-${target}`;
+  const moduleVersionId = `${moduleVariantId}-${version}`;
 
   const initialCodeCells = cells
     .filter((cell) => cell.cell_type === 'code')
@@ -46,7 +55,7 @@ export default function NotebookPage({ title, cells }: { title : string, cells: 
   const {
     codeCells, cellsModified, handleSourceChanged, handleExecute,
     handleToggleOutputArea, handleResetState, getWholeSource,
-  } = useCodeState(initialCodeCells, moduleVariantId);
+  } = useCodeState(initialCodeCells, moduleVersionId);
 
   const pageTitle = `${title} - PyTamaro`;
 
@@ -59,6 +68,14 @@ export default function NotebookPage({ title, cells }: { title : string, cells: 
       <Box>
         <NavigationBar title={title} />
         <ResetButton visible={cellsModified} onReset={handleResetState} />
+        <VariantSelector
+          slug={slug}
+          language={language}
+          target={target}
+          version={version}
+          versions={versions}
+          languages={languages}
+        />
         <Container>
           {cells.map((cell: NotebookCell, idx) => {
             if (cell.cell_type === 'markdown') {
@@ -100,15 +117,20 @@ export async function getStaticProps(
     props: {
       title: (await variantInfo(slug, language, target)).title,
       cells: await getNotebookContent(slug, language, target, version),
+      versions: await findVersions(slug, language, target),
+      languages: await findLanguages(slug, target),
     },
   };
 }
 
 export async function getStaticPaths() {
   const modules = await listModules();
-  const allVariantPaths = modules.flatMap((module) => module.variants.map((notebook: NotebookVariant) => `/modules/${module.slug}/${notebook.language}/${notebook.target}/latest`));
+  const paths = modules.flatMap((module) => module.variants.flatMap(
+    async (notebook) => (await findVersions(module.slug, notebook.language, notebook.target))
+      .map((v) => `/modules/${notebookVersionUrl(module.slug, notebook.language, notebook.target, v)}`),
+  ));
   return {
-    paths: allVariantPaths,
+    paths: (await Promise.all(paths)).flat(),
     fallback: false,
   };
 }

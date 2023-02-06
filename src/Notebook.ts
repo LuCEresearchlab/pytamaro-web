@@ -1,7 +1,6 @@
 import { readFile } from 'fs/promises';
 import path from 'path';
-
-const GENERATED_NOTEBOOK_DIR = 'generated_notebooks';
+import { MODULES_PATH } from './Modules';
 
 export interface ContentItem {
   name: string,
@@ -22,7 +21,7 @@ export async function getNotebookContent(
   target: string,
   version: string,
 ) {
-  const notebookPath = path.join(GENERATED_NOTEBOOK_DIR, slug, `${slug}-${language}-${target}-${version}.ipynb`);
+  const notebookPath = path.join(MODULES_PATH, slug, `${slug}-${language}-${target}-${version}.ipynb`);
   const contentBuffer = await readFile(notebookPath);
   const content = JSON.parse(contentBuffer.toString());
   return content.cells.map((cell: any, idx: number) => ({ ...cell, source: cell.source.join(''), id: idx.toString() }));

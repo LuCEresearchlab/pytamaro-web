@@ -4,13 +4,15 @@
             "title": "Swiss Flag",
             "language": "en",
             "target": "student",
-            "description": "overlay, rotate"
+            "description": "overlay, rotate",
+            "latestVersion": "v1"
         },
         {
             "title": "Schweizerfahne",
             "language": "de",
             "target": "student",
-            "description": "overlay, rotate"
+            "description": "overlay, rotate",
+            "latestVersion": "v1"
         }
     ],
     "previewImage": "flag.png",

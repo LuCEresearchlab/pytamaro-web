@@ -4,13 +4,15 @@
       "title": "Balken-Diagramm",
       "language": "de",
       "target": "student",
-      "description": "fixiere, kombiniere"
+      "description": "fixiere, kombiniere",
+      "latestVersion": "v1"
     },
     {
       "title": "Bar Chart",
       "language": "en",
       "target": "student",
-      "description": "pin, compose"
+      "description": "pin, compose",
+      "latestVersion": "v1"
     }
   ],
   "previewImage": "bar-chart.png",
