@@ -28,8 +28,8 @@ export default function MyApp(props: MyAppProps) {
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
         <PlausibleProvider
-          domain={process.env.DOMAIN as string}
-          customDomain={process.env.PLAUSIBLE_URL}
+          domain={process.env.NEXT_PUBLIC_DOMAIN as string}
+          customDomain={process.env.NEXT_PUBLIC_PLAUSIBLE_URL}
           selfHosted
         >
           <ConfirmProvider>
