@@ -27,7 +27,11 @@ export default function MyApp(props: MyAppProps) {
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
-        <PlausibleProvider domain={process.env.DOMAIN as string} selfHosted>
+        <PlausibleProvider
+          domain={process.env.DOMAIN as string}
+          customDomain={process.env.PLAUSIBLE_URL}
+          selfHosted
+        >
           <ConfirmProvider>
             <Component // eslint-disable-next-line react/jsx-props-no-spreading
               {...pageProps}
