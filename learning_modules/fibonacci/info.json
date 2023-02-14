@@ -1,0 +1,13 @@
+{
+    "variants": [
+        {
+            "title": "Fibonacci",
+            "language": "en",
+            "target": "student",
+            "description": "recursion, pin, compose",
+            "latestVersion": "v1"
+        }
+    ],
+    "previewImage": "fibonacci.png",
+    "visibility": "draft"
+}
