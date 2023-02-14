@@ -1,0 +1,14 @@
+{
+    "variants": [
+        {
+            "title": "Rolling Eyes",
+            "language": "en",
+            "target": "student",
+            "description": "pin, compose, overlay, ellipse, beside",
+            "latestVersion": "v1"
+        }
+    ],
+    "previewImage": "rolling-eyes.png",
+    "visibility": "draft"
+}
+    

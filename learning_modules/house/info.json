@@ -1,0 +1,13 @@
+{
+    "variants": [
+        {
+            "title": "House",
+            "language": "en",
+            "target": "student",
+            "description": "above, triangle, rectangle",
+            "latestVersion": "v1"
+        }
+    ],
+    "previewImage": "house.png",
+    "visibility": "draft"
+}

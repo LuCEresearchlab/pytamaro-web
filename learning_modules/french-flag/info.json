@@ -1,0 +1,13 @@
+{
+    "variants": [
+        {
+            "title": "French Flag",
+            "language": "en",
+            "target": "student",
+            "description": "rgb_color, beside, rectangle",
+            "latestVersion": "v1"
+        }
+    ],
+    "previewImage": "french-flag.png",
+    "visibility": "draft"
+}

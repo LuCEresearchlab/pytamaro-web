@@ -1,0 +1,13 @@
+{
+    "variants": [
+        {
+            "title": "Double Black Diamond",
+            "language": "en",
+            "target": "student",
+            "description": "rotate, rectangle, beside, text, above",
+            "latestVersion": "v1"
+        }
+    ],
+    "previewImage": "double-black-diamond.png",
+    "visibility": "draft"
+}

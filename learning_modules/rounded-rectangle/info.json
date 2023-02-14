@@ -1,0 +1,14 @@
+{
+    "variants": [
+        {
+            "title": "Rounded Rectangle",
+            "language": "en",
+            "target": "student",
+            "description": "pin, compose, empty_graphic, circular_sector, rectangle",
+            "latestVersion": "v1"
+        }
+    ],
+    "previewImage": "rounded-rectangle.png",
+    "visibility": "draft"
+}
+    
