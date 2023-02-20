@@ -8,6 +8,9 @@
             "latestVersion": "v1"
         }
     ],
-    "previewImage": "chat.png",
+    "previewImage": {
+        "filename": "chat.png",
+        "backgroundColor": "#add9e6"
+    },
     "visibility": "draft"
 }

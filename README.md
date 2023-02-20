@@ -40,7 +40,7 @@ Note that user edits are persisted in the browser's local storage only with resp
 When creating a notebook, embed resources (such as images) as attachments.
 
 Additionally, the object describing a module contains the following fields:
-- `previewImage`: filename of a preview image to be shown in the gallery
+- `previewImage`: an object containing the `filename` of a preview image and its `backgroundColor`, to be used in the gallery
 - `visibility`: one of `"visible"` (the module is shown normally in the gallery), `"draft"` (the module is shown with a special label in the gallery and can only be accessed using a direct link), or `"hidden"` (the module is not shown at all in the gallery).
 
 ## How to set up a development environment

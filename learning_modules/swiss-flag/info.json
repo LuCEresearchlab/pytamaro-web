@@ -15,6 +15,9 @@
             "latestVersion": "v1"
         }
     ],
-    "previewImage": "flag.png",
+    "previewImage": {
+        "filename": "flag.png",
+        "backgroundColor": "#ffffff"
+    },
     "visibility": "visible"
 }

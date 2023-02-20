@@ -8,7 +8,10 @@
             "latestVersion": "v1"
         }
     ],
-    "previewImage": "rounded-rectangle.png",
-    "visibility": "draft"
+    "previewImage": {
+        "filename": "rounded-rectangle.png",
+        "backgroundColor": "#ffffff"
+    },
+    "visibility": "hidden"
 }
     

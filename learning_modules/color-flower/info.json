@@ -15,6 +15,9 @@
       "latestVersion": "v1"
     }
   ],
-  "previewImage": "color-flower.png",
+  "previewImage": {
+    "filename": "color-flower.png",
+    "backgroundColor": "#ffffff"
+  },
   "visibility": "visible"
 }

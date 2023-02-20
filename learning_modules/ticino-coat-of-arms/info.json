@@ -8,7 +8,10 @@
             "latestVersion": "v1"
         }
     ],
-    "previewImage": "ticino-coat-of-arms.png",
+    "previewImage": {
+        "filename": "ticino-coat-of-arms.png",
+        "backgroundColor": "#ffffff"
+    },
     "visibility": "draft"
 }
     

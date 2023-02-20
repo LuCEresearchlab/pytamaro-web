@@ -57,9 +57,9 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
                     <CardMedia
                       component="img"
                       height="300"
-                      image={`/modules/${module.slug}/${module.previewImage}`}
+                      image={`/modules/${module.slug}/${module.previewImage.filename}`}
                       alt={variant.title}
-                      sx={{ objectFit: 'contain' }}
+                      sx={{ objectFit: 'contain', backgroundColor: module.previewImage.backgroundColor }}
                     />
                     <CardContent>
                       <Typography gutterBottom variant="h5" component="div">

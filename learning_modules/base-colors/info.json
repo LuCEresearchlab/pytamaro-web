@@ -8,6 +8,9 @@
             "latestVersion": "v1"
         }
     ],
-    "previewImage": "base-colors.png",
+    "previewImage": {
+        "filename": "base-colors.png",
+        "backgroundColor": "#eeeeee"
+    },
     "visibility": "draft"
 }

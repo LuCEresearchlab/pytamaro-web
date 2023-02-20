@@ -8,6 +8,9 @@
       "latestVersion": "v1"
     }
   ],
-  "previewImage": "bandiera_italia.png",
+  "previewImage": {
+    "filename": "bandiera_italia.png",
+    "backgroundColor": "#ffffff"
+  },
   "visibility": "visible"
 }
