@@ -13,7 +13,7 @@ export default function Install() {
       </Head>
       <Box>
         <NavigationBar title="Installation Guide" />
-        <Container maxWidth="lg">
+        <Container maxWidth="md">
           <Typography variant="h3" align="center" marginY={3}>How to Install PyTamaro</Typography>
           <Typography variant="h6">
             If you know how to use
@@ -48,6 +48,30 @@ export default function Install() {
                 then click the &quot;Install&quot; button.
               </li>
             </ol>
+          </Typography>
+          <Typography variant="h3" align="center" marginY={3}>Frequently Asked Questions</Typography>
+          <Typography variant="h6">
+            I was using PyTamaro and now some functions do not work anymore as they used to!
+          </Typography>
+          <Typography variant="body1">
+            In February 2023, we released a new version of PyTamaro
+            that includes some breaking changes to the API
+            to improve the consistency of the library and its error messages.
+            <br />
+            We advise to upgrade to the latest version of PyTamaro
+            (
+            <code>pip install --upgrade pytamaro</code>
+            ).
+            <br />
+            The documentation for the older version of PyTamaro (years 2022 and before)
+            {' '}
+            <a href="https://pytamaro.readthedocs.io/en/version_2022/">is still available</a>
+            .
+            <br />
+            For a detailed list of the changes, see
+            {' '}
+            <a href="https://github.com/LuCEresearchlab/pytamaro/blob/main/CHANGELOG.md#040---2023-02-27">this changelog</a>
+            .
           </Typography>
         </Container>
       </Box>
