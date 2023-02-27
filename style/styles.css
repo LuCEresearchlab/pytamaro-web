@@ -1,0 +1,21 @@
+body {
+    background-color: #e0f6ff;
+}
+
+.swiss-flag-animation {
+    opacity: 0;
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.swiss-flag-background {
+    height: 320px;
+    width: 320px;
+    background-color: white;
+}
+
+.swiss-flag-arm {
+    height: 60px;
+    width: 200px;
+    background-color: red;
+}
