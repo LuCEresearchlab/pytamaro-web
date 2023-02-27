@@ -12,10 +12,10 @@ import { InstallDesktop } from '@mui/icons-material';
 
 export default function Home() {
   const [demoOutputVisible, setDemoOutputVisible] = useState(false);
-  const animRef = useRef(null);
+  const animRef = useRef<HTMLElement>();
 
   useEffect(() => {
-    if (demoOutputVisible) {
+    if (demoOutputVisible && animRef.current) {
       const middle = animRef.current.offsetWidth / 2;
       const tl = anime.timeline({
         easing: 'easeOutQuad',
