@@ -15,6 +15,9 @@ import Image from 'next/image';
 import Head from 'next/head';
 import NavigationBar from '../../components/NavigationBar';
 import AlpeFoppa from '../../public/AlpeFoppa.jpg';
+import YinYang from '../../public/yinyang.png';
+import PyTamaro from '../../public/pytamaro.png';
+import LambdaPyTamaroLove from '../../public/lambda-pytamaro-love.png';
 import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
 import Theory from 'public/artturi-jalli-gYrYa37fAKI-unsplash.jpg';
 
@@ -22,10 +25,10 @@ export default function Install() {
   return (
     <div>
       <Head>
-        <title>PyTamaro Summer Camp</title>
+        <title>PyTamaro Summer Academy</title>
       </Head>
       <Box>
-        <NavigationBar title="PyTamaro Summer Camp" />
+        <NavigationBar title="PyTamaro Summer Academy" />
         <div
           style={{
             display: 'flex',
@@ -46,16 +49,31 @@ export default function Install() {
         </div>
         <Container maxWidth="lg">
           <Typography variant="h3" align="center" marginY={3}>An Extraordinary Way to Learn Programming</Typography>
-          <Typography variant="h4" align="center" marginY={3}>Five-Day Summer Camp in Lugano, with a Trip to Monte Tamaro</Typography>
+          <Typography variant="h4" align="center" marginY={3}>Five-Day Summer Academy in Lugano, with a Trip to Monte Tamaro</Typography>
+
           <Typography variant="h5" align="center" marginY={3}>
-            In this summer camp you learn programming by decomposing graphical compositions
-            and reconstructing them in code.
-            You will experience the sound theoretical foundations of programming
+            Learn programming by decomposing graphical compositions
+            and reconstructing them as programs.
+            Experience the sound theoretical foundations of programming
             combined with the unbounded creativity and playfulness of computer graphics.
-            We will use the most prevalent programming language, Python,
+            Use the most prevalent programming language, Python,
             and the (we think) greatest Python graphics library, PyTamaro.
           </Typography>
         </Container>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            margin: '2rem 0',
+          }}
+        >
+          <Image
+            src={YinYang}
+            alt="Yin and Yang"
+            width="100"
+            height="100"
+          />
+        </div>
         <Container maxWidth="lg" component="main">
           <Grid container spacing={5} alignItems="flex-end">
             <Grid
@@ -87,7 +105,7 @@ export default function Install() {
                     variant="subtitle1"
                   >
                     The PyTamaro library currently supports German, Italian, and English.
-                    In this summer camp we will speak them all.
+                    In this summer academy we will speak them all.
                     Join us, and learn to program in your native language!
                   </Typography>
                 </CardContent>
@@ -123,7 +141,7 @@ export default function Install() {
                     variant="subtitle1"
                   >
                     Programming is a collaborative activity.
-                    To participate in this summer camp,
+                    To participate in this summer academy,
                     you need to come as a team:
                     each teacher brings along 1-3 students.
                     Or we team you up.
@@ -160,7 +178,7 @@ export default function Install() {
                     component="p"
                     variant="subtitle1"
                   >
-                    The summer camp will take place at USI in Lugano,
+                    The summer academy will take place at USI in Lugano,
                     but we will explore the beautiful surroundings.
                     Yes, we will discover PyTamaro. But also Monte Tamaro!
                   </Typography>
@@ -259,9 +277,34 @@ export default function Install() {
         </Container>
 
 
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            margin: '2rem 0',
+          }}
+        >
+          <Image
+            src={LambdaPyTamaroLove}
+            alt="Lambda + PyTamaro = Love"
+            width="435"
+            height="80"
+          />
+        </div>
+
 
         <Container maxWidth="lg">
-          <Typography align="center" marginY={3}>For more information, contact Matthias.Hauswirth@usi.ch</Typography>
+          <Typography align="center" marginY={3}>
+            The PyTamaro Summer Academy is brought to you by
+            the&nbsp;
+            <a href="https://luce.si.usi.ch/">Lugano Computing Education Research Lab</a>
+            &nbsp;at the&nbsp;
+            <a href="https://si.usi.ch/">Software Institute</a>
+            &nbsp;of&nbsp;
+            <a href="https://www.usi.ch/">USI</a>
+            .
+          </Typography>
+          <Typography align="center" marginY={3}>For more information or pre-registration, contact Matthias.Hauswirth@usi.ch.</Typography>
         </Container>
       </Box>
     </div>
