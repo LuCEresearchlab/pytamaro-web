@@ -358,9 +358,7 @@ export default function Install() {
               </g>
             </g>
           </svg>
-
         </div>
-
 
         <Container maxWidth="lg" component="main">
           <Typography variant="h4" align="center" marginY={3}>Organizers</Typography>
