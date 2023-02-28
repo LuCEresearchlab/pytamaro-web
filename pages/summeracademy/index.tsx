@@ -15,7 +15,6 @@ import Head from 'next/head';
 import Theory from 'public/artturi-jalli-gYrYa37fAKI-unsplash.jpg';
 import AlpeFoppa from '../../public/AlpeFoppa-WithTitle.jpg';
 import YinYang from '../../public/yinyang.png';
-import LambdaPyTamaroLove from '../../public/lambda-pytamaro-love.png';
 import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
 import NavigationBar from '../../components/NavigationBar';
 
@@ -506,21 +505,6 @@ export default function SummerAcademy() {
             .
           </Typography>
         </Container>
-
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            margin: '1rem 0',
-          }}
-        >
-          <Image
-            src={LambdaPyTamaroLove}
-            alt="Lambda + PyTamaro = Love"
-            width="108"
-            height="20"
-          />
-        </div>
 
       </Box>
     </div>
