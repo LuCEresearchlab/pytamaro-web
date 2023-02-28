@@ -1,8 +1,6 @@
 import {
   Box,
-  Button,
   Card,
-  CardActions,
   CardContent,
   CardHeader,
   CardMedia,
@@ -13,13 +11,12 @@ import SchoolIcon from '@mui/icons-material/School';
 import LandscapeIcon from '@mui/icons-material/Landscape';
 import Image from 'next/image';
 import Head from 'next/head';
+import Theory from 'public/artturi-jalli-gYrYa37fAKI-unsplash.jpg';
 import NavigationBar from '../../components/NavigationBar';
 import AlpeFoppa from '../../public/AlpeFoppa.jpg';
 import YinYang from '../../public/yinyang.png';
-import PyTamaro from '../../public/pytamaro.png';
 import LambdaPyTamaroLove from '../../public/lambda-pytamaro-love.png';
 import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
-import Theory from 'public/artturi-jalli-gYrYa37fAKI-unsplash.jpg';
 
 export default function Install() {
   return (
@@ -227,7 +224,8 @@ export default function Install() {
                     component="p"
                     variant="subtitle1"
                   >
-                    The contents is informed by concepts from algebra you might know from middle school,
+                    The contents is informed by concepts from algebra
+                    you might know from middle school,
                     all the way to abstract algebra and logic one would learn at university.
                   </Typography>
                 </CardContent>
@@ -276,7 +274,6 @@ export default function Install() {
           </Grid>
         </Container>
 
-
         <div
           style={{
             display: 'flex',
@@ -291,7 +288,6 @@ export default function Install() {
             height="80"
           />
         </div>
-
 
         <Container maxWidth="lg">
           <Typography align="center" marginY={3}>
