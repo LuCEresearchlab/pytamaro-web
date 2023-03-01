@@ -3,7 +3,7 @@ import {
 } from '@mui/material';
 import Image from 'next/image';
 import TypeIt from 'typeit-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import SchoolIcon from '@mui/icons-material/School';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import TerminalIcon from '@mui/icons-material/Terminal';
@@ -12,7 +12,6 @@ import { InstallDesktop } from '@mui/icons-material';
 
 export default function Home() {
   const [demoOutputVisible, setDemoOutputVisible] = useState(false);
-  const animRef = useRef<HTMLElement>();
 
   useEffect(() => {
     const tl = anime.timeline({
@@ -87,7 +86,6 @@ export default function Home() {
         <Button startIcon={<TerminalIcon />} variant="outlined" size="large" href="/playground">Try in the browser</Button>
       </Stack>
       <Box
-        ref={animRef}
         sx={{
           minHeight: '20vw',
           position: 'relative',
