@@ -97,32 +97,41 @@ export default function SummerAcademy() {
     });
     tl.add({
       targets: '.eye-top',
-      translateX: '20vw',
+      translateX: '15vw',
       translateY: '2vw',
       delay: 1000,
     });
     tl.add({
       targets: '.eye-bottom',
-      translateX: '-20vw',
+      translateX: '-15vw',
       translateY: '-2vw',
       endDelay: 1000,
     });
     tl.add({
-      targets: '.semicircle-right',
-      translateX: '30vw',
-    });
-    tl.add({
-      targets: '.semicircle-left',
-      translateX: '-30vw',
-      endDelay: 1000,
-    });
-    tl.add({
       targets: '.dot-top',
-      translateX: '10vw',
+      translateX: '20vw',
     });
     tl.add({
       targets: '.dot-bottom',
-      translateX: '-10vw',
+      translateX: '-20vw',
+      endDelay: 1000,
+    });
+    tl.add({
+      targets: '.semicircle-right',
+      translateX: '5vw',
+    });
+    tl.add({
+      targets: '.semicircle-left',
+      translateX: '-5vw',
+      endDelay: 1000,
+    }, '-=750');
+    tl.add({
+      targets: '.semicircle-right',
+      rotate: -90,
+    });
+    tl.add({
+      targets: '.semicircle-left',
+      rotate: 90,
       endDelay: 1000,
     });
   }, []);
