@@ -2,7 +2,7 @@ body {
     background-color: #e0f6ff;
 }
 
-.irc-emblem-animation {
+.irc-emblem-animation, .yin-yang-animation {
     position: absolute;
 }
 

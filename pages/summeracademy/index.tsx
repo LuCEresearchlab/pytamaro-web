@@ -13,8 +13,9 @@ import LandscapeIcon from '@mui/icons-material/Landscape';
 import Image from 'next/image';
 import Head from 'next/head';
 import Theory from 'public/artturi-jalli-gYrYa37fAKI-unsplash.jpg';
+import { useEffect } from 'react';
+import anime from 'animejs';
 import AlpeFoppa from '../../public/AlpeFoppa-WithTitle.jpg';
-import YinYang from '../../public/yinyang.png';
 import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
 import NavigationBar from '../../components/NavigationBar';
 
@@ -87,6 +88,44 @@ function SILogo({ height } : { height: number }) {
 }
 
 export default function SummerAcademy() {
+  useEffect(() => {
+    const tl = anime.timeline({
+      easing: 'easeOutQuad',
+      duration: 750,
+      direction: 'alternate',
+      loop: true,
+    });
+    tl.add({
+      targets: '.eye-top',
+      translateX: '20vw',
+      translateY: '2vw',
+      delay: 1000,
+    });
+    tl.add({
+      targets: '.eye-bottom',
+      translateX: '-20vw',
+      translateY: '-2vw',
+      endDelay: 1000,
+    });
+    tl.add({
+      targets: '.semicircle-right',
+      translateX: '30vw',
+    });
+    tl.add({
+      targets: '.semicircle-left',
+      translateX: '-30vw',
+      endDelay: 1000,
+    });
+    tl.add({
+      targets: '.dot-top',
+      translateX: '10vw',
+    });
+    tl.add({
+      targets: '.dot-bottom',
+      translateX: '-10vw',
+      endDelay: 1000,
+    });
+  }, []);
   return (
     <div>
       <Head>
@@ -112,13 +151,50 @@ export default function SummerAcademy() {
             }}
           />
         </div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            margin: '2rem 0',
+        <Box
+          sx={{
+            minHeight: '8vw',
+            position: 'relative',
+            my: 2,
           }}
-        />
+        >
+          <div
+            className="yin-yang-animation semicircle-left"
+            style={{
+              height: '8vw', width: '4vw', backgroundColor: 'white', left: 'calc(50% - 4vw)', zIndex: 2, borderRadius: '4vw 0 0 4vw',
+            }}
+          />
+          <div
+            className="yin-yang-animation semicircle-right"
+            style={{
+              height: '8vw', width: '4vw', backgroundColor: 'black', left: 'calc(50%)', zIndex: 2, borderRadius: '0 4vw 4vw 0',
+            }}
+          />
+          <div
+            className="yin-yang-animation eye-top"
+            style={{
+              height: '4vw', width: '4vw', backgroundColor: 'white', left: 'calc(50% - 2vw)', zIndex: 3, borderRadius: '50%',
+            }}
+          />
+          <div
+            className="yin-yang-animation eye-bottom"
+            style={{
+              height: '4vw', width: '4vw', backgroundColor: 'black', left: 'calc(50% - 2vw)', top: '4vw', zIndex: 3, borderRadius: '50%',
+            }}
+          />
+          <div
+            className="yin-yang-animation eye-top dot-top"
+            style={{
+              height: '1vw', width: '1vw', backgroundColor: 'black', left: 'calc(50% - .5vw)', top: '1.5vw', zIndex: 4, borderRadius: '50%',
+            }}
+          />
+          <div
+            className="yin-yang-animation eye-bottom dot-bottom"
+            style={{
+              height: '1vw', width: '1vw', backgroundColor: 'white', left: 'calc(50% - .5vw)', top: '5.5vw', zIndex: 4, borderRadius: '50%',
+            }}
+          />
+        </Box>
         <Container maxWidth="lg">
           <Typography variant="h4" align="center" marginY={3}>Five-Day Summer Academy at the Software Institute at USI in Lugano</Typography>
           <Typography variant="h5" align="center" marginY={3}>
@@ -129,21 +205,6 @@ export default function SummerAcademy() {
             and the (we think) greatest Python graphics library, PyTamaro.
           </Typography>
         </Container>
-
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            margin: '4rem 0',
-          }}
-        >
-          <Image
-            src={YinYang}
-            alt="Yin and Yang"
-            width="100"
-            height="100"
-          />
-        </div>
 
         <Container maxWidth="lg" component="main">
           <Grid container spacing={5} alignItems="flex-end">
