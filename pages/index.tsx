@@ -15,48 +15,31 @@ export default function Home() {
   const animRef = useRef<HTMLElement>();
 
   useEffect(() => {
-    if (demoOutputVisible && animRef.current) {
-      const middle = animRef.current.offsetWidth / 2;
-      const tl = anime.timeline({
-        easing: 'easeOutQuad',
-        duration: 750,
-        loop: true,
-      });
-      tl.add({
-        targets: '.harm',
-        opacity: 1,
-        easing: 'linear',
-        delay: 2000,
-      });
-      tl.add({
-        targets: '.harm',
-        translateX: middle - 100,
-      });
-      tl.add({
-        targets: '.varm',
-        opacity: 1,
-        easing: 'linear',
-      });
-      tl.add({
-        targets: '.varm',
-        rotate: 90,
-      });
-      tl.add({
-        targets: '.varm',
-        translateY: -(middle - 30 - 70),
-      });
-      tl.add({
-        targets: '.swiss-flag-background',
-        opacity: 1,
-        easing: 'linear',
-      });
-      tl.add({
-        targets: '.swiss-flag-background',
-        translateX: middle - 160,
-        endDelay: 1500,
-      });
-    }
-  }, [animRef, demoOutputVisible]);
+    const tl = anime.timeline({
+      easing: 'easeOutQuad',
+      duration: 750,
+      loop: true,
+      direction: 'alternate',
+    });
+    tl.add({
+      targets: '.irc-emblem-background',
+      translateX: '-20vw',
+      delay: 1000,
+    });
+    tl.add({
+      targets: '.harm',
+      translateX: '25vw',
+    });
+    tl.add({
+      targets: '.varm',
+      rotate: [90, 0],
+    });
+    tl.add({
+      targets: '.varm',
+      translateX: '10vw',
+      endDelay: 1000,
+    });
+  }, []);
 
   return (
     <Container maxWidth="lg">
@@ -106,19 +89,20 @@ export default function Home() {
       <Box
         ref={animRef}
         sx={{
-          minHeight: '400px', display: 'grid', margin: 2, alignItems: 'center',
+          minHeight: '20vw',
+          position: 'relative',
         }}
       >
         <div
-          className="harm swiss-flag-arm swiss-flag-animation"
+          className="harm irc-emblem-arm irc-emblem-animation"
           style={{ zIndex: 2 }}
         />
         <div
-          className="varm swiss-flag-arm swiss-flag-animation"
+          className="varm irc-emblem-arm irc-emblem-animation"
           style={{ zIndex: 1 }}
         />
         <div
-          className="swiss-flag-background swiss-flag-animation"
+          className="irc-emblem-background irc-emblem-animation"
           style={{ zIndex: 0 }}
         />
       </Box>

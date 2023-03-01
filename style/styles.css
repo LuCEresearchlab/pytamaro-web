@@ -2,20 +2,22 @@ body {
     background-color: #e0f6ff;
 }
 
-.swiss-flag-animation {
-    opacity: 0;
-    grid-column: 1;
-    grid-row: 1;
+.irc-emblem-animation {
+    position: absolute;
 }
 
-.swiss-flag-background {
-    height: 320px;
-    width: 320px;
+.irc-emblem-background {
+    height: 16vw;
+    width: 16vw;
+    left: calc(50% - 8vw);
+    top: 0;
     background-color: white;
 }
 
-.swiss-flag-arm {
-    height: 60px;
-    width: 200px;
+.irc-emblem-arm {
+    height: 3vw;
+    width: 10vw;
+    left: calc(50% - 5vw);
+    top: 6.5vw;
     background-color: red;
 }
