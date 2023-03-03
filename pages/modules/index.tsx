@@ -12,6 +12,11 @@ import {
   Typography,
   Button,
   Chip,
+  TextField,
+  Select,
+  FormControl,
+  InputLabel,
+  MenuItem,
 } from '@mui/material';
 import { HourglassBottom } from '@mui/icons-material';
 import {
@@ -25,20 +30,24 @@ const DEFAULT_TARGET = 'student';
 export default function ModulesPage({ modules }: { modules: Module[] }) {
   const router = useRouter();
   const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('');
   const [filteredModules, setFilteredModules] = useState(modules);
 
   useEffect(() => {
     setFilteredModules(
       modules.filter(
         (module) => module.visibility !== 'hidden'
+        && module.variants.some(
+          (avariant) => avariant.language.toLowerCase().includes(filter.toLowerCase()),
+        )
         && (module.slug.toLowerCase().includes(search.toLowerCase())
         || module.variants.some(
           (avariant) => avariant.description.toLowerCase().includes(search.toLowerCase())
-          || avariant.language.toLowerCase().includes(search.toLowerCase()),
+          || avariant.title.toLowerCase().includes(search.toLowerCase()),
         )),
       ),
     );
-  }, [search, modules]);
+  }, [search, filter, modules]);
 
   // Minimal sorting
   modules.sort((m1, m2) => {
@@ -52,11 +61,31 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
   return (
     <Stack spacing={2}>
       <NavigationBar title="All Learning Modules" />
-      <input
-        type="text"
-        placeholder="Search Modules"
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      <Grid container spacing={2}>
+        <Grid xs={8}>
+          <TextField
+            fullWidth
+            label="Search Modules"
+            variant="outlined"
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </Grid>
+        <Grid xs={4}>
+          <FormControl fullWidth>
+            <InputLabel>Language</InputLabel>
+            <Select
+              value={filter}
+              label="Language"
+              onChange={(e) => setFilter(e.target.value)}
+            >
+              <MenuItem value=""><em>All</em></MenuItem>
+              <MenuItem value="en">EN</MenuItem>
+              <MenuItem value="de">DE</MenuItem>
+              <MenuItem value="it">IT</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
       <Grid container spacing={2}>
         {filteredModules.map((module) => {
           const variant = module.variants.find(
