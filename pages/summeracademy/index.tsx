@@ -493,10 +493,9 @@ export default function SummerAcademy() {
                   }}
                 >
                   <Avatar
+                    src="agnese.jpg"
                     sx={{ width: 80, height: 80 }}
-                  >
-                    AZ
-                  </Avatar>
+                  />
                 </Box>
                 <CardHeader
                   title="Agnese Zamboni"
