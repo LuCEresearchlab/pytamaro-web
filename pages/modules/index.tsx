@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Grid from '@mui/material/Unstable_Grid2';
 import {
@@ -23,10 +24,24 @@ const DEFAULT_TARGET = 'student';
 
 export default function ModulesPage({ modules }: { modules: Module[] }) {
   const router = useRouter();
-  const visibleModules = modules.filter((module) => module.visibility !== 'hidden');
+  const [search, setSearch] = useState('');
+  const [filteredModules, setFilteredModules] = useState(modules);
+
+  useEffect(() => {
+    setFilteredModules(
+      modules.filter(
+        (module) => module.visibility !== 'hidden'
+        && (module.slug.toLowerCase().includes(search.toLowerCase())
+        || module.variants.some(
+          (avariant) => avariant.description.toLowerCase().includes(search.toLowerCase())
+          || avariant.language.toLowerCase().includes(search.toLowerCase()),
+        )),
+      ),
+    );
+  }, [search, modules]);
 
   // Minimal sorting
-  visibleModules.sort((m1, m2) => {
+  modules.sort((m1, m2) => {
     if (m1.visibility !== m2.visibility) {
       // different visibility, draft should come after
       return m1.visibility === 'draft' ? 1 : -1;
@@ -37,8 +52,13 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
   return (
     <Stack spacing={2}>
       <NavigationBar title="All Learning Modules" />
+      <input
+        type="text"
+        placeholder="Search Modules"
+        onChange={(e) => setSearch(e.target.value)}
+      />
       <Grid container spacing={2}>
-        {visibleModules.map((module) => {
+        {filteredModules.map((module) => {
           const variant = module.variants.find(
             (v) => v.target === DEFAULT_TARGET,
           ) as NotebookVariant;
