@@ -17,4 +17,4 @@ def yin_yang(diameter: float) -> Graphic:
 def eye(diameter: float, outer_color: Color, inner_color: Color) -> Graphic:
     return overlay(circle(diameter / 3, inner_color), circle(diameter, outer_color))
 
-save_graphic("yinyang.svg", yin_yang(800))
+save_graphic("yinyang.svg", yin_yang(300))
