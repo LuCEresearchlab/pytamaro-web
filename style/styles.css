@@ -1,0 +1,23 @@
+body {
+    background-color: #e0f6ff;
+}
+
+.irc-emblem-animation, .yin-yang-animation {
+    position: absolute;
+}
+
+.irc-emblem-background {
+    height: 16vw;
+    width: 16vw;
+    left: calc(50% - 8vw);
+    top: 0;
+    background-color: white;
+}
+
+.irc-emblem-arm {
+    height: 3vw;
+    width: 10vw;
+    left: calc(50% - 5vw);
+    top: 6.5vw;
+    background-color: red;
+}

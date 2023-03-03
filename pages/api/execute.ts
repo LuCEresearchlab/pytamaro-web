@@ -44,7 +44,7 @@ async function saveToCache(key: string, value: string) {
 
 async function doExecution(code: string) {
   const data = {
-    image: 'glot/pytamaro:latest',
+    image: process.env.GLOT_IMAGE_TAG,
     payload: {
       language: 'python',
       files: [

@@ -7,6 +7,7 @@ import { ConfirmProvider } from 'material-ui-confirm';
 import PlausibleProvider from 'next-plausible';
 import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
+import '../style/styles.css';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
