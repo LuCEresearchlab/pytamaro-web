@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="250" height="467">
+	<path fill="white" transform="translate(0 216.506)" d="M0 0L250 0L250 250L0 250L0 0Z"/>
+	<path fill="red" transform="translate(0 216.506)" d="M0 0L250 0L125 -216.506L0 0Z"/>
+</svg>

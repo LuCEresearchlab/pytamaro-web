@@ -9,8 +9,8 @@
         }
     ],
     "previewImage": {
-        "filename": "japanese-flag.png",
-        "backgroundColor": "#ffffff"
+        "filename": "japanese-flag.svg",
+        "backgroundColor": "#eeeeee"
     },
-    "visibility": "draft"
+    "visibility": "visible"
 }

@@ -9,9 +9,9 @@
         }
     ],
     "previewImage": {
-        "filename": "ticino-coat-of-arms.png",
+        "filename": "ticino-coat-of-arms.svg",
         "backgroundColor": "#ffffff"
     },
-    "visibility": "draft"
+    "visibility": "visible"
 }
     

@@ -9,8 +9,8 @@
         }
     ],
     "previewImage": {
-        "filename": "eyes.png",
-        "backgroundColor": "#ffffff"
+        "filename": "eyes.svg",
+        "backgroundColor": "#eeeeee"
     },
-    "visibility": "draft"
+    "visibility": "visible"
 }
