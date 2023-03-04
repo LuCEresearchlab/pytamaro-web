@@ -5,6 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import { ConfirmProvider } from 'material-ui-confirm';
 import PlausibleProvider from 'next-plausible';
+import { Container, Divider, Typography } from '@mui/material';
 import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
 import '../style/styles.css';
@@ -37,6 +38,19 @@ export default function MyApp(props: MyAppProps) {
             <Component // eslint-disable-next-line react/jsx-props-no-spreading
               {...pageProps}
             />
+            <Container maxWidth="lg" sx={{ mt: 4, mb: 2 }}>
+              <Divider>
+                <Typography variant="body2" align="center">
+                  PyTamaro is a project created by
+                  the&nbsp;
+                  <a href="https://luce.si.usi.ch/">Lugano Computing Education Research Lab</a>
+            &nbsp;at the&nbsp;
+                  <a href="https://si.usi.ch/">Software Institute</a>
+            &nbsp;of&nbsp;
+                  <a href="https://www.usi.ch/">USI</a>
+                </Typography>
+              </Divider>
+            </Container>
           </ConfirmProvider>
         </PlausibleProvider>
       </ThemeProvider>
