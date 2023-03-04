@@ -9,8 +9,8 @@
         }
     ],
     "previewImage": {
-        "filename": "french-flag.png",
-        "backgroundColor": "#ffffff"
+        "filename": "french-flag.svg",
+        "backgroundColor": "#eeeeee"
     },
-    "visibility": "draft"
+    "visibility": "visible"
 }

@@ -9,9 +9,9 @@
         }
     ],
     "previewImage": {
-        "filename": "rolling-eyes.png",
-        "backgroundColor": "#ffffff"
+        "filename": "rolling-eyes.svg",
+        "backgroundColor": "#eeeeee"
     },
-    "visibility": "draft"
+    "visibility": "visible"
 }
     

@@ -1,0 +1,16 @@
+{
+    "variants": [
+        {
+            "title": "Clover",
+            "language": "en",
+            "target": "student",
+            "description": "pin, compose, rgb_color, circular_sector",
+            "latestVersion": "v1"
+        }
+    ],
+    "previewImage": {
+        "filename": "clover.png",
+        "backgroundColor": "#eeeeee"
+    },
+    "visibility": "visible"
+}

@@ -9,8 +9,8 @@
         }
     ],
     "previewImage": {
-        "filename": "pacman.png",
+        "filename": "pacman.svg",
         "backgroundColor": "#f0f0f0"
     },
-    "visibility": "draft"
+    "visibility": "visible"
 }

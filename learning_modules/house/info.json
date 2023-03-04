@@ -9,8 +9,8 @@
         }
     ],
     "previewImage": {
-        "filename": "house.png",
-        "backgroundColor": "#ffffff"
+        "filename": "house.svg",
+        "backgroundColor": "#eeeeee"
     },
-    "visibility": "hidden"
+    "visibility": "visible"
 }

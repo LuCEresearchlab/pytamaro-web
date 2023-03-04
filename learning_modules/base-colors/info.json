@@ -9,8 +9,8 @@
         }
     ],
     "previewImage": {
-        "filename": "base-colors.png",
+        "filename": "base-colors.svg",
         "backgroundColor": "#eeeeee"
     },
-    "visibility": "draft"
+    "visibility": "visible"
 }

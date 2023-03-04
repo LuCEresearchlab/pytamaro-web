@@ -9,8 +9,8 @@
         }
     ],
     "previewImage": {
-        "filename": "fibonacci.png",
+        "filename": "fibonacci.svg",
         "backgroundColor": "#ffffff"
     },
-    "visibility": "draft"
+    "visibility": "visible"
 }
