@@ -30,15 +30,26 @@ const DEFAULT_TARGET = 'student';
 export default function ModulesPage({ modules }: { modules: Module[] }) {
   const router = useRouter();
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState('');
+  const [languageFilter, setLanguageFilter] = useState('');
   const [filteredModules, setFilteredModules] = useState(modules);
+
+  // get all languages in set of modules
+  const languages = [''];
+  modules.forEach((module) => {
+    module.variants.forEach((avariant) => {
+      const l = avariant.language.toLowerCase();
+      if (!languages.includes(l)) {
+        languages.push(l);
+      }
+    });
+  });
 
   useEffect(() => {
     setFilteredModules(
       modules.filter(
         (module) => module.visibility !== 'hidden'
         && module.variants.some(
-          (avariant) => avariant.language.toLowerCase().includes(filter.toLowerCase()),
+          (avariant) => avariant.language.toLowerCase().includes(languageFilter.toLowerCase()),
         )
         && (module.slug.toLowerCase().includes(search.toLowerCase())
         || module.variants.some(
@@ -47,7 +58,7 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
         )),
       ),
     );
-  }, [search, filter, modules]);
+  }, [search, languageFilter, modules]);
 
   // Minimal sorting
   modules.sort((m1, m2) => {
@@ -65,7 +76,7 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
         <Grid xs={8}>
           <TextField
             fullWidth
-            label="Search Modules"
+            label="Search by title and description"
             variant="outlined"
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -74,14 +85,15 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
           <FormControl fullWidth>
             <InputLabel>Language</InputLabel>
             <Select
-              value={filter}
+              value={languageFilter}
               label="Language"
-              onChange={(e) => setFilter(e.target.value)}
+              onChange={(e) => setLanguageFilter(e.target.value)}
             >
-              <MenuItem value=""><em>All</em></MenuItem>
-              <MenuItem value="en">EN</MenuItem>
-              <MenuItem value="de">DE</MenuItem>
-              <MenuItem value="it">IT</MenuItem>
+              {languages.map((language) => (
+                <MenuItem key={language} value={language}>
+                  {language ? new Intl.DisplayNames(['en'], { type: 'language' }).of(language) : (<em>All</em>)}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Grid>
