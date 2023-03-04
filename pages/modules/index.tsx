@@ -91,7 +91,7 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
             >
               {languages.map((language) => (
                 <MenuItem key={language} value={language}>
-                  {language ? new Intl.DisplayNames(['en'], { type: 'language' }).of(language) : (<em>All</em>)}
+                  {language ? new Intl.DisplayNames([language], { type: 'language' }).of(language) : (<em>All</em>)}
                 </MenuItem>
               ))}
             </Select>
