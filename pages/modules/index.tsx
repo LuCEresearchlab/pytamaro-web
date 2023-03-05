@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Grid from '@mui/material/Unstable_Grid2';
 import {
@@ -11,6 +12,11 @@ import {
   Typography,
   Button,
   Chip,
+  TextField,
+  Select,
+  FormControl,
+  InputLabel,
+  MenuItem,
 } from '@mui/material';
 import { HourglassBottom } from '@mui/icons-material';
 import {
@@ -23,10 +29,33 @@ const DEFAULT_TARGET = 'student';
 
 export default function ModulesPage({ modules }: { modules: Module[] }) {
   const router = useRouter();
-  const visibleModules = modules.filter((module) => module.visibility !== 'hidden');
+  const [search, setSearch] = useState('');
+  const [languageFilter, setLanguageFilter] = useState('');
+  const [filteredModules, setFilteredModules] = useState(modules);
+
+  // get all languages in set of modules
+  const languages = new Set(
+    modules.flatMap((module) => module.variants.map((avariant) => avariant.language)),
+  );
+
+  useEffect(() => {
+    setFilteredModules(
+      modules.filter(
+        (module) => module.visibility !== 'hidden'
+        && module.variants.some(
+          (avariant) => avariant.language.toLowerCase().includes(languageFilter.toLowerCase()),
+        )
+        && (module.slug.toLowerCase().includes(search.toLowerCase())
+        || module.variants.some(
+          (avariant) => avariant.description.toLowerCase().includes(search.toLowerCase())
+          || avariant.title.toLowerCase().includes(search.toLowerCase()),
+        )),
+      ),
+    );
+  }, [search, languageFilter, modules]);
 
   // Minimal sorting
-  visibleModules.sort((m1, m2) => {
+  modules.sort((m1, m2) => {
     if (m1.visibility !== m2.visibility) {
       // different visibility, draft should come after
       return m1.visibility === 'draft' ? 1 : -1;
@@ -38,7 +67,36 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
     <Stack spacing={2}>
       <NavigationBar title="All Learning Modules" />
       <Grid container spacing={2}>
-        {visibleModules.map((module) => {
+        <Grid xs={8}>
+          <TextField
+            fullWidth
+            label="Search by title and description"
+            variant="outlined"
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </Grid>
+        <Grid xs={4}>
+          <FormControl fullWidth>
+            <InputLabel>Language</InputLabel>
+            <Select
+              value={languageFilter}
+              label="Language"
+              onChange={(e) => setLanguageFilter(e.target.value)}
+            >
+              <MenuItem key="" value=""><em>All</em></MenuItem>
+              {Array.from(languages).map((language) => (
+                <MenuItem key={language} value={language}>
+                  {Intl.DisplayNames
+                    ? new Intl.DisplayNames([language], { type: 'language' }).of(language)
+                    : language.toUpperCase()}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
+      <Grid container spacing={2}>
+        {filteredModules.map((module) => {
           const variant = module.variants.find(
             (v) => v.target === DEFAULT_TARGET,
           ) as NotebookVariant;
