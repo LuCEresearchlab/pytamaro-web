@@ -34,15 +34,9 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
   const [filteredModules, setFilteredModules] = useState(modules);
 
   // get all languages in set of modules
-  const languages = [''];
-  modules.forEach((module) => {
-    module.variants.forEach((avariant) => {
-      const l = avariant.language.toLowerCase();
-      if (!languages.includes(l)) {
-        languages.push(l);
-      }
-    });
-  });
+  const languages = new Set(
+    modules.flatMap((module) => module.variants.map((avariant) => avariant.language)),
+  );
 
   useEffect(() => {
     setFilteredModules(
@@ -89,9 +83,12 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
               label="Language"
               onChange={(e) => setLanguageFilter(e.target.value)}
             >
-              {languages.map((language) => (
+              <MenuItem key="" value=""><em>All</em></MenuItem>
+              {Array.from(languages).map((language) => (
                 <MenuItem key={language} value={language}>
-                  {language ? new Intl.DisplayNames([language], { type: 'language' }).of(language) : (<em>All</em>)}
+                  {Intl.DisplayNames
+                    ? new Intl.DisplayNames([language], { type: 'language' }).of(language)
+                    : language.toUpperCase()}
                 </MenuItem>
               ))}
             </Select>
