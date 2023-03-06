@@ -1,0 +1,39 @@
+{
+  "variants": [
+    {
+      "title": "Schweizer Bahnhofsuhr",
+      "language": "de",
+      "target": "student",
+      "description": "fixiere, kombiniere, drehe",
+      "latestVersion": "v1"
+    },
+    {
+      "title": "Orologio delle Ferrovie Svizzere",
+      "language": "it",
+      "target": "student",
+      "description": "pin, compose, rotate",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "clock.png",
+    "backgroundColor": "#ffffff"
+  },
+  "visibility": "draft",
+  "uses": [
+    {
+      "institution": "USI",
+      "course": "GymInf PSK 2022b",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "7. 'Advanced PyTamaro', Aufgabe 5 'Bahnhofsuhr'",
+      "url": "https://informa.inf.usi.ch/course/GRhdPvEMYcNSmyTeR/lab/Ga6uWXYcRvuwCGqXa#item_SQPDkfvyF4ewfkrem"
+    },
+    {
+      "institution": "USI",
+      "course": "MII2 2021",
+      "instructors": ["Luca Chiodini", "Matthias Hauswirth"],
+      "assignment": "Lab 2.9: Orologio",
+      "url": "https://informa.inf.usi.ch/course/aXZZtAnHDx4E9LCnt/lab/C5XdTkKM3de3zBPNS"
+    }
+  ]
+}
