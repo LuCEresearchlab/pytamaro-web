@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="354" height="354">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="354" height="354" shape-rendering="crispEdges">
 	<path fill="#BF42B0" transform="matrix(-0.707107 -0.707107 0.707107 -0.707107 353.553 176.777)" d="M0 0L125 0L0 -125L0 0Z"/>
 	<path fill="#83C500" transform="matrix(0 -1 1 0 265.165 265.165)" d="M0 0L88.3884 0L0 -88.3884L0 0Z"/>
 	<path fill="#83C500" transform="matrix(0 1 -1 0 176.777 265.165)" d="M0 0L88.3884 0L0 -88.3884L0 0Z"/>
