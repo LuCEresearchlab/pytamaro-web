@@ -14,10 +14,12 @@ from pytamaro import (
     rotate,
     beside,
     show_graphic,
+    save_graphic,
+    transparent,
 )
 
 
-LEAF_COLOR = rgb_color(0, 128, 0)
+LEAF_COLOR = rgb_color(51, 102, 45)
 
 
 def semicircle(radius: float, color: Color) -> Graphic:
@@ -83,3 +85,4 @@ def clover(leaf_radius: float, four_leaves: bool) -> Graphic:
 result = beside(clover(30, False), clover(30, True))
 show_graphic(result)
 
+save_graphic("clover.svg", beside(clover(30, False), beside(rectangle(5, 0, transparent), clover(30, True))))
