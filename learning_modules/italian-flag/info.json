@@ -12,5 +12,28 @@
     "filename": "bandiera_italia.png",
     "backgroundColor": "#ffffff"
   },
-  "visibility": "visible"
+  "visibility": "visible",
+  "references": [
+    {
+      "institution": "USI",
+      "course": "PF2 2023",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 2, Task 5",
+      "url": "https://www.icorsi.ch/mod/resource/view.php?id=900378"
+    },
+    {
+      "institution": "SUPSI",
+      "course": "SDD 2022",
+      "instructors": ["Luca Chiodini", "Matthias Hauswirth"],
+      "assignment": "Session 7: 'Seme: Bandiere con PyTamaro'; Assignment 4: 'Bandiere con PyTamaro'",
+      "url": "https://www.icorsi.ch/course/view.php?id=14818"
+    },
+    {
+      "institution": "USI",
+      "course": "MII2 2021",
+      "instructors": ["Luca Chiodini", "Matthias Hauswirth"],
+      "assignment": "Lab 2.2: Esercizio 1: Bandiera dell'Italia",
+      "url": "https://informa.inf.usi.ch/course/aXZZtAnHDx4E9LCnt/lab/7BGW3AHExiyR7b7mD"
+    }
+  ]
 }

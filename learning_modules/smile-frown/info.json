@@ -1,17 +1,25 @@
 {
-    "variants": [
-        {
-            "title": "Smile and Frown",
-            "language": "en",
-            "target": "student",
-            "description": "ellipse, circular_sector, pin, compose, overlay, beside, above",
-            "latestVersion": "v1"
-        }
-    ],
-    "previewImage": {
-        "filename": "smile-frown.png",
-        "backgroundColor": "#ffffff"
-    },
-    "visibility": "visible"
+  "variants": [
+    {
+      "title": "Smile and Frown",
+      "language": "en",
+      "target": "student",
+      "description": "ellipse, circular_sector, pin, compose, overlay, beside, above",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "smile-frown.png",
+    "backgroundColor": "#ffffff"
+  },
+  "visibility": "visible",
+  "references": [
+    {
+      "institution": "USI",
+      "course": "PF2 2023",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 2, Task 10",
+      "url": "https://www.icorsi.ch/mod/resource/view.php?id=900378"
+    }
+  ]
 }
-    

@@ -1,17 +1,25 @@
 {
-    "variants": [
-        {
-            "title": "Target",
-            "language": "en",
-            "target": "student",
-            "description": "ellipse, overlay",
-            "latestVersion": "v1"
-        }
-    ],
-    "previewImage": {
-        "filename": "target.svg",
-        "backgroundColor": "#ffffff"
-    },
-    "visibility": "visible"
+  "variants": [
+    {
+      "title": "Target",
+      "language": "en",
+      "target": "student",
+      "description": "ellipse, overlay",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "target.svg",
+    "backgroundColor": "#ffffff"
+  },
+  "visibility": "visible",
+  "references": [
+    {
+      "institution": "USI",
+      "course": "PF2 2023",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 2, Task 6",
+      "url": "https://www.icorsi.ch/mod/resource/view.php?id=900378"
+    }
+  ]
 }
-    
