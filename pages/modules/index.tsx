@@ -18,7 +18,7 @@ import {
   InputLabel,
   MenuItem,
 } from '@mui/material';
-import { HourglassBottom } from '@mui/icons-material';
+import { HourglassBottom, Star } from '@mui/icons-material';
 import {
   listModules, Module, NotebookVariant,
 } from '../../src/Modules';
@@ -58,7 +58,18 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
   modules.sort((m1, m2) => {
     if (m1.visibility !== m2.visibility) {
       // different visibility, draft should come after
-      return m1.visibility === 'draft' ? 1 : -1;
+      if (m1.visibility === 'featured') {
+        return -1;
+      }
+      if (m1.visibility === 'draft') {
+        return 1;
+      }
+      // m1 is visible
+      if (m2.visibility === 'featured') {
+        return 1;
+      }
+      // m2 is draft
+      return -1;
     }
     // same visibility, more variants first
     return m2.variants.length - m1.variants.length;
@@ -128,6 +139,15 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
                             icon={<HourglassBottom />}
                             label="Coming soon"
                             color="error"
+                            sx={{ marginLeft: 2, textTransform: 'uppercase', fontWeight: 'bold' }}
+                          />
+                          )}
+                        {module.visibility === 'featured'
+                          && (
+                          <Chip
+                            icon={<Star />}
+                            label="Featured"
+                            color="success"
                             sx={{ marginLeft: 2, textTransform: 'uppercase', fontWeight: 'bold' }}
                           />
                           )}
