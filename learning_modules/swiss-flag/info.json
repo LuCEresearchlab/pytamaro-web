@@ -19,7 +19,7 @@
     "filename": "flag.png",
     "backgroundColor": "#ffffff"
   },
-  "visibility": "visible",
+  "visibility": "featured",
   "references": [
     {
       "institution": "USI",

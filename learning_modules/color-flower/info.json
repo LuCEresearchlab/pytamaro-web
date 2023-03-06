@@ -19,7 +19,7 @@
     "filename": "color-flower.png",
     "backgroundColor": "#ffffff"
   },
-  "visibility": "visible",
+  "visibility": "featured",
   "references": [
     {
       "institution": "SUPSI",
