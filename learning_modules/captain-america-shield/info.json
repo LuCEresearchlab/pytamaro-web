@@ -1,16 +1,25 @@
 {
-    "variants": [
-        {
-            "title": "Captain America Shield",
-            "language": "en",
-            "target": "student",
-            "description": "pin, compose, rotate, empty_graphic, triangle",
-            "latestVersion": "v1"
-        }
-    ],
-    "previewImage": {
-        "filename": "captain-america-shield.svg",
-        "backgroundColor": "#eeeeee"
-    },
-    "visibility": "visible"
+  "variants": [
+    {
+      "title": "Captain America Shield",
+      "language": "en",
+      "target": "student",
+      "description": "pin, compose, rotate, empty_graphic, triangle",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "captain-america-shield.svg",
+    "backgroundColor": "#eeeeee"
+  },
+  "visibility": "visible",
+  "references": [
+    {
+      "institution": "USI",
+      "course": "PF2 2023",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 2, Task 12",
+      "url": "https://www.icorsi.ch/mod/resource/view.php?id=900378"
+    }
+  ]
 }

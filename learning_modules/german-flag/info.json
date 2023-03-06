@@ -12,5 +12,21 @@
     "filename": "flag.png",
     "backgroundColor": "#ffffff"
   },
-  "visibility": "visible"
+  "visibility": "visible",
+  "references": [
+    {
+      "institution": "USI",
+      "course": "PF2 2023",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 2, Task 3",
+      "url": "https://www.icorsi.ch/mod/resource/view.php?id=900378"
+    },
+    {
+      "institution": "USI",
+      "course": "GymInf PSK 2022b",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 5 'Dekomposition mit Grafik', Aufgabe 1 'Deutsche Flagge'",
+      "url": "https://informa.inf.usi.ch/course/GRhdPvEMYcNSmyTeR/lab/hvfMcEiKxNZfgKvti#item_9LiaxBLRAa2KTJDxB"
+    }
+  ]
 }

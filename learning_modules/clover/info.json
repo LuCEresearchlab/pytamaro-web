@@ -1,16 +1,25 @@
 {
-    "variants": [
-        {
-            "title": "Clover",
-            "language": "en",
-            "target": "student",
-            "description": "pin, compose, rgb_color, circular_sector",
-            "latestVersion": "v1"
-        }
-    ],
-    "previewImage": {
-        "filename": "clover.png",
-        "backgroundColor": "#eeeeee"
-    },
-    "visibility": "visible"
+  "variants": [
+    {
+      "title": "Clover",
+      "language": "en",
+      "target": "student",
+      "description": "pin, compose, rgb_color, circular_sector",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "clover.png",
+    "backgroundColor": "#eeeeee"
+  },
+  "visibility": "visible",
+  "references": [
+    {
+      "institution": "USI",
+      "course": "PF2 2023",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 2, Task 9",
+      "url": "https://www.icorsi.ch/mod/resource/view.php?id=900378"
+    }
+  ]
 }

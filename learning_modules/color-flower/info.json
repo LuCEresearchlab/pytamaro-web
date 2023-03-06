@@ -19,5 +19,21 @@
     "filename": "color-flower.png",
     "backgroundColor": "#ffffff"
   },
-  "visibility": "visible"
+  "visibility": "visible",
+  "references": [
+    {
+      "institution": "SUPSI",
+      "course": "SDD 2022",
+      "instructors": ["Luca Chiodini", "Matthias Hauswirth"],
+      "assignment": "Session 15: Seme: Esercizi su Processare Liste",
+      "url": "https://www.icorsi.ch/mod/resource/view.php?id=881599"
+    },
+    {
+      "institution": "USI",
+      "course": "GymInf PSK 2022b",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 8 'Repetition', Teil 2 'Farbverlauf'",
+      "url": "https://informa.inf.usi.ch/course/GRhdPvEMYcNSmyTeR/lab/nZCoD9YNt8N6gvExz"
+    }
+  ]
 }

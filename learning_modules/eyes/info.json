@@ -1,16 +1,33 @@
 {
-    "variants": [
-        {
-            "title": "Eyes",
-            "language": "en",
-            "target": "student",
-            "description": "ellipse, beside, overlay",
-            "latestVersion": "v1"
-        }
-    ],
-    "previewImage": {
-        "filename": "eyes.svg",
-        "backgroundColor": "#eeeeee"
+  "variants": [
+    {
+      "title": "Eyes",
+      "language": "en",
+      "target": "student",
+      "description": "ellipse, beside, overlay",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "eyes.svg",
+    "backgroundColor": "#eeeeee"
+  },
+  "visibility": "visible",
+  "references": [
+    {
+      "institution": "USI",
+      "course": "PF2 2023",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 1, Tasks 15 and 16",
+      "url": "https://www.icorsi.ch/mod/resource/view.php?id=900378"
     },
-    "visibility": "visible"
+    {
+      "institution": "USI",
+      "course": "GymInf PSK 2022b",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 7 'Advanced PyTamaro', Aufgabe 1 'Augen'",
+      "url": "https://informa.inf.usi.ch/course/GRhdPvEMYcNSmyTeR/lab/Ga6uWXYcRvuwCGqXa#item_hXcxZz4usJhe5pcN8",
+      "comment": "mit 'Sklera', 'Iris' und 'Pupille'; auch animierte rollende Augen"
+    }
+  ]
 }

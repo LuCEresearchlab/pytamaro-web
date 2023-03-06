@@ -1,16 +1,25 @@
 {
-    "variants": [
-        {
-            "title": "House",
-            "language": "en",
-            "target": "student",
-            "description": "above, triangle, rectangle",
-            "latestVersion": "v1"
-        }
-    ],
-    "previewImage": {
-        "filename": "house.svg",
-        "backgroundColor": "#eeeeee"
-    },
-    "visibility": "visible"
+  "variants": [
+    {
+      "title": "House",
+      "language": "en",
+      "target": "student",
+      "description": "above, triangle, rectangle",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "house.svg",
+    "backgroundColor": "#eeeeee"
+  },
+  "visibility": "visible",
+  "references": [
+    {
+      "institution": "USI",
+      "course": "PF2 2023",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 1, Tasks 7 and 8",
+      "url": "https://www.icorsi.ch/mod/resource/view.php?id=899268"
+    }
+  ]
 }

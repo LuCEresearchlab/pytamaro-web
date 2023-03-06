@@ -1,16 +1,25 @@
 {
-    "variants": [
-        {
-            "title": "Double Black Diamond",
-            "language": "en",
-            "target": "student",
-            "description": "rotate, rectangle, beside, text, above",
-            "latestVersion": "v1"
-        }
-    ],
-    "previewImage": {
-        "filename": "double-black-diamond.png",
-        "backgroundColor": "#ffffff"
-    },
-    "visibility": "visible"
+  "variants": [
+    {
+      "title": "Double Black Diamond",
+      "language": "en",
+      "target": "student",
+      "description": "rotate, rectangle, beside, text, above",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "double-black-diamond.png",
+    "backgroundColor": "#ffffff"
+  },
+  "visibility": "visible",
+  "references": [
+    {
+      "institution": "USI",
+      "course": "PF2 2023",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 1, Tasks 11, 12, and 13",
+      "url": "https://www.icorsi.ch/mod/resource/view.php?id=900378"
+    }
+  ]
 }

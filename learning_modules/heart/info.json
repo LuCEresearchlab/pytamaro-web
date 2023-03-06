@@ -1,16 +1,25 @@
 {
-    "variants": [
-        {
-            "title": "Heart",
-            "language": "en",
-            "target": "student",
-            "description": "pin, compose, rgb_color, circular_sector",
-            "latestVersion": "v1"
-        }
-    ],
-    "previewImage": {
-        "filename": "heart.png",
-        "backgroundColor": "#ffffff"
-    },
-    "visibility": "visible"
+  "variants": [
+    {
+      "title": "Heart",
+      "language": "en",
+      "target": "student",
+      "description": "pin, compose, rgb_color, circular_sector",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "heart.png",
+    "backgroundColor": "#ffffff"
+  },
+  "visibility": "visible",
+  "references": [
+    {
+      "institution": "USI",
+      "course": "PF2 2023",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 2, Task 8",
+      "url": "https://www.icorsi.ch/mod/resource/view.php?id=900378"
+    }
+  ]
 }
