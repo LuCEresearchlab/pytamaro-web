@@ -1,0 +1,25 @@
+{
+  "variants": [
+    {
+      "title": "Strassenplatten",
+      "language": "de",
+      "target": "student",
+      "description": "pin, compose, rgb_color, circular_sector",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "strassensystem.png",
+    "backgroundColor": "#00cb6d"
+  },
+  "visibility": "draft",
+  "uses": [
+    {
+      "institution": "USI",
+      "course": "GymInf PSK 2022b",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "7. 'Advanced PyTamaro', Aufgabe 3 'Strasse'",
+      "url": "https://informa.inf.usi.ch/course/GRhdPvEMYcNSmyTeR/lab/Ga6uWXYcRvuwCGqXa#item_qkuBqEdNtXriStDPi"
+    }
+  ]
+}
