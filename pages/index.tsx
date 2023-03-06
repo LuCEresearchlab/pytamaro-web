@@ -75,7 +75,7 @@ export default function Home() {
             </g>
           </svg>
         </Box>
-        <Stack direction="row" justifyContent="space-between" spacing={8} sx={{ my: 4 }}>
+        <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" spacing={{ xs: 4, md: 8 }} sx={{ my: 4 }}>
           <Button startIcon={<SchoolIcon />} variant="outlined" size="large" href="/modules">Learning Activities</Button>
           <Button startIcon={<MenuBookIcon />} variant="outlined" size="large" href="https://pytamaro.readthedocs.org">Documentation</Button>
           <Button startIcon={<InstallDesktop />} variant="outlined" size="large" href="/install">How to Install & FAQ</Button>
