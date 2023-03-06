@@ -20,7 +20,7 @@
     "backgroundColor": "#ffffff"
   },
   "visibility": "featured",
-  "references": [
+  "uses": [
     {
       "institution": "USI",
       "course": "PF2 2023",

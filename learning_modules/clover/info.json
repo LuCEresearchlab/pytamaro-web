@@ -10,10 +10,10 @@
   ],
   "previewImage": {
     "filename": "clover.png",
-    "backgroundColor": "#eeeeee"
+    "backgroundColor": "#c3ffc3"
   },
   "visibility": "featured",
-  "references": [
+  "uses": [
     {
       "institution": "USI",
       "course": "PF2 2023",

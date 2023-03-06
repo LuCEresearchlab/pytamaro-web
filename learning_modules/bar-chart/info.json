@@ -20,7 +20,7 @@
     "backgroundColor": "#ffffff"
   },
   "visibility": "draft",
-  "references": [
+  "uses": [
     {
       "institution": "USI",
       "course": "GymInf PSK 2022b",

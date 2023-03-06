@@ -10,10 +10,10 @@
   ],
   "previewImage": {
     "filename": "pacman.svg",
-    "backgroundColor": "#f0f0f0"
+    "backgroundColor": "#000000"
   },
   "visibility": "visible",
-  "references": [
+  "uses": [
     {
       "institution": "USI",
       "course": "PF2 2023",

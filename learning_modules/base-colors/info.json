@@ -10,10 +10,10 @@
   ],
   "previewImage": {
     "filename": "base-colors.svg",
-    "backgroundColor": "#eeeeee"
+    "backgroundColor": "#ffffff"
   },
   "visibility": "visible",
-  "references": [
+  "uses": [
     {
       "institution": "USI",
       "course": "PF2 2023",
