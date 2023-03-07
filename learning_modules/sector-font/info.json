@@ -1,0 +1,25 @@
+{
+  "variants": [
+    {
+      "title": "Sector Font",
+      "language": "en",
+      "target": "student",
+      "description": "rectangle, circular_sector, rotate",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "sector-font.png",
+    "backgroundColor": "#ffffff"
+  },
+  "visibility": "featured",
+  "uses": [
+    {
+      "institution": "USI",
+      "course": "internal",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "alphabet",
+      "url": "https://github.com/LuCEresearchlab/pytamaro-solutions/blob/main/alphabet/README.md"
+    }
+  ]
+}
