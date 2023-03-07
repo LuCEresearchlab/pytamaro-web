@@ -1,0 +1,26 @@
+{
+    "variants": [
+      {
+        "title": "Triangles",
+        "language": "en",
+        "target": "student",
+        "description": "triangle",
+        "latestVersion": "v1"
+      }
+    ],
+    "previewImage": {
+      "filename": "triangles.svg",
+      "backgroundColor": "#ffffff"
+    },
+    "visibility": "visible",
+    "uses": [
+      {
+        "institution": "USI",
+        "course": "PF2 2023",
+        "instructors": ["Matthias Hauswirth"],
+        "assignment": "Lab 1, Task 4, 5, 6",
+        "url": "https://www.icorsi.ch/mod/resource/view.php?id=899268"
+      }
+    ]
+  }
+  
