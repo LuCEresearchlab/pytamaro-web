@@ -94,13 +94,22 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
               onChange={(e) => setLanguageFilter(e.target.value)}
             >
               <MenuItem key="" value=""><em>All</em></MenuItem>
-              {Array.from(languages).map((language) => (
-                <MenuItem key={language} value={language}>
-                  {Intl.DisplayNames
-                    ? new Intl.DisplayNames([language], { type: 'language' }).of(language)
-                    : language.toUpperCase()}
-                </MenuItem>
-              ))}
+              {Array.from(languages).map((language) => {
+                function getLanguageDisplayName() {
+                  if (Intl.DisplayNames) {
+                    const languageDisplayName = new Intl.DisplayNames([language], { type: 'language' }).of(language);
+                    return languageDisplayName
+                      ? (languageDisplayName.charAt(0).toUpperCase() + languageDisplayName.slice(1))
+                      : language.toUpperCase();
+                  }
+                  return language.toUpperCase();
+                }
+                return (
+                  <MenuItem key={language} value={language}>
+                    {getLanguageDisplayName()}
+                  </MenuItem>
+                );
+              })}
             </Select>
           </FormControl>
         </Grid>
