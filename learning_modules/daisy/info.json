@@ -12,5 +12,14 @@
     "filename": "daisy.png",
     "backgroundColor": "#69a84f"
   },
-  "visibility": "visible"
+  "visibility": "featured",
+  "uses": [
+    {
+      "institution": "USI",
+      "course": "GymInf PSK 2022b",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 8 'Repetition', Teil 1 'Margritli (Gänseblümchen)'",
+      "url": "https://informa.inf.usi.ch/course/GRhdPvEMYcNSmyTeR/lab/nZCoD9YNt8N6gvExz#item_fyfDCkfGDE8E6o2F2"
+    }
+  ]
 }

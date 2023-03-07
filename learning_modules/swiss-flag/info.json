@@ -1,23 +1,53 @@
 {
-    "variants": [
-        {
-            "title": "Swiss Flag",
-            "language": "en",
-            "target": "student",
-            "description": "overlay, rotate",
-            "latestVersion": "v1"
-        },
-        {
-            "title": "Schweizerfahne",
-            "language": "de",
-            "target": "student",
-            "description": "overlay, rotate",
-            "latestVersion": "v1"
-        }
-    ],
-    "previewImage": {
-        "filename": "flag.png",
-        "backgroundColor": "#ffffff"
+  "variants": [
+    {
+      "title": "Swiss Flag",
+      "language": "en",
+      "target": "student",
+      "description": "overlay, rotate",
+      "latestVersion": "v1"
     },
-    "visibility": "visible"
+    {
+      "title": "Schweizerfahne",
+      "language": "de",
+      "target": "student",
+      "description": "overlay, rotate",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "flag.png",
+    "backgroundColor": "#ffffff"
+  },
+  "visibility": "featured",
+  "uses": [
+    {
+      "institution": "USI",
+      "course": "PF2 2023",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 1, Task 9",
+      "url": "https://www.icorsi.ch/mod/resource/view.php?id=899268"
+    },
+    {
+      "institution": "USI",
+      "course": "GymInf PSK 2022b",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "5. 'Dekomposition mit Grafik', Aufgabe 2 'Schweizerfahne'",
+      "url": "https://informa.inf.usi.ch/course/GRhdPvEMYcNSmyTeR/lab/hvfMcEiKxNZfgKvti#item_26Zxw6tCzrfgG4ZeG"
+    },
+    {
+      "institution": "SUPSI",
+      "course": "SDD 2022",
+      "instructors": ["Luca Chiodini", "Matthias Hauswirth"],
+      "assignment": "Session 7: 'Seme: Bandiere con PyTamaro'; Assignment 4: 'Bandiere con PyTamaro'",
+      "url": "https://www.icorsi.ch/course/view.php?id=14818"
+    },
+    {
+      "institution": "USI",
+      "course": "MII2 2021",
+      "instructors": ["Luca Chiodini", "Matthias Hauswirth"],
+      "assignment": "Lab 2.2: Esercizio 2: Bandiera della Svizzera",
+      "url": "https://informa.inf.usi.ch/course/aXZZtAnHDx4E9LCnt/lab/7BGW3AHExiyR7b7mD"
+    }
+  ]
 }

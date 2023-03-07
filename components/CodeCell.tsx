@@ -74,7 +74,7 @@ export default function CodeCell({
     buttonMessage = 'Running...';
   }
   return (
-    <Container maxWidth="md" sx={{ mb: 2 }}>
+    <Container sx={{ mb: 2 }}>
       <Paper elevation={8}>
         <Card>
           <CardContent>

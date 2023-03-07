@@ -22,20 +22,20 @@ export default function Home() {
     });
     tl.add({
       targets: '#pytamaro-logo-text',
-      translateX: '15vw',
+      translateX: '15rem',
       delay: 1000,
     });
     tl.add({
       targets: '#pytamaro-logo-symbol',
-      translateX: '-6vw',
+      translateX: '-6rem',
     }, '-=750');
     tl.add({
       targets: '#pytamaro-logo-right-lake',
-      translateX: '9vw',
+      translateX: '9rem',
     });
     tl.add({
       targets: '#pytamaro-logo-left-lake',
-      translateX: '-9vw',
+      translateX: '-9rem',
     });
     tl.add({
       targets: '#pytamaro-logo-right-lake',
@@ -75,7 +75,7 @@ export default function Home() {
             </g>
           </svg>
         </Box>
-        <Stack direction="row" justifyContent="space-between" spacing={8} sx={{ my: 4 }}>
+        <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" spacing={{ xs: 4, md: 8 }} sx={{ my: 4 }}>
           <Button startIcon={<SchoolIcon />} variant="outlined" size="large" href="/modules">Learning Activities</Button>
           <Button startIcon={<MenuBookIcon />} variant="outlined" size="large" href="https://pytamaro.readthedocs.org">Documentation</Button>
           <Button startIcon={<InstallDesktop />} variant="outlined" size="large" href="/install">How to Install & FAQ</Button>

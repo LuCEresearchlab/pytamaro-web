@@ -19,5 +19,22 @@
     "filename": "bar-chart.png",
     "backgroundColor": "#ffffff"
   },
-  "visibility": "draft"
+  "visibility": "draft",
+  "uses": [
+    {
+      "institution": "USI",
+      "course": "GymInf PSK 2022b",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 8 'Repetition', Teil 3 'Balken-Diagramm'",
+      "url": "https://informa.inf.usi.ch/course/GRhdPvEMYcNSmyTeR/lab/nZCoD9YNt8N6gvExz#item_Gh9kwQLa4KXrNJF9G"
+    },
+    {
+      "institution": "USI",
+      "course": "MII1 2022",
+      "instructors": ["Luca Chiodini", "Matthias Hauswirth"],
+      "assignment": "3. File System e Date",
+      "url": "https://informa.inf.usi.ch/course/uE2ZrfeycWKwQEXah/lab/N5Myc3NK5fria8koc",
+      "comment": "Used a different kind of bar chart (rectangles instead of a stack of circles)"
+    }
+  ]
 }

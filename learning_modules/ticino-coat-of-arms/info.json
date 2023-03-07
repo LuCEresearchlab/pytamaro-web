@@ -1,17 +1,25 @@
 {
-    "variants": [
-        {
-            "title": "Ticino Coat of Arms",
-            "language": "en",
-            "target": "student",
-            "description": "rgb_color, pin, compose, rotate, rectangle, circular_sector",
-            "latestVersion": "v1"
-        }
-    ],
-    "previewImage": {
-        "filename": "ticino-coat-of-arms.svg",
-        "backgroundColor": "#ffffff"
-    },
-    "visibility": "visible"
+  "variants": [
+    {
+      "title": "Ticino Coat of Arms",
+      "language": "en",
+      "target": "student",
+      "description": "rgb_color, pin, compose, rotate, rectangle, circular_sector",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "ticino-coat-of-arms.svg",
+    "backgroundColor": "#ffffff"
+  },
+  "visibility": "visible",
+  "uses": [
+    {
+      "institution": "USI",
+      "course": "PF2 2023",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 2, Task 2",
+      "url": "https://www.icorsi.ch/mod/resource/view.php?id=900378"
+    }
+  ]
 }
-    

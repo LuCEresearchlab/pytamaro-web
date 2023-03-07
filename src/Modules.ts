@@ -20,11 +20,20 @@ export interface NotebookVariant {
   latestVersion: string,
 }
 
+export interface NotebookUse {
+  institution: string,
+  course: string,
+  instructors: string[],
+  assignment: string,
+  url: string,
+}
+
 export interface Module {
   slug: string,
   previewImage: { filename: string, backgroundColor: string },
-  visibility: 'visible' | 'draft' | 'hidden',
+  visibility: 'featured' | 'visible' | 'draft' | 'hidden',
   variants: NotebookVariant[],
+  uses: NotebookUse[],
 }
 
 export interface LanguageWithLatestVersion {

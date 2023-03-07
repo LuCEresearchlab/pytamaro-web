@@ -1,16 +1,25 @@
 {
-    "variants": [
-        {
-            "title": "Japanese Flag",
-            "language": "en",
-            "target": "student",
-            "description": "rgb_color, overlay, ellipse, rectangle",
-            "latestVersion": "v1"
-        }
-    ],
-    "previewImage": {
-        "filename": "japanese-flag.svg",
-        "backgroundColor": "#eeeeee"
-    },
-    "visibility": "visible"
+  "variants": [
+    {
+      "title": "Japanese Flag",
+      "language": "en",
+      "target": "student",
+      "description": "rgb_color, overlay, ellipse, rectangle",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "japanese-flag.svg",
+    "backgroundColor": "#eeeeee"
+  },
+  "visibility": "visible",
+  "uses": [
+    {
+      "institution": "USI",
+      "course": "PF2 2023",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 2, Task 1",
+      "url": "https://www.icorsi.ch/mod/resource/view.php?id=900378"
+    }
+  ]
 }

@@ -1,17 +1,26 @@
 {
-    "variants": [
-        {
-            "title": "Rolling Eyes",
-            "language": "en",
-            "target": "student",
-            "description": "pin, compose, overlay, ellipse, beside",
-            "latestVersion": "v1"
-        }
-    ],
-    "previewImage": {
-        "filename": "rolling-eyes.svg",
-        "backgroundColor": "#eeeeee"
-    },
-    "visibility": "visible"
+  "variants": [
+    {
+      "title": "Rolling Eyes",
+      "language": "en",
+      "target": "student",
+      "description": "pin, compose, overlay, ellipse, beside",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "rolling-eyes.svg",
+    "backgroundColor": "#eeeeee"
+  },
+  "visibility": "visible",
+  "uses": [
+    {
+      "institution": "USI",
+      "course": "GymInf PSK 2022b",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 7 'Advanced PyTamaro', Aufgabe 2 'Rollende Augen'",
+      "url": "https://informa.inf.usi.ch/course/GRhdPvEMYcNSmyTeR/lab/Ga6uWXYcRvuwCGqXa#item_8R9kS7LxamfuycqnB",
+      "comment": "mit 'Sklera', 'Iris' und 'Pupille'; auch animierte rollende Augen"
+    }
+  ]
 }
-    

@@ -1,16 +1,17 @@
 {
-    "variants": [
-        {
-            "title": "Fibonacci",
-            "language": "en",
-            "target": "student",
-            "description": "recursion, pin, compose",
-            "latestVersion": "v1"
-        }
-    ],
-    "previewImage": {
-        "filename": "fibonacci.svg",
-        "backgroundColor": "#ffffff"
-    },
-    "visibility": "visible"
+  "variants": [
+    {
+      "title": "Fibonacci",
+      "language": "en",
+      "target": "student",
+      "description": "recursion, pin, compose",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "fibonacci.svg",
+    "backgroundColor": "#ffffff"
+  },
+  "visibility": "featured",
+  "uses": []
 }

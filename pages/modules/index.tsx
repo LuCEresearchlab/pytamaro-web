@@ -18,7 +18,7 @@ import {
   InputLabel,
   MenuItem,
 } from '@mui/material';
-import { HourglassBottom } from '@mui/icons-material';
+import { HourglassBottom, Verified } from '@mui/icons-material';
 import {
   listModules, Module, NotebookVariant,
 } from '../../src/Modules';
@@ -26,6 +26,12 @@ import NavigationBar from '../../components/NavigationBar';
 import { notebookVersionUrl } from '../../src/urlUtils';
 
 const DEFAULT_TARGET = 'student';
+const VISIBILITY_PRIORITY = {
+  featured: 0,
+  visible: 1,
+  draft: 2,
+  hidden: 4,
+};
 
 export default function ModulesPage({ modules }: { modules: Module[] }) {
   const router = useRouter();
@@ -57,11 +63,15 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
   // Minimal sorting
   modules.sort((m1, m2) => {
     if (m1.visibility !== m2.visibility) {
-      // different visibility, draft should come after
-      return m1.visibility === 'draft' ? 1 : -1;
+      // different visibility, featured before visible before draft before hidden
+      return VISIBILITY_PRIORITY[m1.visibility] - VISIBILITY_PRIORITY[m2.visibility];
     }
-    // same visibility, more variants first
-    return m2.variants.length - m1.variants.length;
+    if (m1.variants.length !== m2.variants.length) {
+      // same visibility, more variants first
+      return Math.sign(m2.variants.length - m1.variants.length);
+    }
+    // same visibility, same number of variants, sort by slug
+    return m1.slug < m2.slug ? -1 : 1;
   });
   return (
     <Stack spacing={2}>
@@ -117,17 +127,22 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
                       height="300"
                       image={`/modules/${module.slug}/${module.previewImage.filename}`}
                       alt={variant.title}
-                      sx={{ objectFit: 'contain', backgroundColor: module.previewImage.backgroundColor }}
+                      sx={{ padding: 1, objectFit: 'contain', backgroundColor: module.previewImage.backgroundColor }}
                     />
                     <CardContent>
                       <Typography gutterBottom variant="h5" component="div">
                         {variant.title}
+                        {module.visibility === 'featured'
+                          && (
+                          <Verified
+                            sx={{ marginLeft: 1, color: 'primary.main' }}
+                          />
+                          )}
                         {isDraft
                           && (
                           <Chip
                             icon={<HourglassBottom />}
                             label="Coming soon"
-                            color="error"
                             sx={{ marginLeft: 2, textTransform: 'uppercase', fontWeight: 'bold' }}
                           />
                           )}
