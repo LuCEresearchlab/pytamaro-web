@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="470" height="130" shape-rendering="crispEdges">
+	<path fill="fuchsia" transform="translate(150 129.904)" d="M0 0L150 0L114.907 -96.4181L0 0Z"/>
+	<path fill="aqua" transform="translate(0 129.904)" d="M0 0L150 0L75 -129.904L0 0Z"/>
+	<path fill="yellow" transform="translate(300 129.904)" d="M0 0L170 0L0 -100L0 0Z"/>
+</svg>

@@ -1,0 +1,26 @@
+{
+    "variants": [
+      {
+        "title": "Pacman Film",
+        "language": "en",
+        "target": "student",
+        "description": "circular_sector, rotate, beside, empty_graphic",
+        "latestVersion": "v1"
+      }
+    ],
+    "previewImage": {
+      "filename": "pacman-film.svg",
+      "backgroundColor": "#000000"
+    },
+    "visibility": "visible",
+    "uses": [
+      {
+        "institution": "USI",
+        "course": "PF2 2023",
+        "instructors": ["Matthias Hauswirth"],
+        "assignment": "Lab 3, Task 4",
+        "url": "https://www.icorsi.ch/mod/resource/view.php?id=907822"
+      }
+    ]
+  }
+  
