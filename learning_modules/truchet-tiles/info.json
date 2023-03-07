@@ -1,0 +1,25 @@
+{
+  "variants": [
+    {
+      "title": "Truchet Tiles",
+      "language": "en",
+      "target": "student",
+      "description": "rectangle, triangle, circular_sector, rotate",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "truchet-tiles.svg",
+    "backgroundColor": "#e01c25"
+  },
+  "visibility": "featured",
+  "uses": [
+    {
+      "institution": "USI",
+      "course": "internal",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "truchet tiles",
+      "url": "https://github.com/LuCEresearchlab/pytamaro-solutions/blob/main/truchet_tiles/README.md"
+    }
+  ]
+}
