@@ -29,6 +29,7 @@
     "react-ace": "^10.1.0",
     "react-dom": "18.2.0",
     "react-markdown": "^8.0.3",
+    "react-material-ui-carousel": "^3.4.2",
     "redis": "^4.5.1",
     "sharp": "^0.31.3",
     "typeit-react": "^2.6.4",
