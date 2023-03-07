@@ -22,20 +22,20 @@ export default function Home() {
     });
     tl.add({
       targets: '#pytamaro-logo-text',
-      translateX: '15vw',
+      translateX: '15rem',
       delay: 1000,
     });
     tl.add({
       targets: '#pytamaro-logo-symbol',
-      translateX: '-6vw',
+      translateX: '-6rem',
     }, '-=750');
     tl.add({
       targets: '#pytamaro-logo-right-lake',
-      translateX: '9vw',
+      translateX: '9rem',
     });
     tl.add({
       targets: '#pytamaro-logo-left-lake',
-      translateX: '-9vw',
+      translateX: '-9rem',
     });
     tl.add({
       targets: '#pytamaro-logo-right-lake',
