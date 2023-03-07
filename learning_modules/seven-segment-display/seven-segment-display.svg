@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="280" height="520">
+	<path transform="translate(234.641 480)" d="M0 0L40 0L40 40L0 40L0 0Z"/>
+	<path fill="yellow" transform="matrix(0 1 -1 0 200 480)" d="M0 0L40 0L20 -34.641L0 0Z"/>
+	<path fill="yellow" transform="matrix(0 -1 1 0 80 520)" d="M0 0L40 0L40 120L0 120L0 0Z"/>
+	<path fill="yellow" transform="matrix(0 -1 1 0 80 520)" d="M0 0L40 0L20 -34.641L0 0Z"/>
+	<path transform="translate(5.35899 480)" d="M0 0L40 0L40 40L0 40L0 0Z"/>
+	<path fill="yellow" transform="matrix(-1 0 0 -1 280 440)" d="M0 0L40 0L20 -34.641L0 0Z"/>
+	<path fill="yellow" transform="translate(240 320)" d="M0 0L40 0L40 120L0 120L0 0Z"/>
+	<path fill="yellow" transform="translate(240 320)" d="M0 0L40 0L20 -34.641L0 0Z"/>
+	<path transform="translate(40 280)" d="M0 0L200 0L200 200L0 200L0 0Z"/>
+	<path fill="yellow" transform="matrix(-1 0 0 -1 40 440)" d="M0 0L40 0L20 -34.641L0 0Z"/>
+	<path fill="yellow" transform="translate(0 320)" d="M0 0L40 0L40 120L0 120L0 0Z"/>
+	<path fill="yellow" transform="translate(0 320)" d="M0 0L40 0L20 -34.641L0 0Z"/>
+	<path transform="translate(234.641 240)" d="M0 0L40 0L40 40L0 40L0 0Z"/>
+	<path fill="yellow" transform="matrix(0 1 -1 0 200 240)" d="M0 0L40 0L20 -34.641L0 0Z"/>
+	<path fill="yellow" transform="matrix(0 -1 1 0 80 280)" d="M0 0L40 0L40 120L0 120L0 0Z"/>
+	<path fill="yellow" transform="matrix(0 -1 1 0 80 280)" d="M0 0L40 0L20 -34.641L0 0Z"/>
+	<path transform="translate(5.35899 240)" d="M0 0L40 0L40 40L0 40L0 0Z"/>
+	<path fill="#202000" transform="matrix(-1 0 0 -1 280 200)" d="M0 0L40 0L20 -34.641L0 0Z"/>
+	<path fill="#202000" transform="translate(240 80)" d="M0 0L40 0L40 120L0 120L0 0Z"/>
+	<path fill="#202000" transform="translate(240 80)" d="M0 0L40 0L20 -34.641L0 0Z"/>
+	<path transform="translate(40 40)" d="M0 0L200 0L200 200L0 200L0 0Z"/>
+	<path fill="yellow" transform="matrix(-1 0 0 -1 40 200)" d="M0 0L40 0L20 -34.641L0 0Z"/>
+	<path fill="yellow" transform="translate(0 80)" d="M0 0L40 0L40 120L0 120L0 0Z"/>
+	<path fill="yellow" transform="translate(0 80)" d="M0 0L40 0L20 -34.641L0 0Z"/>
+	<path transform="translate(234.641 -1.52588e-05)" d="M0 0L40 0L40 40L0 40L0 0Z"/>
+	<path fill="yellow" transform="matrix(0 1 -1 0 200 -1.52588e-05)" d="M0 0L40 0L20 -34.641L0 0Z"/>
+	<path fill="yellow" transform="matrix(0 -1 1 0 80 40)" d="M0 0L40 0L40 120L0 120L0 0Z"/>
+	<path fill="yellow" transform="matrix(0 -1 1 0 80 40)" d="M0 0L40 0L20 -34.641L0 0Z"/>
+	<path transform="translate(5.35899 -1.52588e-05)" d="M0 0L40 0L40 40L0 40L0 0Z"/>
+</svg>

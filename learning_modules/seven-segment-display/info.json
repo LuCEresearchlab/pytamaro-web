@@ -1,0 +1,25 @@
+{
+  "variants": [
+    {
+      "title": "Seven Segment Display",
+      "language": "en",
+      "target": "student",
+      "description": "rgb_color, transparent, rectangle, triangle, empty_graphic, rotate, above, beside",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "seven-segment-display.png",
+    "backgroundColor": "#000000"
+  },
+  "visibility": "visible",
+  "uses": [
+    {
+      "institution": "USI",
+      "course": "internal",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "seven segment display",
+      "url": "https://github.com/LuCEresearchlab/pytamaro-solutions/blob/main/seven_segment_display/README.md"
+    }
+  ]
+}
