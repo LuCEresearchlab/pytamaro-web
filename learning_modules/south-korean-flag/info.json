@@ -1,0 +1,25 @@
+{
+  "variants": [
+    {
+      "title": "South Korean Flag",
+      "language": "en",
+      "target": "student",
+      "description": "rgb_color, beside, rectangle",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "south-korean-flag.svg",
+    "backgroundColor": "#eeeeee"
+  },
+  "visibility": "visible",
+  "uses": [
+    {
+      "institution": "USI",
+      "course": "internal",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "alphabet",
+      "url": "https://github.com/LuCEresearchlab/pytamaro-solutions/blob/main/south_korean_flag/README.md"
+    }
+  ]
+}
