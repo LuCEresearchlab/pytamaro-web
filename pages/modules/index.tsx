@@ -17,8 +17,10 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
+  ToggleButton,
 } from '@mui/material';
 import { HourglassBottom, Verified } from '@mui/icons-material';
+import ViewCompactIcon from '@mui/icons-material/ViewCompact';
 import {
   listModules, Module, NotebookVariant,
 } from '../../src/Modules';
@@ -38,6 +40,7 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
   const [search, setSearch] = useState('');
   const [languageFilter, setLanguageFilter] = useState('');
   const [filteredModules, setFilteredModules] = useState(modules);
+  const [compactView, setCompactView] = useState(false);
 
   // get all languages in set of modules
   const languages = new Set(
@@ -85,7 +88,7 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
             onChange={(e) => setSearch(e.target.value)}
           />
         </Grid>
-        <Grid xs={4}>
+        <Grid xs={3}>
           <FormControl fullWidth>
             <InputLabel>Language</InputLabel>
             <Select
@@ -113,6 +116,18 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
             </Select>
           </FormControl>
         </Grid>
+        <Grid xs={1} display="flex" justifyContent="center" alignItems="center">
+          <ToggleButton
+            color="primary"
+            value="compact"
+            selected={compactView}
+            onChange={() => {
+              setCompactView(!compactView);
+            }}
+          >
+            <ViewCompactIcon />
+          </ToggleButton>
+        </Grid>
       </Grid>
       <Grid container spacing={2}>
         {filteredModules.map((module) => {
@@ -124,7 +139,7 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
           }
           const isDraft = module.visibility === 'draft';
           return (
-            <Grid md={4} lg={3} key={module.slug}>
+            <Grid md={compactView ? 3 : 4} lg={compactView ? 2 : 3} key={module.slug}>
               <Paper elevation={8}>
                 <Card>
                   <CardActionArea
@@ -138,6 +153,7 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
                       alt={variant.title}
                       sx={{ padding: 1, objectFit: 'contain', backgroundColor: module.previewImage.backgroundColor }}
                     />
+                    { !compactView && (
                     <CardContent>
                       <Typography gutterBottom variant="h5" component="div">
                         {variant.title}
@@ -160,7 +176,9 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
                         {variant.description}
                       </Typography>
                     </CardContent>
+                    )}
                   </CardActionArea>
+                  { !compactView && (
                   <CardActions>
                     {module.variants.map((avariant) => (
                       <Button
@@ -174,6 +192,7 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
                       </Button>
                     ))}
                   </CardActions>
+                  )}
                 </Card>
               </Paper>
             </Grid>
