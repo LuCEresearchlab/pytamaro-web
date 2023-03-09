@@ -12,7 +12,7 @@
     "filename": "strassensystem.png",
     "backgroundColor": "#00cb6d"
   },
-  "visibility": "draft",
+  "visibility": "visible",
   "uses": [
     {
       "institution": "USI",

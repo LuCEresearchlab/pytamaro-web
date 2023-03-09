@@ -1,0 +1,26 @@
+{
+    "variants": [
+      {
+        "title": "Rhombus",
+        "language": "en",
+        "target": "student",
+        "description": "triangle, rotate, above",
+        "latestVersion": "v1"
+      }
+    ],
+    "previewImage": {
+      "filename": "rhombus.svg",
+      "backgroundColor": "#ffffff"
+    },
+    "visibility": "featured",
+    "uses": [
+      {
+        "institution": "USI",
+        "course": "PF2 2023",
+        "instructors": ["Matthias Hauswirth"],
+        "assignment": "Lab 1, Task 10",
+        "url": "https://www.icorsi.ch/mod/resource/view.php?id=899268"
+      }
+    ]
+  }
+  

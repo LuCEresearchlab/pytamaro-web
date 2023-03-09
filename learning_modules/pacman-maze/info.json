@@ -1,0 +1,26 @@
+{
+    "variants": [
+      {
+        "title": "Pacman Maze",
+        "language": "en",
+        "target": "student",
+        "description": "rectangle, above, beside, circular_sector, ellipse",
+        "latestVersion": "v1"
+      }
+    ],
+    "previewImage": {
+      "filename": "pacman-maze.svg",
+      "backgroundColor": "#ffffff"
+    },
+    "visibility": "draft",
+    "uses": [
+      {
+        "institution": "USI",
+        "course": "PF2 2023",
+        "instructors": ["Matthias Hauswirth"],
+        "assignment": "Lab 3, Task 10, 11, 12, 13",
+        "url": "https://www.icorsi.ch/mod/resource/view.php?id=907822"
+      }
+    ]
+  }
+  

@@ -1,0 +1,26 @@
+{
+    "variants": [
+      {
+        "title": "Tulip",
+        "language": "en",
+        "target": "student",
+        "description": "hsv_color, circular_sector, pin, compose, rotate",
+        "latestVersion": "v1"
+      }
+    ],
+    "previewImage": {
+      "filename": "tulip.svg",
+      "backgroundColor": "#ffffff"
+    },
+    "visibility": "visible",
+    "uses": [
+      {
+        "institution": "USI",
+        "course": "PF2 2023",
+        "instructors": ["Matthias Hauswirth"],
+        "assignment": "Lab 3, Task 7",
+        "url": "https://www.icorsi.ch/mod/resource/view.php?id=907822"
+      }
+    ]
+  }
+  

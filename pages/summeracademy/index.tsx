@@ -5,17 +5,32 @@ import {
   CardContent,
   CardHeader,
   CardMedia,
-  Container, Grid, Typography,
+  Container,
+  Grid,
+  Typography,
 } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Language';
 import SchoolIcon from '@mui/icons-material/School';
 import LandscapeIcon from '@mui/icons-material/Landscape';
 import Image from 'next/image';
 import Head from 'next/head';
+import Carousel from 'react-material-ui-carousel';
 import Theory from 'public/artturi-jalli-gYrYa37fAKI-unsplash.jpg';
 import { useEffect } from 'react';
 import anime from 'animejs';
 import AlpeFoppa from '../../public/AlpeFoppa-WithTitle.jpg';
+import PanoramaAlpeFoppa from '../../public/PanoramaAlpeFoppa.jpg';
+import PanoramaBottaChurch from '../../public/PanoramaBottaChurch.jpg';
+import PanoramaCampusEst from '../../public/PanoramaCampusEst.jpg';
+import PanoramaLuganoStazione from '../../public/PanoramaLuganoStazione.jpg';
+import PanoramaMonteBoglia from '../../public/PanoramaMonteBoglia.jpg';
+import PanoramaParcoCiani from '../../public/PanoramaParcoCiani.jpg';
+import PanoramaPedalo from '../../public/PanoramaPedalo.jpg';
+import PanoramaSanBernardino from '../../public/PanoramaSanBernardino.jpg';
+import PanoramaSanSalvatore from '../../public/PanoramaSanSalvatore.jpg';
+import PanoramaTamaroLemaDry from '../../public/PanoramaTamaroLemaDry.jpg';
+import PanoramaTamaroLemaLugano from '../../public/PanoramaTamaroLemaLugano.jpg';
+import PanoramaUSI from '../../public/PanoramaUSI.jpg';
 import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
 import NavigationBar from '../../components/NavigationBar';
 
@@ -437,6 +452,18 @@ export default function SummerAcademy() {
         <Container maxWidth="lg" component="main">
           <Typography variant="h4" align="center" marginY={3}>Organizers</Typography>
         </Container>
+        <Container maxWidth="lg">
+          <Typography align="center" marginY={3}>
+            The PyTamaro Summer Academy is brought to you by
+            the&nbsp;
+            <a href="https://luce.si.usi.ch/">Lugano Computing Education Research Lab</a>
+            &nbsp;at the&nbsp;
+            <a href="https://si.usi.ch/">Software Institute</a>
+            &nbsp;of&nbsp;
+            <a href="https://www.usi.ch/">USI</a>
+            .
+          </Typography>
+        </Container>
 
         <Container maxWidth="lg" component="main">
           <Grid container spacing={5} alignItems="flex-end">
@@ -556,17 +583,187 @@ export default function SummerAcademy() {
           </Grid>
         </Container>
 
+        <Container maxWidth="lg" component="main">
+          <Typography variant="h4" align="center" marginY={3}>Location</Typography>
+        </Container>
+
         <Container maxWidth="lg">
-          <Typography align="center" marginY={3}>
-            The PyTamaro Summer Academy is brought to you by
-            the&nbsp;
-            <a href="https://luce.si.usi.ch/">Lugano Computing Education Research Lab</a>
-            &nbsp;at the&nbsp;
-            <a href="https://si.usi.ch/">Software Institute</a>
-            &nbsp;of&nbsp;
-            <a href="https://www.usi.ch/">USI</a>
-            .
-          </Typography>
+          <p>
+            The PyTamaro Summer Academy will take place at USI,
+            the Università della Svizzera italiana,
+            in beautiful Lugano.
+            The USI Campus is within walking distance from the lake and the city center.
+            There are trains, cable cars, and gondolas up many of the nearby mountains,
+            several of them easily reachable on foot or by public transportation.
+          </p>
+          <Carousel>
+            <Image
+              key={0}
+              src={PanoramaLuganoStazione}
+              alt="Photo of Lugano Station"
+              width="1280"
+              height="285"
+              sizes="100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
+            />
+            <Image
+              key={1}
+              src={PanoramaAlpeFoppa}
+              alt="Photo of Alpe Foppa"
+              width="1280"
+              height="285"
+              sizes="100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
+            />
+            <Image
+              key={1.5}
+              src={PanoramaCampusEst}
+              alt="Photo of USI Campus Est"
+              width="1280"
+              height="285"
+              sizes="100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
+            />
+            <Image
+              key={2}
+              src={PanoramaBottaChurch}
+              alt="Photo of Mario Botta Church"
+              width="1280"
+              height="285"
+              sizes="100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
+            />
+            <Image
+              key={3}
+              src={PanoramaMonteBoglia}
+              alt="Photo of Monte Boglia"
+              width="1280"
+              height="285"
+              sizes="100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
+            />
+            <Image
+              key={4}
+              src={PanoramaParcoCiani}
+              alt="Photo of Parco Ciani"
+              width="1280"
+              height="285"
+              sizes="100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
+            />
+            <Image
+              key={5}
+              src={PanoramaPedalo}
+              alt="Photo of Lugano"
+              width="1280"
+              height="285"
+              sizes="100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
+            />
+            <Image
+              key={6}
+              src={PanoramaSanBernardino}
+              alt="Photo of San Bernardino"
+              width="1280"
+              height="285"
+              sizes="100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
+            />
+            <Image
+              key={7}
+              src={PanoramaSanSalvatore}
+              alt="Photo of San Salvatore"
+              width="1280"
+              height="285"
+              sizes="100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
+            />
+            <Image
+              key={8}
+              src={PanoramaTamaroLemaDry}
+              alt="Photo of Tamaro-Lema Hike"
+              width="1280"
+              height="285"
+              sizes="100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
+            />
+            <Image
+              key={9}
+              src={PanoramaTamaroLemaLugano}
+              alt="Photo of Tamaro-Lema Hike, View of Lugano"
+              width="1280"
+              height="285"
+              sizes="100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
+            />
+            <Image
+              key={10}
+              src={PanoramaUSI}
+              alt="Photo of USI"
+              width="1280"
+              height="285"
+              sizes="100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
+            />
+          </Carousel>
+          <p>
+            Lugano is full of hotels, many of them within walking distance from USI.
+            Some examples are&nbsp;
+            <a href="https://www.hotelcitylugano.ch/">Hotel City</a>
+            , right next to campus,&nbsp;
+            <a href="https://www.hotellido-lugano.com/en/">Hotel Lido Seegarten</a>
+            , at the lake front, and&nbsp;
+            <a href="https://www.hotelzurigo.ch/">Hotel Zurigo Downtown</a>
+            &nbsp;and&nbsp;
+            <a href="https://www.pestalozzi-lugano.ch/en/">Hotel Pestalozzi</a>
+            , in the city center.
+            And the&nbsp;
+            <a href="https://www.youthhostel.ch/en/hostels/lugano">Youth Hostel Lugano Savosa</a>
+            &nbsp;has a swimming pool and palm trees,
+            and includes breakfast!
+            Like a hotel, but unlike AirBnBs, it also includes a&nbsp;
+            <a href="https://www.ticino.ch/en/ticket.html">Ticino Ticket</a>
+            &nbsp;for free public transportation within Ticino.
+          </p>
+        </Container>
+
+        <Container maxWidth="lg">
           <Typography align="center" marginY={3}>
             For more information or pre-registration,
             contact&nbsp;

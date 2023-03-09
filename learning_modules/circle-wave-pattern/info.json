@@ -1,0 +1,25 @@
+{
+  "variants": [
+    {
+      "title": "Circle Wave Pattern",
+      "language": "en",
+      "target": "student",
+      "description": "rectangle, circular_sector, rotate",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "circle-wave-pattern.svg",
+    "backgroundColor": "#990056"
+  },
+  "visibility": "visible",
+  "uses": [
+    {
+      "institution": "USI",
+      "course": "internal",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "circle wave pattern",
+      "url": "https://github.com/LuCEresearchlab/pytamaro-solutions/tree/main/circle_wave_pattern"
+    }
+  ]
+}
