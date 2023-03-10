@@ -59,6 +59,9 @@ export default function NotebookPage({
 
   const pageTitle = `${title} - PyTamaro`;
 
+  const userType = 'student';
+  const TEACHER_ONLY_CELL_PREFIX = '#teacher-only';
+
   return (
     <div>
       <Head>
@@ -78,6 +81,9 @@ export default function NotebookPage({
         />
         <Container>
           {cells.map((cell: NotebookCell, idx) => {
+            if (userType === 'student' && cell.source.startsWith(TEACHER_ONLY_CELL_PREFIX)) {
+              return (<Box key={cell.id} />);
+            }
             if (cell.cell_type === 'markdown') {
               return (
                 <ReactMarkdown
