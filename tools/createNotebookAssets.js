@@ -14,6 +14,7 @@ async function copyAssets(slug, infoFileContent) {
     // List of properties that contain paths of assets to be copied
     const assetsPaths = [
         infoFileContent.previewImage.filename,
+        ...infoFileContent?.assets || [] 
     ];
     await fs.mkdir(path.join(ASSETS_PATH, slug))
     return Promise.all(assetsPaths.map(asset => {

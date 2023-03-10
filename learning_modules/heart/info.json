@@ -5,7 +5,7 @@
       "language": "en",
       "target": "student",
       "description": "pin, compose, rgb_color, circular_sector",
-      "latestVersion": "v1"
+      "latestVersion": "v2"
     }
   ],
   "previewImage": {
@@ -21,5 +21,8 @@
       "assignment": "Lab 2, Task 8",
       "url": "https://www.icorsi.ch/mod/resource/view.php?id=900378"
     }
+  ],
+  "assets": [
+    "heart_rotated.svg"
   ]
 }
