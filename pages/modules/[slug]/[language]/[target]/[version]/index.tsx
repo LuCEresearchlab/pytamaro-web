@@ -81,7 +81,7 @@ export default function NotebookPage({
         />
         <Container>
           {cells.map((cell: NotebookCell, idx) => {
-            if (userType === 'student' && cell.source.startsWith(TEACHER_ONLY_CELL_PREFIX)) {
+            if (userType === 'student' && cell.source.trimStart().startsWith(TEACHER_ONLY_CELL_PREFIX)) {
               return (<Box key={cell.id} />);
             }
             if (cell.cell_type === 'markdown') {
