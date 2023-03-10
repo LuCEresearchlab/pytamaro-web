@@ -51,13 +51,18 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
     setFilteredModules(
       modules.filter(
         (module) => module.visibility !== 'hidden'
+        // language filter
         && module.variants.some(
-          (avariant) => avariant.language.toLowerCase().includes(languageFilter.toLowerCase()),
+          (avariant) => !languageFilter
+          || avariant.language.toLowerCase() === languageFilter.toLowerCase(),
         )
+        // search by slug and by title and description of language-filtered variant
         && (module.slug.toLowerCase().includes(search.toLowerCase())
         || module.variants.some(
-          (avariant) => avariant.description.toLowerCase().includes(search.toLowerCase())
-          || avariant.title.toLowerCase().includes(search.toLowerCase()),
+          (avariant) => (!languageFilter
+          || avariant.language.toLowerCase() === languageFilter.toLowerCase())
+          && (avariant.description.toLowerCase().includes(search.toLowerCase())
+          || avariant.title.toLowerCase().includes(search.toLowerCase())),
         )),
       ),
     );
@@ -131,7 +136,11 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
       </Grid>
       <Grid container spacing={2}>
         {filteredModules.map((module) => {
+          // get language-filtered variant (if cannot, get first)
           const variant = module.variants.find(
+            (v) => v.target === DEFAULT_TARGET
+            && (!languageFilter || v.language.toLowerCase() === languageFilter.toLowerCase()),
+          ) || module.variants.find(
             (v) => v.target === DEFAULT_TARGET,
           ) as NotebookVariant;
           function variantUrl(language: string) {
