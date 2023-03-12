@@ -50,7 +50,13 @@ export default function InfoPage({ title, uses }: { title : string, uses : Noteb
                   </Typography>
                 </CardContent>
                 <CardActions>
-                  <Button size="small">Learn More</Button>
+                  <Button
+                    href={use.url}
+                    target="_blank"
+                    size="small"
+                  >
+                    View
+                  </Button>
                 </CardActions>
               </Card>
             </Box>
