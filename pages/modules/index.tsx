@@ -191,6 +191,14 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
                         {avariant.language}
                       </Button>
                     ))}
+                    <Grid container justifyContent="flex-end">
+                      <Button
+                        onClick={() => router.push(`${variantUrl(module.variants[0].language)}/info`)}
+                        size="small"
+                      >
+                        Info
+                      </Button>
+                    </Grid>
                   </CardActions>
                   )}
                 </Card>
