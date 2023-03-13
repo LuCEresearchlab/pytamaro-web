@@ -197,7 +197,7 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
                     <Box sx={{ marginLeft: 'auto' }}>
                       <IconButton
                         size="small"
-                        onClick={() => router.push(`${variantUrl(module.variants[0].language)}/info`)}
+                        onClick={() => router.push(`${variantUrl(variant.language)}/info`)}
                       >
                         <InfoIcon />
                       </IconButton>
