@@ -1,9 +1,11 @@
 import ReactMarkdown, { uriTransformer } from 'react-markdown';
 import Container from '@mui/material/Container';
 
-import { Box, Button } from '@mui/material';
+import { Box, Button, Stack } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
+import DownloadIcon from '@mui/icons-material/Download';
 import Head from 'next/head';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import {
   getNotebookContent, NotebookCell,
@@ -22,6 +24,7 @@ import { createCodeCell, useCodeState } from '../../../../../src/codeState';
 import ResetButton from '../../../../../components/ResetButton';
 import { notebookVersionUrl } from '../../../../../src/urlUtils';
 import VariantSelector from '../../../../../components/VariantsSelector';
+import downloadSourceCode from '../../../../../src/CodeDownload';
 
 function attachmentsTransformer(src: string, cell: NotebookCell) {
   const attachmentPrefix = 'attachment:';
@@ -106,18 +109,25 @@ export default function NotebookPage({
               />
             );
           })}
-          <DownloadCodeButton getSource={getWholeSource} />
         </Container>
-        <Box textAlign="center" sx={{ m: 4 }}>
+        <Stack mt={6} mb={6} direction="row" justifyContent="center" spacing={2}>
           <Button
             variant="contained"
-            color="info"
-            startIcon={<InfoIcon />}
-            onClick={() => router.push(`${router.asPath}/info`)}
+            color="success"
+            startIcon={<DownloadIcon />}
+            onClick={() => downloadSourceCode(getWholeSource())}
           >
-            More Info About Module
+            Download Python Code
           </Button>
-        </Box>
+          <Button
+            variant="outlined"
+            startIcon={<InfoIcon />}
+            component={Link}
+            href={`/modules/${slug}`}
+          >
+            Module Information
+          </Button>
+        </Stack>
       </Box>
     </div>
   );

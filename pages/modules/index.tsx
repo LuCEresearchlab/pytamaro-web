@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import Grid from '@mui/material/Unstable_Grid2';
 import {
   Stack,
@@ -29,6 +30,7 @@ import {
 } from '../../src/Modules';
 import NavigationBar from '../../components/NavigationBar';
 import { notebookVersionUrl } from '../../src/urlUtils';
+import getLanguageDisplayName from '../../src/internationalization';
 
 const VISIBILITY_PRIORITY = {
   featured: 0,
@@ -104,22 +106,11 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
               onChange={(e) => setLanguageFilter(e.target.value)}
             >
               <MenuItem key="" value=""><em>All</em></MenuItem>
-              {Array.from(languages).map((language) => {
-                function getLanguageDisplayName() {
-                  if (Intl.DisplayNames) {
-                    const languageDisplayName = new Intl.DisplayNames([language], { type: 'language' }).of(language);
-                    return languageDisplayName
-                      ? (languageDisplayName.charAt(0).toUpperCase() + languageDisplayName.slice(1))
-                      : language.toUpperCase();
-                  }
-                  return language.toUpperCase();
-                }
-                return (
-                  <MenuItem key={language} value={language}>
-                    {getLanguageDisplayName()}
-                  </MenuItem>
-                );
-              })}
+              {Array.from(languages).map((language) => (
+                <MenuItem key={language} value={language}>
+                  {getLanguageDisplayName(language)}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Grid>
@@ -202,7 +193,8 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
                     <Box sx={{ marginLeft: 'auto' }}>
                       <IconButton
                         size="small"
-                        onClick={() => router.push(`${variantUrl(variant.language)}/info`)}
+                        href={`/modules/${module.slug}`}
+                        component={Link}
                       >
                         <InfoIcon />
                       </IconButton>

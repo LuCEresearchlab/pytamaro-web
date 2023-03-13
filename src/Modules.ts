@@ -79,7 +79,11 @@ export async function listModules() : Promise<Module[]> {
   return Promise.all(slugs.map(getModuleInfo));
 }
 
+export async function getModule(slug: string) : Promise<Module> {
+  return getModuleInfo(slug);
+}
+
 export async function getNotebookUses(slug: string) : Promise<NotebookUse[]> {
   const mod = await getModuleInfo(slug);
-  return mod.uses;
+  return mod.uses.filter((use: NotebookUse) => use.course !== 'internal');
 }
