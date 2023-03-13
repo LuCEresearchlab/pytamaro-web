@@ -30,6 +30,7 @@ export default function InfoPage({ title, uses }: { title : string, uses : Noteb
       <Box>
         <NavigationBar title={title} />
         <Container>
+          <Typography variant="h2" align="center" marginY={3}>Module Usages</Typography>
           {uses.map((use: NotebookUse) => (
             <Box m={2} key={use.url}>
               <Card>
@@ -55,7 +56,7 @@ export default function InfoPage({ title, uses }: { title : string, uses : Noteb
                     target="_blank"
                     size="small"
                   >
-                    View
+                    View Course
                   </Button>
                 </CardActions>
               </Card>
