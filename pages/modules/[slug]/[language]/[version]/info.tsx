@@ -14,9 +14,9 @@ import {
   NotebookUse,
   findVersions,
   listModules,
-} from '../../../../../../src/Modules';
-import NavigationBar from '../../../../../../components/NavigationBar';
-import { notebookVersionUrl } from '../../../../../../src/urlUtils';
+} from '../../../../../src/Modules';
+import NavigationBar from '../../../../../components/NavigationBar';
+import { notebookVersionUrl } from '../../../../../src/urlUtils';
 
 export default function InfoPage({ title, uses }: { title : string, uses : NotebookUse[] }) {
   const pageTitle = `${title} - PyTamaro`;
@@ -69,14 +69,14 @@ export default function InfoPage({ title, uses }: { title : string, uses : Noteb
 }
 
 export async function getStaticProps(
-  context: { params: { slug: string, language: string, target: string, version: string } },
+  context: { params: { slug: string, language: string, version: string } },
 ) {
   const {
-    slug, language, target,
+    slug, language,
   } = context.params;
   return {
     props: {
-      title: (await variantInfo(slug, language, target)).title,
+      title: (await variantInfo(slug, language)).title,
       uses: await getNotebookUses(slug),
     },
   };
@@ -85,8 +85,8 @@ export async function getStaticProps(
 export async function getStaticPaths() {
   const modules = await listModules();
   const paths = modules.flatMap((module) => module.variants.flatMap(
-    async (notebook) => (await findVersions(module.slug, notebook.language, notebook.target))
-      .map((v) => `/modules/${notebookVersionUrl(module.slug, notebook.language, notebook.target, v)}/info`),
+    async (notebook) => (await findVersions(module.slug, notebook.language))
+      .map((v) => `/modules/${notebookVersionUrl(module.slug, notebook.language, v)}/info`),
   ));
   return {
     paths: (await Promise.all(paths)).flat(),
