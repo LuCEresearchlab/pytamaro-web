@@ -1,7 +1,8 @@
 import ReactMarkdown, { uriTransformer } from 'react-markdown';
 import Container from '@mui/material/Container';
 
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import {
@@ -107,6 +108,16 @@ export default function NotebookPage({
           })}
           <DownloadCodeButton getSource={getWholeSource} />
         </Container>
+        <Box textAlign="center" sx={{ m: 4 }}>
+          <Button
+            variant="contained"
+            color="info"
+            startIcon={<InfoIcon />}
+            onClick={() => router.push(`${router.asPath}/info`)}
+          >
+            More Info About Module
+          </Button>
+        </Box>
       </Box>
     </div>
   );
