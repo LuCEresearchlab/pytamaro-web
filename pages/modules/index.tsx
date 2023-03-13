@@ -18,8 +18,11 @@ import {
   InputLabel,
   MenuItem,
   ToggleButton,
+  IconButton,
+  Box,
 } from '@mui/material';
 import { HourglassBottom, Verified } from '@mui/icons-material';
+import InfoIcon from '@mui/icons-material/Info';
 import ViewCompactIcon from '@mui/icons-material/ViewCompact';
 import {
   listModules, Module, NotebookVariant,
@@ -200,6 +203,14 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
                         {avariant.language}
                       </Button>
                     ))}
+                    <Box sx={{ marginLeft: 'auto' }}>
+                      <IconButton
+                        size="small"
+                        onClick={() => router.push(`${variantUrl(variant.language)}/info`)}
+                      >
+                        <InfoIcon />
+                      </IconButton>
+                    </Box>
                   </CardActions>
                   )}
                 </Card>

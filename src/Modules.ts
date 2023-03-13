@@ -81,3 +81,8 @@ export async function listModules() : Promise<Module[]> {
 
   return Promise.all(slugs.map(getModuleInfo));
 }
+
+export async function getNotebookUses(slug: string) : Promise<NotebookUse[]> {
+  const mod = await getModuleInfo(slug);
+  return mod.uses;
+}
