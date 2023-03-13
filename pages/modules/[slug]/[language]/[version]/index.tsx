@@ -19,7 +19,6 @@ import {
   variantInfo,
 } from '../../../../../src/Modules';
 import NavigationBar from '../../../../../components/NavigationBar';
-import DownloadCodeButton from '../../../../../components/CodeDownloadButton';
 import { createCodeCell, useCodeState } from '../../../../../src/codeState';
 import ResetButton from '../../../../../components/ResetButton';
 import { notebookVersionUrl } from '../../../../../src/urlUtils';
