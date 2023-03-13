@@ -8,10 +8,10 @@
       "latestVersion": "v1"
     },
     {
-      "title": "Farben-Blume",
+      "title": "Color Flower",
       "language": "en",
       "target": "student",
-      "description": "hsl_farbe, fixiere, drehe, kombiniere",
+      "description": "hsl_color, pin, rotate, compose",
       "latestVersion": "v1"
     }
   ],
