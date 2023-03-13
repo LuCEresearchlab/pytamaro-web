@@ -3,14 +3,12 @@
     {
       "title": "Schweizer Bahnhofsuhr",
       "language": "de",
-      "target": "student",
       "description": "fixiere, kombiniere, drehe",
       "latestVersion": "v1"
     },
     {
       "title": "Orologio delle Ferrovie Svizzere",
       "language": "it",
-      "target": "student",
       "description": "pin, compose, rotate",
       "latestVersion": "v1"
     }

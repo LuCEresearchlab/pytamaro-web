@@ -3,8 +3,7 @@
       {
         "title": "Pacman Maze",
         "language": "en",
-        "target": "student",
-        "description": "rectangle, above, beside, circular_sector, ellipse",
+          "description": "rectangle, above, beside, circular_sector, ellipse",
         "latestVersion": "v1"
       }
     ],

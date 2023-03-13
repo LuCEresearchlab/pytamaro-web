@@ -27,7 +27,6 @@ import {
 import NavigationBar from '../../components/NavigationBar';
 import { notebookVersionUrl } from '../../src/urlUtils';
 
-const DEFAULT_TARGET = 'student';
 const VISIBILITY_PRIORITY = {
   featured: 0,
   visible: 1,
@@ -131,11 +130,9 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
       </Grid>
       <Grid container spacing={2}>
         {filteredModules.map((module) => {
-          const variant = module.variants.find(
-            (v) => v.target === DEFAULT_TARGET,
-          ) as NotebookVariant;
+          const variant = module.variants[0] as NotebookVariant;
           function variantUrl(language: string) {
-            return `${router.asPath}/${notebookVersionUrl(module.slug, language, variant.target, variant.latestVersion)}`;
+            return `${router.asPath}/${notebookVersionUrl(module.slug, language, variant.latestVersion)}`;
           }
           const isDraft = module.visibility === 'draft';
           return (

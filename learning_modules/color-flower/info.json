@@ -3,14 +3,12 @@
     {
       "title": "Farben-Blume",
       "language": "de",
-      "target": "student",
       "description": "hsl_farbe, fixiere, drehe, kombiniere",
       "latestVersion": "v1"
     },
     {
       "title": "Farben-Blume",
       "language": "en",
-      "target": "student",
       "description": "hsl_farbe, fixiere, drehe, kombiniere",
       "latestVersion": "v1"
     }

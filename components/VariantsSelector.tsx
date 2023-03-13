@@ -8,15 +8,15 @@ import { LanguageWithLatestVersion } from '../src/Modules';
 import { notebookVersionUrl } from '../src/urlUtils';
 
 export default function VariantSelector({
-  slug, language, target, version, versions, languages,
+  slug, language, version, versions, languages,
 }:
-{ slug: string, language: string, target: string, version: string,
+{ slug: string, language: string, version: string,
   versions: string[], languages: LanguageWithLatestVersion[] }) {
   const router = useRouter();
   const [selectedVersion, setSelectedVersion] = useState(version);
   const [selectedLanguage, setSelectedLanguage] = useState(language);
   useEffect(() => {
-    router.push(`/modules/${notebookVersionUrl(slug, selectedLanguage, target, selectedVersion)}`);
+    router.push(`/modules/${notebookVersionUrl(slug, selectedLanguage, selectedVersion)}`);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedVersion, selectedLanguage]);
   return (

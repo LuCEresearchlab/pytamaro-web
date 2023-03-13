@@ -3,7 +3,6 @@
     {
       "title": "Ticino Coat of Arms",
       "language": "en",
-      "target": "student",
       "description": "rgb_color, pin, compose, rotate, rectangle, circular_sector",
       "latestVersion": "v1"
     }

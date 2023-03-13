@@ -18,10 +18,9 @@ export interface NotebookCell {
 export async function getNotebookContent(
   slug: string,
   language: string,
-  target: string,
   version: string,
 ) {
-  const notebookPath = path.join(MODULES_PATH, slug, `${slug}-${language}-${target}-${version}.ipynb`);
+  const notebookPath = path.join(MODULES_PATH, slug, `${slug}-${language}-${version}.ipynb`);
   const contentBuffer = await readFile(notebookPath);
   const content = JSON.parse(contentBuffer.toString());
   return content.cells.map((cell: any, idx: number) => ({ ...cell, source: cell.source.join(''), id: idx.toString() }));
