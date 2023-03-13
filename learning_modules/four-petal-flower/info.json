@@ -3,8 +3,7 @@
       {
         "title": "Four Petal Flower",
         "language": "en",
-        "target": "student",
-        "description": "ellipse, above, rotate, overlay",
+          "description": "ellipse, above, rotate, overlay",
         "latestVersion": "v1"
       }
     ],

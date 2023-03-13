@@ -3,7 +3,6 @@
     {
       "title": "Chessboard",
       "language": "en",
-      "target": "student",
       "description": "rectangle, triangle, circular_sector, rotate",
       "latestVersion": "v1"
     }

@@ -3,7 +3,6 @@
     {
       "title": "Japanese Flag",
       "language": "en",
-      "target": "student",
       "description": "rgb_color, overlay, ellipse, rectangle",
       "latestVersion": "v1"
     }

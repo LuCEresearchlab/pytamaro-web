@@ -7,21 +7,21 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import {
   getNotebookContent, NotebookCell,
-} from '../../../../../../src/Notebook';
-import CodeCell from '../../../../../../components/CodeCell';
+} from '../../../../../src/Notebook';
+import CodeCell from '../../../../../components/CodeCell';
 import {
   findLanguages,
   findVersions,
   LanguageWithLatestVersion,
   listModules,
   variantInfo,
-} from '../../../../../../src/Modules';
-import NavigationBar from '../../../../../../components/NavigationBar';
-import DownloadCodeButton from '../../../../../../components/CodeDownloadButton';
-import { createCodeCell, useCodeState } from '../../../../../../src/codeState';
-import ResetButton from '../../../../../../components/ResetButton';
-import { notebookVersionUrl } from '../../../../../../src/urlUtils';
-import VariantSelector from '../../../../../../components/VariantsSelector';
+} from '../../../../../src/Modules';
+import NavigationBar from '../../../../../components/NavigationBar';
+import DownloadCodeButton from '../../../../../components/CodeDownloadButton';
+import { createCodeCell, useCodeState } from '../../../../../src/codeState';
+import ResetButton from '../../../../../components/ResetButton';
+import { notebookVersionUrl } from '../../../../../src/urlUtils';
+import VariantSelector from '../../../../../components/VariantsSelector';
 
 function attachmentsTransformer(src: string, cell: NotebookCell) {
   const attachmentPrefix = 'attachment:';
@@ -42,9 +42,9 @@ export default function NotebookPage({
   languages: LanguageWithLatestVersion[] }) {
   const router = useRouter();
   const {
-    slug, language, target, version,
-  } = router.query as { slug: string, language: string, target: string, version: string };
-  const moduleVariantId = `${slug}-${language}-${target}`;
+    slug, language, version,
+  } = router.query as { slug: string, language: string, version: string };
+  const moduleVariantId = `${slug}-${language}`;
   const moduleVersionId = `${moduleVariantId}-${version}`;
 
   const initialCodeCells = cells
@@ -60,6 +60,9 @@ export default function NotebookPage({
 
   const pageTitle = `${title} - PyTamaro`;
 
+  const userType = 'student';
+  const TEACHER_ONLY_CELL_PREFIX = '#teacher-only';
+
   return (
     <div>
       <Head>
@@ -72,13 +75,15 @@ export default function NotebookPage({
         <VariantSelector
           slug={slug}
           language={language}
-          target={target}
           version={version}
           versions={versions}
           languages={languages}
         />
         <Container>
           {cells.map((cell: NotebookCell, idx) => {
+            if (userType === 'student' && cell.source.trimStart().startsWith(TEACHER_ONLY_CELL_PREFIX)) {
+              return (<Box key={cell.id} />);
+            }
             if (cell.cell_type === 'markdown') {
               return (
                 <ReactMarkdown
@@ -119,17 +124,17 @@ export default function NotebookPage({
 }
 
 export async function getStaticProps(
-  context: { params: { slug: string, language: string, target: string, version: string } },
+  context: { params: { slug: string, language: string, version: string } },
 ) {
   const {
-    slug, language, target, version,
+    slug, language, version,
   } = context.params;
   return {
     props: {
-      title: (await variantInfo(slug, language, target)).title,
-      cells: await getNotebookContent(slug, language, target, version),
-      versions: await findVersions(slug, language, target),
-      languages: await findLanguages(slug, target),
+      title: (await variantInfo(slug, language)).title,
+      cells: await getNotebookContent(slug, language, version),
+      versions: await findVersions(slug, language),
+      languages: await findLanguages(slug),
     },
   };
 }
@@ -137,8 +142,8 @@ export async function getStaticProps(
 export async function getStaticPaths() {
   const modules = await listModules();
   const paths = modules.flatMap((module) => module.variants.flatMap(
-    async (notebook) => (await findVersions(module.slug, notebook.language, notebook.target))
-      .map((v) => `/modules/${notebookVersionUrl(module.slug, notebook.language, notebook.target, v)}`),
+    async (notebook) => (await findVersions(module.slug, notebook.language))
+      .map((v) => `/modules/${notebookVersionUrl(module.slug, notebook.language, v)}`),
   ));
   return {
     paths: (await Promise.all(paths)).flat(),

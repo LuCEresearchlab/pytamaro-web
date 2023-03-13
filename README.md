@@ -14,21 +14,19 @@ See the `swiss-flag` module for an example.
 
 Each learning module can exists in several variants,
 depending on:
-- the _target person_ (either a student or a teacher);
 - the _natural language_ (e.g, English, Italian or German).
 
-Our default mandatory variant is in _English_ for a _student_.
+Our default mandatory variant is in _English_.
 
 All the meta-information about a learning module is specified in an `info.json` file.
 See `learning_modules/swiss-flag/info.json` for an example.
 Each variant is described by an object containing:
 - the localized `title`,
 - the natural language `language` in the ISO 639-1 format,
-- the `target` person (`"student"` or `"teacher"`),
 - the `latestVersion`.
 
 These pieces of information prescribe the name of the Jupyter notebook file
-for that variant (`slug-language-target-version.ipynb`).
+for that variant (`slug-language-version.ipynb`).
 
 Small changes (such as fixing a typo, or improving the wording of a markdown cell in a notebook)
 should not be created in a new version.

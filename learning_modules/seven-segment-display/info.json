@@ -3,7 +3,6 @@
     {
       "title": "Seven Segment Display",
       "language": "en",
-      "target": "student",
       "description": "rgb_color, transparent, rectangle, triangle, empty_graphic, rotate, above, beside",
       "latestVersion": "v1"
     }

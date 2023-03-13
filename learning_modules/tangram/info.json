@@ -3,7 +3,6 @@
     {
       "title": "Tangram",
       "language": "en",
-      "target": "student",
       "description": "pin, compose, rgb_color, rectangle, triangle, beside, above",
       "latestVersion": "v1"
     }

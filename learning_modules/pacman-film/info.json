@@ -3,8 +3,7 @@
       {
         "title": "Pacman Film",
         "language": "en",
-        "target": "student",
-        "description": "circular_sector, rotate, beside, empty_graphic",
+          "description": "circular_sector, rotate, beside, empty_graphic",
         "latestVersion": "v1"
       }
     ],

@@ -3,7 +3,6 @@
     {
       "title": "Chat",
       "language": "en",
-      "target": "student",
       "description": "tuple, pin, compose",
       "latestVersion": "v1"
     }

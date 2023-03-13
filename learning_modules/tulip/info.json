@@ -3,7 +3,6 @@
       {
         "title": "Tulip",
         "language": "en",
-        "target": "student",
         "description": "hsv_color, circular_sector, pin, compose, rotate",
         "latestVersion": "v1"
       }

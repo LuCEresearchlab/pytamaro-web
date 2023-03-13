@@ -15,7 +15,6 @@ async function getModuleInfo(slug: string) {
 export interface NotebookVariant {
   title: string,
   language: string,
-  target: string,
   description: string,
   latestVersion: string,
 }
@@ -49,29 +48,27 @@ async function notebookFileNames(slug: string) {
   return notebooks.map((filename) => filename.replace(suffix, ''));
 }
 
-export async function findVersions(slug: string, language: string, target: string)
+export async function findVersions(slug: string, language: string)
   : Promise<string[]> {
-  const prefix = `${slug}-${language}-${target}-`;
+  const prefix = `${slug}-${language}-`;
   return (await notebookFileNames(slug)).filter((filename) => filename.startsWith(prefix)).map(
     (filename) => filename.replace(prefix, ''),
   );
 }
 
-export async function variantInfo(slug: string, language: string, target: string)
+export async function variantInfo(slug: string, language: string)
   : Promise<NotebookVariant> {
   const mod = await getModuleInfo(slug);
-  return mod.variants.find((v : NotebookVariant) => v.language === language && v.target === target);
+  return mod.variants.find((v : NotebookVariant) => v.language === language);
 }
 
-export async function findLanguages(slug: string, target: string)
+export async function findLanguages(slug: string)
   : Promise<LanguageWithLatestVersion[]> {
-  const notebooks = (await notebookFileNames(slug)).filter(
-    (filename) => filename.includes(target),
-  );
-  const languages = notebooks.map((filename) => filename.split('-').at(-3)) as string[];
+  const notebooks = await notebookFileNames(slug);
+  const languages = notebooks.map((filename) => filename.split('-').at(-2)) as string[];
   const uniqueLanguages = Array.from(new Set(languages));
   return Promise.all(uniqueLanguages.map(async (language) => (
-    { language, latestVersion: (await variantInfo(slug, language, target)).latestVersion })));
+    { language, latestVersion: (await variantInfo(slug, language)).latestVersion })));
 }
 
 export async function listModules() : Promise<Module[]> {
