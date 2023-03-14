@@ -11,7 +11,7 @@
       "filename": "rhombus.svg",
       "backgroundColor": "#ffffff"
     },
-    "visibility": "featured",
+    "visibility": "visible",
     "uses": [
       {
         "institution": "USI",
@@ -20,6 +20,11 @@
         "assignment": "Lab 1, Task 10",
         "url": "https://www.icorsi.ch/mod/resource/view.php?id=899268"
       }
+    ],
+    "assets": [
+      "pytamaro-triangle.svg",
+      "triangle-reasoning.svg",
+      "vertical-triangle.svg"
     ]
   }
   

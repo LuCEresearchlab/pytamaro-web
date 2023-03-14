@@ -1,12 +1,9 @@
 from pytamaro import (
-    Color, 
-    Graphic, 
+    Color, Graphic, 
+    red, white,
+    triangle, rectangle, 
     above, 
-    triangle, 
-    rectangle, 
-    red, 
-    white,
-    show_graphic
+    show_graphic, save_graphic
 )
 
 
@@ -25,3 +22,4 @@ def standard_house(width: float) -> Graphic:
 # code that shows result
 result = standard_house(250)
 show_graphic(result)
+# save_graphic("house.svg", result, False)

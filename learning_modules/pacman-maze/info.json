@@ -11,7 +11,7 @@
       "filename": "pacman-maze.svg",
       "backgroundColor": "#ffffff"
     },
-    "visibility": "draft",
+    "visibility": "visible",
     "uses": [
       {
         "institution": "USI",
@@ -20,6 +20,17 @@
         "assignment": "Lab 3, Task 10, 11, 12, 13",
         "url": "https://www.icorsi.ch/mod/resource/view.php?id=907822"
       }
+    ],
+    "assets": [
+      "straight-tile-h.svg",
+      "straight-tile-v.svg",
+      "corner-tile-0.svg",
+      "corner-tile-90.svg",
+      "corner-tile-180.svg",
+      "corner-tile-270.svg",
+      "floor-tile-empty.svg",
+      "floor-tile-dot.svg",
+      "floor-tile-pill.svg"
     ]
   }
   

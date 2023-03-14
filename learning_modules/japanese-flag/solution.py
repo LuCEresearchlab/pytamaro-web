@@ -1,12 +1,9 @@
 from pytamaro import(
-    Graphic,
-    Color,
-    ellipse,
-    rectangle,
-    rgb_color,
+    Graphic, Color,
+    rgb_color, white,
+    ellipse, rectangle,
     overlay,
-    white,
-    show_graphic
+    show_graphic, save_graphic
 )
 
 
@@ -27,3 +24,4 @@ def japanese_flag(height: float) -> Graphic:
 # code to show result
 result = japanese_flag(300)
 show_graphic(result)
+# save_graphic("japanese-flag.svg", result, False)

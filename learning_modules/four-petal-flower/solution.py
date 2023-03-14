@@ -1,14 +1,9 @@
 from pytamaro import (
-    Graphic,
-    Color,
+    Graphic, Color,
     rgb_color,
-    ellipse,
-    circular_sector,
-    above,
-    rotate,
-    overlay,
-    show_graphic,
-    save_graphic
+    ellipse, circular_sector,
+    above, rotate, overlay,
+    show_graphic, save_graphic
 )
 
 
@@ -23,13 +18,13 @@ def circle(diameter: float, color: Color) -> Graphic:
 def four_petal_flower(size: float) -> Graphic:
     assert size >= 0
     petal = circle(size, PETAL_COLOR)
-    center = circle(size, CENTER_COLOR)
-    first_part = above(petal, petal)
+    pistil = circle(size, CENTER_COLOR)
+    vertical_petals = above(petal, petal)
     return overlay(
-        center,
+        pistil,
         overlay(
-            first_part,
-            rotate(90, first_part)
+            vertical_petals,
+            rotate(90, vertical_petals)
         )
     )
 
