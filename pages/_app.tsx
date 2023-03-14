@@ -5,6 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import { ConfirmProvider } from 'material-ui-confirm';
 import PlausibleProvider from 'next-plausible';
+import Box from '@mui/material/Box';
 import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
 import '../style/styles.css';
@@ -35,10 +36,15 @@ export default function MyApp(props: MyAppProps) {
           selfHosted
         >
           <ConfirmProvider>
-            <Component // eslint-disable-next-line react/jsx-props-no-spreading
-              {...pageProps}
-            />
-            <PageFooter />
+            <Box sx={{
+              display: 'flex', flexDirection: 'column', minHeight: '100vh', justifyContent: 'flex-start',
+            }}
+            >
+              <Component // eslint-disable-next-line react/jsx-props-no-spreading
+                {...pageProps}
+              />
+              <PageFooter />
+            </Box>
           </ConfirmProvider>
         </PlausibleProvider>
       </ThemeProvider>

@@ -4,7 +4,7 @@ import PyTamaroLogo from '../public/PyTamaroLogo.png';
 
 export default function PageFooter() {
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 2 }}>
+    <Container maxWidth="lg" sx={{ mt: 'auto', mb: 2 }}>
       <Typography variant="body2" align="center" mt={6}>
         <Image
           src={PyTamaroLogo}
