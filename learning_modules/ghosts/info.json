@@ -22,6 +22,13 @@
     },
     {
       "institution": "USI",
+      "course": "GymInf PSK 2022a",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "5. 'Dekomposition mit Grafik', Aufgabe 5 'Gespenst'",
+      "url": "https://informa.inf.usi.ch/course/u5RicGYmRGDKLJge8/lab/edYaoZbQARWwmLfDf#item_2YwCGj8PYfBeEzGeA"
+    },
+    {
+      "institution": "USI",
       "course": "MII2 2021",
       "instructors": ["Luca Chiodini", "Matthias Hauswirth"],
       "assignment": "Lab 2.4, Esercizio 3 - Fantasma",
