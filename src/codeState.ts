@@ -99,6 +99,9 @@ ${currentCellSource}`;
     for (let i = 0; i <= idx; i += 1) {
       handleExecuteSingleCell(i);
     }
+    // Log for analytics (`plausible` is added globally by `plausible-next`)
+    // @ts-ignore
+    plausible('CodeExecution', { props: { module: moduleVariantId, cellidx: idx } });
   };
 
   const handleToggleOutputArea = (idx: number) => {
