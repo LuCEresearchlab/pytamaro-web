@@ -1,0 +1,24 @@
+{
+    "variants": [
+      {
+        "title": "Star",
+        "language": "en",
+        "description": "triangle, pin, compose, rotate",
+        "latestVersion": "v1"
+      }
+    ],
+    "previewImage": {
+      "filename": "star.svg",
+      "backgroundColor": "#000000"
+    },
+    "visibility": "visible",
+    "assets": [
+      "different-pointed-stars.svg",
+      "five-pointed-stars.svg",
+      "isosceles-triangle-not-rotated.svg",
+      "triangle-approach.svg",
+      "isosceles-triangle-rotation.svg"
+    ]
+    
+  }
+  

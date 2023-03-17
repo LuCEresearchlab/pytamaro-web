@@ -22,9 +22,9 @@
       }
     ],
     "assets": [
-      "pytamaro-triangle.svg",
-      "triangle-reasoning.svg",
-      "vertical-triangle.svg"
+      "triangle-not-rotated.svg",
+      "isosceles-triangle-rotation.svg",
+      "triangle-rotated.svg"
     ]
   }
   

@@ -1,0 +1,25 @@
+{
+    "variants": [
+      {
+        "title": "Hue Ring",
+        "language": "en",
+        "description": "hsv_color, pin, compose, circular_sector",
+        "latestVersion": "v1"
+      }
+    ],
+    "previewImage": {
+      "filename": "hue-ring.svg",
+      "backgroundColor": "#ffffff"
+    },
+    "visibility": "visible",
+    "uses": [
+      {
+        "institution": "USI",
+        "course": "PF2 2023",
+        "instructors": ["Matthias Hauswirth"],
+        "assignment": "Lab 4, Task 11",
+        "url": "https://www.icorsi.ch/mod/resource/view.php?id=910857"
+      }
+    ]
+  }
+  

@@ -1,18 +1,15 @@
 from pytamaro import (
-    Graphic,
-    Color,
+    Graphic, Color,
     hsv_color,
     circular_sector,
-    pin,
-    bottom_left, 
-    bottom_right,
-    compose,
-    rotate,
-    above,
-    show_graphic,
-    save_graphic
+    pin, bottom_left, bottom_right,compose,
+    rotate, above,
+    show_graphic, save_graphic
 )
 
+
+def semicircle(radius: float, color: Color) -> Graphic:
+    return circular_sector(radius, 180, color)
 
 def tulip(diameter: float, hue: float) -> Graphic:
     assert diameter >= 0
@@ -20,21 +17,21 @@ def tulip(diameter: float, hue: float) -> Graphic:
     assert hue <= 360
     front_color = hsv_color(hue, 1, 0.8, 1)
     back_color = hsv_color(hue, 1, 1, 1)
-    petal = pin(bottom_left, circular_sector(diameter / 2, 90, front_color))
-    back = pin(bottom_left, circular_sector(diameter / 2, 180, back_color))
-    top_part = compose(
-        rotate(90, petal),
+    petal = circular_sector(diameter / 2, 90, front_color)
+    back_petal = semicircle(diameter / 2, back_color)
+    top_petals = compose(
+        rotate(90, pin(bottom_left, petal)),
         pin(
             bottom_right,
             compose(
-                petal,
-                back
+                pin(bottom_left, petal),
+                pin(bottom_left, back_petal)
             )
         )
     )
     return above(
-        top_part,
-        rotate( 180, circular_sector(diameter/2, 180, front_color))
+        top_petals,
+        rotate(180, semicircle(diameter/2, front_color))
     )
 
 

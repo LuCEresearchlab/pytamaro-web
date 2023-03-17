@@ -1,0 +1,25 @@
+{
+    "variants": [
+      {
+        "title": "Hue Bar",
+        "language": "en",
+        "description": "hsv_color, beside, rectangle",
+        "latestVersion": "v1"
+      }
+    ],
+    "previewImage": {
+      "filename": "hue-bar.svg",
+      "backgroundColor": "#ffffff"
+    },
+    "visibility": "visible",
+    "uses": [
+      {
+        "institution": "USI",
+        "course": "PF2 2023",
+        "instructors": ["Matthias Hauswirth"],
+        "assignment": "Lab 4, Task 10",
+        "url": "https://www.icorsi.ch/mod/resource/view.php?id=910857"
+      }
+    ]
+  }
+  
