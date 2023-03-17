@@ -1,12 +1,9 @@
 from pytamaro import(
-    Graphic,
-    Color,
-    triangle,
-    rotate,
-    above,
+    Graphic, Color,
     cyan,
-    show_graphic,
-    save_graphic
+    triangle,
+    rotate, above,
+    show_graphic, save_graphic
 )
 
 

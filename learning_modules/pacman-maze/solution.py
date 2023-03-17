@@ -1,23 +1,10 @@
 from pytamaro import (
-    Graphic,
-    Color,
-    rectangle,
-    ellipse,
-    circular_sector,
-    rotate,
-    black,
-    white,
-    blue,
-    yellow,
-    pin,
-    bottom_left,
-    compose,
-    overlay,
-    above,
-    beside,
-    empty_graphic,
-    show_graphic,
-    save_graphic
+    Graphic, Color,
+    black, white, blue, yellow,
+    rectangle, ellipse, circular_sector, empty_graphic,
+    rotate, overlay, above, beside,
+    pin, bottom_left, compose,
+    show_graphic, save_graphic
 )
 
 
@@ -32,19 +19,6 @@ def pacman(radius: float, mouth_angle: float) -> Graphic:
     assert mouth_angle >= 0
     assert mouth_angle < 360
     return rotate(mouth_angle / 2, circular_sector(radius, 360 - mouth_angle, yellow))
-
-def beside_many(graphics: list[Graphic]) -> Graphic:
-    result = empty_graphic()
-    for g in graphics:
-        result = beside(result, g)
-    return result
-
-def above_many(graphics: list[Graphic]) -> Graphic:
-    result = empty_graphic()
-    for g in graphics:
-        result = above(result, g)
-    return result
-
 
 # the blue line should be centered and 1/5 as thick as the tile's size
 def straight_tile(size: float, horizontal: bool) -> Graphic:
@@ -83,9 +57,8 @@ def floor_tile(size: float, dot: bool, pill: bool) -> Graphic:
         return black_square(size)
 
 
-
 # code to show result
-SIZE = 30
+SIZE = 15
 
 STRAIGHT_TILE_H = straight_tile(SIZE, True)
 STRAIGHT_TILE_V = straight_tile(SIZE, False)
@@ -100,111 +73,72 @@ FLOOR_TILE_DOT = floor_tile(SIZE, True, False)
 FLOOR_TILE_PILL = floor_tile(SIZE, False, True)
 PACMAN_TILE = floor_tile(SIZE, True, True)
 
+def char_to_tile(c: str) -> Graphic:
+    if c == "-":
+        return STRAIGHT_TILE_H
+    elif c == "|":
+        return STRAIGHT_TILE_V
+    elif c == "d":
+        return CORNER_TILE_0
+    elif c == "r":
+        return CORNER_TILE_90
+    elif c == "u":
+        return CORNER_TILE_180
+    elif c == "l":
+        return CORNER_TILE_270
+    elif c == ".":
+        return FLOOR_TILE_DOT
+    elif c == "0":
+        return FLOOR_TILE_PILL
+    elif c == "P":
+        return PACMAN_TILE
+    else:
+        return FLOOR_TILE_EMPTY
+    
+def string_to_maze(maze: list[str]) -> Graphic:
+    result = empty_graphic()
+    for row in maze:
+        r = empty_graphic()
+        for c in row:
+            r = beside(r, char_to_tile(c))
+        result = above(result, r)
+    return result
 
-FIRST_ROW = beside_many(
-    [
-        PACMAN_TILE,
-        FLOOR_TILE_DOT,
-        FLOOR_TILE_DOT,
-        FLOOR_TILE_DOT,
-        FLOOR_TILE_PILL,
-        FLOOR_TILE_DOT,
-        FLOOR_TILE_DOT,
-        STRAIGHT_TILE_V,
-        STRAIGHT_TILE_V,
-        FLOOR_TILE_DOT,
-        FLOOR_TILE_DOT,
-    ]
-)
-SECOND_ROW = beside_many(
-    [
-        CORNER_TILE_0,
-        FLOOR_TILE_DOT,
-        CORNER_TILE_90,
-        STRAIGHT_TILE_H,
-        STRAIGHT_TILE_H,
-        CORNER_TILE_0,
-        FLOOR_TILE_DOT,
-        STRAIGHT_TILE_V,
-        STRAIGHT_TILE_V,
-        FLOOR_TILE_DOT,
-        CORNER_TILE_90
-    ]
-)
-THIRD_ROW = beside_many(
-    [
-        STRAIGHT_TILE_V,
-        FLOOR_TILE_DOT,
-        CORNER_TILE_180,
-        STRAIGHT_TILE_H,
-        STRAIGHT_TILE_H,
-        CORNER_TILE_270,
-        FLOOR_TILE_DOT,
-        CORNER_TILE_180,
-        CORNER_TILE_270,
-        FLOOR_TILE_EMPTY,
-        STRAIGHT_TILE_V
-    ]
-)
-FOURTH_ROW = beside_many(
-    [
-        STRAIGHT_TILE_V,
-        FLOOR_TILE_DOT,
-        FLOOR_TILE_DOT,
-        FLOOR_TILE_DOT,
-        FLOOR_TILE_DOT,
-        FLOOR_TILE_DOT,
-        FLOOR_TILE_DOT,
-        FLOOR_TILE_EMPTY,
-        FLOOR_TILE_EMPTY,
-        FLOOR_TILE_EMPTY,
-        STRAIGHT_TILE_V
-    ]
-)
-TOP_BORDER = beside_many(
-    [
-        STRAIGHT_TILE_H,
-        STRAIGHT_TILE_H,
-        STRAIGHT_TILE_H,
-        STRAIGHT_TILE_H,
-        STRAIGHT_TILE_H,
-        STRAIGHT_TILE_H,
-        STRAIGHT_TILE_H,
-        CORNER_TILE_0,
-        CORNER_TILE_90,
-        STRAIGHT_TILE_H,
-        STRAIGHT_TILE_H
-    ]
-)
-BOTTOM_BORDER = beside_many(
-    [
-        CORNER_TILE_180,
-        STRAIGHT_TILE_H,
-        CORNER_TILE_0,
-        FLOOR_TILE_DOT,
-        CORNER_TILE_90,
-        STRAIGHT_TILE_H,
-        CORNER_TILE_0,
-        FLOOR_TILE_DOT,
-        CORNER_TILE_90,
-        STRAIGHT_TILE_H,
-        CORNER_TILE_270
-    ]
-)
-PIECE = above_many(
-    [
-        TOP_BORDER,
-        FIRST_ROW,
-        SECOND_ROW,
-        THIRD_ROW,
-        FOURTH_ROW,
-        BOTTOM_BORDER
-    ]
-)
-result = above(
-    beside(PIECE, PIECE),
-    rotate(180, beside(PIECE, PIECE))
-)
+maze = [
+    "r------------dr------------d" ,
+    "|............||.......0....|",
+    "|.r--d.r---d.||.r---d.r--d.|",
+    "|.|  |.|   |.||.|   |.|  |.|",
+    "|.u--l.u---l.ul.u---l.u--l.|",
+    "|...0......................|",
+    "|.r--d.rd.r------d.rd.r--d.|",
+    "|.u--l.||.u--dr--l.||.u--l.|",
+    "|......||....||....||......|",
+    "u----d.|u--d.||.r--l|.r----l",
+    "     |.|r--l.ul.u--d|.|     ",
+    "     |.||..........||.|     ",
+    "     |.||.r--  --d.||.|     ",
+    "-----l.ul.|      |.ul.u-----",
+    "..........|      |....0.....",
+    "-----d.rd.|      |.rd.r-----",
+    "     |.||.u------l.||.|     ",
+    "     |.||..........||.|     ",
+    "     |.||.r------d.||.|     ",
+    "r----l.ul.u--dr--l.ul.u----d",
+    "|......P.....||............|",
+    "|.r--d.r---d.||.r---d.r--d.|",
+    "|.u-d|.u---l.ul.u---l.|r-l.|",
+    "|.0.||................||...|",
+    "u-d.||.rd.r------d.rd.||.r-l",
+    "r-l.ul.||.u--dr--l.||.ul.u-d",
+    "|......||....||....||......|",
+    "|.r----lu--d.||.r--lu----d.|",
+    "|.u--------l.ul.u--------l.|",
+    "|......................0...|",
+    "u--------------------------l"
+]
+
+result = string_to_maze(maze)
 
 show_graphic(result)
 # save_graphic("pacman-maze.svg", result, False)

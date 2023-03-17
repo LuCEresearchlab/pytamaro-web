@@ -1,12 +1,9 @@
 from pytamaro import(
-    Graphic, 
-    Color, 
-    overlay,
-    ellipse, 
-    black, 
-    white, 
-    beside,
-    show_graphic
+    Graphic, Color, 
+    black, white, 
+    ellipse,
+    overlay, beside,
+    show_graphic, save_graphic
 )
 
 def circle(diameter: float, color: Color) -> Graphic:
@@ -24,3 +21,4 @@ def eyes(diameter: float) -> Graphic:
 # code to show the result
 result = eyes(200)
 show_graphic(result)
+# save_graphic("eyes.svg", result, False)

@@ -4,7 +4,7 @@
       "title": "Pacman",
       "language": "en",
       "description": "circular_sector, rotate",
-      "latestVersion": "v1"
+      "latestVersion": "v2"
     }
   ],
   "previewImage": {
@@ -26,6 +26,13 @@
       "instructors": ["Matthias Hauswirth"],
       "assignment": "5. 'Dekomposition mit Grafik', Aufgabe 3 'Pacman'",
       "url": "https://informa.inf.usi.ch/course/GRhdPvEMYcNSmyTeR/lab/hvfMcEiKxNZfgKvti#item_rmoyPdb9DAjvbc6jS"
+    },
+    {
+      "institution": "USI",
+      "course": "GymInf PSK 2022a",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "5. 'Dekomposition mit Grafik', Aufgabe 3 'Pacman'",
+      "url": "https://informa.inf.usi.ch/course/u5RicGYmRGDKLJge8/lab/edYaoZbQARWwmLfDf#item_ggT84iHCkgma9HT5Z"
     },
     {
       "institution": "USI",

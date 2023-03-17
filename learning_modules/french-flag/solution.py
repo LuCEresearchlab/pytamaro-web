@@ -1,11 +1,9 @@
 from pytamaro import (
-    Graphic,
-    Color,
-    rgb_color,
+    Graphic, Color,
+    rgb_color, white,
     rectangle,
     beside,
-    white,
-    show_graphic
+    show_graphic, save_graphic
 )
 
 
@@ -31,3 +29,4 @@ def french_flag(height: float) -> Graphic:
 # code to show result
 result = french_flag(300)
 show_graphic(result)
+# save_graphic("french-flag.svg", result, False)

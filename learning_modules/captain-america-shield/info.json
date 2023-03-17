@@ -11,7 +11,7 @@
     "filename": "captain-america-shield.svg",
     "backgroundColor": "#ffffff"
   },
-  "visibility": "featured",
+  "visibility": "visible",
   "uses": [
     {
       "institution": "USI",
