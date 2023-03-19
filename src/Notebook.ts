@@ -1,4 +1,5 @@
 import { readFile } from 'fs/promises';
+import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import path from 'path';
 import { MODULES_PATH } from './Modules';
 
@@ -12,6 +13,7 @@ export interface NotebookCell {
   id: string,
   cell_type: string,
   source: string,
+  mdxSource: MDXRemoteSerializeResult,
   attachments?: any,
 }
 

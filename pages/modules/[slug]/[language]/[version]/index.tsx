@@ -1,5 +1,6 @@
-import ReactMarkdown, { uriTransformer } from 'react-markdown';
 import Container from '@mui/material/Container';
+import { serialize } from 'next-mdx-remote/serialize';
+import { MDXRemote } from 'next-mdx-remote';
 
 import { Box, Button, Stack } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
@@ -34,7 +35,20 @@ function attachmentsTransformer(src: string, cell: NotebookCell) {
     const data = attachment[mimeType];
     return `data:${mimeType};base64,${data}`;
   }
-  return uriTransformer(src);
+  return src;
+}
+
+function attachmentsImage(props: any, cell: NotebookCell) {
+  return (
+    <picture>
+      <img
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...props}
+        alt={props.alt}
+        src={attachmentsTransformer(props.src, cell)}
+      />
+    </picture>
+  );
 }
 
 export default function NotebookPage({
@@ -87,13 +101,16 @@ export default function NotebookPage({
               return (<Box key={cell.id} />);
             }
             if (cell.cell_type === 'markdown') {
+              const components = {
+                img: (props: any) => attachmentsImage(props, cell),
+              };
               return (
-                <ReactMarkdown
+                <MDXRemote
+                  // eslint-disable-next-line react/jsx-props-no-spreading
+                  {...cell.mdxSource}
                   key={cell.id}
-                  transformImageUri={(src) => attachmentsTransformer(src, cell)}
-                >
-                  {cell.source}
-                </ReactMarkdown>
+                  components={components}
+                />
               );
             }
             const cellIdx = originalIdxToCodeCellIdx.get(idx) as number;
@@ -141,7 +158,11 @@ export async function getStaticProps(
   return {
     props: {
       title: (await variantInfo(slug, language)).title,
-      cells: await getNotebookContent(slug, language, version),
+      cells: await Promise.all((await getNotebookContent(slug, language, version)).map(
+        async (cell: NotebookCell) => (cell.cell_type === 'markdown'
+          ? { ...cell, mdxSource: await serialize(cell.source) }
+          : cell),
+      )),
       versions: await findVersions(slug, language),
       languages: await findLanguages(slug),
     },
