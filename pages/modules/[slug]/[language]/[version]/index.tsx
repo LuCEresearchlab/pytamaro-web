@@ -1,6 +1,8 @@
 import Container from '@mui/material/Container';
 import { serialize } from 'next-mdx-remote/serialize';
 import { MDXRemote } from 'next-mdx-remote';
+// @ts-ignore
+import { YouTube } from 'mdx-embed/dist/components/youtube';
 
 import { Box, Button, Stack } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
@@ -103,6 +105,7 @@ export default function NotebookPage({
             if (cell.cell_type === 'markdown') {
               const components = {
                 img: (props: any) => attachmentsImage(props, cell),
+                YouTube,
               };
               return (
                 <MDXRemote
