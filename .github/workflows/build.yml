@@ -1,5 +1,5 @@
-# This workflow installs node dependencies (using the cache if package-lock.json has not been modified) and lints
-name: Lint
+# This workflow installs node dependencies (using the cache if package-lock.json has not been modified) and tries to build
+name: Next.js Build
 
 on:
   push:
@@ -25,5 +25,5 @@ jobs:
         key: npm-${{ hashFiles('**/package-lock.json') }}
     - name: Install dependecies
       run: npm install
-    - name: Lint 
-      run: npm run lint
+    - name: Build 
+      run: npm run build
