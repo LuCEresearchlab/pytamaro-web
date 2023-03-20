@@ -1,5 +1,4 @@
 import Container from '@mui/material/Container';
-import { serialize } from 'next-mdx-remote/serialize';
 import { MDXRemote } from 'next-mdx-remote';
 // @ts-ignore
 import { YouTube } from 'mdx-embed/dist/components/youtube';
@@ -161,11 +160,7 @@ export async function getStaticProps(
   return {
     props: {
       title: (await variantInfo(slug, language)).title,
-      cells: await Promise.all((await getNotebookContent(slug, language, version)).map(
-        async (cell: NotebookCell) => (cell.cell_type === 'markdown'
-          ? { ...cell, mdxSource: await serialize(cell.source) }
-          : cell),
-      )),
+      cells: await getNotebookContent(slug, language, version),
       versions: await findVersions(slug, language),
       languages: await findLanguages(slug),
     },
