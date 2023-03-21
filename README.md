@@ -28,7 +28,7 @@ Each variant is described by an object containing:
 These pieces of information prescribe the name of the Jupyter notebook file
 for that variant (`slug-language-version.ipynb`).
 
-For how to write a notebook, go [here](notebook.md).
+There is a specific separate documentation [on how to write a notebook for an activity](docs/notebook.md).
 
 Small changes (such as fixing a typo, or improving the wording of a markdown cell in a notebook)
 should not be created in a new version.

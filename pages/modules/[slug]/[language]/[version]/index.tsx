@@ -104,6 +104,7 @@ export default function NotebookPage({
               const components = {
                 img: (props: any) => attachmentsImage(props, cell),
                 ReactPlayer: ResponsiveReactPlayer,
+                Stack,
               };
               return (
                 <MDXRemote
