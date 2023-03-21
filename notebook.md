@@ -8,4 +8,4 @@ Embed resources (such as images) as attachments.
 
 Special components that can be used:
 
-- [`<YouTube />`](https://www.mdx-embed.com/?path=/docs/components-youtube--usage)
+- `ReactPlayer` (see [usage](https://github.com/cookpete/react-player))

@@ -1,7 +1,5 @@
 import Container from '@mui/material/Container';
 import { MDXRemote } from 'next-mdx-remote';
-// @ts-ignore
-import { YouTube } from 'mdx-embed/dist/components/youtube';
 
 import { Box, Button, Stack } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
@@ -26,6 +24,7 @@ import ResetButton from '../../../../../components/ResetButton';
 import { notebookVersionUrl } from '../../../../../src/urlUtils';
 import VariantSelector from '../../../../../components/VariantsSelector';
 import downloadSourceCode from '../../../../../src/CodeDownload';
+import ResponsiveReactPlayer from '../../../../../components/ResponsiveReactPlayer';
 
 function attachmentsTransformer(src: string, cell: NotebookCell) {
   const attachmentPrefix = 'attachment:';
@@ -104,7 +103,7 @@ export default function NotebookPage({
             if (cell.cell_type === 'markdown') {
               const components = {
                 img: (props: any) => attachmentsImage(props, cell),
-                YouTube,
+                ReactPlayer: ResponsiveReactPlayer,
               };
               return (
                 <MDXRemote
