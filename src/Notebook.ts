@@ -42,7 +42,7 @@ export async function getNotebookContent(
       id: idx.toString(),
     };
     if (cell.cell_type === 'markdown') {
-      annotatedCell.mdxSource = await serialize(annotatedCell);
+      annotatedCell.mdxSource = await serialize(annotatedCell.source);
     }
     return annotatedCell;
   }));
