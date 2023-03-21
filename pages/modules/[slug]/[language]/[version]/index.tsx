@@ -1,5 +1,5 @@
-import ReactMarkdown, { uriTransformer } from 'react-markdown';
 import Container from '@mui/material/Container';
+import { MDXRemote } from 'next-mdx-remote';
 
 import { Box, Button, Stack } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
@@ -24,6 +24,7 @@ import ResetButton from '../../../../../components/ResetButton';
 import { notebookVersionUrl } from '../../../../../src/urlUtils';
 import VariantSelector from '../../../../../components/VariantsSelector';
 import downloadSourceCode from '../../../../../src/CodeDownload';
+import ResponsiveReactPlayer from '../../../../../components/ResponsiveReactPlayer';
 
 function attachmentsTransformer(src: string, cell: NotebookCell) {
   const attachmentPrefix = 'attachment:';
@@ -34,7 +35,20 @@ function attachmentsTransformer(src: string, cell: NotebookCell) {
     const data = attachment[mimeType];
     return `data:${mimeType};base64,${data}`;
   }
-  return uriTransformer(src);
+  return src;
+}
+
+function attachmentsImage(props: any, cell: NotebookCell) {
+  return (
+    <picture>
+      <img
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...props}
+        alt={props.alt}
+        src={attachmentsTransformer(props.src, cell)}
+      />
+    </picture>
+  );
 }
 
 export default function NotebookPage({
@@ -87,13 +101,18 @@ export default function NotebookPage({
               return (<Box key={cell.id} />);
             }
             if (cell.cell_type === 'markdown') {
+              const components = {
+                img: (props: any) => attachmentsImage(props, cell),
+                ReactPlayer: ResponsiveReactPlayer,
+                Stack,
+              };
               return (
-                <ReactMarkdown
+                <MDXRemote
+                  // eslint-disable-next-line react/jsx-props-no-spreading
+                  {...cell.mdxSource}
                   key={cell.id}
-                  transformImageUri={(src) => attachmentsTransformer(src, cell)}
-                >
-                  {cell.source}
-                </ReactMarkdown>
+                  components={components}
+                />
               );
             }
             const cellIdx = originalIdxToCodeCellIdx.get(idx) as number;

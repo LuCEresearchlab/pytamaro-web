@@ -28,14 +28,14 @@ Each variant is described by an object containing:
 These pieces of information prescribe the name of the Jupyter notebook file
 for that variant (`slug-language-version.ipynb`).
 
+There is a specific separate documentation [on how to write a notebook for an activity](docs/notebook.md).
+
 Small changes (such as fixing a typo, or improving the wording of a markdown cell in a notebook)
 should not be created in a new version.
 On the other hand, major changes, including all the ones that involve the addition/removal of cells
 should be created in a new version.
 
 Note that user edits are persisted in the browser's local storage only with respect to a specific version.
-
-When creating a notebook, embed resources (such as images) as attachments.
 
 Additionally, the object describing a module contains the following fields:
 - `previewImage`: an object containing the `filename` of a preview image and its `backgroundColor`, to be used in the gallery
