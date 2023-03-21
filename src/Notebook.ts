@@ -31,14 +31,19 @@ export async function getNotebookContent(
   slug: string,
   language: string,
   version: string,
-) {
+) : Promise<NotebookCell[]> {
   const notebookPath = path.join(MODULES_PATH, slug, `${slug}-${language}-${version}.ipynb`);
   const contentBuffer = await readFile(notebookPath);
   const content = JSON.parse(contentBuffer.toString());
-  return Promise.all(content.cells.map(async (cell: any, idx: number) => ({
-    ...cell,
-    source: cell.source.join(''),
-    mdxSource: cell.cell_type === 'markdown' ? await serialize(cell.source.join('')) : null,
-    id: idx.toString(),
-  })));
+  return Promise.all(content.cells.map(async (cell: any, idx: number) => {
+    const annotatedCell = {
+      ...cell,
+      source: cell.source.join(''),
+      id: idx.toString(),
+    };
+    if (cell.cell_type === 'markdown') {
+      annotatedCell.mdxSource = await serialize(annotatedCell);
+    }
+    return annotatedCell;
+  }));
 }
