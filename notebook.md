@@ -8,4 +8,4 @@ Embed resources (such as images) as attachments.
 
 Special components that can be used:
 
-- `ReactPlayer` (see [usage](https://github.com/cookpete/react-player))
+- `<ReactPlayer url='...' />` (see [more on usage](https://github.com/cookpete/react-player))
