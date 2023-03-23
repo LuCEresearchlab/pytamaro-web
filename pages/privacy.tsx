@@ -14,7 +14,7 @@ export default function PrivacyPolicy() {
         <title>Privacy Policy - PyTamaro Web</title>
       </Head>
       <Box>
-        <NavigationBar title="Terms of Service" />
+        <NavigationBar title="Privacy Policy" />
         <Container maxWidth="md">
           <Typography variant="h3" align="center" marginY={margin}>Privacy Policy</Typography>
           <Typography variant="h6" align="center" marginY={margin}>Last updated: March 23, 2023</Typography>
