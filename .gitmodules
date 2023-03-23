@@ -1,0 +1,3 @@
+[submodule "submodules/pytamaro-web-luce"]
+	path = submodules/pytamaro-web-luce
+	url = https://github.com/LuCEresearchlab/pytamaro-web-luce
