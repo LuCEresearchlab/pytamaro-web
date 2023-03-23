@@ -7,7 +7,7 @@ The web architecture is implemented using [Next.js](https://nextjs.org/),
 while the contents (i.e., the learning modules) are stored as [Jupyter notebooks](https://jupyter.org/).
 
 ### Learning modules
-Learning modules are stored each in one folder inside the `learning_modules` folder.
+Learning modules are stored each in one folder inside the `submodules/<author-repo>/activities` folder.
 The name of the folder should use hyphens and determines the _slug_ of the module,
 which uniquely identifies it.
 See the `swiss-flag` module for an example.
@@ -19,7 +19,7 @@ depending on:
 Our default mandatory variant is in _English_.
 
 All the meta-information about a learning module is specified in an `info.json` file.
-See `learning_modules/swiss-flag/info.json` for an example.
+See `submodules/pytamaro-web-luce/activities/swiss-flag/info.json` for an example.
 Each variant is described by an object containing:
 - the localized `title`,
 - the natural language `language` in the ISO 639-1 format,

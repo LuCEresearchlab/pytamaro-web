@@ -1,11 +1,11 @@
 import path from 'path';
 import { readdir, readFile } from 'fs/promises';
 
-export const MODULES_PATH = 'learning_modules';
+export const ACTIVITIES_PATH = 'submodules/pytamaro-web-luce/activities';
 const MODULE_INFO_FILE = 'info.json';
 
 async function getModuleInfo(slug: string) {
-  const content = await readFile(path.join(MODULES_PATH, slug, MODULE_INFO_FILE), 'utf-8');
+  const content = await readFile(path.join(ACTIVITIES_PATH, slug, MODULE_INFO_FILE), 'utf-8');
   return {
     slug,
     ...JSON.parse(content),
@@ -42,7 +42,7 @@ export interface LanguageWithLatestVersion {
 
 async function notebookFileNames(slug: string) {
   const suffix = '.ipynb';
-  const notebooks = (await readdir(path.join(MODULES_PATH, slug))).filter(
+  const notebooks = (await readdir(path.join(ACTIVITIES_PATH, slug))).filter(
     (file) => file.endsWith(suffix),
   );
   return notebooks.map((filename) => filename.replace(suffix, ''));
@@ -72,7 +72,7 @@ export async function findLanguages(slug: string)
 }
 
 export async function listModules() : Promise<Module[]> {
-  const slugs = (await readdir(MODULES_PATH, { withFileTypes: true }))
+  const slugs = (await readdir(ACTIVITIES_PATH, { withFileTypes: true }))
     .filter((item) => item.isDirectory())
     .map((dir) => dir.name);
 

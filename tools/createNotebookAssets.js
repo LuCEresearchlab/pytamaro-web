@@ -1,7 +1,7 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
-const SOURCE_NOTEBOOKS_DIR = "learning_modules";
+const SOURCE_NOTEBOOKS_DIR = "submodules/pytamaro-web-luce/activities";
 const INFO_FILE = "info.json";
 const ASSETS_PATH = path.join("public", "modules");
 
