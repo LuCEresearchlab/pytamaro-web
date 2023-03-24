@@ -17,7 +17,7 @@ export default function PrivacyPolicy() {
         <NavigationBar title="Privacy Policy" />
         <Container maxWidth="md">
           <Typography variant="h3" align="center" marginY={margin}>Privacy Policy</Typography>
-          <Typography variant="h6" align="center" marginY={margin}>Last updated: March 23, 2023</Typography>
+          <Typography variant="h6" align="center" marginY={margin}>Last updated: March 24, 2023</Typography>
           <Typography variant="body1" marginY={margin}>
             The privacy of your data is important to us.
             In this policy, we lay out:
@@ -99,11 +99,17 @@ export default function PrivacyPolicy() {
             Here’s what that means in practice:
           </Typography>
           <Typography variant="h5" marginY={margin}>
+            Advertising
+          </Typography>
+          <Typography variant="body1" marginY={margin}>
+            We do not use any third-party advertising services.
+          </Typography>
+          <Typography variant="h5" marginY={margin}>
             Personally Identifiable Information
           </Typography>
           <Typography variant="body1" marginY={margin}>
             We do not collect any personally-identifiable information.
-            PyTamaro web has no user accounts.
+            PyTamaro Web has no user accounts.
           </Typography>
           <Typography variant="h5" marginY={margin}>
             Voluntarily Provided Content (e.g., Source Code You Enter)
@@ -113,7 +119,8 @@ export default function PrivacyPolicy() {
             For this purpose you enter source code into the website,
             and you receive the output produced by that code.
             You also may provide other content,
-            e.g., by marking an activity you solved as completed.
+            e.g., by marking an activity you solved as completed,
+            or by requesting help about a specific PyTamaro API function.
           </Typography>
           <Typography variant="body1" marginY={margin}>
             The content you enter on our website gets stored in two places:
@@ -129,7 +136,7 @@ export default function PrivacyPolicy() {
               it is under your control.
               It may be stored on your local computer,
               or on some file server of your local network.
-              You can delete your local storate at any time,
+              You can delete your local storage at any time,
               but doing so means that your solutions of past activities will be lost.
               The PyTamaro web application running in your browser
               will read and write your local storage,
@@ -156,6 +163,29 @@ export default function PrivacyPolicy() {
             </li>
           </ul>
           <Typography variant="h5" marginY={margin}>
+            Cookies
+          </Typography>
+          <Typography variant="body1" marginY={margin}>
+            We do not use any third-party cookies.
+            {/*
+              Some activities may embed explanatory videos that are hosted on YouTube.
+              We use a YouTube embed plugin that minimizes the use of cookies.
+            */}
+          </Typography>
+          <Typography variant="body1" marginY={margin}>
+            If you approve our use of our own (first-party) cookies,
+            we store a randomly generated unique identifier (e.g., the number 123456789)
+            in your browser&apos;s local storage.
+            This identifier does not allow us to determine who you are;
+            and it does not allow us to determine where you are.
+            It only allows us to tell that multiple requests (e.g., to run source code)
+            came from the same browser (e.g., the browser storing the number 123456789).
+            We use this to determine which source code fragments came from the same browser,
+            which allows us to study learning trajectories taken through the activities.
+            (E.g., we can tell that two specific source code fragments
+            came from the browser storing the number 123456789.)
+          </Typography>
+          <Typography variant="h5" marginY={margin}>
             Website Interactions
           </Typography>
           <Typography variant="body1" marginY={margin}>
@@ -167,15 +197,11 @@ export default function PrivacyPolicy() {
             {' '}
             <Link href="https://plausible.io/data-policy">Plausible Analytics Data Policy</Link>
             .
-          </Typography>
-          <Typography variant="h5" marginY={margin}>
-            Advertising and Cookies
-          </Typography>
-          <Typography variant="body1" marginY={margin}>
-            We do not use any third-party advertising services.
-            Some activities may embed explanatory videos that are hosted on YouTube.
-            We use a YouTube embed plugin that does not use cookies.
-            <strong>(TODO: Luca, is that correct?)</strong>
+            {/*
+              You can see the analytics data we collect at
+              <Link href="https://plausible.pytamaro.si.usi.ch">our PyTamaro Plausible dashboard</Link>
+              .
+            */}
           </Typography>
           <Typography variant="h4" marginY={margin}>
             When we access or share your information
@@ -190,13 +216,15 @@ export default function PrivacyPolicy() {
               {' '}
               We are a research group studying how people learn to program.
               For this purpose, we study the code submitted for execution,
-              to compute statistics and
+              as well as trajectories taken through our activities.
+              We do this to compute statistics and
               to better understand the kind of mistakes and solutions produced.
               We will publish the findings of our studies,
               both as aggregate statistics,
               as well as concrete code fragements.
               For any code fragments we publish,
-              we will ensure that they do not contain personally identifiable information.
+              we will ensure that they do not inadvertently contain
+              personally identifiable information.
               We also may share the collected code fragments with other legitimate researchers,
               inside or outside Switzerland,
               who will bide by the same policy.
