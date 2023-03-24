@@ -1,8 +1,7 @@
 import {
   Box,
   Button,
-  ButtonGroup,
-  Container, FormControlLabel, Link, Paper, Stack, Switch, Typography,
+  Container, Link, Paper, Stack, Typography,
 } from '@mui/material';
 import Head from 'next/head';
 import NextLink from 'next/link';
