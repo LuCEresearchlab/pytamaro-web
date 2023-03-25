@@ -1,5 +1,5 @@
 import {
-  Typography, Container, Button, Paper, Box, Stack, Card, CardContent, CardActions,
+  Typography, Container, Button, Paper, Box, Stack, Card, CardContent, CardActions, useTheme,
 } from '@mui/material';
 import TypeIt from 'typeit-react';
 import { useEffect, useState } from 'react';
@@ -11,6 +11,8 @@ import InstallDesktop from '@mui/icons-material/InstallDesktop';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 export default function Home() {
+  const theme = useTheme();
+
   const [demoOutputVisible, setDemoOutputVisible] = useState(false);
 
   useEffect(() => {
@@ -106,7 +108,7 @@ export default function Home() {
                   bgcolor: '#222222', margin: 2, padding: 1, paddingBottom: 12, borderRadius: 4,
                 }}
               >
-                <Typography textAlign="left" fontFamily="Monaco" color="white" minHeight={90}>
+                <Typography textAlign="left" fontFamily={theme.pytamaro.monospaceFontFamily} color="white" minHeight={90}>
                   <TypeIt
                     options={{
                       strings: ['from pytamaro import *', 'target = rectangle(200, 100, red)', 'show_graphic(target)'],

@@ -89,6 +89,9 @@ export default function CodeCell({
               showPrintMargin={false}
               showGutter={false}
               highlightActiveLine={false}
+              setOptions={{
+                fontFamily: theme.pytamaro.monospaceFontFamily,
+              }}
             />
           </CardContent>
           <CardActions disableSpacing sx={{ padding: 2, display: 'flex' }}>

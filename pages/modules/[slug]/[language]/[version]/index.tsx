@@ -25,6 +25,7 @@ import { notebookVersionUrl } from '../../../../../src/urlUtils';
 import VariantSelector from '../../../../../components/VariantsSelector';
 import downloadSourceCode from '../../../../../src/CodeDownload';
 import ResponsiveReactPlayer from '../../../../../components/ResponsiveReactPlayer';
+import PyTamaroAPI from '../../../../../components/PyTamaroAPI';
 
 function attachmentsTransformer(src: string, cell: NotebookCell) {
   const attachmentPrefix = 'attachment:';
@@ -105,6 +106,7 @@ export default function NotebookPage({
                 img: (props: any) => attachmentsImage(props, cell),
                 ReactPlayer: ResponsiveReactPlayer,
                 Stack,
+                API: PyTamaroAPI,
               };
               return (
                 <MDXRemote
