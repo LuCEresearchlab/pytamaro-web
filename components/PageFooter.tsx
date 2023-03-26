@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import NextLink from 'next/link';
 import { Container, Link, Typography } from '@mui/material';
 import PyTamaroLogo from '../public/PyTamaroLogo.png';
 
@@ -24,6 +25,9 @@ export default function PageFooter() {
         <Link href="https://si.usi.ch/">Software Institute</Link>
         &nbsp;of&nbsp;
         <Link href="https://www.usi.ch/">USI</Link>
+      </Typography>
+      <Typography variant="body2" align="center" color="grey" sx={{ mt: '1rem' }}>
+        <Link component={NextLink} href="privacy">Privacy Policy</Link>
       </Typography>
     </Container>
   );
