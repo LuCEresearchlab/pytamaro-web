@@ -105,10 +105,15 @@ export default function Home() {
               <Paper
                 elevation={3}
                 sx={{
-                  bgcolor: '#222222', margin: 2, padding: 1, paddingBottom: 12, borderRadius: 4,
+                  bgcolor: '#222222',
+                  margin: 2,
+                  padding: 1,
+                  paddingBottom: 12,
+                  borderRadius: 4,
+                  minHeight: '10vw',
                 }}
               >
-                <Typography textAlign="left" fontFamily={theme.pytamaro.monospaceFontFamily} color="white" minHeight={90}>
+                <Typography textAlign="left" fontFamily={theme.pytamaro.monospaceFontFamily} color="white">
                   <TypeIt
                     options={{
                       strings: ['from pytamaro import *', 'target = rectangle(200, 100, red)', 'show_graphic(target)'],
@@ -121,8 +126,8 @@ export default function Home() {
                   />
                 </Typography>
                 <Box
-                  marginTop={1}
-                  marginLeft={4}
+                  marginTop={2}
+                  marginLeft={2}
                   sx={{
                     float: 'left', width: '10vw', height: '5vw', border: 'none', backgroundColor: 'red', visibility: demoOutputVisible ? 'visible' : 'hidden',
                   }}
