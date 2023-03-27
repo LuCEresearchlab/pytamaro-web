@@ -12,7 +12,7 @@ export default function TermsOfService() {
         <title>Terms of Service - PyTamaro Web</title>
       </Head>
       <Box>
-        <NavigationBar title="Terms of Service" />
+        <NavigationBar />
         <Container maxWidth="md">
           <Typography variant="h3" align="center" marginY={3}>Terms of Service</Typography>
           <Typography variant="h6">

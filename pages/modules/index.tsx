@@ -87,9 +87,20 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
   });
   return (
     <Stack spacing={2}>
-      <NavigationBar title="All Learning Modules" />
+      <NavigationBar>
+        <ToggleButton
+          color="neutral"
+          value="compact"
+          selected={compactView}
+          onChange={() => {
+            setCompactView(!compactView);
+          }}
+        >
+          <ViewCompactIcon />
+        </ToggleButton>
+      </NavigationBar>
       <Grid container spacing={2}>
-        <Grid xs={8}>
+        <Grid xs={9}>
           <TextField
             fullWidth
             label="Search by title and description"
@@ -113,18 +124,6 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
               ))}
             </Select>
           </FormControl>
-        </Grid>
-        <Grid xs={1} display="flex" justifyContent="center" alignItems="center">
-          <ToggleButton
-            color="primary"
-            value="compact"
-            selected={compactView}
-            onChange={() => {
-              setCompactView(!compactView);
-            }}
-          >
-            <ViewCompactIcon />
-          </ToggleButton>
         </Grid>
       </Grid>
       <Grid container spacing={2}>

@@ -15,6 +15,26 @@ declare module '@mui/material/styles' {
       redColor?: string,
     };
   }
+
+  interface Palette {
+    neutral: Palette['primary'];
+  }
+
+  // allow configuration using `createTheme`
+  interface PaletteOptions {
+    neutral?: PaletteOptions['primary'];
+  }
+}
+
+declare module '@mui/material/CircularProgress' {
+  interface CircularProgressPropsColorOverrides {
+    neutral: true;
+  }
+}
+declare module '@mui/material/ToggleButton' {
+  interface ToggleButtonPropsColorOverrides {
+    neutral: true;
+  }
 }
 
 // Create a theme instance.
@@ -28,6 +48,9 @@ const theme = createTheme({
     },
     error: {
       main: red.A400,
+    },
+    neutral: {
+      main: '#fff',
     },
   },
   pytamaro: {

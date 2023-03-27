@@ -87,16 +87,18 @@ export default function NotebookPage({
       </Head>
 
       <Box>
-        <NavigationBar title={title} />
+        <NavigationBar>
+          <VariantSelector
+            slug={slug}
+            language={language}
+            version={version}
+            versions={versions}
+            languages={languages}
+          />
+        </NavigationBar>
         <ResetButton visible={cellsModified} onReset={handleResetState} />
-        <VariantSelector
-          slug={slug}
-          language={language}
-          version={version}
-          versions={versions}
-          languages={languages}
-        />
         <Container>
+          <h1>{title}</h1>
           {cells.map((cell: NotebookCell, idx) => {
             if (userType === 'student' && cell.source.trimStart().startsWith(TEACHER_ONLY_CELL_PREFIX)) {
               return (<Box key={cell.id} />);

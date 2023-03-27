@@ -156,7 +156,9 @@ export default function SummerAcademy() {
         <title>PyTamaro Summer Academy</title>
       </Head>
       <Box>
-        <NavigationBar title="PyTamaro Summer Academy" />
+        <NavigationBar>
+          <Typography variant="h6">PyTamaro Summer Academy</Typography>
+        </NavigationBar>
         <div
           style={{
             display: 'flex',
