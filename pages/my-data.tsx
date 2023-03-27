@@ -14,7 +14,7 @@ export default function MyData() {
         <title>My Data - PyTamaro</title>
       </Head>
       <Box>
-        <NavigationBar title="My Data" />
+        <NavigationBar />
         <Container maxWidth="md">
           <Typography variant="h3" align="center" marginY={3}>My Data</Typography>
           <Typography variant="body1" marginY={3}>

@@ -27,7 +27,7 @@ export default function Playground() {
         <title>Playground - PyTamaro</title>
       </Head>
       <Box>
-        <NavigationBar title="Playground" />
+        <NavigationBar />
         <ResetButton visible={cellsModified} onReset={handleResetState} />
         <Container maxWidth="lg">
           <Typography variant="h2" align="center" marginY={3}>Playground</Typography>

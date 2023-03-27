@@ -27,7 +27,9 @@ export default function PageFooter() {
         <Link href="https://www.usi.ch/">USI</Link>
       </Typography>
       <Typography variant="body2" align="center" color="grey" sx={{ mt: '1rem' }}>
-        <Link component={NextLink} href="privacy">Privacy Policy</Link>
+        <Link component={NextLink} href="/privacy">Privacy Policy</Link>
+        {' • '}
+        {`Platform Version ${process.env.PLATFORM_VERSION}`}
       </Typography>
     </Container>
   );

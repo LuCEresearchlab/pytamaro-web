@@ -1,4 +1,4 @@
-import Box from '@mui/material/Box';
+import { Stack } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -20,11 +20,14 @@ export default function VariantSelector({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedVersion, selectedLanguage]);
   return (
-    <Box>
+    <Stack
+      direction="row"
+      alignItems="center"
+      spacing={2}
+    >
+      {(version !== selectedVersion || language !== selectedLanguage) && <CircularProgress color="neutral" size="2rem" />}
       <Select
-        sx={{
-          ml: 2, mt: 2, position: 'fixed', minWidth: 70,
-        }}
+        sx={{ color: 'white' }}
         value={selectedLanguage}
         label="Language"
         size="small"
@@ -46,11 +49,8 @@ export default function VariantSelector({
           </MenuItem>
         ))}
       </Select>
-      {language === selectedLanguage && (
       <Select
-        sx={{
-          ml: 2, mt: 8, position: 'fixed', minWidth: 70,
-        }}
+        sx={{ color: 'white' }}
         size="small"
         value={selectedVersion}
         label="Version"
@@ -58,11 +58,10 @@ export default function VariantSelector({
           const newVersion = selected.target.value as string;
           setSelectedVersion(newVersion);
         }}
+        disabled={language !== selectedLanguage}
       >
         {versions.map((v) => <MenuItem key={v} value={v}>{v}</MenuItem>)}
       </Select>
-      )}
-      {(version !== selectedVersion || language !== selectedLanguage) && <CircularProgress sx={{ ml: 12, mt: 3, position: 'fixed' }} />}
-    </Box>
+    </Stack>
   );
 }

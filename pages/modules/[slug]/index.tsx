@@ -34,7 +34,7 @@ export default function InfoPage({ uses, module }: {
       </Head>
 
       <Box>
-        <NavigationBar title={title} />
+        <NavigationBar />
         <Container>
           <Typography variant="h2" marginY={3}>{title}</Typography>
           <div style={{

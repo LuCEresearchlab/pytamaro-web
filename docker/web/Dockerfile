@@ -25,9 +25,8 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# RUN yarn build
-
-# If using npm comment out above and use below instead
+# `git` is required to build (to find out the current version's commit hash)
+RUN apk --no-cache add git
 RUN npm run build
 
 # Production image, copy all the files and run next

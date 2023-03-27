@@ -84,7 +84,7 @@ export default function CodeCell({
               value={codeCellState.source}
               onChange={onSourceChanged}
               maxLines={Infinity}
-              fontSize={theme.typography.fontSize}
+              fontSize="1rem"
               width="100%"
               showPrintMargin={false}
               showGutter={false}

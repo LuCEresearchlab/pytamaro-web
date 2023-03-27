@@ -1,5 +1,5 @@
 import {
-  AppBar, Box, Button, Toolbar, Typography,
+  AppBar, Button, Divider, Stack, Toolbar,
 } from '@mui/material';
 
 const navItems = [
@@ -8,34 +8,35 @@ const navItems = [
     url: '/',
   },
   {
-    name: 'Learning Modules',
+    name: 'Activities',
     url: '/modules',
+  },
+  {
+    name: 'Docs',
+    url: 'https://pytamaro.readthedocs.org',
   },
 ];
 
-export default function NavigationBar(props: { title: string }) {
-  const { title } = props;
+// eslint-disable-next-line react/require-default-props
+export default function NavigationBar(props: { children?: React.ReactNode }) {
+  const { children } = props;
   return (
-    <Box>
-      <AppBar component="nav">
-        <Toolbar>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
-          >
-            {title}
-          </Typography>
-          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-            {navItems.map((item) => (
-              <Button key={item.url} href={item.url} sx={{ color: '#fff' }}>
-                {item.name}
-              </Button>
-            ))}
-          </Box>
-        </Toolbar>
-      </AppBar>
-      <Toolbar />
-    </Box>
+    <AppBar position="sticky">
+      <Toolbar>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{ flexGrow: 1 }}
+          divider={<Divider light orientation="vertical" flexItem />}
+        >
+          {navItems.map((item) => (
+            <Button key={item.url} href={item.url} sx={{ color: '#fff' }}>
+              {item.name}
+            </Button>
+          ))}
+        </Stack>
+        {children}
+      </Toolbar>
+    </AppBar>
   );
 }

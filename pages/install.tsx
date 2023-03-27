@@ -12,7 +12,7 @@ export default function Install() {
         <title>Installation Guide - PyTamaro</title>
       </Head>
       <Box>
-        <NavigationBar title="Installation Guide" />
+        <NavigationBar />
         <Container maxWidth="md">
           <Typography variant="h3" align="center" marginY={3}>How to Install PyTamaro</Typography>
           <Typography variant="h6">
