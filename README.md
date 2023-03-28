@@ -4,22 +4,22 @@ This repository contains the achitecture and the materials for the PyTamaro curr
 
 ### Executive Summary
 The web architecture is implemented using [Next.js](https://nextjs.org/),
-while the contents (i.e., the learning modules) are stored as [Jupyter notebooks](https://jupyter.org/).
+while the contents (i.e., the activities) are stored as [Jupyter notebooks](https://jupyter.org/).
 
-### Learning modules
-Learning modules are stored each in one folder inside the `submodules/<author-repo>/activities` folder.
+### Activities
+Activities are stored each in one folder inside the `data/<author-repo>/activities` folder.
 The name of the folder should use hyphens and determines the _slug_ of the module,
 which uniquely identifies it.
 See the `swiss-flag` module for an example.
 
-Each learning module can exists in several variants,
+Each activity can exists in several variants,
 depending on:
 - the _natural language_ (e.g, English, Italian or German).
 
 Our default mandatory variant is in _English_.
 
-All the meta-information about a learning module is specified in an `info.json` file.
-See `submodules/pytamaro-web-luce/activities/swiss-flag/info.json` for an example.
+All the meta-information about an activity is specified in an `info.json` file.
+See `data/pytamaro-web-luce/activities/swiss-flag/info.json` for an example.
 Each variant is described by an object containing:
 - the localized `title`,
 - the natural language `language` in the ISO 639-1 format,

@@ -1,7 +1,7 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
-const SOURCE_NOTEBOOKS_DIR = "submodules/pytamaro-web-luce/activities";
+const SOURCE_NOTEBOOKS_DIR = "data/pytamaro-web-luce/activities";
 const INFO_FILE = "info.json";
 const ASSETS_PATH = path.join("public", "modules");
 
@@ -28,12 +28,12 @@ async function main() {
     // Clean up the generated directories and create new ones
     await deleteAndRecreateDirectory(ASSETS_PATH);
 
-    // List all learning modules
+    // List all activities
     const slugs = (await fs.readdir(SOURCE_NOTEBOOKS_DIR, { withFileTypes: true }))
         .filter(item => item.isDirectory())
         .map(item => item.name);
 
-    // For each learning module, copy the referenced assets into the public folder
+    // For each activity, copy the referenced assets into the public folder
     slugs.forEach(async slug => {
         const infoFileContent = JSON.parse(await fs.readFile(path.join(SOURCE_NOTEBOOKS_DIR, slug, INFO_FILE)));
 
