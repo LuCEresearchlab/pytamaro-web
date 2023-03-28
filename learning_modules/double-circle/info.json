@@ -1,0 +1,24 @@
+{
+  "variants": [
+    {
+      "title": "Double Circle",
+      "language": "en",
+      "description": "ellipse, rectangle, beside, above, overlay",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "double-circle.svg",
+    "backgroundColor": "#ffc21e"
+  },
+  "visibility": "visible",
+  "uses": [
+    {
+      "institution": "USI",
+      "course": "PF2 2023",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 7, Task ?",
+      "url": "https://www.icorsi.ch/mod/resource/view.php?id=900378"
+    }
+  ]
+}
