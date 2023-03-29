@@ -25,7 +25,7 @@ import { notebookVersionUrl } from '../../../../../src/urlUtils';
 import VariantSelector from '../../../../../components/VariantsSelector';
 import downloadSourceCode from '../../../../../src/CodeDownload';
 import ResponsiveReactPlayer from '../../../../../components/ResponsiveReactPlayer';
-import PyTamaroAPI from '../../../../../components/PyTamaroAPI';
+import PyTamaroAPI from '../../../../../components/PyTamaroAPIDocs/PyTamaroAPI';
 
 function attachmentsTransformer(src: string, cell: NotebookCell) {
   const attachmentPrefix = 'attachment:';
