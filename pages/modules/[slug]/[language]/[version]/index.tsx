@@ -52,6 +52,12 @@ function attachmentsImage(props: any, cell: NotebookCell) {
   );
 }
 
+function PyTamaroAPIWithLanguage(name: string, lang: string) {
+  return (
+    <PyTamaroAPI name={name} lang={lang} />
+  );
+}
+
 export default function NotebookPage({
   title, cells, versions, languages,
 }:
@@ -108,7 +114,7 @@ export default function NotebookPage({
                 img: (props: any) => attachmentsImage(props, cell),
                 ReactPlayer: ResponsiveReactPlayer,
                 Stack,
-                API: PyTamaroAPI,
+                API: ({ name }: { name: string }) => PyTamaroAPIWithLanguage(name, language),
               };
               return (
                 <MDXRemote
