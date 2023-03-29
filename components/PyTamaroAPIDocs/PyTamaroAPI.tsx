@@ -8,11 +8,12 @@ import axios from 'axios';
 import { useState } from 'react';
 import names from './names';
 
-export default function PyTamaroAPI({ name } : { name: string }) {
+export default function PyTamaroAPI({ name, lang } : { name: string, lang: string }) {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const nameInfo = (names as any)[name];
+  const nameWithLang = `${lang}.${name}`;
+  const nameInfo = (names as any)[nameWithLang];
 
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -25,7 +26,7 @@ export default function PyTamaroAPI({ name } : { name: string }) {
   const open = Boolean(anchorEl);
 
   const { isLoading, error, data } = useQuery({
-    queryKey: [`docs-${name}`],
+    queryKey: [`docs-${nameWithLang}`],
     queryFn: () => axios.get(`https://readthedocs.org/api/v3/embed/?${new URLSearchParams({
       url: `https://pytamaro.readthedocs.io/en/stable/${nameInfo.url}.html`,
     })}`)
