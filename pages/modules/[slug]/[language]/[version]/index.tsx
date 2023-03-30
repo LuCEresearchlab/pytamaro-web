@@ -114,7 +114,9 @@ export default function NotebookPage({
                 img: (props: any) => attachmentsImage(props, cell),
                 ReactPlayer: ResponsiveReactPlayer,
                 Stack,
-                API: ({ name }: { name: string }) => PyTamaroAPIWithLanguage(name, language),
+                API: ({ children: name }: { children: string }) => (
+                  PyTamaroAPIWithLanguage(name, language)
+                ),
               };
               return (
                 <MDXRemote
