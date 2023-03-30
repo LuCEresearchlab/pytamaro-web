@@ -8,7 +8,7 @@ from pytamaro import (
 
 
 PETAL_COLOR = rgb_color(255, 159, 208)
-CENTER_COLOR = rgb_color(255, 246, 159)
+PISTIL_COLOR = rgb_color(255, 246, 159)
 
 
 def circle(diameter: float, color: Color) -> Graphic:
@@ -18,7 +18,7 @@ def circle(diameter: float, color: Color) -> Graphic:
 def four_petal_flower(size: float) -> Graphic:
     assert size >= 0
     petal = circle(size, PETAL_COLOR)
-    pistil = circle(size, CENTER_COLOR)
+    pistil = circle(size, PISTIL_COLOR)
     vertical_petals = above(petal, petal)
     return overlay(
         pistil,

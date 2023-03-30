@@ -1,15 +1,9 @@
 from pytamaro import(
-    Graphic,
-    Color,
-    circular_sector,
-    rectangle,
-    pin,
-    bottom_right,
-    bottom_left,
-    top_left,
-    compose,
-    rotate,
+    Graphic, Color,
     rgb_color,
+    circular_sector, rectangle,
+    pin, compose, rotate,
+    bottom_right, bottom_left, top_left,
     show_graphic
 )
 

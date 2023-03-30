@@ -1,11 +1,5 @@
 from functools import reduce
-from pytamaro import(
-    Graphic, Color,
-    hsv_color,
-    rectangle,
-    beside,
-    show_graphic, save_graphic
-)
+from pytamaro import Graphic, Color, hsv_color, rectangle, beside, show_graphic, save_graphic
 
 
 def hue_to_tile(width: float, height: float, hue: float) -> Graphic:
@@ -17,7 +11,7 @@ def hues_to_tiles(tile_width: float, tile_height: float, hues: list[float]) -> l
     return list(map(lambda x: hue_to_tile(tile_width, tile_height, x), hues))
 
 def hue_bar(tile_width: float, tile_height: float) -> Graphic:
-    tiles = hues_to_tiles(tile_width, tile_height, [x for x in range(0, 360)])
+    tiles = hues_to_tiles(tile_width, tile_height, [x for x in range(360)])
     return reduce((lambda x, y: beside(x, y)), tiles)
 
 

@@ -7,6 +7,9 @@
       "latestVersion": "v2"
     }
   ],
+  "usesComposePin": true,
+  "usesRepetition": false,
+  "onlyConstantColors": false,
   "previewImage": {
     "filename": "heart.svg",
     "backgroundColor": "#ffffff"

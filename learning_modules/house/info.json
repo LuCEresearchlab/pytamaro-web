@@ -7,6 +7,9 @@
       "latestVersion": "v2"
     }
   ],
+  "usesComposePin": false,
+  "usesRepetition": false,
+  "onlyConstantColors": true,
   "previewImage": {
     "filename": "house.svg",
     "backgroundColor": "#eeeeee"

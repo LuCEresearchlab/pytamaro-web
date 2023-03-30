@@ -4,9 +4,12 @@
       "title": "Chessboard",
       "language": "en",
       "description": "rectangle, triangle, circular_sector, rotate",
-      "latestVersion": "v1"
+      "latestVersion": "v2"
     }
   ],
+  "usesComposePin": false,
+  "usesRepetition": true,
+  "onlyConstantColors": false,
   "previewImage": {
     "filename": "chessboard.svg",
     "backgroundColor": "#503a2f"

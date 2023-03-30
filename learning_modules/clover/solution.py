@@ -1,21 +1,10 @@
 from pytamaro import (
-    Graphic,
-    Color,
-    rgb_color,
-    circular_sector,
-    rectangle,
-    pin,
-    bottom_left,
-    bottom_center, 
-    bottom_right,
-    top_left,
-    top_center,
-    compose,
-    rotate,
-    beside,
-    show_graphic,
-    save_graphic,
-    transparent,
+    Graphic, Color,
+    rgb_color, transparent,
+    circular_sector, rectangle, empty_graphic,
+    pin, compose, rotate, beside,
+    bottom_left, bottom_center, bottom_right, top_left, top_center,
+    show_graphic, save_graphic
 )
 
 
@@ -41,44 +30,14 @@ def stem(size: float) -> Graphic:
     assert size >= 0
     return pin(top_center, rectangle(size / 4, size * 4, LEAF_COLOR))
 
-def three_leaf_clover(leaf_radius: float) -> Graphic:
-    assert leaf_radius >= 0
-    leaf1 = leaf(leaf_radius)
-    leaf2 = rotate(120, leaf1)
-    leaf3 = rotate(-120, leaf1)
-    return compose(
-        stem(leaf_radius),
-        compose(
-            leaf1, compose(leaf2, leaf3)
-        )
-    )
-
-def four_leaf_clover(leaf_radius: float) -> Graphic:
-    assert leaf_radius >= 0
-    leaf1 = leaf(leaf_radius)
-    leaf2 = rotate(90, leaf1)
-    leaf3 = rotate(180, leaf1)
-    leaf4 = rotate(270, leaf1)
-    return compose(
-        stem(leaf_radius),
-        rotate(
-            45,
-            compose(
-                leaf1,
-                compose(
-                    leaf2,
-                    compose(
-                        leaf3,
-                        leaf4
-                    )
-                )
-            )
-        )
-    )
 
 def clover(leaf_radius: float, four_leaves: bool) -> Graphic:
-    assert leaf_radius >= 0
-    return four_leaf_clover(leaf_radius) if four_leaves else three_leaf_clover(leaf_radius)
+    leaf_num = 4 if four_leaves else 3
+    rotation_angle = 360 / leaf_num
+    result = empty_graphic()
+    for i in range(leaf_num):
+        result = compose(result, rotate(rotation_angle * i, pin(bottom_center, leaf(leaf_radius))))
+    return compose(pin(top_center, stem(leaf_radius)), result)
 
 
 # code to show result

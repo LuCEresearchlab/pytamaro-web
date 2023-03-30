@@ -7,6 +7,9 @@
       "latestVersion": "v1"
     }
   ],
+  "usesComposePin": false,
+  "usesRepetition": false,
+  "onlyConstantColors": true,
   "previewImage": {
     "filename": "double-black-diamond.svg",
     "backgroundColor": "#ffffff"

@@ -4,9 +4,12 @@
       "title": "Base Colors",
       "language": "en",
       "description": "ellipse, rectangle, beside",
-      "latestVersion": "v1"
+      "latestVersion": "v2"
     }
   ],
+  "usesComposePin": false,
+  "usesRepetition": false,
+  "onlyConstantColors": true,
   "previewImage": {
     "filename": "base-colors.svg",
     "backgroundColor": "#ffffff"

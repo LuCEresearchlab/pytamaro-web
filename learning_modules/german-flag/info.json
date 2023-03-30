@@ -7,6 +7,9 @@
       "latestVersion": "v1"
     }
   ],
+  "usesComposePin": false,
+  "usesRepetition": false,
+  "onlyConstantColors": false,
   "previewImage": {
     "filename": "flag.png",
     "backgroundColor": "#ffffff"

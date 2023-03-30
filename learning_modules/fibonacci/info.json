@@ -4,9 +4,12 @@
       "title": "Fibonacci",
       "language": "en",
       "description": "recursion, pin, compose",
-      "latestVersion": "v1"
+      "latestVersion": "v2"
     }
   ],
+  "usesComposePin": true,
+  "usesRepetition": true,
+  "onlyConstantColors": true,
   "previewImage": {
     "filename": "fibonacci.svg",
     "backgroundColor": "#ffffff"

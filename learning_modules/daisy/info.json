@@ -7,6 +7,9 @@
       "latestVersion": "v2"
     }
   ],
+  "usesComposePin": true,
+  "usesRepetition": true,
+  "onlyConstantColors": false,
   "previewImage": {
     "filename": "daisy.svg",
     "backgroundColor": "#69a84f"

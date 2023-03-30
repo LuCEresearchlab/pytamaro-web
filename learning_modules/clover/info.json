@@ -7,6 +7,9 @@
       "latestVersion": "v1"
     }
   ],
+  "usesComposePin": true,
+  "usesRepetition": false,
+  "onlyConstantColors": false,
   "previewImage": {
     "filename": "clover.svg",
     "backgroundColor": "#70a95a"

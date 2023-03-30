@@ -1,21 +1,11 @@
 from pytamaro import (
-    Graphic,
-    Color,
-    rectangle,
-    circular_sector,
-    above,
-    beside,
-    empty_graphic,
-    hsv_color,
-    rotate,
-    pin,
-    compose,
-    bottom_left,
-    graphic_width,
-    graphic_height,
-    black,
-    show_graphic,
-    save_graphic
+    Graphic, Color,
+    hsv_color, black,
+    rectangle, circular_sector, empty_graphic,
+    above, beside, rotate,
+    pin, compose, bottom_left,
+    graphic_width, graphic_height,
+    show_graphic, save_graphic
 )
 
 

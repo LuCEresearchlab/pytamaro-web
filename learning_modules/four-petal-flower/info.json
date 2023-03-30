@@ -7,6 +7,9 @@
         "latestVersion": "v2"
       }
     ],
+    "usesComposePin": false,
+    "usesRepetition": false,
+    "onlyConstantColors": false,
     "previewImage": {
       "filename": "four-petal-flower.svg",
       "backgroundColor": "#70a95a"

@@ -1,12 +1,7 @@
 from pytamaro import (
-    Graphic, 
-    Color,
-    triangle,
-    rotate, 
-    black, 
-    beside, 
-    above, 
-    text, 
+    Graphic, Color,
+    triangle, text, black, 
+    rotate, beside, above, 
     show_graphic
 )
 

@@ -1,17 +1,8 @@
 from pytamaro import (
-    Graphic, 
-    Color, 
-    ellipse,
-    beside, 
-    above, 
-    red, 
-    green,
-    blue, 
-    cyan, 
-    magenta,
-    yellow, 
-    rectangle,
-    transparent,
+    Graphic, Color, 
+    red, green, blue, cyan, magenta, yellow, transparent,
+    ellipse, rectangle,
+    beside, above,
     show_graphic
 )
 

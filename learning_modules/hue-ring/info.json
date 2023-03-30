@@ -7,6 +7,9 @@
         "latestVersion": "v1"
       }
     ],
+    "usesComposePin": true,
+    "usesRepetition": true,
+    "onlyConstantColors": false,
     "previewImage": {
       "filename": "hue-ring.svg",
       "backgroundColor": "#ffffff"

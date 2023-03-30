@@ -7,6 +7,9 @@
       "latestVersion": "v2"
     }
   ],
+  "usesComposePin": false,
+  "usesRepetition": false,
+  "onlyConstantColors": false,
   "previewImage": {
     "filename": "french-flag.svg",
     "backgroundColor": "#eeeeee"
