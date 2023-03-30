@@ -4,11 +4,11 @@
       "title": "Margritli",
       "language": "de",
       "description": "fixiere, drehe, kombiniere",
-      "latestVersion": "v1"
+      "latestVersion": "v2"
     }
   ],
   "previewImage": {
-    "filename": "daisy.png",
+    "filename": "daisy.svg",
     "backgroundColor": "#69a84f"
   },
   "visibility": "featured",
