@@ -6,9 +6,11 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import { ConfirmProvider } from 'material-ui-confirm';
 import PlausibleProvider from 'next-plausible';
 import Box from '@mui/material/Box';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
 import '../style/styles.css';
+import '../style/rtd.css';
 import PageFooter from '../components/PageFooter';
 
 // Fonts
@@ -28,6 +30,7 @@ interface MyAppProps extends AppProps {
 
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+  const queryClient = new QueryClient();
   return (
     <CacheProvider value={emotionCache}>
       <Head>
@@ -47,10 +50,12 @@ export default function MyApp(props: MyAppProps) {
               display: 'flex', flexDirection: 'column', minHeight: '100vh', justifyContent: 'flex-start',
             }}
             >
-              <Component // eslint-disable-next-line react/jsx-props-no-spreading
-                {...pageProps}
-              />
-              <PageFooter />
+              <QueryClientProvider client={queryClient}>
+                <Component // eslint-disable-next-line react/jsx-props-no-spreading
+                  {...pageProps}
+                />
+                <PageFooter />
+              </QueryClientProvider>
             </Box>
           </ConfirmProvider>
         </PlausibleProvider>

@@ -25,7 +25,7 @@ import { notebookVersionUrl } from '../../../../../src/urlUtils';
 import VariantSelector from '../../../../../components/VariantsSelector';
 import downloadSourceCode from '../../../../../src/CodeDownload';
 import ResponsiveReactPlayer from '../../../../../components/ResponsiveReactPlayer';
-import PyTamaroAPI from '../../../../../components/PyTamaroAPI';
+import PyTamaroAPI from '../../../../../components/PyTamaroAPIDocs/PyTamaroAPI';
 
 function attachmentsTransformer(src: string, cell: NotebookCell) {
   const attachmentPrefix = 'attachment:';
@@ -49,6 +49,12 @@ function attachmentsImage(props: any, cell: NotebookCell) {
         src={attachmentsTransformer(props.src, cell)}
       />
     </picture>
+  );
+}
+
+function PyTamaroAPIWithLanguage(name: string, lang: string) {
+  return (
+    <PyTamaroAPI name={name} lang={lang} />
   );
 }
 
@@ -108,7 +114,9 @@ export default function NotebookPage({
                 img: (props: any) => attachmentsImage(props, cell),
                 ReactPlayer: ResponsiveReactPlayer,
                 Stack,
-                API: PyTamaroAPI,
+                API: ({ children: name }: { children: string }) => (
+                  PyTamaroAPIWithLanguage(name, language)
+                ),
               };
               return (
                 <MDXRemote
