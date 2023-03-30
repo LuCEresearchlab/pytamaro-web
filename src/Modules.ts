@@ -1,7 +1,7 @@
 import path from 'path';
 import { readdir, readFile } from 'fs/promises';
 
-export const ACTIVITIES_PATH = 'data/pytamaro-web-luce/activities';
+export const ACTIVITIES_PATH = 'data/luce/activities';
 const MODULE_INFO_FILE = 'info.json';
 
 async function getModuleInfo(slug: string) {
