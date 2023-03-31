@@ -2,6 +2,7 @@ import produce from 'immer';
 import { useConfirm } from 'material-ui-confirm';
 import { useEffect, useState } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
+import logEvent, { EventName } from './AnalyticsEvent';
 
 import { executeCode } from './CodeExecution';
 
@@ -99,9 +100,7 @@ ${currentCellSource}`;
     for (let i = 0; i <= idx; i += 1) {
       handleExecuteSingleCell(i);
     }
-    // Log for analytics (`plausible` is added globally by `plausible-next`)
-    // @ts-ignore
-    plausible('CodeExecution', { props: { module: moduleVariantId, cellidx: idx } });
+    logEvent(EventName.CodeExecution, { module: moduleVariantId });
   };
 
   const handleToggleOutputArea = (idx: number) => {

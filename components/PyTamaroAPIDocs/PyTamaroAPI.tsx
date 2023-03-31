@@ -6,21 +6,30 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useState } from 'react';
+import logEvent, { EventName } from '../../src/AnalyticsEvent';
 import names from './names';
 
 export default function PyTamaroAPI({ name, lang } : { name: string, lang: string }) {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [timeoutId, setTimeoutId] = useState<ReturnType<typeof setTimeout>>();
 
   const nameWithLang = `${lang}.${name}`;
   const nameInfo = (names as any)[nameWithLang];
 
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
+    // When the popover is open for at least 2 seconds, track the event.
+    setTimeoutId(setTimeout(() => {
+      logEvent(EventName.APIDocsPopover, { name: nameWithLang });
+    }, 2000));
   };
 
   const handlePopoverClose = () => {
     setAnchorEl(null);
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
   };
 
   const open = Boolean(anchorEl);
