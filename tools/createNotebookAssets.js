@@ -3,7 +3,7 @@ const path = require("node:path");
 
 const DATA_DIR = "data";
 const INFO_FILE = "info.json";
-const ASSETS_PATH = path.join("public", "data");
+const ASSETS_PATH = path.join("public", "activities");
 const ACTIVITIES_DIR = "activities";
 
 async function deleteAndRecreateDirectory(directory) {

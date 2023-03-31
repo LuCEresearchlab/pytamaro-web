@@ -34,5 +34,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# generated assets from modules
-public/data
+# generated assets from activities
+public/*/
