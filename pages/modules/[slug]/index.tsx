@@ -11,20 +11,20 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
-  Module,
+  Activity,
   getNotebookUses,
   NotebookUse,
   listActivities,
-  getModule,
+  getActivity,
   NotebookVariant,
 } from '../../../src/Activities';
 import NavigationBar from '../../../components/NavigationBar';
 import getLanguageDisplayName from '../../../src/internationalization';
 
-export default function InfoPage({ uses, module }: {
-  uses : NotebookUse[], module : Module
+export default function InfoPage({ uses, activity }: {
+  uses : NotebookUse[], activity : Activity
 }) {
-  const title = module.slug;
+  const title = activity.slug;
   const pageTitle = `${title} - PyTamaro`;
 
   return (
@@ -40,14 +40,14 @@ export default function InfoPage({ uses, module }: {
           <div style={{
             width: '100%',
             height: '300px',
-            backgroundColor: module.previewImage.backgroundColor,
+            backgroundColor: activity.previewImage.backgroundColor,
             position: 'relative',
           }}
           >
             <Image
               fill
-              src={`/modules/${module.slug}/${module.previewImage.filename}`}
-              alt={module.variants[0].title}
+              src={`/modules/${activity.slug}/${activity.previewImage.filename}`}
+              alt={activity.variants[0].title}
               style={{
                 padding: '1rem',
                 objectFit: 'contain',
@@ -56,19 +56,19 @@ export default function InfoPage({ uses, module }: {
           </div>
           <Typography variant="h3" marginY={3}>Languages</Typography>
           <Typography variant="body1" marginY={3}>
-            This module is
-            { module.visibility === 'draft' ? ' under development ' : '  available ' }
+            This activity is
+            { activity.visibility === 'draft' ? ' under development ' : '  available ' }
             in the following languages:
           </Typography>
           <ul>
             {
-              module.variants.map((variant: NotebookVariant) => (
+              activity.variants.map((variant: NotebookVariant) => (
                 <li key={variant.language}>
-                  { module.visibility !== 'draft' && (
+                  { activity.visibility !== 'draft' && (
                     <Link href={{
                       pathname: '/modules/[slug]/[language]/[version]',
                       query: {
-                        slug: module.slug,
+                        slug: activity.slug,
                         language: variant.language,
                         version: variant.latestVersion,
                       },
@@ -77,7 +77,7 @@ export default function InfoPage({ uses, module }: {
                       {variant.title}
                     </Link>
                   )}
-                  { module.visibility === 'draft' && (
+                  { activity.visibility === 'draft' && (
                     variant.title
                   )}
                   {' '}
@@ -93,16 +93,16 @@ export default function InfoPage({ uses, module }: {
               ))
             }
           </ul>
-          <Typography variant="h3" marginY={3}>Module Usage</Typography>
+          <Typography variant="h3" marginY={3}>Activity Usage</Typography>
           {uses.length === 0 && (
             <Typography variant="body1" marginY={3}>
-              We do not currently have information about courses using this module.
+              We do not currently have information about courses using this activity.
             </Typography>
           )}
           {uses.length > 0 && (
             <>
               <Typography variant="body1" marginY={3}>
-                This module has been used in the following
+                This activity has been used in the following
                 {' '}
                 {uses.length}
                 {' '}
@@ -157,7 +157,7 @@ export async function getStaticProps(
     props: {
       slug,
       uses: await getNotebookUses(slug),
-      module: await getModule(slug),
+      activity: await getActivity(slug),
     },
   };
 }

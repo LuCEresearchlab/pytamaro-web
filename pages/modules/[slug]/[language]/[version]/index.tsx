@@ -67,8 +67,8 @@ export default function NotebookPage({
   const {
     slug, language, version,
   } = router.query as { slug: string, language: string, version: string };
-  const moduleVariantId = `${slug}-${language}`;
-  const moduleVersionId = `${moduleVariantId}-${version}`;
+  const activityVariantId = `${slug}-${language}`;
+  const activityVersionId = `${activityVariantId}-${version}`;
 
   const initialCodeCells = cells
     .filter((cell) => cell.cell_type === 'code')
@@ -79,7 +79,7 @@ export default function NotebookPage({
   const {
     codeCells, cellsModified, handleSourceChanged, handleExecute,
     handleToggleOutputArea, handleResetState, getWholeSource,
-  } = useCodeState(initialCodeCells, moduleVersionId);
+  } = useCodeState(initialCodeCells, activityVersionId);
 
   const pageTitle = `${title} - PyTamaro`;
 
@@ -155,7 +155,7 @@ export default function NotebookPage({
             component={Link}
             href={`/activities/${slug}`}
           >
-            Module Information
+            Activity Information
           </Button>
         </Stack>
       </Box>
