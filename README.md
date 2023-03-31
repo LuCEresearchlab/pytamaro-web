@@ -43,12 +43,11 @@ Additionally, the object describing a module contains the following fields:
 
 ## How to set up a development environment
 
-From the root folder of this repository:
-
+1. Clone this repository and all its submodules: `git clone --recurse-submodules git@github.com:LuCEresearchlab/pytamaro-web.git` 
 1. Install the dependencies of this project: `npm install`
-2. Populate the `public` folder with notebooks-related assets: `node tools/createNotebookAssets.js`
-3. Start the Next.js server: `npm run dev`
-4. Browse at [http://localhost:3000](http://localhost:3000)
+1. Populate the `public` folder with notebooks-related assets: `node tools/createNotebookAssets.js`
+1. Start the Next.js server: `npm run dev`
+1. Browse at [http://localhost:3000](http://localhost:3000)
 
 ## Coding guidelines
 
