@@ -14,10 +14,10 @@ import {
   Module,
   getNotebookUses,
   NotebookUse,
-  listModules,
+  listActivities,
   getModule,
   NotebookVariant,
-} from '../../../src/Modules';
+} from '../../../src/Activities';
 import NavigationBar from '../../../components/NavigationBar';
 import getLanguageDisplayName from '../../../src/internationalization';
 
@@ -163,8 +163,8 @@ export async function getStaticProps(
 }
 
 export async function getStaticPaths() {
-  const modules = await listModules();
-  const paths = modules.map((m) => `/modules/${m.slug}`);
+  const activities = await listActivities();
+  const paths = activities.map((a) => `/modules/${a.slug}`);
   return {
     paths: (await Promise.all(paths)).flat(),
     fallback: false,

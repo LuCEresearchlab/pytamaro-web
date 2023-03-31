@@ -4,7 +4,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { LanguageWithLatestVersion } from '../src/Modules';
+import { LanguageWithLatestVersion } from '../src/Activities';
 import { notebookVersionUrl } from '../src/urlUtils';
 
 export default function VariantSelector({

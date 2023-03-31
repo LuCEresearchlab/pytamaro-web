@@ -15,9 +15,9 @@ import {
   findLanguages,
   findVersions,
   LanguageWithLatestVersion,
-  listModules,
+  listActivities,
   variantInfo,
-} from '../../../../../src/Modules';
+} from '../../../../../src/Activities';
 import NavigationBar from '../../../../../components/NavigationBar';
 import { createCodeCell, useCodeState } from '../../../../../src/codeState';
 import ResetButton from '../../../../../components/ResetButton';
@@ -153,7 +153,7 @@ export default function NotebookPage({
             variant="outlined"
             startIcon={<InfoIcon />}
             component={Link}
-            href={`/modules/${slug}`}
+            href={`/activities/${slug}`}
           >
             Module Information
           </Button>
@@ -180,10 +180,10 @@ export async function getStaticProps(
 }
 
 export async function getStaticPaths() {
-  const modules = await listModules();
-  const paths = modules.flatMap((module) => module.variants.flatMap(
-    async (notebook) => (await findVersions(module.slug, notebook.language))
-      .map((v) => `/modules/${notebookVersionUrl(module.slug, notebook.language, v)}`),
+  const activities = await listActivities();
+  const paths = activities.flatMap((activity) => activity.variants.flatMap(
+    async (notebook) => (await findVersions(activity.slug, notebook.language))
+      .map((v) => `/activities/${notebookVersionUrl(activity.slug, notebook.language, v)}`),
   ));
   return {
     paths: (await Promise.all(paths)).flat(),

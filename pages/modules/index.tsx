@@ -26,8 +26,8 @@ import { HourglassBottom, Verified } from '@mui/icons-material';
 import InfoIcon from '@mui/icons-material/Info';
 import ViewCompactIcon from '@mui/icons-material/ViewCompact';
 import {
-  listModules, Module, NotebookVariant,
-} from '../../src/Modules';
+  listActivities, Activity, NotebookVariant,
+} from '../../src/Activities';
 import NavigationBar from '../../components/NavigationBar';
 import { notebookVersionUrl } from '../../src/urlUtils';
 import getLanguageDisplayName from '../../src/internationalization';
@@ -39,30 +39,30 @@ const VISIBILITY_PRIORITY = {
   hidden: 4,
 };
 
-export default function ModulesPage({ modules }: { modules: Module[] }) {
+export default function ActivitiesPage({ activities }: { activities: Activity[] }) {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [languageFilter, setLanguageFilter] = useState('');
-  const [filteredModules, setFilteredModules] = useState(modules);
+  const [filteredActivities, setFilteredActivities] = useState(activities);
   const [compactView, setCompactView] = useState(false);
 
-  // get all languages in set of modules
+  // get all languages in set of activities
   const languages = new Set(
-    modules.flatMap((module) => module.variants.map((avariant) => avariant.language)),
+    activities.flatMap((activity) => activity.variants.map((avariant) => avariant.language)),
   );
 
   useEffect(() => {
-    setFilteredModules(
-      modules.filter(
-        (module) => module.visibility !== 'hidden'
+    setFilteredActivities(
+      activities.filter(
+        (activity) => activity.visibility !== 'hidden'
         // language filter
-        && module.variants.some(
+        && activity.variants.some(
           (avariant) => !languageFilter
           || avariant.language.toLowerCase() === languageFilter.toLowerCase(),
         )
         // search by slug and by title and description of language-filtered variant
-        && (module.slug.toLowerCase().includes(search.toLowerCase())
-        || module.variants.some(
+        && (activity.slug.toLowerCase().includes(search.toLowerCase())
+        || activity.variants.some(
           (avariant) => (!languageFilter
           || avariant.language.toLowerCase() === languageFilter.toLowerCase())
           && (avariant.description.toLowerCase().includes(search.toLowerCase())
@@ -70,20 +70,20 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
         )),
       ),
     );
-  }, [search, languageFilter, modules]);
+  }, [search, languageFilter, activities]);
 
   // Minimal sorting
-  modules.sort((m1, m2) => {
-    if (m1.visibility !== m2.visibility) {
+  activities.sort((a1, a2) => {
+    if (a1.visibility !== a2.visibility) {
       // different visibility, featured before visible before draft before hidden
-      return VISIBILITY_PRIORITY[m1.visibility] - VISIBILITY_PRIORITY[m2.visibility];
+      return VISIBILITY_PRIORITY[a1.visibility] - VISIBILITY_PRIORITY[a2.visibility];
     }
-    if (m1.variants.length !== m2.variants.length) {
+    if (a1.variants.length !== a2.variants.length) {
       // same visibility, more variants first
-      return Math.sign(m2.variants.length - m1.variants.length);
+      return Math.sign(a2.variants.length - a1.variants.length);
     }
     // same visibility, same number of variants, sort by slug
-    return m1.slug < m2.slug ? -1 : 1;
+    return a1.slug < a2.slug ? -1 : 1;
   });
   return (
     <Stack spacing={2}>
@@ -127,17 +127,17 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
         </Grid>
       </Grid>
       <Grid container spacing={2}>
-        {filteredModules.map((module) => {
+        {filteredActivities.map((activity) => {
           // get language-filtered variant (if cannot, get first)
-          const variant = module.variants.find(
+          const variant = activity.variants.find(
             (v) => !languageFilter || v.language.toLowerCase() === languageFilter.toLowerCase(),
-          ) || module.variants[0] as NotebookVariant;
+          ) || activity.variants[0] as NotebookVariant;
           function variantUrl(language: string) {
-            return `${router.asPath}/${notebookVersionUrl(module.slug, language, variant.latestVersion)}`;
+            return `${router.asPath}/${notebookVersionUrl(activity.slug, language, variant.latestVersion)}`;
           }
-          const isDraft = module.visibility === 'draft';
+          const isDraft = activity.visibility === 'draft';
           return (
-            <Grid md={compactView ? 3 : 4} lg={compactView ? 2 : 3} key={module.slug}>
+            <Grid md={compactView ? 3 : 4} lg={compactView ? 2 : 3} key={activity.slug}>
               <Paper elevation={8}>
                 <Card>
                   <CardActionArea
@@ -147,15 +147,15 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
                     <CardMedia
                       component="img"
                       height="300"
-                      image={`/modules/${module.slug}/${module.previewImage.filename}`}
+                      image={`/modules/${activity.slug}/${activity.previewImage.filename}`}
                       alt={variant.title}
-                      sx={{ padding: 1, objectFit: 'contain', backgroundColor: module.previewImage.backgroundColor }}
+                      sx={{ padding: 1, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
                     />
                     { !compactView && (
                     <CardContent>
                       <Typography gutterBottom variant="h5" component="div">
                         {variant.title}
-                        {module.visibility === 'featured'
+                        {activity.visibility === 'featured'
                           && (
                           <Verified
                             sx={{ marginLeft: 1, color: 'primary.main' }}
@@ -178,7 +178,7 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
                   </CardActionArea>
                   { !compactView && (
                   <CardActions>
-                    {module.variants.map((avariant) => (
+                    {activity.variants.map((avariant) => (
                       <Button
                         onClick={() => router.push(variantUrl(avariant.language))}
                         size="small"
@@ -192,7 +192,7 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
                     <Box sx={{ marginLeft: 'auto' }}>
                       <IconButton
                         size="small"
-                        href={`/modules/${module.slug}`}
+                        href={`/modules/${activity.slug}`}
                         component={Link}
                       >
                         <InfoIcon />
@@ -212,6 +212,6 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
 
 export async function getStaticProps() {
   return {
-    props: { modules: await listModules() },
+    props: { activities: await listActivities() },
   };
 }

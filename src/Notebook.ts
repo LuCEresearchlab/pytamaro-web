@@ -2,7 +2,7 @@ import { readFile } from 'fs/promises';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
 import path from 'path';
-import { ACTIVITIES_PATH } from './Modules';
+import { ACTIVITIES_PATH } from './Activities';
 
 export interface ContentItem {
   name: string,

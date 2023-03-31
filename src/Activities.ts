@@ -2,10 +2,10 @@ import path from 'path';
 import { readdir, readFile } from 'fs/promises';
 
 export const ACTIVITIES_PATH = 'data/luce/activities';
-const MODULE_INFO_FILE = 'info.json';
+const ACTIVITY_INFO_FILE = 'info.json';
 
-async function getModuleInfo(slug: string) {
-  const content = await readFile(path.join(ACTIVITIES_PATH, slug, MODULE_INFO_FILE), 'utf-8');
+async function getActivityInfo(slug: string) {
+  const content = await readFile(path.join(ACTIVITIES_PATH, slug, ACTIVITY_INFO_FILE), 'utf-8');
   return {
     slug,
     ...JSON.parse(content),
@@ -27,7 +27,7 @@ export interface NotebookUse {
   url: string,
 }
 
-export interface Module {
+export interface Activity {
   slug: string,
   previewImage: { filename: string, backgroundColor: string },
   visibility: 'featured' | 'visible' | 'draft' | 'hidden',
@@ -58,7 +58,7 @@ export async function findVersions(slug: string, language: string)
 
 export async function variantInfo(slug: string, language: string)
   : Promise<NotebookVariant> {
-  const mod = await getModuleInfo(slug);
+  const mod = await getActivityInfo(slug);
   return mod.variants.find((v : NotebookVariant) => v.language === language);
 }
 
@@ -71,19 +71,19 @@ export async function findLanguages(slug: string)
     { language, latestVersion: (await variantInfo(slug, language)).latestVersion })));
 }
 
-export async function listModules() : Promise<Module[]> {
+export async function listActivities() : Promise<Activity[]> {
   const slugs = (await readdir(ACTIVITIES_PATH, { withFileTypes: true }))
     .filter((item) => item.isDirectory())
     .map((dir) => dir.name);
 
-  return Promise.all(slugs.map(getModuleInfo));
+  return Promise.all(slugs.map(getActivityInfo));
 }
 
-export async function getModule(slug: string) : Promise<Module> {
-  return getModuleInfo(slug);
+export async function getActivity(slug: string) : Promise<Activity> {
+  return getActivityInfo(slug);
 }
 
 export async function getNotebookUses(slug: string) : Promise<NotebookUse[]> {
-  const mod = await getModuleInfo(slug);
+  const mod = await getActivityInfo(slug);
   return mod.uses.filter((use: NotebookUse) => use.course !== 'internal');
 }
