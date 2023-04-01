@@ -1,0 +1,56 @@
+@startuml
+' hide the spot
+hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity "Author" as author {
+  *slug : text
+  --
+  *name : text
+  email : text
+}
+
+entity "Course" as course {
+  *slug : text
+  --
+  *name : text
+  *institution : text
+  *instructors : text[]
+  *assignments : slug[]
+  *curricula : slug[]
+}
+entity "Assignment" as assignment {
+  *slug : text
+  --
+  *name : text
+  *url : text
+  *activities : slug[]
+}
+entity "Curriculum" as curriculum {
+  *slug : text
+  --
+  *title : text
+  *description : text
+  *concepts : text[]
+  *competencies : text[]
+  *activities : slug[]
+}
+entity "Activity" as activity {
+  *slug : text
+  --
+  ...
+}
+
+
+author ||--o{ course
+author ||--o{ assignment
+author ||--o{ curriculum
+author ||--o{ activity
+
+course }o--o{ assignment
+course }o--o{ curriculum
+assignment }o--o{ activity
+curriculum }o--o{ activity
+@enduml
