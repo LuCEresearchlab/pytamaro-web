@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+	<path fill="red" transform="translate(171.429 186.667)" d="M0 0L28.5714 0L28.5714 13.3333L0 13.3333L0 0Z"/>
+	<path fill="red" transform="translate(165.714 200)" d="M0 0L5.71429 0L5.71429 0L0 0Z"/>
+	<path fill="red" transform="translate(137.143 0)" d="M0 0L28.5714 0L28.5714 200L0 200L0 0Z"/>
+	<path fill="red" transform="translate(131.429 200)" d="M0 0L5.71429 0L5.71429 0L0 0Z"/>
+	<path fill="red" transform="translate(102.857 66.6667)" d="M0 0L28.5714 0L28.5714 133.333L0 133.333L0 0Z"/>
+	<path fill="red" transform="translate(97.1429 200)" d="M0 0L5.71429 0L5.71429 0L0 0Z"/>
+	<path fill="red" transform="translate(68.5714 80)" d="M0 0L28.5714 0L28.5714 120L0 120L0 0Z"/>
+	<path fill="red" transform="translate(62.8571 200)" d="M0 0L5.71429 0L5.71429 0L0 0Z"/>
+	<path fill="red" transform="translate(34.2857 66.6667)" d="M0 0L28.5714 0L28.5714 133.333L0 133.333L0 0Z"/>
+	<path fill="red" transform="translate(28.5714 200)" d="M0 0L5.71429 0L5.71429 0L0 0Z"/>
+	<path fill="red" transform="translate(5.72205e-06 133.333)" d="M0 0L28.5714 0L28.5714 66.6667L0 66.6667L0 0Z"/>
+</svg>
