@@ -1,13 +1,14 @@
 import path from 'path';
 import { readdir, readFile } from 'fs/promises';
 
-export const ACTIVITIES_PATH = 'data/luce/activities';
+export const DATA_DIR = 'data';
+export const ACTIVITIES_DIR = 'activities';
 const ACTIVITY_INFO_FILE = 'info.json';
 
-async function getActivityInfo(slug: string) {
-  const content = await readFile(path.join(ACTIVITIES_PATH, slug, ACTIVITY_INFO_FILE), 'utf-8');
+async function getActivityInfo(authorSlug: string, activitySlug: string) {
+  const content = await readFile(path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR, activitySlug, ACTIVITY_INFO_FILE), 'utf-8');
   return {
-    slug,
+    slug: activitySlug,
     ...JSON.parse(content),
   };
 }
@@ -40,50 +41,59 @@ export interface LanguageWithLatestVersion {
   latestVersion: string,
 }
 
-async function notebookFileNames(slug: string) {
+async function notebookFileNames(authorSlug: string, activitySlug: string) {
   const suffix = '.ipynb';
-  const notebooks = (await readdir(path.join(ACTIVITIES_PATH, slug))).filter(
-    (file) => file.endsWith(suffix),
-  );
+  const notebooks = (await readdir(path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR, activitySlug)))
+    .filter((file) => file.endsWith(suffix));
   return notebooks.map((filename) => filename.replace(suffix, ''));
 }
 
-export async function findVersions(slug: string, language: string)
+export async function findVersions(authorSlug: string, activitySlug: string, language: string)
   : Promise<string[]> {
-  const prefix = `${slug}-${language}-`;
-  return (await notebookFileNames(slug)).filter((filename) => filename.startsWith(prefix)).map(
-    (filename) => filename.replace(prefix, ''),
-  );
+  const prefix = `${activitySlug}-${language}-`;
+  return (await notebookFileNames(authorSlug, activitySlug))
+    .filter((filename) => filename.startsWith(prefix))
+    .map((filename) => filename.replace(prefix, ''));
 }
 
-export async function variantInfo(slug: string, language: string)
+export async function variantInfo(authorSlug: string, activitySlug: string, language: string)
   : Promise<NotebookVariant> {
-  const mod = await getActivityInfo(slug);
-  return mod.variants.find((v : NotebookVariant) => v.language === language);
+  const activity = await getActivityInfo(authorSlug, activitySlug);
+  return activity.variants.find((v : NotebookVariant) => v.language === language);
 }
 
-export async function findLanguages(slug: string)
+export async function findLanguages(authorSlug: string, activitySlug: string)
   : Promise<LanguageWithLatestVersion[]> {
-  const notebooks = await notebookFileNames(slug);
+  const notebooks = await notebookFileNames(authorSlug, activitySlug);
   const languages = notebooks.map((filename) => filename.split('-').at(-2)) as string[];
   const uniqueLanguages = Array.from(new Set(languages));
-  return Promise.all(uniqueLanguages.map(async (language) => (
-    { language, latestVersion: (await variantInfo(slug, language)).latestVersion })));
+  return Promise.all(uniqueLanguages.map(async (language) => ({
+    language,
+    latestVersion: (await variantInfo(authorSlug, activitySlug, language)).latestVersion,
+  })));
 }
 
-export async function listActivities() : Promise<Activity[]> {
-  const slugs = (await readdir(ACTIVITIES_PATH, { withFileTypes: true }))
+export async function listActivities(authorSlug: string) : Promise<Activity[]> {
+  const activitySlugs = (await readdir(
+    path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR),
+    { withFileTypes: true },
+  ))
     .filter((item) => item.isDirectory())
     .map((dir) => dir.name);
 
-  return Promise.all(slugs.map(getActivityInfo));
+  return Promise.all(activitySlugs.map(
+    (activitySlug) => getActivityInfo(authorSlug, activitySlug),
+  ));
 }
 
-export async function getActivity(slug: string) : Promise<Activity> {
-  return getActivityInfo(slug);
+export async function getActivity(authorSlug: string, activitySlug: string) : Promise<Activity> {
+  return getActivityInfo(authorSlug, activitySlug);
 }
 
-export async function getNotebookUses(slug: string) : Promise<NotebookUse[]> {
-  const mod = await getActivityInfo(slug);
+export async function getNotebookUses(
+  authorSlug: string,
+  activitySlug: string,
+) : Promise<NotebookUse[]> {
+  const mod = await getActivityInfo(authorSlug, activitySlug);
   return mod.uses.filter((use: NotebookUse) => use.course !== 'internal');
 }

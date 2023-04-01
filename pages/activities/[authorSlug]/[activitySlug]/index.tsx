@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import {
   Box,
   Button,
@@ -14,17 +15,24 @@ import {
   Activity,
   getNotebookUses,
   NotebookUse,
-  listActivities,
   getActivity,
   NotebookVariant,
-} from '../../../src/Activities';
-import NavigationBar from '../../../components/NavigationBar';
-import getLanguageDisplayName from '../../../src/internationalization';
+} from '../../../../src/Activities';
+import NavigationBar from '../../../../components/NavigationBar';
+import getLanguageDisplayName from '../../../../src/internationalization';
+import { listAuthors } from '../../../../src/Authors';
 
 export default function InfoPage({ uses, activity }: {
   uses : NotebookUse[], activity : Activity
 }) {
-  const title = activity.slug;
+  const router = useRouter();
+  const {
+    authorSlug, activitySlug,
+  } = router.query as {
+    authorSlug: string,
+    activitySlug: string,
+  };
+  const title = activitySlug;
   const pageTitle = `${title} - PyTamaro`;
 
   return (
@@ -46,7 +54,7 @@ export default function InfoPage({ uses, activity }: {
           >
             <Image
               fill
-              src={`/modules/${activity.slug}/${activity.previewImage.filename}`}
+              src={`/activities/${authorSlug}/${activitySlug}/${activity.previewImage.filename}`}
               alt={activity.variants[0].title}
               style={{
                 padding: '1rem',
@@ -66,9 +74,10 @@ export default function InfoPage({ uses, activity }: {
                 <li key={variant.language}>
                   { activity.visibility !== 'draft' && (
                     <Link href={{
-                      pathname: '/modules/[slug]/[language]/[version]',
+                      pathname: '/activities/[authorSlug]/[activitySlug]/[language]/[version]',
                       query: {
-                        slug: activity.slug,
+                        authorSlug,
+                        activitySlug,
                         language: variant.language,
                         version: variant.latestVersion,
                       },
@@ -148,25 +157,26 @@ export default function InfoPage({ uses, activity }: {
 }
 
 export async function getStaticProps(
-  context: { params: { slug: string } },
+  context: { params: { authorSlug: string, activitySlug: string } },
 ) {
   const {
-    slug,
+    authorSlug, activitySlug,
   } = context.params;
   return {
     props: {
-      slug,
-      uses: await getNotebookUses(slug),
-      activity: await getActivity(slug),
+      uses: await getNotebookUses(authorSlug, activitySlug),
+      activity: await getActivity(authorSlug, activitySlug),
     },
   };
 }
 
 export async function getStaticPaths() {
-  const activities = await listActivities();
-  const paths = activities.map((a) => `/modules/${a.slug}`);
+  const authors = await listAuthors();
+  const paths = authors.flatMap((author) => author.activities.map(
+    (activity) => `/activities/${author.slug}/${activity.slug}`,
+  ));
   return {
-    paths: (await Promise.all(paths)).flat(),
+    paths,
     fallback: false,
   };
 }

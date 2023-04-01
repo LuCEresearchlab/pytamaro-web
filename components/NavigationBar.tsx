@@ -9,7 +9,7 @@ const navItems = [
   },
   {
     name: 'Activities',
-    url: '/modules',
+    url: '/activities/luce',
   },
   {
     name: 'Docs',

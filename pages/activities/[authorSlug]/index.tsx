@@ -27,10 +27,11 @@ import InfoIcon from '@mui/icons-material/Info';
 import ViewCompactIcon from '@mui/icons-material/ViewCompact';
 import {
   listActivities, Activity, NotebookVariant,
-} from '../../src/Activities';
-import NavigationBar from '../../components/NavigationBar';
-import { notebookVersionUrl } from '../../src/urlUtils';
-import getLanguageDisplayName from '../../src/internationalization';
+} from '../../../src/Activities';
+import NavigationBar from '../../../components/NavigationBar';
+import { activityAssetUrl, notebookVersionUrl } from '../../../src/urlUtils';
+import getLanguageDisplayName from '../../../src/internationalization';
+import { listAuthors } from '../../../src/Authors';
 
 const VISIBILITY_PRIORITY = {
   featured: 0,
@@ -41,6 +42,7 @@ const VISIBILITY_PRIORITY = {
 
 export default function ActivitiesPage({ activities }: { activities: Activity[] }) {
   const router = useRouter();
+  const { authorSlug } = router.query as { authorSlug: string };
   const [search, setSearch] = useState('');
   const [languageFilter, setLanguageFilter] = useState('');
   const [filteredActivities, setFilteredActivities] = useState(activities);
@@ -147,7 +149,11 @@ export default function ActivitiesPage({ activities }: { activities: Activity[] 
                     <CardMedia
                       component="img"
                       height="300"
-                      image={`/modules/${activity.slug}/${activity.previewImage.filename}`}
+                      image={activityAssetUrl(
+                        authorSlug,
+                        activity.slug,
+                        activity.previewImage.filename,
+                      )}
                       alt={variant.title}
                       sx={{ padding: 1, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
                     />
@@ -192,7 +198,7 @@ export default function ActivitiesPage({ activities }: { activities: Activity[] 
                     <Box sx={{ marginLeft: 'auto' }}>
                       <IconButton
                         size="small"
-                        href={`/modules/${activity.slug}`}
+                        href={`${router.asPath}/${activity.slug}`}
                         component={Link}
                       >
                         <InfoIcon />
@@ -210,8 +216,24 @@ export default function ActivitiesPage({ activities }: { activities: Activity[] 
   );
 }
 
-export async function getStaticProps() {
+export async function getStaticProps(
+  context: { params: { authorSlug: string } },
+) {
+  const {
+    authorSlug,
+  } = context.params;
   return {
-    props: { activities: await listActivities() },
+    props: {
+      activities: await listActivities(authorSlug),
+    },
+  };
+}
+
+export async function getStaticPaths() {
+  const authors = await listAuthors();
+  const paths = authors.map((a) => `/activities/${a.slug}`);
+  return {
+    paths,
+    fallback: false,
   };
 }

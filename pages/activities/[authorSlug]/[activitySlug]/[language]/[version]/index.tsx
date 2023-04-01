@@ -9,23 +9,23 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import {
   getNotebookContent, NotebookCell,
-} from '../../../../../src/Notebook';
-import CodeCell from '../../../../../components/CodeCell';
+} from '../../../../../../src/Notebook';
+import CodeCell from '../../../../../../components/CodeCell';
 import {
   findLanguages,
   findVersions,
   LanguageWithLatestVersion,
-  listActivities,
   variantInfo,
-} from '../../../../../src/Activities';
-import NavigationBar from '../../../../../components/NavigationBar';
-import { createCodeCell, useCodeState } from '../../../../../src/codeState';
-import ResetButton from '../../../../../components/ResetButton';
-import { notebookVersionUrl } from '../../../../../src/urlUtils';
-import VariantSelector from '../../../../../components/VariantsSelector';
-import downloadSourceCode from '../../../../../src/CodeDownload';
-import ResponsiveReactPlayer from '../../../../../components/ResponsiveReactPlayer';
-import PyTamaroAPI from '../../../../../components/PyTamaroAPIDocs/PyTamaroAPI';
+} from '../../../../../../src/Activities';
+import NavigationBar from '../../../../../../components/NavigationBar';
+import { createCodeCell, useCodeState } from '../../../../../../src/codeState';
+import ResetButton from '../../../../../../components/ResetButton';
+import { notebookVersionUrl } from '../../../../../../src/urlUtils';
+import VariantSelector from '../../../../../../components/VariantsSelector';
+import downloadSourceCode from '../../../../../../src/CodeDownload';
+import ResponsiveReactPlayer from '../../../../../../components/ResponsiveReactPlayer';
+import PyTamaroAPI from '../../../../../../components/PyTamaroAPIDocs/PyTamaroAPI';
+import { listAuthors } from '../../../../../../src/Authors';
 
 function attachmentsTransformer(src: string, cell: NotebookCell) {
   const attachmentPrefix = 'attachment:';
@@ -65,9 +65,14 @@ export default function NotebookPage({
   languages: LanguageWithLatestVersion[] }) {
   const router = useRouter();
   const {
-    slug, language, version,
-  } = router.query as { slug: string, language: string, version: string };
-  const activityVariantId = `${slug}-${language}`;
+    authorSlug, activitySlug, language, version,
+  } = router.query as {
+    authorSlug: string,
+    activitySlug: string,
+    language: string,
+    version: string
+  };
+  const activityVariantId = `${activitySlug}-${language}`;
   const activityVersionId = `${activityVariantId}-${version}`;
 
   const initialCodeCells = cells
@@ -95,7 +100,8 @@ export default function NotebookPage({
       <Box>
         <NavigationBar>
           <VariantSelector
-            slug={slug}
+            authorSlug={authorSlug}
+            activitySlug={activitySlug}
             language={language}
             version={version}
             versions={versions}
@@ -153,7 +159,7 @@ export default function NotebookPage({
             variant="outlined"
             startIcon={<InfoIcon />}
             component={Link}
-            href={`/activities/${slug}`}
+            href={`/activities/${authorSlug}/${activitySlug}`}
           >
             Activity Information
           </Button>
@@ -164,27 +170,35 @@ export default function NotebookPage({
 }
 
 export async function getStaticProps(
-  context: { params: { slug: string, language: string, version: string } },
+  context: { params: {
+    authorSlug: string,
+    activitySlug: string,
+    language: string,
+    version: string,
+  } },
 ) {
   const {
-    slug, language, version,
+    authorSlug, activitySlug, language, version,
   } = context.params;
   return {
     props: {
-      title: (await variantInfo(slug, language)).title,
-      cells: await getNotebookContent(slug, language, version),
-      versions: await findVersions(slug, language),
-      languages: await findLanguages(slug),
+      title: (await variantInfo(authorSlug, activitySlug, language)).title,
+      cells: await getNotebookContent(authorSlug, activitySlug, language, version),
+      versions: await findVersions(authorSlug, activitySlug, language),
+      languages: await findLanguages(authorSlug, activitySlug),
     },
   };
 }
 
 export async function getStaticPaths() {
-  const activities = await listActivities();
-  const paths = activities.flatMap((activity) => activity.variants.flatMap(
-    async (notebook) => (await findVersions(activity.slug, notebook.language))
-      .map((v) => `/activities/${notebookVersionUrl(activity.slug, notebook.language, v)}`),
-  ));
+  const authors = await listAuthors();
+  const paths = authors
+    .flatMap((author) => author.activities
+      .flatMap((activity) => activity.variants
+        .flatMap(
+          async (notebook) => (await findVersions(author.slug, activity.slug, notebook.language))
+            .map((v) => `/activities/${author.slug}/${notebookVersionUrl(activity.slug, notebook.language, v)}`),
+        )));
   return {
     paths: (await Promise.all(paths)).flat(),
     fallback: false,
