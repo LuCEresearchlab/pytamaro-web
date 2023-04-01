@@ -1,20 +1,20 @@
 {
   "variants": [
     {
-      "title": "Balken-Diagramm",
+      "title": "Tierbein Diagramm",
       "language": "de",
       "description": "fixiere, kombiniere",
       "latestVersion": "v1"
     },
     {
-      "title": "Bar Chart",
+      "title": "Animal Leg Chart",
       "language": "en",
       "description": "pin, compose",
       "latestVersion": "v1"
     }
   ],
   "previewImage": {
-    "filename": "bar-chart.png",
+    "filename": "animal-leg-chart.png",
     "backgroundColor": "#ffffff"
   },
   "visibility": "draft",
