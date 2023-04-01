@@ -35,4 +35,9 @@ yarn-error.log*
 next-env.d.ts
 
 # generated assets from activities
-public/*/
+public/activities
+# Sentry
+.sentryclirc
+
+# Sentry
+next.config.original.js
