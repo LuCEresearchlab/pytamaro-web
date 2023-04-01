@@ -7,7 +7,7 @@
       "latestVersion": "v1"
     }
   ],
-  "usesComposePin": false,
+  "usesComposePin": true,
   "usesRepetition": true,
   "onlyConstantColors": true,
   "previewImage": {
