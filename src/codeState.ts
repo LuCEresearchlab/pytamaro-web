@@ -28,8 +28,8 @@ export function createCodeCell(source: string, originalIndex: number): CodeCellS
   };
 }
 
-export function useCodeState(initialCodeCells: CodeState, moduleVariantId: string) {
-  const KEY = `pytamaro_web_${moduleVariantId}_codeCells`;
+export function useCodeState(initialCodeCells: CodeState, activityVariantId: string) {
+  const KEY = `pytamaro_web_${activityVariantId}_codeCells`;
   const [codeCells, setCodeCells] = useLocalStorageState(KEY, { defaultValue: initialCodeCells });
   const [cellsModified, setCellsModified] = useState(false);
   useEffect(() => {
@@ -100,7 +100,7 @@ ${currentCellSource}`;
     for (let i = 0; i <= idx; i += 1) {
       handleExecuteSingleCell(i);
     }
-    logEvent(EventName.CodeExecution, { module: moduleVariantId });
+    logEvent(EventName.CodeExecution, { activity: activityVariantId });
   };
 
   const handleToggleOutputArea = (idx: number) => {

@@ -8,9 +8,9 @@ while the contents (i.e., the activities) are stored as [Jupyter notebooks](http
 
 ### Activities
 Activities are stored each in one folder inside the `data/<author-slug>/activities` folder.
-The name of the folder should use hyphens and determines the _slug_ of the module,
+The name of the folder should use hyphens and determines the _slug_ of the activity,
 which uniquely identifies it.
-See the `swiss-flag` module for an example.
+See the `swiss-flag` activity for an example.
 
 Each activity can exists in several variants,
 depending on:
@@ -37,9 +37,9 @@ should be created in a new version.
 
 Note that user edits are persisted in the browser's local storage only with respect to a specific version.
 
-Additionally, the object describing a module contains the following fields:
+Additionally, the object describing a activity contains the following fields:
 - `previewImage`: an object containing the `filename` of a preview image and its `backgroundColor`, to be used in the gallery
-- `visibility`: one of `"featured"` (shown first in the gallery with a special mark), `"visible"` (shown with normal priority in the gallery), `"draft"` (shown with a special "Coming soon" label in the gallery and only accessible using a direct link), or `"hidden"` (the module is not shown at all in the gallery).
+- `visibility`: one of `"featured"` (shown first in the gallery with a special mark), `"visible"` (shown with normal priority in the gallery), `"draft"` (shown with a special "Coming soon" label in the gallery and only accessible using a direct link), or `"hidden"` (the activity is not shown at all in the gallery).
 
 ## How to set up a development environment
 
