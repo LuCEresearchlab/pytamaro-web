@@ -12,7 +12,7 @@
   "onlyConstantColors": false,
   "previewImage": {
     "filename": "bandiera_italia.png",
-    "backgroundColor": "#ffffff"
+    "backgroundColor": "#aed9e7"
   },
   "visibility": "visible",
   "uses": [

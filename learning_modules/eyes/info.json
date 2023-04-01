@@ -12,7 +12,7 @@
   "onlyConstantColors": true,
   "previewImage": {
     "filename": "eyes.svg",
-    "backgroundColor": "#eeeeee"
+    "backgroundColor": "#4d7db1"
   },
   "visibility": "visible",
   "uses": [
