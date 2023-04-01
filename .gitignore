@@ -36,3 +36,8 @@ next-env.d.ts
 
 # generated assets from modules
 public/modules
+# Sentry
+.sentryclirc
+
+# Sentry
+next.config.original.js
