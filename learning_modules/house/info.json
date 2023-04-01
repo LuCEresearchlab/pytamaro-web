@@ -12,7 +12,7 @@
   "onlyConstantColors": true,
   "previewImage": {
     "filename": "house.svg",
-    "backgroundColor": "#eeeeee"
+    "backgroundColor": "#00cb6d"
   },
   "visibility": "visible",
   "uses": [

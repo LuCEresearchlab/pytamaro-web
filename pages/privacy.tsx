@@ -197,11 +197,12 @@ export default function PrivacyPolicy() {
             {' '}
             <Link href="https://plausible.io/data-policy">Plausible Analytics Data Policy</Link>
             .
-            {/*
-              You can see the analytics data we collect at
-              <Link href="https://plausible.pytamaro.si.usi.ch">our PyTamaro Plausible dashboard</Link>
-              .
-            */}
+          </Typography>
+          <Typography variant="body1" marginY={margin}>
+            You can see the analytics data we collect at our
+            {' '}
+            <Link href="https://analytics.luce.si.usi.ch/pytamaro.si.usi.ch">PyTamaro Plausible dashboard</Link>
+            .
           </Typography>
           <Typography variant="h4" marginY={margin}>
             When we access or share your information
@@ -227,7 +228,7 @@ export default function PrivacyPolicy() {
               personally identifiable information.
               We also may share the collected code fragments with other legitimate researchers,
               inside or outside Switzerland,
-              who will bide by the same policy.
+              who will abide by the same policy.
             </li>
             <li>
               <strong>Website Interaction Data.</strong>
