@@ -30,6 +30,10 @@ import PyTamaroAPI from '../../../../../components/PyTamaroAPIDocs/PyTamaroAPI';
 import NetworkErrorSnackbar from '../../../../../components/NetworkErrorSnackbar';
 import ResetButton from '../../../../../components/ResetButton';
 
+const userType = 'student';
+const TEACHER_ONLY_CELL_PREFIX = '#teacher-only';
+const STUDENT_TEACHER_CELL_PREFIX = '#student-teacher';
+
 function attachmentsTransformer(src: string, cell: NotebookCell) {
   const attachmentPrefix = 'attachment:';
   if (src.startsWith(attachmentPrefix)) {
@@ -93,9 +97,6 @@ export default function NotebookPage({
 
   const pageTitle = `${title} - PyTamaro`;
 
-  const userType = 'student';
-  const TEACHER_ONLY_CELL_PREFIX = '#teacher-only';
-
   return (
     <div>
       <Head>
@@ -117,9 +118,6 @@ export default function NotebookPage({
         <Container maxWidth="md">
           <Typography variant="h3" marginTop={2}>{title}</Typography>
           {cells.map((cell: NotebookCell, idx) => {
-            if (userType === 'student' && cell.source.trimStart().startsWith(TEACHER_ONLY_CELL_PREFIX)) {
-              return (<Box key={cell.id} />);
-            }
             if (cell.cell_type === 'markdown') {
               const components = {
                 img: (props: any) => attachmentsImage(props, cell),
@@ -183,7 +181,9 @@ export async function getStaticProps(
   return {
     props: {
       title: (await variantInfo(slug, language)).title,
-      cells: await getNotebookContent(slug, language, version),
+      cells: (await getNotebookContent(slug, language, version))
+        .filter((cell) => (userType !== 'student' || !cell.source.trimStart().startsWith(TEACHER_ONLY_CELL_PREFIX))
+          && (userType === 'student' || cell.source.trimStart().startsWith(TEACHER_ONLY_CELL_PREFIX) || cell.source.trimStart().startsWith(STUDENT_TEACHER_CELL_PREFIX))),
       versions: await findVersions(slug, language),
       languages: await findLanguages(slug),
     },
