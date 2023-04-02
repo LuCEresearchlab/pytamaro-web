@@ -85,8 +85,9 @@ export default function NotebookPage({
   const moduleVersionId = `${moduleVariantId}-${version}`;
 
   const initialCodeCells = cells
-    .filter((cell) => cell.cell_type === 'code')
-    .map((cell) => createCodeCell(cell.source, parseInt(cell.id, 10)));
+    .map((cell, idx) => ({ cell, idx }))
+    .filter(({ cell }) => cell.cell_type === 'code')
+    .map(({ cell, idx: originalIdx }) => createCodeCell(cell.source, originalIdx));
   const originalIdxToCodeCellIdx = new Map<number, number>();
   initialCodeCells.forEach((cell, idx) => originalIdxToCodeCellIdx.set(cell.originalIndex, idx));
 
