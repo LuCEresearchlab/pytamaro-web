@@ -33,13 +33,14 @@ entity "Curriculum" as curriculum {
   --
   *title : text
   *description : text
-  *concepts : text[]
   *competencies : text[]
   *activities : slug[]
 }
 entity "Activity" as activity {
   *slug : text
   --
+  ' see https://progmiscon.org/concepts
+  *concepts : text[] 
   ...
 }
 
