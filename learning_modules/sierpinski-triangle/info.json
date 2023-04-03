@@ -1,0 +1,24 @@
+{
+  "variants": [
+    {
+      "title": "Sierpinski Triangle",
+      "language": "en",
+      "description": "triangle, pin, compose",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "sierpinski-triangle.svg",
+    "backgroundColor": "#ffffff"
+  },
+  "visibility": "visible",
+  "uses": [
+    {
+      "institution": "USI",
+      "course": "internal",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Sierpinski triangle",
+      "url": "https://github.com/LuCEresearchlab/pytamaro-solutions/blob/main/sierpinski_triangle/README.md"
+    }
+  ]
+}
