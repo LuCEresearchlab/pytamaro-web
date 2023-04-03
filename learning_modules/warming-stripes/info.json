@@ -1,0 +1,24 @@
+{
+  "variants": [
+    {
+      "title": "Warming Stripes",
+      "language": "it",
+      "description": "beside, rgb_color",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "stripes.png",
+    "backgroundColor": "#ffffff"
+  },
+  "visibility": "featured",
+  "uses": [
+    {
+      "institution": "SUPSI",
+      "course": "SDD 2022",
+      "instructors": ["Luca Chiodini", "Matthias Hauswirth"],
+      "assignment": "Assignment 10: 'Warming Stripes con PyTamaro'",
+      "url": "https://www.icorsi.ch/course/view.php?id=14818"
+    }
+  ]
+}
