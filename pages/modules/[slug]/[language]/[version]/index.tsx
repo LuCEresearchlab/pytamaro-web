@@ -41,14 +41,21 @@ function attachmentsTransformer(src: string, cell: NotebookCell) {
 
 function attachmentsImage(props: any, cell: NotebookCell) {
   return (
-    <picture>
-      <img
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      component="span"
+    >
+      <picture>
+        <img
         // eslint-disable-next-line react/jsx-props-no-spreading
-        {...props}
-        alt={props.alt}
-        src={attachmentsTransformer(props.src, cell)}
-      />
-    </picture>
+          {...props}
+          alt={props.alt}
+          src={attachmentsTransformer(props.src, cell)}
+        />
+      </picture>
+    </Box>
   );
 }
 
