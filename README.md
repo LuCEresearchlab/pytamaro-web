@@ -6,6 +6,25 @@ This repository contains the achitecture and the materials for the PyTamaro curr
 The web architecture is implemented using [Next.js](https://nextjs.org/),
 while the contents (i.e., the activities) are stored as [Jupyter notebooks](https://jupyter.org/).
 
+### Data
+Activites and curricula are responsiblity of a certain author and are maintained in external repositories.
+See the [Luce repository](https://github.com/LuCEresearchlab/pytamaro-web-luce/) for an example.
+
+Such repositories are imported to this repository as git submodules.
+They can be added using the following command:
+```sh
+git submodule add <repository-url> data/<author-slug>
+```
+
+To develop activities locally without having to commit your changes
+in the external repository and then update the submodule in this repository,
+you can remove the submodule and use a symlink instead:
+```sh
+rm -rf data/<author-slug>
+ln -s <path-to-local-folder> data/<author-slug>
+```
+Do not commit this change!
+
 ### Activities
 Activities are stored each in one folder inside the `data/<author-slug>/activities` folder.
 The name of the folder should use hyphens and determines the _slug_ of the activity,
