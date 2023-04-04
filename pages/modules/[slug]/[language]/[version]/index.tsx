@@ -1,7 +1,9 @@
 import Container from '@mui/material/Container';
 import { MDXRemote } from 'next-mdx-remote';
 
-import { Box, Button, Stack } from '@mui/material';
+import {
+  Box, Button, Stack, Typography,
+} from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import DownloadIcon from '@mui/icons-material/Download';
 import Head from 'next/head';
@@ -110,8 +112,8 @@ export default function NotebookPage({
           />
         </NavigationBar>
         <ResetButton visible={cellsModified} onReset={handleResetState} />
-        <Container>
-          <h1>{title}</h1>
+        <Container maxWidth="md">
+          <Typography variant="h3" marginTop={2}>{title}</Typography>
           {cells.map((cell: NotebookCell, idx) => {
             if (userType === 'student' && cell.source.trimStart().startsWith(TEACHER_ONLY_CELL_PREFIX)) {
               return (<Box key={cell.id} />);
