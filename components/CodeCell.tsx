@@ -2,7 +2,6 @@ import dynamic from 'next/dynamic';
 import { useTheme, styled } from '@mui/material/styles';
 import {
   Card, CardActions, CardContent, Collapse, IconButton, Paper,
-  Container,
   Tooltip,
 } from '@mui/material';
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
