@@ -1,9 +1,9 @@
 /*! CSS Used from: https://pytamaro.readthedocs.io/en/stable/_static/css/theme.css and slightly adapted (removed fonts, prefixed with .rst-content, margins adjusted) */
-.rst-content *,:after,:before{box-sizing:inherit;}
+.rst-content *, .rst-content :after, .rst-content :before{box-sizing:inherit;}
 .rst-content *{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;}
-.rst-content a:active,a:hover{outline:0;}
+.rst-content a:active, .rst-content a:hover{outline:0;}
 .rst-content strong{font-weight:700;}
-.rst-content dl,ul{margin:0;padding:0;list-style:none;list-style-image:none;}
+.rst-content dl, .rst-content ul{margin:0;padding:0;list-style:none;list-style-image:none;}
 .rst-content li{list-style:none;}
 .rst-content dd{margin:0;}
 .rst-content a{color:#2980b9;text-decoration:none;cursor:pointer;}
