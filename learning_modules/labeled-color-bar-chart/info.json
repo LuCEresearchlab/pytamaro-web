@@ -1,0 +1,27 @@
+{
+  "variants": [
+    {
+      "title": "Labeled Color Bar Chart",
+      "language": "en",
+      "description": "rectangle, beside",
+      "latestVersion": "v1"
+    }
+  ],
+  "usesComposePin": true,
+  "usesRepetition": true,
+  "onlyConstantColors": true,
+  "previewImage": {
+    "filename": "pop-density.svg",
+    "backgroundColor": "#ffffff"
+  },
+  "visibility": "visible",
+  "uses": [
+    {
+      "institution": "USI",
+      "course": "PF2 2023",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 7, Tasks 16 and 24",
+      "url": "https://www.icorsi.ch/mod/resource/view.php?id=899268"
+    }
+  ]
+}
