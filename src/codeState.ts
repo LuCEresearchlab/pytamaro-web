@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
 import logEvent, { EventName } from './AnalyticsEvent';
 
-import { executeCode } from './CodeExecution';
+import { ExecutionResponse, executeCode } from './CodeExecution';
 
 export interface CodeCellState {
   source: string;
@@ -32,6 +32,8 @@ export function useCodeState(initialCodeCells: CodeState, moduleVariantId: strin
   const KEY = `pytamaro_web_${moduleVariantId}_codeCells`;
   const [codeCells, setCodeCells] = useLocalStorageState(KEY, { defaultValue: initialCodeCells });
   const [cellsModified, setCellsModified] = useState(false);
+  const [networkError, setNetworkError] = useState(false);
+
   useEffect(() => {
     setCellsModified(JSON.stringify(codeCells) !== JSON.stringify(initialCodeCells));
   }, [codeCells, initialCodeCells]);
@@ -76,14 +78,16 @@ ${currentCellSource}`;
     );
   };
 
-  const executionFinished = (idx: number, response: any) => {
+  const executionFinished = (idx: number, response: ExecutionResponse | undefined) => {
     setCodeCells(
       (currentCodeCells) => produce(currentCodeCells, (draft) => {
         draft[idx].executionInProgress = false;
-        draft[idx].executionResponse = response;
-        draft[idx].outputSynced = true;
-        if (response.content.length > 0) {
-          draft[idx].outputAreaVisible = true;
+        if (response !== undefined) {
+          draft[idx].executionResponse = response;
+          draft[idx].outputSynced = true;
+          if (response.content.length > 0) {
+            draft[idx].outputAreaVisible = true;
+          }
         }
       }),
     );
@@ -93,14 +97,20 @@ ${currentCellSource}`;
     executionStarted(idx);
     const response = await executeCode(codeFirstNCells(idx));
     executionFinished(idx, response);
+    return response !== undefined;
   };
 
   const handleExecute = async (idx: number) => {
-    // (Re-Execute) all cells from the first one to the current one, included.
-    for (let i = 0; i <= idx; i += 1) {
-      handleExecuteSingleCell(i);
-    }
     logEvent(EventName.CodeExecution, { module: moduleVariantId });
+    setNetworkError(false);
+    // (Re-Execute) all cells from the first one to the current one, included.
+    const successes = [];
+    for (let i = 0; i <= idx; i += 1) {
+      successes.push(handleExecuteSingleCell(i));
+    }
+    if ((await Promise.all(successes)).includes(false)) {
+      setNetworkError(true);
+    }
   };
 
   const handleToggleOutputArea = (idx: number) => {
@@ -120,6 +130,8 @@ ${currentCellSource}`;
   return {
     codeCells,
     cellsModified,
+    networkError,
+    setNetworkError,
     handleSourceChanged,
     handleExecute,
     handleToggleOutputArea,

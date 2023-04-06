@@ -28,6 +28,7 @@ import VariantSelector from '../../../../../components/VariantsSelector';
 import downloadSourceCode from '../../../../../src/CodeDownload';
 import ResponsiveReactPlayer from '../../../../../components/ResponsiveReactPlayer';
 import PyTamaroAPI from '../../../../../components/PyTamaroAPIDocs/PyTamaroAPI';
+import NetworkErrorSnackbar from '../../../../../components/NetworkErrorSnackbar';
 
 function attachmentsTransformer(src: string, cell: NotebookCell) {
   const attachmentPrefix = 'attachment:';
@@ -86,7 +87,7 @@ export default function NotebookPage({
   initialCodeCells.forEach((cell, idx) => originalIdxToCodeCellIdx.set(cell.originalIndex, idx));
 
   const {
-    codeCells, cellsModified, handleSourceChanged, handleExecute,
+    codeCells, cellsModified, networkError, setNetworkError, handleSourceChanged, handleExecute,
     handleToggleOutputArea, handleResetState, getWholeSource,
   } = useCodeState(initialCodeCells, moduleVersionId);
 
@@ -112,6 +113,7 @@ export default function NotebookPage({
           />
         </NavigationBar>
         <ResetButton visible={cellsModified} onReset={handleResetState} />
+        <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
         <Container maxWidth="md">
           <Typography variant="h3" marginTop={2}>{title}</Typography>
           {cells.map((cell: NotebookCell, idx) => {
