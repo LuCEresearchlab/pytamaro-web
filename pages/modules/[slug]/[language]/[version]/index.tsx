@@ -22,13 +22,13 @@ import {
 } from '../../../../../src/Modules';
 import NavigationBar from '../../../../../components/NavigationBar';
 import { createCodeCell, useCodeState } from '../../../../../src/codeState';
-import ResetButton from '../../../../../components/ResetButton';
 import { notebookVersionUrl } from '../../../../../src/urlUtils';
 import VariantSelector from '../../../../../components/VariantsSelector';
 import downloadSourceCode from '../../../../../src/CodeDownload';
 import ResponsiveReactPlayer from '../../../../../components/ResponsiveReactPlayer';
 import PyTamaroAPI from '../../../../../components/PyTamaroAPIDocs/PyTamaroAPI';
 import NetworkErrorSnackbar from '../../../../../components/NetworkErrorSnackbar';
+import ResetButton from '../../../../../components/ResetButton';
 
 function attachmentsTransformer(src: string, cell: NotebookCell) {
   const attachmentPrefix = 'attachment:';
@@ -111,8 +111,8 @@ export default function NotebookPage({
             versions={versions}
             languages={languages}
           />
+          <ResetButton enabled={cellsModified} onReset={handleResetState} />
         </NavigationBar>
-        <ResetButton visible={cellsModified} onReset={handleResetState} />
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
         <Container maxWidth="md">
           <Typography variant="h3" marginTop={2}>{title}</Typography>

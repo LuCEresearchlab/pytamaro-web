@@ -123,7 +123,7 @@ ${currentCellSource}`;
 
   const confirm = useConfirm();
   const handleResetState = () => {
-    confirm({ description: 'You will lose all your changes!' })
+    confirm({ description: 'You are about to reset all the code you have written in this activity. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete my code' })
       .then(() => setCodeCells(initialCodeCells));
   };
 

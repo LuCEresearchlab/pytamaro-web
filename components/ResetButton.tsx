@@ -1,22 +1,17 @@
 import { RestartAlt } from '@mui/icons-material';
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
+import { IconButton, Tooltip } from '@mui/material';
 
-export default function ResetButton({ visible, onReset }:
-{ visible: boolean, onReset: () => void }) {
+export default function ResetButton({ enabled, onReset }:
+{ enabled: boolean, onReset: () => void }) {
   return (
-    <Grid container justifyContent="flex-end">
-      <Button
-        variant="contained"
-        color="error"
-        endIcon={<RestartAlt />}
-        sx={{
-          m: 2, mb: -6, visibility: visible ? 'visible' : 'hidden', position: 'fixed',
-        }}
+    <Tooltip title="Reset" sx={{ ml: 1 }}>
+      <IconButton
+        disabled={!enabled}
         onClick={onReset}
+        color="neutral"
       >
-        Reset
-      </Button>
-    </Grid>
+        <RestartAlt />
+      </IconButton>
+    </Tooltip>
   );
 }

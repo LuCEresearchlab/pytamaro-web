@@ -21,6 +21,7 @@ import {
   ToggleButton,
   IconButton,
   Box,
+  Tooltip,
 } from '@mui/material';
 import { HourglassBottom, Verified } from '@mui/icons-material';
 import InfoIcon from '@mui/icons-material/Info';
@@ -88,16 +89,18 @@ export default function ModulesPage({ modules }: { modules: Module[] }) {
   return (
     <Stack spacing={2}>
       <NavigationBar>
-        <ToggleButton
-          color="neutral"
-          value="compact"
-          selected={compactView}
-          onChange={() => {
-            setCompactView(!compactView);
-          }}
-        >
-          <ViewCompactIcon />
-        </ToggleButton>
+        <Tooltip title="Compact View">
+          <ToggleButton
+            color="neutral"
+            value="compact"
+            selected={compactView}
+            onChange={() => {
+              setCompactView(!compactView);
+            }}
+          >
+            <ViewCompactIcon />
+          </ToggleButton>
+        </Tooltip>
       </NavigationBar>
       <Grid container spacing={2}>
         <Grid xs={9}>
