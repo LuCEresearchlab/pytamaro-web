@@ -7,22 +7,23 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useState } from 'react';
 import {
-  Alert, IconButton, Stack, Tooltip,
+  IconButton, Stack, Tooltip,
 } from '@mui/material';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import * as Sentry from '@sentry/nextjs';
+import CustomSnackbar from './CustomSnackbar';
 
 export default function FeedbackDialog() {
   const [open, setOpen] = useState(false);
-  const [feedbackSent, setFeedbackSent] = useState(false);
-  const [feedbackError, setFeedbackError] = useState(false);
+  const [feedbackReceivedVisibile, setFeedbackReceivedVisible] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
 
-  const clearFeedbackResults = () => {
-    setFeedbackSent(false);
-    setFeedbackError(false);
+  const clearFeedback = () => {
+    setName('');
+    setEmail('');
+    setMessage('');
   };
 
   const handleClickOpen = () => {
@@ -31,24 +32,19 @@ export default function FeedbackDialog() {
 
   const handleClose = () => {
     setOpen(false);
-    clearFeedbackResults();
   };
 
   const handleSend = async () => {
-    clearFeedbackResults();
-
-    try {
-      const eventId = Sentry.captureMessage('User Feedback');
-      Sentry.captureUserFeedback({
-        event_id: eventId,
-        name,
-        email,
-        comments: message,
-      });
-      setFeedbackSent(true);
-    } catch {
-      setFeedbackError(true);
-    }
+    const eventId = Sentry.captureMessage('User Feedback');
+    Sentry.captureUserFeedback({
+      event_id: eventId,
+      name,
+      email,
+      comments: message,
+    });
+    handleClose();
+    clearFeedback();
+    setFeedbackReceivedVisible(true);
   };
 
   return (
@@ -94,8 +90,6 @@ export default function FeedbackDialog() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            {feedbackSent ? <Alert severity="success">We got your feedback. Thanks!</Alert> : null}
-            {feedbackError ? <Alert severity="error">Something went wrong while sending the feedback. Try again!</Alert> : null}
           </Stack>
         </DialogContent>
         <DialogActions>
@@ -103,6 +97,7 @@ export default function FeedbackDialog() {
           <Button onClick={handleSend}>Send</Button>
         </DialogActions>
       </Dialog>
+      <CustomSnackbar visible={feedbackReceivedVisibile} setVisible={setFeedbackReceivedVisible} severity="success" message="Feedback received!" />
     </div>
   );
 }
