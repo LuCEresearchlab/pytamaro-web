@@ -1,0 +1,24 @@
+{
+  "variants": [
+    {
+      "title": "Pitaya Slice",
+      "language": "en",
+      "description": "ellipse, compose, pin, rotate",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "pitaya-slice.svg",
+    "backgroundColor": "#fceba3"
+  },
+  "visibility": "visible",
+  "uses": [
+    {
+      "institution": "USI",
+      "course": "PF2 2023",
+      "instructors": ["Matthias Hauswirth"],
+      "assignment": "Lab 8, Task ?",
+      "url": "https://www.icorsi.ch/mod/resource/view.php?id=899268"
+    }
+  ]
+}
