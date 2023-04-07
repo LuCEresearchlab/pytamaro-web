@@ -1,7 +1,9 @@
 import Container from '@mui/material/Container';
 import { MDXRemote } from 'next-mdx-remote';
 
-import { Box, Button, Stack } from '@mui/material';
+import {
+  Box, Button, Stack, Typography,
+} from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import DownloadIcon from '@mui/icons-material/Download';
 import Head from 'next/head';
@@ -20,12 +22,13 @@ import {
 } from '../../../../../src/Modules';
 import NavigationBar from '../../../../../components/NavigationBar';
 import { createCodeCell, useCodeState } from '../../../../../src/codeState';
-import ResetButton from '../../../../../components/ResetButton';
 import { notebookVersionUrl } from '../../../../../src/urlUtils';
 import VariantSelector from '../../../../../components/VariantsSelector';
 import downloadSourceCode from '../../../../../src/CodeDownload';
 import ResponsiveReactPlayer from '../../../../../components/ResponsiveReactPlayer';
 import PyTamaroAPI from '../../../../../components/PyTamaroAPIDocs/PyTamaroAPI';
+import NetworkErrorSnackbar from '../../../../../components/NetworkErrorSnackbar';
+import ResetButton from '../../../../../components/ResetButton';
 
 const userType = 'student';
 
@@ -43,14 +46,21 @@ function attachmentsTransformer(src: string, cell: NotebookCell) {
 
 function attachmentsImage(props: any, cell: NotebookCell) {
   return (
-    <picture>
-      <img
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      component="span"
+    >
+      <picture>
+        <img
         // eslint-disable-next-line react/jsx-props-no-spreading
-        {...props}
-        alt={props.alt}
-        src={attachmentsTransformer(props.src, cell)}
-      />
-    </picture>
+          {...props}
+          alt={props.alt}
+          src={attachmentsTransformer(props.src, cell)}
+        />
+      </picture>
+    </Box>
   );
 }
 
@@ -80,7 +90,7 @@ export default function NotebookPage({
   initialCodeCells.forEach((cell, idx) => originalIdxToCodeCellIdx.set(cell.originalIndex, idx));
 
   const {
-    codeCells, cellsModified, handleSourceChanged, handleExecute,
+    codeCells, cellsModified, networkError, setNetworkError, handleSourceChanged, handleExecute,
     handleToggleOutputArea, handleResetState, getWholeSource,
   } = useCodeState(initialCodeCells, moduleVersionId);
 
@@ -101,10 +111,11 @@ export default function NotebookPage({
             versions={versions}
             languages={languages}
           />
+          <ResetButton enabled={cellsModified} onReset={handleResetState} />
         </NavigationBar>
-        <ResetButton visible={cellsModified} onReset={handleResetState} />
-        <Container>
-          <h1>{title}</h1>
+        <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
+        <Container maxWidth="md">
+          <Typography variant="h3" marginTop={2}>{title}</Typography>
           {cells.map((cell: NotebookCell, idx) => {
             if (cell.cell_type === 'markdown') {
               const components = {

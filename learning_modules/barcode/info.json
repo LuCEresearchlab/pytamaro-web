@@ -1,0 +1,24 @@
+{
+  "variants": [
+    {
+      "title": "Codice a barre",
+      "language": "it",
+      "description": "beside, data representation",
+      "latestVersion": "v1"
+    }
+  ],
+  "previewImage": {
+    "filename": "barcode.png",
+    "backgroundColor": "#aed9e7"
+  },
+  "visibility": "featured",
+  "uses": [
+    {
+      "institution": "SUPSI",
+      "course": "SDD 2022",
+      "instructors": ["Luca Chiodini", "Matthias Hauswirth"],
+      "assignment": "Assignment 2: Crea un tuo Codice a Barre",
+      "url": "https://www.icorsi.ch/course/view.php?id=14818"
+    }
+  ]
+}

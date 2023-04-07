@@ -1,6 +1,7 @@
 import {
   AppBar, Button, Divider, Stack, Toolbar,
 } from '@mui/material';
+import FeedbackDialog from './FeedbackDialog';
 
 const navItems = [
   {
@@ -36,6 +37,7 @@ export default function NavigationBar(props: { children?: React.ReactNode }) {
           ))}
         </Stack>
         {children}
+        <FeedbackDialog />
       </Toolbar>
     </AppBar>
   );
