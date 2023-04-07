@@ -1,9 +1,14 @@
 import Container from '@mui/material/Container';
 import { MDXRemote } from 'next-mdx-remote';
+import useLocalStorageState from 'use-local-storage-state';
+import produce from 'immer';
 
-import { Box, Button, Stack } from '@mui/material';
+import {
+  Box, Button, Stack, ToggleButton,
+} from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import DownloadIcon from '@mui/icons-material/Download';
+import CheckIcon from '@mui/icons-material/Check';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -12,6 +17,7 @@ import {
 } from '../../../../../../src/Notebook';
 import CodeCell from '../../../../../../components/CodeCell';
 import {
+  ActivityInfo,
   findLanguages,
   findVersions,
   LanguageWithLatestVersion,
@@ -85,6 +91,10 @@ export default function NotebookPage({
     codeCells, cellsModified, handleSourceChanged, handleExecute,
     handleToggleOutputArea, handleResetState, getWholeSource,
   } = useCodeState(initialCodeCells, activityVersionId);
+  const [activityMetadata, setActivityMetadata] = useLocalStorageState(
+    'pytamaro_web_activity_metadata',
+    { defaultValue: [] as ActivityInfo[] },
+  );
 
   const pageTitle = `${title} - PyTamaro`;
 
@@ -163,6 +173,32 @@ export default function NotebookPage({
           >
             Activity Information
           </Button>
+          <ToggleButton
+            color="primary"
+            value="check"
+            selected={activityMetadata.find((md) => md.slug === activitySlug)?.completed}
+            onChange={() => {
+              setActivityMetadata(
+                produce((draft) => {
+                  const activityMeta = draft.find((md) => md.slug === activitySlug);
+                  if (activityMeta) {
+                    activityMeta.completed = !activityMeta.completed;
+                  } else {
+                    draft.push({
+                      slug: activitySlug,
+                      completed: true,
+                    });
+                  }
+                }),
+              );
+            }}
+          >
+            {activityMetadata.find((md) => md.slug === activitySlug)?.completed && (
+              <CheckIcon />
+            )}
+            {!activityMetadata.find((md) => md.slug === activitySlug)?.completed && 'Mark as '}
+            Completed
+          </ToggleButton>
         </Stack>
       </Box>
     </div>

@@ -13,6 +13,11 @@ async function getActivityInfo(authorSlug: string, activitySlug: string) {
   };
 }
 
+export interface ActivityInfo {
+  slug: string,
+  completed: boolean,
+}
+
 export interface NotebookVariant {
   title: string,
   language: string,
