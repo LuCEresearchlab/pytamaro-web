@@ -28,8 +28,6 @@ import ResponsiveReactPlayer from '../../../../../components/ResponsiveReactPlay
 import PyTamaroAPI from '../../../../../components/PyTamaroAPIDocs/PyTamaroAPI';
 
 const userType = 'student';
-const TEACHER_ONLY_CELL_PREFIX = '#teacher-only';
-const STUDENT_TEACHER_CELL_PREFIX = '#student-teacher';
 
 function attachmentsTransformer(src: string, cell: NotebookCell) {
   const attachmentPrefix = 'attachment:';
@@ -171,9 +169,7 @@ export async function getStaticProps(
   return {
     props: {
       title: (await variantInfo(slug, language)).title,
-      cells: (await getNotebookContent(slug, language, version))
-        .filter((cell) => (userType !== 'student' || !cell.source.trimStart().startsWith(TEACHER_ONLY_CELL_PREFIX))
-          && (userType === 'student' || cell.source.trimStart().startsWith(TEACHER_ONLY_CELL_PREFIX) || cell.source.trimStart().startsWith(STUDENT_TEACHER_CELL_PREFIX))),
+      cells: (await getNotebookContent(slug, language, version, userType)),
       versions: await findVersions(slug, language),
       languages: await findLanguages(slug),
     },
