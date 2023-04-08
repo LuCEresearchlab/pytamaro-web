@@ -1,14 +1,14 @@
 {
   "variants": [
     {
-      "title": "Pitaya Slice",
+      "title": "Sliced Watermelon",
       "language": "en",
       "description": "ellipse, compose, pin, rotate",
       "latestVersion": "v1"
     }
   ],
   "previewImage": {
-    "filename": "pitaya-slice.svg",
+    "filename": "sliced-watermelon.svg",
     "backgroundColor": "#fceba3"
   },
   "visibility": "visible",
