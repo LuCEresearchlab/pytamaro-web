@@ -6,8 +6,9 @@ import Head from 'next/head';
 import CodeCell from '../components/CodeCell';
 import DownloadCodeButton from '../components/CodeDownloadButton';
 import NavigationBar from '../components/NavigationBar';
-import ResetButton from '../components/ResetButton';
 import { createCodeCell, useCodeState } from '../src/codeState';
+import NetworkErrorSnackbar from '../components/NetworkErrorSnackbar';
+import ResetButton from '../components/ResetButton';
 
 const INITIAL_SOURCE = `from pytamaro import rectangle, red, show_graphic
 
@@ -17,7 +18,7 @@ show_graphic(red_square)`;
 export default function Playground() {
   const initialCodeState = [createCodeCell(INITIAL_SOURCE, 0)];
   const {
-    codeCells, cellsModified,
+    codeCells, cellsModified, networkError, setNetworkError,
     handleSourceChanged, handleExecute, handleToggleOutputArea, handleResetState, getWholeSource,
   } = useCodeState(initialCodeState, 'playground');
   const codeCellState = codeCells[0];
@@ -27,8 +28,10 @@ export default function Playground() {
         <title>Playground - PyTamaro</title>
       </Head>
       <Box>
-        <NavigationBar />
-        <ResetButton visible={cellsModified} onReset={handleResetState} />
+        <NavigationBar>
+          <ResetButton enabled={cellsModified} onReset={handleResetState} />
+        </NavigationBar>
+        <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
         <Container maxWidth="lg">
           <Typography variant="h2" align="center" marginY={3}>Playground</Typography>
           <CodeCell

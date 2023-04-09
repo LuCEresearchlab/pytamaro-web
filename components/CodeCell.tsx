@@ -2,7 +2,6 @@ import dynamic from 'next/dynamic';
 import { useTheme, styled } from '@mui/material/styles';
 import {
   Card, CardActions, CardContent, Collapse, IconButton, Paper,
-  Container,
   Tooltip,
 } from '@mui/material';
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
@@ -74,63 +73,61 @@ export default function CodeCell({
     buttonMessage = 'Running...';
   }
   return (
-    <Container sx={{ mb: 2 }}>
-      <Paper elevation={8}>
-        <Card>
+    <Paper elevation={4}>
+      <Card>
+        <CardContent>
+          <AceEditor
+            mode="python"
+            theme="xcode"
+            value={codeCellState.source}
+            onLoad={(editor) => { editor.moveCursorTo(0, 0); }}
+            onChange={onSourceChanged}
+            maxLines={Infinity}
+            fontSize="1rem"
+            width="100%"
+            showPrintMargin={false}
+            showGutter={false}
+            highlightActiveLine={false}
+            setOptions={{
+              fontFamily: theme.pytamaro.monospaceFontFamily,
+            }}
+          />
+        </CardContent>
+        <CardActions disableSpacing sx={{ padding: 2, display: 'flex' }}>
+          <Tooltip title={buttonTooltip} placement="right">
+            <span>
+              <LoadingButton
+                onClick={onExecutionRequested}
+                endIcon={buttonIcon}
+                loading={codeCellState.executionInProgress}
+                loadingPosition="end"
+                variant="contained"
+                sx={{ minWidth: 200 }}
+                disabled={!executionEnabled}
+              >
+                <span>{buttonMessage}</span>
+              </LoadingButton>
+            </span>
+          </Tooltip>
+          <ExpandMore
+            expand={codeCellState.outputAreaVisible}
+            aria-expanded={codeCellState.outputAreaVisible}
+            aria-label="show output area"
+            sx={{ visibility: codeCellState.executionResponse ? 'visible' : 'hidden' }}
+            onClick={onOutputAreaToggled}
+          >
+            <ExpandMoreIcon fontSize="large" />
+          </ExpandMore>
+        </CardActions>
+        <Collapse in={codeCellState.outputAreaVisible} timeout="auto" unmountOnExit>
           <CardContent>
-            <AceEditor
-              mode="python"
-              theme="xcode"
-              value={codeCellState.source}
-              onChange={onSourceChanged}
-              maxLines={Infinity}
-              fontSize="1rem"
-              width="100%"
-              showPrintMargin={false}
-              showGutter={false}
-              highlightActiveLine={false}
-              setOptions={{
-                fontFamily: theme.pytamaro.monospaceFontFamily,
-              }}
-            />
-          </CardContent>
-          <CardActions disableSpacing sx={{ padding: 2, display: 'flex' }}>
-            <Tooltip title={buttonTooltip} placement="right">
-              <span>
-                <LoadingButton
-                  onClick={onExecutionRequested}
-                  endIcon={buttonIcon}
-                  loading={codeCellState.executionInProgress}
-                  loadingPosition="end"
-                  variant="contained"
-                  sx={{ minWidth: 200 }}
-                  disabled={!executionEnabled}
-                >
-                  <span>{buttonMessage}</span>
-                </LoadingButton>
-              </span>
-            </Tooltip>
-            <ExpandMore
-              expand={codeCellState.outputAreaVisible}
-              aria-expanded={codeCellState.outputAreaVisible}
-              aria-label="show output area"
-              sx={{ visibility: codeCellState.executionResponse ? 'visible' : 'hidden' }}
-              onClick={onOutputAreaToggled}
-            >
-              <ExpandMoreIcon fontSize="large" />
-            </ExpandMore>
-          </CardActions>
-          <Collapse in={codeCellState.outputAreaVisible} timeout="auto" unmountOnExit>
-            <CardContent>
-              <Card sx={{ backgroundColor: outputAreaBgColor, p: 2 }}>
-                {codeCellState.executionResponse
+            <Card sx={{ backgroundColor: outputAreaBgColor, p: 2 }}>
+              {codeCellState.executionResponse
                   && <OutputArea executionResponse={codeCellState.executionResponse} />}
-              </Card>
-            </CardContent>
-          </Collapse>
-        </Card>
-      </Paper>
-
-    </Container>
+            </Card>
+          </CardContent>
+        </Collapse>
+      </Card>
+    </Paper>
   );
 }

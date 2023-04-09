@@ -36,6 +36,11 @@ declare module '@mui/material/ToggleButton' {
     neutral: true;
   }
 }
+declare module '@mui/material/IconButton' {
+  interface IconButtonPropsColorOverrides {
+    neutral: true;
+  }
+}
 
 // Create a theme instance.
 const theme = createTheme({

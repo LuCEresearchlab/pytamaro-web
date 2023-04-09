@@ -113,9 +113,8 @@ export default function InfoPage({ uses, activity }: {
               <Typography variant="body1" marginY={3}>
                 This activity has been used in the following
                 {' '}
-                {uses.length}
-                {' '}
-                courses:
+                {uses.length === 1 ? 'course' : `${uses.length} courses`}
+                :
               </Typography>
               {uses.map((use: NotebookUse) => (
                 <Box m={2} key={use.url}>

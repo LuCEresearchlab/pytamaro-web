@@ -4,7 +4,7 @@ import useLocalStorageState from 'use-local-storage-state';
 import produce from 'immer';
 
 import {
-  Box, Button, Stack, ToggleButton,
+  Box, Button, Stack, Typography, ToggleButton,
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -25,12 +25,13 @@ import {
 } from '../../../../../../src/Activities';
 import NavigationBar from '../../../../../../components/NavigationBar';
 import { createCodeCell, useCodeState } from '../../../../../../src/codeState';
-import ResetButton from '../../../../../../components/ResetButton';
 import { notebookVersionUrl } from '../../../../../../src/urlUtils';
 import VariantSelector from '../../../../../../components/VariantsSelector';
 import downloadSourceCode from '../../../../../../src/CodeDownload';
 import ResponsiveReactPlayer from '../../../../../../components/ResponsiveReactPlayer';
 import PyTamaroAPI from '../../../../../../components/PyTamaroAPIDocs/PyTamaroAPI';
+import NetworkErrorSnackbar from '../../../../../../components/NetworkErrorSnackbar';
+import ResetButton from '../../../../../../components/ResetButton';
 import { listAuthors } from '../../../../../../src/Authors';
 
 function attachmentsTransformer(src: string, cell: NotebookCell) {
@@ -47,14 +48,21 @@ function attachmentsTransformer(src: string, cell: NotebookCell) {
 
 function attachmentsImage(props: any, cell: NotebookCell) {
   return (
-    <picture>
-      <img
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      component="span"
+    >
+      <picture>
+        <img
         // eslint-disable-next-line react/jsx-props-no-spreading
-        {...props}
-        alt={props.alt}
-        src={attachmentsTransformer(props.src, cell)}
-      />
-    </picture>
+          {...props}
+          alt={props.alt}
+          src={attachmentsTransformer(props.src, cell)}
+        />
+      </picture>
+    </Box>
   );
 }
 
@@ -88,7 +96,7 @@ export default function NotebookPage({
   initialCodeCells.forEach((cell, idx) => originalIdxToCodeCellIdx.set(cell.originalIndex, idx));
 
   const {
-    codeCells, cellsModified, handleSourceChanged, handleExecute,
+    codeCells, cellsModified, networkError, setNetworkError, handleSourceChanged, handleExecute,
     handleToggleOutputArea, handleResetState, getWholeSource,
   } = useCodeState(initialCodeCells, activityVersionId);
   const [activityMetadata, setActivityMetadata] = useLocalStorageState(
@@ -117,10 +125,11 @@ export default function NotebookPage({
             versions={versions}
             languages={languages}
           />
+          <ResetButton enabled={cellsModified} onReset={handleResetState} />
         </NavigationBar>
-        <ResetButton visible={cellsModified} onReset={handleResetState} />
-        <Container>
-          <h1>{title}</h1>
+        <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
+        <Container maxWidth="md">
+          <Typography variant="h3" marginTop={2}>{title}</Typography>
           {cells.map((cell: NotebookCell, idx) => {
             if (userType === 'student' && cell.source.trimStart().startsWith(TEACHER_ONLY_CELL_PREFIX)) {
               return (<Box key={cell.id} />);

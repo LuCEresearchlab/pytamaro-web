@@ -1,16 +1,31 @@
 version: "3.9"
 services:
-  web:
+  pytamaro-web-nextjs:
     build:
       context: ..
       dockerfile: docker/web/Dockerfile
-    ports:
-      - "9009:3000"
     depends_on:
-      - redis
-  redis:
+      - pytamaro-web-redis
+    environment:
+      - VIRTUAL_HOST=${NEXT_PUBLIC_DOMAIN}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+  pytamaro-web-redis:
     image: redis:alpine
     restart: always
     ports:
       - "6379:6379"
     command: redis-server --requirepass ${REDIS_PASSWORD}
+  pytamaro-web-nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    ports:
+      - "9009:9009"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    environment:
+      - HTTP_PORT=9009
+
