@@ -223,6 +223,13 @@ export default function SummerAcademy() {
         </Box>
         <Container maxWidth="lg">
           <Typography variant="h4" align="center" marginY={3}>Five-Day Summer Academy at the Software Institute at USI in Lugano</Typography>
+          <Typography variant="h4" align="center" marginY={3} sx={{ color: '#d2071b', fontWeight: 'bold' }}>Monday, August 14 to Friday, August 18, 2023</Typography>
+          <Typography variant="h5" align="center" marginY={3} sx={{ color: '#d2071b' }}>
+            Daily Schedule: 9:00 to 17:00, lunch included
+          </Typography>
+          <Typography variant="h5" align="center" marginY={3} sx={{ color: '#d2071b', fontWeight: 'bold' }}>
+            Online Registration Coming Soon
+          </Typography>
           <Typography variant="h5" align="center" marginY={3}>
             Learn programming by decomposing graphics and recomposing them as programs.
             Experience the sound theoretical foundations of programming
