@@ -84,7 +84,7 @@ export default function MyData() {
             .
           </Typography>
           <Typography variant="h4" align="center" marginY={3}>Export and Import</Typography>
-          <Typography variant="body1" marginY={3}>
+          <Typography variant="body1" marginTop={3}>
             The data (e.g., source code) you enter in PyTamaro Web is stored in your browser,
             inside its local storage.
             You may want to export the data into a file
@@ -92,7 +92,7 @@ export default function MyData() {
             you can backup (e.g., if someone might clear your browser&apos;s local storage),
             or you can send to your teacher.
           </Typography>
-          <Stack direction="row" alignItems="center" justifyContent="center" spacing={2}>
+          <Stack direction="row" alignItems="center" justifyContent="center" spacing={1}>
             <ExportLocalStorageButton
               getData={() => JSON.stringify(Object.fromEntries(localStorageMap))}
             />
@@ -131,7 +131,7 @@ export default function MyData() {
           )}
           {activityVariantIds.length === 0 && (
             <Typography variant="body1" marginY={3}>
-              You haven&apos;t wrote source code for any activities.
+              You haven&apos;t written source code for any activities.
             </Typography>
           )}
           {completedActivityMetadata.length > 0 && (
