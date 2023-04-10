@@ -1,0 +1,51 @@
+import { Box, Button } from '@mui/material';
+
+import { useRef, useState } from 'react';
+import UploadIcon from '@mui/icons-material/Upload';
+import CustomSnackbar from './CustomSnackbar';
+
+export default function ImportLocalStorageButton({ setLocalStorageMapFromString }
+: { setLocalStorageMapFromString: (jsonString: string) => void }) {
+  const hiddenFileInput = useRef<HTMLInputElement>(null);
+  const [importSuccessfulVisible, setImportSuccessfulVisible] = useState(false);
+  const [importErrorVisible, setImportErrorVisible] = useState(false);
+
+  const handleClick = () => {
+    if (hiddenFileInput.current) {
+      hiddenFileInput.current.click();
+    }
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { target } = event;
+    const filesUploaded = event.target.files;
+    if (filesUploaded && filesUploaded[0]) {
+      const reader = new FileReader();
+      reader.readAsText(filesUploaded[0], 'UTF-8');
+      reader.onload = (e) => {
+        if (e.target && typeof e.target.result === 'string') {
+          setLocalStorageMapFromString(e.target.result);
+          setImportSuccessfulVisible(true);
+        } else {
+          setImportErrorVisible(true);
+        }
+      };
+      reader.onerror = () => {
+        setImportErrorVisible(true);
+      };
+    }
+    // Clear file input
+    target.value = '';
+  };
+
+  return (
+    <Box textAlign="center" sx={{ m: 4 }} onClick={handleClick}>
+      <Button variant="contained" color="success" startIcon={<UploadIcon />}>
+        Upload
+      </Button>
+      <input type="file" ref={hiddenFileInput} onChangeCapture={handleChange} style={{ display: 'none' }} />
+      <CustomSnackbar visible={importSuccessfulVisible} setVisible={setImportSuccessfulVisible} severity="success" message="Import successful!" />
+      <CustomSnackbar visible={importErrorVisible} setVisible={setImportErrorVisible} severity="error" message="Import Error" />
+    </Box>
+  );
+}

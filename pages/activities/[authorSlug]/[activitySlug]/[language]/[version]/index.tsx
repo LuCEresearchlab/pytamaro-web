@@ -86,8 +86,8 @@ export default function NotebookPage({
     language: string,
     version: string
   };
-  const activityVariantId = `${activitySlug}-${language}`;
-  const activityVersionId = `${activityVariantId}-${version}`;
+  const activityVariantId = `${authorSlug}/${activitySlug}/${language}`;
+  const activityVersionId = `${activityVariantId}/${version}`;
 
   const initialCodeCells = cells
     .filter((cell) => cell.cell_type === 'code')
@@ -185,16 +185,16 @@ export default function NotebookPage({
           <ToggleButton
             color="primary"
             value="check"
-            selected={activityMetadata.find((md) => md.slug === activitySlug)?.completed}
+            selected={activityMetadata.find((md) => md.slug === activityVersionId)?.completed}
             onChange={() => {
               setActivityMetadata(
                 produce((draft) => {
-                  const activityMeta = draft.find((md) => md.slug === activitySlug);
+                  const activityMeta = draft.find((md) => md.slug === activityVersionId);
                   if (activityMeta) {
                     activityMeta.completed = !activityMeta.completed;
                   } else {
                     draft.push({
-                      slug: activitySlug,
+                      slug: activityVersionId,
                       completed: true,
                     });
                   }
@@ -202,10 +202,10 @@ export default function NotebookPage({
               );
             }}
           >
-            {activityMetadata.find((md) => md.slug === activitySlug)?.completed && (
+            {activityMetadata.find((md) => md.slug === activityVersionId)?.completed && (
               <CheckIcon />
             )}
-            {!activityMetadata.find((md) => md.slug === activitySlug)?.completed && 'Mark as '}
+            {!activityMetadata.find((md) => md.slug === activityVersionId)?.completed && 'Mark as '}
             Completed
           </ToggleButton>
         </Stack>

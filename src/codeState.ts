@@ -28,8 +28,17 @@ export function createCodeCell(source: string, originalIndex: number): CodeCellS
   };
 }
 
+function getKeyFromId(activityVariantId: string) {
+  return `pytamaro_web_${activityVariantId}_codeCells`;
+}
+
+export function getIdFromKey(key: string) {
+  const words = key.split('_');
+  return words[2];
+}
+
 export function useCodeState(initialCodeCells: CodeState, activityVariantId: string) {
-  const KEY = `pytamaro_web_${activityVariantId}_codeCells`;
+  const KEY = getKeyFromId(activityVariantId);
   const [codeCells, setCodeCells] = useLocalStorageState(KEY, { defaultValue: initialCodeCells });
   const [cellsModified, setCellsModified] = useState(false);
   const [networkError, setNetworkError] = useState(false);

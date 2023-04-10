@@ -5,9 +5,32 @@ import {
 } from '@mui/material';
 import Head from 'next/head';
 import NextLink from 'next/link';
+import { useMemo } from 'react';
 import NavigationBar from '../components/NavigationBar';
+import { ActivityInfo } from '../src/Activities';
+import { getIdFromKey } from '../src/codeState';
+import getLanguageDisplayName from '../src/internationalization';
+import ExportLocalStorageButton from '../components/ExportLocalStorageButton';
+import ImportLocalStorageButton from '../components/ImportLocalStorageButton';
+import useLocalStorageMapState from '../src/localStorageMapState';
 
 export default function MyData() {
+  const { localStorageMap, setLocalStorageMapFromString } = useLocalStorageMapState();
+  const activityVariantIds = useMemo(
+    () => Array.from(localStorageMap.keys())
+      .filter((key) => key.startsWith('pytamaro_web') && key.endsWith('codeCells'))
+      .map((key) => getIdFromKey(key)),
+    [localStorageMap],
+  );
+  const activityMetadata = useMemo(
+    () => (localStorageMap.get('pytamaro_web_activity_metadata') || []) as ActivityInfo[],
+    [localStorageMap],
+  );
+  const completedActivityMetadata = useMemo(
+    () => activityMetadata.filter((activity) => activity.completed),
+    [activityMetadata],
+  );
+
   return (
     <div>
       <Head>
@@ -69,16 +92,83 @@ export default function MyData() {
             you can backup (e.g., if someone might clear your browser&apos;s local storage),
             or you can send to your teacher.
           </Typography>
-          <Typography variant="body1" marginY={3}>
-            TODO
-          </Typography>
+          <Stack direction="row" alignItems="center" justifyContent="center" spacing={2}>
+            <ExportLocalStorageButton
+              getData={() => JSON.stringify(Object.fromEntries(localStorageMap))}
+            />
+            <ImportLocalStorageButton setLocalStorageMapFromString={setLocalStorageMapFromString} />
+          </Stack>
           <Typography variant="h4" align="center" marginY={3}>My Source Code</Typography>
-          <Typography variant="body1" marginY={3}>
-            You wrote source code for the following activities:
-          </Typography>
-          <Typography variant="body1" marginY={3}>
-            TODO
-          </Typography>
+          {activityVariantIds.length > 0 && (
+            <>
+              <Typography variant="body1" marginY={3}>
+                You wrote source code for the following activities:
+              </Typography>
+              <ul>
+                {
+                  activityVariantIds.map((id: string) => {
+                    const [authorSlug, activitySlug, language, version] = id.split('/');
+                    return (
+                      <li key={id}>
+                        <Link href={`/activities/${authorSlug}/${activitySlug}/${language}/${version}`}>
+                          {`${authorSlug}/${activitySlug}`}
+                        </Link>
+                        {' '}
+                        (
+                        {getLanguageDisplayName(language)}
+                        ,
+                        {' '}
+                        latest version:
+                        {' '}
+                        {version}
+                        )
+                      </li>
+                    );
+                  })
+                }
+              </ul>
+            </>
+          )}
+          {activityVariantIds.length === 0 && (
+            <Typography variant="body1" marginY={3}>
+              You haven&apos;t wrote source code for any activities.
+            </Typography>
+          )}
+          {completedActivityMetadata.length > 0 && (
+            <>
+              <Typography variant="body1" marginY={3}>
+                You completed the following activities:
+              </Typography>
+              <ul>
+                {
+                  completedActivityMetadata.map(({ slug }) => {
+                    const [authorSlug, activitySlug, language, version] = slug.split('/');
+                    return (
+                      <li key={slug}>
+                        <Link href={`/activities/${authorSlug}/${activitySlug}/${language}/${version}`}>
+                          {`${authorSlug}/${activitySlug}`}
+                        </Link>
+                        {' '}
+                        (
+                        {getLanguageDisplayName(language)}
+                        ,
+                        {' '}
+                        latest version:
+                        {' '}
+                        {version}
+                        )
+                      </li>
+                    );
+                  })
+                }
+              </ul>
+            </>
+          )}
+          {completedActivityMetadata.length === 0 && (
+            <Typography variant="body1" marginY={3}>
+              You haven&apos;t completed any activities.
+            </Typography>
+          )}
         </Container>
       </Box>
     </div>
