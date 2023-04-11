@@ -10,7 +10,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import {
-  getNotebookContent, NotebookCell,
+  getNotebookContent, MarkdownCell, NotebookCell,
 } from '../../../../../src/Notebook';
 import CodeCell from '../../../../../components/CodeCell';
 import {
@@ -118,8 +118,9 @@ export default function NotebookPage({
           <Typography variant="h3" marginTop={2}>{title}</Typography>
           {cells.map((cell: NotebookCell, idx) => {
             if (cell.cell_type === 'markdown') {
+              const markdownCell = cell as MarkdownCell;
               const components = {
-                img: (props: any) => attachmentsImage(props, cell),
+                img: (props: any) => attachmentsImage(props, markdownCell),
                 ReactPlayer: ResponsiveReactPlayer,
                 Stack,
                 API: ({ children: name }: { children: string }) => (
@@ -129,8 +130,8 @@ export default function NotebookPage({
               return (
                 <MDXRemote
                   // eslint-disable-next-line react/jsx-props-no-spreading
-                  {...cell.mdxSource}
-                  key={cell.id}
+                  {...markdownCell.mdxSource}
+                  key={markdownCell.id}
                   components={components}
                 />
               );
@@ -180,7 +181,7 @@ export async function getStaticProps(
   return {
     props: {
       title: (await variantInfo(slug, language)).title,
-      cells: (await getNotebookContent(slug, language, version, userType)),
+      cells: await getNotebookContent(slug, language, version, userType),
       versions: await findVersions(slug, language),
       languages: await findLanguages(slug),
     },

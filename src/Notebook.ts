@@ -7,50 +7,63 @@ import { MODULES_PATH } from './Modules';
 const TEACHER_ONLY_CELL_PREFIX = '#teacher-only';
 const STUDENT_TEACHER_CELL_PREFIX = '#student-teacher';
 
+const KNOWN_PREFIXES = [
+  TEACHER_ONLY_CELL_PREFIX,
+  STUDENT_TEACHER_CELL_PREFIX,
+];
+
 export interface ContentItem {
   name: string,
   path: string
   type: string
 }
 
-interface NotebookGeneralCell {
+type CellType = 'code' | 'markdown' | 'raw';
+
+interface JupyterCell {
+  id: string,
+  source: string[],
+  attachments?: any,
+  cell_type: CellType,
+}
+
+export interface NotebookCell {
   id: string,
   source: string,
   attachments?: any,
+  cell_type: CellType,
 }
 
-interface NotebookMarkdownCell extends NotebookGeneralCell {
+export interface MarkdownCell extends NotebookCell {
   cell_type: 'markdown',
   mdxSource: MDXRemoteSerializeResult,
 }
 
 type User = 'teacher' | 'student';
 
-interface NotebookOtherCell extends NotebookGeneralCell {
-  cell_type: 'code' | 'raw',
-}
-
-export type NotebookCell = NotebookMarkdownCell | NotebookOtherCell;
-
-function filterNotebookCells(
-  cells: any,
+function cellsVisibleToUser(
+  cells: JupyterCell[],
   user: User,
 ) {
-  return cells.filter((cell: any) => {
-    const trimmedFirstLine = cell.source.join('').split('\n')[0].trimStart();
-    return (user !== 'student'
-        || trimmedFirstLine !== TEACHER_ONLY_CELL_PREFIX)
-      && (user === 'student'
-        || trimmedFirstLine === TEACHER_ONLY_CELL_PREFIX
-        || trimmedFirstLine === STUDENT_TEACHER_CELL_PREFIX);
+  return cells.filter((cell) => {
+    if (cell.cell_type !== 'code') {
+      // Only code cells can be hidden
+      return true;
+    }
+    const specialTag = cell.source[0].trim();
+    if (user === 'student') {
+      return specialTag !== TEACHER_ONLY_CELL_PREFIX;
+    }
+    // teacher
+    return specialTag === TEACHER_ONLY_CELL_PREFIX || specialTag === STUDENT_TEACHER_CELL_PREFIX;
   });
 }
 
-function cleanCellSource(src: string[]) {
-  return src.join('').split('\n').filter((line) => {
-    const trimmedLine = line.trimStart();
-    return trimmedLine !== TEACHER_ONLY_CELL_PREFIX && trimmedLine !== STUDENT_TEACHER_CELL_PREFIX;
-  }).join('\n');
+function cleanCellSource(source: string[]) {
+  // Remove the first line if it's a known tag
+  return source
+    .filter((line, idx) => idx > 0 || !KNOWN_PREFIXES.includes(line.trim()))
+    .join('');
 }
 
 export async function getNotebookContent(
@@ -62,16 +75,13 @@ export async function getNotebookContent(
   const notebookPath = path.join(MODULES_PATH, slug, `${slug}-${language}-${version}.ipynb`);
   const contentBuffer = await readFile(notebookPath);
   const content = JSON.parse(contentBuffer.toString());
-  content.cells = filterNotebookCells(content.cells, user);
-  return Promise.all(content.cells.map(async (cell: any, idx: number) => {
-    const annotatedCell = {
+  return Promise.all(cellsVisibleToUser(content.cells, user).map(async (cell, idx) => {
+    const source = cleanCellSource(cell.source);
+    return {
       ...cell,
-      source: cleanCellSource(cell.source),
+      source,
       id: idx.toString(),
+      mdxSource: cell.cell_type === 'markdown' ? await serialize(source) : null,
     };
-    if (cell.cell_type === 'markdown') {
-      annotatedCell.mdxSource = await serialize(annotatedCell.source);
-    }
-    return annotatedCell;
   }));
 }
