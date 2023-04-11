@@ -5,10 +5,9 @@ import {
 } from '@mui/material';
 import Head from 'next/head';
 import NextLink from 'next/link';
-import { useMemo } from 'react';
+import useLocalStorageState from 'use-local-storage-state';
 import NavigationBar from '../components/NavigationBar';
-import { ActivityInfo } from '../src/Activities';
-import { getIdFromKey } from '../src/codeState';
+import { getDefaultMetadata } from '../src/codeState';
 import getLanguageDisplayName from '../src/internationalization';
 import ExportLocalStorageButton from '../components/ExportLocalStorageButton';
 import ImportLocalStorageButton from '../components/ImportLocalStorageButton';
@@ -16,20 +15,15 @@ import useLocalStorageMapState from '../src/localStorageMapState';
 
 export default function MyData() {
   const { localStorageMap, setLocalStorageMapFromString } = useLocalStorageMapState();
-  const activityVariantIds = useMemo(
-    () => Array.from(localStorageMap.keys())
-      .filter((key) => key.startsWith('pytamaro_web') && key.endsWith('codeCells'))
-      .map((key) => getIdFromKey(key)),
-    [localStorageMap],
-  );
-  const activityMetadata = useMemo(
-    () => (localStorageMap.get('pytamaro_web_activity_metadata') || []) as ActivityInfo[],
-    [localStorageMap],
-  );
-  const completedActivityMetadata = useMemo(
-    () => activityMetadata.filter((activity) => activity.completed),
-    [activityMetadata],
-  );
+  const [metadata] = useLocalStorageState('pytamaro_web_metadata', {
+    defaultValue: getDefaultMetadata(),
+  });
+  const cellsModifiedActivityVariantIds = metadata.activities
+    .filter((a) => a.cellsModified)
+    .map((a) => a.id);
+  const completedActivityVariantIds = metadata.activities
+    .filter((a) => a.completed)
+    .map((a) => a.id);
 
   return (
     <div>
@@ -99,14 +93,14 @@ export default function MyData() {
             <ImportLocalStorageButton setLocalStorageMapFromString={setLocalStorageMapFromString} />
           </Stack>
           <Typography variant="h4" align="center" marginY={3}>My Source Code</Typography>
-          {activityVariantIds.length > 0 && (
+          {cellsModifiedActivityVariantIds.length > 0 && (
             <>
               <Typography variant="body1" marginY={3}>
                 You wrote source code for the following activities:
               </Typography>
               <ul>
                 {
-                  activityVariantIds.map((id: string) => {
+                  cellsModifiedActivityVariantIds.map((id: string) => {
                     const [authorSlug, activitySlug, language, version] = id.split('/');
                     return (
                       <li key={id}>
@@ -129,22 +123,22 @@ export default function MyData() {
               </ul>
             </>
           )}
-          {activityVariantIds.length === 0 && (
+          {cellsModifiedActivityVariantIds.length === 0 && (
             <Typography variant="body1" marginY={3}>
               You haven&apos;t written source code for any activities.
             </Typography>
           )}
-          {completedActivityMetadata.length > 0 && (
+          {completedActivityVariantIds.length > 0 && (
             <>
               <Typography variant="body1" marginY={3}>
                 You completed the following activities:
               </Typography>
               <ul>
                 {
-                  completedActivityMetadata.map(({ slug }) => {
-                    const [authorSlug, activitySlug, language, version] = slug.split('/');
+                  completedActivityVariantIds.map((id: string) => {
+                    const [authorSlug, activitySlug, language, version] = id.split('/');
                     return (
-                      <li key={slug}>
+                      <li key={id}>
                         <Link href={`/activities/${authorSlug}/${activitySlug}/${language}/${version}`}>
                           {`${authorSlug}/${activitySlug}`}
                         </Link>
@@ -164,7 +158,7 @@ export default function MyData() {
               </ul>
             </>
           )}
-          {completedActivityMetadata.length === 0 && (
+          {completedActivityVariantIds.length === 0 && (
             <Typography variant="body1" marginY={3}>
               You haven&apos;t completed any activities.
             </Typography>

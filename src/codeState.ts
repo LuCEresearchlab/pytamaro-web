@@ -6,6 +6,20 @@ import logEvent, { EventName } from './AnalyticsEvent';
 
 import { ExecutionResponse, executeCode } from './CodeExecution';
 
+const VERSION = '1';
+
+interface Metadata {
+  version: string;
+  activities: ActivityMetadata[],
+}
+
+interface ActivityMetadata {
+  id: string,
+  codeCellsKey: string,
+  cellsModified: boolean,
+  completed: boolean,
+}
+
 export interface CodeCellState {
   source: string;
   executionInProgress: boolean;
@@ -28,24 +42,70 @@ export function createCodeCell(source: string, originalIndex: number): CodeCellS
   };
 }
 
-function getKeyFromId(activityVariantId: string) {
+function getDefaultKey(activityVariantId: string) {
   return `pytamaro_web_${activityVariantId}_codeCells`;
 }
 
-export function getIdFromKey(key: string) {
-  const words = key.split('_');
-  return words[2];
+export function getDefaultMetadata() : Metadata {
+  return {
+    version: VERSION,
+    activities: [],
+  };
+}
+
+export function getDefaultActivityMetadata(activityVariantId: string) : ActivityMetadata {
+  return {
+    id: activityVariantId,
+    codeCellsKey: getDefaultKey(activityVariantId),
+    cellsModified: false,
+    completed: false,
+  };
 }
 
 export function useCodeState(initialCodeCells: CodeState, activityVariantId: string) {
-  const KEY = getKeyFromId(activityVariantId);
-  const [codeCells, setCodeCells] = useLocalStorageState(KEY, { defaultValue: initialCodeCells });
-  const [cellsModified, setCellsModified] = useState(false);
+  const [metadata, setMetadata] = useLocalStorageState('pytamaro_web_metadata', {
+    defaultValue: getDefaultMetadata(),
+  });
+  const activityMetadata = metadata.activities.find((a) => a.id === activityVariantId);
+  const [codeCells, setCodeCells] = useLocalStorageState(
+    activityMetadata?.codeCellsKey || getDefaultKey(activityVariantId),
+    { defaultValue: initialCodeCells },
+  );
   const [networkError, setNetworkError] = useState(false);
 
+  const completed = !!activityMetadata?.completed;
+  const cellsModified = !!activityMetadata?.cellsModified;
+
+  const toggleCompleted = () => {
+    setMetadata(
+      produce((draft) => {
+        const draftActivityMetadata = draft.activities.find((a) => a.id === activityVariantId);
+        if (draftActivityMetadata) {
+          draftActivityMetadata.completed = !draftActivityMetadata.completed;
+        } else {
+          const newActivityMetadata = getDefaultActivityMetadata(activityVariantId);
+          newActivityMetadata.completed = !newActivityMetadata.completed;
+          draft.activities.push(newActivityMetadata);
+        }
+      }),
+    );
+  };
+
   useEffect(() => {
-    setCellsModified(JSON.stringify(codeCells) !== JSON.stringify(initialCodeCells));
-  }, [codeCells, initialCodeCells]);
+    const newCellsModified = JSON.stringify(codeCells) !== JSON.stringify(initialCodeCells);
+    setMetadata(
+      produce((draft) => {
+        const draftActivityMetadata = draft.activities.find((a) => a.id === activityVariantId);
+        if (draftActivityMetadata) {
+          draftActivityMetadata.cellsModified = newCellsModified;
+        } else {
+          const newActivityMetadata = getDefaultActivityMetadata(activityVariantId);
+          newActivityMetadata.cellsModified = newCellsModified;
+          draft.activities.push(newActivityMetadata);
+        }
+      }),
+    );
+  }, [codeCells, initialCodeCells, activityVariantId, setMetadata]);
 
   const getSourceFirstNCodeCells = (n: number) => codeCells.map((cell) => cell.source).slice(0, n).join('\n');
 
@@ -138,8 +198,10 @@ ${currentCellSource}`;
 
   return {
     codeCells,
+    completed,
     cellsModified,
     networkError,
+    toggleCompleted,
     setNetworkError,
     handleSourceChanged,
     handleExecute,

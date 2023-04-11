@@ -1,7 +1,5 @@
 import Container from '@mui/material/Container';
 import { MDXRemote } from 'next-mdx-remote';
-import useLocalStorageState from 'use-local-storage-state';
-import produce from 'immer';
 
 import {
   Box, Button, Stack, Typography, ToggleButton,
@@ -17,7 +15,6 @@ import {
 } from '../../../../../../src/Notebook';
 import CodeCell from '../../../../../../components/CodeCell';
 import {
-  ActivityInfo,
   findLanguages,
   findVersions,
   LanguageWithLatestVersion,
@@ -96,13 +93,10 @@ export default function NotebookPage({
   initialCodeCells.forEach((cell, idx) => originalIdxToCodeCellIdx.set(cell.originalIndex, idx));
 
   const {
-    codeCells, cellsModified, networkError, setNetworkError, handleSourceChanged, handleExecute,
+    codeCells, cellsModified, completed, networkError,
+    toggleCompleted, setNetworkError, handleSourceChanged, handleExecute,
     handleToggleOutputArea, handleResetState, getWholeSource,
   } = useCodeState(initialCodeCells, activityVersionId);
-  const [activityMetadata, setActivityMetadata] = useLocalStorageState(
-    'pytamaro_web_activity_metadata',
-    { defaultValue: [] as ActivityInfo[] },
-  );
 
   const pageTitle = `${title} - PyTamaro`;
 
@@ -185,27 +179,11 @@ export default function NotebookPage({
           <ToggleButton
             color="primary"
             value="check"
-            selected={activityMetadata.find((md) => md.slug === activityVersionId)?.completed}
-            onChange={() => {
-              setActivityMetadata(
-                produce((draft) => {
-                  const activityMeta = draft.find((md) => md.slug === activityVersionId);
-                  if (activityMeta) {
-                    activityMeta.completed = !activityMeta.completed;
-                  } else {
-                    draft.push({
-                      slug: activityVersionId,
-                      completed: true,
-                    });
-                  }
-                }),
-              );
-            }}
+            selected={completed}
+            onChange={toggleCompleted}
           >
-            {activityMetadata.find((md) => md.slug === activityVersionId)?.completed && (
-              <CheckIcon />
-            )}
-            {!activityMetadata.find((md) => md.slug === activityVersionId)?.completed && 'Mark as '}
+            {completed && (<CheckIcon />)}
+            {!completed && 'Mark as '}
             Completed
           </ToggleButton>
         </Stack>
