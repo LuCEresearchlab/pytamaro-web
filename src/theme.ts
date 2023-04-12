@@ -46,7 +46,7 @@ declare module '@mui/material/IconButton' {
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#556cd6',
+      main: '#008BCB',
     },
     secondary: {
       main: '#19857b',
