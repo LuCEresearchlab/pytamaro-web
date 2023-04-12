@@ -1,12 +1,13 @@
-This repository contains the achitecture and the materials for the PyTamaro curriculum website.
+This repository contains the PyTamaro web plaform, served at https://pytamaro.si.usi.ch.
 
 ## Architecture
 
 ### Executive Summary
-The web architecture is implemented using [Next.js](https://nextjs.org/),
-while the contents (i.e., the activities) are stored as [Jupyter notebooks](https://jupyter.org/).
+The web plaform is implemented using [Next.js](https://nextjs.org/).
+The actual content is stored in separate repositories, one for each author, which are imported as git submodules.
+Activities are created as [Jupyter notebooks](https://jupyter.org/).
 
-### Data
+### Content
 Activites and curricula are responsiblity of a certain author and are maintained in external repositories.
 See the [Luce repository](https://github.com/LuCEresearchlab/pytamaro-web-luce/) for an example.
 
@@ -32,6 +33,10 @@ a workflow on the LuCE server that tries to build the plaftfrom with the new con
 In case of success, the reference to the submodule will be updated to the new commit
 and the redeployment of the entire platform will be triggered.
 
+Entity relationship diagram for our content:
+
+![Data Model Entity Relationship Diagram](docs/data-model-er.png)
+
 ### Activities
 Activities are stored each in one folder inside the `data/<author-slug>/activities` folder.
 The name of the folder should use hyphens and determines the _slug_ of the activity,
@@ -41,8 +46,6 @@ See the `swiss-flag` activity for an example.
 Each activity can exists in several variants,
 depending on:
 - the _natural language_ (e.g, English, Italian or German).
-
-Our default mandatory variant is in _English_.
 
 All the meta-information about an activity is specified in an `info.json` file.
 See `data/luce/activities/swiss-flag/info.json` for an example.
