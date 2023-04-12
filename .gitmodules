@@ -1,3 +1,3 @@
 [submodule "luce"]
 	path = data/luce
-	url = https://github.com/LuCEresearchlab/pytamaro-web-luce
+	url = git@github.com:LuCEresearchlab/pytamaro-web-luce.git
