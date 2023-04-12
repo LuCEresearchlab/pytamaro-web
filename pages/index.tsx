@@ -10,6 +10,21 @@ import anime from 'animejs';
 import InstallDesktop from '@mui/icons-material/InstallDesktop';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
+function HomePagePrimaryButton(props: { icon: JSX.Element, text: string, href: string }) {
+  const { icon, text, href } = props;
+  return (
+    <Button
+      startIcon={icon}
+      variant="outlined"
+      size="large"
+      sx={{ minWidth: '10vw' }}
+      href={href}
+    >
+      {text}
+    </Button>
+  );
+}
+
 export default function Home() {
   const theme = useTheme();
 
@@ -51,7 +66,7 @@ export default function Home() {
   }, []);
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="xl">
       <Box height="100vh">
         <Box
           display="flex"
@@ -77,11 +92,18 @@ export default function Home() {
             </g>
           </svg>
         </Box>
-        <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" spacing={{ xs: 4, md: 8 }} sx={{ my: 4 }}>
-          <Button startIcon={<SchoolIcon />} variant="outlined" size="large" href="/activities/luce">Learning Activities</Button>
-          <Button startIcon={<MenuBookIcon />} variant="outlined" size="large" href="https://pytamaro.readthedocs.org">Documentation</Button>
-          <Button startIcon={<InstallDesktop />} variant="outlined" size="large" href="/install">How to Install & FAQ</Button>
-          <Button startIcon={<TerminalIcon />} variant="outlined" size="large" href="/playground">Try in the browser</Button>
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          justifyContent="space-between"
+          spacing={{
+            xs: 4, md: 8,
+          }}
+          sx={{ my: 4 }}
+        >
+          <HomePagePrimaryButton icon={<SchoolIcon />} text="Activities" href="/activities/luce" />
+          <HomePagePrimaryButton icon={<MenuBookIcon />} text="Documentation" href="https://pytamaro.readthedocs.org" />
+          <HomePagePrimaryButton icon={<InstallDesktop />} text="How to Install & FAQ" href="/install" />
+          <HomePagePrimaryButton icon={<TerminalIcon />} text="Try in the browser" href="/playground" />
         </Stack>
         <ExpandMoreIcon
           fontSize="large"
