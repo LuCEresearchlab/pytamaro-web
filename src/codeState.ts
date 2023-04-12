@@ -10,10 +10,10 @@ const VERSION = '1';
 
 interface Metadata {
   version: string;
-  activities: ActivityMetadata[],
+  activities: ActivityVariantMetadata[],
 }
 
-interface ActivityMetadata {
+interface ActivityVariantMetadata {
   id: string,
   codeCellsKey: string,
   cellsModified: boolean,
@@ -55,7 +55,8 @@ export function getDefaultMetadata() : Metadata {
   };
 }
 
-export function getDefaultActivityMetadata(activityVariantId: string) : ActivityMetadata {
+function getDefaultActivityVariantMetadata(activityVariantId: string)
+  : ActivityVariantMetadata {
   return {
     id: activityVariantId,
     codeCellsKey: getActivityVariantCodeCellsKey(activityVariantId),
@@ -68,26 +69,26 @@ export function useCodeState(initialCodeCells: CodeState, activityVariantId: str
   const [metadata, setMetadata] = useLocalStorageState(METADATA_KEY, {
     defaultValue: getDefaultMetadata(),
   });
-  const activityMetadata = metadata.activities.find((a) => a.id === activityVariantId);
+  const variantMetadata = metadata.activities.find((a) => a.id === activityVariantId);
   const [codeCells, setCodeCells] = useLocalStorageState(
-    activityMetadata?.codeCellsKey || getActivityVariantCodeCellsKey(activityVariantId),
+    variantMetadata?.codeCellsKey || getActivityVariantCodeCellsKey(activityVariantId),
     { defaultValue: initialCodeCells },
   );
   const [networkError, setNetworkError] = useState(false);
 
-  const completed = !!activityMetadata?.completed;
-  const cellsModified = !!activityMetadata?.cellsModified;
+  const completed = !!variantMetadata?.completed;
+  const cellsModified = !!variantMetadata?.cellsModified;
 
   const toggleCompleted = () => {
     setMetadata(
       produce((draft) => {
-        const draftActivityMetadata = draft.activities.find((a) => a.id === activityVariantId);
-        if (draftActivityMetadata) {
-          draftActivityMetadata.completed = !draftActivityMetadata.completed;
+        const draftVariantMetadata = draft.activities.find((a) => a.id === activityVariantId);
+        if (draftVariantMetadata) {
+          draftVariantMetadata.completed = !draftVariantMetadata.completed;
         } else {
-          const newActivityMetadata = getDefaultActivityMetadata(activityVariantId);
-          newActivityMetadata.completed = !newActivityMetadata.completed;
-          draft.activities.push(newActivityMetadata);
+          const newVariantMetadata = getDefaultActivityVariantMetadata(activityVariantId);
+          newVariantMetadata.completed = !newVariantMetadata.completed;
+          draft.activities.push(newVariantMetadata);
         }
       }),
     );
@@ -97,13 +98,13 @@ export function useCodeState(initialCodeCells: CodeState, activityVariantId: str
     const newCellsModified = JSON.stringify(codeCells) !== JSON.stringify(initialCodeCells);
     setMetadata(
       produce((draft) => {
-        const draftActivityMetadata = draft.activities.find((a) => a.id === activityVariantId);
-        if (draftActivityMetadata) {
-          draftActivityMetadata.cellsModified = newCellsModified;
+        const draftVariantMetadata = draft.activities.find((a) => a.id === activityVariantId);
+        if (draftVariantMetadata) {
+          draftVariantMetadata.cellsModified = newCellsModified;
         } else {
-          const newActivityMetadata = getDefaultActivityMetadata(activityVariantId);
-          newActivityMetadata.cellsModified = newCellsModified;
-          draft.activities.push(newActivityMetadata);
+          const newVariantMetadata = getDefaultActivityVariantMetadata(activityVariantId);
+          newVariantMetadata.cellsModified = newCellsModified;
+          draft.activities.push(newVariantMetadata);
         }
       }),
     );
