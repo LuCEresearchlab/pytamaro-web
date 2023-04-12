@@ -30,6 +30,7 @@ import PyTamaroAPI from '../../../../../../components/PyTamaroAPIDocs/PyTamaroAP
 import NetworkErrorSnackbar from '../../../../../../components/NetworkErrorSnackbar';
 import ResetButton from '../../../../../../components/ResetButton';
 import { listAuthors } from '../../../../../../src/Authors';
+import MarkCompletedButton from '../../../../../../components/MarkCompletedButton';
 
 const userType = 'student';
 
@@ -120,6 +121,7 @@ export default function NotebookPage({
             languages={languages}
           />
           <ResetButton enabled={cellsModified} onReset={handleResetState} />
+          <MarkCompletedButton completed={completed} toggleCompleted={toggleCompleted} />
         </NavigationBar>
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
         <Container maxWidth="md">
@@ -157,7 +159,7 @@ export default function NotebookPage({
             );
           })}
         </Container>
-        <Stack mt={6} mb={6} direction="row" justifyContent="center" spacing={2}>
+        <Stack mt={12} mb={6} direction="row" justifyContent="center" spacing={4}>
           <Button
             variant="contained"
             color="success"
@@ -167,23 +169,13 @@ export default function NotebookPage({
             Download Python Code
           </Button>
           <Button
-            variant="outlined"
+            variant="contained"
             startIcon={<InfoIcon />}
             component={Link}
             href={`/activities/${authorSlug}/${activitySlug}`}
           >
-            Activity Information
+            Activity Info
           </Button>
-          <ToggleButton
-            color="primary"
-            value="check"
-            selected={completed}
-            onChange={toggleCompleted}
-          >
-            {completed && (<CheckIcon />)}
-            {!completed && 'Mark as '}
-            Completed
-          </ToggleButton>
         </Stack>
       </Box>
     </div>
