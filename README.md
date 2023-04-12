@@ -16,14 +16,21 @@ They can be added using the following command:
 git submodule add <repository-url> data/<author-slug>
 ```
 
-To develop activities locally without having to commit your changes
-in the external repository and then update the submodule in this repository,
-you can remove the submodule and use a symlink instead:
+To fetch the submodules content, if not already done while cloning, run:
 ```sh
-rm -rf data/<author-slug>
-ln -s <path-to-local-folder> data/<author-slug>
+git submodule update --init
 ```
-Do not commit this change!
+
+Work as usual by making changes to the files in the submodule's folder.
+When you are ready, commit _inside_ a submodule folder and push to its `main` branch using:
+```sh
+git push origin HEAD:main
+```
+
+Merging the `main` branch of a submodule into its `live` branch will trigger
+a workflow on the LuCE server that tries to build the plaftfrom with the new content.
+In case of success, the reference to the submodule will be updated to the new commit
+and the redeployment of the entire platform will be triggered.
 
 ### Activities
 Activities are stored each in one folder inside the `data/<author-slug>/activities` folder.
