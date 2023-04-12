@@ -1,11 +1,11 @@
-export function moduleAssetUrl(slug: string, asset: string) {
-  return `/modules/${slug}/${asset}`;
+export function activityAssetUrl(authorSlug: string, activitySlug: string, asset: string) {
+  return `/activities/${authorSlug}/${activitySlug}/${asset}`;
 }
 
 export function notebookVersionUrl(
-  slug: string,
+  activitySlug: string,
   language: string,
   version: string,
 ) {
-  return `${slug}/${language}/${version}`;
+  return `${activitySlug}/${language}/${version}`;
 }

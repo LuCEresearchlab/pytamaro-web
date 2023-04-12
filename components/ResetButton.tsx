@@ -4,14 +4,17 @@ import { IconButton, Tooltip } from '@mui/material';
 export default function ResetButton({ enabled, onReset }:
 { enabled: boolean, onReset: () => void }) {
   return (
-    <Tooltip title="Reset" sx={{ ml: 1 }}>
-      <IconButton
-        disabled={!enabled}
-        onClick={onReset}
-        color="neutral"
-      >
-        <RestartAlt />
-      </IconButton>
+    <Tooltip title="Reset Code">
+      <span>
+        <IconButton
+          sx={{ ml: 1 }}
+          style={enabled ? {} : { pointerEvents: 'none' }}
+          color={enabled ? 'neutral' : 'default'}
+          onClick={onReset}
+        >
+          <RestartAlt />
+        </IconButton>
+      </span>
     </Tooltip>
   );
 }

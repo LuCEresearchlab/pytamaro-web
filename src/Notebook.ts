@@ -2,7 +2,7 @@ import { readFile } from 'fs/promises';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
 import path from 'path';
-import { MODULES_PATH } from './Modules';
+import { DATA_DIR, ACTIVITIES_DIR } from './Activities';
 
 const TEACHER_ONLY_CELL_PREFIX = '#teacher-only';
 const STUDENT_TEACHER_CELL_PREFIX = '#student-teacher';
@@ -67,12 +67,13 @@ function cleanCellSource(source: string[]) {
 }
 
 export async function getNotebookContent(
-  slug: string,
+  authorSlug: string,
+  activitySlug: string,
   language: string,
   version: string,
   user: User,
 ) : Promise<NotebookCell[]> {
-  const notebookPath = path.join(MODULES_PATH, slug, `${slug}-${language}-${version}.ipynb`);
+  const notebookPath = path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR, activitySlug, `${activitySlug}-${language}-${version}.ipynb`);
   const contentBuffer = await readFile(notebookPath);
   const content = JSON.parse(contentBuffer.toString());
   return Promise.all(cellsVisibleToUser(content.cells, user).map(async (cell, idx) => {

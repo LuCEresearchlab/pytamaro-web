@@ -5,9 +5,26 @@ import {
 } from '@mui/material';
 import Head from 'next/head';
 import NextLink from 'next/link';
+import useLocalStorageState from 'use-local-storage-state';
 import NavigationBar from '../components/NavigationBar';
+import { METADATA_KEY, getDefaultMetadata } from '../src/codeState';
+import getLanguageDisplayName from '../src/internationalization';
+import ExportLocalStorageButton from '../components/ExportLocalStorageButton';
+import ImportLocalStorageButton from '../components/ImportLocalStorageButton';
+import useLocalStorageMapState from '../src/localStorageMapState';
 
 export default function MyData() {
+  const { localStorageMap, setLocalStorageMapFromString } = useLocalStorageMapState();
+  const [metadata] = useLocalStorageState(METADATA_KEY, {
+    defaultValue: getDefaultMetadata(),
+  });
+  const cellsModifiedActivityVariantIds = metadata.activities
+    .filter((a) => a.cellsModified)
+    .map((a) => a.id);
+  const completedActivityVariantIds = metadata.activities
+    .filter((a) => a.completed)
+    .map((a) => a.id);
+
   return (
     <div>
       <Head>
@@ -61,7 +78,7 @@ export default function MyData() {
             .
           </Typography>
           <Typography variant="h4" align="center" marginY={3}>Export and Import</Typography>
-          <Typography variant="body1" marginY={3}>
+          <Typography variant="body1" marginTop={3}>
             The data (e.g., source code) you enter in PyTamaro Web is stored in your browser,
             inside its local storage.
             You may want to export the data into a file
@@ -69,16 +86,83 @@ export default function MyData() {
             you can backup (e.g., if someone might clear your browser&apos;s local storage),
             or you can send to your teacher.
           </Typography>
-          <Typography variant="body1" marginY={3}>
-            TODO
-          </Typography>
+          <Stack direction="row" alignItems="center" justifyContent="center" spacing={1}>
+            <ExportLocalStorageButton
+              getData={() => JSON.stringify(Object.fromEntries(localStorageMap))}
+            />
+            <ImportLocalStorageButton setLocalStorageMapFromString={setLocalStorageMapFromString} />
+          </Stack>
           <Typography variant="h4" align="center" marginY={3}>My Source Code</Typography>
-          <Typography variant="body1" marginY={3}>
-            You wrote source code for the following activities:
-          </Typography>
-          <Typography variant="body1" marginY={3}>
-            TODO
-          </Typography>
+          {cellsModifiedActivityVariantIds.length > 0 && (
+            <>
+              <Typography variant="body1" marginY={3}>
+                You wrote source code for the following activities:
+              </Typography>
+              <ul>
+                {
+                  cellsModifiedActivityVariantIds.map((id: string) => {
+                    const [authorSlug, activitySlug, language, version] = id.split('/');
+                    return (
+                      <li key={id}>
+                        <Link href={`/activities/${authorSlug}/${activitySlug}/${language}/${version}`}>
+                          {`${authorSlug}/${activitySlug}`}
+                        </Link>
+                        {' '}
+                        (
+                        {getLanguageDisplayName(language)}
+                        ,
+                        {' '}
+                        latest version:
+                        {' '}
+                        {version}
+                        )
+                      </li>
+                    );
+                  })
+                }
+              </ul>
+            </>
+          )}
+          {cellsModifiedActivityVariantIds.length === 0 && (
+            <Typography variant="body1" marginY={3}>
+              You haven&apos;t written source code for any activities.
+            </Typography>
+          )}
+          {completedActivityVariantIds.length > 0 && (
+            <>
+              <Typography variant="body1" marginY={3}>
+                You completed the following activities:
+              </Typography>
+              <ul>
+                {
+                  completedActivityVariantIds.map((id: string) => {
+                    const [authorSlug, activitySlug, language, version] = id.split('/');
+                    return (
+                      <li key={id}>
+                        <Link href={`/activities/${authorSlug}/${activitySlug}/${language}/${version}`}>
+                          {`${authorSlug}/${activitySlug}`}
+                        </Link>
+                        {' '}
+                        (
+                        {getLanguageDisplayName(language)}
+                        ,
+                        {' '}
+                        latest version:
+                        {' '}
+                        {version}
+                        )
+                      </li>
+                    );
+                  })
+                }
+              </ul>
+            </>
+          )}
+          {completedActivityVariantIds.length === 0 && (
+            <Typography variant="body1" marginY={3}>
+              You haven&apos;t completed any activities.
+            </Typography>
+          )}
         </Container>
       </Box>
     </div>

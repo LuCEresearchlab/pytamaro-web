@@ -4,19 +4,19 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { LanguageWithLatestVersion } from '../src/Modules';
+import { LanguageWithLatestVersion } from '../src/Activities';
 import { notebookVersionUrl } from '../src/urlUtils';
 
 export default function VariantSelector({
-  slug, language, version, versions, languages,
+  authorSlug, activitySlug, language, version, versions, languages,
 }:
-{ slug: string, language: string, version: string,
+{ authorSlug: string, activitySlug: string, language: string, version: string,
   versions: string[], languages: LanguageWithLatestVersion[] }) {
   const router = useRouter();
   const [selectedVersion, setSelectedVersion] = useState(version);
   const [selectedLanguage, setSelectedLanguage] = useState(language);
   useEffect(() => {
-    router.push(`/modules/${notebookVersionUrl(slug, selectedLanguage, selectedVersion)}`);
+    router.push(`/activities/${authorSlug}/${notebookVersionUrl(activitySlug, selectedLanguage, selectedVersion)}`);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedVersion, selectedLanguage]);
   return (
