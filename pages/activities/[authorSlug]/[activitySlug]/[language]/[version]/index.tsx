@@ -2,11 +2,10 @@ import Container from '@mui/material/Container';
 import { MDXRemote } from 'next-mdx-remote';
 
 import {
-  Box, Button, Stack, Typography, ToggleButton,
+  Box, Button, Stack, Typography,
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import DownloadIcon from '@mui/icons-material/Download';
-import CheckIcon from '@mui/icons-material/Check';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
