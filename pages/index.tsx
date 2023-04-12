@@ -1,5 +1,5 @@
 import {
-  Typography, Container, Button, Paper, Box, Stack, Card, CardContent, CardActions, useTheme,
+  Typography, Container, Button, Paper, Box, Stack, Card, CardContent, CardActions, useTheme, Fab,
 } from '@mui/material';
 import TypeIt from 'typeit-react';
 import { useEffect, useState } from 'react';
@@ -92,15 +92,24 @@ export default function Home() {
             </g>
           </svg>
         </Box>
+        <Box
+          display="flex"
+          justifyContent="center"
+          sx={{ my: 8 }}
+        >
+          <Fab variant="extended" color="primary" href="/activities/luce" sx={{ p: 3, fontSize: 16 }}>
+            <SchoolIcon sx={{ mr: 2 }} />
+            Learn with 50+ Activities
+          </Fab>
+        </Box>
         <Stack
           direction={{ xs: 'column', md: 'row' }}
-          justifyContent="space-between"
+          justifyContent="space-around"
           spacing={{
             xs: 4, md: 8,
           }}
-          sx={{ my: 4 }}
+          sx={{ mt: 12 }}
         >
-          <HomePagePrimaryButton icon={<SchoolIcon />} text="Activities" href="/activities/luce" />
           <HomePagePrimaryButton icon={<MenuBookIcon />} text="Documentation" href="https://pytamaro.readthedocs.org" />
           <HomePagePrimaryButton icon={<InstallDesktop />} text="How to Install & FAQ" href="/install" />
           <HomePagePrimaryButton icon={<TerminalIcon />} text="Try in the browser" href="/playground" />
