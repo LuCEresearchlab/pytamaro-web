@@ -9,7 +9,7 @@ import { ExecutionResponse, executeCode } from './CodeExecution';
 const VERSION = '1';
 
 interface Metadata {
-  version: string;
+  dataModelVersion: string;
   activities: ActivityVariantMetadata[],
 }
 
@@ -50,7 +50,7 @@ function getActivityVariantCodeCellsKey(activityVariantId: string) {
 
 export function getDefaultMetadata() : Metadata {
   return {
-    version: VERSION,
+    dataModelVersion: VERSION,
     activities: [],
   };
 }
