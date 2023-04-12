@@ -223,6 +223,8 @@ export default function SummerAcademy() {
         </Box>
         <Container maxWidth="lg">
           <Typography variant="h4" align="center" marginY={3}>Five-Day Summer Academy at the Software Institute at USI in Lugano</Typography>
+        </Container>
+        <Container maxWidth="lg">
           <Typography variant="h5" align="center" marginY={3}>
             Learn programming by decomposing graphics and recomposing them as programs.
             Experience the sound theoretical foundations of programming
@@ -231,6 +233,47 @@ export default function SummerAcademy() {
             and the (we think) greatest Python graphics library, PyTamaro.
           </Typography>
         </Container>
+        <Container maxWidth="lg">
+          <Card>
+            <CardMedia>
+              <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                <Image
+                  key={10}
+                  src={PanoramaUSI}
+                  alt="Photo of USI"
+                  width="1280"
+                  height="285"
+                  sizes="100vw"
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                  }}
+                />
+              </div>
+            </CardMedia>
+            <CardHeader
+              title="Monday, August 14 to Friday, August 18, 2023"
+              subheader="Daily Schedule: 9:00 to 17:00, lunch included"
+              titleTypographyProps={{ align: 'center' }}
+              subheaderTypographyProps={{
+                align: 'center',
+              }}
+            />
+            <CardContent>
+              <Typography variant="h5" align="center" marginY={3} sx={{ color: '#d2071b', fontWeight: 'bold' }}>
+                Registrations Opening Soon
+              </Typography>
+            </CardContent>
+          </Card>
+        </Container>
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            margin: '1rem 0',
+          }}
+        />
 
         <Container maxWidth="lg" component="main">
           <Grid container spacing={5} alignItems="flex-end">

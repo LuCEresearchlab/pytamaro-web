@@ -11,7 +11,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import {
-  getNotebookContent, NotebookCell,
+  getNotebookContent, MarkdownCell, NotebookCell,
 } from '../../../../../../src/Notebook';
 import CodeCell from '../../../../../../components/CodeCell';
 import {
@@ -30,6 +30,8 @@ import PyTamaroAPI from '../../../../../../components/PyTamaroAPIDocs/PyTamaroAP
 import NetworkErrorSnackbar from '../../../../../../components/NetworkErrorSnackbar';
 import ResetButton from '../../../../../../components/ResetButton';
 import { listAuthors } from '../../../../../../src/Authors';
+
+const userType = 'student';
 
 function attachmentsTransformer(src: string, cell: NotebookCell) {
   const attachmentPrefix = 'attachment:';
@@ -87,8 +89,9 @@ export default function NotebookPage({
   const activityVersionId = `${activityVariantId}/${version}`;
 
   const initialCodeCells = cells
-    .filter((cell) => cell.cell_type === 'code')
-    .map((cell) => createCodeCell(cell.source, parseInt(cell.id, 10)));
+    .map((cell, idx) => ({ cell, idx }))
+    .filter(({ cell }) => cell.cell_type === 'code')
+    .map(({ cell, idx: originalIdx }) => createCodeCell(cell.source, originalIdx));
   const originalIdxToCodeCellIdx = new Map<number, number>();
   initialCodeCells.forEach((cell, idx) => originalIdxToCodeCellIdx.set(cell.originalIndex, idx));
 
@@ -99,9 +102,6 @@ export default function NotebookPage({
   } = useCodeState(initialCodeCells, activityVersionId);
 
   const pageTitle = `${title} - PyTamaro`;
-
-  const userType = 'student';
-  const TEACHER_ONLY_CELL_PREFIX = '#teacher-only';
 
   return (
     <div>
@@ -125,12 +125,10 @@ export default function NotebookPage({
         <Container maxWidth="md">
           <Typography variant="h3" marginTop={2}>{title}</Typography>
           {cells.map((cell: NotebookCell, idx) => {
-            if (userType === 'student' && cell.source.trimStart().startsWith(TEACHER_ONLY_CELL_PREFIX)) {
-              return (<Box key={cell.id} />);
-            }
             if (cell.cell_type === 'markdown') {
+              const markdownCell = cell as MarkdownCell;
               const components = {
-                img: (props: any) => attachmentsImage(props, cell),
+                img: (props: any) => attachmentsImage(props, markdownCell),
                 ReactPlayer: ResponsiveReactPlayer,
                 Stack,
                 API: ({ children: name }: { children: string }) => (
@@ -140,8 +138,8 @@ export default function NotebookPage({
               return (
                 <MDXRemote
                   // eslint-disable-next-line react/jsx-props-no-spreading
-                  {...cell.mdxSource}
-                  key={cell.id}
+                  {...markdownCell.mdxSource}
+                  key={markdownCell.id}
                   components={components}
                 />
               );
@@ -206,7 +204,7 @@ export async function getStaticProps(
   return {
     props: {
       title: (await variantInfo(authorSlug, activitySlug, language)).title,
-      cells: await getNotebookContent(authorSlug, activitySlug, language, version),
+      cells: await getNotebookContent(authorSlug, activitySlug, language, version, userType),
       versions: await findVersions(authorSlug, activitySlug, language),
       languages: await findLanguages(authorSlug, activitySlug),
     },

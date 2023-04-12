@@ -4,6 +4,8 @@
 
 - Embed resources (such as images) as attachments.
 - Include slash in every self-closing tag (for example, write `<br/>` instead of `<br>`).
+- To create cells only for teachers, its first line should be `#teacher-only`.
+- To create cells for both students and teachers, its first line should be `#student-teacher`.
 
 ## Special Components
 
