@@ -7,7 +7,7 @@ import Head from 'next/head';
 import NextLink from 'next/link';
 import useLocalStorageState from 'use-local-storage-state';
 import NavigationBar from '../components/NavigationBar';
-import { getDefaultMetadata } from '../src/codeState';
+import { METADATA_KEY, getDefaultMetadata } from '../src/codeState';
 import getLanguageDisplayName from '../src/internationalization';
 import ExportLocalStorageButton from '../components/ExportLocalStorageButton';
 import ImportLocalStorageButton from '../components/ImportLocalStorageButton';
@@ -15,7 +15,7 @@ import useLocalStorageMapState from '../src/localStorageMapState';
 
 export default function MyData() {
   const { localStorageMap, setLocalStorageMapFromString } = useLocalStorageMapState();
-  const [metadata] = useLocalStorageState('pytamaro_web_metadata', {
+  const [metadata] = useLocalStorageState(METADATA_KEY, {
     defaultValue: getDefaultMetadata(),
   });
   const cellsModifiedActivityVariantIds = metadata.activities

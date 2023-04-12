@@ -42,8 +42,10 @@ export function createCodeCell(source: string, originalIndex: number): CodeCellS
   };
 }
 
-function getDefaultKey(activityVariantId: string) {
-  return `pytamaro_web_${activityVariantId}_codeCells`;
+export const METADATA_KEY = 'pytamaro-web';
+
+function getActivityVariantCodeCellsKey(activityVariantId: string) {
+  return `${METADATA_KEY}-${activityVariantId}-codeCells`;
 }
 
 export function getDefaultMetadata() : Metadata {
@@ -56,19 +58,19 @@ export function getDefaultMetadata() : Metadata {
 export function getDefaultActivityMetadata(activityVariantId: string) : ActivityMetadata {
   return {
     id: activityVariantId,
-    codeCellsKey: getDefaultKey(activityVariantId),
+    codeCellsKey: getActivityVariantCodeCellsKey(activityVariantId),
     cellsModified: false,
     completed: false,
   };
 }
 
 export function useCodeState(initialCodeCells: CodeState, activityVariantId: string) {
-  const [metadata, setMetadata] = useLocalStorageState('pytamaro_web_metadata', {
+  const [metadata, setMetadata] = useLocalStorageState(METADATA_KEY, {
     defaultValue: getDefaultMetadata(),
   });
   const activityMetadata = metadata.activities.find((a) => a.id === activityVariantId);
   const [codeCells, setCodeCells] = useLocalStorageState(
-    activityMetadata?.codeCellsKey || getDefaultKey(activityVariantId),
+    activityMetadata?.codeCellsKey || getActivityVariantCodeCellsKey(activityVariantId),
     { defaultValue: initialCodeCells },
   );
   const [networkError, setNetworkError] = useState(false);

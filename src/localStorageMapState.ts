@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import { METADATA_KEY } from './codeState';
 
 export default function useLocalStorageMapState() {
   const data = new Map();
   if (typeof window !== 'undefined') {
     Object.keys(localStorage)
-      .filter((key) => key.startsWith('pytamaro_web_'))
+      .filter((key) => key.startsWith(METADATA_KEY))
       .forEach((key) => {
         const value = localStorage.getItem(key);
         if (value !== null) {
@@ -22,14 +23,14 @@ export default function useLocalStorageMapState() {
     }
     // Clear localStorage
     Object.keys(localStorage)
-      .filter((key) => key.startsWith('pytamaro_web_'))
+      .filter((key) => key.startsWith(METADATA_KEY))
       .forEach((key) => {
         localStorage.removeItem(key);
       });
     const newLocalStorageMap = new Map();
     // Update localStorage
     Object.keys(jsonObject).forEach((key) => {
-      if (key.startsWith('pytamaro_web_')) {
+      if (key.startsWith(METADATA_KEY)) {
         localStorage.setItem(key, JSON.stringify(jsonObject[key]));
         newLocalStorageMap.set(key, jsonObject[key]);
       }
