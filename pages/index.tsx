@@ -17,7 +17,7 @@ function HomePagePrimaryButton(props: { icon: JSX.Element, text: string, href: s
       startIcon={icon}
       variant="outlined"
       size="large"
-      sx={{ minWidth: '10vw' }}
+      sx={{ minWidth: '15vw' }}
       href={href}
     >
       {text}
@@ -71,7 +71,7 @@ export default function Home() {
         <Box
           display="flex"
           justifyContent="center"
-          paddingTop="30vh"
+          paddingTop={{ xs: '20vh', md: '25vh' }}
           paddingBottom="10vh"
         >
           <svg viewBox="0 0 600 108" display="block" width="40vw" overflow="visible">
@@ -104,9 +104,9 @@ export default function Home() {
         </Box>
         <Stack
           direction={{ xs: 'column', md: 'row' }}
-          justifyContent="space-around"
+          justifyContent="center"
           spacing={{
-            xs: 4, md: 8,
+            xs: 4, md: 8, lg: 12, xl: 16,
           }}
           sx={{ mt: 12 }}
         >
@@ -122,7 +122,7 @@ export default function Home() {
           }}
         />
       </Box>
-      <Container maxWidth="md" sx={{ mt: 6 }}>
+      <Container maxWidth="md" sx={{ mt: 8 }}>
         <Stack spacing={4}>
           <Card>
             <CardContent>
