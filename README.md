@@ -1,51 +1,74 @@
+<img src="public/PyTamaro-horizontal.png" alt="PyTamaro Logo" style="background-color:white;" />
+
 This repository contains the PyTamaro web plaform, served at https://pytamaro.si.usi.ch.
 
-## Architecture
+## Executive Summary: How is this all organized?
 
-### Executive Summary
 The web plaform is implemented using [Next.js](https://nextjs.org/).
 The actual content is stored in separate repositories, one for each author, which are imported as git submodules.
 Activities are created as [Jupyter notebooks](https://jupyter.org/).
 
-### Content
+## I am a content author. What do I need to know to operate with submodules?
+<details>
+<summary>Expand</summary>
+
 Activites and curricula are responsiblity of a certain author and are maintained in external repositories.
 See the [Luce repository](https://github.com/LuCEresearchlab/pytamaro-web-luce/) for an example.
-
 Such repositories are imported to this repository as git submodules.
-They can be added using the following command:
+
+When a new author is added, one of the maintainers needs to add their repository (`pytamaro-web-<author-slug>`) to this one using the following command:
 ```sh
 git submodule add <repository-url> data/<author-slug>
 ```
 
-To fetch the submodules content, if not already done while cloning, run:
+As an author, after your repository has been added to this one you should clone it using:
 ```sh
-git submodule update --init
+git clone --recurse-submodules git@github.com:LuCEresearchlab/pytamaro-web.git
 ```
 
-Work as usual by making changes to the files in the submodule's folder.
-When you are ready, commit _inside_ a submodule folder and push to its `main` branch using:
-```sh
-git push origin HEAD:main
-```
+(or alternatively, if you had already cloned it without the `--recurse-submodules` flag, run `git submodule update --init`).
 
-Merging the `main` branch of a submodule into its `live` branch will trigger
-a workflow on the LuCE server that tries to build the plaftfrom with the new content.
-In case of success, the reference to the submodule will be updated to the new commit
-and the redeployment of the entire platform will be triggered.
+You can work on your content as usual by making changes to the files in the submodule's folder (`data/<author-slug>/...`). 
 
-Entity relationship diagram for our content:
+When you are ready and want to commit your changes:
+1. if not there already, move to a folder inside your submodule:
+    ```sh
+    cd data/<author-slug>
+    ```
+1. stage and commit your changes normally (e.g., `git add . && git commit -m "New activity"`)
+1. push your changes to the `main` branch of your submodule:
+    ```sh
+    git push origin HEAD:main
+    ```
 
-![Data Model Entity Relationship Diagram](docs/data-model-er.png)
+When you want to integrate your changes into the main repository and see them live on the platform:
+1. if not there already, move to a folder inside your submodule:
+    ```sh
+    cd data/<author-slug>
+    ```
+1. merge the `main` branch of your submodule into the `live` branch:
+    ```sh
+    git checkout live && git merge main && git push && git checkout main
+    ```
 
-### Activities
-Activities are stored each in one folder inside the `data/<author-slug>/activities` folder.
+This will trigger a workflow on the LuCE server that tries to build the plaftfrom with the new content.
+In case of success, the reference to the submodule in this platform repository will be updated to the new commit.
+Finally, the redeployment of the entire platform will be automatically triggered.
+The entire process should take less than 10 minutes.
+</details>
+
+## I am a content author. What do I need to know to create a new activity?
+<details>
+<summary>Expand</summary>
+
+Inside your `data/<author-slug>` folder, activities are stored in the `activities` folder. 
+
 The name of the folder should use hyphens and determines the _slug_ of the activity,
 which uniquely identifies it.
-See the `swiss-flag` activity for an example.
+See the `swiss-flag` activity inside the `luce` folder for an example.
 
-Each activity can exists in several variants,
-depending on:
-- the _natural language_ (e.g, English, Italian or German).
+Each activity can exists in several variants, depending on the _natural language_ in which it is written
+(e.g, English, Italian or German).
 
 All the meta-information about an activity is specified in an `info.json` file.
 See `data/luce/activities/swiss-flag/info.json` for an example.
@@ -69,16 +92,32 @@ Note that user edits are persisted in the browser's local storage only with resp
 Additionally, the object describing a activity contains the following fields:
 - `previewImage`: an object containing the `filename` of a preview image and its `backgroundColor`, to be used in the gallery
 - `visibility`: one of `"featured"` (shown first in the gallery with a special mark), `"visible"` (shown with normal priority in the gallery), `"draft"` (shown with a special "Coming soon" label in the gallery and only accessible using a direct link), or `"hidden"` (the activity is not shown at all in the gallery).
+</details>
 
-## How to set up a development environment
+
+## How do I set up a development environment to run the platform locally?
+<details>
+<summary>Expand</summary>
 
 1. Clone this repository and all its submodules: `git clone --recurse-submodules git@github.com:LuCEresearchlab/pytamaro-web.git` 
 1. Install the dependencies of this project: `npm install`
 1. Populate the `public` folder with notebooks-related assets: `node tools/createNotebookAssets.js`
 1. Start the Next.js server: `npm run dev`
 1. Browse at [http://localhost:3000](http://localhost:3000)
+</details>
 
-## Coding guidelines
+## Activities, Curricula... give me a comprehensive picture!
+<details>
+<summary>Expand</summary>
+
+Entity relationship diagram for our content:
+
+![Data Model Entity Relationship Diagram](docs/data-model-er.png)
+</details>
+
+## I am a developer of the platform. Which coding guidelines should I follow?
+<details>
+<summary>Expand</summary>
 
 We use TypeScript and follow the AirBnB style guide.
 Install ESLint in your environment.
@@ -90,17 +129,24 @@ We mostly follow the structure prescribed by Next.js:
 - `src` contains "business logic"
 - `public` contains public assets
 - `tools` contains extra utilities meant to be executed as scripts
+</details>
 
-## How to deploy
+## I am a developer of the platform. How do I deploy it?
+<details>
+<summary>Expand</summary>
 
 Pushes to the `live` branch trigger an automatic re-deployment.
 One liner from the `main` branch:
 ```sh
 git checkout live && git merge main && git push && git checkout main
 ```
+</details>
 
-## Configure Deployment
+## How is the platform being executed on the server?
+<details>
+<summary>Expand</summary>
 
-- Set up an instance of `glot` (see the `pytamaro-docker` repo)
+- Set up an instance of `glot` (see the [pytamaro-glot-docker](https://github.com/LuCEresearchlab/pytamaro-glot-docker) repository).
 - Create an appropriate `.env.production` in the root folder
-- Navigate into the `docker` folder; execute `docker-compose --env-file ../.env.production build` to build the NextJS and Redis containers, and `docker compose --env-file ../.env.production up` to start them.
+- Use `docker compose` to build and start the containers. See how it is currently done in the [luce-server](https://github.com/LuCEresearchlab/luce-server) repository.
+</details>
