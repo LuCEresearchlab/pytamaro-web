@@ -6,9 +6,10 @@ import Head from 'next/head';
 import CodeCell from '../components/CodeCell';
 import DownloadCodeButton from '../components/CodeDownloadButton';
 import NavigationBar from '../components/NavigationBar';
-import { createCodeCell, useCodeState } from '../src/codeState';
+import { createCodeCell, useLocalActivity } from '../src/localStorage/useLocalActivity';
 import NetworkErrorSnackbar from '../components/NetworkErrorSnackbar';
 import ResetButton from '../components/ResetButton';
+import { getWholeSource } from '../src/CodeExecution';
 
 const INITIAL_SOURCE = `from pytamaro import rectangle, red, show_graphic
 
@@ -19,8 +20,8 @@ export default function Playground() {
   const initialCodeState = [createCodeCell(INITIAL_SOURCE, 0)];
   const {
     codeCells, cellsModified, networkError, setNetworkError,
-    handleSourceChanged, handleExecute, handleToggleOutputArea, handleResetState, getWholeSource,
-  } = useCodeState(initialCodeState, 'playground');
+    handleSourceChanged, handleExecute, handleToggleOutputArea, handleResetState,
+  } = useLocalActivity(initialCodeState, 'playground');
   const codeCellState = codeCells[0];
   return (
     <div>
@@ -40,7 +41,7 @@ export default function Playground() {
             onExecutionRequested={() => handleExecute(0)}
             onOutputAreaToggled={() => handleToggleOutputArea(0)}
           />
-          <DownloadCodeButton getSource={getWholeSource} />
+          <DownloadCodeButton getSource={() => getWholeSource(codeCells)} />
         </Container>
       </Box>
     </div>

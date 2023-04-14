@@ -13,6 +13,10 @@ const navItems = [
     url: '/activities/luce',
   },
   {
+    name: 'My Data',
+    url: '/my-data',
+  },
+  {
     name: 'Docs',
     url: 'https://pytamaro.readthedocs.org',
   },

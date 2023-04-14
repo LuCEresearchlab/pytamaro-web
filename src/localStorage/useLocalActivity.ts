@@ -2,34 +2,14 @@ import produce from 'immer';
 import { useConfirm } from 'material-ui-confirm';
 import { useEffect, useState } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
-import logEvent, { EventName } from './AnalyticsEvent';
+import axios from 'axios';
+import logAnalyticsEvent, { EventName } from '../AnalyticsEvent';
 
-import { ExecutionResponse, executeCode } from './CodeExecution';
-
-const VERSION = '1';
-
-interface Metadata {
-  dataModelVersion: string;
-  activities: ActivityVariantMetadata[],
-}
-
-interface ActivityVariantMetadata {
-  id: string,
-  codeCellsKey: string,
-  cellsModified: boolean,
-  completed: boolean,
-}
-
-export interface CodeCellState {
-  source: string;
-  executionInProgress: boolean;
-  executionResponse: any;
-  outputAreaVisible: boolean;
-  outputSynced: boolean;
-  originalIndex: number;
-}
-
-export type CodeState = CodeCellState[];
+import { ExecutionResponse, codeFirstNCells, executeCode } from '../CodeExecution';
+import {
+  CodeCellState, CodeState, getActivityVariantCodeCellsKey, getDefaultActivityVariantMetadata,
+} from './schema';
+import useLocalProfile from './useLocalProfile';
 
 export function createCodeCell(source: string, originalIndex: number): CodeCellState {
   return {
@@ -42,33 +22,8 @@ export function createCodeCell(source: string, originalIndex: number): CodeCellS
   };
 }
 
-export const METADATA_KEY = 'pytamaro-web';
-
-function getActivityVariantCodeCellsKey(activityVariantId: string) {
-  return `${METADATA_KEY}-${activityVariantId}-codeCells`;
-}
-
-export function getDefaultMetadata() : Metadata {
-  return {
-    dataModelVersion: VERSION,
-    activities: [],
-  };
-}
-
-function getDefaultActivityVariantMetadata(activityVariantId: string)
-  : ActivityVariantMetadata {
-  return {
-    id: activityVariantId,
-    codeCellsKey: getActivityVariantCodeCellsKey(activityVariantId),
-    cellsModified: false,
-    completed: false,
-  };
-}
-
-export function useCodeState(initialCodeCells: CodeState, activityVariantId: string) {
-  const [metadata, setMetadata] = useLocalStorageState(METADATA_KEY, {
-    defaultValue: getDefaultMetadata(),
-  });
+export function useLocalActivity(initialCodeCells: CodeState, activityVariantId: string) {
+  const { metadata, dataSharingAllowed, setMetadata } = useLocalProfile();
   const variantMetadata = metadata.activities.find((a) => a.id === activityVariantId);
   const [codeCells, setCodeCells] = useLocalStorageState(
     variantMetadata?.codeCellsKey || getActivityVariantCodeCellsKey(activityVariantId),
@@ -94,6 +49,7 @@ export function useCodeState(initialCodeCells: CodeState, activityVariantId: str
     );
   };
 
+  /* Check if code cells have been modified (compared to their initial state) */
   useEffect(() => {
     const newCellsModified = JSON.stringify(codeCells) !== JSON.stringify(initialCodeCells);
     setMetadata(
@@ -109,26 +65,6 @@ export function useCodeState(initialCodeCells: CodeState, activityVariantId: str
       }),
     );
   }, [codeCells, initialCodeCells, activityVariantId, setMetadata]);
-
-  const getSourceFirstNCodeCells = (n: number) => codeCells.map((cell) => cell.source).slice(0, n).join('\n');
-
-  const getWholeSource = () => getSourceFirstNCodeCells(codeCells.length);
-
-  const indentSource = (source: string) => source.split('\n').map((line) => `\t${line}`).join('\n');
-
-  const codeFirstNCells = (n: number) => {
-    // Creates a Python source with all the previous cells embedded within a
-    // context manager that redirects stdout and stderr to None, so that the
-    // only the stdout/stderr of the current cell is considered.
-    const currentCellSource = codeCells[n].source;
-    const previousCellsSource = getSourceFirstNCodeCells(n);
-    return `
-from contextlib import redirect_stdout, redirect_stderr
-with redirect_stdout(None), redirect_stderr(None):
-${previousCellsSource ? indentSource(previousCellsSource) : '\tpass'}
-
-${currentCellSource}`;
-  };
 
   const handleSourceChanged = (newSource: string, idx: number) => {
     setCodeCells(
@@ -167,13 +103,20 @@ ${currentCellSource}`;
 
   const handleExecuteSingleCell = async (idx: number) => {
     executionStarted(idx);
-    const response = await executeCode(codeFirstNCells(idx));
+    const response = await executeCode(codeFirstNCells(codeCells, idx));
     executionFinished(idx, response);
     return response !== undefined;
   };
 
   const handleExecute = async (idx: number) => {
-    logEvent(EventName.CodeExecution, { activity: activityVariantId });
+    logAnalyticsEvent(EventName.CodeExecution, { activity: activityVariantId });
+    if (dataSharingAllowed) {
+      axios.post('/api/events/codeExecution', {
+        uuid: metadata.userUuid,
+        code: codeFirstNCells(codeCells, idx),
+        activityVariant: activityVariantId,
+      }).catch(() => {}); // don't bother if this fails
+    }
     setNetworkError(false);
     // (Re-Execute) all cells from the first one to the current one, included.
     const successes = [];
@@ -210,6 +153,5 @@ ${currentCellSource}`;
     handleExecute,
     handleToggleOutputArea,
     handleResetState,
-    getWholeSource,
   };
 }

@@ -80,8 +80,8 @@ async function doExecution(code: string) {
   return resData;
 }
 
-async function computeKey(code: string) {
-  const msgUint8 = new TextEncoder().encode(code);
+async function computeKey(text: string) {
+  const msgUint8 = new TextEncoder().encode(text);
   const hashBuffer = await crypto.webcrypto.subtle.digest('SHA-256', msgUint8);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
@@ -92,7 +92,7 @@ export default async function handler(
   res: NextApiResponse<ExecutionResponse>,
 ) {
   const { code } = req.body;
-  const key = await computeKey(code);
+  const key = await computeKey(JSON.stringify({ code, image: process.env.GLOT_IMAGE_TAG }));
   const cacheResult = await retrieveFromCache(key);
   let response;
   if (cacheResult) {

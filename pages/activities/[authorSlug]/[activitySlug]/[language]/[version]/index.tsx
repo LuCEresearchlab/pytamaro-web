@@ -20,7 +20,7 @@ import {
   variantInfo,
 } from '../../../../../../src/Activities';
 import NavigationBar from '../../../../../../components/NavigationBar';
-import { createCodeCell, useCodeState } from '../../../../../../src/codeState';
+import { createCodeCell, useLocalActivity } from '../../../../../../src/localStorage/useLocalActivity';
 import { notebookVersionUrl } from '../../../../../../src/urlUtils';
 import VariantSelector from '../../../../../../components/VariantsSelector';
 import downloadSourceCode from '../../../../../../src/CodeDownload';
@@ -30,6 +30,7 @@ import NetworkErrorSnackbar from '../../../../../../components/NetworkErrorSnack
 import ResetButton from '../../../../../../components/ResetButton';
 import { listAuthors } from '../../../../../../src/Authors';
 import MarkCompletedButton from '../../../../../../components/MarkCompletedButton';
+import { getWholeSource } from '../../../../../../src/CodeExecution';
 
 const userType = 'student';
 
@@ -98,8 +99,8 @@ export default function NotebookPage({
   const {
     codeCells, cellsModified, completed, networkError,
     toggleCompleted, setNetworkError, handleSourceChanged, handleExecute,
-    handleToggleOutputArea, handleResetState, getWholeSource,
-  } = useCodeState(initialCodeCells, activityVersionId);
+    handleToggleOutputArea, handleResetState,
+  } = useLocalActivity(initialCodeCells, activityVersionId);
 
   const pageTitle = `${title} - PyTamaro`;
 
@@ -163,7 +164,7 @@ export default function NotebookPage({
             variant="contained"
             color="success"
             startIcon={<DownloadIcon />}
-            onClick={() => downloadSourceCode(getWholeSource())}
+            onClick={() => downloadSourceCode(getWholeSource(codeCells))}
           >
             Download Python Code
           </Button>

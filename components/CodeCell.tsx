@@ -11,7 +11,7 @@ import { IconButtonProps } from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { red } from '@mui/material/colors';
 import OutputArea from './OutputArea';
-import { CodeCellState } from '../src/codeState';
+import { CodeCellState } from '../src/localStorage/schema';
 
 const AceEditor = dynamic(
   async () => {
