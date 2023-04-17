@@ -14,9 +14,10 @@ jobs:
           submodules: true
           token: ${{ secrets.PYTAMARO_WEB_TOKEN }}
       # Install NPM dependencies, cache them correctly,
-      # start local server
+      # build, start local server
       # and run all Cypress tests
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:
-          start: npm run dev
+          build: npm run build
+          start: npm start
