@@ -1,3 +1,5 @@
+export {};
+
 describe('Activity Page', () => {
   it('should hide teacher-only cells', () => {
     cy.visit('/activities/luce/color-flower/en/v2');

@@ -1,3 +1,5 @@
+export {};
+
 describe('Playground Page', () => {
   beforeEach(() => {
     cy.visit('/playground');
