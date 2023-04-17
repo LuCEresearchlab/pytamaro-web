@@ -156,7 +156,7 @@ git checkout live && git merge main && git push && git checkout main
 
 Create a new file: `cypress/e2e/[filename].cy.ts`.
 
-Note: since `isolatedModules` is set, the file should contains some import or export (for example, start the file with `export {};`).
+Note: since `isolatedModules` is set, the file should contain some import or export (for example, start the file with `export {};`).
 </details>
 
 ## How is the platform being executed on the server?
