@@ -142,6 +142,23 @@ git checkout live && git merge main && git push && git checkout main
 ```
 </details>
 
+## I am a developer of the platform. How do I test it?
+<details>
+<summary>Expand</summary>
+
+1. Start the Next.js server: `npm run dev`
+1. Start Cypress by running `npm run cypress` in another terminal window
+</details>
+
+## I am a developer of the platform. How do I add a new E2E test?
+<details>
+<summary>Expand</summary>
+
+Create a new file: `cypress/e2e/[filename].cy.ts`.
+
+Note: since `isolatedModules` is set, the file should contain some import or export (for example, start the file with `export {};`).
+</details>
+
 ## How is the platform being executed on the server?
 <details>
 <summary>Expand</summary>
