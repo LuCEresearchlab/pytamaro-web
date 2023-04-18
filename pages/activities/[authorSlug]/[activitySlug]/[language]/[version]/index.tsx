@@ -20,7 +20,7 @@ import {
   variantInfo,
 } from '../../../../../../src/Activities';
 import NavigationBar from '../../../../../../components/NavigationBar';
-import { createCodeCell, useCodeState } from '../../../../../../src/codeState';
+import { countLines, createCodeCell, useCodeState } from '../../../../../../src/codeState';
 import { notebookVersionUrl } from '../../../../../../src/urlUtils';
 import VariantSelector from '../../../../../../components/VariantsSelector';
 import downloadSourceCode from '../../../../../../src/CodeDownload';
@@ -103,6 +103,8 @@ export default function NotebookPage({
 
   const pageTitle = `${title} - PyTamaro`;
 
+  let nextFirstLineNumber = 1;
+
   return (
     <div>
       <Head>
@@ -147,6 +149,8 @@ export default function NotebookPage({
             }
             const cellIdx = originalIdxToCodeCellIdx.get(idx) as number;
             const currentCodeCell = codeCells[cellIdx];
+            const firstLineNumber = nextFirstLineNumber;
+            nextFirstLineNumber += countLines(currentCodeCell.source);
             return (
               <CodeCell
                 key={cell.id}
@@ -154,6 +158,7 @@ export default function NotebookPage({
                 onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
                 onExecutionRequested={() => handleExecute(cellIdx)}
                 onOutputAreaToggled={() => handleToggleOutputArea(cellIdx)}
+                firstLineNumber={firstLineNumber}
               />
             );
           })}

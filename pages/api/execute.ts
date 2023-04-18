@@ -42,15 +42,36 @@ async function saveToCache(key: string, value: string) {
   }
 }
 
-async function doExecution(code: string) {
+const PREVIOUS_CELLS_FILENAME = 'previous_cells';
+const CURRENT_CELL_FILENAME = 'cell';
+
+// The source of the previous cells is embedded within a context manager that
+// redirects stdout and stderr to None, so that the only the stdout/stderr of
+// the current cell is considered.
+const DRIVER_SOURCE = `
+from contextlib import redirect_stdout, redirect_stderr
+with redirect_stdout(None), redirect_stderr(None):
+    import previous_cells
+import cell
+`;
+
+async function doExecution(previousCellsSource: string, currentCellSource: string) {
   const data = {
     image: process.env.GLOT_IMAGE_TAG,
     payload: {
       language: 'python',
       files: [
         {
-          name: 'main.py',
-          content: code,
+          name: 'driver.py',
+          content: DRIVER_SOURCE,
+        },
+        {
+          name: `${PREVIOUS_CELLS_FILENAME}.py`,
+          content: previousCellsSource || 'pass',
+        },
+        {
+          name: `${CURRENT_CELL_FILENAME}.py`,
+          content: currentCellSource || 'pass',
         },
       ],
     },
@@ -91,14 +112,14 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ExecutionResponse>,
 ) {
-  const { code } = req.body;
-  const key = await computeKey(code);
+  const { previousCellsSource, currentCellSource } = req.body;
+  const key = await computeKey(JSON.stringify({ previousCellsSource, currentCellSource }));
   const cacheResult = await retrieveFromCache(key);
   let response;
   if (cacheResult) {
     response = JSON.parse(cacheResult);
   } else {
-    response = await doExecution(code);
+    response = await doExecution(previousCellsSource, currentCellSource);
     saveToCache(key, JSON.stringify(response));
   }
   res.status(200).json(response);

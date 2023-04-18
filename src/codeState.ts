@@ -65,6 +65,10 @@ function getDefaultActivityVariantMetadata(activityVariantId: string)
   };
 }
 
+export function countLines(source: string) {
+  return source.split('\n').length;
+}
+
 export function useCodeState(initialCodeCells: CodeState, activityVariantId: string) {
   const [metadata, setMetadata] = useLocalStorageState(METADATA_KEY, {
     defaultValue: getDefaultMetadata(),
@@ -114,22 +118,6 @@ export function useCodeState(initialCodeCells: CodeState, activityVariantId: str
 
   const getWholeSource = () => getSourceFirstNCodeCells(codeCells.length);
 
-  const indentSource = (source: string) => source.split('\n').map((line) => `\t${line}`).join('\n');
-
-  const codeFirstNCells = (n: number) => {
-    // Creates a Python source with all the previous cells embedded within a
-    // context manager that redirects stdout and stderr to None, so that the
-    // only the stdout/stderr of the current cell is considered.
-    const currentCellSource = codeCells[n].source;
-    const previousCellsSource = getSourceFirstNCodeCells(n);
-    return `
-from contextlib import redirect_stdout, redirect_stderr
-with redirect_stdout(None), redirect_stderr(None):
-${previousCellsSource ? indentSource(previousCellsSource) : '\tpass'}
-
-${currentCellSource}`;
-  };
-
   const handleSourceChanged = (newSource: string, idx: number) => {
     setCodeCells(
       (currentCodeCells) => produce(currentCodeCells, (draft) => {
@@ -167,7 +155,15 @@ ${currentCellSource}`;
 
   const handleExecuteSingleCell = async (idx: number) => {
     executionStarted(idx);
-    const response = await executeCode(codeFirstNCells(idx));
+    // Get the concatenated source of all the previous cells.
+    const previousCellsSource = getSourceFirstNCodeCells(idx);
+    // Get the source of the current cell, padded before with empty lines
+    // to account for the previous cells.
+    const currentCellSource = codeCells[idx].source;
+    const paddedCurrentCellSource = idx === 0
+      ? currentCellSource
+      : '\n'.repeat(countLines(previousCellsSource)) + codeCells[idx].source;
+    const response = await executeCode(previousCellsSource, paddedCurrentCellSource);
     executionFinished(idx, response);
     return response !== undefined;
   };

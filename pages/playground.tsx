@@ -39,6 +39,7 @@ export default function Playground() {
             onSourceChanged={(newSource) => handleSourceChanged(newSource, 0)}
             onExecutionRequested={() => handleExecute(0)}
             onOutputAreaToggled={() => handleToggleOutputArea(0)}
+            firstLineNumber={1}
           />
           <DownloadCodeButton getSource={getWholeSource} />
         </Container>

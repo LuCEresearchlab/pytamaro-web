@@ -40,3 +40,7 @@ code, pre {
 .ace_hidden-cursors {
     opacity:0
 } 
+
+.ace_gutter-cell {
+    color: #777777
+}

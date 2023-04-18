@@ -43,12 +43,13 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 }));
 
 export default function CodeCell({
-  codeCellState, onSourceChanged, onExecutionRequested, onOutputAreaToggled,
+  codeCellState, onSourceChanged, onExecutionRequested, onOutputAreaToggled, firstLineNumber,
 } :
-{ codeCellState : CodeCellState
+{ codeCellState : CodeCellState,
   onSourceChanged: (newSource: string) => void,
   onExecutionRequested: () => Promise<any>,
-  onOutputAreaToggled: () => void
+  onOutputAreaToggled: () => void,
+  firstLineNumber : number,
 }) {
   const theme = useTheme();
   let outputAreaBgColor;
@@ -86,10 +87,11 @@ export default function CodeCell({
             fontSize="1rem"
             width="100%"
             showPrintMargin={false}
-            showGutter={false}
             highlightActiveLine={false}
             setOptions={{
               fontFamily: theme.pytamaro.monospaceFontFamily,
+              firstLineNumber,
+              showFoldWidgets: false,
             }}
           />
         </CardContent>

@@ -5,10 +5,12 @@ export interface ExecutionResponse {
   content: any
 }
 
-export async function executeCode(source: string) : Promise<ExecutionResponse | undefined> {
+export async function executeCode(previousCellsSource: string, currentCellSource: string)
+  : Promise<ExecutionResponse | undefined> {
   try {
     return (await axios.post('/api/execute', {
-      code: source,
+      previousCellsSource,
+      currentCellSource,
     })).data;
   } catch (e) {
     return undefined;
