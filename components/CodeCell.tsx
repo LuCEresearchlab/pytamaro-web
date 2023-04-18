@@ -123,7 +123,7 @@ export default function CodeCell({
         </CardActions>
         <Collapse in={codeCellState.outputAreaVisible} timeout="auto" unmountOnExit>
           <CardContent>
-            <Card sx={{ backgroundColor: outputAreaBgColor, p: 2 }}>
+            <Card sx={{ backgroundColor: outputAreaBgColor, p: 2, overflowX: 'auto' }}>
               {codeCellState.executionResponse
                   && <OutputArea executionResponse={codeCellState.executionResponse} />}
             </Card>
