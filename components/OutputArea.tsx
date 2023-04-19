@@ -1,3 +1,4 @@
+import AnsiUp from 'ansi_up';
 import { ExecutionResponse } from '../src/CodeExecution';
 
 export default function OutputArea(
@@ -14,7 +15,9 @@ export default function OutputArea(
     }
   } if (executionResponse.type === 'error') {
     const traceback = executionResponse.content;
-    child = <pre style={{ color: 'red' }}>{traceback}</pre>;
+    const html = new AnsiUp().ansi_to_html(traceback);
+    // eslint-disable-next-line react/no-danger
+    child = <pre style={{ color: 'white', backgroundColor: '#101010' }} dangerouslySetInnerHTML={{ __html: html }} />;
   }
   return <div style={{ width: 'max-content' }}>{child}</div>;
 }

@@ -42,13 +42,18 @@ async function saveToCache(key: string, value: string) {
   }
 }
 
-const PREVIOUS_CELLS_FILENAME = 'previous_cells';
-const CURRENT_CELL_FILENAME = 'cell';
+const DRIVER_FILE = 'driver.py';
+const PREVIOUS_CELLS_FILE = 'previous_cells.py';
+const CURRENT_CELL_FILE = 'cell.py';
 
 // The source of the previous cells is embedded within a context manager that
 // redirects stdout and stderr to None, so that the only the stdout/stderr of
 // the current cell is considered.
 const DRIVER_SOURCE = `
+import friendly
+friendly.install()
+friendly.set_formatter("dark", color_system="truecolor")
+friendly.exclude_file_from_traceback('/home/glot/${DRIVER_FILE}')
 from contextlib import redirect_stdout, redirect_stderr
 with redirect_stdout(None), redirect_stderr(None):
     import previous_cells
@@ -62,15 +67,15 @@ async function doExecution(previousCellsSource: string, currentCellSource: strin
       language: 'python',
       files: [
         {
-          name: 'driver.py',
+          name: `${DRIVER_FILE}`,
           content: DRIVER_SOURCE,
         },
         {
-          name: `${PREVIOUS_CELLS_FILENAME}.py`,
+          name: `${PREVIOUS_CELLS_FILE}`,
           content: previousCellsSource || 'pass',
         },
         {
-          name: `${CURRENT_CELL_FILENAME}.py`,
+          name: `${CURRENT_CELL_FILE}`,
           content: currentCellSource || 'pass',
         },
       ],
@@ -78,7 +83,7 @@ async function doExecution(previousCellsSource: string, currentCellSource: strin
   };
   let resData;
   try {
-    const glotResponse = await axios.post(
+    const glotResponse = (await axios.post(
       `${process.env.GLOT_RUNNER_URL}/run`,
       data,
       {
@@ -88,11 +93,11 @@ async function doExecution(previousCellsSource: string, currentCellSource: strin
             'Content-Type': 'application/json',
           },
       },
-    );
-    if (glotResponse.data.error.length > 0) {
-      resData = { type: 'error', content: glotResponse.data.stderr };
+    )).data;
+    if (glotResponse.error.length > 0) {
+      resData = { type: 'error', content: glotResponse.stdout + glotResponse.stderr };
     } else {
-      resData = { type: 'success', content: glotResponse.data.stdout };
+      resData = { type: 'success', content: glotResponse.stdout };
     }
   } catch (e) {
     // @ts-ignore

@@ -32,7 +32,7 @@ export default function Playground() {
           <ResetButton enabled={cellsModified} onReset={handleResetState} />
         </NavigationBar>
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
-        <Container maxWidth="lg">
+        <Container maxWidth="md">
           <Typography variant="h2" align="center" marginY={3}>Playground</Typography>
           <CodeCell
             codeCellState={codeCellState}
