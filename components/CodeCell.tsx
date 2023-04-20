@@ -1,15 +1,17 @@
 import dynamic from 'next/dynamic';
 import { useTheme, styled } from '@mui/material/styles';
 import {
+  Badge,
+  BadgeProps,
   Card, CardActions, CardContent, Collapse, IconButton, Paper,
   Tooltip,
 } from '@mui/material';
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import DoneIcon from '@mui/icons-material/Done';
+import SyncProblemIcon from '@mui/icons-material/SyncProblem';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { IconButtonProps } from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { red } from '@mui/material/colors';
 import OutputArea from './OutputArea';
 import { CodeCellState } from '../src/codeState';
 
@@ -42,6 +44,15 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
   }),
 }));
 
+const StaleOutputBadge = styled(Badge)<BadgeProps>(() => ({
+  '& .MuiBadge-badge': {
+    right: '1rem',
+    paddingLeft: '1rem',
+    paddingRight: '1rem',
+  },
+  width: '100%',
+}));
+
 export default function CodeCell({
   codeCellState, onSourceChanged, onExecutionRequested, onOutputAreaToggled, firstLineNumber,
 } :
@@ -52,14 +63,7 @@ export default function CodeCell({
   firstLineNumber : number,
 }) {
   const theme = useTheme();
-  let outputAreaBgColor;
-  if (codeCellState.outputSynced) {
-    outputAreaBgColor = theme.palette.grey[codeCellState.executionResponse?.type === 'error' ? 400 : 100];
-  } else {
-    // eslint-disable-next-line prefer-destructuring
-    outputAreaBgColor = red[100];
-  }
-
+  const executionError = codeCellState.executionResponse?.type === 'error';
   const executionEnabled = !codeCellState.outputSynced;
   let buttonMessage = 'Run';
   let buttonTooltip = ''; // Empty tooltips are not displayed
@@ -123,10 +127,24 @@ export default function CodeCell({
         </CardActions>
         <Collapse in={codeCellState.outputAreaVisible} timeout="auto" unmountOnExit>
           <CardContent>
-            <Card sx={{ backgroundColor: outputAreaBgColor, p: 2, overflowX: 'auto' }}>
-              {codeCellState.executionResponse
+            <StaleOutputBadge
+              badgeContent={<Tooltip title="Stale output: re-run your code to refresh it"><SyncProblemIcon /></Tooltip>}
+              color="error"
+              invisible={codeCellState.outputSynced}
+            >
+              <Card
+                sx={{
+                  backgroundColor: executionError ? '#101010' : theme.palette.grey[100],
+                  color: executionError ? 'white' : 'black',
+                  p: 2,
+                  overflowX: 'auto',
+                  width: '100%',
+                }}
+              >
+                {codeCellState.executionResponse
                   && <OutputArea executionResponse={codeCellState.executionResponse} />}
-            </Card>
+              </Card>
+            </StaleOutputBadge>
           </CardContent>
         </Collapse>
       </Card>
