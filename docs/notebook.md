@@ -1,8 +1,21 @@
 # How to Write a Notebook for an Activity
 
-## General
+## Images
 
-- Embed resources (such as images) as attachments.
+There are three ways to include an image in your activity:
+- as a Jupyter notebook attachment (some editors supports drag-and-drop)
+- using the standard HTML `<img>` tag referring to an external URL, e.g.
+  ```html
+  <img alt="Example image" src="https://upload.wikimedia.org/wikipedia/commons/7/70/Example.png" />
+  ```
+- using the standard HTML `<img>` tag referring to a file in the activity's directory; please use a **relative path**:
+  ```html
+  <img alt="Example image" src="example.png" />
+  ```
+  and **add the resource** to the array of `assets` specified in the activity's `info.json` file.
+
+## General remarks
+
 - Include slash in every self-closing tag (for example, write `<br/>` instead of `<br>`).
 - To create cells only for teachers, its first line should be `#teacher-only`.
 - To create cells for both students and teachers, its first line should be `#student-teacher`.

@@ -5,7 +5,7 @@ import Select from '@mui/material/Select';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { LanguageWithLatestVersion } from '../src/Activities';
-import { notebookVersionUrl } from '../src/urlUtils';
+import { activityVariantPathname } from '../src/urlUtils';
 
 export default function VariantSelector({
   authorSlug, activitySlug, language, version, versions, languages,
@@ -16,7 +16,9 @@ export default function VariantSelector({
   const [selectedVersion, setSelectedVersion] = useState(version);
   const [selectedLanguage, setSelectedLanguage] = useState(language);
   useEffect(() => {
-    router.push(`/activities/${authorSlug}/${notebookVersionUrl(activitySlug, selectedLanguage, selectedVersion)}`);
+    router.push(
+      activityVariantPathname(authorSlug, activitySlug, selectedLanguage, selectedVersion),
+    );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedVersion, selectedLanguage]);
   return (

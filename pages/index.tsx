@@ -9,6 +9,7 @@ import TerminalIcon from '@mui/icons-material/Terminal';
 import anime from 'animejs';
 import InstallDesktop from '@mui/icons-material/InstallDesktop';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { activitiesByAuthorPathname } from '../src/urlUtils';
 
 function HomePagePrimaryButton(props: { icon: JSX.Element, text: string, href: string }) {
   const { icon, text, href } = props;
@@ -97,7 +98,7 @@ export default function Home() {
           justifyContent="center"
           sx={{ my: 8 }}
         >
-          <Fab variant="extended" color="primary" href="/activities/luce" sx={{ p: 3, fontSize: 16 }}>
+          <Fab variant="extended" color="primary" href={activitiesByAuthorPathname('luce')} sx={{ p: 3, fontSize: 16 }}>
             <SchoolIcon sx={{ mr: 2 }} />
             Learn with 50+ Activities
           </Fab>

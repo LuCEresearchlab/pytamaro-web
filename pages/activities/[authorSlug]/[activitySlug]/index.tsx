@@ -21,6 +21,7 @@ import {
 import NavigationBar from '../../../../components/NavigationBar';
 import getLanguageDisplayName from '../../../../src/internationalization';
 import { listAuthors } from '../../../../src/Authors';
+import { activityAssetPathname, activityPathname, activityVariantPathname } from '../../../../src/urlUtils';
 
 export default function InfoPage({ uses, activity }: {
   uses : NotebookUse[], activity : Activity
@@ -54,7 +55,7 @@ export default function InfoPage({ uses, activity }: {
           >
             <Image
               fill
-              src={`/activities/${authorSlug}/${activitySlug}/${activity.previewImage.filename}`}
+              src={activityAssetPathname(authorSlug, activitySlug, activity.previewImage.filename)}
               alt={activity.variants[0].title}
               style={{
                 padding: '1rem',
@@ -73,15 +74,12 @@ export default function InfoPage({ uses, activity }: {
               activity.variants.map((variant: NotebookVariant) => (
                 <li key={variant.language}>
                   { activity.visibility !== 'draft' && (
-                    <Link href={{
-                      pathname: '/activities/[authorSlug]/[activitySlug]/[language]/[version]',
-                      query: {
-                        authorSlug,
-                        activitySlug,
-                        language: variant.language,
-                        version: variant.latestVersion,
-                      },
-                    }}
+                    <Link href={activityVariantPathname(
+                      authorSlug,
+                      activitySlug,
+                      variant.language,
+                      variant.latestVersion,
+                    )}
                     >
                       {variant.title}
                     </Link>
@@ -172,7 +170,7 @@ export async function getStaticProps(
 export async function getStaticPaths() {
   const authors = await listAuthors();
   const paths = authors.flatMap((author) => author.activities.map(
-    (activity) => `/activities/${author.slug}/${activity.slug}`,
+    (activity) => activityPathname(author.slug, activity.slug),
   ));
   return {
     paths,

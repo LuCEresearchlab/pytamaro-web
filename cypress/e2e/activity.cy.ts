@@ -1,8 +1,10 @@
+import { activityVariantPathname } from '../../src/urlUtils';
+
 export {};
 
 describe('Activity Page', () => {
   it('should hide teacher-only cells', () => {
-    cy.visit('/activities/luce/color-flower/en/v2');
+    cy.visit(activityVariantPathname('luce', 'color-flower', 'en', 'v2'));
 
     // only 2 visible cells
     cy.get('.ace_editor').should('have.length', 2);

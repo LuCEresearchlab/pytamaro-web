@@ -21,7 +21,7 @@ import {
 } from '../../../../../../src/Activities';
 import NavigationBar from '../../../../../../components/NavigationBar';
 import { countLines, createCodeCell, useCodeState } from '../../../../../../src/codeState';
-import { notebookVersionUrl } from '../../../../../../src/urlUtils';
+import { activityAssetPathname, activityPathname, activityVariantPathname } from '../../../../../../src/urlUtils';
 import VariantSelector from '../../../../../../components/VariantsSelector';
 import downloadSourceCode from '../../../../../../src/CodeDownload';
 import ResponsiveReactPlayer from '../../../../../../components/ResponsiveReactPlayer';
@@ -33,7 +33,12 @@ import MarkCompletedButton from '../../../../../../components/MarkCompletedButto
 
 const userType = 'student';
 
-function attachmentsTransformer(src: string, cell: NotebookCell) {
+function imgSourceTransformer(
+  src: string,
+  cell: NotebookCell,
+  authorSlug: string,
+  activitySlug: string,
+) {
   const attachmentPrefix = 'attachment:';
   if (src.startsWith(attachmentPrefix)) {
     const name = src.substring(attachmentPrefix.length);
@@ -42,10 +47,14 @@ function attachmentsTransformer(src: string, cell: NotebookCell) {
     const data = attachment[mimeType];
     return `data:${mimeType};base64,${data}`;
   }
-  return src;
+  try {
+    return new URL(src).href;
+  } catch {
+    return activityAssetPathname(authorSlug, activitySlug, src);
+  }
 }
 
-function attachmentsImage(props: any, cell: NotebookCell) {
+function imgComponent(props: any, cell: NotebookCell, authorSlug: string, activitySlug: string) {
   return (
     <Box
       display="flex"
@@ -58,7 +67,7 @@ function attachmentsImage(props: any, cell: NotebookCell) {
         // eslint-disable-next-line react/jsx-props-no-spreading
           {...props}
           alt={props.alt}
-          src={attachmentsTransformer(props.src, cell)}
+          src={imgSourceTransformer(props.src, cell, authorSlug, activitySlug)}
         />
       </picture>
     </Box>
@@ -83,7 +92,7 @@ export default function NotebookPage({
     authorSlug: string,
     activitySlug: string,
     language: string,
-    version: string
+    version: string,
   };
   const activityVariantId = `${authorSlug}/${activitySlug}/${language}`;
   const activityVersionId = `${activityVariantId}/${version}`;
@@ -131,7 +140,7 @@ export default function NotebookPage({
             if (cell.cell_type === 'markdown') {
               const markdownCell = cell as MarkdownCell;
               const components = {
-                img: (props: any) => attachmentsImage(props, markdownCell),
+                img: (props: any) => imgComponent(props, markdownCell, authorSlug, activitySlug),
                 ReactPlayer: ResponsiveReactPlayer,
                 Stack,
                 API: ({ children: name }: { children: string }) => (
@@ -176,7 +185,7 @@ export default function NotebookPage({
             variant="contained"
             startIcon={<InfoIcon />}
             component={Link}
-            href={`/activities/${authorSlug}/${activitySlug}`}
+            href={activityPathname(authorSlug, activitySlug)}
           >
             Activity Info
           </Button>
@@ -214,7 +223,7 @@ export async function getStaticPaths() {
       .flatMap((activity) => activity.variants
         .flatMap(
           async (notebook) => (await findVersions(author.slug, activity.slug, notebook.language))
-            .map((v) => `/activities/${author.slug}/${notebookVersionUrl(activity.slug, notebook.language, v)}`),
+            .map((v) => activityVariantPathname(author.slug, activity.slug, notebook.language, v)),
         )));
   return {
     paths: (await Promise.all(paths)).flat(),
