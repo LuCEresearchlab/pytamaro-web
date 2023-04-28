@@ -14,6 +14,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+    restart: always
   pytamaro-web-redis:
     image: redis:alpine
     restart: always
@@ -28,4 +29,4 @@ services:
       - /var/run/docker.sock:/tmp/docker.sock:ro
     environment:
       - HTTP_PORT=9009
-
+    restart: always
