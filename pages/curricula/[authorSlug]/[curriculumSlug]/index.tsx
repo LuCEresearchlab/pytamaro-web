@@ -2,6 +2,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { ReactFlowProvider } from 'reactflow';
 import NavigationBar from '../../../../components/NavigationBar';
 import { listAuthors } from '../../../../src/Authors';
 import { getCurriculum, Curriculum } from '../../../../src/Curricula';
@@ -15,7 +16,9 @@ export default function CurriculumPage({ curriculum }:
     <Stack spacing={2}>
       <NavigationBar />
       <Typography variant="h2" marginY={3} align="center">{curriculum.title}</Typography>
-      <CurriculumFlow curriculum={curriculum} />
+      <ReactFlowProvider>
+        <CurriculumFlow curriculum={curriculum} />
+      </ReactFlowProvider>
     </Stack>
   );
 }

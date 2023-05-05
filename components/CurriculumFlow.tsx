@@ -2,7 +2,7 @@ import {
   Box,
 } from '@mui/material';
 import ReactFlow, {
-  Edge, MiniMap, Node, useEdgesState, useNodesState,
+  Edge, Node, ReactFlowInstance, useStore,
 } from 'reactflow';
 import dagre from 'dagre';
 import useLocalStorageState from 'use-local-storage-state';
@@ -14,6 +14,9 @@ import 'reactflow/dist/style.css';
 
 const nodeTypes = { activity: ActivityNode, sum: SumNode };
 
+const edgeStyle = {
+  strokeWidth: 10,
+};
 const rfStyle = {
   backgroundColor: '#B8CEFF',
 };
@@ -22,11 +25,9 @@ const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
 
 // https://reactflow.dev/docs/examples/layout/dagre/
-function getLayoutedElements(nodes: Node[], edges: Edge[], direction = 'TB') {
+function getLayoutedNodes(nodes: Node[], edges: Edge[], direction = 'TB') {
   const isHorizontal = direction === 'LR';
   dagreGraph.setGraph({ rankdir: direction });
-
-  console.log(nodes);
 
   const getDimensions = (node: Node) => {
     const { width, height } = node;
@@ -34,8 +35,8 @@ function getLayoutedElements(nodes: Node[], edges: Edge[], direction = 'TB') {
       return { width, height };
     }
     return {
-      width: 700,
-      height: 1000,
+      width: 70,
+      height: 70,
     };
   };
 
@@ -65,7 +66,7 @@ function getLayoutedElements(nodes: Node[], edges: Edge[], direction = 'TB') {
     } as Node;
   });
 
-  return { nodes: newNodes, edges };
+  return newNodes;
 }
 
 export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum }) {
@@ -134,12 +135,14 @@ export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum
                 id: `${activityNodeId}-edge-${sumIndex}`,
                 source: `${activityNodeId}-sum-${sumIndex}`,
                 target: `${activityNodeId}`,
+                style: edgeStyle,
               } as Edge,
               ...asum.map(
                 (aterm, termIndex) => ({
                   id: `${activityNodeId}-edge-${sumIndex}-${termIndex}`,
                   source: JSON.stringify(aterm),
                   target: `${activityNodeId}-sum-${sumIndex}`,
+                  style: edgeStyle,
                 } as Edge),
               ),
             ];
@@ -149,6 +152,7 @@ export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum
               id: `${activityNodeId}-edge-${sumIndex}`,
               source: JSON.stringify(asum[0]),
               target: `${activityNodeId}`,
+              style: edgeStyle,
             } as Edge;
           }
           // asum.length === 0
@@ -157,27 +161,47 @@ export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum
       );
     },
   );
-  const [nodes,, onNodesChange] = useNodesState(initialNodes);
-  const [edges,, onEdgesChange] = useEdgesState(initialEdges);
-  // get layouted elements
-  const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-    nodes,
-    edges,
-  );
+
+  const scrollWidthSelector = (state: { domNode: any }) => {
+    console.log(`w: ${state.domNode?.children[0].scrollWidth}`);
+    return state.domNode?.scrollWidth || 1;
+  };
+  const scrollHeightSelector = (state: { domNode: any }) => {
+    console.log(`h: ${state.domNode?.children[0].scrollHeight}`);
+    return state.domNode?.scrollHeight || 1;
+  };
+  const reactFlowWidth = useStore(scrollWidthSelector);
+  const reactFlowHeight = useStore(scrollHeightSelector);
+
+  function onInit(r: ReactFlowInstance) {
+    if (r.getNodes()[0]?.width) {
+      // layout
+      const layoutedNodes = getLayoutedNodes(
+        r.getNodes(),
+        r.getEdges(),
+      );
+      r.setNodes(layoutedNodes);
+    }
+  }
 
   return (
-    <Box style={{ width: '100vw', height: '100vh' }}>
+    <Box style={{
+      width: reactFlowWidth,
+      height: reactFlowHeight,
+    }}
+    >
       <ReactFlow
-        nodes={layoutedNodes}
-        edges={layoutedEdges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
+        defaultNodes={initialNodes}
+        defaultEdges={initialEdges}
         nodeTypes={nodeTypes}
-        fitView
         style={rfStyle}
-      >
-        <MiniMap />
-      </ReactFlow>
+        panOnDrag={false}
+        zoomOnScroll={false}
+        zoomOnPinch={false}
+        zoomOnDoubleClick={false}
+        preventScrolling={false}
+        onInit={(r) => onInit(r)}
+      />
     </Box>
   );
 }
