@@ -13,6 +13,48 @@ import ExportLocalStorageButton from '../components/ExportLocalStorageButton';
 import ImportLocalStorageButton from '../components/ImportLocalStorageButton';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import getEntireLocalStorage, { replaceEntireLocalStorage } from '../src/localStorage/entireLocalStorage';
+import { activityVariantPathname } from '../src/urlUtils';
+
+function ActivityVariantsList({ ids } : { ids: string[] }) {
+  return (
+    <ul>
+      {ids.map((id) => {
+        if (id === 'playground') {
+          return (
+            <li key={id}>
+              <Link href="/playground">
+                Playground
+              </Link>
+            </li>
+          );
+        }
+        const [authorSlug, activitySlug, language, version] = id.split('/');
+        const pathname = activityVariantPathname(
+          authorSlug,
+          activitySlug,
+          language,
+          version,
+        );
+        return (
+          <li key={id}>
+            <Link href={pathname}>
+              {`${authorSlug}/${activitySlug}`}
+            </Link>
+            {' '}
+            (
+            {getLanguageDisplayName(language)}
+            ,
+            {' '}
+            latest version:
+            {' '}
+            {version}
+            )
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
 
 export default function MyData() {
   const { metadata, setMetadata } = useLocalProfile();
@@ -58,30 +100,7 @@ export default function MyData() {
               <Typography variant="body1" marginY={3}>
                 You wrote source code for the following activities:
               </Typography>
-              <ul>
-                {
-                  cellsModifiedActivityVariantIds.map((id: string) => {
-                    if (id === 'playground') {
-                      return (
-                        <li key={id}>
-                          <Link href="/playground">
-                            Playground
-                          </Link>
-                        </li>
-                      );
-                    }
-                    const [authorSlug, activitySlug, language, version] = id.split('/');
-                    return (
-                      <li key={id}>
-                        <Link href={`/activities/${authorSlug}/${activitySlug}/${language}/${version}`}>
-                          {`${authorSlug}/${activitySlug}`}
-                        </Link>
-                        {` (${getLanguageDisplayName(language)}, version ${version})`}
-                      </li>
-                    );
-                  })
-                }
-              </ul>
+              <ActivityVariantsList ids={cellsModifiedActivityVariantIds} />
             </>
           )}
           {cellsModifiedActivityVariantIds.length === 0 && (
@@ -94,29 +113,7 @@ export default function MyData() {
               <Typography variant="body1" marginY={3}>
                 You completed the following activities:
               </Typography>
-              <ul>
-                {
-                  completedActivityVariantIds.map((id: string) => {
-                    const [authorSlug, activitySlug, language, version] = id.split('/');
-                    return (
-                      <li key={id}>
-                        <Link href={`/activities/${authorSlug}/${activitySlug}/${language}/${version}`}>
-                          {`${authorSlug}/${activitySlug}`}
-                        </Link>
-                        {' '}
-                        (
-                        {getLanguageDisplayName(language)}
-                        ,
-                        {' '}
-                        latest version:
-                        {' '}
-                        {version}
-                        )
-                      </li>
-                    );
-                  })
-                }
-              </ul>
+              <ActivityVariantsList ids={completedActivityVariantIds} />
             </>
           )}
           {completedActivityVariantIds.length === 0 && (

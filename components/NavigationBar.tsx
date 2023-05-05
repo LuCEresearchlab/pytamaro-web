@@ -2,6 +2,7 @@ import {
   AppBar, Button, Divider, Stack, Toolbar,
 } from '@mui/material';
 import FeedbackDialog from './FeedbackDialog';
+import { activitiesByAuthorPathname } from '../src/urlUtils';
 
 const navItems = [
   {
@@ -10,7 +11,7 @@ const navItems = [
   },
   {
     name: 'Activities',
-    url: '/activities/luce',
+    url: activitiesByAuthorPathname('luce'),
   },
   {
     name: 'My Data',

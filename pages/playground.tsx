@@ -33,13 +33,14 @@ export default function Playground() {
           <ResetButton enabled={cellsModified} onReset={handleResetState} />
         </NavigationBar>
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
-        <Container maxWidth="lg">
+        <Container maxWidth="md">
           <Typography variant="h2" align="center" marginY={3}>Playground</Typography>
           <CodeCell
             codeCellState={codeCellState}
             onSourceChanged={(newSource) => handleSourceChanged(newSource, 0)}
             onExecutionRequested={() => handleExecute(0)}
             onOutputAreaToggled={() => handleToggleOutputArea(0)}
+            firstLineNumber={1}
           />
           <DownloadCodeButton getSource={() => getWholeSource(codeCells)} />
         </Container>

@@ -22,6 +22,10 @@ export function createCodeCell(source: string, originalIndex: number): CodeCellS
   };
 }
 
+export function countLines(source: string) {
+  return source.split('\n').length;
+}
+
 export function useLocalActivity(initialCodeCells: CodeState, activityVariantId: string) {
   const { metadata, dataSharingAllowed, setMetadata } = useLocalProfile();
   const variantMetadata = metadata.activities.find((a) => a.id === activityVariantId);
@@ -101,9 +105,19 @@ export function useLocalActivity(initialCodeCells: CodeState, activityVariantId:
     );
   };
 
+  const getSourceFirstNCodeCells = (n: number) => codeCells.map((cell) => cell.source).slice(0, n).join('\n');
+
   const handleExecuteSingleCell = async (idx: number) => {
     executionStarted(idx);
-    const response = await executeCode(codeFirstNCells(codeCells, idx));
+    // Get the concatenated source of all the previous cells.
+    const previousCellsSource = getSourceFirstNCodeCells(idx);
+    // Get the source of the current cell, padded before with empty lines
+    // to account for the previous cells.
+    const currentCellSource = codeCells[idx].source;
+    const paddedCurrentCellSource = idx === 0
+      ? currentCellSource
+      : '\n'.repeat(countLines(previousCellsSource)) + codeCells[idx].source;
+    const response = await executeCode(previousCellsSource, paddedCurrentCellSource);
     executionFinished(idx, response);
     return response !== undefined;
   };

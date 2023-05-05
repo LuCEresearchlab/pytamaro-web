@@ -1,11 +1,23 @@
-export function activityAssetUrl(authorSlug: string, activitySlug: string, asset: string) {
-  return `/activities/${authorSlug}/${activitySlug}/${asset}`;
+export function activitiesByAuthorPathname(authorSlug: string) {
+  return `/activities/${authorSlug}`;
 }
 
-export function notebookVersionUrl(
+export function activityPathname(
+  authorSlug: string,
+  activitySlug: string,
+) {
+  return `${activitiesByAuthorPathname(authorSlug)}/${activitySlug}`;
+}
+
+export function activityVariantPathname(
+  authorSlug: string,
   activitySlug: string,
   language: string,
   version: string,
 ) {
-  return `${activitySlug}/${language}/${version}`;
+  return `${activityPathname(authorSlug, activitySlug)}/${language}/${version}`;
+}
+
+export function activityAssetPathname(authorSlug: string, activitySlug: string, asset: string) {
+  return `${activityPathname(authorSlug, activitySlug)}/${asset}`;
 }

@@ -1,38 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import Grid from '@mui/material/Unstable_Grid2';
 import {
-  Stack,
-  Card,
-  CardContent,
-  CardActionArea,
-  CardMedia,
-  CardActions,
-  Paper,
-  Typography,
-  Button,
-  Chip,
-  TextField,
+  Stack, Typography, TextField,
   Select,
   FormControl,
   InputLabel,
   MenuItem,
   ToggleButton,
-  IconButton,
-  Box,
 } from '@mui/material';
-import { HourglassBottom, Verified } from '@mui/icons-material';
-import InfoIcon from '@mui/icons-material/Info';
 import ViewCompactIcon from '@mui/icons-material/ViewCompact';
 import {
-  getActivity, Activity, NotebookVariant,
+  getActivity, Activity,
 } from '../../../../src/Activities';
 import NavigationBar from '../../../../components/NavigationBar';
-import { activityAssetUrl, notebookVersionUrl } from '../../../../src/urlUtils';
 import getLanguageDisplayName from '../../../../src/internationalization';
 import { listAuthors } from '../../../../src/Authors';
 import { getCurriculum, Curriculum } from '../../../../src/Curricula';
+import ActivitiesGallery from '../../../../components/ActivitiesGallery';
 
 const VISIBILITY_PRIORITY = {
   featured: 0,
@@ -133,90 +118,12 @@ export default function CurriculumPage({
           </FormControl>
         </Grid>
       </Grid>
-      <Grid container spacing={2}>
-        {filteredActivities.map((activity) => {
-          // get language-filtered variant (if cannot, get first)
-          const variant = activity.variants.find(
-            (v) => !languageFilter || v.language.toLowerCase() === languageFilter.toLowerCase(),
-          ) || activity.variants[0] as NotebookVariant;
-          function variantUrl(language: string) {
-            return `${router.asPath}/${notebookVersionUrl(activity.slug, language, variant.latestVersion)}`;
-          }
-          const isDraft = activity.visibility === 'draft';
-          return (
-            <Grid md={compactView ? 3 : 4} lg={compactView ? 2 : 3} key={activity.slug}>
-              <Paper elevation={8}>
-                <Card>
-                  <CardActionArea
-                    onClick={() => router.push(variantUrl(variant.language))}
-                    disabled={isDraft}
-                  >
-                    <CardMedia
-                      component="img"
-                      height="300"
-                      image={activityAssetUrl(
-                        authorSlug,
-                        activity.slug,
-                        activity.previewImage.filename,
-                      )}
-                      alt={variant.title}
-                      sx={{ padding: 1, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
-                    />
-                    { !compactView && (
-                    <CardContent>
-                      <Typography gutterBottom variant="h5" component="div">
-                        {variant.title}
-                        {activity.visibility === 'featured'
-                          && (
-                          <Verified
-                            sx={{ marginLeft: 1, color: 'primary.main' }}
-                          />
-                          )}
-                        {isDraft
-                          && (
-                          <Chip
-                            icon={<HourglassBottom />}
-                            label="Coming soon"
-                            sx={{ marginLeft: 2, textTransform: 'uppercase', fontWeight: 'bold' }}
-                          />
-                          )}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {variant.description}
-                      </Typography>
-                    </CardContent>
-                    )}
-                  </CardActionArea>
-                  { !compactView && (
-                  <CardActions>
-                    {activity.variants.map((avariant) => (
-                      <Button
-                        onClick={() => router.push(variantUrl(avariant.language))}
-                        size="small"
-                        variant="outlined"
-                        key={avariant.language}
-                        disabled={isDraft}
-                      >
-                        {avariant.language}
-                      </Button>
-                    ))}
-                    <Box sx={{ marginLeft: 'auto' }}>
-                      <IconButton
-                        size="small"
-                        href={`${router.asPath}/${activity.slug}`}
-                        component={Link}
-                      >
-                        <InfoIcon />
-                      </IconButton>
-                    </Box>
-                  </CardActions>
-                  )}
-                </Card>
-              </Paper>
-            </Grid>
-          );
-        })}
-      </Grid>
+      <ActivitiesGallery
+        activities={filteredActivities}
+        compactView={compactView}
+        languageFilter={languageFilter}
+        authorSlug={authorSlug}
+      />
     </Stack>
   );
 }

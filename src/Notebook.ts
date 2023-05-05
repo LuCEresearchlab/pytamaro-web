@@ -50,7 +50,7 @@ function cellsVisibleToUser(
       // Only code cells can be hidden
       return true;
     }
-    const specialTag = cell.source[0].trim();
+    const specialTag = cell.source[0]?.trim();
     if (user === 'student') {
       return specialTag !== TEACHER_ONLY_CELL_PREFIX;
     }

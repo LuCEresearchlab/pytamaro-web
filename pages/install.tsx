@@ -1,9 +1,34 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import {
   Box,
   Container, Typography,
 } from '@mui/material';
 import Head from 'next/head';
 import NavigationBar from '../components/NavigationBar';
+
+function SectionHeading({ children } : { children: React.ReactNode }) {
+  return (
+    <Typography variant="h3" mt={6} align="center">
+      {children}
+    </Typography>
+  );
+}
+
+function QuestionHeading({ children } : { children: React.ReactNode }) {
+  return (
+    <Typography variant="h6" mt={4}>
+      {children}
+    </Typography>
+  );
+}
+
+function QuestionBody({ children } : { children: React.ReactNode }) {
+  return (
+    <Typography variant="body1" component="div">
+      {children}
+    </Typography>
+  );
+}
 
 export default function Install() {
   return (
@@ -14,26 +39,21 @@ export default function Install() {
       <Box>
         <NavigationBar />
         <Container maxWidth="md">
-          <Typography variant="h3" align="center" marginY={3}>How to Install PyTamaro</Typography>
-          <Typography variant="h6">
-            If you know how to use
-            {' '}
-            <code>pip</code>
-          </Typography>
-          <Typography variant="body1">
+          <SectionHeading>How to Install PyTamaro</SectionHeading>
+
+          <QuestionHeading>
+            If you know how to use <code>pip</code>
+          </QuestionHeading>
+          <QuestionBody>
             If you have installed on your computer a Python interpreter
-            with the
-            {' '}
-            <code>pip</code>
-            {' '}
-            package manager, you can easily install PyTamaro:
-            <br />
-            <code>pip install pytamaro</code>
-          </Typography>
-          <Typography variant="h6" sx={{ mt: 2 }}>
+            with the <code>pip</code> package manager, you can easily install PyTamaro:
+            <pre style={{ textAlign: 'center', color: 'red' }}>pip install pytamaro</pre>
+          </QuestionBody>
+
+          <QuestionHeading>
             If you use Thonny as an IDE
-          </Typography>
-          <Typography component="span" variant="body1">
+          </QuestionHeading>
+          <QuestionBody>
             <ol>
               <li>
                 Select the &quot;Tools&quot; menu,
@@ -48,12 +68,14 @@ export default function Install() {
                 then click the &quot;Install&quot; button.
               </li>
             </ol>
-          </Typography>
-          <Typography variant="h3" align="center" marginY={3}>Frequently Asked Questions</Typography>
-          <Typography variant="h6">
+          </QuestionBody>
+
+          <SectionHeading>Frequently Asked Questions</SectionHeading>
+
+          <QuestionHeading>
             I was using PyTamaro and now some functions do not work anymore as they used to!
-          </Typography>
-          <Typography variant="body1">
+          </QuestionHeading>
+          <QuestionBody>
             In February 2023, we released a new version of PyTamaro
             that includes some breaking changes to the API
             to improve the consistency of the library and its error messages.
@@ -63,16 +85,26 @@ export default function Install() {
             <code>pip install --upgrade pytamaro</code>
             ).
             <br />
-            The documentation for the older version of PyTamaro (years 2022 and before)
-            {' '}
-            <a href="https://pytamaro.readthedocs.io/en/version_2022/">is still available</a>
-            .
+            The documentation for the older version of PyTamaro (years 2022 and before) <a href="https://pytamaro.readthedocs.io/en/version_2022/">is still available</a>.
             <br />
-            For a detailed list of the changes, see
-            {' '}
-            <a href="https://github.com/LuCEresearchlab/pytamaro/blob/main/CHANGELOG.md#040---2023-02-27">this changelog</a>
-            .
-          </Typography>
+            For a detailed list of the changes, see <a href="https://github.com/LuCEresearchlab/pytamaro/blob/main/CHANGELOG.md#040---2023-02-27">this changelog</a>.
+          </QuestionBody>
+
+          <QuestionHeading>
+            Which environment is used to execute my Python code?
+          </QuestionHeading>
+          <QuestionBody>
+            We execute your code in an enviroment with <a href="https://docs.python.org/3/whatsnew/3.11.html">Python 3.11</a> and the following libraries:
+            <ul>
+              <li>
+                <code>pytamaro</code> version <a href="https://pypi.org/project/pytamaro/0.4.1/"><code>0.4.1</code></a>
+              </li>
+              <li>
+                <code>friendly</code> version <a href="https://github.com/friendly-traceback/friendly"><code>fe5d3a2</code></a>
+                {' '}(configured to show user-friendly tracebacks)
+              </li>
+            </ul>
+          </QuestionBody>
         </Container>
       </Box>
     </div>
