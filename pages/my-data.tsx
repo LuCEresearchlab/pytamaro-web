@@ -142,7 +142,7 @@ export default function MyData() {
               }
             />
           </Stack>
-          <Typography variant="h4" align="center" marginY={3}>Privacy Settings</Typography>
+          <Typography id="privacy-settings" variant="h4" align="center" marginY={3}>Privacy Settings</Typography>
           <Typography variant="body1" marginY={3}>
             PyTamaro Web is run by
             {' '}
@@ -163,9 +163,10 @@ export default function MyData() {
             <Typography variant="body1" marginBottom={3}>
               Current preference:
               {' '}
-              {currentSharingPreference === 'yes' && 'enabled'}
-              {currentSharingPreference === 'no' && 'disabled'}
+              {currentSharingPreference === 'yes' && 'data collection enabled'}
+              {currentSharingPreference === 'no' && 'data collection disabled'}
               {currentSharingPreference === 'unknown' && 'not expressed'}
+              .
             </Typography>
             <Stack direction="row" spacing={2}>
               <Button variant="contained" color="success" disabled={currentSharingPreference === 'yes'} onClick={dataSharingOptIn}>Enable</Button>

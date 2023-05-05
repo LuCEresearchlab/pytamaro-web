@@ -31,6 +31,7 @@ import ResetButton from '../../../../../../components/ResetButton';
 import { listAuthors } from '../../../../../../src/Authors';
 import MarkCompletedButton from '../../../../../../components/MarkCompletedButton';
 import { getWholeSource } from '../../../../../../src/CodeExecution';
+import DataSharingPreferenceDialog from '../../../../../../components/DataSharingPreferenceDialog';
 
 const userType = 'student';
 
@@ -135,6 +136,7 @@ export default function NotebookPage({
           <MarkCompletedButton completed={completed} toggleCompleted={toggleCompleted} />
         </NavigationBar>
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
+        <DataSharingPreferenceDialog />
         <Container maxWidth="md">
           <Typography variant="h3" marginTop={2}>{title}</Typography>
           {cells.map((cell: NotebookCell, idx) => {

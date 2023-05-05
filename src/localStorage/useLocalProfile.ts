@@ -16,7 +16,21 @@ export default function useLocalProfile() {
   const [metadata, setMetadata] = useLocalStorageState(METADATA_KEY, {
     defaultValue: getDefaultMetadata(),
   });
-  const dataSharingAllowed = metadata.allowSharingAnonData === 'yes';
   migrateIfNecessary(metadata, setMetadata);
-  return { metadata, dataSharingAllowed, setMetadata };
+
+  const dataSharingAllowed = metadata.allowSharingAnonData === 'yes';
+  const requestDataSharingPreference = metadata.allowSharingAnonData === 'unknown';
+  const setDataSharingPreference = (preference: 'yes' | 'no') => {
+    setMetadata((prevMetadata) => ({
+      ...prevMetadata,
+      allowSharingAnonData: preference,
+    }));
+  };
+  return {
+    metadata,
+    dataSharingAllowed,
+    requestDataSharingPreference,
+    setMetadata,
+    setDataSharingPreference,
+  };
 }

@@ -10,6 +10,7 @@ import { createCodeCell, useLocalActivity } from '../src/localStorage/useLocalAc
 import NetworkErrorSnackbar from '../components/NetworkErrorSnackbar';
 import ResetButton from '../components/ResetButton';
 import { getWholeSource } from '../src/CodeExecution';
+import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDialog';
 
 const INITIAL_SOURCE = `from pytamaro import rectangle, red, show_graphic
 
@@ -33,6 +34,7 @@ export default function Playground() {
           <ResetButton enabled={cellsModified} onReset={handleResetState} />
         </NavigationBar>
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
+        <DataSharingPreferenceDialog />
         <Container maxWidth="md">
           <Typography variant="h2" align="center" marginY={3}>Playground</Typography>
           <CodeCell
