@@ -93,10 +93,12 @@ export default function CurriculumFlow({ nodes, edges }: { nodes : Node[], edges
   const reactFlowHeight = useStore(scrollHeightSelector);
 
   return (
-    <Box style={{
-      width: reactFlowWidth,
-      height: reactFlowHeight,
-    }}
+    <Box
+      alignSelf="center"
+      style={{
+        width: reactFlowWidth,
+        height: reactFlowHeight,
+      }}
     >
       <ReactFlow
         defaultNodes={nodes}
