@@ -8,8 +8,7 @@ import {
   Box,
 } from '@mui/material';
 import {
-  Block,
-  CheckCircle,
+  CheckCircleOutlineOutlined,
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { Handle, Position, NodeProps } from 'reactflow';
@@ -31,23 +30,15 @@ export default function ActivityNode({ data }: NodeProps<NodeData>) {
   } = data;
   const [authorSlug, , , version] = id.split('/');
 
-  function getBackgroundColor() {
-    if (isCompleted) {
-      return 'green';
-    }
-    if (isUnlocked) {
-      return 'yellow';
-    }
-    return 'red';
-  }
-
   return (
-    <Box style={{
-      width: 400,
-    }}
+    <Box
+      style={{
+        width: 400,
+        opacity: isUnlocked ? 1 : 0.3,
+      }}
     >
       <Handle type="target" position={Position.Top} />
-      <Paper elevation={8} sx={{ padding: 1, backgroundColor: getBackgroundColor() }}>
+      <Paper elevation={8} sx={{ padding: 1, backgroundColor: 'grey' }}>
         <Card>
           <CardActionArea
             onClick={() => router.push(activityVariantPathname(
@@ -73,23 +64,21 @@ export default function ActivityNode({ data }: NodeProps<NodeData>) {
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
                 {variant.title}
-                {!isUnlocked
-                    && (
-                    <Block
-                      sx={{ marginLeft: 1, color: 'red' }}
-                    />
-                    )}
-                {isCompleted
-                    && (
-                    <CheckCircle
-                      sx={{ marginLeft: 1, color: 'green' }}
-                    />
-                    )}
               </Typography>
             </CardContent>
           </CardActionArea>
         </Card>
       </Paper>
+      {isCompleted && (
+        <CheckCircleOutlineOutlined
+          sx={{ margin: 1, fontSize: 100, color: 'green' }}
+          style={{
+            position: 'absolute',
+            right: 0,
+            bottom: 0,
+          }}
+        />
+      )}
       <Handle type="source" position={Position.Bottom} />
     </Box>
   );
