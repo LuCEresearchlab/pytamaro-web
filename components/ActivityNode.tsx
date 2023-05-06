@@ -5,14 +5,11 @@ import {
   CardContent,
   Typography,
   Paper,
-  Chip,
   Box,
 } from '@mui/material';
 import {
   Block,
   CheckCircle,
-  HourglassBottom,
-  Verified,
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { Handle, Position, NodeProps } from 'reactflow';
@@ -32,7 +29,6 @@ export default function ActivityNode({ data }: NodeProps<NodeData>) {
   const {
     authorSlug, activity, variant, isCompleted, isUnlocked,
   } = data;
-  const isDraft = activity.visibility === 'draft' || !isUnlocked;
 
   function getBackgroundColor() {
     if (isCompleted) {
@@ -59,7 +55,7 @@ export default function ActivityNode({ data }: NodeProps<NodeData>) {
               variant.language,
               variant.latestVersion,
             ))}
-            disabled={isDraft}
+            disabled={!isUnlocked}
           >
             <CardMedia
               component="img"
@@ -88,23 +84,6 @@ export default function ActivityNode({ data }: NodeProps<NodeData>) {
                       sx={{ marginLeft: 1, color: 'green' }}
                     />
                     )}
-                {activity.visibility === 'featured'
-                    && (
-                    <Verified
-                      sx={{ marginLeft: 1, color: 'primary.main' }}
-                    />
-                    )}
-                {isDraft
-                    && (
-                    <Chip
-                      icon={<HourglassBottom />}
-                      label="Coming soon"
-                      sx={{ marginLeft: 2, textTransform: 'uppercase', fontWeight: 'bold' }}
-                    />
-                    )}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {variant.description}
               </Typography>
             </CardContent>
           </CardActionArea>
