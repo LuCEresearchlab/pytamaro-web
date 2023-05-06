@@ -17,7 +17,7 @@ import { Activity, NotebookVariant } from '../src/Activities';
 import { activityAssetPathname, activityVariantPathname } from '../src/urlUtils';
 
 type NodeData = {
-  authorSlug: string;
+  id: string;
   activity: Activity;
   variant: NotebookVariant;
   isCompleted: boolean;
@@ -27,8 +27,9 @@ type NodeData = {
 export default function ActivityNode({ data }: NodeProps<NodeData>) {
   const router = useRouter();
   const {
-    authorSlug, activity, variant, isCompleted, isUnlocked,
+    id, activity, variant, isCompleted, isUnlocked,
   } = data;
+  const [authorSlug, , , version] = id.split('/');
 
   function getBackgroundColor() {
     if (isCompleted) {
@@ -53,7 +54,7 @@ export default function ActivityNode({ data }: NodeProps<NodeData>) {
               authorSlug,
               activity.slug,
               variant.language,
-              variant.latestVersion,
+              version,
             ))}
             disabled={!isUnlocked}
           >

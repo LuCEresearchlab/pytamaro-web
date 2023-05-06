@@ -7,37 +7,40 @@ import {
 export const CURRICULA_DIR = 'curricula';
 const CURRICULUM_EXT = '.json';
 
+interface RawCurriculumActivity {
+  id: string,
+  activityRequirements: string[][],
+  prerequisites: string[],
+  learningObjectives: string[],
+}
+
 async function getCurriculumInfo(authorSlug: string, curriculumSlug: string) {
   const content = JSON.parse(
     await readFile(path.join(DATA_DIR, authorSlug, CURRICULA_DIR, `${curriculumSlug}.json`), 'utf-8'),
   );
-  content.activities = await Promise.all(content.activities.map(async (curriculumAct: any) => {
-    const { authorSlug: thisAuthorSlug, activitySlug, language } = curriculumAct.id;
-    return {
-      activity: await getActivity(thisAuthorSlug, activitySlug),
-      variant: await variantInfo(thisAuthorSlug, activitySlug, language),
-      ...curriculumAct,
-    };
-  }));
+  content.activities = await Promise.all(content.activities.map(
+    async (curriculumAct: RawCurriculumActivity) => {
+      const [thisAuthorSlug, activitySlug, language] = curriculumAct.id.split('/');
+      return {
+        activity: await getActivity(thisAuthorSlug, activitySlug),
+        variant: await variantInfo(thisAuthorSlug, activitySlug, language),
+        ...curriculumAct,
+      };
+    },
+  ));
   return {
     slug: curriculumSlug,
     ...content,
   };
 }
 
-export interface CurriculumActivityId {
-  authorSlug: string,
-  activitySlug: string,
-  language: string,
-}
-
 export interface CurriculumActivity {
-  id: CurriculumActivityId,
+  id: string,
   activity: Activity,
   variant: NotebookVariant,
+  activityRequirements: string[][],
   prerequisites: string[],
   learningObjectives: string[],
-  activityRequirements: CurriculumActivityId[][],
 }
 
 export interface Curriculum {

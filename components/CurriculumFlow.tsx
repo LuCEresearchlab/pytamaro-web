@@ -6,7 +6,7 @@ import ReactFlow, {
 } from 'reactflow';
 import dagre from 'dagre';
 import useLocalStorageState from 'use-local-storage-state';
-import { Curriculum, CurriculumActivityId } from '../src/Curricula';
+import { Curriculum } from '../src/Curricula';
 import { METADATA_KEY, getDefaultMetadata } from '../src/codeState';
 import ActivityNode from './ActivityNode';
 import SumNode from './SumNode';
@@ -81,33 +81,22 @@ function getLayoutedNodes(nodes: Node[], edges: Edge[], direction = 'TB') {
   return newNodes;
 }
 
-function getNodeId(id: CurriculumActivityId) {
-  return JSON.stringify(id).replaceAll('"', '\\"');
-}
-
 export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum }) {
   const [metadata] = useLocalStorageState(METADATA_KEY, {
     defaultValue: getDefaultMetadata(),
   });
-  const completedActivityVariantNodeIds = metadata.activities
+  const completedActivityVariantIds = metadata.activities
     .filter((a) => a.completed)
-    .map((a) => {
-      const [authorSlug, activitySlug, language] = a.id.split('/');
-      return getNodeId({
-        authorSlug,
-        activitySlug,
-        language,
-      } as CurriculumActivityId);
-    });
+    .map((a) => a.id);
 
   // get nodes
   const initialNodes: Node[] = curriculum.activities.flatMap(
     (a) => {
-      const activityNodeId = getNodeId(a.id);
-      const isCompleted = completedActivityVariantNodeIds.includes(activityNodeId);
+      const activityNodeId = a.id;
+      const isCompleted = completedActivityVariantIds.includes(activityNodeId);
       const isUnlocked = a.activityRequirements.every(
         (asum) => asum.some(
-          (aterm) => completedActivityVariantNodeIds.includes(getNodeId(aterm)),
+          (aterm) => completedActivityVariantIds.includes(aterm),
         ),
       );
       return [
@@ -116,7 +105,7 @@ export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum
           id: activityNodeId,
           type: 'activity',
           data: {
-            authorSlug: a.id.authorSlug,
+            id: a.id,
             activity: a.activity,
             variant: a.variant,
             isCompleted,
@@ -142,7 +131,7 @@ export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum
   // get edges
   const initialEdges: Edge[] = curriculum.activities.flatMap(
     (a) => {
-      const activityNodeId = getNodeId(a.id);
+      const activityNodeId = a.id;
       return a.activityRequirements.flatMap(
         (asum, sumIndex) => {
           if (asum.length > 1) {
@@ -151,13 +140,13 @@ export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum
                 ...edgeOptions,
                 id: `${activityNodeId}-edge-${sumIndex}`,
                 source: `${activityNodeId}-sum-${sumIndex}`,
-                target: `${activityNodeId}`,
+                target: activityNodeId,
               } as Edge,
               ...asum.map(
                 (aterm, termIndex) => ({
                   ...edgeOptions,
                   id: `${activityNodeId}-edge-${sumIndex}-${termIndex}`,
-                  source: getNodeId(aterm),
+                  source: aterm,
                   target: `${activityNodeId}-sum-${sumIndex}`,
                 } as Edge),
               ),
@@ -167,8 +156,8 @@ export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum
             return {
               ...edgeOptions,
               id: `${activityNodeId}-edge-${sumIndex}`,
-              source: getNodeId(asum[0]),
-              target: `${activityNodeId}`,
+              source: asum[0],
+              target: activityNodeId,
             } as Edge;
           }
           // asum.length === 0
