@@ -15,7 +15,7 @@ import { METADATA_KEY, getDefaultMetadata } from '../../../../src/codeState';
 const nodeOptions = {
   position: { x: 0, y: 0 },
   draggable: false,
-  selectable: false,
+  selectable: true,
   connectable: false,
   deletable: false,
   focusable: false,
