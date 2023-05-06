@@ -81,15 +81,19 @@ function getLayoutedNodes(nodes: Node[], edges: Edge[], direction = 'TB') {
   return newNodes;
 }
 
+function getNodeId(id: CurriculumActivityId) {
+  return JSON.stringify(id).replaceAll('"', '\\"');
+}
+
 export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum }) {
   const [metadata] = useLocalStorageState(METADATA_KEY, {
     defaultValue: getDefaultMetadata(),
   });
-  const completedActivityVariantIds = metadata.activities
+  const completedActivityVariantNodeIds = metadata.activities
     .filter((a) => a.completed)
     .map((a) => {
       const [authorSlug, activitySlug, language] = a.id.split('/');
-      return JSON.stringify({
+      return getNodeId({
         authorSlug,
         activitySlug,
         language,
@@ -99,11 +103,11 @@ export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum
   // get nodes
   const initialNodes: Node[] = curriculum.activities.flatMap(
     (a) => {
-      const activityNodeId = JSON.stringify(a.id);
-      const isCompleted = completedActivityVariantIds.includes(activityNodeId);
+      const activityNodeId = getNodeId(a.id);
+      const isCompleted = completedActivityVariantNodeIds.includes(activityNodeId);
       const isUnlocked = a.activityRequirements.every(
         (asum) => asum.some(
-          (aterm) => completedActivityVariantIds.includes(JSON.stringify(aterm)),
+          (aterm) => completedActivityVariantNodeIds.includes(getNodeId(aterm)),
         ),
       );
       return [
@@ -138,7 +142,7 @@ export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum
   // get edges
   const initialEdges: Edge[] = curriculum.activities.flatMap(
     (a) => {
-      const activityNodeId = JSON.stringify(a.id);
+      const activityNodeId = getNodeId(a.id);
       return a.activityRequirements.flatMap(
         (asum, sumIndex) => {
           if (asum.length > 1) {
@@ -153,7 +157,7 @@ export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum
                 (aterm, termIndex) => ({
                   ...edgeOptions,
                   id: `${activityNodeId}-edge-${sumIndex}-${termIndex}`,
-                  source: JSON.stringify(aterm),
+                  source: getNodeId(aterm),
                   target: `${activityNodeId}-sum-${sumIndex}`,
                 } as Edge),
               ),
@@ -163,7 +167,7 @@ export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum
             return {
               ...edgeOptions,
               id: `${activityNodeId}-edge-${sumIndex}`,
-              source: JSON.stringify(asum[0]),
+              source: getNodeId(asum[0]),
               target: `${activityNodeId}`,
             } as Edge;
           }
