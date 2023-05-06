@@ -6,6 +6,7 @@ import {
   Typography,
   Paper,
   Chip,
+  Box,
 } from '@mui/material';
 import {
   Block,
@@ -44,7 +45,10 @@ export default function ActivityNode({ data }: NodeProps<NodeData>) {
   }
 
   return (
-    <>
+    <Box style={{
+      width: 400,
+    }}
+    >
       <Handle type="target" position={Position.Top} />
       <Paper elevation={8} sx={{ padding: 1, backgroundColor: getBackgroundColor() }}>
         <Card>
@@ -107,6 +111,6 @@ export default function ActivityNode({ data }: NodeProps<NodeData>) {
         </Card>
       </Paper>
       <Handle type="source" position={Position.Bottom} />
-    </>
+    </Box>
   );
 }
