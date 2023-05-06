@@ -14,11 +14,23 @@ import 'reactflow/dist/style.css';
 
 const nodeTypes = { activity: ActivityNode, sum: SumNode };
 
-const edgeStyle = {
-  strokeWidth: 10,
-};
 const rfStyle = {
-  backgroundColor: '#B8CEFF',
+  backgroundColor: 'primary.main',
+};
+const nodeOptions = {
+  position: { x: 0, y: 0 },
+  draggable: false,
+  selectable: false,
+  connectable: false,
+  deletable: false,
+  focusable: false,
+};
+const edgeOptions = {
+  deletable: false,
+  focusable: false,
+  style: {
+    strokeWidth: 10,
+  },
 };
 
 const dagreGraph = new dagre.graphlib.Graph();
@@ -96,9 +108,9 @@ export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum
       );
       return [
         {
+          ...nodeOptions,
           id: activityNodeId,
           type: 'activity',
-          position: { x: 0, y: 0 },
           data: {
             authorSlug: a.id.authorSlug,
             activity: a.activity,
@@ -111,9 +123,9 @@ export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum
           (asum, sumIndex) => {
             if (asum.length > 1) {
               return {
+                ...nodeOptions,
                 id: `${activityNodeId}-sum-${sumIndex}`,
                 type: 'sum',
-                position: { x: 0, y: 0 },
                 data: {},
               } as Node;
             }
@@ -132,27 +144,27 @@ export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum
           if (asum.length > 1) {
             return [
               {
+                ...edgeOptions,
                 id: `${activityNodeId}-edge-${sumIndex}`,
                 source: `${activityNodeId}-sum-${sumIndex}`,
                 target: `${activityNodeId}`,
-                style: edgeStyle,
               } as Edge,
               ...asum.map(
                 (aterm, termIndex) => ({
+                  ...edgeOptions,
                   id: `${activityNodeId}-edge-${sumIndex}-${termIndex}`,
                   source: JSON.stringify(aterm),
                   target: `${activityNodeId}-sum-${sumIndex}`,
-                  style: edgeStyle,
                 } as Edge),
               ),
             ];
           }
           if (asum.length === 1) {
             return {
+              ...edgeOptions,
               id: `${activityNodeId}-edge-${sumIndex}`,
               source: JSON.stringify(asum[0]),
               target: `${activityNodeId}`,
-              style: edgeStyle,
             } as Edge;
           }
           // asum.length === 0
