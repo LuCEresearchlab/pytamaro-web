@@ -178,14 +178,8 @@ export default function CurriculumFlow({ curriculum }: { curriculum : Curriculum
     },
   );
 
-  const scrollWidthSelector = (state: { domNode: any }) => {
-    console.log(`w: ${state.domNode?.children[0].scrollWidth}`);
-    return state.domNode?.scrollWidth || 1;
-  };
-  const scrollHeightSelector = (state: { domNode: any }) => {
-    console.log(`h: ${state.domNode?.children[0].scrollHeight}`);
-    return state.domNode?.scrollHeight || 1;
-  };
+  const scrollWidthSelector = (state: { domNode: any }) => state.domNode?.scrollWidth || 1;
+  const scrollHeightSelector = (state: { domNode: any }) => state.domNode?.scrollHeight || 1;
   const reactFlowWidth = useStore(scrollWidthSelector);
   const reactFlowHeight = useStore(scrollHeightSelector);
 
