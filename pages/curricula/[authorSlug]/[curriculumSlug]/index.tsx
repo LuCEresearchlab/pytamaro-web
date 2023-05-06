@@ -16,6 +16,7 @@ export default function CurriculumPage({ curriculum }:
     <Stack spacing={2}>
       <NavigationBar />
       <Typography variant="h2" marginY={3} align="center">{curriculum.title}</Typography>
+      <Typography variant="h5" marginY={3} align="center">{curriculum.description}</Typography>
       <ReactFlowProvider>
         <CurriculumFlow curriculum={curriculum} />
       </ReactFlowProvider>
