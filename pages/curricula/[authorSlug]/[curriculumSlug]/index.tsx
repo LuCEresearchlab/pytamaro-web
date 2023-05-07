@@ -9,7 +9,7 @@ import { listAuthors } from '../../../../src/Authors';
 import { getCurriculum, Curriculum } from '../../../../src/Curricula';
 import 'reactflow/dist/style.css';
 import { curriculumPathname } from '../../../../src/urlUtils';
-import CurriculumFlow from '../../../../components/CurriculumFlow';
+import CurriculumFlow from '../../../../components/Curriculum/CurriculumFlow';
 import { METADATA_KEY, getDefaultMetadata } from '../../../../src/codeState';
 
 const nodeOptions = {
@@ -39,13 +39,13 @@ export default function CurriculumPage({ curriculum }:
 
   // get nodes
   const initialNodes: Node[] = curriculum.units.flatMap(
-    (unit) => {
-      const unitNodeId = unit.title;
+    (unit, idx) => {
+      const unitNodeId = `${idx}`;
       return [
         {
           ...nodeOptions,
           id: unitNodeId,
-          type: 'group',
+          type: 'unit',
           data: {
             label: unit.title,
           },

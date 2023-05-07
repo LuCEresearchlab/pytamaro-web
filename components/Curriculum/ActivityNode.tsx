@@ -12,8 +12,8 @@ import {
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { Handle, Position, NodeProps } from 'reactflow';
-import { Activity, NotebookVariant } from '../src/Activities';
-import { activityAssetPathname, activityVariantPathname } from '../src/urlUtils';
+import { Activity, NotebookVariant } from '../../src/Activities';
+import { activityAssetPathname, activityVariantPathname } from '../../src/urlUtils';
 
 type NodeData = {
   id: string;
