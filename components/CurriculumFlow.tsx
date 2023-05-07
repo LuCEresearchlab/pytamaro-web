@@ -28,21 +28,60 @@ function getLayoutedNodes(
   direction = 'TB',
 ) {
   const isHorizontal = direction === 'LR';
-  dagreGraph.setGraph({ rankdir: direction });
 
-  nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, getDimensions(node));
+  const nodeIds = [] as string[];
+  nodes.forEach((node, idx) => {
+    if (node.type === 'group') {
+      if (idx !== 0) {
+        // add edges inside subflow to dagre
+        edges.forEach((edge) => {
+          if (nodeIds.includes(edge.source) && nodeIds.includes(edge.target)) {
+            dagreGraph.setEdge(edge.source, edge.target);
+          }
+        });
+        // layout
+        dagre.layout(dagreGraph);
+        // empty array
+        nodeIds.splice(0, nodeIds.length);
+      }
+      // reset dagre
+      dagreGraph.setGraph({ rankdir: direction });
+    } else {
+      // add node to dagre
+      dagreGraph.setNode(node.id, getDimensions(node));
+      nodeIds.push(node.id);
+    }
   });
-
+  // add edges inside subflow to dagre
   edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
+    if (nodeIds.includes(edge.source) && nodeIds.includes(edge.target)) {
+      dagreGraph.setEdge(edge.source, edge.target);
+    }
   });
-
+  // layout
   dagre.layout(dagreGraph);
 
-  const newNodes = nodes.map((node) => {
+  const groupDimensions = [] as { width: number, height: number }[];
+  const groupDimension = { width: 0, height: 0 };
+  const newNodes = nodes.map((node, idx) => {
+    if (node.type === 'group') {
+      if (idx !== 0) {
+        groupDimensions.push(groupDimension);
+        groupDimension.width = 0;
+        groupDimension.height = 0;
+      }
+      return node;
+    }
     const nodeWithPosition = dagreGraph.node(node.id);
     const { width, height } = getDimensions(node);
+    const newGroupWidth = nodeWithPosition.x + width / 2;
+    const newGroupHeight = nodeWithPosition.y + height / 2;
+    if (groupDimension.width < newGroupWidth) {
+      groupDimension.width = newGroupWidth;
+    }
+    if (groupDimension.height < newGroupHeight) {
+      groupDimension.height = newGroupHeight;
+    }
     return {
       ...node,
       targetPosition: isHorizontal ? 'left' : 'top',
@@ -55,8 +94,29 @@ function getLayoutedNodes(
       },
     } as Node;
   });
+  groupDimensions.push(groupDimension);
 
-  return newNodes;
+  // update dimensions of group nodes
+  let groupNodeIdx = 0;
+  const newNewNodes = newNodes.map((node) => {
+    if (node.type === 'group') {
+      const { width, height } = groupDimensions[groupNodeIdx];
+      groupNodeIdx += 1;
+      return {
+        ...node,
+        width,
+        height,
+        style: {
+          ...node.style,
+          width,
+          height,
+        },
+      };
+    }
+    return node;
+  });
+
+  return newNewNodes;
 }
 
 function onInit(nodes: Node[], edges: Edge[], r: ReactFlowInstance) {
@@ -83,6 +143,7 @@ function onInit(nodes: Node[], edges: Edge[], r: ReactFlowInstance) {
     edges,
     getDimensions,
   );
+  console.log(layoutedNodes);
   r.setNodes(layoutedNodes);
 }
 

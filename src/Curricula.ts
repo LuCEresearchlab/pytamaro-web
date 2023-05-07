@@ -7,31 +7,38 @@ import {
 export const CURRICULA_DIR = 'curricula';
 const CURRICULUM_EXT = '.json';
 
+async function getCurriculumInfo(authorSlug: string, curriculumSlug: string) {
+  const content = JSON.parse(
+    await readFile(path.join(DATA_DIR, authorSlug, CURRICULA_DIR, `${curriculumSlug}.json`), 'utf-8'),
+  );
+  content.units = await Promise.all(
+    content.units.map(
+      async (unit: CurriculumUnit) => ({
+        ...unit,
+        activities: await Promise.all(unit.activities.map(
+          async (curriculumAct: RawCurriculumActivity) => {
+            const [thisAuthorSlug, activitySlug, language] = curriculumAct.id.split('/');
+            return {
+              ...curriculumAct,
+              activity: await getActivity(thisAuthorSlug, activitySlug),
+              variant: await variantInfo(thisAuthorSlug, activitySlug, language),
+            };
+          },
+        )),
+      }),
+    ),
+  );
+  return {
+    slug: curriculumSlug,
+    ...content,
+  };
+}
+
 interface RawCurriculumActivity {
   id: string,
   activityRequirements: string[][],
   prerequisites: string[],
   learningObjectives: string[],
-}
-
-async function getCurriculumInfo(authorSlug: string, curriculumSlug: string) {
-  const content = JSON.parse(
-    await readFile(path.join(DATA_DIR, authorSlug, CURRICULA_DIR, `${curriculumSlug}.json`), 'utf-8'),
-  );
-  content.activities = await Promise.all(content.activities.map(
-    async (curriculumAct: RawCurriculumActivity) => {
-      const [thisAuthorSlug, activitySlug, language] = curriculumAct.id.split('/');
-      return {
-        activity: await getActivity(thisAuthorSlug, activitySlug),
-        variant: await variantInfo(thisAuthorSlug, activitySlug, language),
-        ...curriculumAct,
-      };
-    },
-  ));
-  return {
-    slug: curriculumSlug,
-    ...content,
-  };
 }
 
 export interface CurriculumActivity {
@@ -43,13 +50,18 @@ export interface CurriculumActivity {
   learningObjectives: string[],
 }
 
+export interface CurriculumUnit {
+  title: string,
+  activities: CurriculumActivity[],
+}
+
 export interface Curriculum {
   slug: string,
   title: string,
   description: string,
   visibility: 'featured' | 'visible' | 'draft' | 'hidden',
   competencies: string[],
-  activities: CurriculumActivity[],
+  units: CurriculumUnit[],
 }
 
 export async function listCurricula(authorSlug: string) : Promise<Curriculum[]> {

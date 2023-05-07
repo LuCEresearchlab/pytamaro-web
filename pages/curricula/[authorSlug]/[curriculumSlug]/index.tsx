@@ -38,81 +38,102 @@ export default function CurriculumPage({ curriculum }:
     .map((a) => a.id);
 
   // get nodes
-  const initialNodes: Node[] = curriculum.activities.flatMap(
-    (a) => {
-      const activityNodeId = a.id;
-      const isCompleted = completedActivityVariantIds.includes(activityNodeId);
-      const isUnlocked = a.activityRequirements.every(
-        (asum) => asum.some(
-          (aterm) => completedActivityVariantIds.includes(aterm),
-        ),
-      );
+  const initialNodes: Node[] = curriculum.units.flatMap(
+    (unit) => {
+      const unitNodeId = unit.title;
       return [
         {
           ...nodeOptions,
-          id: activityNodeId,
-          type: 'activity',
+          id: unitNodeId,
+          type: 'group',
           data: {
-            id: a.id,
-            activity: a.activity,
-            variant: a.variant,
-            isCompleted,
-            isUnlocked,
+            label: unit.title,
           },
         } as Node,
-        ...a.activityRequirements.flatMap(
-          (asum, sumIndex) => {
-            if (asum.length > 1) {
-              return {
+        ...unit.activities.flatMap(
+          (a) => {
+            const activityNodeId = a.id;
+            const isCompleted = completedActivityVariantIds.includes(activityNodeId);
+            const isUnlocked = a.activityRequirements.every(
+              (asum) => asum.some(
+                (aterm) => completedActivityVariantIds.includes(aterm),
+              ),
+            );
+            return [
+              {
                 ...nodeOptions,
-                id: `${activityNodeId}-sum-${sumIndex}`,
-                type: 'sum',
-                data: {},
-              } as Node;
-            }
-            return [];
+                id: activityNodeId,
+                type: 'activity',
+                data: {
+                  id: a.id,
+                  activity: a.activity,
+                  variant: a.variant,
+                  isCompleted,
+                  isUnlocked,
+                },
+                parentNode: unitNodeId,
+                extent: 'parent',
+              } as Node,
+              ...a.activityRequirements.flatMap(
+                (asum, sumIndex) => {
+                  if (asum.length > 1) {
+                    return {
+                      ...nodeOptions,
+                      id: `${activityNodeId}-sum-${sumIndex}`,
+                      type: 'sum',
+                      data: {},
+                      parentNode: unitNodeId,
+                      extent: 'parent',
+                    } as Node;
+                  }
+                  return [];
+                },
+              ),
+            ];
           },
         ),
       ];
     },
   );
   // get edges
-  const initialEdges: Edge[] = curriculum.activities.flatMap(
-    (a) => {
-      const activityNodeId = a.id;
-      return a.activityRequirements.flatMap(
-        (asum, sumIndex) => {
-          if (asum.length > 1) {
-            return [
-              {
+  const initialEdges: Edge[] = curriculum.units.flatMap(
+    (unit) => unit.activities.flatMap(
+      (a) => {
+        const activityNodeId = a.id;
+        return a.activityRequirements.flatMap(
+          (asum, sumIndex) => {
+            if (asum.length > 1) {
+              return [
+                {
+                  ...edgeOptions,
+                  id: `${activityNodeId}-edge-${sumIndex}`,
+                  source: `${activityNodeId}-sum-${sumIndex}`,
+                  target: activityNodeId,
+                } as Edge,
+                ...asum.map(
+                  (aterm, termIndex) => ({
+                    ...edgeOptions,
+                    id: `${activityNodeId}-edge-${sumIndex}-${termIndex}`,
+                    source: aterm,
+                    target: `${activityNodeId}-sum-${sumIndex}`,
+                  } as Edge),
+                ),
+              ];
+            }
+            if (asum.length === 1) {
+              return {
                 ...edgeOptions,
                 id: `${activityNodeId}-edge-${sumIndex}`,
-                source: `${activityNodeId}-sum-${sumIndex}`,
+                source: asum[0],
                 target: activityNodeId,
-              } as Edge,
-              ...asum.map(
-                (aterm, termIndex) => ({
-                  ...edgeOptions,
-                  id: `${activityNodeId}-edge-${sumIndex}-${termIndex}`,
-                  source: aterm,
-                  target: `${activityNodeId}-sum-${sumIndex}`,
-                } as Edge),
-              ),
-            ];
-          }
-          if (asum.length === 1) {
-            return {
-              ...edgeOptions,
-              id: `${activityNodeId}-edge-${sumIndex}`,
-              source: asum[0],
-              target: activityNodeId,
-            } as Edge;
-          }
-          // asum.length === 0
-          return [];
-        },
-      );
-    },
+              } as Edge;
+            }
+            // asum.length === 0
+            return [];
+          },
+        );
+      },
+    ),
   );
 
   return (
