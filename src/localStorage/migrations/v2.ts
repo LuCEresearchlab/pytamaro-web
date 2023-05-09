@@ -1,3 +1,5 @@
+import { playgroundActivityVariant } from '../../playground';
+import { activityVariantId } from '../../schemas/activitySchema';
 import { ActivityVariantMetadata, Metadata, getDefaultMetadata } from '../schema';
 
 export interface MetadataV1 {
@@ -6,12 +8,15 @@ export interface MetadataV1 {
 }
 
 export default function migrateToV2(metadata: MetadataV1) : Metadata {
-  const base = getDefaultMetadata();
+  /* Update playground activity variant id, if found */
+  const activities = metadata.activities.map((activity) => (
+    (activity.id === 'playground')
+      ? { ...activity, id: activityVariantId(playgroundActivityVariant) }
+      : activity
+  ));
+  /* Add new metadata properties */
   return {
-    ...metadata,
-    dataModelVersion: base.dataModelVersion,
-    userUuid: base.userUuid,
-    experimentKey: base.experimentKey,
-    allowSharingAnonData: base.allowSharingAnonData,
+    ...getDefaultMetadata(),
+    activities,
   };
 }
