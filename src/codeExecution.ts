@@ -10,7 +10,7 @@ export interface ExecutionResponse {
  * Update this version at every change to the process below
  * that turns cells into files for execution.
  */
-export const CODE_EXECUTION_CELLS_TO_FILES_VERSION = 1;
+export const CODE_EXECUTION_CELLS_TO_FILES_VERSION = 2;
 
 const DRIVER_FILE = 'driver';
 const PREVIOUS_CELLS_FILE = 'previous_cells';
@@ -23,6 +23,7 @@ const DRIVER_SOURCE = `
 import friendly
 friendly.install()
 friendly.set_formatter("dark", color_system="truecolor")
+friendly.set_include("friendly_tb")
 friendly.exclude_file_from_traceback('/home/glot/${DRIVER_FILE}.py')
 from contextlib import redirect_stdout, redirect_stderr
 with redirect_stdout(None), redirect_stderr(None):
