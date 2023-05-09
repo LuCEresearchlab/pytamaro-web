@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from 'redis';
 import crypto from 'crypto';
-import { ExecutionResponse, cellsToFiles } from '../../src/codeExecution';
+import { CODE_EXECUTION_CELLS_TO_FILES_VERSION, ExecutionResponse, cellsToFiles } from '../../src/codeExecution';
 
 const redisClient = createClient({
   socket: {
@@ -83,16 +83,21 @@ async function computeKey(text: string) {
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
+function dataForKey(sources: string[], idx: number) {
+  return JSON.stringify({
+    sources,
+    idx,
+    image: process.env.GLOT_IMAGE_TAG,
+    cellsToFilesVersion: CODE_EXECUTION_CELLS_TO_FILES_VERSION,
+  });
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ExecutionResponse>,
 ) {
   const { sources, idx } = req.body;
-  const key = await computeKey(JSON.stringify({
-    sources,
-    idx,
-    image: process.env.GLOT_IMAGE_TAG,
-  }));
+  const key = await computeKey(dataForKey(sources, idx));
   const cacheResult = await retrieveFromCache(key);
   let response;
   if (cacheResult) {
