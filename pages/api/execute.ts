@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from 'redis';
 import crypto from 'crypto';
-import { ExecutionResponse } from '../../src/CodeExecution';
+import { ExecutionResponse, cellsToFiles } from '../../src/codeExecution';
 
 const redisClient = createClient({
   socket: {
@@ -42,45 +42,13 @@ async function saveToCache(key: string, value: string) {
   }
 }
 
-const DRIVER_FILE = 'driver';
-const PREVIOUS_CELLS_FILE = 'previous_cells';
-const CURRENT_CELL_FILE = 'cell';
-
-// The source of the previous cells is embedded within a context manager that
-// redirects stdout and stderr to None, so that the only the stdout/stderr of
-// the current cell is considered.
-const DRIVER_SOURCE = `
-import friendly
-friendly.install()
-friendly.set_formatter("dark", color_system="truecolor")
-friendly.exclude_file_from_traceback('/home/glot/${DRIVER_FILE}.py')
-from contextlib import redirect_stdout, redirect_stderr
-with redirect_stdout(None), redirect_stderr(None):
-    import ${PREVIOUS_CELLS_FILE}
-    import builtins
-    builtins.__dict__.update(vars(${PREVIOUS_CELLS_FILE}))
-import ${CURRENT_CELL_FILE}
-`;
-
-async function doExecution(previousCellsSource: string, currentCellSource: string) {
+async function doExecution(sources: string[], idx: number) {
+  const files = cellsToFiles(sources, idx);
   const data = {
     image: process.env.GLOT_IMAGE_TAG,
     payload: {
       language: 'python',
-      files: [
-        {
-          name: `${DRIVER_FILE}.py`,
-          content: DRIVER_SOURCE,
-        },
-        {
-          name: `${PREVIOUS_CELLS_FILE}.py`,
-          content: previousCellsSource || 'pass',
-        },
-        {
-          name: `${CURRENT_CELL_FILE}.py`,
-          content: currentCellSource || 'pass',
-        },
-      ],
+      files,
     },
   };
   let resData;
@@ -108,8 +76,8 @@ async function doExecution(previousCellsSource: string, currentCellSource: strin
   return resData;
 }
 
-async function computeKey(code: string) {
-  const msgUint8 = new TextEncoder().encode(code);
+async function computeKey(text: string) {
+  const msgUint8 = new TextEncoder().encode(text);
   const hashBuffer = await crypto.webcrypto.subtle.digest('SHA-256', msgUint8);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
@@ -119,14 +87,18 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ExecutionResponse>,
 ) {
-  const { previousCellsSource, currentCellSource } = req.body;
-  const key = await computeKey(JSON.stringify({ previousCellsSource, currentCellSource }));
+  const { sources, idx } = req.body;
+  const key = await computeKey(JSON.stringify({
+    sources,
+    idx,
+    image: process.env.GLOT_IMAGE_TAG,
+  }));
   const cacheResult = await retrieveFromCache(key);
   let response;
   if (cacheResult) {
     response = JSON.parse(cacheResult);
   } else {
-    response = await doExecution(previousCellsSource, currentCellSource);
+    response = await doExecution(sources, idx);
     saveToCache(key, JSON.stringify(response));
   }
   res.status(200).json(response);

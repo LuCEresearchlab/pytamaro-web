@@ -1,5 +1,11 @@
+function contentTypeByAuthorPathname(contentType: string, authorSlug: string) {
+  return `/${contentType}/${authorSlug}`;
+}
+
+/* Activities */
+
 export function activitiesByAuthorPathname(authorSlug: string) {
-  return `/activities/${authorSlug}`;
+  return contentTypeByAuthorPathname('activities', authorSlug);
 }
 
 export function activityPathname(
@@ -20,4 +26,20 @@ export function activityVariantPathname(
 
 export function activityAssetPathname(authorSlug: string, activitySlug: string, asset: string) {
   return `${activityPathname(authorSlug, activitySlug)}/${asset}`;
+}
+
+/* Curricula */
+
+export function curriculaByAuthorPathname(authorSlug: string) {
+  return contentTypeByAuthorPathname('curricula', authorSlug);
+}
+
+export function curriculumPathname(authorSlug: string, curriculumSlug: string) {
+  return `${curriculaByAuthorPathname(authorSlug)}/${curriculumSlug}`;
+}
+
+/* Extra */
+
+export function playgroundPathname() {
+  return '/playground';
 }

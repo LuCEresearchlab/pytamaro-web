@@ -7,8 +7,10 @@ import {
 import Head from 'next/head';
 import Link from 'next/link';
 import NavigationBar from '../../../components/NavigationBar';
-import { listAuthors } from '../../../src/Authors';
-import { Curriculum, listCurricula } from '../../../src/Curricula';
+import { listCurricula } from '../../../src/fs-content/curricula';
+import { Curriculum } from '../../../src/schemas/curriculumSchema';
+import listAuthors from '../../../src/fs-content/authors';
+import { curriculaByAuthorPathname, curriculumPathname } from '../../../src/urlUtils';
 
 export default function CurriculaPage({ curricula }: { curricula: Curriculum[] }) {
   const router = useRouter();
@@ -43,11 +45,7 @@ export default function CurriculaPage({ curricula }: { curricula: Curriculum[] }
                 <li key={curriculum.slug}>
                   { curriculum.visibility !== 'draft' && (
                     <Link href={{
-                      pathname: '/curricula/[authorSlug]/[curriculumSlug]',
-                      query: {
-                        authorSlug,
-                        curriculumSlug: curriculum.slug,
-                      },
+                      pathname: curriculumPathname(authorSlug, curriculum.slug),
                     }}
                     >
                       {curriculum.title}
@@ -78,7 +76,7 @@ export async function getStaticProps(
 
 export async function getStaticPaths() {
   const authors = await listAuthors();
-  const paths = authors.map((a) => `/curricula/${a.slug}`);
+  const paths = authors.map((a) => curriculaByAuthorPathname(a.slug));
   return {
     paths,
     fallback: false,

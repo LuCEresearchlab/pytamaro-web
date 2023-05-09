@@ -4,8 +4,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { LanguageWithLatestVersion } from '../src/Activities';
 import { activityVariantPathname } from '../src/urlUtils';
+import { LanguageWithLatestVersion } from '../src/schemas/activitySchema';
 
 export default function VariantSelector({
   authorSlug, activitySlug, language, version, versions, languages,

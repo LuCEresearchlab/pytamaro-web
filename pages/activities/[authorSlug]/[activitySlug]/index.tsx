@@ -11,20 +11,15 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  Activity,
-  getNotebookUses,
-  NotebookUse,
-  getActivity,
-  NotebookVariant,
-} from '../../../../src/Activities';
 import NavigationBar from '../../../../components/NavigationBar';
 import getLanguageDisplayName from '../../../../src/internationalization';
-import { listAuthors } from '../../../../src/Authors';
 import { activityAssetPathname, activityPathname, activityVariantPathname } from '../../../../src/urlUtils';
+import { Activity, ActivityUse, NotebookVariant } from '../../../../src/schemas/activitySchema';
+import { getActivityUses, readActivity } from '../../../../src/fs-content/activities';
+import listAuthors from '../../../../src/fs-content/authors';
 
 export default function InfoPage({ uses, activity }: {
-  uses : NotebookUse[], activity : Activity
+  uses : ActivityUse[], activity : Activity
 }) {
   const router = useRouter();
   const {
@@ -114,7 +109,7 @@ export default function InfoPage({ uses, activity }: {
                 {uses.length === 1 ? 'course' : `${uses.length} courses`}
                 :
               </Typography>
-              {uses.map((use: NotebookUse) => (
+              {uses.map((use) => (
                 <Box m={2} key={use.url}>
                   <Card>
                     <CardContent>
@@ -161,8 +156,8 @@ export async function getStaticProps(
   } = context.params;
   return {
     props: {
-      uses: await getNotebookUses(authorSlug, activitySlug),
-      activity: await getActivity(authorSlug, activitySlug),
+      uses: await getActivityUses(authorSlug, activitySlug),
+      activity: await readActivity(authorSlug, activitySlug),
     },
   };
 }

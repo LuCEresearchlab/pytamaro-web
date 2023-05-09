@@ -1,24 +1,36 @@
+/* eslint-disable max-len */
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
-  Container, Link, Paper, Stack, Typography,
+  Container, Link, Paper, Stack, TextField, Typography,
 } from '@mui/material';
 import Head from 'next/head';
 import NextLink from 'next/link';
-import useLocalStorageState from 'use-local-storage-state';
+import { produce } from 'immer';
+import { useState } from 'react';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useConfirm } from 'material-ui-confirm';
 import NavigationBar from '../components/NavigationBar';
-import { METADATA_KEY, getDefaultMetadata } from '../src/codeState';
 import getLanguageDisplayName from '../src/internationalization';
 import ExportLocalStorageButton from '../components/ExportLocalStorageButton';
 import ImportLocalStorageButton from '../components/ImportLocalStorageButton';
-import useLocalStorageMapState from '../src/localStorageMapState';
-import { activityVariantPathname } from '../src/urlUtils';
+import useLocalProfile from '../src/localStorage/useLocalProfile';
+import getEntireLocalStorage, { clearEntireLocalStorage, replaceEntireLocalStorage } from '../src/localStorage/entireLocalStorage';
+import { activityVariantPathname, playgroundPathname } from '../src/urlUtils';
+import { isPlayground } from '../src/playground';
+import theme from '../src/theme';
 
 function ActivityVariantsList({ ids } : { ids: string[] }) {
   return (
     <ul>
       {ids.map((id) => {
         const [authorSlug, activitySlug, language, version] = id.split('/');
+        if (isPlayground(authorSlug, activitySlug, language, version)) {
+          return <li key={id}><Link href={playgroundPathname()}>Playground</Link></li>;
+        }
         const pathname = activityVariantPathname(
           authorSlug,
           activitySlug,
@@ -28,7 +40,7 @@ function ActivityVariantsList({ ids } : { ids: string[] }) {
         return (
           <li key={id}>
             <Link href={pathname}>
-              {`${authorSlug}/${activitySlug}`}
+              {`${authorSlug} - ${activitySlug}`}
             </Link>
             {' '}
             (
@@ -47,16 +59,41 @@ function ActivityVariantsList({ ids } : { ids: string[] }) {
 }
 
 export default function MyData() {
-  const { localStorageMap, setLocalStorageMapFromString } = useLocalStorageMapState();
-  const [metadata] = useLocalStorageState(METADATA_KEY, {
-    defaultValue: getDefaultMetadata(),
-  });
+  const { metadata, setMetadata } = useLocalProfile();
   const cellsModifiedActivityVariantIds = metadata.activities
     .filter((a) => a.cellsModified)
     .map((a) => a.id);
   const completedActivityVariantIds = metadata.activities
     .filter((a) => a.completed)
     .map((a) => a.id);
+
+  const [localStorageChanged, setLocalStorageChanged] = useState(0);
+  const confirm = useConfirm();
+
+  const currentSharingPreference = metadata.allowSharingAnonData;
+
+  const changeExperimentKey = (newKey: string) => {
+    setMetadata((currentMetadata) => produce(currentMetadata, (draft) => {
+      draft.experimentKey = newKey;
+    }));
+  };
+
+  const updateDataSharingPreference = (newPreference: 'yes' | 'no') => {
+    setMetadata((currentMetadata) => produce(currentMetadata, (draft) => {
+      draft.allowSharingAnonData = newPreference;
+    }));
+  };
+
+  const handleGlobalReset = () => {
+    confirm({ description: 'You are about to delete ALL the data. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete everything' })
+      .then(() => {
+        clearEntireLocalStorage();
+        setLocalStorageChanged(localStorageChanged + 1);
+      });
+  };
+
+  const dataSharingOptIn = () => updateDataSharingPreference('yes');
+  const dataSharingOptOut = () => updateDataSharingPreference('no');
 
   return (
     <div>
@@ -74,57 +111,6 @@ export default function MyData() {
             You also can configure your privacy settings,
             which influence what data gets sent to our server.
           </Typography>
-          <Typography variant="h4" align="center" marginY={3}>Privacy Settings</Typography>
-          <Typography variant="body1" marginY={3}>
-            PyTamaro Web is run by
-            {' '}
-            <Link href="https://luce.si.usi.ch/">Luce</Link>
-            , the computing education research group at USI in Lugano, Switzerland.
-            We run PyTamaro Web on servers at USI.
-            We can do this because our job is to conduct research on how people (like you)
-            learn to program.
-            We are not a company, and we do not sell your data to anyone.
-            However, for our research, we need to understand the kind of programs learners write,
-            and which learning trajectories they take through the activities.
-            This is why we would like to place cookies in your browser.
-          </Typography>
-          <Paper sx={{ padding: '2rem' }}>
-            <Typography variant="h5" marginBottom={3}>
-              Cookie Permissions
-            </Typography>
-            <Stack direction="row" spacing={2}>
-              <Button variant="contained" color="success">Allow Luce Cookies</Button>
-              <Button variant="contained" color="error">Disallow Luce Cookies</Button>
-            </Stack>
-            <Typography variant="body1" marginTop={3}>
-              Please select whether you allow us to store our cookies in your browser.
-            </Typography>
-          </Paper>
-          <Typography variant="body1" marginY={3}>
-            Even if you allow our cookies,
-            we do not collect any personally-identifiable data.
-            You remain completely anonymous.
-            We will not know who you are, we will not know where you are.
-            We describe this fully in our
-            {' '}
-            <Link component={NextLink} href="/privacy">Privacy Policy</Link>
-            .
-          </Typography>
-          <Typography variant="h4" align="center" marginY={3}>Export and Import</Typography>
-          <Typography variant="body1" marginTop={3}>
-            The data (e.g., source code) you enter in PyTamaro Web is stored in your browser,
-            inside its local storage.
-            You may want to export the data into a file
-            you can carry around (e.g., if you work at home and in school),
-            you can backup (e.g., if someone might clear your browser&apos;s local storage),
-            or you can send to your teacher.
-          </Typography>
-          <Stack direction="row" alignItems="center" justifyContent="center" spacing={1}>
-            <ExportLocalStorageButton
-              getData={() => JSON.stringify(Object.fromEntries(localStorageMap))}
-            />
-            <ImportLocalStorageButton setLocalStorageMapFromString={setLocalStorageMapFromString} />
-          </Stack>
           <Typography variant="h4" align="center" marginY={3}>My Source Code</Typography>
           {cellsModifiedActivityVariantIds.length > 0 && (
             <>
@@ -152,6 +138,118 @@ export default function MyData() {
               You haven&apos;t completed any activities.
             </Typography>
           )}
+          <Typography variant="h4" align="center" marginY={3}>Export and Import</Typography>
+          <Typography variant="body1" marginTop={3}>
+            The data (e.g., source code) you enter in PyTamaro Web is stored in your browser,
+            inside its local storage.
+            You may want to export the data into a file
+            you can carry around (e.g., if you work at home and in school),
+            you can backup (e.g., if someone might clear your browser&apos;s local storage),
+            or you can send to your teacher.
+          </Typography>
+          <Stack direction="row" alignItems="center" justifyContent="center" spacing={10}>
+            <ExportLocalStorageButton
+              getData={getEntireLocalStorage}
+            />
+            <ImportLocalStorageButton onClick={
+                (data) => {
+                  replaceEntireLocalStorage(data);
+                  setLocalStorageChanged(localStorageChanged + 1);
+                }
+              }
+            />
+          </Stack>
+          <Typography id="privacy-settings" variant="h4" align="center" marginY={3}>Privacy Settings</Typography>
+          <Typography variant="body1" marginY={3}>
+            PyTamaro Web is run by
+            {' '}
+            <Link href="https://luce.si.usi.ch/">Luce</Link>
+            , the computing education research group at USI in Lugano, Switzerland.
+            We run PyTamaro Web on servers at USI.
+            We can do this because our job is to conduct research on how people (like you)
+            learn to program.
+            We are not a company, and we do not sell your data to anyone.
+            However, for our research, we need to understand the kind of programs learners write,
+            and which learning trajectories they take through the activities.
+            This is why we would like to anonymously store this data.
+          </Typography>
+          <Paper sx={{ padding: '2rem' }}>
+            <Typography variant="h5" marginBottom={3}>
+              Anonymous data sharing for research
+            </Typography>
+            <Typography variant="body1" marginBottom={3}>
+              Current preference:
+              {' '}
+              {currentSharingPreference === 'yes' && 'data collection enabled'}
+              {currentSharingPreference === 'no' && 'data collection disabled'}
+              {currentSharingPreference === 'unknown' && 'not expressed'}
+              .
+            </Typography>
+            <Stack direction="row" spacing={2}>
+              <Button variant="contained" color="success" disabled={currentSharingPreference === 'yes'} onClick={dataSharingOptIn}>Enable</Button>
+              <Button variant="contained" color="error" disabled={currentSharingPreference === 'no'} onClick={dataSharingOptOut}>Disable</Button>
+            </Stack>
+            <Typography variant="body1" marginTop={3}>
+              Please select whether you consent to anonymously use your data.
+            </Typography>
+          </Paper>
+          <Typography variant="body1" marginY={3}>
+            Even if you allow sharing data for research purposes,
+            we do not collect any personally-identifiable data.
+            You remain completely anonymous.
+            We will not know who you are, we will not know where you are.
+            We describe this fully in our
+            {' '}
+            <Link component={NextLink} href="/privacy">Privacy Policy</Link>
+            .
+          </Typography>
+          <Accordion sx={{ mt: 6 }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="body1">Do you want to delete/reset ALL the data PyTamaro Web stores on your computer?</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="body2">
+                The button below will delete all the data this web application stores in your browser&apos;s local storage
+                (i.e., deleting the code you have written in ALL activities
+                and resetting the entire web application to its initial state).
+              </Typography>
+              <Button
+                sx={{ mt: 2 }}
+                variant="contained"
+                color="error"
+                onClick={handleGlobalReset}
+              >
+                ⚠️ Delete Everything ⚠️
+              </Button>
+            </AccordionDetails>
+          </Accordion>
+          <Accordion sx={{ mt: 6 }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="body1">Are you part of a research experiment?</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="body2">
+                If you are part of a research experiment,
+                specify here the
+                {' '}
+                <i>experiment key</i>
+                {' '}
+                you received from the researcher.
+                This will allow us to associate the anonymous data with the experiment.
+              </Typography>
+              <TextField
+                sx={{ mt: 2 }}
+                inputProps={{
+                  style: { fontFamily: theme.pytamaro.monospaceFontFamily },
+                  maxLength: 100,
+                }}
+                fullWidth
+                label="Experiment key"
+                value={metadata.experimentKey}
+                onChange={(e) => changeExperimentKey(e.target.value)}
+              />
+            </AccordionDetails>
+          </Accordion>
         </Container>
       </Box>
     </div>
