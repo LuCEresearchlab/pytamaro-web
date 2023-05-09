@@ -5,6 +5,7 @@ export const CURRENT_VERSION = '2';
 export interface Metadata {
   dataModelVersion: string;
   userUuid: string;
+  experimentKey: string;
   allowSharingAnonData: 'yes' | 'no' | 'unknown'
   activities: ActivityVariantMetadata[],
 }
@@ -53,5 +54,6 @@ export function getDefaultMetadata() : Metadata {
     userUuid: uuidv4(),
     activities: [],
     allowSharingAnonData: 'unknown',
+    experimentKey: '',
   };
 }

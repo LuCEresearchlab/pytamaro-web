@@ -1,7 +1,7 @@
 import { Box, Button } from '@mui/material';
 
 import DownloadIcon from '@mui/icons-material/Download';
-import downloadSourceCode from '../src/CodeDownload';
+import downloadSourceCode from '../src/codeDownload';
 
 export default function ExportLocalStorageButton({ getData }: { getData: () => string }) {
   return (

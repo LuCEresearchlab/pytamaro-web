@@ -9,29 +9,25 @@ import DownloadIcon from '@mui/icons-material/Download';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import {
-  getNotebookContent, MarkdownCell, NotebookCell,
-} from '../../../../../../src/Notebook';
 import CodeCell from '../../../../../../components/CodeCell';
-import {
-  findLanguages,
-  findVersions,
-  LanguageWithLatestVersion,
-  variantInfo,
-} from '../../../../../../src/Activities';
 import NavigationBar from '../../../../../../components/NavigationBar';
-import { countLines, createCodeCell, useLocalActivity } from '../../../../../../src/localStorage/useLocalActivity';
+import { asSingleSource, createCodeCell, useLocalActivity } from '../../../../../../src/localStorage/useLocalActivity';
 import { activityAssetPathname, activityPathname, activityVariantPathname } from '../../../../../../src/urlUtils';
 import VariantSelector from '../../../../../../components/VariantsSelector';
-import downloadSourceCode from '../../../../../../src/CodeDownload';
+import downloadSourceCode from '../../../../../../src/codeDownload';
 import ResponsiveReactPlayer from '../../../../../../components/ResponsiveReactPlayer';
 import PyTamaroAPI from '../../../../../../components/PyTamaroAPIDocs/PyTamaroAPI';
 import NetworkErrorSnackbar from '../../../../../../components/NetworkErrorSnackbar';
 import ResetButton from '../../../../../../components/ResetButton';
-import { listAuthors } from '../../../../../../src/Authors';
 import MarkCompletedButton from '../../../../../../components/MarkCompletedButton';
-import { getWholeSource } from '../../../../../../src/CodeExecution';
 import DataSharingPreferenceDialog from '../../../../../../components/DataSharingPreferenceDialog';
+import {
+  ActivityVariant, LanguageWithLatestVersion, MarkdownCell, NotebookCell,
+} from '../../../../../../src/schemas/activitySchema';
+import { findLanguages, findVersions, variantInfo } from '../../../../../../src/fs-content/activities';
+import getNotebookContent from '../../../../../../src/notebook';
+import listAuthors from '../../../../../../src/fs-content/authors';
+import { countLines } from '../../../../../../src/sourceUtils';
 
 const userType = 'student';
 
@@ -76,9 +72,12 @@ function imgComponent(props: any, cell: NotebookCell, authorSlug: string, activi
   );
 }
 
-function PyTamaroAPIWithLanguage(name: string, lang: string) {
+function PyTamaroAPIComponent(
+  name: string,
+  activityVariant: ActivityVariant,
+) {
   return (
-    <PyTamaroAPI name={name} lang={lang} />
+    <PyTamaroAPI name={name} activityVariant={activityVariant} />
   );
 }
 
@@ -96,8 +95,9 @@ export default function NotebookPage({
     language: string,
     version: string,
   };
-  const activityVariantId = `${authorSlug}/${activitySlug}/${language}`;
-  const activityVersionId = `${activityVariantId}/${version}`;
+  const activityVariant = {
+    authorSlug, activitySlug, language, version,
+  };
 
   const initialCodeCells = cells
     .map((cell, idx) => ({ cell, idx }))
@@ -110,7 +110,7 @@ export default function NotebookPage({
     codeCells, cellsModified, completed, networkError,
     toggleCompleted, setNetworkError, handleSourceChanged, handleExecute,
     handleToggleOutputArea, handleResetState,
-  } = useLocalActivity(initialCodeCells, activityVersionId);
+  } = useLocalActivity(initialCodeCells, activityVariant);
 
   const pageTitle = `${title} - PyTamaro`;
 
@@ -147,7 +147,7 @@ export default function NotebookPage({
                 ReactPlayer: ResponsiveReactPlayer,
                 Stack,
                 API: ({ children: name }: { children: string }) => (
-                  PyTamaroAPIWithLanguage(name, language)
+                  PyTamaroAPIComponent(name, activityVariant)
                 ),
               };
               return (
@@ -180,7 +180,7 @@ export default function NotebookPage({
             variant="contained"
             color="success"
             startIcon={<DownloadIcon />}
-            onClick={() => downloadSourceCode(getWholeSource(codeCells))}
+            onClick={() => downloadSourceCode(asSingleSource(codeCells))}
           >
             Download Python Code
           </Button>

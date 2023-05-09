@@ -10,14 +10,15 @@ import {
   ToggleButton,
 } from '@mui/material';
 import ViewCompactIcon from '@mui/icons-material/ViewCompact';
-import {
-  getActivity, Activity,
-} from '../../../../src/Activities';
 import NavigationBar from '../../../../components/NavigationBar';
 import getLanguageDisplayName from '../../../../src/internationalization';
-import { listAuthors } from '../../../../src/Authors';
-import { getCurriculum, Curriculum } from '../../../../src/Curricula';
+import { getCurriculum } from '../../../../src/fs-content/curricula';
 import ActivitiesGallery from '../../../../components/ActivitiesGallery';
+import { Activity } from '../../../../src/schemas/activitySchema';
+import { Curriculum } from '../../../../src/schemas/curriculumSchema';
+import { curriculumPathname } from '../../../../src/urlUtils';
+import { readActivity } from '../../../../src/fs-content/activities';
+import listAuthors from '../../../../src/fs-content/authors';
 
 const VISIBILITY_PRIORITY = {
   featured: 0,
@@ -139,7 +140,7 @@ export async function getStaticProps(
   } = context.params;
   const curriculum = await getCurriculum(authorSlug, curriculumSlug);
   const activities = await Promise.all(curriculum.activities
-    .map((curriculumAct) => getActivity(authorSlug, curriculumAct.slug)));
+    .map((curriculumAct) => readActivity(authorSlug, curriculumAct.slug)));
   return {
     props: {
       curriculum,
@@ -151,8 +152,9 @@ export async function getStaticProps(
 export async function getStaticPaths() {
   const authors = await listAuthors();
   const paths = authors
-    .flatMap((author) => author.curricula
-      .map((curriculum) => `/curricula/${author.slug}/${curriculum.slug}`));
+    .flatMap((author) => author.curricula.map(
+      (curriculum) => curriculumPathname(author.slug, curriculum.slug),
+    ));
   return {
     paths,
     fallback: false,

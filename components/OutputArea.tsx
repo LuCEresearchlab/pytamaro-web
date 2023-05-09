@@ -1,5 +1,5 @@
 import AnsiUp from 'ansi_up';
-import { ExecutionResponse } from '../src/CodeExecution';
+import { ExecutionResponse } from '../src/codeExecution';
 
 export default function OutputArea(
   { executionResponse }: { executionResponse: ExecutionResponse },

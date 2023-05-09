@@ -1,5 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
-import { ActivityVariantMetadata, Metadata } from '../schema';
+import { ActivityVariantMetadata, Metadata, getDefaultMetadata } from '../schema';
 
 export interface MetadataV1 {
   dataModelVersion: string;
@@ -7,7 +6,12 @@ export interface MetadataV1 {
 }
 
 export default function migrateToV2(metadata: MetadataV1) : Metadata {
+  const base = getDefaultMetadata();
   return {
-    ...metadata, dataModelVersion: '2', userUuid: uuidv4(), allowSharingAnonData: 'unknown',
+    ...metadata,
+    dataModelVersion: base.dataModelVersion,
+    userUuid: base.userUuid,
+    experimentKey: base.experimentKey,
+    allowSharingAnonData: base.allowSharingAnonData,
   };
 }

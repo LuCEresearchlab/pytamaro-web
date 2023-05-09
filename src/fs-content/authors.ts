@@ -1,7 +1,9 @@
 import path from 'path';
 import { readdir, stat } from 'fs/promises';
-import { Activity, listActivities, DATA_DIR } from './Activities';
-import { Curriculum, listCurricula } from './Curricula';
+import { Author } from '../schemas/activitySchema';
+import { DATA_DIR } from './notebooks';
+import { listActivities } from './activities';
+import { listCurricula } from './curricula';
 
 async function getAuthorInfo(authorSlug: string) {
   return {
@@ -11,13 +13,7 @@ async function getAuthorInfo(authorSlug: string) {
   };
 }
 
-export interface Author {
-  slug: string,
-  activities: Activity[],
-  curricula: Curriculum[],
-}
-
-export async function listAuthors() : Promise<Author[]> {
+export default async function listAuthors() : Promise<Author[]> {
   const authorSlugs = (await readdir(DATA_DIR, { withFileTypes: true }))
     .filter(async (entry) => (await stat(path.join(DATA_DIR, entry.name))).isDirectory())
     .map((dir) => dir.name);

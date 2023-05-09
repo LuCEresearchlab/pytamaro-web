@@ -1,6 +1,7 @@
 import path from 'path';
 import { readdir, readFile } from 'fs/promises';
-import { DATA_DIR } from './Activities';
+import { DATA_DIR } from './notebooks';
+import { Curriculum } from '../schemas/curriculumSchema';
 
 export const CURRICULA_DIR = 'curricula';
 const CURRICULUM_EXT = '.json';
@@ -11,22 +12,6 @@ async function getCurriculumInfo(authorSlug: string, curriculumSlug: string) {
     slug: curriculumSlug,
     ...JSON.parse(content),
   };
-}
-
-export interface CurriculumActivity {
-  slug: string,
-  prerequisites: string[],
-  learningObjectives: string[],
-  activityRequirements: string[][],
-}
-
-export interface Curriculum {
-  slug: string,
-  title: string,
-  description: string,
-  visibility: 'featured' | 'visible' | 'draft' | 'hidden',
-  competencies: string[],
-  activities: CurriculumActivity[]
 }
 
 export async function listCurricula(authorSlug: string) : Promise<Curriculum[]> {

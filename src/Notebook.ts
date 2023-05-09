@@ -1,8 +1,6 @@
-import { readFile } from 'fs/promises';
-import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
-import path from 'path';
-import { DATA_DIR, ACTIVITIES_DIR } from './Activities';
+import { readNotebookContent } from './fs-content/notebooks';
+import { JupyterCell, NotebookCell } from './schemas/activitySchema';
 
 const TEACHER_ONLY_CELL_PREFIX = '#teacher-only';
 const STUDENT_TEACHER_CELL_PREFIX = '#student-teacher';
@@ -11,33 +9,6 @@ const KNOWN_PREFIXES = [
   TEACHER_ONLY_CELL_PREFIX,
   STUDENT_TEACHER_CELL_PREFIX,
 ];
-
-export interface ContentItem {
-  name: string,
-  path: string
-  type: string
-}
-
-type CellType = 'code' | 'markdown' | 'raw';
-
-interface JupyterCell {
-  id: string,
-  source: string[],
-  attachments?: any,
-  cell_type: CellType,
-}
-
-export interface NotebookCell {
-  id: string,
-  source: string,
-  attachments?: any,
-  cell_type: CellType,
-}
-
-export interface MarkdownCell extends NotebookCell {
-  cell_type: 'markdown',
-  mdxSource: MDXRemoteSerializeResult,
-}
 
 type User = 'teacher' | 'student';
 
@@ -66,17 +37,15 @@ function cleanCellSource(source: string[]) {
     .join('');
 }
 
-export async function getNotebookContent(
+export default async function getNotebookContent(
   authorSlug: string,
   activitySlug: string,
   language: string,
   version: string,
   user: User,
 ) : Promise<NotebookCell[]> {
-  const notebookPath = path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR, activitySlug, `${activitySlug}-${language}-${version}.ipynb`);
-  const contentBuffer = await readFile(notebookPath);
-  const content = JSON.parse(contentBuffer.toString());
-  return Promise.all(cellsVisibleToUser(content.cells, user).map(async (cell, idx) => {
+  const cells = await readNotebookContent(authorSlug, activitySlug, language, version);
+  return Promise.all(cellsVisibleToUser(cells, user).map(async (cell, idx) => {
     const source = cleanCellSource(cell.source);
     return {
       ...cell,

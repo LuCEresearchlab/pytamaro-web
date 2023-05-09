@@ -1,34 +1,36 @@
+/* eslint-disable max-len */
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
-  Container, Link, Paper, Stack, Typography,
+  Container, Link, Paper, Stack, TextField, Typography,
 } from '@mui/material';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { produce } from 'immer';
 import { useState } from 'react';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useConfirm } from 'material-ui-confirm';
 import NavigationBar from '../components/NavigationBar';
 import getLanguageDisplayName from '../src/internationalization';
 import ExportLocalStorageButton from '../components/ExportLocalStorageButton';
 import ImportLocalStorageButton from '../components/ImportLocalStorageButton';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
-import getEntireLocalStorage, { replaceEntireLocalStorage } from '../src/localStorage/entireLocalStorage';
-import { activityVariantPathname } from '../src/urlUtils';
+import getEntireLocalStorage, { clearEntireLocalStorage, replaceEntireLocalStorage } from '../src/localStorage/entireLocalStorage';
+import { activityVariantPathname, playgroundPathname } from '../src/urlUtils';
+import { isPlayground } from '../src/playground';
+import theme from '../src/theme';
 
 function ActivityVariantsList({ ids } : { ids: string[] }) {
   return (
     <ul>
       {ids.map((id) => {
-        if (id === 'playground') {
-          return (
-            <li key={id}>
-              <Link href="/playground">
-                Playground
-              </Link>
-            </li>
-          );
-        }
         const [authorSlug, activitySlug, language, version] = id.split('/');
+        if (isPlayground(authorSlug, activitySlug, language, version)) {
+          return <li key={id}><Link href={playgroundPathname()}>Playground</Link></li>;
+        }
         const pathname = activityVariantPathname(
           authorSlug,
           activitySlug,
@@ -38,7 +40,7 @@ function ActivityVariantsList({ ids } : { ids: string[] }) {
         return (
           <li key={id}>
             <Link href={pathname}>
-              {`${authorSlug}/${activitySlug}`}
+              {`${authorSlug} - ${activitySlug}`}
             </Link>
             {' '}
             (
@@ -65,14 +67,29 @@ export default function MyData() {
     .filter((a) => a.completed)
     .map((a) => a.id);
 
-  const [localStorageReplaced, setLocalStorageReplaced] = useState(0);
+  const [localStorageChanged, setLocalStorageChanged] = useState(0);
+  const confirm = useConfirm();
 
   const currentSharingPreference = metadata.allowSharingAnonData;
+
+  const changeExperimentKey = (newKey: string) => {
+    setMetadata((currentMetadata) => produce(currentMetadata, (draft) => {
+      draft.experimentKey = newKey;
+    }));
+  };
 
   const updateDataSharingPreference = (newPreference: 'yes' | 'no') => {
     setMetadata((currentMetadata) => produce(currentMetadata, (draft) => {
       draft.allowSharingAnonData = newPreference;
     }));
+  };
+
+  const handleGlobalReset = () => {
+    confirm({ description: 'You are about to delete ALL the data. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete everything' })
+      .then(() => {
+        clearEntireLocalStorage();
+        setLocalStorageChanged(localStorageChanged + 1);
+      });
   };
 
   const dataSharingOptIn = () => updateDataSharingPreference('yes');
@@ -137,7 +154,7 @@ export default function MyData() {
             <ImportLocalStorageButton onClick={
                 (data) => {
                   replaceEntireLocalStorage(data);
-                  setLocalStorageReplaced(localStorageReplaced + 1);
+                  setLocalStorageChanged(localStorageChanged + 1);
                 }
               }
             />
@@ -186,6 +203,53 @@ export default function MyData() {
             <Link component={NextLink} href="/privacy">Privacy Policy</Link>
             .
           </Typography>
+          <Accordion sx={{ mt: 6 }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="body1">Do you want to delete/reset ALL the data PyTamaro Web stores on your computer?</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="body2">
+                The button below will delete all the data this web application stores in your browser&apos;s local storage
+                (i.e., deleting the code you have written in ALL activities
+                and resetting the entire web application to its initial state).
+              </Typography>
+              <Button
+                sx={{ mt: 2 }}
+                variant="contained"
+                color="error"
+                onClick={handleGlobalReset}
+              >
+                ⚠️ Delete Everything ⚠️
+              </Button>
+            </AccordionDetails>
+          </Accordion>
+          <Accordion sx={{ mt: 6 }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="body1">Are you part of a research experiment?</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="body2">
+                If you are part of a research experiment,
+                specify here the
+                {' '}
+                <i>experiment key</i>
+                {' '}
+                you received from the researcher.
+                This will allow us to associate the anonymous data with the experiment.
+              </Typography>
+              <TextField
+                sx={{ mt: 2 }}
+                inputProps={{
+                  style: { fontFamily: theme.pytamaro.monospaceFontFamily },
+                  maxLength: 100,
+                }}
+                fullWidth
+                label="Experiment key"
+                value={metadata.experimentKey}
+                onChange={(e) => changeExperimentKey(e.target.value)}
+              />
+            </AccordionDetails>
+          </Accordion>
         </Container>
       </Box>
     </div>

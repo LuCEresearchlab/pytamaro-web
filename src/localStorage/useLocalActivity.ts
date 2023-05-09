@@ -3,13 +3,15 @@ import { useConfirm } from 'material-ui-confirm';
 import { useEffect, useState } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
 import axios from 'axios';
-import logAnalyticsEvent, { EventName } from '../AnalyticsEvent';
-
-import { ExecutionResponse, codeFirstNCells, executeCode } from '../CodeExecution';
+import logAnalyticsEvent, { AnalyticsEventName } from '../analyticsEvent';
 import {
   CodeCellState, CodeState, getActivityVariantCodeCellsKey, getDefaultActivityVariantMetadata,
 } from './schema';
 import useLocalProfile from './useLocalProfile';
+import { ActivityVariant, activityVariantId } from '../schemas/activitySchema';
+import { EventName, storeDbEvent } from '../storeDbEvent';
+import { ExecutionResponse } from '../codeExecution';
+import { joinLines } from '../sourceUtils';
 
 export function createCodeCell(source: string, originalIndex: number): CodeCellState {
   return {
@@ -22,15 +24,32 @@ export function createCodeCell(source: string, originalIndex: number): CodeCellS
   };
 }
 
-export function countLines(source: string) {
-  return source.split('\n').length;
+async function executeOnServer(sources: string[], idx: number)
+  : Promise<ExecutionResponse | undefined> {
+  try {
+    return (await axios.post('/api/execute', {
+      sources,
+      idx,
+    })).data;
+  } catch {
+    return undefined;
+  }
 }
 
-export function useLocalActivity(initialCodeCells: CodeState, activityVariantId: string) {
-  const { metadata, dataSharingAllowed, setMetadata } = useLocalProfile();
-  const variantMetadata = metadata.activities.find((a) => a.id === activityVariantId);
+function sourceFromCell(cell: CodeCellState) {
+  return cell.source;
+}
+
+export function asSingleSource(cells: CodeCellState[]) {
+  return joinLines(cells.map(sourceFromCell));
+}
+
+export function useLocalActivity(initialCodeCells: CodeState, activityVariant: ActivityVariant) {
+  const { metadata, setMetadata } = useLocalProfile();
+  const variantId = activityVariantId(activityVariant);
+  const variantMetadata = metadata.activities.find((a) => a.id === variantId);
   const [codeCells, setCodeCells] = useLocalStorageState(
-    variantMetadata?.codeCellsKey || getActivityVariantCodeCellsKey(activityVariantId),
+    variantMetadata?.codeCellsKey || getActivityVariantCodeCellsKey(variantId),
     { defaultValue: initialCodeCells },
   );
   const [networkError, setNetworkError] = useState(false);
@@ -41,11 +60,11 @@ export function useLocalActivity(initialCodeCells: CodeState, activityVariantId:
   const toggleCompleted = () => {
     setMetadata(
       produce((draft) => {
-        const draftVariantMetadata = draft.activities.find((a) => a.id === activityVariantId);
+        const draftVariantMetadata = draft.activities.find((a) => a.id === variantId);
         if (draftVariantMetadata) {
           draftVariantMetadata.completed = !draftVariantMetadata.completed;
         } else {
-          const newVariantMetadata = getDefaultActivityVariantMetadata(activityVariantId);
+          const newVariantMetadata = getDefaultActivityVariantMetadata(variantId);
           newVariantMetadata.completed = !newVariantMetadata.completed;
           draft.activities.push(newVariantMetadata);
         }
@@ -58,17 +77,17 @@ export function useLocalActivity(initialCodeCells: CodeState, activityVariantId:
     const newCellsModified = JSON.stringify(codeCells) !== JSON.stringify(initialCodeCells);
     setMetadata(
       produce((draft) => {
-        const draftVariantMetadata = draft.activities.find((a) => a.id === activityVariantId);
+        const draftVariantMetadata = draft.activities.find((a) => a.id === variantId);
         if (draftVariantMetadata) {
           draftVariantMetadata.cellsModified = newCellsModified;
         } else {
-          const newVariantMetadata = getDefaultActivityVariantMetadata(activityVariantId);
+          const newVariantMetadata = getDefaultActivityVariantMetadata(variantId);
           newVariantMetadata.cellsModified = newCellsModified;
           draft.activities.push(newVariantMetadata);
         }
       }),
     );
-  }, [codeCells, initialCodeCells, activityVariantId, setMetadata]);
+  }, [codeCells, initialCodeCells, variantId, setMetadata]);
 
   const handleSourceChanged = (newSource: string, idx: number) => {
     setCodeCells(
@@ -97,7 +116,7 @@ export function useLocalActivity(initialCodeCells: CodeState, activityVariantId:
         if (response !== undefined) {
           draft[idx].executionResponse = response;
           draft[idx].outputSynced = true;
-          if (response.content.length > 0) {
+          if (response.content?.length > 0) {
             draft[idx].outputAreaVisible = true;
           }
         }
@@ -105,32 +124,21 @@ export function useLocalActivity(initialCodeCells: CodeState, activityVariantId:
     );
   };
 
-  const getSourceFirstNCodeCells = (n: number) => codeCells.map((cell) => cell.source).slice(0, n).join('\n');
-
   const handleExecuteSingleCell = async (idx: number) => {
     executionStarted(idx);
-    // Get the concatenated source of all the previous cells.
-    const previousCellsSource = getSourceFirstNCodeCells(idx);
-    // Get the source of the current cell, padded before with empty lines
-    // to account for the previous cells.
-    const currentCellSource = codeCells[idx].source;
-    const paddedCurrentCellSource = idx === 0
-      ? currentCellSource
-      : '\n'.repeat(countLines(previousCellsSource)) + codeCells[idx].source;
-    const response = await executeCode(previousCellsSource, paddedCurrentCellSource);
+    const response = await executeOnServer(codeCells.map(sourceFromCell), idx);
     executionFinished(idx, response);
     return response !== undefined;
   };
 
   const handleExecute = async (idx: number) => {
-    logAnalyticsEvent(EventName.CodeExecution, { activity: activityVariantId });
-    if (dataSharingAllowed) {
-      axios.post('/api/events/codeExecution', {
-        uuid: metadata.userUuid,
-        code: codeFirstNCells(codeCells, idx),
-        activityVariant: activityVariantId,
-      }).catch(() => {}); // don't bother if this fails
-    }
+    logAnalyticsEvent(AnalyticsEventName.CodeExecution, { activity: variantId });
+    storeDbEvent(EventName.CodeExecution, metadata, {
+      sources: codeCells.map(sourceFromCell),
+      initialSources: initialCodeCells.map(sourceFromCell),
+      requestedCellSequenceNumber: idx,
+      activityVariant,
+    });
     setNetworkError(false);
     // (Re-Execute) all cells from the first one to the current one, included.
     const successes = [];

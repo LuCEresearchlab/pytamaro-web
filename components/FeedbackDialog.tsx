@@ -11,19 +11,28 @@ import {
 } from '@mui/material';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import * as Sentry from '@sentry/nextjs';
+import { useRouter } from 'next/router';
 import CustomSnackbar from './CustomSnackbar';
+import { EventName, alwaysStoreDbEvent } from '../src/storeDbEvent';
+import NetworkErrorSnackbar from './NetworkErrorSnackbar';
+import useLocalProfile from '../src/localStorage/useLocalProfile';
 
 export default function FeedbackDialog() {
   const [open, setOpen] = useState(false);
+  const [errorMessageRequired, setErrorMessageRequired] = useState(false);
   const [feedbackReceivedVisibile, setFeedbackReceivedVisible] = useState(false);
+  const [feedbackErrorVisible, setFeedbackErrorVisible] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const { pathname } = useRouter();
+  const { metadata } = useLocalProfile();
 
   const clearFeedback = () => {
     setName('');
     setEmail('');
     setMessage('');
+    setErrorMessageRequired(false);
   };
 
   const handleClickOpen = () => {
@@ -35,6 +44,10 @@ export default function FeedbackDialog() {
   };
 
   const handleSend = async () => {
+    if (!message) {
+      setErrorMessageRequired(true);
+      return;
+    }
     const eventId = Sentry.captureMessage('User Feedback');
     Sentry.captureUserFeedback({
       event_id: eventId,
@@ -42,9 +55,16 @@ export default function FeedbackDialog() {
       email,
       comments: message,
     });
-    handleClose();
-    clearFeedback();
-    setFeedbackReceivedVisible(true);
+    const success = await alwaysStoreDbEvent(EventName.UserFeedback, metadata, {
+      name, email, message, pathname,
+    });
+    if (success) {
+      handleClose();
+      clearFeedback();
+      setFeedbackReceivedVisible(true);
+    } else {
+      setFeedbackErrorVisible(true);
+    }
   };
 
   return (
@@ -73,6 +93,7 @@ export default function FeedbackDialog() {
               multiline
               minRows={3}
               value={message}
+              error={errorMessageRequired && message === ''}
               onChange={(e) => setMessage(e.target.value)}
             />
             <TextField
@@ -98,6 +119,7 @@ export default function FeedbackDialog() {
         </DialogActions>
       </Dialog>
       <CustomSnackbar visible={feedbackReceivedVisibile} setVisible={setFeedbackReceivedVisible} severity="success" message="Feedback received!" />
+      <NetworkErrorSnackbar visible={feedbackErrorVisible} setVisible={setFeedbackErrorVisible} />
     </div>
   );
 }
