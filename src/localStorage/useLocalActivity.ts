@@ -52,6 +52,7 @@ export function useLocalActivity(initialCodeCells: CodeState, activityVariant: A
     variantMetadata?.codeCellsKey || getActivityVariantCodeCellsKey(variantId),
     { defaultValue: initialCodeCells },
   );
+  const localCodeCellsWrongLength = codeCells.length !== initialCodeCells.length;
   const [networkError, setNetworkError] = useState(false);
 
   const completed = !!variantMetadata?.completed;
@@ -169,6 +170,7 @@ export function useLocalActivity(initialCodeCells: CodeState, activityVariant: A
     completed,
     cellsModified,
     networkError,
+    localCodeCellsWrongLength,
     toggleCompleted,
     setNetworkError,
     handleSourceChanged,

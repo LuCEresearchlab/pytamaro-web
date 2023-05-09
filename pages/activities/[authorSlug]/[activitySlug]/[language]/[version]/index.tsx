@@ -2,6 +2,8 @@ import Container from '@mui/material/Container';
 import { MDXRemote } from 'next-mdx-remote';
 
 import {
+  Alert,
+  AlertTitle,
   Box, Button, Stack, Typography,
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
@@ -81,6 +83,49 @@ function PyTamaroAPIComponent(
   );
 }
 
+function InconsistencyMessage() {
+  return (
+    <Alert severity="error">
+      <AlertTitle>Inconsistency Detected</AlertTitle>
+      <Typography>
+        Code cells saved in your browser do not match the ones in the original notebook.
+        This should not happen.
+      </Typography>
+      <Typography gutterBottom>
+        Please send us a report using the feedback button.
+      </Typography>
+      {process.env.NODE_ENV === 'development' && (
+      <Typography fontWeight="bold">
+        If you are a content author, either increase the version number of this activity
+        or delete the code previously saved in your browser using the reset button.
+      </Typography>
+      )}
+    </Alert>
+  );
+}
+
+function MarkdownCellComponent({ cell, activityVariant } :
+{ cell: MarkdownCell, activityVariant: ActivityVariant }) {
+  const adHocComponents = {
+    img: (props: any) => (
+      imgComponent(props, cell, activityVariant.authorSlug, activityVariant.activitySlug)
+    ),
+    ReactPlayer: ResponsiveReactPlayer,
+    Stack,
+    API: ({ children: name }: { children: string }) => (
+      PyTamaroAPIComponent(name, activityVariant)
+    ),
+  };
+  return (
+    <MDXRemote
+    // eslint-disable-next-line react/jsx-props-no-spreading
+      {...cell.mdxSource}
+      key={cell.id}
+      components={adHocComponents}
+    />
+  );
+}
+
 export default function NotebookPage({
   title, cells, versions, languages,
 }:
@@ -107,7 +152,7 @@ export default function NotebookPage({
   initialCodeCells.forEach((cell, idx) => originalIdxToCodeCellIdx.set(cell.originalIndex, idx));
 
   const {
-    codeCells, cellsModified, completed, networkError,
+    codeCells, cellsModified, completed, networkError, localCodeCellsWrongLength,
     toggleCompleted, setNetworkError, handleSourceChanged, handleExecute,
     handleToggleOutputArea, handleResetState,
   } = useLocalActivity(initialCodeCells, activityVariant);
@@ -139,41 +184,33 @@ export default function NotebookPage({
         <DataSharingPreferenceDialog />
         <Container maxWidth="md">
           <Typography variant="h3" marginTop={2}>{title}</Typography>
-          {cells.map((cell: NotebookCell, idx) => {
-            if (cell.cell_type === 'markdown') {
-              const markdownCell = cell as MarkdownCell;
-              const components = {
-                img: (props: any) => imgComponent(props, markdownCell, authorSlug, activitySlug),
-                ReactPlayer: ResponsiveReactPlayer,
-                Stack,
-                API: ({ children: name }: { children: string }) => (
-                  PyTamaroAPIComponent(name, activityVariant)
-                ),
-              };
+          {localCodeCellsWrongLength
+            ? <InconsistencyMessage />
+            : cells.map((cell: NotebookCell, idx) => {
+              if (cell.cell_type === 'markdown') {
+                return (
+                  <MarkdownCellComponent
+                    key={cell.id}
+                    cell={cell as MarkdownCell}
+                    activityVariant={activityVariant}
+                  />
+                );
+              }
+              const cellIdx = originalIdxToCodeCellIdx.get(idx) as number;
+              const currentCodeCell = codeCells[cellIdx];
+              const firstLineNumber = nextFirstLineNumber;
+              nextFirstLineNumber += countLines(currentCodeCell.source);
               return (
-                <MDXRemote
-                  // eslint-disable-next-line react/jsx-props-no-spreading
-                  {...markdownCell.mdxSource}
-                  key={markdownCell.id}
-                  components={components}
+                <CodeCell
+                  key={cell.id}
+                  codeCellState={currentCodeCell}
+                  onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
+                  onExecutionRequested={() => handleExecute(cellIdx)}
+                  onOutputAreaToggled={() => handleToggleOutputArea(cellIdx)}
+                  firstLineNumber={firstLineNumber}
                 />
               );
-            }
-            const cellIdx = originalIdxToCodeCellIdx.get(idx) as number;
-            const currentCodeCell = codeCells[cellIdx];
-            const firstLineNumber = nextFirstLineNumber;
-            nextFirstLineNumber += countLines(currentCodeCell.source);
-            return (
-              <CodeCell
-                key={cell.id}
-                codeCellState={currentCodeCell}
-                onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
-                onExecutionRequested={() => handleExecute(cellIdx)}
-                onOutputAreaToggled={() => handleToggleOutputArea(cellIdx)}
-                firstLineNumber={firstLineNumber}
-              />
-            );
-          })}
+            })}
         </Container>
         <Stack mt={12} mb={6} direction="row" justifyContent="center" spacing={4}>
           <Button
