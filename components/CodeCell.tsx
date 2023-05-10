@@ -14,7 +14,7 @@ import { editor as EditorNamespace } from 'monaco-editor';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useState } from 'react';
 import {
-  ContentCopy, RestartAlt, Visibility, VisibilityOff,
+  ContentCopy, ErrorOutline, RestartAlt, Visibility, VisibilityOff,
 } from '@mui/icons-material';
 import OutputArea from './OutputArea';
 import { CodeCellState } from '../src/localStorage/schema';
@@ -129,18 +129,17 @@ export default function CodeCell({
   };
 
   const executionError = codeCellState.executionResponse?.type === 'error';
-  const executionEnabled = !codeCellState.outputSynced;
+  const executing = codeCellState.executionInProgress;
+  const executionFinished = codeCellState.outputSynced;
   let buttonMessage = 'Run';
   let buttonTooltip = ''; // Empty tooltips are not displayed
   let buttonIcon = <PlayCircleFilledIcon />;
-  if (codeCellState.executionResponse && executionEnabled) {
-    buttonMessage = 'Re-Run';
-  } else if (!executionEnabled) {
+  if (executing) {
+    buttonMessage = 'Running';
+  } else if (executionFinished) {
     buttonMessage = 'Done';
     buttonTooltip = 'Execution completed: re-run possible only after changing the code';
-    buttonIcon = <DoneIcon />;
-  } else if (codeCellState.executionInProgress) {
-    buttonMessage = 'Running...';
+    buttonIcon = executionError ? <ErrorOutline /> : <DoneIcon />;
   }
   return (
     <Paper elevation={4}>
@@ -169,11 +168,11 @@ export default function CodeCell({
               <LoadingButton
                 onClick={onExecutionRequested}
                 endIcon={buttonIcon}
-                loading={codeCellState.executionInProgress}
+                loading={executing}
                 loadingPosition="end"
                 variant="contained"
-                sx={{ minWidth: 200 }}
-                disabled={!executionEnabled}
+                sx={{ minWidth: '10rem' }}
+                disabled={executing || executionFinished}
               >
                 <span>{buttonMessage}</span>
               </LoadingButton>
