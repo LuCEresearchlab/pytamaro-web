@@ -1,4 +1,3 @@
-import dynamic from 'next/dynamic';
 import { useTheme, styled } from '@mui/material/styles';
 import {
   Badge,
@@ -12,21 +11,10 @@ import SyncProblemIcon from '@mui/icons-material/SyncProblem';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { IconButtonProps } from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
+import Editor from '@monaco-editor/react';
+import { editor as EditorNamespace } from 'monaco-editor';
 import OutputArea from './OutputArea';
 import { CodeCellState } from '../src/localStorage/schema';
-
-const AceEditor = dynamic(
-  async () => {
-    const ace = await import('react-ace');
-    await import('ace-builds/src-noconflict/mode-python');
-    await import('ace-builds/src-noconflict/theme-github');
-    await import('ace-builds/src-noconflict/ext-language_tools');
-    return ace;
-  },
-  {
-    ssr: false,
-  },
-);
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -63,6 +51,14 @@ export default function CodeCell({
   firstLineNumber : number,
 }) {
   const theme = useTheme();
+
+  const handleEditorMount = (editor: EditorNamespace.IStandaloneCodeEditor) => {
+    const updateHeight = () => {
+      editor.layout({ width: editor.getLayoutInfo().width, height: editor.getContentHeight() });
+    };
+    editor.onDidContentSizeChange(updateHeight);
+  };
+
   const executionError = codeCellState.executionResponse?.type === 'error';
   const executionEnabled = !codeCellState.outputSynced;
   let buttonMessage = 'Run';
@@ -81,25 +77,24 @@ export default function CodeCell({
     <Paper elevation={4}>
       <Card>
         <CardContent>
-          <AceEditor
-            mode="python"
-            theme="xcode"
+          <Editor
+            language="python"
             value={codeCellState.source}
-            onLoad={(editor) => { editor.moveCursorTo(0, 0); }}
-            onChange={onSourceChanged}
-            maxLines={Infinity}
-            fontSize="1rem"
-            width="100%"
-            showPrintMargin={false}
-            highlightActiveLine={false}
-            setOptions={{
+            onChange={(value) => value && onSourceChanged(value)}
+            options={{
               fontFamily: theme.pytamaro.monospaceFontFamily,
-              firstLineNumber,
-              showFoldWidgets: false,
+              fontSize: 1.1 * theme.typography.fontSize,
+              lineNumbers: (n) => (n + firstLineNumber - 1).toString(10),
+              lineNumbersMinChars: 2,
+              minimap: { enabled: false },
+              renderLineHighlight: 'none',
+              overviewRulerLanes: 0,
+              scrollBeyondLastLine: false,
             }}
+            onMount={handleEditorMount}
           />
         </CardContent>
-        <CardActions disableSpacing sx={{ padding: 2, display: 'flex' }}>
+        <CardActions disableSpacing sx={{ pX: 0, display: 'flex' }}>
           <Tooltip title={buttonTooltip} placement="right">
             <span>
               <LoadingButton
