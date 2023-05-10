@@ -94,7 +94,7 @@ export default function CodeCell({
             onMount={handleEditorMount}
           />
         </CardContent>
-        <CardActions disableSpacing sx={{ pX: 0, display: 'flex' }}>
+        <CardActions disableSpacing sx={{ paddingLeft: 2, display: 'flex' }}>
           <Tooltip title={buttonTooltip} placement="right">
             <span>
               <LoadingButton
