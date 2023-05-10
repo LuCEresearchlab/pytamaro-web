@@ -160,9 +160,18 @@ export function useLocalActivity(initialCodeCells: CodeState, activityVariant: A
   };
 
   const confirm = useConfirm();
-  const handleResetState = () => {
+  const handleResetActivity = () => {
     confirm({ description: 'You are about to reset all the code you have written in this activity. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete my code' })
       .then(() => setCodeCells(initialCodeCells));
+  };
+
+  const handleResetSingleCell = (idx: number) => {
+    confirm({ description: 'You are about to reset the code in this cell. Other cells will be left unchanged. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete my code' })
+      .then(() => setCodeCells(
+        (currentCodeCells) => produce(currentCodeCells, (draft) => {
+          draft[idx] = initialCodeCells[idx];
+        }),
+      ));
   };
 
   return {
@@ -176,6 +185,7 @@ export function useLocalActivity(initialCodeCells: CodeState, activityVariant: A
     handleSourceChanged,
     handleExecute,
     handleToggleOutputArea,
-    handleResetState,
+    handleResetActivity,
+    handleResetSingleCell,
   };
 }

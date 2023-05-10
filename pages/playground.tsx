@@ -16,7 +16,8 @@ export default function Playground() {
   const initialCodeState = [createCodeCell(playgroundInitialSource, 0)];
   const {
     codeCells, cellsModified, networkError, setNetworkError,
-    handleSourceChanged, handleExecute, handleToggleOutputArea, handleResetState,
+    handleSourceChanged, handleExecute, handleToggleOutputArea,
+    handleResetActivity, handleResetSingleCell,
   } = useLocalActivity(initialCodeState, playgroundActivityVariant);
   return (
     <div>
@@ -25,7 +26,7 @@ export default function Playground() {
       </Head>
       <Box>
         <NavigationBar>
-          <ResetButton enabled={cellsModified} onReset={handleResetState} />
+          <ResetButton enabled={cellsModified} onReset={handleResetActivity} />
         </NavigationBar>
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
         <DataSharingPreferenceDialog />
@@ -36,6 +37,7 @@ export default function Playground() {
             onSourceChanged={(newSource) => handleSourceChanged(newSource, 0)}
             onExecutionRequested={() => handleExecute(0)}
             onOutputAreaToggled={() => handleToggleOutputArea(0)}
+            onReset={() => handleResetSingleCell(0)}
             firstLineNumber={1}
           />
           <DownloadCodeButton getSource={() => asSingleSource(codeCells)} />

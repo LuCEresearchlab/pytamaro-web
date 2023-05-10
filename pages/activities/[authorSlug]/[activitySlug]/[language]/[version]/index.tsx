@@ -154,7 +154,7 @@ export default function NotebookPage({
   const {
     codeCells, cellsModified, completed, networkError, localCodeCellsWrongLength,
     toggleCompleted, setNetworkError, handleSourceChanged, handleExecute,
-    handleToggleOutputArea, handleResetState,
+    handleToggleOutputArea, handleResetActivity, handleResetSingleCell,
   } = useLocalActivity(initialCodeCells, activityVariant);
 
   const pageTitle = `${title} - PyTamaro`;
@@ -177,7 +177,7 @@ export default function NotebookPage({
             versions={versions}
             languages={languages}
           />
-          <ResetButton enabled={cellsModified} onReset={handleResetState} />
+          <ResetButton enabled={cellsModified} onReset={handleResetActivity} />
           <MarkCompletedButton completed={completed} toggleCompleted={toggleCompleted} />
         </NavigationBar>
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
@@ -207,6 +207,7 @@ export default function NotebookPage({
                   onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
                   onExecutionRequested={() => handleExecute(cellIdx)}
                   onOutputAreaToggled={() => handleToggleOutputArea(cellIdx)}
+                  onReset={() => handleResetSingleCell(cellIdx)}
                   firstLineNumber={firstLineNumber}
                 />
               );
