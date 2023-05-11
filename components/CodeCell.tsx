@@ -121,7 +121,19 @@ export default function CodeCell({
 }) {
   const theme = useTheme();
 
-  const handleEditorMount = (editor: EditorNamespace.IStandaloneCodeEditor) => {
+  const handleEditorMount = (editor: EditorNamespace.IStandaloneCodeEditor, monaco: any) => {
+    const themeName = 'luce';
+    monaco.editor.defineTheme(themeName, {
+      base: 'vs', // use vscode light as base theme
+      inherit: true,
+      rules: [],
+      colors: {
+        'editorLineNumber.foreground': '#60bcd9',
+        'editorLineNumber.activeForeground': '#60bcd9',
+        'editor.wordHighlightBackground': '#57575710',
+      },
+    });
+    monaco.editor.setTheme(themeName);
     const updateHeight = () => {
       editor.layout({ width: editor.getLayoutInfo().width, height: editor.getContentHeight() });
     };
@@ -147,6 +159,7 @@ export default function CodeCell({
         <CardContent>
           <Editor
             language="python"
+            theme="luce"
             value={codeCellState.source}
             onChange={(value) => value && onSourceChanged(value)}
             options={{
