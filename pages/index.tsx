@@ -72,7 +72,7 @@ export default function Home() {
         <Box
           display="flex"
           justifyContent="center"
-          paddingTop={{ xs: '20vh', md: '25vh' }}
+          paddingTop={{ xs: '15vh', md: '25vh' }}
           paddingBottom="10vh"
         >
           <svg viewBox="0 0 600 108" display="block" width="40vw" overflow="visible">
@@ -96,7 +96,7 @@ export default function Home() {
         <Box
           display="flex"
           justifyContent="center"
-          sx={{ my: 8 }}
+          marginY={{ xs: 6, md: 8 }}
         >
           <Fab variant="extended" color="primary" href={activitiesByAuthorPathname('luce')} sx={{ p: 3, fontSize: 16 }}>
             <SchoolIcon sx={{ mr: 2 }} />
@@ -107,9 +107,9 @@ export default function Home() {
           direction={{ xs: 'column', md: 'row' }}
           justifyContent="center"
           spacing={{
-            xs: 4, md: 8, lg: 12, xl: 16,
+            xs: 2, sm: 4, md: 8, lg: 12, xl: 16,
           }}
-          sx={{ mt: 12 }}
+          marginTop={{ xs: 8, md: 12 }}
         >
           <HomePagePrimaryButton icon={<MenuBookIcon />} text="Documentation" href="https://pytamaro.readthedocs.org" />
           <HomePagePrimaryButton icon={<InstallDesktop />} text="How to Install & FAQ" href="/install" />
