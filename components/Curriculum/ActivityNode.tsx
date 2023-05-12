@@ -21,25 +21,37 @@ type NodeData = {
   variant: NotebookVariant;
   isCompleted: boolean;
   isUnlocked: boolean;
+  width: number,
+  height: number,
 };
 
 export default function ActivityNode({ data }: NodeProps<NodeData>) {
   const router = useRouter();
   const {
-    id, activity, variant, isCompleted, isUnlocked,
+    id, activity, variant, isCompleted, isUnlocked, width, height,
   } = data;
   const [authorSlug, , , version] = id.split('/');
 
   return (
     <Box
-      style={{
-        width: 400,
+      sx={{
+        width,
+        height,
         opacity: isUnlocked ? 1 : 0.3,
       }}
     >
       <Handle type="target" position={Position.Top} />
-      <Paper elevation={8} sx={{ padding: 1, backgroundColor: 'grey' }}>
-        <Card>
+      <Paper
+        elevation={8}
+        sx={{
+          width: '100%', height: '100%', padding: 1, backgroundColor: 'grey',
+        }}
+      >
+        <Card
+          sx={{
+            width: '100%', height: '100%',
+          }}
+        >
           <CardActionArea
             onClick={() => router.push(activityVariantPathname(
               authorSlug,

@@ -1,252 +1,242 @@
 import {
   Box,
 } from '@mui/material';
-import { useCallback, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactFlow, {
-  Edge, Node, ReactFlowInstance, useReactFlow,
+  Edge, Node,
 } from 'reactflow';
-import dagre from 'dagre';
+import ELK, { ElkExtendedEdge, ElkNode } from 'elkjs';
+import useLocalStorageState from 'use-local-storage-state';
 import ActivityNode from './ActivityNode';
 import SumNode from './SumNode';
 import UnitNode from './UnitNode';
+import { CurriculumActivity } from '../../src/Curricula';
+import { METADATA_KEY, getDefaultMetadata } from '../../src/codeState';
 
 import 'reactflow/dist/style.css';
 
+const nodeOptions = {
+  position: { x: 0, y: 0 },
+  draggable: false,
+  selectable: true,
+  connectable: false,
+  deletable: false,
+  focusable: false,
+};
+const edgeOptions = {
+  deletable: false,
+  focusable: false,
+  style: {
+    strokeWidth: 10,
+  },
+};
 const nodeTypes = {
   activity: ActivityNode,
   sum: SumNode,
   unit: UnitNode,
 };
+const nodeTypeDimensions = {
+  activity: {
+    width: 400,
+    height: 400,
+  },
+  sum: {
+    width: 67,
+    height: 67,
+  },
+};
 const rfStyle = {
   backgroundColor: 'primary.main',
 };
 
-const dagreGraph = new dagre.graphlib.Graph();
-dagreGraph.setDefaultEdgeLabel(() => ({}));
+function activitiesToElkNodes(activities: CurriculumActivity[]) {
+  return activities.flatMap(
+    (a) => {
+      const activityNodeId = a.id;
+      return [
+        {
+          id: activityNodeId,
+          width: nodeTypeDimensions.activity.width,
+          height: nodeTypeDimensions.activity.height,
+        } as ElkNode,
+        ...a.activityRequirements.flatMap(
+          (asum, sumIndex) => {
+            if (asum.length > 1) {
+              return {
+                id: `${activityNodeId}-sum-${sumIndex}`,
+                width: nodeTypeDimensions.sum.width,
+                height: nodeTypeDimensions.sum.height,
+              } as ElkNode;
+            }
+            return [];
+          },
+        ),
+      ];
+    },
+  );
+}
 
-// https://reactflow.dev/docs/examples/layout/dagre/
-function getLayoutedNodes(
-  nodes: Node[],
-  edges: Edge[],
-  r: ReactFlowInstance,
-  direction = 'TB',
-) {
-  const getDimensions = (node: Node) => {
-    const defaultDimensions = {
-      width: 70,
-      height: 70,
-    };
-    const nodeWithDimensions = r.getNode(node.id);
-    if (nodeWithDimensions === undefined) {
-      return defaultDimensions;
-    }
-    const { width, height } = nodeWithDimensions;
-    if (width && height) {
-      return {
-        width,
-        height,
-      };
-    }
-    return defaultDimensions;
-  };
-
-  const isHorizontal = direction === 'LR';
-
-  const nodeIds = [] as string[];
-  nodes.forEach((node, idx) => {
-    if (node.type === 'unit') {
-      if (idx !== 0) {
-        // add edges inside subflow to dagre
-        edges.forEach((edge) => {
-          if (nodeIds.includes(edge.source) && nodeIds.includes(edge.target)) {
-            dagreGraph.setEdge(edge.source, edge.target);
+function activitiesToElkEdges(activities: CurriculumActivity[]) {
+  return activities.flatMap(
+    (a) => {
+      const activityNodeId = a.id;
+      return a.activityRequirements.flatMap(
+        (asum, sumIndex) => {
+          if (asum.length > 1) {
+            return [
+              {
+                id: `${activityNodeId}-edge-${sumIndex}`,
+                sources: [`${activityNodeId}-sum-${sumIndex}`],
+                targets: [activityNodeId],
+              } as ElkExtendedEdge,
+              ...asum.map(
+                (aterm, termIndex) => ({
+                  id: `${activityNodeId}-edge-${sumIndex}-${termIndex}`,
+                  sources: [aterm],
+                  targets: [`${activityNodeId}-sum-${sumIndex}`],
+                } as ElkExtendedEdge),
+              ),
+            ];
           }
-        });
-        // layout
-        dagre.layout(dagreGraph);
-        // empty array
-        nodeIds.splice(0, nodeIds.length);
-      }
-      // reset dagre
-      dagreGraph.setGraph({ rankdir: direction });
-    } else {
-      // add node to dagre
-      dagreGraph.setNode(node.id, getDimensions(node));
-      nodeIds.push(node.id);
-    }
-  });
-  // add edges inside subflow to dagre
-  edges.forEach((edge) => {
-    if (nodeIds.includes(edge.source) && nodeIds.includes(edge.target)) {
-      dagreGraph.setEdge(edge.source, edge.target);
-    }
-  });
-  // layout
-  dagre.layout(dagreGraph);
-
-  const groupDimensions = [] as { width: number, height: number }[];
-  const groupDimension = { width: 0, height: 0 };
-  const newNodes = nodes.map((node, idx) => {
-    if (node.type === 'unit') {
-      if (idx !== 0) {
-        groupDimensions.push(groupDimension);
-        groupDimension.width = 0;
-        groupDimension.height = 0;
-      }
-      return node;
-    }
-    const nodeWithPosition = dagreGraph.node(node.id);
-    const { width, height } = getDimensions(node);
-    const newGroupWidth = nodeWithPosition.x + width / 2;
-    const newGroupHeight = nodeWithPosition.y + height / 2;
-    if (groupDimension.width < newGroupWidth) {
-      groupDimension.width = newGroupWidth;
-    }
-    if (groupDimension.height < newGroupHeight) {
-      groupDimension.height = newGroupHeight;
-    }
-    return {
-      ...node,
-      targetPosition: isHorizontal ? 'left' : 'top',
-      sourcePosition: isHorizontal ? 'right' : 'bottom',
-      // We are shifting the dagre node position (anchor=center center) to the top left
-      // so it matches the React Flow node anchor point (top left).
-      position: {
-        x: nodeWithPosition.x - width / 2,
-        y: nodeWithPosition.y - height / 2,
-      },
-    } as Node;
-  });
-  groupDimensions.push(groupDimension);
-
-  // update dimensions of group nodes
-  let groupNodeIdx = 0;
-  const newNewNodes = newNodes.map((node) => {
-    if (node.type === 'unit') {
-      const { width, height } = groupDimensions[groupNodeIdx];
-      groupNodeIdx += 1;
-      return {
-        ...node,
-        width,
-        height,
-        data: {
-          ...node,
-          width,
-          height,
+          if (asum.length === 1) {
+            return {
+              id: `${activityNodeId}-edge-${sumIndex}`,
+              sources: [asum[0]],
+              targets: [activityNodeId],
+            } as ElkExtendedEdge;
+          }
+          // asum.length === 0
+          return [];
         },
-        style: {
-          ...node.style,
-          width,
-          height,
-        },
-      };
-    }
-    return node;
-  });
-
-  return newNewNodes;
-}
-
-function getFlowDimensions(nodes: Node[]) {
-  const dimensions = {
-    width: 0,
-    height: 0,
-  };
-  nodes.forEach((node) => {
-    if (node.type === 'unit') {
-      const right = node.position.x + (node.width || 0);
-      const bottom = node.position.y + (node.height || 0);
-      if (dimensions.width < right) {
-        dimensions.width = right;
-      }
-      if (dimensions.height < bottom) {
-        dimensions.height = bottom;
-      }
-    }
-  });
-  return dimensions;
-}
-
-export default function CurriculumFlow({ nodes, edges }
-: { nodes : Node[], edges : Edge[] }) {
-  const [width, setWidth] = useState(900);
-  const [height, setHeight] = useState(2000);
-  const reactFlowInstance = useReactFlow();
-
-  const layoutNodes = useCallback((r: ReactFlowInstance) => {
-    const layoutedNodes = getLayoutedNodes(
-      nodes,
-      edges,
-      r,
-    );
-    r.setNodes(layoutedNodes);
-    setWidth(getFlowDimensions(layoutedNodes).width);
-    setHeight(getFlowDimensions(layoutedNodes).height);
-  }, [nodes, edges]);
-
-  const collapseUnit = useCallback((event: React.MouseEvent, clickedNode: Node) => {
-    if (clickedNode.type === 'unit') {
-      const layoutedNodes = getLayoutedNodes(
-        nodes,
-        edges,
-        reactFlowInstance,
       );
-      // collapse
-      const { isCollapsed } = clickedNode.data;
-      let isInGroup = false;
-      const nodeInGroupIds = [] as string[];
-      const newNodes = layoutedNodes.map((node) => {
-        if (clickedNode.id === node.id) {
-          // group node to be collapsed
-          isInGroup = true;
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              width: !isCollapsed ? 100 : node.style?.width,
-              height: !isCollapsed ? 100 : node.style?.height,
-              isCollapsed: !isCollapsed,
-            },
-            width: !isCollapsed ? 100 : node.style?.width,
-            height: !isCollapsed ? 100 : node.style?.height,
-            style: {
-              ...node.style,
-              width: !isCollapsed ? 100 : node.style?.width,
-              height: !isCollapsed ? 100 : node.style?.height,
-            },
-          } as Node;
-        }
-        if (node.type === 'unit') {
-          // another group node
-          isInGroup = false;
-          return node;
-        }
-        if (!isInGroup) {
-          // activity node not in group to be collapsed
-          return node;
-        }
-        // activity node in group to be collapsed
-        nodeInGroupIds.push(node.id);
+    },
+  );
+}
+
+async function layoutElkElements(elkNodes: ElkNode[], elkEdges: ElkExtendedEdge[]) {
+  const elk = new ELK();
+  const graph : ElkNode = {
+    id: 'root',
+    children: elkNodes,
+    edges: elkEdges,
+    layoutOptions: {
+      'spacing.nodeNodeBetweenLayers': '100',
+      'elk.direction': 'DOWN',
+      'org.eclipse.elk.algorithm': 'org.eclipse.elk.layered',
+      'org.eclipse.elk.spacing.nodeNode': '100',
+      'org.eclipse.elk.layered.allowNonFlowPortsToSwitchSides': 'true',
+    },
+  };
+  const newGraph = await elk.layout(graph);
+  const { width, height, children: nodes, edges } = newGraph;
+  return {
+    width: width || 0,
+    height: height || 0,
+    nodes: nodes || [],
+    edges: edges || [],
+  };
+}
+
+function createFlowElements(
+  activities: CurriculumActivity[],
+  elkNodes: ElkNode[],
+  elkEdges: ElkExtendedEdge[],
+  completedActivityVariantIds: string[],
+) {
+  const nodes = elkNodes.map(
+    (elkNode) => {
+      const curriculumAct = activities.find((a) => a.id === elkNode.id);
+      if (!curriculumAct) {
         return {
-          ...node,
-          hidden: !isCollapsed,
-        };
-      });
-      const newEdges = edges.map((edge) => {
-        if (nodeInGroupIds.includes(edge.source) || nodeInGroupIds.includes(edge.target)) {
-          return {
-            ...edge,
-            hidden: !isCollapsed,
-          };
-        }
-        return edge;
-      });
-      reactFlowInstance.setNodes(newNodes);
-      reactFlowInstance.setEdges(newEdges);
-      setWidth(getFlowDimensions(newNodes).width);
-      setHeight(getFlowDimensions(newNodes).height);
+          ...nodeOptions,
+          id: elkNode.id,
+          type: 'sum',
+          data: nodeTypeDimensions.sum,
+          position: {
+            x: elkNode.x,
+            y: elkNode.y,
+          },
+        } as Node;
+      }
+      const isCompleted = completedActivityVariantIds.includes(curriculumAct.id);
+      const isUnlocked = curriculumAct.activityRequirements.every(
+        (asum) => asum.some(
+          (aterm) => completedActivityVariantIds.includes(aterm),
+        ),
+      );
+      return {
+        ...nodeOptions,
+        id: elkNode.id,
+        type: 'activity',
+        data: {
+          id: curriculumAct.id,
+          activity: curriculumAct.activity,
+          variant: curriculumAct.variant,
+          isCompleted,
+          isUnlocked,
+          width: nodeTypeDimensions.activity.width,
+          height: nodeTypeDimensions.activity.height,
+        },
+        position: {
+          x: elkNode?.x,
+          y: elkNode?.y,
+        },
+      } as Node;
+    },
+  );
+  const edges = elkEdges.map(
+    (elkEdge) => ({
+      ...edgeOptions,
+      id: elkEdge.id,
+      source: elkEdge.sources[0],
+      target: elkEdge.targets[0],
+    } as Edge),
+  );
+  return {
+    nodes,
+    edges,
+  };
+}
+
+export default function CurriculumFlow({ activities }: { activities : CurriculumActivity[] }) {
+  const [width, setWidth] = useState(100);
+  const [height, setHeight] = useState(100);
+  const [nodes, setNodes] = useState([] as Node[]);
+  const [edges, setEdges] = useState([] as Edge[]);
+  const [metadata] = useLocalStorageState(METADATA_KEY, {
+    defaultValue: getDefaultMetadata(),
+  });
+  const completedActivityVariantIds = metadata.activities
+    .filter((a) => a.completed)
+    .map((a) => a.id);
+
+  useEffect(() => {
+    const setFlowElements = async () => {
+      const elkNodes = activitiesToElkNodes(activities);
+      const elkEdges = activitiesToElkEdges(activities);
+      const {
+        width: newWidth,
+        height: newHeight,
+        nodes: newElkNodes,
+        edges: newElkEdges,
+      } = await layoutElkElements(elkNodes, elkEdges);
+      setWidth(newWidth);
+      setHeight(newHeight);
+      const {
+        nodes: newNodes,
+        edges: newEdges,
+      } = createFlowElements(activities, newElkNodes, newElkEdges, completedActivityVariantIds);
+      console.log(newWidth);
+      console.log(newHeight);
+      console.log(newNodes);
+      console.log(newEdges);
+      setNodes(newNodes);
+      setEdges(newEdges);
+    };
+    if (nodes.length === 0) {
+      setFlowElements();
     }
-  }, [nodes, edges, reactFlowInstance]);
+  }, [nodes, activities, completedActivityVariantIds]);
 
   return (
     <Box
@@ -257,8 +247,8 @@ export default function CurriculumFlow({ nodes, edges }
       }}
     >
       <ReactFlow
-        defaultNodes={nodes}
-        defaultEdges={edges}
+        nodes={nodes}
+        edges={edges}
         nodeTypes={nodeTypes}
         style={rfStyle}
         panOnDrag={false}
@@ -266,8 +256,6 @@ export default function CurriculumFlow({ nodes, edges }
         zoomOnPinch={false}
         zoomOnDoubleClick={false}
         preventScrolling={false}
-        onInit={layoutNodes}
-        onNodeClick={collapseUnit}
       />
     </Box>
   );
