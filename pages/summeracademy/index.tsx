@@ -526,7 +526,7 @@ export default function SummerAcademy() {
                   }}
                 >
                   <Avatar
-                    src="matthias.jpg"
+                    src="people/MatthiasHauswirth.jpg"
                     sx={{ width: 80, height: 80 }}
                   />
                 </Box>
@@ -565,7 +565,7 @@ export default function SummerAcademy() {
                   }}
                 >
                   <Avatar
-                    src="agnese.jpg"
+                    src="people/AgneseZamboni.jpg"
                     sx={{ width: 80, height: 80 }}
                   />
                 </Box>

@@ -2,34 +2,16 @@ import produce from 'immer';
 import { useConfirm } from 'material-ui-confirm';
 import { useEffect, useState } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
-import logEvent, { EventName } from './AnalyticsEvent';
-
-import { ExecutionResponse, executeCode } from './CodeExecution';
-
-const VERSION = '1';
-
-interface Metadata {
-  dataModelVersion: string;
-  activities: ActivityVariantMetadata[],
-}
-
-interface ActivityVariantMetadata {
-  id: string,
-  codeCellsKey: string,
-  cellsModified: boolean,
-  completed: boolean,
-}
-
-export interface CodeCellState {
-  source: string;
-  executionInProgress: boolean;
-  executionResponse: any;
-  outputAreaVisible: boolean;
-  outputSynced: boolean;
-  originalIndex: number;
-}
-
-export type CodeState = CodeCellState[];
+import axios from 'axios';
+import logAnalyticsEvent, { AnalyticsEventName } from '../analyticsEvent';
+import {
+  CodeCellState, CodeState, getActivityVariantCodeCellsKey, getDefaultActivityVariantMetadata,
+} from './schema';
+import useLocalProfile from './useLocalProfile';
+import { ActivityVariant, activityVariantId } from '../schemas/activitySchema';
+import { EventName, storeDbEvent } from '../storeDbEvent';
+import { ExecutionResponse } from '../codeExecution';
+import { joinLines } from '../sourceUtils';
 
 export function createCodeCell(source: string, originalIndex: number): CodeCellState {
   return {
@@ -42,42 +24,35 @@ export function createCodeCell(source: string, originalIndex: number): CodeCellS
   };
 }
 
-export const METADATA_KEY = 'pytamaro-web';
-
-function getActivityVariantCodeCellsKey(activityVariantId: string) {
-  return `${METADATA_KEY}-${activityVariantId}-codeCells`;
+async function executeOnServer(sources: string[], idx: number)
+  : Promise<ExecutionResponse | undefined> {
+  try {
+    return (await axios.post('/api/execute', {
+      sources,
+      idx,
+    })).data;
+  } catch {
+    return undefined;
+  }
 }
 
-export function getDefaultMetadata() : Metadata {
-  return {
-    dataModelVersion: VERSION,
-    activities: [],
-  };
+function sourceFromCell(cell: CodeCellState) {
+  return cell.source;
 }
 
-function getDefaultActivityVariantMetadata(activityVariantId: string)
-  : ActivityVariantMetadata {
-  return {
-    id: activityVariantId,
-    codeCellsKey: getActivityVariantCodeCellsKey(activityVariantId),
-    cellsModified: false,
-    completed: false,
-  };
+export function asSingleSource(cells: CodeCellState[]) {
+  return joinLines(cells.map(sourceFromCell));
 }
 
-export function countLines(source: string) {
-  return source.split('\n').length;
-}
-
-export function useCodeState(initialCodeCells: CodeState, activityVariantId: string) {
-  const [metadata, setMetadata] = useLocalStorageState(METADATA_KEY, {
-    defaultValue: getDefaultMetadata(),
-  });
-  const variantMetadata = metadata.activities.find((a) => a.id === activityVariantId);
+export function useLocalActivity(initialCodeCells: CodeState, activityVariant: ActivityVariant) {
+  const { metadata, setMetadata } = useLocalProfile();
+  const variantId = activityVariantId(activityVariant);
+  const variantMetadata = metadata.activities.find((a) => a.id === variantId);
   const [codeCells, setCodeCells] = useLocalStorageState(
-    variantMetadata?.codeCellsKey || getActivityVariantCodeCellsKey(activityVariantId),
+    variantMetadata?.codeCellsKey || getActivityVariantCodeCellsKey(variantId),
     { defaultValue: initialCodeCells },
   );
+  const localCodeCellsWrongLength = codeCells.length !== initialCodeCells.length;
   const [networkError, setNetworkError] = useState(false);
 
   const completed = !!variantMetadata?.completed;
@@ -86,11 +61,11 @@ export function useCodeState(initialCodeCells: CodeState, activityVariantId: str
   const toggleCompleted = () => {
     setMetadata(
       produce((draft) => {
-        const draftVariantMetadata = draft.activities.find((a) => a.id === activityVariantId);
+        const draftVariantMetadata = draft.activities.find((a) => a.id === variantId);
         if (draftVariantMetadata) {
           draftVariantMetadata.completed = !draftVariantMetadata.completed;
         } else {
-          const newVariantMetadata = getDefaultActivityVariantMetadata(activityVariantId);
+          const newVariantMetadata = getDefaultActivityVariantMetadata(variantId);
           newVariantMetadata.completed = !newVariantMetadata.completed;
           draft.activities.push(newVariantMetadata);
         }
@@ -98,25 +73,22 @@ export function useCodeState(initialCodeCells: CodeState, activityVariantId: str
     );
   };
 
+  /* Check if code cells have been modified (compared to their initial state) */
   useEffect(() => {
     const newCellsModified = JSON.stringify(codeCells) !== JSON.stringify(initialCodeCells);
     setMetadata(
       produce((draft) => {
-        const draftVariantMetadata = draft.activities.find((a) => a.id === activityVariantId);
+        const draftVariantMetadata = draft.activities.find((a) => a.id === variantId);
         if (draftVariantMetadata) {
           draftVariantMetadata.cellsModified = newCellsModified;
         } else {
-          const newVariantMetadata = getDefaultActivityVariantMetadata(activityVariantId);
+          const newVariantMetadata = getDefaultActivityVariantMetadata(variantId);
           newVariantMetadata.cellsModified = newCellsModified;
           draft.activities.push(newVariantMetadata);
         }
       }),
     );
-  }, [codeCells, initialCodeCells, activityVariantId, setMetadata]);
-
-  const getSourceFirstNCodeCells = (n: number) => codeCells.map((cell) => cell.source).slice(0, n).join('\n');
-
-  const getWholeSource = () => getSourceFirstNCodeCells(codeCells.length);
+  }, [codeCells, initialCodeCells, variantId, setMetadata]);
 
   const handleSourceChanged = (newSource: string, idx: number) => {
     setCodeCells(
@@ -145,7 +117,7 @@ export function useCodeState(initialCodeCells: CodeState, activityVariantId: str
         if (response !== undefined) {
           draft[idx].executionResponse = response;
           draft[idx].outputSynced = true;
-          if (response.content.length > 0) {
+          if (response.content?.length > 0) {
             draft[idx].outputAreaVisible = true;
           }
         }
@@ -155,21 +127,19 @@ export function useCodeState(initialCodeCells: CodeState, activityVariantId: str
 
   const handleExecuteSingleCell = async (idx: number) => {
     executionStarted(idx);
-    // Get the concatenated source of all the previous cells.
-    const previousCellsSource = getSourceFirstNCodeCells(idx);
-    // Get the source of the current cell, padded before with empty lines
-    // to account for the previous cells.
-    const currentCellSource = codeCells[idx].source;
-    const paddedCurrentCellSource = idx === 0
-      ? currentCellSource
-      : '\n'.repeat(countLines(previousCellsSource)) + codeCells[idx].source;
-    const response = await executeCode(previousCellsSource, paddedCurrentCellSource);
+    const response = await executeOnServer(codeCells.map(sourceFromCell), idx);
     executionFinished(idx, response);
     return response !== undefined;
   };
 
   const handleExecute = async (idx: number) => {
-    logEvent(EventName.CodeExecution, { activity: activityVariantId });
+    logAnalyticsEvent(AnalyticsEventName.CodeExecution, { activity: variantId });
+    storeDbEvent(EventName.CodeExecution, metadata, {
+      sources: codeCells.map(sourceFromCell),
+      initialSources: initialCodeCells.map(sourceFromCell),
+      requestedCellSequenceNumber: idx,
+      activityVariant,
+    });
     setNetworkError(false);
     // (Re-Execute) all cells from the first one to the current one, included.
     const successes = [];
@@ -190,9 +160,18 @@ export function useCodeState(initialCodeCells: CodeState, activityVariantId: str
   };
 
   const confirm = useConfirm();
-  const handleResetState = () => {
+  const handleResetActivity = () => {
     confirm({ description: 'You are about to reset all the code you have written in this activity. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete my code' })
       .then(() => setCodeCells(initialCodeCells));
+  };
+
+  const handleResetSingleCell = (idx: number) => {
+    confirm({ description: 'You are about to reset the code in this cell. Other cells will be left unchanged. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete my code' })
+      .then(() => setCodeCells(
+        (currentCodeCells) => produce(currentCodeCells, (draft) => {
+          draft[idx] = initialCodeCells[idx];
+        }),
+      ));
   };
 
   return {
@@ -200,12 +179,13 @@ export function useCodeState(initialCodeCells: CodeState, activityVariantId: str
     completed,
     cellsModified,
     networkError,
+    localCodeCellsWrongLength,
     toggleCompleted,
     setNetworkError,
     handleSourceChanged,
     handleExecute,
     handleToggleOutputArea,
-    handleResetState,
-    getWholeSource,
+    handleResetActivity,
+    handleResetSingleCell,
   };
 }

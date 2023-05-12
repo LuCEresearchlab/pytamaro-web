@@ -10,14 +10,13 @@ import {
   ToggleButton, Tooltip,
 } from '@mui/material';
 import ViewCompactIcon from '@mui/icons-material/ViewCompact';
-import {
-  listActivities, Activity,
-} from '../../../src/Activities';
 import NavigationBar from '../../../components/NavigationBar';
 import { activitiesByAuthorPathname } from '../../../src/urlUtils';
 import getLanguageDisplayName from '../../../src/internationalization';
-import { listAuthors } from '../../../src/Authors';
 import ActivitiesGallery from '../../../components/ActivitiesGallery';
+import { Activity } from '../../../src/schemas/activitySchema';
+import { listActivities } from '../../../src/fs-content/activities';
+import listAuthors from '../../../src/fs-content/authors';
 
 const VISIBILITY_PRIORITY = {
   featured: 0,

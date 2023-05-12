@@ -2,6 +2,8 @@ import Container from '@mui/material/Container';
 import { MDXRemote } from 'next-mdx-remote';
 
 import {
+  Alert,
+  AlertTitle,
   Box, Button, Stack, Typography,
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
@@ -9,27 +11,25 @@ import DownloadIcon from '@mui/icons-material/Download';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import {
-  getNotebookContent, MarkdownCell, NotebookCell,
-} from '../../../../../../src/Notebook';
 import CodeCell from '../../../../../../components/CodeCell';
-import {
-  findLanguages,
-  findVersions,
-  LanguageWithLatestVersion,
-  variantInfo,
-} from '../../../../../../src/Activities';
 import NavigationBar from '../../../../../../components/NavigationBar';
-import { countLines, createCodeCell, useCodeState } from '../../../../../../src/codeState';
+import { asSingleSource, createCodeCell, useLocalActivity } from '../../../../../../src/localStorage/useLocalActivity';
 import { activityAssetPathname, activityPathname, activityVariantPathname } from '../../../../../../src/urlUtils';
 import VariantSelector from '../../../../../../components/VariantsSelector';
-import downloadSourceCode from '../../../../../../src/CodeDownload';
+import downloadSourceCode from '../../../../../../src/codeDownload';
 import ResponsiveReactPlayer from '../../../../../../components/ResponsiveReactPlayer';
 import PyTamaroAPI from '../../../../../../components/PyTamaroAPIDocs/PyTamaroAPI';
 import NetworkErrorSnackbar from '../../../../../../components/NetworkErrorSnackbar';
 import ResetButton from '../../../../../../components/ResetButton';
-import { listAuthors } from '../../../../../../src/Authors';
 import MarkCompletedButton from '../../../../../../components/MarkCompletedButton';
+import DataSharingPreferenceDialog from '../../../../../../components/DataSharingPreferenceDialog';
+import {
+  ActivityVariant, LanguageWithLatestVersion, MarkdownCell, NotebookCell,
+} from '../../../../../../src/schemas/activitySchema';
+import { findLanguages, findVersions, variantInfo } from '../../../../../../src/fs-content/activities';
+import getNotebookContent from '../../../../../../src/notebook';
+import listAuthors from '../../../../../../src/fs-content/authors';
+import { countLines } from '../../../../../../src/sourceUtils';
 
 const userType = 'student';
 
@@ -74,9 +74,55 @@ function imgComponent(props: any, cell: NotebookCell, authorSlug: string, activi
   );
 }
 
-function PyTamaroAPIWithLanguage(name: string, lang: string) {
+function PyTamaroAPIComponent(
+  name: string,
+  activityVariant: ActivityVariant,
+) {
   return (
-    <PyTamaroAPI name={name} lang={lang} />
+    <PyTamaroAPI name={name} activityVariant={activityVariant} />
+  );
+}
+
+function InconsistencyMessage() {
+  return (
+    <Alert severity="error">
+      <AlertTitle>Inconsistency Detected</AlertTitle>
+      <Typography>
+        Code cells saved in your browser do not match the ones in the original notebook.
+        This should not happen.
+      </Typography>
+      <Typography gutterBottom>
+        Please send us a report using the feedback button.
+      </Typography>
+      {process.env.NODE_ENV === 'development' && (
+      <Typography fontWeight="bold">
+        If you are a content author, either increase the version number of this activity
+        or delete the code previously saved in your browser using the reset button.
+      </Typography>
+      )}
+    </Alert>
+  );
+}
+
+function MarkdownCellComponent({ cell, activityVariant } :
+{ cell: MarkdownCell, activityVariant: ActivityVariant }) {
+  const adHocComponents = {
+    img: (props: any) => (
+      imgComponent(props, cell, activityVariant.authorSlug, activityVariant.activitySlug)
+    ),
+    ReactPlayer: ResponsiveReactPlayer,
+    Stack,
+    API: ({ children: name }: { children: string }) => (
+      PyTamaroAPIComponent(name, activityVariant)
+    ),
+  };
+  return (
+    <MDXRemote
+    // eslint-disable-next-line react/jsx-props-no-spreading
+      {...cell.mdxSource}
+      key={cell.id}
+      components={adHocComponents}
+    />
   );
 }
 
@@ -94,8 +140,9 @@ export default function NotebookPage({
     language: string,
     version: string,
   };
-  const activityVariantId = `${authorSlug}/${activitySlug}/${language}`;
-  const activityVersionId = `${activityVariantId}/${version}`;
+  const activityVariant = {
+    authorSlug, activitySlug, language, version,
+  };
 
   const initialCodeCells = cells
     .map((cell, idx) => ({ cell, idx }))
@@ -105,10 +152,10 @@ export default function NotebookPage({
   initialCodeCells.forEach((cell, idx) => originalIdxToCodeCellIdx.set(cell.originalIndex, idx));
 
   const {
-    codeCells, cellsModified, completed, networkError,
+    codeCells, cellsModified, completed, networkError, localCodeCellsWrongLength,
     toggleCompleted, setNetworkError, handleSourceChanged, handleExecute,
-    handleToggleOutputArea, handleResetState, getWholeSource,
-  } = useCodeState(initialCodeCells, activityVersionId);
+    handleToggleOutputArea, handleResetActivity, handleResetSingleCell,
+  } = useLocalActivity(initialCodeCells, activityVariant);
 
   const pageTitle = `${title} - PyTamaro`;
 
@@ -130,54 +177,48 @@ export default function NotebookPage({
             versions={versions}
             languages={languages}
           />
-          <ResetButton enabled={cellsModified} onReset={handleResetState} />
+          <ResetButton enabled={cellsModified} onReset={handleResetActivity} />
           <MarkCompletedButton completed={completed} toggleCompleted={toggleCompleted} />
         </NavigationBar>
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
+        <DataSharingPreferenceDialog />
         <Container maxWidth="md">
           <Typography variant="h3" marginTop={2}>{title}</Typography>
-          {cells.map((cell: NotebookCell, idx) => {
-            if (cell.cell_type === 'markdown') {
-              const markdownCell = cell as MarkdownCell;
-              const components = {
-                img: (props: any) => imgComponent(props, markdownCell, authorSlug, activitySlug),
-                ReactPlayer: ResponsiveReactPlayer,
-                Stack,
-                API: ({ children: name }: { children: string }) => (
-                  PyTamaroAPIWithLanguage(name, language)
-                ),
-              };
+          {localCodeCellsWrongLength
+            ? <InconsistencyMessage />
+            : cells.map((cell: NotebookCell, idx) => {
+              if (cell.cell_type === 'markdown') {
+                return (
+                  <MarkdownCellComponent
+                    key={cell.id}
+                    cell={cell as MarkdownCell}
+                    activityVariant={activityVariant}
+                  />
+                );
+              }
+              const cellIdx = originalIdxToCodeCellIdx.get(idx) as number;
+              const currentCodeCell = codeCells[cellIdx];
+              const firstLineNumber = nextFirstLineNumber;
+              nextFirstLineNumber += countLines(currentCodeCell.source);
               return (
-                <MDXRemote
-                  // eslint-disable-next-line react/jsx-props-no-spreading
-                  {...markdownCell.mdxSource}
-                  key={markdownCell.id}
-                  components={components}
+                <CodeCell
+                  key={cell.id}
+                  codeCellState={currentCodeCell}
+                  onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
+                  onExecutionRequested={() => handleExecute(cellIdx)}
+                  onOutputAreaToggled={() => handleToggleOutputArea(cellIdx)}
+                  onReset={() => handleResetSingleCell(cellIdx)}
+                  firstLineNumber={firstLineNumber}
                 />
               );
-            }
-            const cellIdx = originalIdxToCodeCellIdx.get(idx) as number;
-            const currentCodeCell = codeCells[cellIdx];
-            const firstLineNumber = nextFirstLineNumber;
-            nextFirstLineNumber += countLines(currentCodeCell.source);
-            return (
-              <CodeCell
-                key={cell.id}
-                codeCellState={currentCodeCell}
-                onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
-                onExecutionRequested={() => handleExecute(cellIdx)}
-                onOutputAreaToggled={() => handleToggleOutputArea(cellIdx)}
-                firstLineNumber={firstLineNumber}
-              />
-            );
-          })}
+            })}
         </Container>
         <Stack mt={12} mb={6} direction="row" justifyContent="center" spacing={4}>
           <Button
             variant="contained"
             color="success"
             startIcon={<DownloadIcon />}
-            onClick={() => downloadSourceCode(getWholeSource())}
+            onClick={() => downloadSourceCode(asSingleSource(codeCells))}
           >
             Download Python Code
           </Button>

@@ -3,10 +3,10 @@ import {
   Typography,
 } from '@mui/material';
 import NavigationBar from '../../../../components/NavigationBar';
-import { listAuthors } from '../../../../src/Authors';
-import { getCurriculum, Curriculum } from '../../../../src/Curricula';
-import 'reactflow/dist/style.css';
+import { getCurriculum } from '../../../../src/fs-content/curricula';
+import { Curriculum } from '../../../../src/schemas/curriculumSchema';
 import { curriculumPathname } from '../../../../src/urlUtils';
+import listAuthors from '../../../../src/fs-content/authors';
 import CurriculumFlow from '../../../../components/Curriculum/CurriculumFlow';
 
 export default function CurriculumPage({ curriculum }:
@@ -41,8 +41,9 @@ export async function getStaticProps(
 export async function getStaticPaths() {
   const authors = await listAuthors();
   const paths = authors
-    .flatMap((author) => author.curricula
-      .map((curriculum) => curriculumPathname(author.slug, curriculum.slug)));
+    .flatMap((author) => author.curricula.map(
+      (curriculum) => curriculumPathname(author.slug, curriculum.slug),
+    ));
   return {
     paths,
     fallback: false,

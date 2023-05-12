@@ -10,8 +10,8 @@ import useLocalStorageState from 'use-local-storage-state';
 import ActivityNode from './ActivityNode';
 import SumNode from './SumNode';
 import UnitNode from './UnitNode';
-import { CurriculumActivity } from '../../src/Curricula';
-import { METADATA_KEY, getDefaultMetadata } from '../../src/codeState';
+import { CurriculumActivity } from '../../src/schemas/curriculumSchema';
+import { METADATA_KEY, getDefaultMetadata } from '../../src/localStorage/schema';
 
 import 'reactflow/dist/style.css';
 
@@ -128,7 +128,9 @@ async function layoutElkElements(elkNodes: ElkNode[], elkEdges: ElkExtendedEdge[
     },
   };
   const newGraph = await elk.layout(graph);
-  const { width, height, children: nodes, edges } = newGraph;
+  const {
+    width, height, children: nodes, edges,
+  } = newGraph;
   return {
     width: width || 0,
     height: height || 0,

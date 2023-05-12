@@ -7,8 +7,8 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Link from 'next/link';
 import router from 'next/router';
 import InfoIcon from '@mui/icons-material/Info';
-import { Activity, NotebookVariant } from '../src/Activities';
 import { activityVariantPathname, activityAssetPathname, activityPathname } from '../src/urlUtils';
+import { Activity, NotebookVariant } from '../src/schemas/activitySchema';
 
 export default function ActivitiesGallery({
   activities, languageFilter, authorSlug, compactView,

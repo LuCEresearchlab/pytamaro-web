@@ -1,8 +1,8 @@
 import path from 'path';
 import { readdir, readFile } from 'fs/promises';
-import {
-  Activity, DATA_DIR, getActivity, NotebookVariant, variantInfo,
-} from './Activities';
+import { DATA_DIR } from './notebooks';
+import { Curriculum, CurriculumUnit, RawCurriculumActivity } from '../schemas/curriculumSchema';
+import { variantInfo, readActivity } from './activities';
 
 export const CURRICULA_DIR = 'curricula';
 const CURRICULUM_EXT = '.json';
@@ -20,7 +20,7 @@ async function getCurriculumInfo(authorSlug: string, curriculumSlug: string) {
             const [thisAuthorSlug, activitySlug, language] = curriculumAct.id.split('/');
             return {
               ...curriculumAct,
-              activity: await getActivity(thisAuthorSlug, activitySlug),
+              activity: await readActivity(thisAuthorSlug, activitySlug),
               variant: await variantInfo(thisAuthorSlug, activitySlug, language),
             };
           },
@@ -32,36 +32,6 @@ async function getCurriculumInfo(authorSlug: string, curriculumSlug: string) {
     slug: curriculumSlug,
     ...content,
   };
-}
-
-interface RawCurriculumActivity {
-  id: string,
-  activityRequirements: string[][],
-  prerequisites: string[],
-  learningObjectives: string[],
-}
-
-export interface CurriculumActivity {
-  id: string,
-  activity: Activity,
-  variant: NotebookVariant,
-  activityRequirements: string[][],
-  prerequisites: string[],
-  learningObjectives: string[],
-}
-
-export interface CurriculumUnit {
-  title: string,
-  activities: CurriculumActivity[],
-}
-
-export interface Curriculum {
-  slug: string,
-  title: string,
-  description: string,
-  visibility: 'featured' | 'visible' | 'draft' | 'hidden',
-  competencies: string[],
-  units: CurriculumUnit[],
 }
 
 export async function listCurricula(authorSlug: string) : Promise<Curriculum[]> {
