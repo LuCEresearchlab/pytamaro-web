@@ -121,7 +121,7 @@ export default function AboutPage() {
           </Typography>
           <Typography variant="h4" gutterBottom>How?</Typography>
           <Typography variant="body1" paragraph>
-            Expression Tutor is a
+            PyTamaro Web is a
             {' '}
             <a href="https://reactjs.org/">React</a>
             {' '}
