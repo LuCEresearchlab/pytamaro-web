@@ -6,12 +6,10 @@ import ReactFlow, {
   Edge, Node,
 } from 'reactflow';
 import ELK, { ElkExtendedEdge, ElkNode } from 'elkjs';
-import useLocalStorageState from 'use-local-storage-state';
 import ActivityNode from './ActivityNode';
 import SumNode from './SumNode';
 import UnitNode from './UnitNode';
 import { CurriculumActivity } from '../../src/schemas/curriculumSchema';
-import { METADATA_KEY, getDefaultMetadata } from '../../src/localStorage/schema';
 
 import 'reactflow/dist/style.css';
 
@@ -200,17 +198,12 @@ function createFlowElements(
   };
 }
 
-export default function CurriculumFlow({ activities }: { activities : CurriculumActivity[] }) {
+export default function CurriculumFlow({ activities, completedActivityVariantIds }
+: { activities : CurriculumActivity[], completedActivityVariantIds : string[] }) {
   const [width, setWidth] = useState(100);
   const [height, setHeight] = useState(100);
   const [nodes, setNodes] = useState([] as Node[]);
   const [edges, setEdges] = useState([] as Edge[]);
-  const [metadata] = useLocalStorageState(METADATA_KEY, {
-    defaultValue: getDefaultMetadata(),
-  });
-  const completedActivityVariantIds = metadata.activities
-    .filter((a) => a.completed)
-    .map((a) => a.id);
 
   useEffect(() => {
     const setFlowElements = async () => {
@@ -228,10 +221,6 @@ export default function CurriculumFlow({ activities }: { activities : Curriculum
         nodes: newNodes,
         edges: newEdges,
       } = createFlowElements(activities, newElkNodes, newElkEdges, completedActivityVariantIds);
-      console.log(newWidth);
-      console.log(newHeight);
-      console.log(newNodes);
-      console.log(newEdges);
       setNodes(newNodes);
       setEdges(newEdges);
     };

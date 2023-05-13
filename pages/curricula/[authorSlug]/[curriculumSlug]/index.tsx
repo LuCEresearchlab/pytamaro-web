@@ -1,22 +1,66 @@
 import {
   Stack,
+  ToggleButton,
+  Tooltip,
   Typography,
 } from '@mui/material';
+import { useState } from 'react';
+import useLocalStorageState from 'use-local-storage-state';
+import ViewCompactIcon from '@mui/icons-material/ViewCompact';
 import NavigationBar from '../../../../components/NavigationBar';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
 import { Curriculum } from '../../../../src/schemas/curriculumSchema';
 import { curriculumPathname } from '../../../../src/urlUtils';
 import listAuthors from '../../../../src/fs-content/authors';
 import CurriculumFlow from '../../../../components/Curriculum/CurriculumFlow';
+import CurriculumUnitSeq from '../../../../components/Curriculum/CurriculumUnitSeq';
+import { METADATA_KEY, getDefaultMetadata } from '../../../../src/localStorage/schema';
 
 export default function CurriculumPage({ curriculum }:
 { curriculum : Curriculum }) {
+  const [compactView, setCompactView] = useState(false);
+  const [metadata] = useLocalStorageState(METADATA_KEY, {
+    defaultValue: getDefaultMetadata(),
+  });
+  const completedActivityVariantIds = metadata.activities
+    .filter((a) => a.completed)
+    .map((a) => a.id);
+
   return (
     <Stack spacing={2}>
-      <NavigationBar />
+      <NavigationBar>
+        <Tooltip title="Compact View">
+          <ToggleButton
+            color="neutral"
+            value="compact"
+            selected={compactView}
+            onChange={() => {
+              setCompactView(!compactView);
+            }}
+          >
+            <ViewCompactIcon />
+          </ToggleButton>
+        </Tooltip>
+      </NavigationBar>
       <Typography variant="h2" marginY={3} align="center">{curriculum.title}</Typography>
       <Typography variant="h5" marginY={3} align="center">{curriculum.description}</Typography>
-      <CurriculumFlow activities={curriculum.units[0].activities} />
+      {compactView && (
+        <Stack spacing={2}>
+          {curriculum.units.map((unit) => (
+            <CurriculumUnitSeq
+              unit={unit}
+              completedActivityVariantIds={completedActivityVariantIds}
+              key={unit.title}
+            />
+          ))}
+        </Stack>
+      )}
+      {!compactView && (
+        <CurriculumFlow
+          activities={curriculum.units[0].activities}
+          completedActivityVariantIds={completedActivityVariantIds}
+        />
+      )}
     </Stack>
   );
 }
