@@ -21,11 +21,19 @@ export interface CurriculumUnit {
   activities: CurriculumActivity[],
 }
 
+export interface CurriculumCompetency {
+  id: string,
+  name: string,
+  description: string,
+  longDescription: string,
+  icon: string,
+}
+
 export interface Curriculum {
   slug: string,
   title: string,
   description: string,
   visibility: 'featured' | 'visible' | 'draft' | 'hidden',
-  competencies: string[],
+  competencies: CurriculumCompetency[],
   units: CurriculumUnit[],
 }

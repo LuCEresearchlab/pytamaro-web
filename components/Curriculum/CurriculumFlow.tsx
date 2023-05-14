@@ -5,11 +5,11 @@ import { useEffect, useState } from 'react';
 import ReactFlow, {
   Edge, Node,
 } from 'reactflow';
-import ELK, { ElkExtendedEdge, ElkNode } from 'elkjs';
+import ELK, { ElkExtendedEdge, ElkLabel, ElkNode } from 'elkjs';
 import ActivityNode from './ActivityNode';
 import SumNode from './SumNode';
 import UnitNode from './UnitNode';
-import { CurriculumActivity } from '../../src/schemas/curriculumSchema';
+import { CurriculumActivity, CurriculumUnit } from '../../src/schemas/curriculumSchema';
 
 import 'reactflow/dist/style.css';
 
@@ -111,6 +111,27 @@ function activitiesToElkEdges(activities: CurriculumActivity[]) {
   );
 }
 
+function unitsToElkNodes(units: CurriculumUnit[]) {
+  return units.map((unit, idx) => ({
+    id: `${idx}`,
+    children: activitiesToElkNodes(unit.activities),
+    labels: [
+      {
+        height: 120,
+        layoutOptions: {
+          'nodeLabels.placement': 'INSIDE V_TOP H_CENTER',
+        },
+      } as ElkLabel,
+    ],
+  } as ElkNode));
+}
+
+function unitsToElkEdges(units: CurriculumUnit[]) {
+  return units.flatMap(
+    (unit) => activitiesToElkEdges(unit.activities),
+  );
+}
+
 async function layoutElkElements(elkNodes: ElkNode[], elkEdges: ElkExtendedEdge[]) {
   const elk = new ELK();
   const graph : ElkNode = {
@@ -118,11 +139,11 @@ async function layoutElkElements(elkNodes: ElkNode[], elkEdges: ElkExtendedEdge[
     children: elkNodes,
     edges: elkEdges,
     layoutOptions: {
-      'spacing.nodeNodeBetweenLayers': '100',
-      'elk.direction': 'DOWN',
+      'org.eclipse.elk.direction': 'DOWN',
+      'org.eclipse.elk.hierarchyHandling': 'INCLUDE_CHILDREN',
       'org.eclipse.elk.algorithm': 'org.eclipse.elk.layered',
+      'org.eclipse.elk.spacing.nodeNodeBetweenLayers': '100',
       'org.eclipse.elk.spacing.nodeNode': '100',
-      'org.eclipse.elk.layered.allowNonFlowPortsToSwitchSides': 'true',
     },
   };
   const newGraph = await elk.layout(graph);
@@ -137,10 +158,10 @@ async function layoutElkElements(elkNodes: ElkNode[], elkEdges: ElkExtendedEdge[
   };
 }
 
-function createFlowElements(
+function createFlowNodesFromActivities(
+  parentNode: string,
   activities: CurriculumActivity[],
   elkNodes: ElkNode[],
-  elkEdges: ElkExtendedEdge[],
   completedActivityVariantIds: string[],
 ) {
   const nodes = elkNodes.map(
@@ -156,6 +177,8 @@ function createFlowElements(
             x: elkNode.x,
             y: elkNode.y,
           },
+          parentNode,
+          extent: 'parent',
         } as Node;
       }
       const isCompleted = completedActivityVariantIds.includes(curriculumAct.id);
@@ -181,7 +204,45 @@ function createFlowElements(
           x: elkNode?.x,
           y: elkNode?.y,
         },
+        parentNode,
+        extent: 'parent',
       } as Node;
+    },
+  );
+  return nodes;
+}
+
+function createFlowElements(
+  units: CurriculumUnit[],
+  elkNodes: ElkNode[],
+  elkEdges: ElkExtendedEdge[],
+  completedActivityVariantIds: string[],
+) {
+  const nodes = elkNodes.flatMap(
+    (elkNode) => {
+      const unit = units[+elkNode.id];
+      return [
+        {
+          ...nodeOptions,
+          id: elkNode.id,
+          type: 'unit',
+          data: {
+            label: unit.title,
+            width: elkNode.width,
+            height: elkNode.height,
+          },
+          position: {
+            x: elkNode.x,
+            y: elkNode.y,
+          },
+        } as Node,
+        ...createFlowNodesFromActivities(
+          elkNode.id,
+          unit.activities,
+          elkNode.children || [],
+          completedActivityVariantIds,
+        ),
+      ];
     },
   );
   const edges = elkEdges.map(
@@ -198,8 +259,8 @@ function createFlowElements(
   };
 }
 
-export default function CurriculumFlow({ activities, completedActivityVariantIds }
-: { activities : CurriculumActivity[], completedActivityVariantIds : string[] }) {
+export default function CurriculumFlow({ units, completedActivityVariantIds }
+: { units : CurriculumUnit[], completedActivityVariantIds : string[] }) {
   const [width, setWidth] = useState(100);
   const [height, setHeight] = useState(100);
   const [nodes, setNodes] = useState([] as Node[]);
@@ -207,8 +268,8 @@ export default function CurriculumFlow({ activities, completedActivityVariantIds
 
   useEffect(() => {
     const setFlowElements = async () => {
-      const elkNodes = activitiesToElkNodes(activities);
-      const elkEdges = activitiesToElkEdges(activities);
+      const elkNodes = unitsToElkNodes(units);
+      const elkEdges = unitsToElkEdges(units);
       const {
         width: newWidth,
         height: newHeight,
@@ -217,17 +278,19 @@ export default function CurriculumFlow({ activities, completedActivityVariantIds
       } = await layoutElkElements(elkNodes, elkEdges);
       setWidth(newWidth);
       setHeight(newHeight);
+      console.log(newElkNodes);
+      console.log(newElkEdges);
       const {
         nodes: newNodes,
         edges: newEdges,
-      } = createFlowElements(activities, newElkNodes, newElkEdges, completedActivityVariantIds);
+      } = createFlowElements(units, newElkNodes, newElkEdges, completedActivityVariantIds);
       setNodes(newNodes);
       setEdges(newEdges);
     };
     if (nodes.length === 0) {
       setFlowElements();
     }
-  }, [nodes, activities, completedActivityVariantIds]);
+  }, [nodes, units, completedActivityVariantIds]);
 
   return (
     <Box
@@ -242,11 +305,12 @@ export default function CurriculumFlow({ activities, completedActivityVariantIds
         edges={edges}
         nodeTypes={nodeTypes}
         style={rfStyle}
-        panOnDrag={false}
-        zoomOnScroll={false}
-        zoomOnPinch={false}
-        zoomOnDoubleClick={false}
-        preventScrolling={false}
+        minZoom={0.1}
+        // panOnDrag={false}
+        // zoomOnScroll={false}
+        // zoomOnPinch={false}
+        // zoomOnDoubleClick={false}
+        // preventScrolling={false}
       />
     </Box>
   );

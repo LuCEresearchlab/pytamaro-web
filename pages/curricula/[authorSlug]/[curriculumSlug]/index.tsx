@@ -57,7 +57,7 @@ export default function CurriculumPage({ curriculum }:
       )}
       {!compactView && (
         <CurriculumFlow
-          activities={curriculum.units[0].activities}
+          units={curriculum.units}
           completedActivityVariantIds={completedActivityVariantIds}
         />
       )}

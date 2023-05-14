@@ -71,7 +71,7 @@ export default function CurriculumUnitSeq({ unit, completedActivityVariantIds }
   return (
     <Card sx={{ paddingX: 2 }}>
       <CardActions disableSpacing>
-        <Typography variant="h2">
+        <Typography variant="h4">
           {unit.title}
         </Typography>
         <ExpandMore
