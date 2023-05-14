@@ -115,9 +115,14 @@ function unitsToElkNodes(units: CurriculumUnit[]) {
   return units.map((unit, idx) => ({
     id: `${idx}`,
     children: activitiesToElkNodes(unit.activities),
+    layoutOptions: {
+      'org.eclipse.elk.spacing.nodeNode': '100',
+      'org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers': '100',
+    },
     labels: [
       {
-        height: 120,
+        text: unit.title,
+        height: 200,
         layoutOptions: {
           'nodeLabels.placement': 'INSIDE V_TOP H_CENTER',
         },
@@ -142,8 +147,7 @@ async function layoutElkElements(elkNodes: ElkNode[], elkEdges: ElkExtendedEdge[
       'org.eclipse.elk.direction': 'DOWN',
       'org.eclipse.elk.hierarchyHandling': 'INCLUDE_CHILDREN',
       'org.eclipse.elk.algorithm': 'org.eclipse.elk.layered',
-      'org.eclipse.elk.spacing.nodeNodeBetweenLayers': '100',
-      'org.eclipse.elk.spacing.nodeNode': '100',
+      'org.eclipse.elk.edgeRouting': 'SPLINES',
     },
   };
   const newGraph = await elk.layout(graph);
@@ -278,8 +282,6 @@ export default function CurriculumFlow({ units, completedActivityVariantIds }
       } = await layoutElkElements(elkNodes, elkEdges);
       setWidth(newWidth);
       setHeight(newHeight);
-      console.log(newElkNodes);
-      console.log(newElkEdges);
       const {
         nodes: newNodes,
         edges: newEdges,
