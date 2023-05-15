@@ -163,7 +163,7 @@ async function layoutElkElements(elkNodes: ElkNode[], elkEdges: ElkExtendedEdge[
 }
 
 function createFlowNodesFromActivities(
-  parentNode: string,
+  parentNode: string | undefined,
   activities: CurriculumActivity[],
   elkNodes: ElkNode[],
   completedActivityVariantIds: string[],
@@ -225,6 +225,14 @@ function createFlowElements(
   const nodes = elkNodes.flatMap(
     (elkNode) => {
       const unit = units[+elkNode.id];
+      if (elkNodes.length === 1) {
+        return createFlowNodesFromActivities(
+          undefined,
+          unit.activities,
+          elkNode.children || [],
+          completedActivityVariantIds,
+        );
+      }
       return [
         {
           ...nodeOptions,

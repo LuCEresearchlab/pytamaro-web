@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState } from 'react';
-import { CurriculumUnit } from '../../src/schemas/curriculumSchema';
+import { CurriculumActivity } from '../../src/schemas/curriculumSchema';
 import ActivityCard from '../ActivityCard';
 
 interface ExpandMoreProps extends IconButtonProps {
@@ -30,15 +30,19 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
   }),
 }));
 
-export default function CurriculumUnitSeq({ unit, completedActivityVariantIds }
-: { unit : CurriculumUnit, completedActivityVariantIds : string[] }) {
+export default function CurriculumSeqUnit({ title, activities, completedActivityVariantIds }
+: {
+  title : string | undefined,
+  activities: CurriculumActivity[],
+  completedActivityVariantIds : string[],
+}) {
   const [expanded, setExpanded] = useState(false);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
-  const sortedActivities = unit.activities
+  const sortedActivities = activities
     .map((activity) => {
       const isCompleted = completedActivityVariantIds.includes(activity.id);
       const isUnlocked = activity.activityRequirements.every(
@@ -69,21 +73,8 @@ export default function CurriculumUnitSeq({ unit, completedActivityVariantIds }
     });
 
   return (
-    <Card sx={{ paddingX: 2 }}>
-      <CardActions disableSpacing>
-        <Typography variant="h4">
-          {unit.title}
-        </Typography>
-        <ExpandMore
-          expand={expanded}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-        >
-          <ExpandMoreIcon />
-        </ExpandMore>
-      </CardActions>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
+    <Card sx={{ padding: 2 }}>
+      {title === undefined && (
         <CardContent>
           <Grid container spacing={2}>
             {sortedActivities.map((activity) => (
@@ -101,7 +92,43 @@ export default function CurriculumUnitSeq({ unit, completedActivityVariantIds }
             ))}
           </Grid>
         </CardContent>
-      </Collapse>
+      )}
+      {title !== undefined && (
+        <>
+          <CardActions disableSpacing>
+            <Typography variant="h4">
+              {title}
+            </Typography>
+            <ExpandMore
+              expand={expanded}
+              onClick={handleExpandClick}
+              aria-expanded={expanded}
+              aria-label="show more"
+            >
+              <ExpandMoreIcon />
+            </ExpandMore>
+          </CardActions>
+          <Collapse in={expanded} timeout="auto" unmountOnExit>
+            <CardContent>
+              <Grid container spacing={2}>
+                {sortedActivities.map((activity) => (
+                  <Grid md={4} lg={3} key={activity.id}>
+                    <ActivityCard
+                      id={activity.id}
+                      activity={activity.activity}
+                      variant={activity.variant}
+                      isCompleted={activity.isCompleted}
+                      isUnlocked={activity.isUnlocked}
+                      width={undefined}
+                      height={undefined}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </CardContent>
+          </Collapse>
+        </>
+      )}
     </Card>
   );
 }

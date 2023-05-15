@@ -13,7 +13,7 @@ import { Curriculum } from '../../../../src/schemas/curriculumSchema';
 import { curriculumPathname } from '../../../../src/urlUtils';
 import listAuthors from '../../../../src/fs-content/authors';
 import CurriculumFlow from '../../../../components/Curriculum/CurriculumFlow';
-import CurriculumUnitSeq from '../../../../components/Curriculum/CurriculumUnitSeq';
+import CurriculumSeq from '../../../../components/Curriculum/CurriculumSeq';
 import { METADATA_KEY, getDefaultMetadata } from '../../../../src/localStorage/schema';
 
 export default function CurriculumPage({ curriculum }:
@@ -45,15 +45,10 @@ export default function CurriculumPage({ curriculum }:
       <Typography variant="h2" marginY={3} align="center">{curriculum.title}</Typography>
       <Typography variant="h5" marginY={3} align="center">{curriculum.description}</Typography>
       {compactView && (
-        <Stack spacing={2}>
-          {curriculum.units.map((unit) => (
-            <CurriculumUnitSeq
-              unit={unit}
-              completedActivityVariantIds={completedActivityVariantIds}
-              key={unit.title}
-            />
-          ))}
-        </Stack>
+        <CurriculumSeq
+          units={curriculum.units}
+          completedActivityVariantIds={completedActivityVariantIds}
+        />
       )}
       {!compactView && (
         <CurriculumFlow
