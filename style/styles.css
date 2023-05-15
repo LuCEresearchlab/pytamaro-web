@@ -45,6 +45,10 @@ code, pre {
     color: #777777
 }
 
+.react-flow__controls {
+    position: fixed !important;
+}
+
 /* https://stackoverflow.com/questions/70797173/monospace-font-characters-are-not-fixed-width */
 @font-face {
     font-family: 'Fira Code';

@@ -3,6 +3,7 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import ReactFlow, {
+  Controls,
   Edge, Node,
 } from 'reactflow';
 import ELK, { ElkExtendedEdge, ElkLabel, ElkNode } from 'elkjs';
@@ -304,24 +305,32 @@ export default function CurriculumFlow({ units, completedActivityVariantIds }
 
   return (
     <Box
-      alignSelf="center"
       style={{
-        width,
-        height,
+        width: '100%',
+        overflow: 'auto',
       }}
     >
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        style={rfStyle}
-        minZoom={0.1}
-        // panOnDrag={false}
-        // zoomOnScroll={false}
-        // zoomOnPinch={false}
-        // zoomOnDoubleClick={false}
-        // preventScrolling={false}
-      />
+      <Box
+        style={{
+          width,
+          height,
+        }}
+      >
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          style={rfStyle}
+          minZoom={0.1}
+          panOnDrag={false}
+          zoomOnScroll={false}
+          zoomOnPinch={false}
+          zoomOnDoubleClick={false}
+          preventScrolling={false}
+        >
+          <Controls />
+        </ReactFlow>
+      </Box>
     </Box>
   );
 }
