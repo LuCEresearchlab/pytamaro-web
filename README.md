@@ -167,3 +167,13 @@ Note: since `isolatedModules` is set, the file should contain some import or exp
 - Create an appropriate `.env.production` in the root folder
 - Use `docker compose` to build and start the containers. See how it is currently done in the [luce-server](https://github.com/LuCEresearchlab/luce-server) repository.
 </details>
+
+## How is the Python parser built?
+<details>
+<summary>Expand</summary>
+
+The Python parser in `tools/parser` is a Rust library
+that leverages [RustPython's Parser](https://github.com/RustPython/Parser)
+and is compiled to WebAssembly using [`wasm-pack`](https://rustwasm.github.io/wasm-pack/).
+Pre-built JavaScript files are already included in this repository at `src/parser`.
+To rebuild the parser, install a Rust toolchain and run `npm run build-rust-parser`.

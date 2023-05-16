@@ -39,6 +39,7 @@ export default function Playground() {
             onOutputAreaToggled={() => handleToggleOutputArea(0)}
             onReset={() => handleResetSingleCell(0)}
             firstLineNumber={1}
+            activityVariant={playgroundActivityVariant}
           />
           <DownloadCodeButton getSource={() => asSingleSource(codeCells)} />
         </Container>
