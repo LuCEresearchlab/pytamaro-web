@@ -7,13 +7,9 @@ export interface RawCurriculumActivity {
   learningObjectives: string[],
 }
 
-export interface CurriculumActivity {
-  id: string,
+export interface CurriculumActivity extends RawCurriculumActivity {
   activity: Activity,
   variant: NotebookVariant,
-  activityRequirements: string[][],
-  prerequisites: string[],
-  learningObjectives: string[],
 }
 
 export interface CurriculumUnit {

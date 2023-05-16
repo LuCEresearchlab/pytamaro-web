@@ -5,7 +5,6 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import useLocalStorageState from 'use-local-storage-state';
 import ViewCompactIcon from '@mui/icons-material/ViewCompact';
 import NavigationBar from '../../../../components/NavigationBar';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
@@ -14,14 +13,12 @@ import { curriculumPathname } from '../../../../src/urlUtils';
 import listAuthors from '../../../../src/fs-content/authors';
 import CurriculumFlow from '../../../../components/Curriculum/CurriculumFlow';
 import CurriculumSeq from '../../../../components/Curriculum/CurriculumSeq';
-import { METADATA_KEY, getDefaultMetadata } from '../../../../src/localStorage/schema';
+import useLocalProfile from '../../../../src/localStorage/useLocalProfile';
 
 export default function CurriculumPage({ curriculum }:
 { curriculum : Curriculum }) {
   const [compactView, setCompactView] = useState(false);
-  const [metadata] = useLocalStorageState(METADATA_KEY, {
-    defaultValue: getDefaultMetadata(),
-  });
+  const { metadata } = useLocalProfile();
   const completedActivityVariantIds = metadata.activities
     .filter((a) => a.completed)
     .map((a) => a.id);
