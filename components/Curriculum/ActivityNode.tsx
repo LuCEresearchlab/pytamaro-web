@@ -1,11 +1,10 @@
 import { Handle, Position, NodeProps } from 'reactflow';
 import ActivityCard from '../ActivityCard';
-import { Activity, NotebookVariant } from '../../src/schemas/activitySchema';
+import { Activity } from '../../src/schemas/activitySchema';
 
 type NodeData = {
   id: string;
   activity: Activity;
-  variant: NotebookVariant;
   isCompleted: boolean;
   isUnlocked: boolean;
   width: number,
@@ -14,7 +13,7 @@ type NodeData = {
 
 export default function ActivityNode({ data }: NodeProps<NodeData>) {
   const {
-    id, activity, variant, isCompleted, isUnlocked, width, height,
+    id, activity, isCompleted, isUnlocked, width, height,
   } = data;
 
   return (
@@ -23,7 +22,6 @@ export default function ActivityNode({ data }: NodeProps<NodeData>) {
       <ActivityCard
         id={id}
         activity={activity}
-        variant={variant}
         isCompleted={isCompleted}
         isUnlocked={isUnlocked}
         width={width}

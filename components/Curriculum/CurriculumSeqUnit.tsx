@@ -82,7 +82,6 @@ export default function CurriculumSeqUnit({ title, activities, completedActivity
                 <ActivityCard
                   id={activity.id}
                   activity={activity.activity}
-                  variant={activity.variant}
                   isCompleted={activity.isCompleted}
                   isUnlocked={activity.isUnlocked}
                   width={undefined}
@@ -116,7 +115,6 @@ export default function CurriculumSeqUnit({ title, activities, completedActivity
                     <ActivityCard
                       id={activity.id}
                       activity={activity.activity}
-                      variant={activity.variant}
                       isCompleted={activity.isCompleted}
                       isUnlocked={activity.isUnlocked}
                       width={undefined}

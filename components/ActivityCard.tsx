@@ -12,12 +12,11 @@ import {
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { activityAssetPathname, activityVariantPathname } from '../src/urlUtils';
-import { Activity, NotebookVariant } from '../src/schemas/activitySchema';
+import { Activity } from '../src/schemas/activitySchema';
 
 export default function ActivityCard({
   id,
   activity,
-  variant,
   isCompleted,
   isUnlocked,
   width,
@@ -25,14 +24,15 @@ export default function ActivityCard({
 }: {
   id: string,
   activity: Activity,
-  variant: NotebookVariant,
   isCompleted: boolean,
   isUnlocked: boolean,
   width: number | undefined,
   height: number | undefined,
 }) {
   const router = useRouter();
-  const [authorSlug, , , version] = id.split('/');
+  const [authorSlug, , language, version] = id.split('/');
+  const variant = activity.variants.find((v) => v.language === language);
+  const title = variant?.title || activity.slug;
 
   return (
     <Box
@@ -58,7 +58,7 @@ export default function ActivityCard({
             onClick={() => router.push(activityVariantPathname(
               authorSlug,
               activity.slug,
-              variant.language,
+              language,
               version,
             ))}
             disabled={!isUnlocked}
@@ -72,12 +72,12 @@ export default function ActivityCard({
                 activity.slug,
                 activity.previewImage.filename,
               )}
-              alt={variant.title}
+              alt={title}
               sx={{ padding: 1, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
             />
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
-                {variant.title}
+                {title}
               </Typography>
             </CardContent>
           </CardActionArea>

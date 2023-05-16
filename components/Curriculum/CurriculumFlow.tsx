@@ -199,7 +199,6 @@ function createFlowNodesFromActivities(
         data: {
           id: curriculumAct.id,
           activity: curriculumAct.activity,
-          variant: curriculumAct.variant,
           isCompleted,
           isUnlocked,
           width: nodeTypeDimensions.activity.width,

@@ -1,4 +1,4 @@
-import { Activity, NotebookVariant } from './activitySchema';
+import { Activity } from './activitySchema';
 
 export interface RawCurriculumActivity {
   id: string,
@@ -9,7 +9,6 @@ export interface RawCurriculumActivity {
 
 export interface CurriculumActivity extends RawCurriculumActivity {
   activity: Activity,
-  variant: NotebookVariant,
 }
 
 export interface CurriculumUnit {
