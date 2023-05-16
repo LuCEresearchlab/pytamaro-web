@@ -113,23 +113,28 @@ function activitiesToElkEdges(activities: CurriculumActivity[]) {
 }
 
 function unitsToElkNodes(units: CurriculumUnit[]) {
-  return units.map((unit, idx) => ({
-    id: `${idx}`,
-    children: activitiesToElkNodes(unit.activities),
-    layoutOptions: {
-      'org.eclipse.elk.spacing.nodeNode': '100',
-      'org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers': '100',
-    },
-    labels: [
-      {
-        text: unit.title,
-        height: 200,
-        layoutOptions: {
-          'nodeLabels.placement': 'INSIDE V_TOP H_CENTER',
-        },
-      } as ElkLabel,
-    ],
-  } as ElkNode));
+  if (units.length === 1) {
+    return activitiesToElkNodes(units[0].activities);
+  }
+  return units.map((unit, idx) => (
+    {
+      id: `${idx}`,
+      children: activitiesToElkNodes(unit.activities),
+      layoutOptions: {
+        'org.eclipse.elk.spacing.nodeNode': '100',
+        'org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers': '100',
+      },
+      labels: [
+        {
+          text: unit.title,
+          height: 200,
+          layoutOptions: {
+            'nodeLabels.placement': 'INSIDE V_TOP H_CENTER',
+          },
+        } as ElkLabel,
+      ],
+    } as ElkNode
+  ));
 }
 
 function unitsToElkEdges(units: CurriculumUnit[]) {
@@ -149,6 +154,8 @@ async function layoutElkElements(elkNodes: ElkNode[], elkEdges: ElkExtendedEdge[
       'org.eclipse.elk.hierarchyHandling': 'INCLUDE_CHILDREN',
       'org.eclipse.elk.algorithm': 'org.eclipse.elk.layered',
       'org.eclipse.elk.edgeRouting': 'SPLINES',
+      'org.eclipse.elk.spacing.nodeNode': '100',
+      'org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers': '100',
     },
   };
   const newGraph = await elk.layout(graph);
@@ -222,17 +229,14 @@ function createFlowElements(
   elkEdges: ElkExtendedEdge[],
   completedActivityVariantIds: string[],
 ) {
-  const nodes = elkNodes.flatMap(
+  const nodes = units.length === 1 ? createFlowNodesFromActivities(
+    undefined,
+    units[0].activities,
+    elkNodes,
+    completedActivityVariantIds,
+  ) : elkNodes.flatMap(
     (elkNode) => {
       const unit = units[+elkNode.id];
-      if (elkNodes.length === 1) {
-        return createFlowNodesFromActivities(
-          undefined,
-          unit.activities,
-          elkNode.children || [],
-          completedActivityVariantIds,
-        );
-      }
       return [
         {
           ...nodeOptions,
