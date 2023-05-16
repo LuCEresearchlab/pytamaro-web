@@ -30,6 +30,30 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
   }),
 }));
 
+interface ExtendedCurriculumActivity extends CurriculumActivity {
+  isCompleted: boolean;
+  isUnlocked: boolean;
+}
+
+function CurriculumSeqUnitActivities({ activities }: { activities: ExtendedCurriculumActivity[] }) {
+  return (
+    <Grid container spacing={2}>
+      {activities.map((activity) => (
+        <Grid md={4} lg={3} key={activity.id}>
+          <ActivityCard
+            id={activity.id}
+            activity={activity.activity}
+            isCompleted={activity.isCompleted}
+            isUnlocked={activity.isUnlocked}
+            width={undefined}
+            height={undefined}
+          />
+        </Grid>
+      ))}
+    </Grid>
+  );
+}
+
 export default function CurriculumSeqUnit({ title, activities, completedActivityVariantIds }
 : {
   title : string | undefined,
@@ -54,7 +78,7 @@ export default function CurriculumSeqUnit({ title, activities, completedActivity
         ...activity,
         isCompleted,
         isUnlocked,
-      };
+      } as ExtendedCurriculumActivity;
     })
     .sort((a, b) => {
       if (a.isCompleted) {
@@ -76,20 +100,7 @@ export default function CurriculumSeqUnit({ title, activities, completedActivity
     <Card sx={{ padding: 2 }}>
       {title === undefined && (
         <CardContent>
-          <Grid container spacing={2}>
-            {sortedActivities.map((activity) => (
-              <Grid md={4} lg={3} key={activity.id}>
-                <ActivityCard
-                  id={activity.id}
-                  activity={activity.activity}
-                  isCompleted={activity.isCompleted}
-                  isUnlocked={activity.isUnlocked}
-                  width={undefined}
-                  height={undefined}
-                />
-              </Grid>
-            ))}
-          </Grid>
+          <CurriculumSeqUnitActivities activities={sortedActivities} />
         </CardContent>
       )}
       {title !== undefined && (
@@ -109,20 +120,7 @@ export default function CurriculumSeqUnit({ title, activities, completedActivity
           </CardActions>
           <Collapse in={expanded} timeout="auto" unmountOnExit>
             <CardContent>
-              <Grid container spacing={2}>
-                {sortedActivities.map((activity) => (
-                  <Grid md={4} lg={3} key={activity.id}>
-                    <ActivityCard
-                      id={activity.id}
-                      activity={activity.activity}
-                      isCompleted={activity.isCompleted}
-                      isUnlocked={activity.isUnlocked}
-                      width={undefined}
-                      height={undefined}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
+              <CurriculumSeqUnitActivities activities={sortedActivities} />
             </CardContent>
           </Collapse>
         </>
