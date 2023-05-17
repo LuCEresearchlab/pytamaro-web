@@ -101,7 +101,7 @@ Additionally, the object describing a activity contains the following fields:
 
 1. Clone this repository and all its submodules: `git clone --recurse-submodules git@github.com:LuCEresearchlab/pytamaro-web.git` 
 1. Install the dependencies of this project: `npm install`
-1. Populate the `public` folder with notebooks-related assets: `node tools/createNotebookAssets.js`
+1. Populate the `public` folder with notebooks-related assets: `npx ts-node tools/createNotebookAssets.mts`
 1. Start the Next.js server: `npm run dev`
 1. Browse at [http://localhost:3000](http://localhost:3000)
 </details>
@@ -175,5 +175,6 @@ Note: since `isolatedModules` is set, the file should contain some import or exp
 The Python parser in `tools/parser` is a Rust library
 that leverages [RustPython's Parser](https://github.com/RustPython/Parser)
 and is compiled to WebAssembly using [`wasm-pack`](https://rustwasm.github.io/wasm-pack/).
-Pre-built JavaScript files are already included in this repository at `src/parser`.
+Pre-built ESM JavaScript files (for the browser) are already included in this repository at `src/parser`.
+Pre-built CommonJS JavaScript files (for Node.js) are already included in this repository at `tools/parser-nodejs`.
 To rebuild the parser, install a Rust toolchain and run `npm run build-rust-parser`.

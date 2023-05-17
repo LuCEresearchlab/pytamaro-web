@@ -7,6 +7,7 @@ export interface Activity {
   visibility: 'featured' | 'visible' | 'draft' | 'hidden',
   variants: NotebookVariant[],
   uses: ActivityUse[],
+  assets: string[],
 }
 
 export interface ActivityInfo {

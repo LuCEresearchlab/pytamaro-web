@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 // eslint-disable-next-line import/no-relative-packages
-import init, { imported_names } from '../src/parser';
+import init, { imported_names } from '../src/parser/parser';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import PyTamaroAPI from './PyTamaroAPIDocs/PyTamaroAPI';
 import PyTamaroNames from './PyTamaroAPIDocs/names';
