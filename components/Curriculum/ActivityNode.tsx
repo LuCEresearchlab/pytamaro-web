@@ -18,7 +18,7 @@ export default function ActivityNode({ data }: NodeProps<NodeData>) {
 
   return (
     <>
-      <Handle type="target" position={Position.Top} />
+      <Handle type="target" position={Position.Top} isConnectable={false} />
       <ActivityCard
         id={id}
         activity={activity}
@@ -27,7 +27,7 @@ export default function ActivityNode({ data }: NodeProps<NodeData>) {
         width={width}
         height={height}
       />
-      <Handle type="source" position={Position.Bottom} />
+      <Handle type="source" position={Position.Bottom} isConnectable={false} />
     </>
   );
 }

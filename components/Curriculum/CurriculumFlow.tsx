@@ -1,5 +1,5 @@
 import {
-  Box, Stack,
+  Box,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import ReactFlow, {
@@ -25,6 +25,9 @@ const nodeOptions = {
 const edgeOptions = {
   deletable: false,
   focusable: false,
+  markerEnd: {
+    type: 'arrowclosed',
+  },
   style: {
     strokeWidth: 10,
   },

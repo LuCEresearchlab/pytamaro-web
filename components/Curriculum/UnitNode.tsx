@@ -19,11 +19,11 @@ export default function UnitNode({ data }: NodeProps<NodeData>) {
         color: 'grey',
       }}
     >
-      <Handle type="target" position={Position.Top} />
+      <Handle type="target" position={Position.Top} isConnectable={false} />
       <Typography variant="h2" marginY={3} align="center">
         {data.label}
       </Typography>
-      <Handle type="source" position={Position.Bottom} />
+      <Handle type="source" position={Position.Bottom} isConnectable={false} />
     </Box>
   );
 }

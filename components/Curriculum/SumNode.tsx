@@ -15,7 +15,7 @@ export default function SumNode({ data }: NodeProps<NodeData>) {
   } = data;
   return (
     <>
-      <Handle type="target" position={Position.Top} />
+      <Handle type="target" position={Position.Top} isConnectable={false} />
       <Box sx={{ width, height }}>
         <AddCircleOutline
           sx={{
@@ -23,7 +23,7 @@ export default function SumNode({ data }: NodeProps<NodeData>) {
           }}
         />
       </Box>
-      <Handle type="source" position={Position.Bottom} />
+      <Handle type="source" position={Position.Bottom} isConnectable={false} />
     </>
   );
 }
