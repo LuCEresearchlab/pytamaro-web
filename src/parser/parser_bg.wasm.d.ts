@@ -1,6 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
+export function parse(a: number, b: number, c: number): void;
 export function imported_names(a: number, b: number, c: number): void;
 export function start(): void;
 export function __wbindgen_add_to_stack_pointer(a: number): number;

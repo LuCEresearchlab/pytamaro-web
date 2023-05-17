@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "cypress": "cypress open",
-    "build-rust-parser": "wasm-pack build tools/parser --target web --out-dir ../../src/parser && wasm-pack build tools/parser --target nodejs --out-dir ../../tools/parser-nodejs"
+    "build-rust-parser": "wasm-pack build tools/parser --target web --out-dir ../../src/parser && wasm-pack build tools/parser --target nodejs --out-dir ../../tools/parser-nodejs && rm src/parser/.gitignore && rm tools/parser-nodejs/.gitignore"
   },
   "dependencies": {
     "@emotion/cache": "^11.10.5",

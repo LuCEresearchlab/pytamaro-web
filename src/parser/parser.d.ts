@@ -7,12 +7,18 @@ export function start(): void;
 * @param {string} python_source
 * @returns {any}
 */
+export function parse(python_source: string): any;
+/**
+* @param {string} python_source
+* @returns {any}
+*/
 export function imported_names(python_source: string): any;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
+  readonly parse: (a: number, b: number, c: number) => void;
   readonly imported_names: (a: number, b: number, c: number) => void;
   readonly start: () => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
