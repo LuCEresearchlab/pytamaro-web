@@ -1,5 +1,5 @@
 import {
-  Box,
+  Box, Stack,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import ReactFlow, {
@@ -309,8 +309,10 @@ export default function CurriculumFlow({ units, completedActivityVariantIds }
   return (
     <Box
       style={{
-        width: '100%',
         overflow: 'auto',
+        maxWidth: '100%',
+        width,
+        alignSelf: 'center',
       }}
     >
       <Box
