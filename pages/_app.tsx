@@ -28,6 +28,7 @@ interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
 
+// eslint-disable-next-line react/require-default-props
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   const queryClient = new QueryClient();

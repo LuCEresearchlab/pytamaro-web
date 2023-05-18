@@ -18,6 +18,8 @@ import {
 } from '@mui/icons-material';
 import OutputArea from './OutputArea';
 import { CodeCellState } from '../src/localStorage/schema';
+import DocumentationStripe from './DocumentationStripe';
+import { ActivityVariant } from '../src/schemas/activitySchema';
 
 const StaleOutputBadge = styled(Badge)<BadgeProps>(() => ({
   '& .MuiBadge-badge': {
@@ -110,7 +112,7 @@ export function MoreOptions({ codeCellState, onShowHideOutput, onReset } :
 
 export default function CodeCell({
   codeCellState, onSourceChanged, onExecutionRequested, onOutputAreaToggled,
-  onReset, firstLineNumber,
+  onReset, firstLineNumber, activityVariant,
 } :
 { codeCellState : CodeCellState,
   onSourceChanged: (newSource: string) => void,
@@ -118,6 +120,7 @@ export default function CodeCell({
   onOutputAreaToggled: () => void,
   onReset: () => void,
   firstLineNumber : number,
+  activityVariant: ActivityVariant,
 }) {
   const theme = useTheme();
 
@@ -139,7 +142,6 @@ export default function CodeCell({
     };
     editor.onDidContentSizeChange(updateHeight);
   };
-
   const executionError = codeCellState.executionResponse?.type === 'error';
   const executing = codeCellState.executionInProgress;
   const executionFinished = codeCellState.outputSynced;
@@ -155,6 +157,7 @@ export default function CodeCell({
   }
   return (
     <Paper elevation={4}>
+      <DocumentationStripe source={codeCellState.source} activityVariant={activityVariant} />
       <Card>
         <CardContent>
           <Editor

@@ -12,14 +12,22 @@ import useLocalProfile from '../../src/localStorage/useLocalProfile';
 import { EventName, storeDbEvent } from '../../src/storeDbEvent';
 import { ActivityVariant } from '../../src/schemas/activitySchema';
 
-export default function PyTamaroAPI({ name, activityVariant } :
-{ name: string, activityVariant: ActivityVariant }) {
+export default function PyTamaroAPI({
+  name, language = undefined, activityVariant, smallerFont = false,
+} :
+{ name: string,
+  language?: string | undefined,
+  activityVariant: ActivityVariant,
+  smallerFont?: boolean
+}) {
+  // When not provided explicitly, the language is inferred from the activity variant.
+  const nameWithLang = `${language || activityVariant.language}.${name}`;
+  const nameInfo = names[nameWithLang];
+
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [timeoutId, setTimeoutId] = useState<ReturnType<typeof setTimeout>>();
   const { metadata } = useLocalProfile();
-  const nameWithLang = `${activityVariant.language}.${name}`;
-  const nameInfo = (names as any)[nameWithLang];
 
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -76,6 +84,7 @@ export default function PyTamaroAPI({ name, activityVariant } :
         onMouseLeave={handlePopoverClose}
         style={{
           color: theme.pytamaro.redColor,
+          fontSize: smallerFont ? '0.8em' : '1em',
           fontFamily: theme.pytamaro.monospaceFontFamily,
         }}
       >

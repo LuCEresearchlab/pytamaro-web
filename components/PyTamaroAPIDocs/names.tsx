@@ -38,7 +38,12 @@ for module in modules:
 print(json.dumps(API, indent=2))
 */
 
-const names = {
+interface NameInfo {
+  fqname: string;
+  url: string;
+}
+
+const names : Record<string, NameInfo> = {
   'en.Color': {
     fqname: 'pytamaro.color.Color',
     url: 'English/colors',

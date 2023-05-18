@@ -22,10 +22,15 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx",
-    "src/tools/notebooksGenerator.js"
+    "**/*.tsx"
   ],
   "exclude": [
     "node_modules"
-  ]
+  ],
+  "ts-node": {
+    "esm": true,
+    "moduleTypes": {
+      "src/**": "esm",
+    }
+  }
 }

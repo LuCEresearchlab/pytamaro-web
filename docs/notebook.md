@@ -1,5 +1,16 @@
 # How to Write a Notebook for an Activity
 
+## Python Code
+All the Python code written in notebooks cells should at least parse (i.e., there should be no syntax errors).
+This includes the Python code that purposefully might have "holes" for learners to fill in.
+You can use an ellipsis (`...`) as a placeholder, e.g. `return ...`.
+
+The platform automatically checks the validity of all Python cells before building the application.
+You can run the same check and see possible errors using:
+```sh
+npx ts-node tools/checkNotebookSourceCode.mts`
+```
+
 ## Images
 
 There are three ways to include an image in your activity:

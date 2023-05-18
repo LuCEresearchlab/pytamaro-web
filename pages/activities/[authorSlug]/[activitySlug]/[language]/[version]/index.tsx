@@ -209,6 +209,7 @@ export default function NotebookPage({
                   onOutputAreaToggled={() => handleToggleOutputArea(cellIdx)}
                   onReset={() => handleResetSingleCell(cellIdx)}
                   firstLineNumber={firstLineNumber}
+                  activityVariant={activityVariant}
                 />
               );
             })}
