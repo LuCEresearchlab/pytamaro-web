@@ -23,6 +23,8 @@ const nextConfig = {
     if (!dev && isServer) {
       config.output.webassemblyModuleFilename = "chunks/[id].wasm";
       config.plugins.push(new WasmChunksFixPlugin());
+      // Generate wasm module in ".next/server" for SSR & SSG
+      config.output.webassemblyModuleFilename = './../static/wasm/[modulehash].wasm'
     }
 
     return config;
