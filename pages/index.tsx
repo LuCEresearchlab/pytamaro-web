@@ -98,9 +98,9 @@ export default function Home() {
           justifyContent="center"
           marginY={{ xs: 6, md: 8 }}
         >
-          <Fab variant="extended" color="primary" href={activitiesByAuthorPathname('luce')} sx={{ p: 3, fontSize: 16 }}>
+          <Fab variant="extended" color="primary" href={activitiesByAuthorPathname('luce')} sx={{ md: { p: 3 } }}>
             <SchoolIcon sx={{ mr: 2 }} />
-            Learn with 50+ Activities
+            <Typography variant="inherit" fontSize={{ xs: '.9rem', md: '1rem' }}>Start learning with 50+ activities</Typography>
           </Fab>
         </Box>
         <Stack
