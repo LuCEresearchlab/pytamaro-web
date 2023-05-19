@@ -29,6 +29,7 @@
   ],
   "ts-node": {
     "esm": true,
+    "experimentalSpecifierResolution": "node",
     "moduleTypes": {
       "src/**": "esm",
     }

@@ -1,13 +1,13 @@
 import fs from 'fs';
 import path from 'path';
-import { start, parse } from './parser-nodejs/parser.js';
+import { parse } from '../src/parser/parser';
 import { JupyterCell } from '../src/schemas/activitySchema';
-import { joinLines } from '../src/sourceUtils.js';
+import { joinLines } from '../src/sourceUtils';
+import { isCodeCell } from '../src/notebook';
 import { DATA_DIR, ACTIVITIES_DIR } from './utils.mjs';
 
 async function main() {
   let errors = 0;
-  start()
   // List all authors
   const authorSlugs = fs.readdirSync(DATA_DIR, { withFileTypes: true })
     .filter((item) => item.isDirectory())
@@ -33,7 +33,7 @@ async function main() {
       notebookFiles.forEach(async (notebookFile) => {
         const notebookPath = path.join(activityPath, notebookFile.name);
         const notebookContent = JSON.parse(fs.readFileSync(notebookPath, 'utf-8'));
-        const sourceCodeCells = notebookContent.cells.filter((cell: JupyterCell) => cell.cell_type === 'code')
+        const sourceCodeCells = notebookContent.cells.filter(isCodeCell)
           .map((cell: JupyterCell) => joinLines(cell.source));
         sourceCodeCells.forEach((sourceCodeCell: string, idx: number) => {
           try {

@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "npx ts-node tools/checkNotebookSourceCode.mts && npx ts-node tools/createNotebookAssets.mts",
+    "prebuild": "NODE_OPTIONS=--experimental-wasm-modules npx ts-node tools/checkNotebookSourceCode.mts && npx ts-node tools/createNotebookAssets.mts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "cypress": "cypress open",
-    "build-rust-parser": "wasm-pack build tools/parser --target web --out-dir ../../src/parser && wasm-pack build tools/parser --target nodejs --out-dir ../../tools/parser-nodejs && rm src/parser/.gitignore && rm tools/parser-nodejs/.gitignore"
+    "build-rust-parser": "wasm-pack build tools/parser --target bundler --out-dir ../../src/parser && rm src/parser/.gitignore"
   },
   "dependencies": {
     "@emotion/cache": "^11.10.5",

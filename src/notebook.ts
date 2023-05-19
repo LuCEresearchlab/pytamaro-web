@@ -10,14 +10,18 @@ const KNOWN_PREFIXES = [
   STUDENT_TEACHER_CELL_PREFIX,
 ];
 
-type User = 'teacher' | 'student';
+export type User = 'teacher' | 'student';
 
-function cellsVisibleToUser(
+export function isCodeCell(cell: JupyterCell) {
+  return cell.cell_type === 'code';
+}
+
+export function cellsVisibleToUser(
   cells: JupyterCell[],
   user: User,
 ) {
   return cells.filter((cell) => {
-    if (cell.cell_type !== 'code') {
+    if (!isCodeCell(cell)) {
       // Only code cells can be hidden
       return true;
     }

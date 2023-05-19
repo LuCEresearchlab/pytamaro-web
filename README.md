@@ -175,6 +175,5 @@ Note: since `isolatedModules` is set, the file should contain some import or exp
 The Python parser in `tools/parser` is a Rust library
 that leverages [RustPython's Parser](https://github.com/RustPython/Parser)
 and is compiled to WebAssembly using [`wasm-pack`](https://rustwasm.github.io/wasm-pack/).
-Pre-built ESM JavaScript files (for the browser) are already included in this repository at `src/parser`.
-Pre-built CommonJS JavaScript files (for Node.js) are already included in this repository at `tools/parser-nodejs`.
+Pre-built JavaScript files (for a bundler, usable both by the browser and by Node.js) are already included in this repository at `src/parser`.
 To rebuild the parser, install a Rust toolchain and run `npm run build-rust-parser`.
