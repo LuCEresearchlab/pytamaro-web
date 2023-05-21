@@ -2,7 +2,6 @@ import { Activity } from './activitySchema';
 
 export interface RawCurriculumActivity {
   id: string,
-  activityRequirements: string[][],
   prerequisites: string[],
   learningObjectives: string[],
 }
@@ -11,9 +10,14 @@ export interface CurriculumActivity extends RawCurriculumActivity {
   activity: Activity,
 }
 
-export interface CurriculumUnit {
-  title: string,
+export interface CurriculumStep {
   activities: CurriculumActivity[],
+  isOptional?: boolean,
+}
+
+export interface CurriculumUnit {
+  title?: string,
+  steps: CurriculumStep[],
 }
 
 export interface CurriculumCompetency {

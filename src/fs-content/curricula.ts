@@ -1,8 +1,13 @@
 import path from 'path';
 import { readdir, readFile } from 'fs/promises';
 import { DATA_DIR } from './notebooks';
-import { Curriculum, CurriculumUnit, RawCurriculumActivity } from '../schemas/curriculumSchema';
-import { variantInfo, readActivity } from './activities';
+import {
+  Curriculum,
+  CurriculumStep,
+  CurriculumUnit,
+  RawCurriculumActivity,
+} from '../schemas/curriculumSchema';
+import { readActivity } from './activities';
 
 export const CURRICULA_DIR = 'curricula';
 const CURRICULUM_EXT = '.json';
@@ -15,16 +20,22 @@ async function getCurriculumInfo(authorSlug: string, curriculumSlug: string) {
     content.units.map(
       async (unit: CurriculumUnit) => ({
         ...unit,
-        activities: await Promise.all(unit.activities.map(
-          async (curriculumAct: RawCurriculumActivity) => {
-            const [thisAuthorSlug, activitySlug, language] = curriculumAct.id.split('/');
-            return {
-              ...curriculumAct,
-              activity: await readActivity(thisAuthorSlug, activitySlug),
-              variant: await variantInfo(thisAuthorSlug, activitySlug, language),
-            };
-          },
-        )),
+        steps: await Promise.all(
+          unit.steps.map(
+            async (step: CurriculumStep) => ({
+              ...step,
+              activities: await Promise.all(step.activities.map(
+                async (curriculumAct: RawCurriculumActivity) => {
+                  const [thisAuthorSlug, activitySlug] = curriculumAct.id.split('/');
+                  return {
+                    ...curriculumAct,
+                    activity: await readActivity(thisAuthorSlug, activitySlug),
+                  };
+                },
+              )),
+            }),
+          ),
+        ),
       }),
     ),
   );

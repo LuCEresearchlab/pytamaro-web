@@ -1,16 +1,16 @@
 import {
   Box,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
 import ReactFlow, {
-  Controls,
-  Edge, Node,
+  Edge,
+  Node,
 } from 'reactflow';
-import ELK, { ElkExtendedEdge, ElkLabel, ElkNode } from 'elkjs';
-import ActivityNode from './ActivityNode';
-import SumNode from './SumNode';
-import UnitNode from './UnitNode';
-import { CurriculumActivity, CurriculumUnit } from '../../src/schemas/curriculumSchema';
+import ActivityNode, { ActivityNodeData } from './ActivityNode';
+import InfoNode from './InfoNode';
+import TitleNode from './TitleNode';
+import OptionalActivitiesNode from './OptionalActivitiesNode';
+import JoinNode from './JoinNode';
+import { CurriculumUnit } from '../../src/schemas/curriculumSchema';
 
 import 'reactflow/dist/style.css';
 
@@ -23,10 +23,14 @@ const nodeOptions = {
   focusable: false,
 };
 const edgeOptions = {
+  type: 'smoothstep',
   deletable: false,
   focusable: false,
   markerEnd: {
-    type: 'arrowclosed',
+    type: 'arrow',
+    height: 8,
+    width: 8,
+    strokeWidth: 2,
   },
   style: {
     strokeWidth: 10,
@@ -34,16 +38,30 @@ const edgeOptions = {
 };
 const nodeTypes = {
   activity: ActivityNode,
-  sum: SumNode,
-  unit: UnitNode,
+  join: JoinNode,
+  info: InfoNode,
+  title: TitleNode,
+  optional: OptionalActivitiesNode,
 };
 const nodeTypeDimensions = {
   activity: {
     width: 400,
     height: 400,
   },
-  sum: {
+  join: {
     width: 67,
+    height: 67,
+  },
+  info: {
+    width: 200,
+    height: 67,
+  },
+  title: {
+    width: 1000,
+    height: 67,
+  },
+  optional: {
+    width: 300,
     height: 67,
   },
 };
@@ -51,263 +69,223 @@ const rfStyle = {
   backgroundColor: 'primary.main',
 };
 
-function activitiesToElkNodes(activities: CurriculumActivity[]) {
-  return activities.flatMap(
-    (a) => {
-      const activityNodeId = a.id;
-      return [
-        {
-          id: activityNodeId,
-          width: nodeTypeDimensions.activity.width,
-          height: nodeTypeDimensions.activity.height,
-        } as ElkNode,
-        ...a.activityRequirements.flatMap(
-          (asum, sumIndex) => {
-            if (asum.length > 1) {
-              return {
-                id: `${activityNodeId}-sum-${sumIndex}`,
-                width: nodeTypeDimensions.sum.width,
-                height: nodeTypeDimensions.sum.height,
-              } as ElkNode;
-            }
-            return [];
-          },
-        ),
-      ];
-    },
-  );
+interface IncompleteEdge {
+  source: string;
 }
 
-function activitiesToElkEdges(activities: CurriculumActivity[]) {
-  return activities.flatMap(
-    (a) => {
-      const activityNodeId = a.id;
-      return a.activityRequirements.flatMap(
-        (asum, sumIndex) => {
-          if (asum.length > 1) {
-            return [
-              {
-                id: `${activityNodeId}-edge-${sumIndex}`,
-                sources: [`${activityNodeId}-sum-${sumIndex}`],
-                targets: [activityNodeId],
-              } as ElkExtendedEdge,
-              ...asum.map(
-                (aterm, termIndex) => ({
-                  id: `${activityNodeId}-edge-${sumIndex}-${termIndex}`,
-                  sources: [aterm],
-                  targets: [`${activityNodeId}-sum-${sumIndex}`],
-                } as ElkExtendedEdge),
-              ),
-            ];
-          }
-          if (asum.length === 1) {
-            return {
-              id: `${activityNodeId}-edge-${sumIndex}`,
-              sources: [asum[0]],
-              targets: [activityNodeId],
-            } as ElkExtendedEdge;
-          }
-          // asum.length === 0
-          return [];
-        },
-      );
-    },
-  );
-}
-
-function unitsToElkNodes(units: CurriculumUnit[]) {
-  if (units.length === 1) {
-    return activitiesToElkNodes(units[0].activities);
-  }
-  return units.map((unit, idx) => (
-    {
-      id: `${idx}`,
-      children: activitiesToElkNodes(unit.activities),
-      layoutOptions: {
-        'org.eclipse.elk.spacing.nodeNode': '100',
-        'org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers': '100',
-      },
-      labels: [
-        {
-          text: unit.title,
-          height: 200,
-          layoutOptions: {
-            'nodeLabels.placement': 'INSIDE V_TOP H_CENTER',
-          },
-        } as ElkLabel,
-      ],
-    } as ElkNode
-  ));
-}
-
-function unitsToElkEdges(units: CurriculumUnit[]) {
-  return units.flatMap(
-    (unit) => activitiesToElkEdges(unit.activities),
-  );
-}
-
-async function layoutElkElements(elkNodes: ElkNode[], elkEdges: ElkExtendedEdge[]) {
-  const elk = new ELK();
-  const graph : ElkNode = {
-    id: 'root',
-    children: elkNodes,
-    edges: elkEdges,
-    layoutOptions: {
-      'org.eclipse.elk.direction': 'DOWN',
-      'org.eclipse.elk.hierarchyHandling': 'INCLUDE_CHILDREN',
-      'org.eclipse.elk.algorithm': 'org.eclipse.elk.layered',
-      'org.eclipse.elk.edgeRouting': 'SPLINES',
-      'org.eclipse.elk.spacing.nodeNode': '100',
-      'org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers': '100',
-    },
-  };
-  const newGraph = await elk.layout(graph);
-  const {
-    width, height, children: nodes, edges,
-  } = newGraph;
-  return {
-    width: width || 0,
-    height: height || 0,
-    nodes: nodes || [],
-    edges: edges || [],
-  };
-}
-
-function createFlowNodesFromActivities(
-  parentNode: string | undefined,
-  activities: CurriculumActivity[],
-  elkNodes: ElkNode[],
+function getFlowElements(
+  units: CurriculumUnit[],
   completedActivityVariantIds: string[],
+  layerSpacing: number,
 ) {
-  const nodes = elkNodes.map(
-    (elkNode) => {
-      const curriculumAct = activities.find((a) => a.id === elkNode.id);
-      if (!curriculumAct) {
-        return {
-          ...nodeOptions,
-          id: elkNode.id,
-          type: 'sum',
-          data: nodeTypeDimensions.sum,
-          position: {
-            x: elkNode.x,
-            y: elkNode.y,
-          },
-          parentNode,
-          extent: 'parent',
-        } as Node;
-      }
-      const isCompleted = completedActivityVariantIds.includes(curriculumAct.id);
-      const isUnlocked = curriculumAct.activityRequirements.every(
-        (asum) => asum.some(
-          (aterm) => completedActivityVariantIds.includes(aterm),
-        ),
-      );
-      return {
-        ...nodeOptions,
-        id: elkNode.id,
-        type: 'activity',
+  // calculate width
+  const titleWidth = nodeTypeDimensions.title.width;
+  const maxNumActivitiesInStep = Math.max(
+    ...units.flatMap((u) => u.steps.flatMap((s) => s.activities.length)),
+  );
+  const maxStepWidth = maxNumActivitiesInStep * nodeTypeDimensions.activity.width
+    + (maxNumActivitiesInStep - 1) * layerSpacing;
+  const width = Math.max(maxStepWidth, titleWidth);
+
+  let bottom = 0;
+  let incompleteEdges = [] as IncompleteEdge[];
+  let previousStepIsCompleted = true;
+  const nodes = [] as Node[];
+  const edges = [] as Edge[];
+
+  let id = 'start';
+  // push start node
+  nodes.push({
+    id,
+    type: 'info',
+    data: {
+      ...nodeTypeDimensions.info,
+      type: 'start',
+    },
+    position: {
+      x: width / 2 - nodeTypeDimensions.info.width / 2,
+      y: 0,
+    },
+  } as Node);
+  // update variables
+  bottom += nodeTypeDimensions.info.height + layerSpacing;
+  incompleteEdges = [{
+    source: id,
+  }];
+
+  units.forEach((unit, unitIdx) => {
+    if (unit.title !== undefined) {
+      id = `${unitIdx}`;
+      // push unit-title node
+      nodes.push({
+        id,
+        type: 'title',
         data: {
-          id: curriculumAct.id,
-          activity: curriculumAct.activity,
-          isCompleted,
-          isUnlocked,
-          width: nodeTypeDimensions.activity.width,
-          height: nodeTypeDimensions.activity.height,
+          ...nodeTypeDimensions.title,
+          title: unit.title,
         },
         position: {
-          x: elkNode?.x,
-          y: elkNode?.y,
+          x: width / 2 - nodeTypeDimensions.title.width / 2,
+          y: bottom,
         },
-        parentNode,
-        extent: 'parent',
-      } as Node;
-    },
-  );
-  return nodes;
-}
-
-function createFlowElements(
-  units: CurriculumUnit[],
-  elkNodes: ElkNode[],
-  elkEdges: ElkExtendedEdge[],
-  completedActivityVariantIds: string[],
-) {
-  const nodes = units.length === 1 ? createFlowNodesFromActivities(
-    undefined,
-    units[0].activities,
-    elkNodes,
-    completedActivityVariantIds,
-  ) : elkNodes.flatMap(
-    (elkNode) => {
-      const unit = units[+elkNode.id];
-      return [
-        {
-          ...nodeOptions,
-          id: elkNode.id,
-          type: 'unit',
+      } as Node);
+      // push in-edges
+      edges.push(
+        ...incompleteEdges.map((incompleteEdge, idx) => ({
+          ...incompleteEdge,
+          id: `${id}-in-edge-${idx}`,
+          target: id,
+        } as Edge)),
+      );
+      // update variables
+      bottom += nodeTypeDimensions.title.height + layerSpacing;
+      incompleteEdges = [{
+        source: id,
+      }];
+    }
+    unit.steps.forEach((step, stepIdx) => {
+      let currentStepIsCompleted = false;
+      const activityInfo = step.activities.map((activity) => {
+        const isCompleted = completedActivityVariantIds.includes(activity.id);
+        const isUnlocked = previousStepIsCompleted;
+        currentStepIsCompleted = currentStepIsCompleted || (isCompleted && isUnlocked);
+        return {
+          ...nodeTypeDimensions.activity,
+          id: activity.id,
+          activity: activity.activity,
+          isCompleted,
+          isUnlocked,
+        } as ActivityNodeData;
+      });
+      if (step.isOptional) {
+        id = `optional-${unitIdx}-${stepIdx}`;
+        // push optional node
+        nodes.push({
+          id,
+          type: 'optional',
           data: {
-            label: unit.title,
-            width: elkNode.width,
-            height: elkNode.height,
+            ...nodeTypeDimensions.optional,
+            activityInfo,
           },
           position: {
-            x: elkNode.x,
-            y: elkNode.y,
+            x: width / 2 - nodeTypeDimensions.optional.width / 2,
+            y: bottom,
           },
-        } as Node,
-        ...createFlowNodesFromActivities(
-          elkNode.id,
-          unit.activities,
-          elkNode.children || [],
-          completedActivityVariantIds,
-        ),
-      ];
+        } as Node);
+        // push in-edges
+        edges.push(
+          ...incompleteEdges.map((incompleteEdge, idx) => ({
+            ...incompleteEdge,
+            id: `${id}-in-edge-${idx}`,
+            target: id,
+          } as Edge)),
+        );
+        // update variables
+        bottom += nodeTypeDimensions.optional.height + layerSpacing;
+        incompleteEdges = [{
+          source: id,
+        }];
+        return;
+      }
+      const numActivities = step.activities.length;
+      if (incompleteEdges.length > 1 && numActivities > 1) {
+        id = `${unitIdx}-${stepIdx}`;
+        // push circle node
+        nodes.push({
+          id,
+          type: 'join',
+          data: nodeTypeDimensions.join,
+          position: {
+            x: width / 2 - nodeTypeDimensions.join.width / 2,
+            y: bottom,
+          },
+        } as Node);
+        // push in-edges
+        edges.push(
+          ...incompleteEdges.map((incompleteEdge, idx) => ({
+            ...incompleteEdge,
+            id: `${id}-in-edge-${idx}`,
+            target: id,
+          } as Edge)),
+        );
+        // update variables
+        bottom += nodeTypeDimensions.join.height + layerSpacing;
+        incompleteEdges = [{
+          source: id,
+        }];
+      }
+      const activityWidth = numActivities * nodeTypeDimensions.activity.width;
+      const spacingWidth = (numActivities - 1) * layerSpacing;
+      const left = width / 2 - activityWidth / 2 - spacingWidth / 2;
+      const nextIncompleteEdges = [] as IncompleteEdge[];
+      activityInfo.forEach((data, activityIdx) => {
+        id = `${unitIdx}-${stepIdx}-${activityIdx}`;
+        // push activity node
+        nodes.push({
+          id,
+          type: 'activity',
+          data,
+          position: {
+            x: left + activityIdx * (nodeTypeDimensions.activity.width + layerSpacing),
+            y: bottom,
+          },
+        } as Node);
+        // push in-edges
+        edges.push(
+          ...incompleteEdges.map((incompleteEdge, idx) => ({
+            ...incompleteEdge,
+            id: `${id}-in-edge-${idx}`,
+            target: id,
+          } as Edge)),
+        );
+        // update variables
+        nextIncompleteEdges.push({
+          source: id,
+        });
+      });
+      // update variables
+      bottom += nodeTypeDimensions.activity.height + layerSpacing;
+      incompleteEdges = nextIncompleteEdges;
+      previousStepIsCompleted = currentStepIsCompleted;
+    });
+  });
+  id = 'end';
+  // push end node
+  nodes.push({
+    id,
+    type: 'info',
+    data: {
+      ...nodeTypeDimensions.info,
+      type: 'end',
     },
+    position: {
+      x: width / 2 - nodeTypeDimensions.info.width / 2,
+      y: bottom,
+    },
+  } as Node);
+  // push in-edges
+  edges.push(
+    ...incompleteEdges.map((incompleteEdge, idx) => ({
+      ...incompleteEdge,
+      id: `${id}-in-edge-${idx}`,
+      target: id,
+    } as Edge)),
   );
-  const edges = elkEdges.map(
-    (elkEdge) => ({
-      ...edgeOptions,
-      id: elkEdge.id,
-      source: elkEdge.sources[0],
-      target: elkEdge.targets[0],
-    } as Edge),
-  );
+  // update variables
+  bottom += nodeTypeDimensions.info.height;
   return {
-    nodes,
-    edges,
+    nodes: nodes.map((node) => ({ ...nodeOptions, ...node } as Node)),
+    edges: edges.map((edge) => ({ ...edgeOptions, ...edge } as Edge)),
+    width,
+    height: bottom,
   };
 }
 
 export default function CurriculumFlow({ units, completedActivityVariantIds }
 : { units : CurriculumUnit[], completedActivityVariantIds : string[] }) {
-  const [width, setWidth] = useState(100);
-  const [height, setHeight] = useState(100);
-  const [nodes, setNodes] = useState([] as Node[]);
-  const [edges, setEdges] = useState([] as Edge[]);
-
-  useEffect(() => {
-    const setFlowElements = async () => {
-      const elkNodes = unitsToElkNodes(units);
-      const elkEdges = unitsToElkEdges(units);
-      const {
-        width: newWidth,
-        height: newHeight,
-        nodes: newElkNodes,
-        edges: newElkEdges,
-      } = await layoutElkElements(elkNodes, elkEdges);
-      setWidth(newWidth);
-      setHeight(newHeight);
-      const {
-        nodes: newNodes,
-        edges: newEdges,
-      } = createFlowElements(units, newElkNodes, newElkEdges, completedActivityVariantIds);
-      setNodes(newNodes);
-      setEdges(newEdges);
-    };
-    if (nodes.length === 0) {
-      setFlowElements();
-    }
-  }, [nodes, units, completedActivityVariantIds]);
+  const {
+    nodes, edges, width, height,
+  } = getFlowElements(units, completedActivityVariantIds, 100);
 
   return (
     <Box
@@ -329,15 +307,12 @@ export default function CurriculumFlow({ units, completedActivityVariantIds }
           edges={edges}
           nodeTypes={nodeTypes}
           style={rfStyle}
-          minZoom={0.1}
           panOnDrag={false}
           zoomOnScroll={false}
           zoomOnPinch={false}
           zoomOnDoubleClick={false}
           preventScrolling={false}
-        >
-          <Controls />
-        </ReactFlow>
+        />
       </Box>
     </Box>
   );

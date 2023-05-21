@@ -1,23 +1,17 @@
 import {
   Stack,
-  ToggleButton,
-  Tooltip,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
-import ViewCompactIcon from '@mui/icons-material/ViewCompact';
 import NavigationBar from '../../../../components/NavigationBar';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
 import { Curriculum } from '../../../../src/schemas/curriculumSchema';
 import { curriculumPathname } from '../../../../src/urlUtils';
 import listAuthors from '../../../../src/fs-content/authors';
 import CurriculumFlow from '../../../../components/Curriculum/CurriculumFlow';
-import CurriculumSeq from '../../../../components/Curriculum/CurriculumSeq';
 import useLocalProfile from '../../../../src/localStorage/useLocalProfile';
 
 export default function CurriculumPage({ curriculum }:
 { curriculum : Curriculum }) {
-  const [compactView, setCompactView] = useState(false);
   const { metadata } = useLocalProfile();
   const completedActivityVariantIds = metadata.activities
     .filter((a) => a.completed)
@@ -25,34 +19,13 @@ export default function CurriculumPage({ curriculum }:
 
   return (
     <Stack spacing={2}>
-      <NavigationBar>
-        <Tooltip title="Compact View">
-          <ToggleButton
-            color="neutral"
-            value="compact"
-            selected={compactView}
-            onChange={() => {
-              setCompactView(!compactView);
-            }}
-          >
-            <ViewCompactIcon />
-          </ToggleButton>
-        </Tooltip>
-      </NavigationBar>
+      <NavigationBar />
       <Typography variant="h2" marginY={3} align="center">{curriculum.title}</Typography>
       <Typography variant="h5" marginY={3} align="center">{curriculum.description}</Typography>
-      {compactView && (
-        <CurriculumSeq
-          units={curriculum.units}
-          completedActivityVariantIds={completedActivityVariantIds}
-        />
-      )}
-      {!compactView && (
-        <CurriculumFlow
-          units={curriculum.units}
-          completedActivityVariantIds={completedActivityVariantIds}
-        />
-      )}
+      <CurriculumFlow
+        units={curriculum.units}
+        completedActivityVariantIds={completedActivityVariantIds}
+      />
     </Stack>
   );
 }

@@ -1,5 +1,5 @@
 import {
-  AddCircleOutline,
+  Circle,
 } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { Handle, NodeProps, Position } from 'reactflow';
@@ -9,7 +9,7 @@ type NodeData = {
   height: number,
 };
 
-export default function SumNode({ data }: NodeProps<NodeData>) {
+export default function JoinNode({ data }: NodeProps<NodeData>) {
   const {
     width, height,
   } = data;
@@ -17,9 +17,9 @@ export default function SumNode({ data }: NodeProps<NodeData>) {
     <>
       <Handle type="target" position={Position.Top} isConnectable={false} />
       <Box sx={{ width, height }}>
-        <AddCircleOutline
+        <Circle
           sx={{
-            width: '100%', height: '100%', color: 'grey',
+            width: '100%', height: '100%', color: '#aed9e7',
           }}
         />
       </Box>
