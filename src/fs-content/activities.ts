@@ -1,7 +1,7 @@
 import { readFile, readdir } from 'fs/promises';
 import path from 'path';
 import {
-  Activity, ActivityUse, LanguageWithLatestVersion, NotebookVariant,
+  Activity, ActivityUse, ActivityVariant, LanguageWithLatestVersion, NotebookVariant,
 } from '../schemas/activitySchema';
 import { ACTIVITIES_DIR, DATA_DIR, notebookFileNames } from './notebooks';
 
@@ -30,6 +30,19 @@ export async function variantInfo(authorSlug: string, activitySlug: string, lang
   return activity.variants.find((v) => v.language === language) as NotebookVariant;
 }
 
+export function latestVariant(
+  authorSlug: string,
+  activitySlug: string,
+  variant: NotebookVariant,
+) : ActivityVariant {
+  return {
+    authorSlug,
+    activitySlug,
+    language: variant.language,
+    version: variant.latestVersion,
+  };
+}
+
 export async function findLanguages(authorSlug: string, activitySlug: string)
   : Promise<LanguageWithLatestVersion[]> {
   const notebooks = await notebookFileNames(authorSlug, activitySlug);
@@ -52,6 +65,11 @@ export async function listActivities(authorSlug: string) : Promise<Activity[]> {
   return Promise.all(activitySlugs.map(
     (activitySlug) => readActivity(authorSlug, activitySlug),
   ));
+}
+
+export async function listVisibleActivities(authorSlug: string) : Promise<Activity[]> {
+  const activities = await listActivities(authorSlug);
+  return activities.filter((activity) => activity.visibility === 'featured' || activity.visibility === 'visible');
 }
 
 export async function getActivityUses(

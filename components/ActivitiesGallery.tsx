@@ -29,7 +29,13 @@ export default function ActivitiesGallery({
         );
         const isDraft = activity.visibility === 'draft';
         return (
-          <Grid md={compactView ? 3 : 4} lg={compactView ? 2 : 3} key={activity.slug}>
+          <Grid
+            xs={12}
+            sm={6}
+            md={compactView ? 3 : 4}
+            lg={compactView ? 2 : 3}
+            key={activity.slug}
+          >
             <Paper elevation={8}>
               <Card>
                 <CardActionArea

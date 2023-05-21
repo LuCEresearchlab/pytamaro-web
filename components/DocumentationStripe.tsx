@@ -1,30 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 // eslint-disable-next-line import/no-relative-packages
-import init, { imported_names } from '../src/parser/parser';
+import { PythonName, imported_names } from '../src/parser/parser';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import PyTamaroAPI from './PyTamaroAPIDocs/PyTamaroAPI';
 import PyTamaroNames from './PyTamaroAPIDocs/names';
 
 export default function DocumentationStripe({ source, activityVariant } :
 { source: string, activityVariant: ActivityVariant }) {
-  const [names, setNames] = useState<string[][] | undefined>([]);
-  const [loaded, setLoaded] = useState(false);
+  const [names, setNames] = useState<PythonName[] | undefined>([]);
   useEffect(() => {
-    (async () => {
-      await init();
-      setLoaded(true);
-    })();
-  }, []);
-  useEffect(() => {
-    if (loaded) {
-      try {
-        setNames(imported_names(source));
-      } catch {
-        setNames(undefined);
-      }
+    try {
+      setNames(imported_names(source));
+    } catch {
+      setNames(undefined);
     }
-  }, [loaded, source]);
+  }, [source]);
   const moduleToLanguage: Record<string, string> = {
     // eslint-disable-next-line quote-props
     'pytamaro': 'en',
@@ -32,8 +23,8 @@ export default function DocumentationStripe({ source, activityVariant } :
     'pytamaro.de': 'de',
   };
   const key = (module: string, name: string) => `${moduleToLanguage[module]}.${name}`;
-  const knownNames = names?.filter(([module]) => module in moduleToLanguage)
-    .filter(([module, name]) => key(module, name) in PyTamaroNames);
+  const knownNames = names?.filter(({ module }) => module in moduleToLanguage)
+    .filter(({ module, name }) => key(module, name) in PyTamaroNames);
   return (
     <Box>
       <Stack direction="row" spacing={1} alignItems="baseline" sx={{ overflowX: 'auto' }} marginLeft={1}>
@@ -42,7 +33,7 @@ export default function DocumentationStripe({ source, activityVariant } :
             Docs:
           </Typography>
         )}
-        {knownNames?.map(([module, name], idx) => (
+        {knownNames?.map(({ module, name }, idx) => (
           <PyTamaroAPI
               // eslint-disable-next-line react/no-array-index-key
             key={`${key(module, name)}-${idx}`}

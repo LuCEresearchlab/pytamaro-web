@@ -2,20 +2,35 @@ use wasm_bindgen::prelude::*;
 extern crate console_error_panic_hook;
 use rustpython_parser::parse_program;
 use rustpython_parser::ast::{Visitor, StmtImportFrom, Stmt};
+use serde::{Deserialize, Serialize};
 
 #[wasm_bindgen(start)]
 pub fn start() {
     console_error_panic_hook::set_once();
 }
 
+#[wasm_bindgen(typescript_custom_section)]
+const TYPES: &'static str = r#"
+export interface PythonName {
+    module: string;
+    name: string;
+};
+"#;
+
+#[derive(Serialize, Deserialize)]
+struct PythonName {
+    module: String,
+    name: String,
+}
+
 struct ImportedNamesCollector {
-    names: Vec<(String, String)>,
+    names: Vec<PythonName>,
 }
 impl Visitor for ImportedNamesCollector {
     fn visit_stmt_ImportFrom(&mut self, node: StmtImportFrom) {
         if let Some(module) = node.module {
             for alias in &node.names {
-                self.names.push((module.to_string(), alias.name.to_string()));
+                self.names.push(PythonName { module: module.to_string(), name: alias.name.to_string() });
             }
         }
     }
