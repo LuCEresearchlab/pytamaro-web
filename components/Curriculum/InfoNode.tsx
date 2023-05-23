@@ -1,5 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import { Handle, NodeProps, Position } from 'reactflow';
+import theme from '../../src/theme';
 
 type NodeData = {
   type: 'start' | 'end';
@@ -25,7 +26,7 @@ export default function InfoNode({ data }: NodeProps<NodeData>) {
           height,
           overflow: 'hidden',
           textOverflow: 'ellipsis',
-          backgroundColor: 'primary.main',
+          backgroundColor: theme.palette.grey[900],
         }}
       >
         <Typography variant="h5" textAlign="center" color="white" noWrap>{type.toUpperCase()}</Typography>

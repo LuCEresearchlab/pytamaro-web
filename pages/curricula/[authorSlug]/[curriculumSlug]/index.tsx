@@ -1,7 +1,9 @@
 import {
+  Container,
   Stack,
   Typography,
 } from '@mui/material';
+import Head from 'next/head';
 import NavigationBar from '../../../../components/NavigationBar';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
 import { Curriculum } from '../../../../src/schemas/curriculumSchema';
@@ -18,15 +20,23 @@ export default function CurriculumPage({ curriculum }:
     .map((a) => a.id);
 
   return (
-    <Stack spacing={2}>
-      <NavigationBar />
-      <Typography variant="h2" marginY={3} align="center">{curriculum.title}</Typography>
-      <Typography variant="h5" marginY={3} align="center">{curriculum.description}</Typography>
-      <CurriculumFlow
-        units={curriculum.units}
-        completedActivityVariantIds={completedActivityVariantIds}
-      />
-    </Stack>
+    <>
+      <Head>
+        <title>{curriculum.title}</title>
+      </Head>
+
+      <Stack spacing={2} alignItems="center">
+        <NavigationBar />
+        <Container maxWidth="md">
+          <Typography variant="h3" marginY={3}>{curriculum.title}</Typography>
+          <Typography variant="subtitle1" marginY={3}>{curriculum.description}</Typography>
+        </Container>
+        <CurriculumFlow
+          units={curriculum.units}
+          completedActivityVariantIds={completedActivityVariantIds}
+        />
+      </Stack>
+    </>
   );
 }
 

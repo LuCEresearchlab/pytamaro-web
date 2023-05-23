@@ -3,13 +3,15 @@ import {
   Box, Stack, Button, Modal, Typography,
 } from '@mui/material';
 import { Handle, NodeProps, Position } from 'reactflow';
-import ActivityCard from '../ActivityCard';
-import { ActivityNodeData } from './ActivityNode';
+import ActivityCard from './ActivityCard';
+import { ActivityNodeData } from './utils';
+import LockedTooltip from './LockedTooltip';
 
 type NodeData = {
   activityInfo: ActivityNodeData[],
   width: number,
   height: number,
+  unlocked: boolean,
 };
 
 const style = {
@@ -32,23 +34,28 @@ export default function OptionalActivitiesNode({ data }: NodeProps<NodeData>) {
   const text = 'optional activities';
 
   const {
-    activityInfo, width, height,
+    activityInfo, width, height, unlocked,
   } = data;
   return (
-    <>
+    <Box sx={{ cursor: unlocked ? 'auto' : 'not-allowed' }}>
       <Handle type="target" position={Position.Top} isConnectable={false} />
-      <Button
-        onClick={handleOpen}
-        variant="contained"
-        color="primary"
-        style={{
-          width, height, overflow: 'hidden', textOverflow: 'ellipsis',
-        }}
-      >
-        <Typography variant="h6">
-          {text.toUpperCase()}
-        </Typography>
-      </Button>
+      <LockedTooltip unlocked={unlocked}>
+        <span>
+          <Button
+            onClick={handleOpen}
+            variant="contained"
+            color="primary"
+            style={{
+              width, height, overflow: 'hidden', textOverflow: 'ellipsis',
+            }}
+            disabled={!unlocked}
+          >
+            <Typography variant="h6">
+              {text.toUpperCase()}
+            </Typography>
+          </Button>
+        </span>
+      </LockedTooltip>
       <Modal
         open={open}
         onClose={handleClose}
@@ -86,6 +93,6 @@ export default function OptionalActivitiesNode({ data }: NodeProps<NodeData>) {
         </Box>
       </Modal>
       <Handle type="source" position={Position.Bottom} isConnectable={false} />
-    </>
+    </Box>
   );
 }

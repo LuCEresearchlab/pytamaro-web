@@ -5,14 +5,15 @@ type NodeData = {
   title: string,
   width: number,
   height: number,
+  unlocked: boolean,
 };
 
 export default function TitleNode({ data }: NodeProps<NodeData>) {
   const {
-    title, width, height,
+    title, width, height, unlocked,
   } = data;
   return (
-    <>
+    <Box sx={{ opacity: unlocked ? 1 : 0.38 }}>
       <Handle type="target" position={Position.Top} isConnectable={false} />
       <Box
         sx={{
@@ -29,6 +30,6 @@ export default function TitleNode({ data }: NodeProps<NodeData>) {
         <Typography variant="h5" textAlign="center" noWrap>{title}</Typography>
       </Box>
       <Handle type="source" position={Position.Bottom} isConnectable={false} />
-    </>
+    </Box>
   );
 }

@@ -1,15 +1,6 @@
 import { Handle, Position, NodeProps } from 'reactflow';
-import ActivityCard from '../ActivityCard';
-import { Activity } from '../../src/schemas/activitySchema';
-
-export type ActivityNodeData = {
-  id: string;
-  activity: Activity;
-  isCompleted: boolean;
-  isUnlocked: boolean;
-  width: number,
-  height: number,
-};
+import ActivityCard from './ActivityCard';
+import { ActivityNodeData } from './utils';
 
 export default function ActivityNode({ data }: NodeProps<ActivityNodeData>) {
   const {
