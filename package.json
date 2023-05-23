@@ -41,11 +41,13 @@
     "react-markdown": "^8.0.3",
     "react-material-ui-carousel": "^3.4.2",
     "react-player": "^2.12.0",
+    "reactflow": "^11.7.0",
     "redis": "^4.5.1",
     "sharp": "^0.31.3",
     "typeit-react": "^2.6.4",
     "use-local-storage-state": "^18.1.2",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "web-worker": "^1.2.0"
   },
   "devDependencies": {
     "@types/node": "18.11.6",

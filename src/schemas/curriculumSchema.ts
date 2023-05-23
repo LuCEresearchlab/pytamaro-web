@@ -1,8 +1,31 @@
-export interface CurriculumActivity {
-  slug: string,
+import { Activity } from './activitySchema';
+
+export interface RawCurriculumActivity {
+  id: string,
   prerequisites: string[],
   learningObjectives: string[],
-  activityRequirements: string[][],
+}
+
+export interface CurriculumActivity extends RawCurriculumActivity {
+  activity: Activity,
+}
+
+export interface CurriculumStep {
+  activities: CurriculumActivity[],
+  isOptional?: boolean,
+}
+
+export interface CurriculumUnit {
+  title?: string,
+  steps: CurriculumStep[],
+}
+
+export interface CurriculumCompetency {
+  id: string,
+  name: string,
+  description: string,
+  longDescription: string,
+  icon: string,
 }
 
 export interface Curriculum {
@@ -10,6 +33,6 @@ export interface Curriculum {
   title: string,
   description: string,
   visibility: 'featured' | 'visible' | 'draft' | 'hidden',
-  competencies: string[],
-  activities: CurriculumActivity[]
+  competencies: CurriculumCompetency[],
+  units: CurriculumUnit[],
 }

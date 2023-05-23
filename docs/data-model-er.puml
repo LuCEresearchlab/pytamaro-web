@@ -33,8 +33,31 @@ entity "Curriculum" as curriculum {
   --
   *title : text
   *description : text
-  *competencies : text[]
-  *activities : slug[]
+  *visibility : text
+  *competencies : slug[]
+  *units : slug[]
+}
+entity "Unit" as unit {
+  *slug : text
+  --
+  *title : text
+  *curriculumActivities : slug[]
+}
+entity "CurriculumActivity" as curriculumactivity {
+  *slug : text
+  --
+  *id : slug
+  *activityRequirements : slug[][]
+  *prerequisites : slug[]
+  *learningObjectives : slug[]
+}
+entity "Competencies" as competencies {
+  *slug : text
+  --
+  *name : text
+  *description : text
+  *longDescription : text
+  *icon : text
 }
 entity "Activity" as activity {
   *slug : text
@@ -52,6 +75,13 @@ author ||--o{ activity
 
 course }o--o{ assignment
 course }o--o{ curriculum
+
 assignment }o--o{ activity
-curriculum }o--o{ activity
+
+curriculum ||--o{ unit
+curriculum ||--o{ competencies
+
+unit ||--o{ curriculumactivity
+
+curriculumactivity }o--|| activity
 @enduml

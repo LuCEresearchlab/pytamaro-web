@@ -1,9 +1,9 @@
 import path from 'path';
 import { readdir, stat } from 'fs/promises';
-import { Author } from '../schemas/activitySchema';
 import { DATA_DIR } from './notebooks';
 import { listActivities } from './activities';
 import { listCurricula } from './curricula';
+import { Author } from '../schemas/authorSchema';
 
 async function getAuthorInfo(authorSlug: string) {
   return {

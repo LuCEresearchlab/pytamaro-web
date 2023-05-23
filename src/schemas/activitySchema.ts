@@ -1,5 +1,4 @@
 import { MDXRemoteSerializeResult } from 'next-mdx-remote';
-import { Curriculum } from './curriculumSchema';
 
 export interface Activity {
   slug: string,
@@ -67,12 +66,6 @@ export interface JupyterCell {
   source: string[],
   attachments?: any,
   cell_type: CellType,
-}
-
-export interface Author {
-  slug: string,
-  activities: Activity[],
-  curricula: Curriculum[],
 }
 
 export function activityVariantId(activityVariant: ActivityVariant) {
