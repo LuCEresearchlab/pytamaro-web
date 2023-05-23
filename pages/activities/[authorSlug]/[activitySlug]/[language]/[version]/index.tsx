@@ -4,19 +4,15 @@ import { MDXRemote } from 'next-mdx-remote';
 import {
   Alert,
   AlertTitle,
-  Box, Button, Stack, Typography,
+  Box, Stack, Typography,
 } from '@mui/material';
-import InfoIcon from '@mui/icons-material/Info';
-import DownloadIcon from '@mui/icons-material/Download';
 import Head from 'next/head';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import CodeCell from '../../../../../../components/CodeCell';
 import NavigationBar from '../../../../../../components/NavigationBar';
 import { asSingleSource, createCodeCell, useLocalActivity } from '../../../../../../src/localStorage/useLocalActivity';
-import { activityAssetPathname, activityPathname, activityVariantPathname } from '../../../../../../src/urlUtils';
+import { activityAssetPathname, activityVariantPathname } from '../../../../../../src/urlUtils';
 import VariantSelector from '../../../../../../components/VariantsSelector';
-import downloadSourceCode from '../../../../../../src/codeDownload';
 import ResponsiveReactPlayer from '../../../../../../components/ResponsiveReactPlayer';
 import PyTamaroAPI from '../../../../../../components/PyTamaroAPIDocs/PyTamaroAPI';
 import NetworkErrorSnackbar from '../../../../../../components/NetworkErrorSnackbar';
@@ -30,6 +26,8 @@ import { findLanguages, findVersions, variantInfo } from '../../../../../../src/
 import getNotebookContent from '../../../../../../src/notebook';
 import listAuthors from '../../../../../../src/fs-content/authors';
 import { countLines } from '../../../../../../src/sourceUtils';
+import ActivityInfoButton from '../../../../../../components/ActivityInfoButton';
+import CodeDownloadButton from '../../../../../../components/CodeDownloadButton';
 
 const userType = 'student';
 
@@ -178,7 +176,7 @@ export default function NotebookPage({
             languages={languages}
           />
           <ResetButton enabled={cellsModified} onReset={handleResetActivity} />
-          <MarkCompletedButton completed={completed} toggleCompleted={toggleCompleted} />
+          <ActivityInfoButton authorSlug={authorSlug} activitySlug={activitySlug} />
         </NavigationBar>
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
         <DataSharingPreferenceDialog />
@@ -215,22 +213,8 @@ export default function NotebookPage({
             })}
         </Container>
         <Stack mt={12} mb={6} direction="row" justifyContent="center" spacing={4}>
-          <Button
-            variant="contained"
-            color="success"
-            startIcon={<DownloadIcon />}
-            onClick={() => downloadSourceCode(asSingleSource(codeCells))}
-          >
-            Download Python Code
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<InfoIcon />}
-            component={Link}
-            href={activityPathname(authorSlug, activitySlug)}
-          >
-            Activity Info
-          </Button>
+          <CodeDownloadButton getSource={() => asSingleSource(codeCells)} />
+          <MarkCompletedButton completed={completed} toggleCompleted={toggleCompleted} />
         </Stack>
       </Box>
     </div>

@@ -92,7 +92,9 @@ export default function Playground({ activitiesWithNames } :
             firstLineNumber={1}
             activityVariant={playgroundActivityVariant}
           />
-          <DownloadCodeButton getSource={() => asSingleSource(codeCells)} />
+          <Box sx={{ display: 'flex', my: 4 }} justifyContent="center">
+            <DownloadCodeButton getSource={() => asSingleSource(codeCells)} />
+          </Box>
           { showRecommendedActivities && (
           <FullWidthAlert
             icon={<TipsAndUpdatesIcon fontSize="inherit" />}
