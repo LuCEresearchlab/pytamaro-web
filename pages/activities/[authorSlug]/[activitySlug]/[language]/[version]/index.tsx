@@ -6,6 +6,7 @@ import {
   AlertTitle,
   Box, Stack, Typography,
 } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import CodeCell from '../../../../../../components/CodeCell';
@@ -28,6 +29,7 @@ import listAuthors from '../../../../../../src/fs-content/authors';
 import { countLines } from '../../../../../../src/sourceUtils';
 import ActivityInfoButton from '../../../../../../components/ActivityInfoButton';
 import CodeDownloadButton from '../../../../../../components/CodeDownloadButton';
+import TableOfContents from '../../../../../../components/TableOfContents';
 
 const userType = 'student';
 
@@ -180,42 +182,57 @@ export default function NotebookPage({
         </NavigationBar>
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
         <DataSharingPreferenceDialog />
-        <Container maxWidth="md">
-          <Typography variant="h3" marginTop={2}>{title}</Typography>
-          {localCodeCellsWrongLength
-            ? <InconsistencyMessage />
-            : cells.map((cell: NotebookCell, idx) => {
-              if (cell.cell_type === 'markdown') {
-                return (
-                  <MarkdownCellComponent
-                    key={cell.id}
-                    cell={cell as MarkdownCell}
-                    activityVariant={activityVariant}
-                  />
-                );
-              }
-              const cellIdx = originalIdxToCodeCellIdx.get(idx) as number;
-              const currentCodeCell = codeCells[cellIdx];
-              const firstLineNumber = nextFirstLineNumber;
-              nextFirstLineNumber += countLines(currentCodeCell.source);
-              return (
-                <CodeCell
-                  key={cell.id}
-                  codeCellState={currentCodeCell}
-                  onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
-                  onExecutionRequested={() => handleExecute(cellIdx)}
-                  onOutputAreaToggled={() => handleToggleOutputArea(cellIdx)}
-                  onReset={() => handleResetSingleCell(cellIdx)}
-                  firstLineNumber={firstLineNumber}
-                  activityVariant={activityVariant}
-                />
-              );
-            })}
-        </Container>
-        <Stack mt={12} mb={6} direction="row" justifyContent="center" spacing={4}>
-          <CodeDownloadButton getSource={() => asSingleSource(codeCells)} />
-          <MarkCompletedButton completed={completed} toggleCompleted={toggleCompleted} />
-        </Stack>
+        <Grid container>
+          <Grid lg={10} xl={11}>
+            <Container maxWidth="md">
+              <Typography variant="h3" marginTop={2}>{title}</Typography>
+              {localCodeCellsWrongLength
+                ? <InconsistencyMessage />
+                : cells.map((cell: NotebookCell, idx) => {
+                  if (cell.cell_type === 'markdown') {
+                    return (
+                      <MarkdownCellComponent
+                        key={cell.id}
+                        cell={cell as MarkdownCell}
+                        activityVariant={activityVariant}
+                      />
+                    );
+                  }
+                  const cellIdx = originalIdxToCodeCellIdx.get(idx) as number;
+                  const currentCodeCell = codeCells[cellIdx];
+                  const firstLineNumber = nextFirstLineNumber;
+                  nextFirstLineNumber += countLines(currentCodeCell.source);
+                  return (
+                    <CodeCell
+                      key={cell.id}
+                      codeCellState={currentCodeCell}
+                      onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
+                      onExecutionRequested={() => handleExecute(cellIdx)}
+                      onOutputAreaToggled={() => handleToggleOutputArea(cellIdx)}
+                      onReset={() => handleResetSingleCell(cellIdx)}
+                      firstLineNumber={firstLineNumber}
+                      activityVariant={activityVariant}
+                    />
+                  );
+                })}
+            </Container>
+            <Stack mt={12} mb={6} direction="row" justifyContent="center" spacing={4}>
+              <CodeDownloadButton getSource={() => asSingleSource(codeCells)} />
+              <MarkCompletedButton completed={completed} toggleCompleted={toggleCompleted} />
+            </Stack>
+          </Grid>
+          <Grid
+            lg={2}
+            xl={1}
+            sx={{
+              display: {
+                xs: 'none', sm: 'none', md: 'none', lg: 'block',
+              },
+            }}
+          >
+            <TableOfContents />
+          </Grid>
+        </Grid>
       </Box>
     </div>
   );

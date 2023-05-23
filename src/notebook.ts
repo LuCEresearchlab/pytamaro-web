@@ -1,4 +1,5 @@
 import { serialize } from 'next-mdx-remote/serialize';
+import rehypeSlug from 'rehype-slug';
 import { readNotebookContent } from './fs-content/notebooks';
 import { JupyterCell, NotebookCell } from './schemas/activitySchema';
 
@@ -55,7 +56,11 @@ export default async function getNotebookContent(
       ...cell,
       source,
       id: idx.toString(),
-      mdxSource: cell.cell_type === 'markdown' ? await serialize(source) : null,
+      mdxSource: cell.cell_type === 'markdown' ? await serialize(source, {
+        mdxOptions: {
+          rehypePlugins: [rehypeSlug],
+        },
+      }) : null,
     };
   }));
 }
