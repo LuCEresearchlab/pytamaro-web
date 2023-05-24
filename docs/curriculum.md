@@ -1,6 +1,9 @@
-# How to Write a JSON file for a Curriculum
+# How to Create a Curriculum
 
-A curriculum is structured as follows:
+To create a curriculum,
+
+1. Add a file called `<curriculum-slug>.json` to the `curricula` directory.
+2. Write a JSON object with the following structure:
 
 ```javascript
 {
@@ -19,13 +22,18 @@ A curriculum is structured as follows:
   ],
   units: [
     {
-      title: string,
-      activities: [
+      title?: string,
+      steps: [
         {
-          id: activityId // string (<author-slug>/<activity-slug>/<language>/<version>),
-          activityRequirements: activityId[][],
-          prerequisites: competencyId[],
-          learningObjectives: competencyId[]
+          activities: [
+            {
+              id: activityId // string (<author-slug>/<activity-slug>/<language>/<version>),
+              prerequisites: competencyId[],
+              learningObjectives: competencyId[]
+            },
+            ...
+          ],
+          isOptional?: boolean,
         },
         ...
       ],
