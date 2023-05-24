@@ -16,6 +16,7 @@ async function getAuthorInfo(authorSlug: string) {
 export default async function listAuthors() : Promise<Author[]> {
   const authorSlugs = (await readdir(DATA_DIR, { withFileTypes: true }))
     .filter(async (entry) => (await stat(path.join(DATA_DIR, entry.name))).isDirectory())
-    .map((dir) => dir.name);
+    .map((dir) => dir.name)
+    .filter((name) => !/^\./.test(name)); // skip hidden directories starting with a '.', such as '.DS_Store'
   return Promise.all(authorSlugs.map(getAuthorInfo));
 }
