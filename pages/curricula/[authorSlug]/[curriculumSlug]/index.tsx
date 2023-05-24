@@ -3,7 +3,9 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
 import Head from 'next/head';
+import { useRef } from 'react';
 import NavigationBar from '../../../../components/NavigationBar';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
 import { Curriculum } from '../../../../src/schemas/curriculumSchema';
@@ -11,6 +13,7 @@ import { curriculumPathname } from '../../../../src/urlUtils';
 import listAuthors from '../../../../src/fs-content/authors';
 import CurriculumFlow from '../../../../components/Curriculum/CurriculumFlow';
 import useLocalProfile from '../../../../src/localStorage/useLocalProfile';
+import TableOfContents from '../../../../components/TableOfContents';
 
 export default function CurriculumPage({ curriculum }:
 { curriculum : Curriculum }) {
@@ -18,6 +21,7 @@ export default function CurriculumPage({ curriculum }:
   const completedActivityVariantIds = metadata.activities
     .filter((a) => a.completed)
     .map((a) => a.id);
+  const curriculumFlowRef = useRef<HTMLDivElement>(null);
 
   return (
     <>
@@ -25,17 +29,34 @@ export default function CurriculumPage({ curriculum }:
         <title>{curriculum.title}</title>
       </Head>
 
-      <Stack spacing={2} alignItems="center">
-        <NavigationBar />
-        <Container maxWidth="md">
-          <Typography variant="h3" marginY={3}>{curriculum.title}</Typography>
-          <Typography variant="subtitle1" marginY={3}>{curriculum.description}</Typography>
-        </Container>
-        <CurriculumFlow
-          units={curriculum.units}
-          completedActivityVariantIds={completedActivityVariantIds}
-        />
-      </Stack>
+      <NavigationBar />
+      <Grid container>
+        <Grid lg={10} xl={11}>
+          <Stack spacing={2} alignItems="center">
+            <Container maxWidth="md">
+              <Typography variant="h3" marginY={3}>{curriculum.title}</Typography>
+              <Typography variant="subtitle1" marginY={3}>{curriculum.description}</Typography>
+            </Container>
+            <div ref={curriculumFlowRef}>
+              <CurriculumFlow
+                units={curriculum.units}
+                completedActivityVariantIds={completedActivityVariantIds}
+              />
+            </div>
+          </Stack>
+        </Grid>
+        <Grid
+          lg={2}
+          xl={1}
+          sx={{
+            display: {
+              xs: 'none', sm: 'none', md: 'none', lg: 'block',
+            },
+          }}
+        >
+          <TableOfContents element={curriculumFlowRef.current} selector=".curriculum-unit[id]" title="In this curriculum" />
+        </Grid>
+      </Grid>
     </>
   );
 }

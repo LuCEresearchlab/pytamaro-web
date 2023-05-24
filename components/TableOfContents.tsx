@@ -94,15 +94,18 @@ interface TOCItem {
   hash: string;
 }
 
-export default function TableOfContents() {
+export default function TableOfContents({ element, selector, title } :
+{ element: HTMLElement | null, selector: string, title: string }) {
   const [items, setItems] = React.useState<TOCItem[]>([]);
   React.useEffect(() => {
-    const headings = Array.from(document.querySelectorAll('h2[id], h3[id]')).map((heading) => ({
-      text: heading.textContent || '',
-      hash: heading.id,
-    }));
-    setItems(headings);
-  }, []);
+    if (element) {
+      const headings = Array.from(element.querySelectorAll(selector)).map((heading) => ({
+        text: heading.textContent || '',
+        hash: heading.id,
+      }));
+      setItems(headings);
+    }
+  }, [element, selector]);
 
   const [activeState, setActiveState] = React.useState<string | null>(null);
   const clickedRef = React.useRef(false);
@@ -114,7 +117,7 @@ export default function TableOfContents() {
     }
 
     let active;
-    for (let i = items.length - 1; i >= 0; i -= 1) {
+    for (let i = 0; i < items.length; i += 1) {
       // No hash if we're near the top of the page
       if (document.documentElement.scrollTop < 200) {
         active = { hash: null };
@@ -126,8 +129,7 @@ export default function TableOfContents() {
 
       if (
         node
-        && node.offsetTop
-          < document.documentElement.scrollTop + document.documentElement.clientHeight / 8
+        && node.getBoundingClientRect().top > -document.documentElement.clientHeight / 4
       ) {
         active = item;
         break;
@@ -178,7 +180,7 @@ export default function TableOfContents() {
     <Nav>
       {items.length > 0 ? (
         <>
-          <NavLabel gutterBottom>Table Of Contents</NavLabel>
+          <NavLabel gutterBottom>{title}</NavLabel>
           <NavList>
             {items.map((item) => (
               <li key={item.text}>

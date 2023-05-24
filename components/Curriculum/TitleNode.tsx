@@ -1,5 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import { Handle, NodeProps, Position } from 'reactflow';
+import { slug } from 'github-slugger';
 
 type NodeData = {
   type: 'unit' | 'start' | 'end',
@@ -23,10 +24,12 @@ export default function TitleNode({ data }: NodeProps<NodeData>) {
           justifyContent: 'center',
           width,
           height,
-          overflow: 'hidden',
+          overflow: 'initial !important',
           textOverflow: 'ellipsis',
           backgroundColor: type === 'unit' ? '#aed9e7' : 'transparent',
         }}
+        className={type === 'unit' ? 'curriculum-unit' : undefined}
+        id={slug(text)}
       >
         {type === 'unit'
           ? <Typography variant="h5" textAlign="center" noWrap>{text}</Typography>

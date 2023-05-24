@@ -9,6 +9,7 @@ import {
 import Grid from '@mui/material/Unstable_Grid2';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { useRef } from 'react';
 import CodeCell from '../../../../../../components/CodeCell';
 import NavigationBar from '../../../../../../components/NavigationBar';
 import { asSingleSource, createCodeCell, useLocalActivity } from '../../../../../../src/localStorage/useLocalActivity';
@@ -157,6 +158,8 @@ export default function NotebookPage({
     handleToggleOutputArea, handleResetActivity, handleResetSingleCell,
   } = useLocalActivity(initialCodeCells, activityVariant);
 
+  const cellsRef = useRef<HTMLDivElement>(null);
+
   const pageTitle = `${title} - PyTamaro`;
 
   let nextFirstLineNumber = 1;
@@ -184,7 +187,7 @@ export default function NotebookPage({
         <DataSharingPreferenceDialog />
         <Grid container>
           <Grid lg={10} xl={11}>
-            <Container maxWidth="md">
+            <Container maxWidth="md" ref={cellsRef}>
               <Typography variant="h3" marginTop={2}>{title}</Typography>
               {localCodeCellsWrongLength
                 ? <InconsistencyMessage />
@@ -230,7 +233,7 @@ export default function NotebookPage({
               },
             }}
           >
-            <TableOfContents />
+            <TableOfContents element={cellsRef.current} selector="h2[id], h3[id]" title="In this activity" />
           </Grid>
         </Grid>
       </Box>
