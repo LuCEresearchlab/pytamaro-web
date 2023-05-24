@@ -2,7 +2,8 @@ import { Box, Typography } from '@mui/material';
 import { Handle, NodeProps, Position } from 'reactflow';
 
 type NodeData = {
-  title: string,
+  type: 'unit' | 'start' | 'end',
+  text: string,
   width: number,
   height: number,
   unlocked: boolean,
@@ -10,7 +11,7 @@ type NodeData = {
 
 export default function TitleNode({ data }: NodeProps<NodeData>) {
   const {
-    title, width, height, unlocked,
+    type, text, width, height, unlocked,
   } = data;
   return (
     <Box sx={{ opacity: unlocked ? 1 : 0.38 }}>
@@ -24,10 +25,12 @@ export default function TitleNode({ data }: NodeProps<NodeData>) {
           height,
           overflow: 'hidden',
           textOverflow: 'ellipsis',
-          backgroundColor: '#aed9e7',
+          backgroundColor: type === 'unit' ? '#aed9e7' : 'transparent',
         }}
       >
-        <Typography variant="h5" textAlign="center" noWrap>{title}</Typography>
+        {type === 'unit'
+          ? <Typography variant="h5" textAlign="center" noWrap>{text}</Typography>
+          : <Typography variant="h6" textTransform="uppercase" letterSpacing=".08rem" textAlign="center" noWrap>{text}</Typography>}
       </Box>
       <Handle type="source" position={Position.Bottom} isConnectable={false} />
     </Box>

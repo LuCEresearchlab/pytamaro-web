@@ -7,7 +7,6 @@ import ReactFlow, {
   MarkerType,
 } from 'reactflow';
 import ActivityNode from './ActivityNode';
-import InfoNode from './InfoNode';
 import TitleNode from './TitleNode';
 import OptionalActivitiesNode from './OptionalActivitiesNode';
 import JoinNode from './JoinNode';
@@ -42,7 +41,6 @@ const edgeOptions = {
 const nodeTypes = {
   activity: ActivityNode,
   join: JoinNode,
-  info: InfoNode,
   title: TitleNode,
   optional: OptionalActivitiesNode,
 };
@@ -122,10 +120,6 @@ function getFlowElements(
     join: {
       width: size(0.02, 10, 20),
       height: size(0.02, 10, 20),
-    },
-    info: {
-      width: size(0.12, 100, 200),
-      height: size(0.02, 30, 60),
     },
     title: {
       width: size(0.8, 300, 1000),
@@ -208,11 +202,11 @@ function getFlowElements(
 
   // The curriculum graph contains:
   // - a start node
-  addSingleNode('start', 'info', { type: 'start' });
+  addSingleNode('start', 'title', { type: 'start', text: 'Start', unlocked: previousStepIsCompleted });
   // - a sequence of units
   units.forEach((unit, unitIdx) => {
     // Each unit has a title
-    addSingleNode(`${unitIdx}`, 'title', { title: unit.title, unlocked: previousStepIsCompleted });
+    addSingleNode(`${unitIdx}`, 'title', { type: 'unit', text: unit.title, unlocked: previousStepIsCompleted });
     // and contains a sequence of steps
     unit.steps.forEach((step, stepIdx) => {
       const activitiesInfo = addActivitiesStatuses(
@@ -239,7 +233,7 @@ function getFlowElements(
     });
   });
   // - an end node
-  addSingleNode('end', 'info', { type: 'end' });
+  addSingleNode('end', 'title', { type: 'end', text: 'End', unlocked: previousStepIsCompleted });
 
   return {
     nodes,
