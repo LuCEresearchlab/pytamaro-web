@@ -41,6 +41,7 @@ const edgeOptions = {
 const nodeTypes = {
   activity: ActivityNode,
   join: JoinNode,
+  startend: TitleNode,
   title: TitleNode,
   optional: OptionalActivitiesNode,
 };
@@ -121,6 +122,10 @@ function getFlowElements(
       width: size(0.02, 10, 20),
       height: size(0.02, 10, 20),
     },
+    startend: {
+      width: size(0.8, 300, 1000),
+      height: size(0.035, 15, 30),
+    },
     title: {
       width: size(0.8, 300, 1000),
       height: size(0.07, 30, 60),
@@ -168,15 +173,26 @@ function getFlowElements(
     });
   };
 
+  const reduceGapFromPreviousRow = (currentNodes: number) => {
+    if (currentNodes === 1 && nodesToBeConnected.length === 1) {
+      bottom -= layerSpacing * 0.4;
+    }
+  };
+
+  const addIncomingEdges = (id: string) => {
+    edges.push(...incomingEdges(nodesToBeConnected, id, previousStepIsCompleted));
+  };
+
   const addSingleNode = (
     id: string,
     type: string,
     data: any,
     selectable = false,
   ) => {
+    reduceGapFromPreviousRow(1);
     const dim = nodeTypeDimensions[type as keyof typeof nodeTypeDimensions];
     addNode(id, type, data, selectable, width / 2 - dim.width / 2);
-    edges.push(...incomingEdges(nodesToBeConnected, id, previousStepIsCompleted));
+    addIncomingEdges(id);
     nodesToBeConnected = [id];
     bottom += dim.height + layerSpacing;
   };
@@ -186,14 +202,22 @@ function getFlowElements(
     activitiesData: ActivityNodeData[],
   ) => {
     const n = activitiesData.length;
+    reduceGapFromPreviousRow(n);
     const dim = nodeTypeDimensions.activity;
     const rowWidth = n * dim.width;
-    const spacingWidth = (n - 1) * layerSpacing;
+    let gap = layerSpacing;
+    if (n > 2) {
+      gap *= 0.8;
+    }
+    if (n > 3) {
+      gap *= 0.7;
+    }
+    const spacingWidth = (n - 1) * gap;
     const left = width / 2 - rowWidth / 2 - spacingWidth / 2;
     const ids = activitiesData.map((data, idx) => {
       const id = `${idPrefix}-${idx}`;
-      addNode(id, 'activity', data, true, left + idx * (dim.width + layerSpacing));
-      edges.push(...incomingEdges(nodesToBeConnected, id, previousStepIsCompleted));
+      addNode(id, 'activity', data, true, left + idx * (dim.width + gap));
+      addIncomingEdges(id);
       return id;
     });
     nodesToBeConnected = [...ids];
@@ -202,7 +226,7 @@ function getFlowElements(
 
   // The curriculum graph contains:
   // - a start node
-  addSingleNode('start', 'title', { type: 'start', text: 'Start', unlocked: previousStepIsCompleted });
+  addSingleNode('start', 'startend', { type: 'start', text: 'Start', unlocked: previousStepIsCompleted });
   // - a sequence of units
   units.forEach((unit, unitIdx) => {
     // Each unit has a title
@@ -232,7 +256,7 @@ function getFlowElements(
     });
   });
   // - an end node
-  addSingleNode('end', 'title', { type: 'end', text: 'End', unlocked: previousStepIsCompleted });
+  addSingleNode('end', 'startend', { type: 'end', text: 'End', unlocked: previousStepIsCompleted });
 
   return {
     nodes,
