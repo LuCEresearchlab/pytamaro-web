@@ -1,26 +1,21 @@
-import { useRouter } from 'next/router';
 import {
   Box,
   Container,
+  Stack,
   Typography,
 } from '@mui/material';
 import Head from 'next/head';
-import Link from 'next/link';
 import NavigationBar from '../../../components/NavigationBar';
 import { listCurricula } from '../../../src/fs-content/curricula';
 import { Curriculum } from '../../../src/schemas/curriculumSchema';
-import listAuthors from '../../../src/fs-content/authors';
-import { curriculaByAuthorPathname, curriculumPathname } from '../../../src/urlUtils';
+import listAuthors, { getAuthorProfile } from '../../../src/fs-content/authors';
+import { curriculaByAuthorPathname } from '../../../src/urlUtils';
+import CurriculumCard from '../../../components/CurriculumCard';
+import { AuthorProfile } from '../../../src/schemas/authorSchema';
 
-export default function CurriculaPage({ curricula }: { curricula: Curriculum[] }) {
-  const router = useRouter();
-  const {
-    authorSlug,
-  } = router.query as {
-    authorSlug: string,
-  };
-  const title = authorSlug;
-  const pageTitle = `${title} - PyTamaro`;
+export default function CurriculaPage({ curricula, authorProfile }:
+{ curricula: Curriculum[], authorProfile: AuthorProfile }) {
+  const pageTitle = `Curricula by ${authorProfile.name} - PyTamaro`;
 
   return (
     <div>
@@ -31,30 +26,16 @@ export default function CurriculaPage({ curricula }: { curricula: Curriculum[] }
       <Box>
         <NavigationBar />
         <Container>
-          <Typography variant="h2" marginY={3}>{title}</Typography>
-          <Typography variant="h3" marginY={3}>Curricula</Typography>
-          <Typography variant="body1" marginY={3}>
-            The list of curricula offered by
+          <Typography variant="h3" marginY={3}>
+            Curricula by
             {' '}
-            {authorSlug}
-            :
+            {authorProfile.name}
           </Typography>
-          <ul>
-            {
-              curricula.map((curriculum: Curriculum) => (
-                <li key={curriculum.slug}>
-                  { curriculum.visibility !== 'draft' && (
-                    <Link href={{
-                      pathname: curriculumPathname(authorSlug, curriculum.slug),
-                    }}
-                    >
-                      {curriculum.title}
-                    </Link>
-                  )}
-                </li>
-              ))
-            }
-          </ul>
+          <Stack spacing={2}>
+            {curricula.map((curriculum: Curriculum) => (
+              <CurriculumCard key={`${authorProfile.slug}/${curriculum.slug}`} authorSlug={authorProfile.slug} curriculum={curriculum} />
+            ))}
+          </Stack>
         </Container>
       </Box>
     </div>
@@ -70,6 +51,7 @@ export async function getStaticProps(
   return {
     props: {
       curricula: await listCurricula(authorSlug),
+      authorProfile: await getAuthorProfile(authorSlug),
     },
   };
 }

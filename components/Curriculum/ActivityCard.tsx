@@ -15,7 +15,7 @@ import {
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { activityAssetPathname, activityVariantPathname } from '../../src/urlUtils';
-import { Activity } from '../../src/schemas/activitySchema';
+import { Activity, activityVariantFromId, getVariantTitle } from '../../src/schemas/activitySchema';
 import LockedTooltip from './LockedTooltip';
 
 const CompletedBadge = styled(Badge)<BadgeProps>(() => ({
@@ -42,9 +42,8 @@ export default function ActivityCard({
   height: number,
 }) {
   const router = useRouter();
-  const [authorSlug, , language, version] = id.split('/');
-  const variant = activity.variants.find((v) => v.language === language);
-  const title = variant?.title || activity.slug;
+  const variant = activityVariantFromId(id);
+  const title = getVariantTitle(activity, variant) || activity.slug;
 
   return (
     <Box
@@ -69,10 +68,10 @@ export default function ActivityCard({
           >
             <CardActionArea
               onClick={() => router.push(activityVariantPathname(
-                authorSlug,
-                activity.slug,
-                language,
-                version,
+                variant.authorSlug,
+                variant.activitySlug,
+                variant.language,
+                variant.version,
               ))}
               disabled={!isUnlocked}
             >
@@ -81,8 +80,8 @@ export default function ActivityCard({
                 height={0.8 * height}
                 color="red"
                 image={activityAssetPathname(
-                  authorSlug,
-                  activity.slug,
+                  variant.authorSlug,
+                  variant.activitySlug,
                   activity.previewImage.filename,
                 )}
                 alt={title}

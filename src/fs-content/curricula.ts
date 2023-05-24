@@ -8,11 +8,12 @@ import {
   RawCurriculumActivity,
 } from '../schemas/curriculumSchema';
 import { readActivity } from './activities';
+import { activityVariantFromId } from '../schemas/activitySchema';
 
 export const CURRICULA_DIR = 'curricula';
 const CURRICULUM_EXT = '.json';
 
-async function getCurriculumInfo(authorSlug: string, curriculumSlug: string) {
+async function getCurriculumInfo(authorSlug: string, curriculumSlug: string) : Promise<Curriculum> {
   const content = JSON.parse(
     await readFile(path.join(DATA_DIR, authorSlug, CURRICULA_DIR, `${curriculumSlug}.json`), 'utf-8'),
   );
@@ -26,10 +27,11 @@ async function getCurriculumInfo(authorSlug: string, curriculumSlug: string) {
               ...step,
               activities: await Promise.all(step.activities.map(
                 async (curriculumAct: RawCurriculumActivity) => {
-                  const [thisAuthorSlug, activitySlug] = curriculumAct.id.split('/');
+                  const variant = activityVariantFromId(curriculumAct.id);
                   return {
                     ...curriculumAct,
-                    activity: await readActivity(thisAuthorSlug, activitySlug),
+                    variant,
+                    activity: await readActivity(variant.authorSlug, variant.activitySlug),
                   };
                 },
               )),

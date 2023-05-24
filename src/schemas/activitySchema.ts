@@ -74,3 +74,14 @@ export function activityVariantId(activityVariant: ActivityVariant) {
   } = activityVariant;
   return `${authorSlug}/${activitySlug}/${language}/${version}`;
 }
+
+export function activityVariantFromId(id: string): ActivityVariant {
+  const [authorSlug, activitySlug, language, version] = id.split('/');
+  return {
+    authorSlug, activitySlug, language, version,
+  };
+}
+
+export function getVariantTitle(activity: Activity, variant: ActivityVariant) {
+  return activity.variants.find((v) => v.language === variant.language)?.title;
+}
