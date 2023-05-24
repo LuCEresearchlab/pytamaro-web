@@ -233,7 +233,7 @@ export default function NotebookPage({
               },
             }}
           >
-            <TableOfContents element={cellsRef.current} selector="h2[id], h3[id]" title="In this activity" />
+            <TableOfContents initialized elementRef={cellsRef} selector="h2[id], h3[id]" title="In this activity" />
           </Grid>
         </Grid>
       </Box>

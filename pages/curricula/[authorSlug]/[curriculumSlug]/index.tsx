@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import Head from 'next/head';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import NavigationBar from '../../../../components/NavigationBar';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
 import { Curriculum } from '../../../../src/schemas/curriculumSchema';
@@ -22,6 +22,7 @@ export default function CurriculumPage({ curriculum }:
     .filter((a) => a.completed)
     .map((a) => a.id);
   const curriculumFlowRef = useRef<HTMLDivElement>(null);
+  const [nodesInitialized, setNodesInitialized] = useState(false);
 
   return (
     <>
@@ -41,6 +42,7 @@ export default function CurriculumPage({ curriculum }:
               <CurriculumFlow
                 units={curriculum.units}
                 completedActivityVariantIds={completedActivityVariantIds}
+                setNodesInitialized={setNodesInitialized}
               />
             </div>
           </Stack>
@@ -54,7 +56,7 @@ export default function CurriculumPage({ curriculum }:
             },
           }}
         >
-          <TableOfContents element={curriculumFlowRef.current} selector=".curriculum-unit[id]" title="In this curriculum" />
+          <TableOfContents elementRef={curriculumFlowRef} initialized={nodesInitialized} selector=".curriculum-unit[id]" title="In this curriculum" />
         </Grid>
       </Grid>
     </>

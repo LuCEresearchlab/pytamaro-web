@@ -6,6 +6,7 @@ import throttle from 'lodash/throttle';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import Link from 'next/link';
+import { RefObject } from 'react';
 
 const Nav = styled('nav')(({ theme }) => ({
   top: theme.spacing(8),
@@ -94,18 +95,20 @@ interface TOCItem {
   hash: string;
 }
 
-export default function TableOfContents({ element, selector, title } :
-{ element: HTMLElement | null, selector: string, title: string }) {
+export default function TableOfContents({
+  elementRef, selector, title, initialized,
+} :
+{ elementRef: RefObject<HTMLElement>, selector: string, title: string, initialized: boolean }) {
   const [items, setItems] = React.useState<TOCItem[]>([]);
   React.useEffect(() => {
-    if (element) {
-      const headings = Array.from(element.querySelectorAll(selector)).map((heading) => ({
+    if (elementRef.current && initialized) {
+      const headings = Array.from(elementRef.current.querySelectorAll(selector)).map((heading) => ({
         text: heading.textContent || '',
         hash: heading.id,
       }));
       setItems(headings);
     }
-  }, [element, selector]);
+  }, [elementRef, selector, initialized]);
 
   const [activeState, setActiveState] = React.useState<string | null>(null);
   const clickedRef = React.useRef(false);

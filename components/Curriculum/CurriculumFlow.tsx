@@ -5,7 +5,10 @@ import ReactFlow, {
   Edge,
   Node,
   MarkerType,
+  useNodesInitialized,
+  ReactFlowProvider,
 } from 'reactflow';
+import { useEffect } from 'react';
 import ActivityNode from './ActivityNode';
 import TitleNode from './TitleNode';
 import OptionalActivitiesNode from './OptionalActivitiesNode';
@@ -266,8 +269,35 @@ function getFlowElements(
   };
 }
 
-export default function CurriculumFlow({ units, completedActivityVariantIds }
-: { units : CurriculumUnit[], completedActivityVariantIds : string[] }) {
+function Flow({ nodes, edges, setNodesInitialized }:
+{ nodes: Node[], edges: Edge[], setNodesInitialized: (initialized: boolean) => void }) {
+  // Separate component, so we can use the hook
+  const nodesInitialized = useNodesInitialized();
+  useEffect(() => {
+    setNodesInitialized(nodesInitialized);
+  }, [nodesInitialized, setNodesInitialized]);
+  return (
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      nodeTypes={nodeTypes}
+      style={rfStyle}
+      panOnDrag={false}
+      zoomOnScroll={false}
+      zoomOnPinch={false}
+      zoomOnDoubleClick={false}
+      preventScrolling={false}
+      elementsSelectable={false}
+      proOptions={{ hideAttribution: true }}
+    />
+  );
+}
+
+export default function CurriculumFlow({ units, completedActivityVariantIds, setNodesInitialized }
+: { units : CurriculumUnit[],
+  completedActivityVariantIds : string[],
+  setNodesInitialized: (initialized: boolean) => void
+}) {
   const windowWidth = useWidth();
   const {
     nodes, edges, width, height,
@@ -288,19 +318,9 @@ export default function CurriculumFlow({ units, completedActivityVariantIds }
           height,
         }}
       >
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          nodeTypes={nodeTypes}
-          style={rfStyle}
-          panOnDrag={false}
-          zoomOnScroll={false}
-          zoomOnPinch={false}
-          zoomOnDoubleClick={false}
-          preventScrolling={false}
-          elementsSelectable={false}
-          proOptions={{ hideAttribution: true }}
-        />
+        <ReactFlowProvider>
+          <Flow nodes={nodes} edges={edges} setNodesInitialized={setNodesInitialized} />
+        </ReactFlowProvider>
       </Box>
     </Box>
   );
