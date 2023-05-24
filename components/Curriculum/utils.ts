@@ -11,5 +11,5 @@ export type ActivityNodeData = {
 };
 
 export function color(highlighted: boolean) {
-  return highlighted ? theme.palette.success.main : theme.palette.grey[300];
+  return highlighted ? theme.palette.primary.main : '#ADD8E6';
 }

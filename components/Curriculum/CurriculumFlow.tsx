@@ -220,13 +220,12 @@ function getFlowElements(
       if (step.isOptional) {
         addSingleNode(`optional-${unitIdx}-${stepIdx}`, 'optional', { activityInfo: activitiesInfo, unlocked: previousStepIsCompleted }, true);
       } else {
-        // or it consists of a set of alternative activities
-        const numActivities = step.activities.length;
-        // (which may be preceded by a "join" node to avoid crossing edges for an N-to-M join)
-        if (nodesToBeConnected.length > 1 && numActivities > 1) {
+        // or it consists of a set of alternative activities...
+        // (which may be preceded by a "join" node when coming from a set of >1 alternatives)
+        if (nodesToBeConnected.length > 1) {
           addSingleNode(`join-${unitIdx}-${stepIdx}`, 'join', { unlocked: previousStepIsCompleted }, true);
         }
-        // shown in a single row
+        // ...shown in a single row
         addActivitiesNodes(`${unitIdx}-${stepIdx}`, activitiesInfo);
         previousStepIsCompleted = currentStepIsCompleted;
       }
