@@ -16,10 +16,12 @@ Activites and curricula are responsiblity of a certain author and are maintained
 See the [Luce repository](https://github.com/LuCEresearchlab/pytamaro-web-luce/) for an example.
 Such repositories are imported to this repository as git submodules.
 
-When a new author is added, one of the maintainers needs to add their repository (`pytamaro-web-<author-slug>`) to this one using the following command:
+When a new author is added, one of the maintainers needs to create their repository and add it to this one as a submodule.
+A script that performs all the necessary steps is available by running:
 ```sh
-git submodule add <repository-url> data/<author-slug>
+npx ts-node tools/newAuthor.ts <author-slug>
 ```
+where `<author-slug>` is the name of the author's repository (e.g., `luce` for the Luce repository).
 
 As an author, after your repository has been added to this one you should clone it using:
 ```sh
