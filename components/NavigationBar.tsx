@@ -4,7 +4,7 @@ import {
 import { useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import FeedbackDialog from './FeedbackDialog';
-import { activitiesByAuthorPathname, curriculaByAuthorPathname } from '../src/urlUtils';
+import { activitiesByAuthorPathname } from '../src/urlUtils';
 
 const navItems = [
   {
@@ -21,7 +21,7 @@ const navItems = [
   },
   {
     name: 'Curricula',
-    url: curriculaByAuthorPathname('luce'),
+    url: '/curricula',
   },
   {
     name: 'My Data',
