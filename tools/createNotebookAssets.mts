@@ -1,7 +1,8 @@
 import path from "path";
-import fs from "fs";
+import fs, { existsSync } from "fs";
 import { ACTIVITIES_DIR, DATA_DIR } from "./utils.mjs";
 import { Activity } from "../src/schemas/activitySchema";
+import { authorInfoPath } from "../src/fs-content/authors.js";
 
 const INFO_FILE = "info.json";
 
@@ -33,6 +34,7 @@ function main() {
     // List all authors
     const authorSlugs = fs.readdirSync(DATA_DIR, { withFileTypes: true })
         .filter(item => item.isDirectory())
+        .filter(item => existsSync(authorInfoPath(item.name)))
         .map(item => item.name);
 
     authorSlugs.forEach(async authorSlug => {
