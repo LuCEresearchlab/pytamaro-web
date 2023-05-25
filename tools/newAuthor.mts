@@ -49,9 +49,10 @@ const fullRepoName = `LuCEresearchlab/pytamaro-web-${authorSlug}`;
 execSync(`gh repo create ${fullRepoName} --source=${authorFolder} --push --private --description "Content by ${authorSlug} for pytamaro-web"`);
 
 // Add it as submodule
-execSync(`git submodule add git@github.com:${fullRepoName}.git ${path.join(DATA_DIR, authorSlug)}`);
+const submodulePath = path.join(DATA_DIR, authorSlug);
+execSync(`git submodule add --name ${authorSlug} git@github.com:${fullRepoName}.git ${submodulePath}`);
 
 // Add, commit and push
-execSync(`git add .`);
+execSync(`git add .gitmodules ${submodulePath}`);
 execSync(`git commit -m "Add ${authorSlug} submodule"`);
 execSync(`git push`);

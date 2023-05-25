@@ -23,14 +23,8 @@ npx ts-node tools/newAuthor.ts <author-slug>
 ```
 where `<author-slug>` is the name of the author's repository (e.g., `luce` for the Luce repository).
 
-As an author, after your repository has been added to this one you should clone it using:
-```sh
-git clone --recurse-submodules git@github.com:LuCEresearchlab/pytamaro-web.git
-```
-
-(or alternatively, if you had already cloned it without the `--recurse-submodules` flag, run `git submodule update --init`).
-
-You can work on your content as usual by making changes to the files in the submodule's folder (`data/<author-slug>/...`). 
+Set up a local development environment as described in the "How do I set up a development enviroment..." section below.
+Then, you can work on your content as usual by making changes to the files in the submodule's folder (`data/<author-slug>/...`). 
 
 When you are ready and want to commit your changes:
 1. if not there already, move to a folder inside your submodule:
@@ -77,7 +71,8 @@ See this document for [creating a new curriculum](docs/curriculum.md).
 <details>
 <summary>Expand</summary>
 
-1. Clone this repository and all its submodules: `git clone --recurse-submodules git@github.com:LuCEresearchlab/pytamaro-web.git` 
+1. Clone this repository: `git clone git@github.com:LuCEresearchlab/pytamaro-web.git` 
+1. Clone the submodules you have access to (e.g., `git submodule update --init data/luce`, or `git submodule update --init` to clone all of them)
 1. Install the dependencies of this project: `npm install`
 1. Populate the `public` folder with notebooks-related assets: `npx ts-node tools/createNotebookAssets.mts`
 1. Start the Next.js server: `npm run dev`
