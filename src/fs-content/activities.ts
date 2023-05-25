@@ -60,7 +60,8 @@ export async function listActivities(authorSlug: string) : Promise<Activity[]> {
     { withFileTypes: true },
   ))
     .filter((item) => item.isDirectory())
-    .map((dir) => dir.name);
+    .map((dir) => dir.name)
+    .filter((name) => !/^\./.test(name)); // skip hidden directories starting with a '.', such as '.DS_Store'
 
   return Promise.all(activitySlugs.map(
     (activitySlug) => readActivity(authorSlug, activitySlug),

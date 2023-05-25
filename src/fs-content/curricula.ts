@@ -53,6 +53,7 @@ export async function listCurricula(authorSlug: string) : Promise<Curriculum[]> 
     { withFileTypes: true },
   ))
     .filter((item) => item.isFile())
+    .filter((item) => !/^\./.test(item.name)) // skip hidden files
     .map((file) => file.name.replace(CURRICULUM_EXT, ''));
 
   return Promise.all(curriculumSlugs.map(
