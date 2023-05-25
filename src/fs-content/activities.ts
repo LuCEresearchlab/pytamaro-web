@@ -11,6 +11,7 @@ export async function readActivity(authorSlug: string, activitySlug: string)
   : Promise<Activity> {
   const content = await readFile(path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR, activitySlug, ACTIVITY_INFO_FILE), 'utf-8');
   return {
+    authorSlug,
     slug: activitySlug,
     ...JSON.parse(content),
   };

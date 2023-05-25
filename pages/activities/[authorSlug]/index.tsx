@@ -15,76 +15,51 @@ import NavigationBar from '../../../components/NavigationBar';
 import ActivitiesGallery, { ANY_LANGUAGE } from '../../../components/ActivitiesGallery';
 import getLanguageDisplayName from '../../../src/internationalization';
 import { listAuthorsProfiles, listAuthorsWithContent } from '../../../src/fs-content/authors';
-import { AuthorActivities, AuthorProfile } from '../../../src/schemas/authorSchema';
+import { AuthorProfile } from '../../../src/schemas/authorSchema';
 import { activitiesByAuthorPathname } from '../../../src/urlUtils';
+import { Activity } from '../../../src/schemas/activitySchema';
 
-const VISIBILITY_PRIORITY = {
-  featured: 0,
-  visible: 1,
-  draft: 2,
-  hidden: 4,
-};
-
-export default function ActivitiesPage({ defaultAuthorSlug, authorsActivities, authorsProfiles }:
+export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsProfiles }:
 { defaultAuthorSlug: string,
-  authorsActivities: AuthorActivities[],
+  activities: Activity[],
   authorsProfiles: AuthorProfile[] }) {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [languageFilter, setLanguageFilter] = useState(ANY_LANGUAGE);
-  const [filteredActivities, setFilteredActivities] = useState(authorsActivities);
+  const [filteredActivities, setFilteredActivities] = useState(activities);
   const [filteredAuthors, setFilteredAuthors] = useState<string[]>([defaultAuthorSlug]);
   const [compactView, setCompactView] = useState(false);
 
   // get all languages in set of activities
   const languages = new Set(
-    authorsActivities.flatMap(
-      (authorActivities) => authorActivities.activities.flatMap(
-        (activity) => activity.variants.map(
-          (avariant) => avariant.language,
-        ),
+    activities.flatMap(
+      (activity) => activity.variants.map(
+        (avariant) => avariant.language,
       ),
     ),
   );
 
   useEffect(() => {
     setFilteredActivities(
-      authorsActivities.filter((author) => filteredAuthors.includes(author.authorSlug))
-        .map((authorActivities) => ({
-          authorSlug: authorActivities.authorSlug,
-          activities: authorActivities.activities.filter((activity) => (
-            activity.visibility !== 'hidden'
-          // language filter
-          && activity.variants.some(
-            (avariant) => languageFilter === ANY_LANGUAGE
+      activities
+        .filter((activity) => filteredAuthors.includes(activity.authorSlug))
+        .filter((activity) => activity.visibility !== 'hidden')
+        .filter((activity) => activity.variants.some(
+          (avariant) => languageFilter === ANY_LANGUAGE
             || avariant.language.toLowerCase() === languageFilter.toLowerCase(),
-          )
+        ))
+        .filter((activity) => (
           // search by slug and by title and description of language-filtered variant
-          && (activity.slug.toLowerCase().includes(search.toLowerCase())
+          (activity.slug.toLowerCase().includes(search.toLowerCase())
           || activity.variants.some(
             (avariant) => (languageFilter === ANY_LANGUAGE
             || avariant.language.toLowerCase() === languageFilter.toLowerCase())
             && (avariant.description.toLowerCase().includes(search.toLowerCase())
             || avariant.title.toLowerCase().includes(search.toLowerCase())),
           ))
-          )),
-        })),
+        )),
     );
-  }, [search, languageFilter, authorsActivities, filteredAuthors]);
-
-  // Minimal sorting
-  authorsActivities.flatMap((authorActivities) => authorActivities.activities).sort((a1, a2) => {
-    if (a1.visibility !== a2.visibility) {
-      // different visibility, featured before visible before draft before hidden
-      return VISIBILITY_PRIORITY[a1.visibility] - VISIBILITY_PRIORITY[a2.visibility];
-    }
-    if (a1.variants.length !== a2.variants.length) {
-      // same visibility, more variants first
-      return Math.sign(a2.variants.length - a1.variants.length);
-    }
-    // same visibility, same number of variants, sort by slug
-    return a1.slug < a2.slug ? -1 : 1;
-  });
+  }, [search, languageFilter, activities, filteredAuthors]);
 
   const handleAuthorsFilterChange = (event: SelectChangeEvent<typeof filteredAuthors>) => {
     const {
@@ -188,7 +163,7 @@ export default function ActivitiesPage({ defaultAuthorSlug, authorsActivities, a
         </Grid>
       </Grid>
       <ActivitiesGallery
-        authorsActivities={filteredActivities}
+        activities={filteredActivities}
         compactView={compactView}
         languageFilter={languageFilter}
       />
@@ -206,9 +181,7 @@ export async function getStaticProps(
     props: {
       defaultAuthorSlug: authorSlug,
       authorsProfiles: await listAuthorsProfiles(),
-      authorsActivities: (await listAuthorsWithContent()).map(
-        (author) => ({ authorSlug: author.slug, activities: author.activities }),
-      ),
+      activities: (await listAuthorsWithContent()).map((author) => author.activities).flat(),
     },
   };
 }

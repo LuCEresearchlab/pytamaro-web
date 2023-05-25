@@ -7,6 +7,7 @@ export interface Activity {
   variants: NotebookVariant[],
   uses: ActivityUse[],
   assets: string[],
+  authorSlug: string,
 }
 
 export interface ActivityInfo {
