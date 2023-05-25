@@ -61,39 +61,15 @@ The entire process should take less than 10 minutes.
 <details>
 <summary>Expand</summary>
 
-Inside your `data/<author-slug>` folder, activities are stored in the `activities` folder. 
-
-The name of the folder should use hyphens and determines the _slug_ of the activity,
-which uniquely identifies it.
-See the `swiss-flag` activity inside the `luce` folder for an example.
-
-Each activity can exists in several variants, depending on the _natural language_ in which it is written
-(e.g, English, Italian or German).
-
-All the meta-information about an activity is specified in an `info.json` file.
-See `data/luce/activities/swiss-flag/info.json` for an example.
-Each variant is described by an object containing:
-- the localized `title`,
-- the natural language `language` in the ISO 639-1 format,
-- the `latestVersion`.
-
-These pieces of information prescribe the name of the Jupyter notebook file
-for that variant (`slug-language-version.ipynb`).
-
-There is a specific separate documentation [on how to write a notebook for an activity](docs/notebook.md).
-
-Small changes (such as fixing a typo, or improving the wording of a markdown cell in a notebook)
-should not be created in a new version.
-On the other hand, major changes, including all the ones that involve the addition/removal of cells
-should be created in a new version.
-
-Note that user edits are persisted in the browser's local storage only with respect to a specific version.
-
-Additionally, the object describing a activity contains the following fields:
-- `previewImage`: an object containing the `filename` of a preview image and its `backgroundColor`, to be used in the gallery
-- `visibility`: one of `"featured"` (shown first in the gallery with a special mark), `"visible"` (shown with normal priority in the gallery), `"draft"` (shown with a special "Coming soon" label in the gallery and only accessible using a direct link), or `"hidden"` (the activity is not shown at all in the gallery).
+See this document for [creating a new activity](docs/activity.md).
 </details>
 
+## I am a content author. What do I need to know to create a new curriculum?
+<details>
+<summary>Expand</summary>
+
+See this document for [creating a new curriculum](docs/curriculum.md).
+</details>
 
 ## How do I set up a development environment to run the platform locally?
 <details>
@@ -110,9 +86,7 @@ Additionally, the object describing a activity contains the following fields:
 <details>
 <summary>Expand</summary>
 
-Entity relationship diagram for our content:
-
-![Data Model Entity Relationship Diagram](docs/data-model-er.png)
+See this document for [the structure of a content repository](docs/content-repo.md).
 </details>
 
 ## I am a developer of the platform. Which coding guidelines should I follow?
