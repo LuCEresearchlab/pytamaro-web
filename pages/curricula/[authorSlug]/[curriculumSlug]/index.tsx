@@ -10,10 +10,10 @@ import NavigationBar from '../../../../components/NavigationBar';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
 import { Curriculum } from '../../../../src/schemas/curriculumSchema';
 import { curriculumPathname } from '../../../../src/urlUtils';
-import listAuthors from '../../../../src/fs-content/authors';
 import CurriculumFlow from '../../../../components/Curriculum/CurriculumFlow';
 import useLocalProfile from '../../../../src/localStorage/useLocalProfile';
 import TableOfContents from '../../../../components/TableOfContents';
+import { listAuthorsWithContent } from '../../../../src/fs-content/authors';
 
 export default function CurriculumPage({ curriculum }:
 { curriculum : Curriculum }) {
@@ -81,7 +81,7 @@ export async function getStaticProps(
 }
 
 export async function getStaticPaths() {
-  const authors = await listAuthors();
+  const authors = await listAuthorsWithContent();
   const paths = authors
     .flatMap((author) => author.curricula.map(
       (curriculum) => curriculumPathname(author.slug, curriculum.slug),

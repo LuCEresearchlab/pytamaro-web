@@ -21,10 +21,15 @@ export async function getAuthorProfile(authorSlug: string) : Promise<AuthorProfi
   };
 }
 
-export default async function listAuthors() : Promise<Author[]> {
+export async function listAuthorsProfiles() : Promise<AuthorProfile[]> {
   const authorSlugs = (await readdir(DATA_DIR, { withFileTypes: true }))
     .filter(async (entry) => (await stat(path.join(DATA_DIR, entry.name))).isDirectory())
     .map((dir) => dir.name)
     .filter((name) => !/^\./.test(name)); // skip hidden directories starting with a '.', such as '.DS_Store'
-  return Promise.all(authorSlugs.map(getAuthorContent));
+  return Promise.all(authorSlugs.map(getAuthorProfile));
+}
+
+export async function listAuthorsWithContent() : Promise<Author[]> {
+  const profiles = await listAuthorsProfiles();
+  return Promise.all(profiles.map(({ slug }) => getAuthorContent(slug)));
 }

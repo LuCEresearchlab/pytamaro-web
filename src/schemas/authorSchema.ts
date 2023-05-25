@@ -7,6 +7,11 @@ export interface Author {
   curricula: Curriculum[];
 }
 
+export interface AuthorActivities {
+  authorSlug: string;
+  activities: Activity[];
+}
+
 export interface AuthorProfile {
   slug: string;
   name: string;

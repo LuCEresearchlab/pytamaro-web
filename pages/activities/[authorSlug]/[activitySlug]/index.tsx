@@ -16,7 +16,7 @@ import getLanguageDisplayName from '../../../../src/internationalization';
 import { activityAssetPathname, activityPathname, activityVariantPathname } from '../../../../src/urlUtils';
 import { Activity, ActivityUse, NotebookVariant } from '../../../../src/schemas/activitySchema';
 import { getActivityUses, readActivity } from '../../../../src/fs-content/activities';
-import listAuthors from '../../../../src/fs-content/authors';
+import { listAuthorsWithContent } from '../../../../src/fs-content/authors';
 
 export default function InfoPage({ uses, activity }: {
   uses : ActivityUse[], activity : Activity
@@ -163,7 +163,7 @@ export async function getStaticProps(
 }
 
 export async function getStaticPaths() {
-  const authors = await listAuthors();
+  const authors = await listAuthorsWithContent();
   const paths = authors.flatMap((author) => author.activities.map(
     (activity) => activityPathname(author.slug, activity.slug),
   ));

@@ -8,10 +8,10 @@ import Head from 'next/head';
 import NavigationBar from '../../../components/NavigationBar';
 import { listCurricula } from '../../../src/fs-content/curricula';
 import { Curriculum } from '../../../src/schemas/curriculumSchema';
-import listAuthors, { getAuthorProfile } from '../../../src/fs-content/authors';
 import { curriculaByAuthorPathname } from '../../../src/urlUtils';
 import CurriculumCard from '../../../components/CurriculumCard';
 import { AuthorProfile } from '../../../src/schemas/authorSchema';
+import { getAuthorProfile, listAuthorsProfiles } from '../../../src/fs-content/authors';
 
 export default function CurriculaPage({ curricula, authorProfile }:
 { curricula: Curriculum[], authorProfile: AuthorProfile }) {
@@ -57,7 +57,7 @@ export async function getStaticProps(
 }
 
 export async function getStaticPaths() {
-  const authors = await listAuthors();
+  const authors = await listAuthorsProfiles();
   const paths = authors.map((a) => curriculaByAuthorPathname(a.slug));
   return {
     paths,

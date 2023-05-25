@@ -26,11 +26,11 @@ import {
 } from '../../../../../../src/schemas/activitySchema';
 import { findLanguages, findVersions, variantInfo } from '../../../../../../src/fs-content/activities';
 import getNotebookContent from '../../../../../../src/notebook';
-import listAuthors from '../../../../../../src/fs-content/authors';
 import { countLines } from '../../../../../../src/sourceUtils';
 import ActivityInfoButton from '../../../../../../components/ActivityInfoButton';
 import CodeDownloadButton from '../../../../../../components/CodeDownloadButton';
 import TableOfContents from '../../../../../../components/TableOfContents';
+import { listAuthorsWithContent } from '../../../../../../src/fs-content/authors';
 
 const userType = 'student';
 
@@ -263,7 +263,7 @@ export async function getStaticProps(
 }
 
 export async function getStaticPaths() {
-  const authors = await listAuthors();
+  const authors = await listAuthorsWithContent();
   const paths = authors
     .flatMap((author) => author.activities
       .flatMap((activity) => activity.variants
