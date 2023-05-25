@@ -20,10 +20,11 @@
   uses: [
     {
       institution: string,
-      course: string | 'internal', // not shown in activity info page if 'internal'
+      course: string,
       instructors: string[],
       assignment: string,
       url: string,
+      hidden?: boolean,
     },
     ...
   ],

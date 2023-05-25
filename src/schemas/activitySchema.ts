@@ -32,6 +32,7 @@ export interface ActivityUse {
   instructors: string[],
   assignment: string,
   url: string,
+  hidden?: boolean,
 }
 
 export interface ContentItem {

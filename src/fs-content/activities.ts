@@ -77,5 +77,5 @@ export async function getActivityUses(
   activitySlug: string,
 ) : Promise<ActivityUse[]> {
   const mod = await readActivity(authorSlug, activitySlug);
-  return mod.uses.filter((use) => use.course !== 'internal');
+  return mod.uses.filter((use) => use?.hidden !== true);
 }
