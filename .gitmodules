@@ -10,3 +10,6 @@
 [submodule "ceschi"]
 	path = data/ceschi
 	url = git@github.com:LuCEresearchlab/pytamaro-web-ceschi.git
+[submodule "dalpian"]
+	path = data/dalpian
+	url = git@github.com:LuCEresearchlab/pytamaro-web-dalpian.git
