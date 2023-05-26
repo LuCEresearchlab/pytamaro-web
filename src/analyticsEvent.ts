@@ -2,6 +2,7 @@ export enum AnalyticsEventName {
   CodeExecution = 'CodeExecution',
   APIDocsPopover = 'APIDocsPopover',
   RecommendedActivity = 'RecommendedActivity',
+  ActivityLink = 'ActivityLink',
 }
 
 export default function logAnalyticsEvent(eventName: AnalyticsEventName, props: any) {

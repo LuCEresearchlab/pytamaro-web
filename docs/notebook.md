@@ -37,5 +37,9 @@ Special components that can be used:
 
 - `<API>above</API>` to render a name (e.g., `above`) from the PyTamaro library with the appropriate style
   and automatic link to the documentation.
+- `<Activity id="luce/sliced-pitaya/en/v1" fragment="ring-of-seeds">Sliced Pitaya activity</Activity>` to render a link to another activity.
+  You can optionally specify a fragment to link to a specific section of the activity. The `id` should refer to a fully qualified activity variant identifier,
+  i.e. it should include the author's slug, the activity's slug, the language, and the version.
+  The content of the tag will be rendered as the link's text.
 - `<ReactPlayer url='...' />` (see [more on usage](https://github.com/cookpete/react-player)).
 - Material UI's [Stack](https://mui.com/material-ui/react-stack/).

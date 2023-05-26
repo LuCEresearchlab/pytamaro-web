@@ -32,6 +32,7 @@ import CodeDownloadButton from '../../../../../../components/CodeDownloadButton'
 import TableOfContents from '../../../../../../components/TableOfContents';
 import { listAuthorsWithContent } from '../../../../../../src/fs-content/authors';
 import { CodeCellState } from '../../../../../../src/localStorage/schema';
+import ActivityLink from '../../../../../../components/ActivityLink';
 
 const userType = 'student';
 
@@ -117,6 +118,7 @@ function MarkdownCellComponent({ cell, activityVariant } :
     API: ({ children: name }: { children: string }) => (
       PyTamaroAPIComponent(name, activityVariant)
     ),
+    Activity: ActivityLink,
   };
   return (
     <MDXRemote
