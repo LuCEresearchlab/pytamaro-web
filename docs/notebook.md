@@ -5,10 +5,24 @@ All the Python code written in notebooks cells should at least parse (i.e., ther
 This includes the Python code that purposefully might have "holes" for learners to fill in.
 You can use an ellipsis (`...`) as a placeholder, e.g. `return ...`.
 
-The platform automatically checks the validity of all Python cells before building the application.
-You can run the same check and see possible errors using:
+⚠ The platform automatically checks the syntax of all Python cells before building the application.
+You can run the same check and see eventual errors using:
 ```sh
 npx ts-node tools/checkNotebookSourceCode.mts`
+```
+
+Additionally, avoid long lines of code (e.g., use a limit of 80 columns as a rule of thumb).
+Not only they are often harder to read, but they also require users to scroll horizontally.
+
+## Visibility of Code Cells
+
+You might want to hide some code cells from learners
+(e.g., because they contain the solution).
+You can do so by adding this special comment in the first line of the code cell:
+
+```python
+#teacher-only
+...
 ```
 
 ## Images
@@ -25,12 +39,6 @@ There are three ways to include an image in your activity:
   ```
   and **add the resource** to the array of `assets` specified in the activity's `info.json` file.
 
-## General remarks
-
-- Include slash in every self-closing tag (for example, write `<br/>` instead of `<br>`).
-- To create cells only for teachers, its first line should be `#teacher-only`.
-- To create cells for both students and teachers, its first line should be `#student-teacher`.
-
 ## Special Components
 
 Special components that can be used:
@@ -42,4 +50,14 @@ Special components that can be used:
   i.e. it should include the author's slug, the activity's slug, the language, and the version.
   The content of the tag will be rendered as the link's text.
 - `<ReactPlayer url='...' />` (see [more on usage](https://github.com/cookpete/react-player)).
-- Material UI's [Stack](https://mui.com/material-ui/react-stack/).
+- Material UI's [Stack](https://mui.com/material-ui/react-stack/). For instance, you might want to display multiple images side by side with some spacing:
+  ```
+  <Stack direction="row" spacing={2} alignItems="flex-end">
+    <div>
+    ![description 1](img1.svg)
+    </div>
+    <div>
+    ![description 2](img2.svg)
+    </div>
+  </Stack>
+  ```
