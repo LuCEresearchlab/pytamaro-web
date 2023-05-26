@@ -13,3 +13,6 @@
 [submodule "dalpian"]
 	path = data/dalpian
 	url = git@github.com:LuCEresearchlab/pytamaro-web-dalpian.git
+[submodule "lichtsteiner"]
+	path = data/lichtsteiner
+	url = git@github.com:LuCEresearchlab/pytamaro-web-lichtsteiner.git
