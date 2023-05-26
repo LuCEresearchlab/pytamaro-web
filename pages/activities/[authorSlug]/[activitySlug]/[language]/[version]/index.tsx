@@ -12,7 +12,7 @@ import { useRouter } from 'next/router';
 import { useRef } from 'react';
 import CodeCell from '../../../../../../components/CodeCell';
 import NavigationBar from '../../../../../../components/NavigationBar';
-import { asSingleSource, createCodeCell, useLocalActivity } from '../../../../../../src/localStorage/useLocalActivity';
+import { asSingleSource, useLocalActivity } from '../../../../../../src/localStorage/useLocalActivity';
 import { activityAssetPathname, activityVariantPathname } from '../../../../../../src/urlUtils';
 import VariantSelector from '../../../../../../components/VariantsSelector';
 import ResponsiveReactPlayer from '../../../../../../components/ResponsiveReactPlayer';
@@ -31,6 +31,7 @@ import ActivityInfoButton from '../../../../../../components/ActivityInfoButton'
 import CodeDownloadButton from '../../../../../../components/CodeDownloadButton';
 import TableOfContents from '../../../../../../components/TableOfContents';
 import { listAuthorsWithContent } from '../../../../../../src/fs-content/authors';
+import { CodeCellState } from '../../../../../../src/localStorage/schema';
 
 const userType = 'student';
 
@@ -145,15 +146,16 @@ export default function NotebookPage({
     authorSlug, activitySlug, language, version,
   };
 
-  const initialCodeCells = cells
+  const initialCodeCells : CodeCellState[] = cells
     .map((cell, idx) => ({ cell, idx }))
     .filter(({ cell }) => cell.cell_type === 'code')
-    .map(({ cell, idx: originalIdx }) => createCodeCell(cell.source, originalIdx));
+    .map(({ cell, idx: originalIdx }) => ({ source: cell.source, originalIndex: originalIdx }));
   const originalIdxToCodeCellIdx = new Map<number, number>();
   initialCodeCells.forEach((cell, idx) => originalIdxToCodeCellIdx.set(cell.originalIndex, idx));
 
   const {
-    codeCells, cellsModified, completed, networkError, localCodeCellsWrongLength,
+    codeCells, codeExecutionStates, cellsModified,
+    completed, networkError, localCodeCellsWrongLength,
     toggleCompleted, setNetworkError, handleSourceChanged, handleExecute,
     handleToggleOutputArea, handleResetActivity, handleResetSingleCell,
   } = useLocalActivity(initialCodeCells, activityVariant);
@@ -209,6 +211,7 @@ export default function NotebookPage({
                     <CodeCell
                       key={cell.id}
                       codeCellState={currentCodeCell}
+                      codeCellExecutionState={codeExecutionStates[cellIdx]}
                       onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
                       onExecutionRequested={() => handleExecute(cellIdx)}
                       onOutputAreaToggled={() => handleToggleOutputArea(cellIdx)}

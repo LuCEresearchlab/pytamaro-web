@@ -17,7 +17,7 @@ import {
   ContentCopy, ErrorOutline, RestartAlt, Visibility, VisibilityOff,
 } from '@mui/icons-material';
 import OutputArea from './OutputArea';
-import { CodeCellState } from '../src/localStorage/schema';
+import { CodeCellExecutionState, CodeCellState } from '../src/localStorage/schema';
 import DocumentationStripe from './DocumentationStripe';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 
@@ -30,8 +30,11 @@ const StaleOutputBadge = styled(Badge)<BadgeProps>(() => ({
   width: '100%',
 }));
 
-export function MoreOptions({ codeCellState, onShowHideOutput, onReset } :
-{ codeCellState: CodeCellState, onShowHideOutput: () => void, onReset: () => void }) {
+export function MoreOptions({
+  codeCellState, codeCellExecutionState, onShowHideOutput, onReset,
+} :
+{ codeCellState: CodeCellState, codeCellExecutionState: CodeCellExecutionState,
+  onShowHideOutput: () => void, onReset: () => void }) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -95,12 +98,12 @@ export function MoreOptions({ codeCellState, onShowHideOutput, onReset } :
           </ListItemIcon>
           Copy Code
         </MenuItem>
-        { codeCellState.executionResponse && (
+        { codeCellExecutionState.executionResponse && (
         <MenuItem onClick={handleShowHideOutputArea}>
           <ListItemIcon>
-            { codeCellState.outputAreaVisible ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+            { codeCellExecutionState.outputAreaVisible ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
           </ListItemIcon>
-          { codeCellState.outputAreaVisible ? 'Hide' : 'Show' }
+          { codeCellExecutionState.outputAreaVisible ? 'Hide' : 'Show' }
           {' '}
           Output
         </MenuItem>
@@ -111,10 +114,11 @@ export function MoreOptions({ codeCellState, onShowHideOutput, onReset } :
 }
 
 export default function CodeCell({
-  codeCellState, onSourceChanged, onExecutionRequested, onOutputAreaToggled,
+  codeCellState, codeCellExecutionState, onSourceChanged, onExecutionRequested, onOutputAreaToggled,
   onReset, firstLineNumber, activityVariant,
 } :
 { codeCellState : CodeCellState,
+  codeCellExecutionState: CodeCellExecutionState,
   onSourceChanged: (newSource: string) => void,
   onExecutionRequested: () => Promise<any>,
   onOutputAreaToggled: () => void,
@@ -142,9 +146,9 @@ export default function CodeCell({
     };
     editor.onDidContentSizeChange(updateHeight);
   };
-  const executionError = codeCellState.executionResponse?.type === 'error';
-  const executing = codeCellState.executionInProgress;
-  const executionFinished = codeCellState.outputSynced;
+  const executionError = codeCellExecutionState.executionResponse?.type === 'error';
+  const executing = codeCellExecutionState.executionInProgress;
+  const executionFinished = codeCellExecutionState.outputSynced;
   let buttonMessage = 'Run';
   let buttonTooltip = ''; // Empty tooltips are not displayed
   let buttonIcon = <PlayCircleFilledIcon />;
@@ -196,16 +200,17 @@ export default function CodeCell({
           </Tooltip>
           <MoreOptions
             codeCellState={codeCellState}
+            codeCellExecutionState={codeCellExecutionState}
             onShowHideOutput={onOutputAreaToggled}
             onReset={onReset}
           />
         </CardActions>
-        <Collapse in={codeCellState.outputAreaVisible} timeout="auto" unmountOnExit>
+        <Collapse in={codeCellExecutionState.outputAreaVisible} timeout="auto" unmountOnExit>
           <CardContent>
             <StaleOutputBadge
               badgeContent={<Tooltip title="Stale output: re-run your code to refresh it"><SyncProblemIcon /></Tooltip>}
               color="error"
-              invisible={codeCellState.outputSynced}
+              invisible={codeCellExecutionState.outputSynced}
             >
               <Card
                 sx={{
@@ -216,8 +221,8 @@ export default function CodeCell({
                   width: '100%',
                 }}
               >
-                {codeCellState.executionResponse
-                  && <OutputArea executionResponse={codeCellState.executionResponse} />}
+                {codeCellExecutionState.executionResponse
+                  && <OutputArea executionResponse={codeCellExecutionState.executionResponse} />}
               </Card>
             </StaleOutputBadge>
           </CardContent>

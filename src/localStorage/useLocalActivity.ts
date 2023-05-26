@@ -5,7 +5,8 @@ import useLocalStorageState from 'use-local-storage-state';
 import axios from 'axios';
 import logAnalyticsEvent, { AnalyticsEventName } from '../analyticsEvent';
 import {
-  CodeCellState, CodeState, getActivityVariantCodeCellsKey, getDefaultActivityVariantMetadata,
+  CodeCellExecutionState,
+  CodeCellState, getActivityVariantCodeCellsKey, getDefaultActivityVariantMetadata,
 } from './schema';
 import useLocalProfile from './useLocalProfile';
 import { ActivityVariant, activityVariantId } from '../schemas/activitySchema';
@@ -13,14 +14,12 @@ import { EventName, storeDbEvent } from '../storeDbEvent';
 import { ExecutionResponse } from '../codeExecution';
 import { joinLines } from '../sourceUtils';
 
-export function createCodeCell(source: string, originalIndex: number): CodeCellState {
+export function initialCodeExecutionState(): CodeCellExecutionState {
   return {
-    source,
     executionInProgress: false,
     executionResponse: undefined,
     outputAreaVisible: false,
     outputSynced: false,
-    originalIndex,
   };
 }
 
@@ -44,7 +43,10 @@ export function asSingleSource(cells: CodeCellState[]) {
   return joinLines(cells.map(sourceFromCell));
 }
 
-export function useLocalActivity(initialCodeCells: CodeState, activityVariant: ActivityVariant) {
+export function useLocalActivity(
+  initialCodeCells: CodeCellState[],
+  activityVariant: ActivityVariant,
+) {
   const { metadata, setMetadata } = useLocalProfile();
   const variantId = activityVariantId(activityVariant);
   const variantMetadata = metadata.activities.find((a) => a.id === variantId);
@@ -52,6 +54,11 @@ export function useLocalActivity(initialCodeCells: CodeState, activityVariant: A
     variantMetadata?.codeCellsKey || getActivityVariantCodeCellsKey(variantId),
     { defaultValue: initialCodeCells },
   );
+  const initialCodeExecutionStates = () => Array(codeCells.length).fill(undefined)
+    .map(initialCodeExecutionState);
+
+  const [codeExecutionStates,
+    setCodeExecutionStates] = useState<CodeCellExecutionState[]>(initialCodeExecutionStates());
   const localCodeCellsWrongLength = codeCells.length !== initialCodeCells.length;
   const [networkError, setNetworkError] = useState(false);
 
@@ -94,6 +101,10 @@ export function useLocalActivity(initialCodeCells: CodeState, activityVariant: A
     setCodeCells(
       (currentCodeCells) => produce(currentCodeCells, (draft) => {
         draft[idx].source = newSource;
+      }),
+    );
+    setCodeExecutionStates(
+      (currentCodeExecutionStates) => produce(currentCodeExecutionStates, (draft) => {
         // Output of all the cells from `idx` is (potentially) no longer in sync
         for (let i = idx; i < codeCells.length; i += 1) {
           draft[i].outputSynced = false;
@@ -103,16 +114,16 @@ export function useLocalActivity(initialCodeCells: CodeState, activityVariant: A
   };
 
   const executionStarted = (idx: number) => {
-    setCodeCells(
-      (currentCodeCells) => produce(currentCodeCells, (draft) => {
+    setCodeExecutionStates(
+      (currentCodeExecutionStates) => produce(currentCodeExecutionStates, (draft) => {
         draft[idx].executionInProgress = true;
       }),
     );
   };
 
   const executionFinished = (idx: number, response: ExecutionResponse | undefined) => {
-    setCodeCells(
-      (currentCodeCells) => produce(currentCodeCells, (draft) => {
+    setCodeExecutionStates(
+      (currentCodeExecutionStates) => produce(currentCodeExecutionStates, (draft) => {
         draft[idx].executionInProgress = false;
         if (response !== undefined) {
           draft[idx].executionResponse = response;
@@ -152,8 +163,8 @@ export function useLocalActivity(initialCodeCells: CodeState, activityVariant: A
   };
 
   const handleToggleOutputArea = (idx: number) => {
-    setCodeCells(
-      (currentCodeCells) => produce(currentCodeCells, (draft) => {
+    setCodeExecutionStates(
+      (currentCodeExecutionStates) => produce(currentCodeExecutionStates, (draft) => {
         draft[idx].outputAreaVisible = !draft[idx].outputAreaVisible;
       }),
     );
@@ -162,20 +173,31 @@ export function useLocalActivity(initialCodeCells: CodeState, activityVariant: A
   const confirm = useConfirm();
   const handleResetActivity = () => {
     confirm({ description: 'You are about to reset all the code you have written in this activity. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete my code' })
-      .then(() => setCodeCells(initialCodeCells));
+      .then(() => {
+        setCodeCells(initialCodeCells);
+        setCodeExecutionStates(initialCodeExecutionStates());
+      });
   };
 
   const handleResetSingleCell = (idx: number) => {
     confirm({ description: 'You are about to reset the code in this cell. Other cells will be left unchanged. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete my code' })
-      .then(() => setCodeCells(
-        (currentCodeCells) => produce(currentCodeCells, (draft) => {
-          draft[idx] = initialCodeCells[idx];
-        }),
-      ));
+      .then(() => {
+        setCodeCells(
+          (currentCodeCells) => produce(currentCodeCells, (draft) => {
+            draft[idx] = initialCodeCells[idx];
+          }),
+        );
+        setCodeExecutionStates(
+          (currentCodeExecutionStates) => produce(currentCodeExecutionStates, (draft) => {
+            draft[idx] = initialCodeExecutionState();
+          }),
+        );
+      });
   };
 
   return {
     codeCells,
+    codeExecutionStates,
     completed,
     cellsModified,
     networkError,

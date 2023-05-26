@@ -13,13 +13,14 @@ import { PythonName, imported_names } from '../src/parser/parser';
 import CodeCell from '../components/CodeCell';
 import DownloadCodeButton from '../components/CodeDownloadButton';
 import NavigationBar from '../components/NavigationBar';
-import { asSingleSource, createCodeCell, useLocalActivity } from '../src/localStorage/useLocalActivity';
+import { asSingleSource, useLocalActivity } from '../src/localStorage/useLocalActivity';
 import NetworkErrorSnackbar from '../components/NetworkErrorSnackbar';
 import ResetButton from '../components/ResetButton';
 import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDialog';
 import { playgroundActivityVariant, playgroundInitialSource } from '../src/playground';
 import getActivitiesWithAPIs, { ActivityVariantWithNames } from '../src/activitiesAPIs';
 import ActivitiesStripe from '../components/ActivitiesStripe';
+import { CodeCellState } from '../src/localStorage/schema';
 
 function uniqueNames(names : PythonName[]) : Set<string> {
   return new Set(names.map(({ module, name }) => `${module}.${name}`));
@@ -33,9 +34,9 @@ const FullWidthAlert = styled(Alert)<AlertProps>(() => ({
 
 export default function Playground({ activitiesWithNames } :
 { activitiesWithNames : ActivityVariantWithNames[] }) {
-  const initialCodeState = [createCodeCell(playgroundInitialSource, 0)];
+  const initialCodeState: CodeCellState[] = [{ source: playgroundInitialSource, originalIndex: 0 }];
   const {
-    codeCells, cellsModified, networkError, setNetworkError,
+    codeCells, codeExecutionStates, cellsModified, networkError, setNetworkError,
     handleSourceChanged, handleExecute, handleToggleOutputArea,
     handleResetActivity, handleResetSingleCell,
   } = useLocalActivity(initialCodeState, playgroundActivityVariant);
@@ -85,6 +86,7 @@ export default function Playground({ activitiesWithNames } :
           <Typography variant="h2" align="center" marginY={3}>Playground</Typography>
           <CodeCell
             codeCellState={codeCells[0]}
+            codeCellExecutionState={codeExecutionStates[0]}
             onSourceChanged={(newSource) => handleSourceChanged(newSource, 0)}
             onExecutionRequested={() => { recommendActivities(); return handleExecute(0); }}
             onOutputAreaToggled={() => handleToggleOutputArea(0)}

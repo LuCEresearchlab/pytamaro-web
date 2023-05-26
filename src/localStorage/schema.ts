@@ -19,14 +19,15 @@ export interface ActivityVariantMetadata {
 
 export interface CodeCellState {
   source: string;
+  originalIndex: number;
+}
+
+export interface CodeCellExecutionState {
   executionInProgress: boolean;
   executionResponse: any;
   outputAreaVisible: boolean;
   outputSynced: boolean;
-  originalIndex: number;
 }
-
-export type CodeState = CodeCellState[];
 
 /* Keys for local storage */
 
