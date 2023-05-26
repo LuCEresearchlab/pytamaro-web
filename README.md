@@ -71,7 +71,8 @@ See this document for [creating a new curriculum](docs/curriculum.md).
 <details>
 <summary>Expand</summary>
 
-1. Clone this repository: `git clone git@github.com:LuCEresearchlab/pytamaro-web.git` 
+1. Clone this repository `git clone git@github.com:LuCEresearchlab/pytamaro-web.git`
+1. Change directory to the newly cloned repository (e.g., `cd pytamaro-web`) 
 1. Clone the submodules you have access to (e.g., `git submodule update --init data/luce`, or `git submodule update --init` to clone all of them)
 1. Install the dependencies of this project: `npm install`
 1. Populate the `public` folder with notebooks-related assets: `npx ts-node tools/createNotebookAssets.mts`
