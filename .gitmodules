@@ -16,3 +16,6 @@
 [submodule "lichtsteiner"]
 	path = data/lichtsteiner
 	url = git@github.com:LuCEresearchlab/pytamaro-web-lichtsteiner.git
+[submodule "lardelli"]
+	path = data/lardelli
+	url = git@github.com:LuCEresearchlab/pytamaro-web-lardelli.git
