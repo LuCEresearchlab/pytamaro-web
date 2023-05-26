@@ -1,6 +1,3 @@
 [submodule "luce"]
 	path = data/luce
 	url = git@github.com:LuCEresearchlab/pytamaro-web-luce.git
-[submodule "dryrun"]
-	path = data/dryrun
-	url = git@github.com:LuCEresearchlab/pytamaro-web-dryrun.git
