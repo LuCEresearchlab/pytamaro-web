@@ -10,7 +10,7 @@ export function authorInfoPath(authorSlug: string) {
   return path.join(DATA_DIR, authorSlug, 'author.json');
 }
 
-async function getAuthorContent(authorSlug: string) {
+export async function getAuthorContent(authorSlug: string) {
   return {
     slug: authorSlug,
     activities: await listActivities(authorSlug),
@@ -19,10 +19,11 @@ async function getAuthorContent(authorSlug: string) {
 }
 
 export async function getAuthorProfile(authorSlug: string) : Promise<AuthorProfile> {
-  const { name } = JSON.parse(await readFile(authorInfoPath(authorSlug), 'utf-8'));
+  const { name, description } = JSON.parse(await readFile(authorInfoPath(authorSlug), 'utf-8'));
   return {
     slug: authorSlug,
     name,
+    description,
   };
 }
 

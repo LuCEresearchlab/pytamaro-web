@@ -1,17 +1,14 @@
 import {
-  Box,
-  Container,
-  Stack,
-  Typography,
+  Box, Container, Typography,
 } from '@mui/material';
 import Head from 'next/head';
 import NavigationBar from '../../../components/NavigationBar';
 import { listCurricula } from '../../../src/fs-content/curricula';
 import { Curriculum } from '../../../src/schemas/curriculumSchema';
 import { curriculaByAuthorPathname } from '../../../src/urlUtils';
-import CurriculumCard from '../../../components/CurriculumCard';
 import { AuthorProfile } from '../../../src/schemas/authorSchema';
 import { getAuthorProfile, listAuthorsProfiles } from '../../../src/fs-content/authors';
+import CurriculaList from '../../../components/CurriculaList';
 
 export default function CurriculaPage({ curricula, authorProfile }:
 { curricula: Curriculum[], authorProfile: AuthorProfile }) {
@@ -31,11 +28,7 @@ export default function CurriculaPage({ curricula, authorProfile }:
             {' '}
             {authorProfile.name}
           </Typography>
-          <Stack spacing={2}>
-            {curricula.map((curriculum: Curriculum) => (
-              <CurriculumCard key={`${authorProfile.slug}/${curriculum.slug}`} authorSlug={authorProfile.slug} curriculum={curriculum} />
-            ))}
-          </Stack>
+          <CurriculaList curricula={curricula} authorProfile={authorProfile} />
         </Container>
       </Box>
     </div>

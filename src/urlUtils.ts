@@ -38,6 +38,12 @@ export function curriculumPathname(authorSlug: string, curriculumSlug: string) {
   return `${curriculaByAuthorPathname(authorSlug)}/${curriculumSlug}`;
 }
 
+/* Authors */
+
+export function authorPathname(authorSlug: string) {
+  return contentTypeByAuthorPathname('authors', authorSlug);
+}
+
 /* Extra */
 
 export function playgroundPathname() {

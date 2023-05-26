@@ -7,7 +7,6 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Link from 'next/link';
 import router from 'next/router';
 import InfoIcon from '@mui/icons-material/Info';
-import { useEffect } from 'react';
 import { activityVariantPathname, activityAssetPathname, activityPathname } from '../src/urlUtils';
 import { Activity, NotebookVariant } from '../src/schemas/activitySchema';
 
@@ -21,27 +20,24 @@ const VISIBILITY_PRIORITY = {
 };
 
 export default function ActivitiesGallery({
-  activities, languageFilter, compactView,
+  activities, languageFilter = ANY_LANGUAGE, compactView = false,
 } :
 { activities : Activity[],
-  languageFilter : string,
-  compactView: boolean
+  languageFilter?: string,
+  compactView?: boolean
 }) {
-  useEffect(() => {
-    // Basic sorting
-    activities.sort((a1, a2) => {
-      if (a1.visibility !== a2.visibility) {
+  activities.sort((a1, a2) => {
+    if (a1.visibility !== a2.visibility) {
       // different visibility, featured before visible before draft before hidden
-        return VISIBILITY_PRIORITY[a1.visibility] - VISIBILITY_PRIORITY[a2.visibility];
-      }
-      if (a1.variants.length !== a2.variants.length) {
+      return VISIBILITY_PRIORITY[a1.visibility] - VISIBILITY_PRIORITY[a2.visibility];
+    }
+    if (a1.variants.length !== a2.variants.length) {
       // same visibility, more variants first
-        return Math.sign(a2.variants.length - a1.variants.length);
-      }
-      // same visibility, same number of variants, sort by slug
-      return a1.slug < a2.slug ? -1 : 1;
-    });
-  }, [activities]);
+      return Math.sign(a2.variants.length - a1.variants.length);
+    }
+    // same visibility, same number of variants, sort by slug
+    return a1.slug < a2.slug ? -1 : 1;
+  });
 
   if (activities.length === 0) {
     return (

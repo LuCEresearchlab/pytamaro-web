@@ -10,4 +10,5 @@ export interface Author {
 export interface AuthorProfile {
   slug: string;
   name: string;
+  description: string;
 }

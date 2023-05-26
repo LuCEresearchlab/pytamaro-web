@@ -1,0 +1,88 @@
+import {
+  Box,
+  Container,
+  Divider,
+  Link,
+  Typography,
+} from '@mui/material';
+import Head from 'next/head';
+import NavigationBar from '../../../components/NavigationBar';
+import { Curriculum } from '../../../src/schemas/curriculumSchema';
+import { activitiesByAuthorPathname, authorPathname, curriculaByAuthorPathname } from '../../../src/urlUtils';
+import { AuthorProfile } from '../../../src/schemas/authorSchema';
+import {
+  getAuthorContent, getAuthorProfile, listAuthorsProfiles,
+} from '../../../src/fs-content/authors';
+import CurriculaList from '../../../components/CurriculaList';
+import ActivitiesGallery from '../../../components/ActivitiesGallery';
+import { Activity } from '../../../src/schemas/activitySchema';
+
+export default function AuthorPage({ authorProfile, curricula, activities }:
+{ authorProfile: AuthorProfile, curricula: Curriculum[], activities: Activity[] }) {
+  const pageTitle = `${authorProfile.name} - PyTamaro`;
+
+  return (
+    <div>
+      <Head>
+        <title>{pageTitle}</title>
+      </Head>
+
+      <Box>
+        <NavigationBar />
+        <Container>
+          <Typography variant="h3" marginY={3}>
+            {authorProfile.name}
+          </Typography>
+          {authorProfile.description && (
+          <Typography variant="body1" marginY={3}>
+            {authorProfile.description}
+          </Typography>
+          )}
+          <Divider />
+          <Typography variant="h5" marginY={3}>
+            <Link href={curriculaByAuthorPathname(authorProfile.slug)} underline="none">
+              Curricula by
+              {' '}
+              {authorProfile.name}
+            </Link>
+          </Typography>
+          <CurriculaList authorProfile={authorProfile} curricula={curricula} />
+          <Divider sx={{ my: 3 }} />
+          <Typography variant="h5" marginY={3}>
+            <Link href={activitiesByAuthorPathname(authorProfile.slug)} underline="none">
+              Activities by
+              {' '}
+              {authorProfile.name}
+            </Link>
+          </Typography>
+          <ActivitiesGallery activities={activities} />
+        </Container>
+      </Box>
+    </div>
+  );
+}
+
+export async function getStaticProps(
+  context: { params: { authorSlug: string } },
+) {
+  const {
+    authorSlug,
+  } = context.params;
+  const content = await getAuthorContent(authorSlug);
+  return {
+    props: {
+      authorProfile: await getAuthorProfile(authorSlug),
+      curricula: content.curricula,
+      activities: content.activities,
+    },
+  };
+}
+
+export async function getStaticPaths() {
+  const authors = await listAuthorsProfiles();
+  const paths = authors.map((a) => authorPathname(a.slug));
+  return {
+    paths,
+    fallback: false,
+  };
+}
