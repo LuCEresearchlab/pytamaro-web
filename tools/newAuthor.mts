@@ -2,11 +2,11 @@ import path from "path";
 import fs from "fs";
 import { execSync } from "child_process";
 import { ACTIVITIES_DIR, CURRICULA_DIR, DATA_DIR } from "./utils.mjs";
-
+import { tmpdir } from "os";
 const authorSlug = process.argv[2];
 
 // Create new author folder
-const authorFolder = fs.mkdtempSync(authorSlug);
+const authorFolder = fs.mkdtempSync(path.join(tmpdir(), authorSlug));
 
 // Create new folders for activities and curricula
 fs.mkdirSync(path.join(authorFolder, ACTIVITIES_DIR));
