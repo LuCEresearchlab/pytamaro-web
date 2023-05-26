@@ -7,3 +7,6 @@
 [submodule "sulmoni"]
 	path = data/sulmoni
 	url = git@github.com:LuCEresearchlab/pytamaro-web-sulmoni.git
+[submodule "ceschi"]
+	path = data/ceschi
+	url = git@github.com:LuCEresearchlab/pytamaro-web-ceschi.git
