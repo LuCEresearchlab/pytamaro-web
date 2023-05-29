@@ -3,9 +3,17 @@ import CircularProgress from '@mui/material/CircularProgress';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import styled from '@emotion/styled';
 import { activityVariantPathname } from '../src/urlUtils';
 import { LanguageWithLatestVersion } from '../src/schemas/activitySchema';
+
+const VariantSelect = styled(Select)({
+  color: 'white',
+  '& fieldset': {
+    border: 'none',
+  },
+});
 
 export default function VariantSelector({
   authorSlug, activitySlug, language, version, versions, languages,
@@ -15,21 +23,18 @@ export default function VariantSelector({
   const router = useRouter();
   const [selectedVersion, setSelectedVersion] = useState(version);
   const [selectedLanguage, setSelectedLanguage] = useState(language);
-  useEffect(() => {
+  const routeToNewVariant = (newLanguage: string, newVersion: string) => {
     router.push(
-      activityVariantPathname(authorSlug, activitySlug, selectedLanguage, selectedVersion),
+      activityVariantPathname(authorSlug, activitySlug, newLanguage, newVersion),
     );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedVersion, selectedLanguage]);
+  };
   return (
     <Stack
       direction="row"
       alignItems="center"
-      spacing={2}
     >
       {(version !== selectedVersion || language !== selectedLanguage) && <CircularProgress color="neutral" size="2rem" />}
-      <Select
-        sx={{ color: 'white' }}
+      <VariantSelect
         value={selectedLanguage}
         label="Language"
         size="small"
@@ -40,6 +45,7 @@ export default function VariantSelector({
             (l) => l.language === newLanguage,
           )?.latestVersion as string;
           setSelectedVersion(versionForNewLanguage);
+          routeToNewVariant(newLanguage, versionForNewLanguage);
         }}
       >
         {languages.map((l) => (
@@ -50,20 +56,20 @@ export default function VariantSelector({
             {l.language.toUpperCase()}
           </MenuItem>
         ))}
-      </Select>
-      <Select
-        sx={{ color: 'white' }}
+      </VariantSelect>
+      <VariantSelect
         size="small"
         value={selectedVersion}
         label="Version"
         onChange={(selected) => {
           const newVersion = selected.target.value as string;
           setSelectedVersion(newVersion);
+          routeToNewVariant(selectedLanguage, newVersion);
         }}
         disabled={language !== selectedLanguage}
       >
         {versions.map((v) => <MenuItem key={v} value={v}>{v}</MenuItem>)}
-      </Select>
+      </VariantSelect>
     </Stack>
   );
 }
