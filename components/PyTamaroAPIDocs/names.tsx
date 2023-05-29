@@ -152,12 +152,16 @@ const names : Record<string, NameInfo> = {
     fqname: 'pytamaro.de.graphic.Grafik',
     url: 'German/index',
   },
-  'de.speichere_gif': {
-    fqname: 'pytamaro.de.io.speichere_gif',
+  'de.speichere_animation': {
+    fqname: 'pytamaro.de.io.speichere_animation',
     url: 'German/io',
   },
   'de.speichere_grafik': {
     fqname: 'pytamaro.de.io.speichere_grafik',
+    url: 'German/io',
+  },
+  'de.zeige_animation': {
+    fqname: 'pytamaro.de.io.zeige_animation',
     url: 'German/io',
   },
   'de.zeige_grafik': {
@@ -264,12 +268,16 @@ const names : Record<string, NameInfo> = {
     fqname: 'pytamaro.graphic.Graphic',
     url: 'English/index',
   },
-  'en.save_gif': {
-    fqname: 'pytamaro.io.save_gif',
+  'en.save_animation': {
+    fqname: 'pytamaro.io.save_animation',
     url: 'English/io',
   },
   'en.save_graphic': {
     fqname: 'pytamaro.io.save_graphic',
+    url: 'English/io',
+  },
+  'en.show_animation': {
+    fqname: 'pytamaro.io.show_animation',
     url: 'English/io',
   },
   'en.show_graphic': {
@@ -332,12 +340,16 @@ const names : Record<string, NameInfo> = {
     fqname: 'pytamaro.it.graphic.Grafica',
     url: 'Italian/index',
   },
-  'it.salva_gif': {
-    fqname: 'pytamaro.it.io.salva_gif',
+  'it.salva_animazione': {
+    fqname: 'pytamaro.it.io.salva_animazione',
     url: 'Italian/io',
   },
   'it.salva_grafica': {
     fqname: 'pytamaro.it.io.salva_grafica',
+    url: 'Italian/io',
+  },
+  'it.visualizza_animazione': {
+    fqname: 'pytamaro.it.io.visualizza_animazione',
     url: 'Italian/io',
   },
   'it.visualizza_grafica': {
