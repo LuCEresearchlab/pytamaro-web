@@ -13,7 +13,7 @@ import ActivityNode from './ActivityNode';
 import TitleNode from './TitleNode';
 import OptionalActivitiesNode from './OptionalActivitiesNode';
 import JoinNode from './JoinNode';
-import { CurriculumActivity, CurriculumUnit } from '../../src/schemas/curriculumSchema';
+import { Curriculum, CurriculumActivity, CurriculumUnit } from '../../src/schemas/curriculumSchema';
 import { ActivityNodeData, color } from './utils';
 
 import 'reactflow/dist/style.css';
@@ -74,6 +74,7 @@ function incomingEdges(
 }
 
 function addActivitiesStatuses(
+  curriculum: Curriculum,
   activities: CurriculumActivity[],
   completedActivityVariantIds: string[],
   previousStepIsCompleted: boolean,
@@ -85,6 +86,7 @@ function addActivitiesStatuses(
     return {
       id: activity.id,
       activity: activity.activity,
+      curriculum,
       isCompleted,
       isUnlocked,
       width,
@@ -108,7 +110,7 @@ function graphWidth(
 }
 
 function getFlowElements(
-  units: CurriculumUnit[],
+  curriculum: Curriculum,
   completedActivityVariantIds: string[],
   windowWidth: number,
 ) {
@@ -142,7 +144,7 @@ function getFlowElements(
   const width = graphWidth(
     nodeTypeDimensions.title.width,
     nodeTypeDimensions.activity.width,
-    units,
+    curriculum.units,
     layerSpacing,
   );
 
@@ -231,12 +233,13 @@ function getFlowElements(
   // - a start node
   addSingleNode('start', 'startend', { type: 'start', text: 'Start', unlocked: previousStepIsCompleted });
   // - a sequence of units
-  units.forEach((unit, unitIdx) => {
+  curriculum.units.forEach((unit, unitIdx) => {
     // Each unit has a title
     addSingleNode(`${unitIdx}`, 'title', { type: 'unit', text: unit.title, unlocked: previousStepIsCompleted });
     // and contains a sequence of steps
     unit.steps.forEach((step, stepIdx) => {
       const activitiesInfo = addActivitiesStatuses(
+        curriculum,
         step.activities,
         completedActivityVariantIds,
         previousStepIsCompleted,
@@ -293,15 +296,17 @@ function Flow({ nodes, edges, setNodesInitialized }:
   );
 }
 
-export default function CurriculumFlow({ units, completedActivityVariantIds, setNodesInitialized }
-: { units : CurriculumUnit[],
-  completedActivityVariantIds : string[],
-  setNodesInitialized: (initialized: boolean) => void
-}) {
+export default function CurriculumFlow(
+  { curriculum, completedActivityVariantIds, setNodesInitialized }
+  : { curriculum : Curriculum,
+    completedActivityVariantIds : string[],
+    setNodesInitialized: (initialized: boolean) => void
+  },
+) {
   const windowWidth = useWidth();
   const {
     nodes, edges, width, height,
-  } = getFlowElements(units, completedActivityVariantIds, windowWidth);
+  } = getFlowElements(curriculum, completedActivityVariantIds, windowWidth);
 
   return (
     <Box

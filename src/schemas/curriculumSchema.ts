@@ -30,10 +30,20 @@ export interface CurriculumCompetency {
 }
 
 export interface Curriculum {
+  authorSlug: string,
   slug: string,
   title: string,
   description: string,
   visibility: 'featured' | 'visible' | 'draft' | 'hidden',
   competencies: CurriculumCompetency[],
   units: CurriculumUnit[],
+}
+
+export function curriculumId(authorSlug: string, slug: string) {
+  return `${authorSlug}/${slug}`;
+}
+
+export function curriculumFromId(id: string) {
+  const [authorSlug, curriculumSlug] = id.split('/');
+  return { authorSlug, curriculumSlug };
 }

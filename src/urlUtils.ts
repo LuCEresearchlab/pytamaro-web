@@ -28,6 +28,8 @@ export function activityAssetPathname(authorSlug: string, activitySlug: string, 
   return `${activityPathname(authorSlug, activitySlug)}/${asset}`;
 }
 
+export const CURRICULUM_QUERY_PARAM = 'curriculum';
+
 /* Curricula */
 
 export function curriculaByAuthorPathname(authorSlug: string) {

@@ -40,7 +40,7 @@ export default function CurriculumPage({ curriculum }:
             </Container>
             <div ref={curriculumFlowRef}>
               <CurriculumFlow
-                units={curriculum.units}
+                curriculum={curriculum}
                 completedActivityVariantIds={completedActivityVariantIds}
                 setNodesInitialized={setNodesInitialized}
               />

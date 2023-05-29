@@ -7,7 +7,7 @@ export default function DownloadCodeButton({ getSource }: { getSource: () => str
   return (
     <Button
       variant="contained"
-      color="success"
+      color="primary"
       startIcon={<DownloadIcon />}
       onClick={() => downloadSourceCode(getSource())}
     >

@@ -4,7 +4,7 @@ import { ActivityNodeData } from './utils';
 
 export default function ActivityNode({ data }: NodeProps<ActivityNodeData>) {
   const {
-    id, activity, isCompleted, isUnlocked, width, height,
+    id, activity, curriculum, isCompleted, isUnlocked, width, height,
   } = data;
 
   return (
@@ -13,6 +13,7 @@ export default function ActivityNode({ data }: NodeProps<ActivityNodeData>) {
       <ActivityCard
         id={id}
         activity={activity}
+        curriculum={curriculum}
         isCompleted={isCompleted}
         isUnlocked={isUnlocked}
         width={width}

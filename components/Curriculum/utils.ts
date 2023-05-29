@@ -1,9 +1,11 @@
 import { Activity } from '../../src/schemas/activitySchema';
+import { Curriculum } from '../../src/schemas/curriculumSchema';
 import theme from '../../src/theme';
 
 export type ActivityNodeData = {
   id: string;
   activity: Activity;
+  curriculum: Curriculum;
   isCompleted: boolean;
   isUnlocked: boolean;
   width: number,

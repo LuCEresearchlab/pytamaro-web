@@ -14,9 +14,10 @@ import {
   CheckCircleOutlineOutlined,
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
-import { activityAssetPathname, activityVariantPathname } from '../../src/urlUtils';
+import { CURRICULUM_QUERY_PARAM, activityAssetPathname, activityVariantPathname } from '../../src/urlUtils';
 import { Activity, activityVariantFromId, getVariantTitle } from '../../src/schemas/activitySchema';
 import LockedTooltip from './LockedTooltip';
+import { Curriculum, curriculumId } from '../../src/schemas/curriculumSchema';
 
 const CompletedBadge = styled(Badge)<BadgeProps>(() => ({
   '& .MuiBadge-badge': {
@@ -29,6 +30,7 @@ const CompletedBadge = styled(Badge)<BadgeProps>(() => ({
 export default function ActivityCard({
   id,
   activity,
+  curriculum,
   isCompleted,
   isUnlocked,
   width,
@@ -36,6 +38,7 @@ export default function ActivityCard({
 }: {
   id: string,
   activity: Activity,
+  curriculum: Curriculum,
   isCompleted: boolean,
   isUnlocked: boolean,
   width: number,
@@ -44,6 +47,13 @@ export default function ActivityCard({
   const router = useRouter();
   const variant = activityVariantFromId(id);
   const title = getVariantTitle(activity, variant) || activity.slug;
+
+  const url = `${activityVariantPathname(
+    variant.authorSlug,
+    variant.activitySlug,
+    variant.language,
+    variant.version,
+  )}?${new URLSearchParams({ [CURRICULUM_QUERY_PARAM]: curriculumId(curriculum.authorSlug, curriculum.slug) }).toString()}`;
 
   return (
     <Box
@@ -67,12 +77,7 @@ export default function ActivityCard({
             }}
           >
             <CardActionArea
-              onClick={() => router.push(activityVariantPathname(
-                variant.authorSlug,
-                variant.activitySlug,
-                variant.language,
-                variant.version,
-              ))}
+              onClick={() => router.push(url, url)}
               disabled={!isUnlocked}
             >
               <CardMedia

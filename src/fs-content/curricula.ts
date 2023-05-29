@@ -42,6 +42,7 @@ async function getCurriculumInfo(authorSlug: string, curriculumSlug: string) : P
     ),
   );
   return {
+    authorSlug,
     slug: curriculumSlug,
     ...content,
   };

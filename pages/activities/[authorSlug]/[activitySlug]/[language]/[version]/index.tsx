@@ -33,6 +33,7 @@ import TableOfContents from '../../../../../../components/TableOfContents';
 import { listAuthorsWithContent } from '../../../../../../src/fs-content/authors';
 import { CodeCellState } from '../../../../../../src/localStorage/schema';
 import ActivityLink from '../../../../../../components/ActivityLink';
+import BackToCurriculum from '../../../../../../components/BackToCurriculum';
 
 const userType = 'student';
 
@@ -228,6 +229,7 @@ export default function NotebookPage({
               <CodeDownloadButton getSource={() => asSingleSource(codeCells)} />
               <MarkCompletedButton completed={completed} toggleCompleted={toggleCompleted} />
             </Stack>
+            <BackToCurriculum />
           </Grid>
           <Grid
             lg={2}
