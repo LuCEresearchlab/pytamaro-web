@@ -72,7 +72,7 @@ export default function PyTamaroAPI({
       <img
         src="/favicon.ico"
         style={{
-          height: '1em', width: 'auto', display: 'inline-block', transform: 'translateY(.2em)', paddingRight: '.1em',
+          height: smallerFont ? '0.8em' : '1em', width: 'auto', display: 'inline-block', transform: `translateY(.${smallerFont ? '1' : '2'}em)`, paddingRight: '.1em',
         }}
         alt="PyTamaro icon"
       />

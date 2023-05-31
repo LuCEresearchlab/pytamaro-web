@@ -9,11 +9,17 @@ import PyTamaroNames from './PyTamaroAPIDocs/names';
 export default function DocumentationStripe({ source, activityVariant } :
 { source: string, activityVariant: ActivityVariant }) {
   const [names, setNames] = useState<PythonName[] | undefined>([]);
+  const [shownAtLeastOnce, setShownAtLeastOnce] = useState(false);
   useEffect(() => {
     try {
-      setNames(imported_names(source));
+      const newNames = imported_names(source);
+      setNames(newNames);
+      if (newNames.length > 0) {
+        setShownAtLeastOnce(true);
+      }
     } catch {
       setNames(undefined);
+      setShownAtLeastOnce(true);
     }
   }, [source]);
   const moduleToLanguage: Record<string, string> = {
@@ -45,6 +51,8 @@ export default function DocumentationStripe({ source, activityVariant } :
         ))}
         {knownNames === undefined
           && <Typography variant="body2" sx={{ color: '#dddddd' }}>Syntax Error</Typography>}
+        {knownNames?.length === 0 && shownAtLeastOnce
+          && <Typography variant="body2" sx={{ color: '#dddddd' }}>No name imported from PyTamaro</Typography>}
       </Stack>
     </Box>
   );
