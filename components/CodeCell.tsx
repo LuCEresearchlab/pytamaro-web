@@ -178,6 +178,7 @@ export default function CodeCell({
               renderLineHighlight: 'none',
               overviewRulerLanes: 0,
               scrollBeyondLastLine: false,
+              fixedOverflowWidgets: true,
             }}
             onMount={handleEditorMount}
           />
