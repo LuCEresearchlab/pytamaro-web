@@ -2,7 +2,7 @@ import { countLines, emptyLines } from './sourceUtils';
 
 export interface ExecutionResponse {
   type: string,
-  content?: any
+  content: string,
 }
 
 /**
