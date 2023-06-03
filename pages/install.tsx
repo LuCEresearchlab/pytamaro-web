@@ -6,6 +6,8 @@ import {
 import Head from 'next/head';
 import NavigationBar from '../components/NavigationBar';
 
+const PYTAMARO_VERSION = '0.5.1';
+
 function SectionHeading({ children } : { children: React.ReactNode }) {
   return (
     <Typography variant="h3" mt={6} align="center">
@@ -97,7 +99,7 @@ export default function Install() {
             We execute your code in an enviroment with <a href="https://docs.python.org/3/whatsnew/3.11.html">Python 3.11</a> and the following libraries:
             <ul>
               <li>
-                <code>pytamaro</code> version <a href="https://pypi.org/project/pytamaro/0.5.0/"><code>0.5.1</code></a>
+                <code>pytamaro</code> version <a href={`https://pypi.org/project/pytamaro/${PYTAMARO_VERSION}/`}><code>{PYTAMARO_VERSION}</code></a>
               </li>
               <li>
                 <code>friendly</code> version <a href="https://github.com/friendly-traceback/friendly"><code>fe5d3a2</code></a>
