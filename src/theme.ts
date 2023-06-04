@@ -59,8 +59,11 @@ const theme = createTheme({
     },
   },
   pytamaro: {
-    monospaceFontFamily: 'Fira Code, monospace',
+    monospaceFontFamily: "'Fira Code', monospace",
     redColor: '#D2071D',
+  },
+  typography: {
+    fontFamily: "'Fira Sans', sans-serif",
   },
 });
 
