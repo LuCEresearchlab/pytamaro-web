@@ -1,39 +1,41 @@
-import Container from '@mui/material/Container';
-import { MDXRemote } from 'next-mdx-remote';
-
 import {
   Alert,
   AlertTitle,
   Box, Stack, Typography,
 } from '@mui/material';
+import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
+import { MDXRemote } from 'next-mdx-remote';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useRef } from 'react';
+import ActivityInfoButton from '../../../../../../components/ActivityInfoButton';
+import ActivityLink from '../../../../../../components/ActivityLink';
+import BackToCurriculum from '../../../../../../components/BackToCurriculum';
 import CodeCell from '../../../../../../components/CodeCell';
-import NavigationBar from '../../../../../../components/NavigationBar';
-import { asSingleSource, useLocalActivity } from '../../../../../../src/localStorage/useLocalActivity';
-import { activityAssetPathname, activityVariantPathname } from '../../../../../../src/urlUtils';
-import VariantSelector from '../../../../../../components/VariantsSelector';
-import ResponsiveReactPlayer from '../../../../../../components/ResponsiveReactPlayer';
-import PyTamaroAPI from '../../../../../../components/PyTamaroAPIDocs/PyTamaroAPI';
-import NetworkErrorSnackbar from '../../../../../../components/NetworkErrorSnackbar';
-import ResetButton from '../../../../../../components/ResetButton';
-import MarkCompletedButton from '../../../../../../components/MarkCompletedButton';
+import CodeDownloadButton from '../../../../../../components/CodeDownloadButton';
 import DataSharingPreferenceDialog from '../../../../../../components/DataSharingPreferenceDialog';
+import LeftSidebar from '../../../../../../components/LeftSidebar';
+import MarkCompletedButton from '../../../../../../components/MarkCompletedButton';
+import MoreOptionsButton from '../../../../../../components/MoreOptionsButton';
+import NavigationBar from '../../../../../../components/NavigationBar';
+import NetworkErrorSnackbar from '../../../../../../components/NetworkErrorSnackbar';
+import PyTamaroAPI from '../../../../../../components/PyTamaroAPIDocs/PyTamaroAPI';
+import ResetButton from '../../../../../../components/ResetButton';
+import ResponsiveReactPlayer from '../../../../../../components/ResponsiveReactPlayer';
+import SaveToToolboxButton from '../../../../../../components/SaveToToolboxButton';
+import TableOfContents from '../../../../../../components/TableOfContents';
+import VariantSelector from '../../../../../../components/VariantsSelector';
+import { findLanguages, findVersions, variantInfo } from '../../../../../../src/fs-content/activities';
+import { listAuthorsWithContent } from '../../../../../../src/fs-content/authors';
+import { CodeCellState } from '../../../../../../src/localStorage/schema';
+import useLocalActivity from '../../../../../../src/localStorage/useLocalActivity';
+import getNotebookContent from '../../../../../../src/notebook';
 import {
   ActivityVariant, LanguageWithLatestVersion, MarkdownCell, NotebookCell,
 } from '../../../../../../src/schemas/activitySchema';
-import { findLanguages, findVersions, variantInfo } from '../../../../../../src/fs-content/activities';
-import getNotebookContent from '../../../../../../src/notebook';
 import { countLines } from '../../../../../../src/sourceUtils';
-import ActivityInfoButton from '../../../../../../components/ActivityInfoButton';
-import CodeDownloadButton from '../../../../../../components/CodeDownloadButton';
-import TableOfContents from '../../../../../../components/TableOfContents';
-import { listAuthorsWithContent } from '../../../../../../src/fs-content/authors';
-import { CodeCellState } from '../../../../../../src/localStorage/schema';
-import ActivityLink from '../../../../../../components/ActivityLink';
-import BackToCurriculum from '../../../../../../components/BackToCurriculum';
+import { activityAssetPathname, activityVariantPathname } from '../../../../../../src/urlUtils';
 
 const userType = 'student';
 
@@ -158,11 +160,10 @@ export default function NotebookPage({
 
   const {
     codeCells, codeExecutionStates, cellsModified,
-    completed, networkError, localCodeCellsWrongLength,
+    completed, networkError, localCodeCellsWrongLength, sourcesUpTo,
     toggleCompleted, setNetworkError, handleSourceChanged, handleExecute,
     handleToggleOutputArea, handleResetActivity, handleResetSingleCell,
   } = useLocalActivity(initialCodeCells, activityVariant);
-
   const cellsRef = useRef<HTMLDivElement>(null);
 
   const pageTitle = `${title} - PyTamaro`;
@@ -191,7 +192,17 @@ export default function NotebookPage({
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
         <DataSharingPreferenceDialog />
         <Grid container>
-          <Grid lg={10} xl={11}>
+          <Grid
+            lg={2}
+            sx={{
+              display: {
+                xs: 'none', sm: 'none', md: 'none', lg: 'block',
+              },
+            }}
+          >
+            <LeftSidebar />
+          </Grid>
+          <Grid xs={12} lg={8}>
             <Container maxWidth="md" ref={cellsRef}>
               <Typography variant="h3" marginTop={2}>{title}</Typography>
               {localCodeCellsWrongLength
@@ -217,23 +228,34 @@ export default function NotebookPage({
                       codeCellExecutionState={codeExecutionStates[cellIdx]}
                       onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
                       onExecutionRequested={() => handleExecute(cellIdx)}
-                      onOutputAreaToggled={() => handleToggleOutputArea(cellIdx)}
-                      onReset={() => handleResetSingleCell(cellIdx)}
                       firstLineNumber={firstLineNumber}
                       activityVariant={activityVariant}
+                      extraActions={(
+                        <>
+                          <SaveToToolboxButton
+                            sources={sourcesUpTo(cellIdx)}
+                            originalActivity={activityVariant}
+                          />
+                          <MoreOptionsButton
+                            codeCellState={currentCodeCell}
+                            codeCellExecutionState={codeExecutionStates[cellIdx]}
+                            onShowHideOutput={() => handleToggleOutputArea(cellIdx)}
+                            onReset={() => handleResetSingleCell(cellIdx)}
+                          />
+                        </>
+                      )}
                     />
                   );
                 })}
             </Container>
             <Stack mt={12} mb={6} direction="row" justifyContent="center" spacing={4}>
-              <CodeDownloadButton getSource={() => asSingleSource(codeCells)} />
+              <CodeDownloadButton codeCells={codeCells} />
               <MarkCompletedButton completed={completed} toggleCompleted={toggleCompleted} />
             </Stack>
             <BackToCurriculum />
           </Grid>
           <Grid
             lg={2}
-            xl={1}
             sx={{
               display: {
                 xs: 'none', sm: 'none', md: 'none', lg: 'block',

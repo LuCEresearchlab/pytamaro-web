@@ -1,25 +1,44 @@
 import postgres from 'postgres';
-import { eventTableName, storeActivity, storeEvent } from './event';
-import { storeOrRetrieveRow, storeRow, storeRowWithoutId } from '../dbUtils';
-import { EventName } from '../../storeDbEvent';
-import { ActivityVariant } from '../../schemas/activitySchema';
-import conn from '../dbConnection';
 import { CODE_EXECUTION_CELLS_TO_FILES_VERSION } from '../../codeExecution';
+import { ToolboxFunction } from '../../localStorage/schema';
+import { ActivityVariant } from '../../schemas/activitySchema';
+import { EventName } from '../../storeDbEvent';
+import conn from '../dbConnection';
+import { storeOrRetrieveRow, storeRow, storeRowWithoutId } from '../dbUtils';
+import { eventTableName, storeActivity, storeEvent } from './event';
 
 async function storeDockerImageTag(sql: postgres.TransactionSql, docker_image: string) {
   return storeOrRetrieveRow(sql, 'docker_images', { tag: docker_image });
 }
 
-async function storeSource(
+async function storeSource(sql: postgres.TransactionSql, source: string) {
+  const SOURCES_TABLE = 'sources';
+  return storeOrRetrieveRow(sql, SOURCES_TABLE, { source });
+}
+
+async function storeToolboxFunction(
+  sql: postgres.TransactionSql,
+  event_id: number,
+  name: string,
+  source: string,
+) {
+  const pSourceId = storeSource(sql, source);
+  storeRowWithoutId(sql, 'code_execution_toolbox_functions', {
+    event_id,
+    name,
+    source_id: await pSourceId,
+  });
+}
+
+async function storeCell(
   sql: postgres.TransactionSql,
   event_id: number,
   source: string,
   initial_source: string,
   cell_seq_number: number,
 ) {
-  const SOURCES_TABLE = 'sources';
-  const pSourceId = storeOrRetrieveRow(sql, SOURCES_TABLE, { source });
-  const pInitialSourceId = storeOrRetrieveRow(sql, SOURCES_TABLE, { source: initial_source });
+  const pSourceId = storeSource(sql, source);
+  const pInitialSourceId = storeSource(sql, initial_source);
   storeRowWithoutId(sql, 'code_execution_sources', {
     event_id,
     source_id: await pSourceId,
@@ -52,6 +71,7 @@ export default async function saveCodeExecutionEvent(
   activity_variant: ActivityVariant,
   docker_image: string,
   requested_cell_seq_number: number,
+  toolboxFunctions: ToolboxFunction[],
 ) : Promise<boolean> {
   try {
     await conn.begin(async (sql) => {
@@ -66,12 +86,20 @@ export default async function saveCodeExecutionEvent(
         requested_cell_seq_number,
       );
       await Promise.all(
-        sources.map(async (source, idx) => storeSource(
+        sources.map(async (source, idx) => storeCell(
           sql,
           await pEventId,
           source,
           initial_sources[idx],
           idx,
+        )),
+      );
+      await Promise.all(
+        toolboxFunctions.map(async (fn) => storeToolboxFunction(
+          sql,
+          await pEventId,
+          fn.name,
+          fn.source,
         )),
       );
     });

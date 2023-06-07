@@ -1,3 +1,4 @@
+import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import {
   Alert,
   AlertProps,
@@ -6,21 +7,18 @@ import {
   Container, Typography, styled,
 } from '@mui/material';
 import Head from 'next/head';
-import { useState } from 'react';
-import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
-// eslint-disable-next-line import/no-relative-packages
-import { PythonName, imported_names } from '../src/parser/parser';
-import CodeCell from '../components/CodeCell';
+import { useEffect, useState } from 'react';
+import ActivitiesStripe from '../components/ActivitiesStripe';
 import DownloadCodeButton from '../components/CodeDownloadButton';
+import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDialog';
 import NavigationBar from '../components/NavigationBar';
-import { asSingleSource, useLocalActivity } from '../src/localStorage/useLocalActivity';
 import NetworkErrorSnackbar from '../components/NetworkErrorSnackbar';
 import ResetButton from '../components/ResetButton';
-import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDialog';
-import { playgroundActivityVariant, playgroundInitialSource } from '../src/playground';
+import SolitaryCodeCell, { initialStateSingleCell } from '../components/SolitaryCodeCell';
 import getActivitiesWithAPIs, { ActivityVariantWithNames } from '../src/activitiesAPIs';
-import ActivitiesStripe from '../components/ActivitiesStripe';
-import { CodeCellState } from '../src/localStorage/schema';
+import useLocalActivity from '../src/localStorage/useLocalActivity';
+import { playgroundActivityVariant, playgroundInitialSource } from '../src/playground';
+import { PythonName, imported_names } from '../src/python-analyzer/python_analyzer';
 
 function uniqueNames(names : PythonName[]) : Set<string> {
   return new Set(names.map(({ module, name }) => `${module}.${name}`));
@@ -34,42 +32,50 @@ const FullWidthAlert = styled(Alert)<AlertProps>(() => ({
 
 export default function Playground({ activitiesWithNames } :
 { activitiesWithNames : ActivityVariantWithNames[] }) {
-  const initialCodeState: CodeCellState[] = [{ source: playgroundInitialSource, originalIndex: 0 }];
+  const localActivity = useLocalActivity(
+    initialStateSingleCell(playgroundInitialSource),
+    playgroundActivityVariant,
+  );
   const {
     codeCells, codeExecutionStates, cellsModified, networkError, setNetworkError,
-    handleSourceChanged, handleExecute, handleToggleOutputArea,
-    handleResetActivity, handleResetSingleCell,
-  } = useLocalActivity(initialCodeState, playgroundActivityVariant);
+    handleResetActivity,
+  } = localActivity;
+  const { outputSynced } = codeExecutionStates[0];
 
   const [recommendedActivities,
     setRecommendedActivities] = useState<ActivityVariantWithNames[]>([]);
 
   const [showRecommendedActivities, setShowRecommendedActivities] = useState(false);
 
-  const recommendActivities = () => {
-    try {
-      const currentlyImported = uniqueNames(imported_names(codeCells[0].source));
-      const scores = activitiesWithNames.map((activityWithName: ActivityVariantWithNames) => {
-        const { importedNames } = activityWithName;
-        // Simple scoring algorithm:
-        // for each name imported in the activity
-        // +1 if also the user has imported it
-        // -0.5 if the user has not imported it
-        let score = 0;
-        uniqueNames(importedNames).forEach((name) => {
-          score += currentlyImported.has(name) ? 1 : -0.5;
+  useEffect(() => {
+    const recommendActivities = () => {
+      try {
+        const currentlyImported = uniqueNames(imported_names(codeCells[0].source));
+        const scores = activitiesWithNames.map((activityWithName: ActivityVariantWithNames) => {
+          const { importedNames } = activityWithName;
+          // Simple scoring algorithm:
+          // for each name imported in the activity
+          // +1 if also the user has imported it
+          // -0.5 if the user has not imported it
+          let score = 0;
+          uniqueNames(importedNames).forEach((name) => {
+            score += currentlyImported.has(name) ? 1 : -0.5;
+          });
+          return score;
         });
-        return score;
-      });
-      const sortedActivities = activitiesWithNames
-        .map((activity, index) => ({ activity, score: scores[index] }))
-        .sort((a, b) => b.score - a.score);
-      setRecommendedActivities(sortedActivities.map((wrapper) => wrapper.activity));
-      setShowRecommendedActivities(sortedActivities.length > 0);
-    } catch (e) {
+        const sortedActivities = activitiesWithNames
+          .map((activity, index) => ({ activity, score: scores[index] }))
+          .sort((a, b) => b.score - a.score);
+        setRecommendedActivities(sortedActivities.map((wrapper) => wrapper.activity));
+        setShowRecommendedActivities(sortedActivities.length > 0);
+      } catch (e) {
       // Could not parse, do not update recommendations.
+      }
+    };
+    if (outputSynced) {
+      recommendActivities();
     }
-  };
+  }, [outputSynced, activitiesWithNames, codeCells]);
 
   return (
     <div>
@@ -84,18 +90,12 @@ export default function Playground({ activitiesWithNames } :
         <DataSharingPreferenceDialog />
         <Container maxWidth="md">
           <Typography variant="h2" align="center" marginY={3}>Playground</Typography>
-          <CodeCell
-            codeCellState={codeCells[0]}
-            codeCellExecutionState={codeExecutionStates[0]}
-            onSourceChanged={(newSource) => handleSourceChanged(newSource, 0)}
-            onExecutionRequested={() => { recommendActivities(); return handleExecute(0); }}
-            onOutputAreaToggled={() => handleToggleOutputArea(0)}
-            onReset={() => handleResetSingleCell(0)}
-            firstLineNumber={1}
+          <SolitaryCodeCell
+            activity={localActivity}
             activityVariant={playgroundActivityVariant}
           />
           <Box sx={{ display: 'flex', my: 4 }} justifyContent="center">
-            <DownloadCodeButton getSource={() => asSingleSource(codeCells)} />
+            <DownloadCodeButton codeCells={codeCells} />
           </Box>
           { showRecommendedActivities && (
           <FullWidthAlert

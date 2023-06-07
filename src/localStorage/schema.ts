@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
+import { ActivityVariant } from '../schemas/activitySchema';
 
-export const CURRENT_VERSION = '2';
+export const CURRENT_VERSION = '3';
 
 export interface Metadata {
   dataModelVersion: string;
@@ -8,6 +9,22 @@ export interface Metadata {
   experimentKey: string;
   allowSharingAnonData: 'yes' | 'no' | 'unknown'
   activities: ActivityVariantMetadata[],
+  toolbox: ToolboxFunction[],
+}
+
+export interface ToolboxFunction {
+  name: string,
+  description: string,
+  source: string,
+  usage: string,
+  args: PythonFunctionArgument[],
+  returnTypeUnparsed: string,
+  originalActivity: ActivityVariant
+}
+
+export interface PythonFunctionArgument {
+  name: string,
+  typeUnparsed: string,
 }
 
 export interface ActivityVariantMetadata {
@@ -56,5 +73,6 @@ export function getDefaultMetadata() : Metadata {
     activities: [],
     allowSharingAnonData: 'unknown',
     experimentKey: '',
+    toolbox: [],
   };
 }

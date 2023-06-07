@@ -12,10 +12,6 @@ const navItems = [
     url: '/',
   },
   {
-    name: 'Docs',
-    url: 'https://pytamaro.readthedocs.org',
-  },
-  {
     name: 'Activities',
     url: activitiesByAuthorPathname('luce'),
   },

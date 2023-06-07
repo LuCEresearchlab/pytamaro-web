@@ -51,3 +51,7 @@ export function authorPathname(authorSlug: string) {
 export function playgroundPathname() {
   return '/playground';
 }
+
+export function pytamaroDocsUrl() {
+  return 'https://pytamaro.readthedocs.org';
+}

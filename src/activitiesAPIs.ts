@@ -1,10 +1,9 @@
-// eslint-disable-next-line import/no-relative-packages
-import { PythonName, imported_names } from './parser/parser';
 import { latestVariant, listVisibleActivities } from './fs-content/activities';
 import { readNotebookContent } from './fs-content/notebooks';
+import { cellsVisibleToUser, isCodeCell } from './notebook';
+import { PythonName, imported_names } from './python-analyzer/python_analyzer';
 import { Activity, ActivityVariant } from './schemas/activitySchema';
 import { joinLines } from './sourceUtils';
-import { cellsVisibleToUser, isCodeCell } from './notebook';
 
 export interface ActivityVariantWithNames {
   activity: Activity,

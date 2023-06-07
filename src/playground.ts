@@ -1,3 +1,5 @@
+import { isEqual } from 'lodash';
+
 export const playgroundInitialSource = `from pytamaro import rectangle, red, show_graphic
 
 red_square = rectangle(100, 100, red)
@@ -16,8 +18,8 @@ export function isPlayground(
   language: string,
   version: string,
 ) {
-  return authorSlug === playgroundActivityVariant.authorSlug
-        && activitySlug === playgroundActivityVariant.activitySlug
-        && language === playgroundActivityVariant.language
-        && version === playgroundActivityVariant.version;
+  const variant = {
+    authorSlug, activitySlug, language, version,
+  };
+  return isEqual(variant, playgroundActivityVariant);
 }

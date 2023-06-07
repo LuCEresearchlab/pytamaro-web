@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from 'redis';
 import crypto from 'crypto';
 import { CODE_EXECUTION_CELLS_TO_FILES_VERSION, ExecutionResponse, cellsToFiles } from '../../src/codeExecution';
+import { ToolboxFunction } from '../../src/localStorage/schema';
 
 const redisClient = createClient({
   socket: {
@@ -42,8 +43,8 @@ async function saveToCache(key: string, value: string) {
   }
 }
 
-async function doExecution(sources: string[], idx: number) {
-  const files = cellsToFiles(sources, idx);
+async function doExecution(sources: string[], idx: number, toolboxFunctions: ToolboxFunction[]) {
+  const files = cellsToFiles(sources, idx, toolboxFunctions);
   const data = {
     image: process.env.GLOT_IMAGE_TAG,
     payload: {
@@ -83,10 +84,9 @@ async function computeKey(text: string) {
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-function dataForKey(sources: string[], idx: number) {
+function dataForKey(data: object) {
   return JSON.stringify({
-    sources,
-    idx,
+    ...data,
     image: process.env.GLOT_IMAGE_TAG,
     cellsToFilesVersion: CODE_EXECUTION_CELLS_TO_FILES_VERSION,
   });
@@ -96,14 +96,14 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ExecutionResponse>,
 ) {
-  const { sources, idx } = req.body;
-  const key = await computeKey(dataForKey(sources, idx));
+  const { sources, idx, toolboxFunctions } = req.body;
+  const key = await computeKey(dataForKey({ sources, idx, toolboxFunctions }));
   const cacheResult = await retrieveFromCache(key);
   let response;
   if (cacheResult) {
     response = JSON.parse(cacheResult);
   } else {
-    response = await doExecution(sources, idx);
+    response = await doExecution(sources, idx, toolboxFunctions);
     saveToCache(key, JSON.stringify(response));
   }
   res.status(200).json(response);

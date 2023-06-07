@@ -32,7 +32,15 @@ export default function CurriculumPage({ curriculum }:
 
       <NavigationBar />
       <Grid container>
-        <Grid lg={10} xl={11}>
+        <Grid
+          lg={2}
+          sx={{
+            display: {
+              xs: 'none', sm: 'none', md: 'none', lg: 'block',
+            },
+          }}
+        />
+        <Grid xs={12} lg={8}>
           <Stack spacing={2} alignItems="center">
             <Container maxWidth="md">
               <Typography variant="h3" marginY={3}>{curriculum.title}</Typography>
@@ -49,7 +57,6 @@ export default function CurriculumPage({ curriculum }:
         </Grid>
         <Grid
           lg={2}
-          xl={1}
           sx={{
             display: {
               xs: 'none', sm: 'none', md: 'none', lg: 'block',
