@@ -83,12 +83,12 @@ function ToolboxList({ functions } : { functions: ToolboxFunction[] }) {
       <Typography variant="h4" align="center" marginY={3}>My Toolbox</Typography>
       {functions.length === 0 ? (
         <Typography variant="body1" marginY={3}>
-          Your toolbox is still empty.
+          Toolbox still empty.
         </Typography>
       ) : (
         <>
           <Typography variant="body1" marginY={3}>
-            Your toolbox contains the following functions:
+            The toolbox contains the following functions:
           </Typography>
 
           <Stack

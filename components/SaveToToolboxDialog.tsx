@@ -62,13 +62,13 @@ function PermanentlySaveToToolboxButton({
         visible={savingSuccess}
         setVisible={setSavingSuccess}
         severity="success"
-        message="Function successfully saved to your toolbox!"
+        message="Function successfully saved to the toolbox!"
       />
       <CustomSnackbar
         visible={savingError}
         setVisible={setSavingError}
         severity="error"
-        message="Saving failed: this name already exists in your toolbox!"
+        message="Saving failed: this name already exists in the toolbox!"
       />
     </>
   );
@@ -195,7 +195,7 @@ export default function FunctionsDialog({
 
   return (
     <Dialog onClose={() => onClose()} open={open} maxWidth="md" fullWidth>
-      <DialogTitle>Save a function to your toolbox</DialogTitle>
+      <DialogTitle>Save a function to my toolbox</DialogTitle>
       <DialogContent>
         <Typography color="text.secondary" fontWeight="bold" marginBottom={2}>
           Implementation
@@ -236,7 +236,7 @@ export default function FunctionsDialog({
               <Alert severity="info">Select a function to save</Alert>
             )}
             {alreadyExists && !saved && (
-              <Alert severity="error">Your toolbox already contains this name!</Alert>
+              <Alert severity="error">The toolbox already contains this name!</Alert>
             )}
             {selectedFunction && (!alreadyExists || saved) && (!description ? (
               <Alert severity="info">Add a description so that you will remember what this function does</Alert>

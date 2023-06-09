@@ -42,7 +42,7 @@ export default function ActivitiesGallery({
   if (activities.length === 0) {
     return (
       <Typography variant="body1" align="center" sx={{ marginTop: 4, fontStyle: 'italic' }}>
-        No activities match your searching criteria.
+        No activities match the searching criteria.
       </Typography>
     );
   }

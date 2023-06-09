@@ -150,7 +150,7 @@ export default function LeftSidebar() {
       }}
     >
       <Title>
-        At your fingertips
+        At my fingertips
       </Title>
       <Stack spacing={1} mb={4}>
         <SidebarPlayground />
@@ -168,7 +168,7 @@ export default function LeftSidebar() {
       {toolboxFunctions.length > 0 && (
         <>
           <Title>
-            Your Toolbox
+            My Toolbox
           </Title>
           <Stack
             spacing={1}
