@@ -20,7 +20,7 @@ import MarkCompletedButton from '../../../../../../components/MarkCompletedButto
 import MoreOptionsButton from '../../../../../../components/MoreOptionsButton';
 import NavigationBar from '../../../../../../components/NavigationBar';
 import NetworkErrorSnackbar from '../../../../../../components/NetworkErrorSnackbar';
-import PyTamaroAPI from '../../../../../../components/PyTamaroAPIDocs/PyTamaroAPI';
+import PyTamaroAPI from '../../../../../../components/PyTamaroAPI';
 import ResetButton from '../../../../../../components/ResetButton';
 import ResponsiveReactPlayer from '../../../../../../components/ResponsiveReactPlayer';
 import SaveToToolboxButton from '../../../../../../components/SaveToToolboxButton';

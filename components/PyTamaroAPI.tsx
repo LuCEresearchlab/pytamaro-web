@@ -6,11 +6,11 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useState } from 'react';
-import logAnalyticsEvent, { AnalyticsEventName } from '../../src/analyticsEvent';
-import names from './names';
-import useLocalProfile from '../../src/localStorage/useLocalProfile';
-import { EventName, storeDbEvent } from '../../src/storeDbEvent';
-import { ActivityVariant } from '../../src/schemas/activitySchema';
+import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
+import useLocalProfile from '../src/localStorage/useLocalProfile';
+import names from '../src/pytamaroNames';
+import { ActivityVariant } from '../src/schemas/activitySchema';
+import { EventName, storeDbEvent } from '../src/storeDbEvent';
 
 export default function PyTamaroAPI({
   name, language = undefined, activityVariant, smallerFont = false,

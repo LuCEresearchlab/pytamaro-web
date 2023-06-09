@@ -1,5 +1,8 @@
 import Editor, { loader } from '@monaco-editor/react';
 import type { editor as EditorNamespace } from 'monaco-editor';
+import { useEffect, useRef } from 'react';
+import useLocalToolbox from '../src/localStorage/useLocalToolbox';
+import { moduleImportCompletionProvider, pytamaroImportCompletionProvider, toolboxImportCompletionProvider } from '../src/monacoSuggestions';
 import theme from '../src/theme';
 
 // Load the same version of monaco-editor specified in the package.json from a
@@ -10,33 +13,63 @@ loader.config({
   paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.39.0/min/vs' },
 });
 
-const handleEditorMount = (editor: EditorNamespace.IStandaloneCodeEditor, monaco: any) => {
-  const themeName = 'luce';
-  monaco.editor.defineTheme(themeName, {
-    base: 'vs', // use vscode light as base theme
-    inherit: true,
-    rules: [],
-    colors: {
-      'editorLineNumber.foreground': '#60bcd9',
-      'editorLineNumber.activeForeground': '#60bcd9',
-      'editor.wordHighlightBackground': '#57575710',
-    },
-  });
-  monaco.editor.setTheme(themeName);
-  const updateHeight = () => {
-    editor.layout({ width: editor.getLayoutInfo().width, height: editor.getContentHeight() });
-  };
-  editor.onDidContentSizeChange(updateHeight);
+const themeName = 'luce';
+const luceTheme = {
+  base: 'vs', // use vscode light as base theme
+  inherit: true,
+  rules: [],
+  colors: {
+    'editorLineNumber.foreground': '#60bcd9',
+    'editorLineNumber.activeForeground': '#60bcd9',
+    'editor.wordHighlightBackground': '#57575710',
+  },
 };
+
+const LANGUAGE = 'python';
 
 export default function CodeEditor({
   source, onChange = () => {}, firstLineNumber = 1, readOnly = false,
 } :
 { source: string, onChange?: (source: string) => void, firstLineNumber?: number,
   readOnly?: boolean }) {
+  const { list } = useLocalToolbox();
+  const monacoRef = useRef<any>(null);
+  const monacoInstance = monacoRef.current;
+  const toolboxFunctions = list();
+  const handleEditorMount = (
+    editor: EditorNamespace.IStandaloneCodeEditor,
+    monaco: any,
+  ) => {
+    monacoRef.current = monaco;
+    monaco.editor.defineTheme(themeName, luceTheme);
+    monaco.editor.setTheme(themeName);
+    const updateHeight = () => {
+      editor.layout({ width: editor.getLayoutInfo().width, height: editor.getContentHeight() });
+    };
+    editor.onDidContentSizeChange(updateHeight);
+  };
+
+  useEffect(() => {
+    if (monacoInstance && monacoInstance.pytamaroProvidesRegistered === undefined) {
+      const providers = [
+        toolboxImportCompletionProvider(monacoInstance, toolboxFunctions),
+        moduleImportCompletionProvider(monacoInstance),
+        pytamaroImportCompletionProvider(monacoInstance),
+      ];
+      const disposers = providers.map(
+        (provider) => monacoInstance.languages.registerCompletionItemProvider(LANGUAGE, provider),
+      );
+      monacoInstance.pytamaroProvidesRegistered = true;
+      return () => {
+        disposers.forEach((disposer) => disposer.dispose());
+      };
+    }
+    return () => {};
+  }, [monacoInstance, toolboxFunctions]);
+
   return (
     <Editor
-      language="python"
+      language={LANGUAGE}
       theme="luce"
       value={source}
       onChange={(value) => value !== undefined && onChange(value)}

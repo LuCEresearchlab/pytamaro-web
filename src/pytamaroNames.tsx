@@ -9,6 +9,15 @@ with open("searchindex.json") as f:
 
 API = dict()
 
+# reverse engineered
+types = [
+    "?",
+    "class",
+    "function",
+    "value",
+    "class"
+]
+
 modules = data["objects"]
 for module in modules:
     if ".it." in module:
@@ -22,6 +31,7 @@ for module in modules:
         language = "English"
     for namewithinfo in modules[module]:
         name = namewithinfo[-1]
+        typeidx = namewithinfo[1]
         fqname = f"{module}.{name}"
         page = module.split(".")[-1]
         if page == "point" or page == "point_names":
@@ -33,7 +43,7 @@ for module in modules:
 
         if page != "pytamaro" and page != "it" and page != "de":
             url = f"{language}/{page}"
-            API[f"{shortlang}.{name}"] = { "fqname": fqname, "url": url }
+            API[f"{shortlang}.{name}"] = { "fqname": fqname, "url": url, "type": types[typeidx] }
 
 print(json.dumps(API, indent=2))
 */
@@ -41,512 +51,639 @@ print(json.dumps(API, indent=2))
 interface NameInfo {
   fqname: string;
   url: string;
+  type: 'class' | 'function' | 'value';
 }
 
 const names : Record<string, NameInfo> = {
   'en.Color': {
     fqname: 'pytamaro.color.Color',
     url: 'English/colors',
+    type: 'class',
   },
   'en.hsl_color': {
     fqname: 'pytamaro.color_functions.hsl_color',
     url: 'English/colors',
+    type: 'function',
   },
   'en.hsv_color': {
     fqname: 'pytamaro.color_functions.hsv_color',
     url: 'English/colors',
+    type: 'function',
   },
   'en.rgb_color': {
     fqname: 'pytamaro.color_functions.rgb_color',
     url: 'English/colors',
+    type: 'function',
   },
   'en.black': {
     fqname: 'pytamaro.color_names.black',
     url: 'English/colors',
+    type: 'value',
   },
   'en.blue': {
     fqname: 'pytamaro.color_names.blue',
     url: 'English/colors',
+    type: 'value',
   },
   'en.cyan': {
     fqname: 'pytamaro.color_names.cyan',
     url: 'English/colors',
+    type: 'value',
   },
   'en.green': {
     fqname: 'pytamaro.color_names.green',
     url: 'English/colors',
+    type: 'value',
   },
   'en.magenta': {
     fqname: 'pytamaro.color_names.magenta',
     url: 'English/colors',
+    type: 'value',
   },
   'en.red': {
     fqname: 'pytamaro.color_names.red',
     url: 'English/colors',
+    type: 'value',
   },
   'en.transparent': {
     fqname: 'pytamaro.color_names.transparent',
     url: 'English/colors',
+    type: 'value',
   },
   'en.white': {
     fqname: 'pytamaro.color_names.white',
     url: 'English/colors',
+    type: 'value',
   },
   'en.yellow': {
     fqname: 'pytamaro.color_names.yellow',
     url: 'English/colors',
+    type: 'value',
   },
   'de.Farbe': {
     fqname: 'pytamaro.de.color.Farbe',
     url: 'German/colors',
+    type: 'class',
   },
   'de.hsl_farbe': {
     fqname: 'pytamaro.de.color.hsl_farbe',
     url: 'German/colors',
+    type: 'function',
   },
   'de.hsv_farbe': {
     fqname: 'pytamaro.de.color.hsv_farbe',
     url: 'German/colors',
+    type: 'function',
   },
   'de.rgb_farbe': {
     fqname: 'pytamaro.de.color.rgb_farbe',
     url: 'German/colors',
+    type: 'function',
   },
   'de.blau': {
     fqname: 'pytamaro.de.color_names.blau',
     url: 'German/colors',
+    type: 'value',
   },
   'de.cyan': {
     fqname: 'pytamaro.de.color_names.cyan',
     url: 'German/colors',
+    type: 'value',
   },
   'de.gelb': {
     fqname: 'pytamaro.de.color_names.gelb',
     url: 'German/colors',
+    type: 'value',
   },
   'de.gruen': {
     fqname: 'pytamaro.de.color_names.gruen',
     url: 'German/colors',
+    type: 'value',
   },
   'de.magenta': {
     fqname: 'pytamaro.de.color_names.magenta',
     url: 'German/colors',
+    type: 'value',
   },
   'de.rot': {
     fqname: 'pytamaro.de.color_names.rot',
     url: 'German/colors',
+    type: 'value',
   },
   'de.schwarz': {
     fqname: 'pytamaro.de.color_names.schwarz',
     url: 'German/colors',
+    type: 'value',
   },
   'de.transparent': {
     fqname: 'pytamaro.de.color_names.transparent',
     url: 'German/colors',
+    type: 'value',
   },
   'de.weiss': {
     fqname: 'pytamaro.de.color_names.weiss',
     url: 'German/colors',
+    type: 'value',
   },
   'de.Grafik': {
     fqname: 'pytamaro.de.graphic.Grafik',
     url: 'German/index',
+    type: 'class',
   },
   'de.speichere_animation': {
     fqname: 'pytamaro.de.io.speichere_animation',
     url: 'German/io',
+    type: 'function',
   },
   'de.speichere_grafik': {
     fqname: 'pytamaro.de.io.speichere_grafik',
     url: 'German/io',
+    type: 'function',
   },
   'de.zeige_animation': {
     fqname: 'pytamaro.de.io.zeige_animation',
     url: 'German/io',
+    type: 'function',
   },
   'de.zeige_grafik': {
     fqname: 'pytamaro.de.io.zeige_grafik',
     url: 'German/io',
+    type: 'function',
   },
   'de.drehe': {
     fqname: 'pytamaro.de.operations.drehe',
     url: 'German/operations',
+    type: 'function',
   },
   'de.fixiere': {
     fqname: 'pytamaro.de.operations.fixiere',
     url: 'German/operations',
+    type: 'function',
   },
   'de.grafik_breite': {
     fqname: 'pytamaro.de.operations.grafik_breite',
     url: 'German/operations',
+    type: 'function',
   },
   'de.grafik_hoehe': {
     fqname: 'pytamaro.de.operations.grafik_hoehe',
     url: 'German/operations',
+    type: 'function',
   },
   'de.kombiniere': {
     fqname: 'pytamaro.de.operations.kombiniere',
     url: 'German/operations',
+    type: 'function',
   },
   'de.neben': {
     fqname: 'pytamaro.de.operations.neben',
     url: 'German/operations',
+    type: 'function',
   },
   'de.ueber': {
     fqname: 'pytamaro.de.operations.ueber',
     url: 'German/operations',
+    type: 'function',
   },
   'de.ueberlagere': {
     fqname: 'pytamaro.de.operations.ueberlagere',
     url: 'German/operations',
+    type: 'function',
   },
   'de.Punkt': {
     fqname: 'pytamaro.de.point.Punkt',
     url: 'German/points',
+    type: 'class',
   },
   'de.mitte': {
     fqname: 'pytamaro.de.point_names.mitte',
     url: 'German/points',
+    type: 'value',
   },
   'de.mitte_links': {
     fqname: 'pytamaro.de.point_names.mitte_links',
     url: 'German/points',
+    type: 'value',
   },
   'de.mitte_rechts': {
     fqname: 'pytamaro.de.point_names.mitte_rechts',
     url: 'German/points',
+    type: 'value',
   },
   'de.oben_links': {
     fqname: 'pytamaro.de.point_names.oben_links',
     url: 'German/points',
+    type: 'value',
   },
   'de.oben_mitte': {
     fqname: 'pytamaro.de.point_names.oben_mitte',
     url: 'German/points',
+    type: 'value',
   },
   'de.oben_rechts': {
     fqname: 'pytamaro.de.point_names.oben_rechts',
     url: 'German/points',
+    type: 'value',
   },
   'de.unten_links': {
     fqname: 'pytamaro.de.point_names.unten_links',
     url: 'German/points',
+    type: 'value',
   },
   'de.unten_mitte': {
     fqname: 'pytamaro.de.point_names.unten_mitte',
     url: 'German/points',
+    type: 'value',
   },
   'de.unten_rechts': {
     fqname: 'pytamaro.de.point_names.unten_rechts',
     url: 'German/points',
+    type: 'value',
   },
   'de.dreieck': {
     fqname: 'pytamaro.de.primitives.dreieck',
     url: 'German/primitives',
+    type: 'function',
   },
   'de.ellipse': {
     fqname: 'pytamaro.de.primitives.ellipse',
     url: 'German/primitives',
+    type: 'function',
   },
   'de.kreis_sektor': {
     fqname: 'pytamaro.de.primitives.kreis_sektor',
     url: 'German/primitives',
+    type: 'function',
   },
   'de.leere_grafik': {
     fqname: 'pytamaro.de.primitives.leere_grafik',
     url: 'German/primitives',
+    type: 'function',
   },
   'de.rechteck': {
     fqname: 'pytamaro.de.primitives.rechteck',
     url: 'German/primitives',
+    type: 'function',
   },
   'de.text': {
     fqname: 'pytamaro.de.primitives.text',
     url: 'German/primitives',
+    type: 'function',
   },
   'en.Graphic': {
     fqname: 'pytamaro.graphic.Graphic',
     url: 'English/index',
+    type: 'class',
   },
   'en.save_animation': {
     fqname: 'pytamaro.io.save_animation',
     url: 'English/io',
+    type: 'function',
   },
   'en.save_graphic': {
     fqname: 'pytamaro.io.save_graphic',
     url: 'English/io',
+    type: 'function',
   },
   'en.show_animation': {
     fqname: 'pytamaro.io.show_animation',
     url: 'English/io',
+    type: 'function',
   },
   'en.show_graphic': {
     fqname: 'pytamaro.io.show_graphic',
     url: 'English/io',
+    type: 'function',
   },
   'it.Colore': {
     fqname: 'pytamaro.it.color.Colore',
     url: 'Italian/colors',
+    type: 'class',
   },
   'it.colore_hsl': {
     fqname: 'pytamaro.it.color.colore_hsl',
     url: 'Italian/colors',
+    type: 'function',
   },
   'it.colore_hsv': {
     fqname: 'pytamaro.it.color.colore_hsv',
     url: 'Italian/colors',
+    type: 'function',
   },
   'it.colore_rgb': {
     fqname: 'pytamaro.it.color.colore_rgb',
     url: 'Italian/colors',
+    type: 'function',
   },
   'it.bianco': {
     fqname: 'pytamaro.it.color_names.bianco',
     url: 'Italian/colors',
+    type: 'value',
   },
   'it.blu': {
     fqname: 'pytamaro.it.color_names.blu',
     url: 'Italian/colors',
+    type: 'value',
   },
   'it.ciano': {
     fqname: 'pytamaro.it.color_names.ciano',
     url: 'Italian/colors',
+    type: 'value',
   },
   'it.giallo': {
     fqname: 'pytamaro.it.color_names.giallo',
     url: 'Italian/colors',
+    type: 'value',
   },
   'it.magenta': {
     fqname: 'pytamaro.it.color_names.magenta',
     url: 'Italian/colors',
+    type: 'value',
   },
   'it.nero': {
     fqname: 'pytamaro.it.color_names.nero',
     url: 'Italian/colors',
+    type: 'value',
   },
   'it.rosso': {
     fqname: 'pytamaro.it.color_names.rosso',
     url: 'Italian/colors',
+    type: 'value',
   },
   'it.trasparente': {
     fqname: 'pytamaro.it.color_names.trasparente',
     url: 'Italian/colors',
+    type: 'value',
   },
   'it.verde': {
     fqname: 'pytamaro.it.color_names.verde',
     url: 'Italian/colors',
+    type: 'value',
   },
   'it.Grafica': {
     fqname: 'pytamaro.it.graphic.Grafica',
     url: 'Italian/index',
+    type: 'class',
   },
   'it.salva_animazione': {
     fqname: 'pytamaro.it.io.salva_animazione',
     url: 'Italian/io',
+    type: 'function',
   },
   'it.salva_grafica': {
     fqname: 'pytamaro.it.io.salva_grafica',
     url: 'Italian/io',
+    type: 'function',
   },
   'it.visualizza_animazione': {
     fqname: 'pytamaro.it.io.visualizza_animazione',
     url: 'Italian/io',
+    type: 'function',
   },
   'it.visualizza_grafica': {
     fqname: 'pytamaro.it.io.visualizza_grafica',
     url: 'Italian/io',
+    type: 'function',
   },
   'it.accanto': {
     fqname: 'pytamaro.it.operations.accanto',
     url: 'Italian/operations',
+    type: 'function',
   },
   'it.altezza_grafica': {
     fqname: 'pytamaro.it.operations.altezza_grafica',
     url: 'Italian/operations',
+    type: 'function',
   },
   'it.componi': {
     fqname: 'pytamaro.it.operations.componi',
     url: 'Italian/operations',
+    type: 'function',
   },
   'it.fissa': {
     fqname: 'pytamaro.it.operations.fissa',
     url: 'Italian/operations',
+    type: 'function',
   },
   'it.larghezza_grafica': {
     fqname: 'pytamaro.it.operations.larghezza_grafica',
     url: 'Italian/operations',
+    type: 'function',
   },
   'it.ruota': {
     fqname: 'pytamaro.it.operations.ruota',
     url: 'Italian/operations',
+    type: 'function',
   },
   'it.sopra': {
     fqname: 'pytamaro.it.operations.sopra',
     url: 'Italian/operations',
+    type: 'function',
   },
   'it.sovrapponi': {
     fqname: 'pytamaro.it.operations.sovrapponi',
     url: 'Italian/operations',
+    type: 'function',
   },
   'it.Punto': {
     fqname: 'pytamaro.it.point.Punto',
     url: 'Italian/points',
+    type: 'class',
   },
   'it.alto_centro': {
     fqname: 'pytamaro.it.point_names.alto_centro',
     url: 'Italian/points',
+    type: 'value',
   },
   'it.alto_destra': {
     fqname: 'pytamaro.it.point_names.alto_destra',
     url: 'Italian/points',
+    type: 'value',
   },
   'it.alto_sinistra': {
     fqname: 'pytamaro.it.point_names.alto_sinistra',
     url: 'Italian/points',
+    type: 'value',
   },
   'it.basso_centro': {
     fqname: 'pytamaro.it.point_names.basso_centro',
     url: 'Italian/points',
+    type: 'value',
   },
   'it.basso_destra': {
     fqname: 'pytamaro.it.point_names.basso_destra',
     url: 'Italian/points',
+    type: 'value',
   },
   'it.basso_sinistra': {
     fqname: 'pytamaro.it.point_names.basso_sinistra',
     url: 'Italian/points',
+    type: 'value',
   },
   'it.centro': {
     fqname: 'pytamaro.it.point_names.centro',
     url: 'Italian/points',
+    type: 'value',
   },
   'it.centro_destra': {
     fqname: 'pytamaro.it.point_names.centro_destra',
     url: 'Italian/points',
+    type: 'value',
   },
   'it.centro_sinistra': {
     fqname: 'pytamaro.it.point_names.centro_sinistra',
     url: 'Italian/points',
+    type: 'value',
   },
   'it.ellisse': {
     fqname: 'pytamaro.it.primitives.ellisse',
     url: 'Italian/primitives',
+    type: 'function',
   },
   'it.grafica_vuota': {
     fqname: 'pytamaro.it.primitives.grafica_vuota',
     url: 'Italian/primitives',
+    type: 'function',
   },
   'it.rettangolo': {
     fqname: 'pytamaro.it.primitives.rettangolo',
     url: 'Italian/primitives',
+    type: 'function',
   },
   'it.settore_circolare': {
     fqname: 'pytamaro.it.primitives.settore_circolare',
     url: 'Italian/primitives',
+    type: 'function',
   },
   'it.testo': {
     fqname: 'pytamaro.it.primitives.testo',
     url: 'Italian/primitives',
+    type: 'function',
   },
   'it.triangolo': {
     fqname: 'pytamaro.it.primitives.triangolo',
     url: 'Italian/primitives',
+    type: 'function',
   },
   'en.above': {
     fqname: 'pytamaro.operations.above',
     url: 'English/operations',
+    type: 'function',
   },
   'en.beside': {
     fqname: 'pytamaro.operations.beside',
     url: 'English/operations',
+    type: 'function',
   },
   'en.compose': {
     fqname: 'pytamaro.operations.compose',
     url: 'English/operations',
+    type: 'function',
   },
   'en.graphic_height': {
     fqname: 'pytamaro.operations.graphic_height',
     url: 'English/operations',
+    type: 'function',
   },
   'en.graphic_width': {
     fqname: 'pytamaro.operations.graphic_width',
     url: 'English/operations',
+    type: 'function',
   },
   'en.overlay': {
     fqname: 'pytamaro.operations.overlay',
     url: 'English/operations',
+    type: 'function',
   },
   'en.pin': {
     fqname: 'pytamaro.operations.pin',
     url: 'English/operations',
+    type: 'function',
   },
   'en.rotate': {
     fqname: 'pytamaro.operations.rotate',
     url: 'English/operations',
+    type: 'function',
   },
   'en.Point': {
     fqname: 'pytamaro.point.Point',
     url: 'English/points',
+    type: 'class',
   },
   'en.bottom_center': {
     fqname: 'pytamaro.point_names.bottom_center',
     url: 'English/points',
+    type: 'value',
   },
   'en.bottom_left': {
     fqname: 'pytamaro.point_names.bottom_left',
     url: 'English/points',
+    type: 'value',
   },
   'en.bottom_right': {
     fqname: 'pytamaro.point_names.bottom_right',
     url: 'English/points',
+    type: 'value',
   },
   'en.center': {
     fqname: 'pytamaro.point_names.center',
     url: 'English/points',
+    type: 'value',
   },
   'en.center_left': {
     fqname: 'pytamaro.point_names.center_left',
     url: 'English/points',
+    type: 'value',
   },
   'en.center_right': {
     fqname: 'pytamaro.point_names.center_right',
     url: 'English/points',
+    type: 'value',
   },
   'en.top_center': {
     fqname: 'pytamaro.point_names.top_center',
     url: 'English/points',
+    type: 'value',
   },
   'en.top_left': {
     fqname: 'pytamaro.point_names.top_left',
     url: 'English/points',
+    type: 'value',
   },
   'en.top_right': {
     fqname: 'pytamaro.point_names.top_right',
     url: 'English/points',
+    type: 'value',
   },
   'en.circular_sector': {
     fqname: 'pytamaro.primitives.circular_sector',
     url: 'English/primitives',
+    type: 'function',
   },
   'en.ellipse': {
     fqname: 'pytamaro.primitives.ellipse',
     url: 'English/primitives',
+    type: 'function',
   },
   'en.empty_graphic': {
     fqname: 'pytamaro.primitives.empty_graphic',
     url: 'English/primitives',
+    type: 'function',
   },
   'en.rectangle': {
     fqname: 'pytamaro.primitives.rectangle',
     url: 'English/primitives',
+    type: 'function',
   },
   'en.text': {
     fqname: 'pytamaro.primitives.text',
     url: 'English/primitives',
+    type: 'function',
   },
   'en.triangle': {
     fqname: 'pytamaro.primitives.triangle',
     url: 'English/primitives',
+    type: 'function',
   },
 };
 

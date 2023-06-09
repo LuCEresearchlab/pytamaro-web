@@ -1,9 +1,9 @@
 import { Box, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import PyTamaroNames from '../src/pytamaroNames';
 import { PythonName, imported_names } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant } from '../src/schemas/activitySchema';
-import PyTamaroAPI from './PyTamaroAPIDocs/PyTamaroAPI';
-import PyTamaroNames from './PyTamaroAPIDocs/names';
+import PyTamaroAPI from './PyTamaroAPI';
 
 export default function DocumentationStripe({ source, activityVariant } :
 { source: string, activityVariant: ActivityVariant }) {
