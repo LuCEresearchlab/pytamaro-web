@@ -34,7 +34,7 @@ async function importedToolboxFunctions(
   return functions.filter((f): f is ToolboxFunction => f !== undefined);
 }
 
-async function transitivelyImportedToolboxFunctions(
+export async function transitivelyImportedToolboxFunctions(
   source: string,
   getFromToolbox: (name: string) => ToolboxFunction | undefined,
 ) : Promise<ToolboxFunction[]> {

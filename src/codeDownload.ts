@@ -1,9 +1,8 @@
 import { saveAs } from 'file-saver';
 import JSZip from 'jszip';
-import { isUndefined, negate } from 'lodash';
-import { TOOLBOX_FILE, toolboxFiles } from './codeExecution';
+import { toolboxFiles } from './codeExecution';
 import { ToolboxFunction } from './localStorage/schema';
-import { PythonName, imported_names } from './python-analyzer/python_analyzer';
+import { transitivelyImportedToolboxFunctions } from './localStorage/useActivity';
 
 export default async function downloadSourceCode(
   source: string,
@@ -13,24 +12,20 @@ export default async function downloadSourceCode(
     name: 'main.py',
     content: source,
   };
-  // Check whether source imports functions from the toolbox
-  const allImports : PythonName[] = await imported_names(source);
-  const toolboxNames = new Set(allImports
-    .filter(({ module }) => module === TOOLBOX_FILE)
-    .map(({ name }) => name));
-
+  const toolboxFunctions = await transitivelyImportedToolboxFunctions(
+    source,
+    getToolboxFunction,
+  );
   // If no toolbox functions are imported, download the source as a single
   // Python file. Otherwise, download a zip file containing the main source and
   // all the files needed for the toolbox.
-  if (toolboxNames.size === 0) {
+  if (toolboxFunctions.length === 0) {
     const blob = new Blob([mainFile.content], { type: 'text/plain;charset=utf-8' });
     saveAs(blob, mainFile.name);
   } else {
-    const toolboxFunctions = Array.from(toolboxNames).map(getToolboxFunction)
-      .filter(negate(isUndefined)) as ToolboxFunction[];
     const files = [
       mainFile,
-      ...toolboxFiles(toolboxFunctions),
+      ...await toolboxFiles(toolboxFunctions),
     ];
     const zip = new JSZip();
     files.forEach(({ name, content }) => zip.file(name, content));
