@@ -1,6 +1,10 @@
 import { Code, MenuBook } from '@mui/icons-material';
 import {
-  Box, Link, Popover, Stack, Typography, styled,
+  Box,
+  Link,
+  Popover,
+  Stack,
+  Typography, styled,
 } from '@mui/material';
 import { useState } from 'react';
 import { ToolboxFunction } from '../src/localStorage/schema';
@@ -24,16 +28,16 @@ const Title = styled(Typography)(() => ({
 function SidebarToolboxFunction({ fn }: { fn: ToolboxFunction }) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handlePopoverClose = () => {
+  const handleClose = () => {
     setAnchorEl(null);
   };
 
   const open = Boolean(anchorEl);
-
+  const toolboxPopoverId = `toolbox-popover-${fn.name}`;
   return (
     <>
       <Typography
@@ -42,19 +46,17 @@ function SidebarToolboxFunction({ fn }: { fn: ToolboxFunction }) {
         fontSize={theme.typography.pxToRem(13)}
         fontFamily={theme.pytamaro.monospaceFontFamily}
         variant="body2"
-        aria-owns={open ? 'mouse-over-popover' : undefined}
+        aria-owns={open ? toolboxPopoverId : undefined}
         aria-haspopup="true"
-        onMouseEnter={handlePopoverOpen}
-        onMouseLeave={handlePopoverClose}
+        onClick={handleClick}
         sx={{ cursor: 'pointer' }}
       >
         {fn.name}
       </Typography>
       <Popover
-        id="mouse-over-popover"
+        id={toolboxPopoverId}
         sx={{
           marginLeft: 1,
-          pointerEvents: 'none',
         }}
         open={open}
         anchorEl={anchorEl}
@@ -66,8 +68,7 @@ function SidebarToolboxFunction({ fn }: { fn: ToolboxFunction }) {
           vertical: 'center',
           horizontal: 'left',
         }}
-        onClose={handlePopoverClose}
-        disableRestoreFocus
+        onClose={handleClose}
       >
         <ToolboxFunctionSummary fn={fn} showSource={false} />
       </Popover>
