@@ -1,13 +1,11 @@
 import axios from 'axios';
 import produce from 'immer';
-import { isEqual, uniqWith } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import {
   Dispatch, SetStateAction, useEffect, useState,
 } from 'react';
 import logAnalyticsEvent, { AnalyticsEventName } from '../analyticsEvent';
-import { ExecutionResponse, TOOLBOX_FILE } from '../codeExecution';
-import { PythonName, imported_names } from '../python-analyzer/python_analyzer';
+import { ExecutionResponse, importedToolboxNames } from '../codeExecution';
 import { ActivityVariant, activityVariantId } from '../schemas/activitySchema';
 import { joinLines } from '../sourceUtils';
 import { EventName, storeDbEvent } from '../storeDbEvent';
@@ -27,23 +25,24 @@ export function initialCodeExecutionState(): CodeCellExecutionState {
   };
 }
 
-async function functionsFromToolbox(
-  sources: string[],
+async function importedToolboxFunctions(
+  source: string,
+  getFromToolbox: (name: string) => ToolboxFunction | undefined,
+) {
+  const names = await importedToolboxNames(source);
+  const functions = await Promise.all(names.map((name) => getFromToolbox(name)));
+  return functions.filter((f): f is ToolboxFunction => f !== undefined);
+}
+
+async function transitivelyImportedToolboxFunctions(
+  source: string,
   getFromToolbox: (name: string) => ToolboxFunction | undefined,
 ) : Promise<ToolboxFunction[]> {
-  const imports : PythonName[] = (await Promise.all(sources.map(
-    (source) => {
-      try {
-        return imported_names(source);
-      } catch {
-        return [];
-      }
-    },
-  ))).flat();
-  const toolboxImports = uniqWith(imports, isEqual).filter(({ module }) => module === TOOLBOX_FILE);
-  return (await Promise.all(
-    toolboxImports.map(({ name }) => getFromToolbox(name)),
-  )).filter((f): f is ToolboxFunction => f !== undefined);
+  const importedFunctions = await importedToolboxFunctions(source, getFromToolbox);
+  const importsOfImports = await Promise.all(importedFunctions.map((fn) => (
+    transitivelyImportedToolboxFunctions(fn.source, getFromToolbox)
+  )));
+  return [...importedFunctions, ...importsOfImports.flat()];
 }
 
 async function executeOnServer(
@@ -190,7 +189,10 @@ export function useActivity(
     };
 
     const sources = codeCells.map(sourceFromCell);
-    const toolboxFunctions = await functionsFromToolbox(sources, functionLookup);
+    const toolboxFunctions = await transitivelyImportedToolboxFunctions(
+      joinLines(sources),
+      functionLookup,
+    );
     logAnalyticsEvent(AnalyticsEventName.CodeExecution, { activity: variantId });
     storeDbEvent(EventName.CodeExecution, metadata, {
       sources,

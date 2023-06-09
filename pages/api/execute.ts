@@ -1,7 +1,7 @@
 import axios from 'axios';
+import crypto from 'crypto';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from 'redis';
-import crypto from 'crypto';
 import { CODE_EXECUTION_CELLS_TO_FILES_VERSION, ExecutionResponse, cellsToFiles } from '../../src/codeExecution';
 import { ToolboxFunction } from '../../src/localStorage/schema';
 
@@ -44,7 +44,7 @@ async function saveToCache(key: string, value: string) {
 }
 
 async function doExecution(sources: string[], idx: number, toolboxFunctions: ToolboxFunction[]) {
-  const files = cellsToFiles(sources, idx, toolboxFunctions);
+  const files = await cellsToFiles(sources, idx, toolboxFunctions);
   const data = {
     image: process.env.GLOT_IMAGE_TAG,
     payload: {
