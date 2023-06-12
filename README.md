@@ -42,6 +42,10 @@ When you want to integrate your changes into the main repository and see them li
     ```sh
     cd data/<author-slug>
     ```
+1. _only for the first time_, create a new branch named `live` and push it to the remote repository:
+    ```sh
+    git checkout -b live && git push -u origin live && git checkout main
+    ```
 1. merge the `main` branch of your submodule into the `live` branch:
     ```sh
     git checkout live && git merge main && git push && git checkout main
