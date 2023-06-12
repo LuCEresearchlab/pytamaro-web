@@ -7,7 +7,9 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { useRouter } from 'next/router';
 import getLanguageDisplayName from '../src/internationalization';
 import { isPlayground } from '../src/playground';
-import { Activity, ActivityVariant, languageInfoForVariant } from '../src/schemas/activitySchema';
+import {
+  Activity, ActivityVariant, activityVariantId, languageInfoForVariant,
+} from '../src/schemas/activitySchema';
 import { isSpecialActivity } from '../src/specialActivities';
 import { activityVariantPathname } from '../src/urlUtils';
 import ActivityCardMedia from './ActivityCardMedia';
@@ -51,7 +53,7 @@ export default function VariantsGallery({
             xs={12}
             sm={6}
             lg={4}
-            key={activity.slug}
+            key={activityVariantId(variant)}
           >
             <Card>
               <CardActionArea onClick={() => handleClick(variant)}>
