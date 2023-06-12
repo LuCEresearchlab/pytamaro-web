@@ -1,10 +1,13 @@
+/* eslint-disable react/no-unescaped-entities */
+import { Close } from '@mui/icons-material';
 import {
   Alert, Box,
   Button,
   Dialog,
   DialogContent,
   DialogTitle,
-  FormControl, InputLabel,
+  FormControl, IconButton,
+  InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -12,7 +15,9 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import {
+  Dispatch, SetStateAction, useEffect, useState,
+} from 'react';
 import { ExecutionResponse, TOOLBOX_FILE } from '../src/codeExecution';
 import { CodeCellState, ToolboxFunction } from '../src/localStorage/schema';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
@@ -21,56 +26,41 @@ import { PythonFunction, defined_functions } from '../src/python-analyzer/python
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
 import { toolboxActivityVariant } from '../src/specialActivities';
+import theme from '../src/theme';
 import { isExecutionError } from './CodeCell';
 import CodeEditor from './CodeEditor';
-import CustomSnackbar from './CustomSnackbar';
 import SolitaryCodeCell, { emptySingleCell, initialStateSingleCell } from './SolitaryCodeCell';
 
 function PermanentlySaveToToolboxButton({
-  fn, enabled, saved, setSaved,
+  fn, enabled, onSave, setSavingSuccess, setSavingError,
 } : {
   fn: ToolboxFunction,
   enabled: boolean,
-  saved: boolean,
-  setSaved: (saved: boolean) => void
+  onSave: () => void,
+  setSavingSuccess: Dispatch<SetStateAction<boolean>>,
+  setSavingError: Dispatch<SetStateAction<boolean>>,
 }) {
-  const [savingSuccess, setSavingSuccess] = useState(false);
-  const [savingError, setSavingError] = useState(false);
   const { add } = useLocalToolbox();
   const saveFunction = () => {
     if (add(fn)) {
       setSavingSuccess(true);
-      setSaved(true);
     } else {
       setSavingError(true);
     }
+    onSave();
   };
   return (
-    <>
-      <Box textAlign="center">
-        <Button
-          onClick={() => saveFunction()}
-          disabled={!enabled || saved}
-          color="primary"
-          variant="contained"
-          sx={{ marginTop: 2, minWidth: '30ch' }}
-        >
-          {saved ? 'Saved' : 'Save to toolbox'}
-        </Button>
-      </Box>
-      <CustomSnackbar
-        visible={savingSuccess}
-        setVisible={setSavingSuccess}
-        severity="success"
-        message="Function successfully saved to the toolbox!"
-      />
-      <CustomSnackbar
-        visible={savingError}
-        setVisible={setSavingError}
-        severity="error"
-        message="Saving failed: this name already exists in the toolbox!"
-      />
-    </>
+    <Box textAlign="center">
+      <Button
+        onClick={() => saveFunction()}
+        disabled={!enabled}
+        color="primary"
+        variant="contained"
+        sx={{ marginTop: 2, minWidth: '30ch' }}
+      >
+        Save to toolbox
+      </Button>
+    </Box>
   );
 }
 
@@ -118,11 +108,14 @@ function functionForToolbox(
   };
 }
 
-export default function FunctionsDialog({
-  open, onClose, initialImplementation, originalActivity,
+export default function SaveToToolboxDialog({
+  open, onClose, initialImplementation, originalActivity, setSavingSuccess, setSavingError,
 }:
 { open: boolean, onClose: () => void, initialImplementation: string,
-  originalActivity: ActivityVariant }) {
+  originalActivity: ActivityVariant,
+  setSavingSuccess: Dispatch<SetStateAction<boolean>>,
+  setSavingError: Dispatch<SetStateAction<boolean>>
+}) {
   const [implementation, setImplementation] = useState(initialImplementation);
   const initialCodeCells = initialStateSingleCell(implementation);
   const [codeCells, setCodeCells] = useState<CodeCellState[]>(initialCodeCells);
@@ -130,7 +123,7 @@ export default function FunctionsDialog({
   const [selectedFunction, setSelectedFunction] = useState<string>('');
   const [description, setDescription] = useState('');
   const [usageExecutedSuccessfully, setUsageExecutedSuccessfully] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [usageEdited, setUsageEdited] = useState(false);
   const selectedPythonFunction = functions.find((f) => f.name === selectedFunction);
   const { exists } = useLocalToolbox();
   const alreadyExists = exists(selectedFunction);
@@ -180,26 +173,76 @@ export default function FunctionsDialog({
   }, [implementation]);
 
   const initUsage = (newSelectedFn: string) => {
-    if (newSelectedFn && newSelectedFn !== selectedFunction) {
+    // Do not overwrite the usage if the user has edited it at least once in the past
+    if (newSelectedFn && newSelectedFn !== selectedFunction && !usageEdited) {
       const newUsage = joinLines([`from ${TOOLBOX_FILE} import ${newSelectedFn}`, '...']);
       activity.handleSourceChanged(newUsage, 0);
       setUsageExecutedSuccessfully(false);
     }
   };
 
+  const resetSelectedFunction = () => {
+    setSelectedFunction('');
+  };
+
+  const resetDescription = () => {
+    setDescription('');
+  };
+
   const handleImplementationChange = (newImplementation: string) => {
     setImplementation(newImplementation);
-    setSelectedFunction('');
+    resetSelectedFunction();
     setUsageExecutedSuccessfully(false);
   };
 
   return (
     <Dialog onClose={() => onClose()} open={open} maxWidth="md" fullWidth>
-      <DialogTitle>Save a function to my toolbox</DialogTitle>
+      <DialogTitle>
+        Save a function to my toolbox
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          }}
+        >
+          <Close />
+        </IconButton>
+      </DialogTitle>
       <DialogContent>
         <Typography color="text.secondary" fontWeight="bold" marginBottom={2}>
           Implementation
         </Typography>
+        <Alert severity="info" sx={{ mb: 2 }}>
+          Clean up your code before saving a function to the toolbox. Here are some tips:
+          <ul style={{
+            marginTop: theme.spacing(1),
+            marginBottom: 0,
+            paddingInlineStart: theme.spacing(2),
+          }}
+          >
+            <li> Remove any code that is not needed by the function you want to save </li>
+            <li>
+              {' '}
+              Remove calls that produce output (e.g., calls to
+              {' '}
+              <code>print</code>
+              {' '}
+              or
+              {' '}
+              <code>show_graphic</code>
+              )
+              {' '}
+            </li>
+            <li>
+              Remove unnecessary imports (move them all to the top,
+              combine them and get rid of unneeded ones)
+            </li>
+          </ul>
+        </Alert>
         <CodeEditor
           source={implementation}
           onChange={handleImplementationChange}
@@ -232,13 +275,10 @@ export default function FunctionsDialog({
                 }}
               />
             </Stack>
-            {!selectedFunction && (
-              <Alert severity="info">Select a function to save</Alert>
+            {alreadyExists && (
+              <Alert severity="error">The toolbox already contains this name. Refactor the code to change its name or delete the existing one from the toolbox.</Alert>
             )}
-            {alreadyExists && !saved && (
-              <Alert severity="error">The toolbox already contains this name!</Alert>
-            )}
-            {selectedFunction && (!alreadyExists || saved) && (!description ? (
+            {selectedFunction && !alreadyExists && (!description ? (
               <Alert severity="info">Add a description so that you will remember what this function does</Alert>
             ) : (
               <>
@@ -248,13 +288,20 @@ export default function FunctionsDialog({
                 <SolitaryCodeCell
                   activity={activity}
                   activityVariant={toolboxActivityVariant}
+                  postSourceChange={() => {
+                    setUsageEdited(true);
+                    setUsageExecutedSuccessfully(false);
+                  }}
                 />
               </>
             ))}
-            {selectedPythonFunction && description && (
+            {selectedPythonFunction && !alreadyExists && description && (
             <>
               {!usageExecutedSuccessfully && (
-              <Alert sx={{ mt: 2 }} severity="info">Run the usage example to make sure the function works as you expect</Alert>
+              <Alert sx={{ mt: 2 }} severity="info">
+                Run the usage example to make sure the function works as you expect.
+                Don't forget to add all the necessary imports.
+              </Alert>
               )}
               <PermanentlySaveToToolboxButton
                 fn={functionForToolbox(
@@ -265,8 +312,9 @@ export default function FunctionsDialog({
                   activity.codeCells[0].source,
                 )}
                 enabled={usageExecutedSuccessfully}
-                saved={saved}
-                setSaved={setSaved}
+                onSave={() => { resetSelectedFunction(); resetDescription(); onClose(); }}
+                setSavingSuccess={setSavingSuccess}
+                setSavingError={setSavingError}
               />
             </>
             )}
