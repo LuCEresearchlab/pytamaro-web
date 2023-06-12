@@ -41,7 +41,6 @@ import PanoramaUSI from '../../public/PanoramaUSI.jpg';
 import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
 import PyTamaroLogo from '../../public/PyTamaroLogo.png';
 import NavigationBar from '../../components/NavigationBar';
-import { TipsAndUpdates } from '@mui/icons-material';
 
 function SILogo({ height } : { height: number }) {
   return (
@@ -269,7 +268,7 @@ export default function SummerAcademy() {
             </CardContent>
           </Card>
         </Container>
-        <Container maxWidth="lg" sx={{marginTop: '25px' }}>
+        <Container maxWidth="lg" sx={{ marginTop: '25px' }}>
           <List>
             <ListItem>
               <ListItemIcon>
