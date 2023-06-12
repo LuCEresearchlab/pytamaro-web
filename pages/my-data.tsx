@@ -6,8 +6,6 @@ import {
   AccordionSummary,
   Box,
   Button,
-  Card,
-  CardActions,
   Container, Link, Paper, Stack, TextField, Typography,
 } from '@mui/material';
 import { produce } from 'immer';
@@ -18,115 +16,12 @@ import { useState } from 'react';
 import ExportLocalStorageButton from '../components/ExportLocalStorageButton';
 import ImportLocalStorageButton from '../components/ImportLocalStorageButton';
 import NavigationBar from '../components/NavigationBar';
-import ToolboxFunctionSummary from '../components/ToolboxFunctionSummary';
-import getLanguageDisplayName from '../src/internationalization';
 import getEntireLocalStorage, { clearEntireLocalStorage, replaceEntireLocalStorage } from '../src/localStorage/entireLocalStorage';
-import { ToolboxFunction } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
-import useLocalToolbox from '../src/localStorage/useLocalToolbox';
-import { isPlayground } from '../src/playground';
-import { isSpecialActivity } from '../src/specialActivities';
 import theme from '../src/theme';
-import { activityVariantPathname, playgroundPathname } from '../src/urlUtils';
-
-function ActivityVariantsList({ ids } : { ids: string[] }) {
-  return (
-    <ul>
-      {ids.map((id) => {
-        const [authorSlug, activitySlug, language, version] = id.split('/');
-        if (isPlayground(authorSlug, activitySlug, language, version)) {
-          return <li key={id}><Link href={playgroundPathname()}>Playground</Link></li>;
-        }
-        if (isSpecialActivity(authorSlug, activitySlug, language, version)) {
-          return null;
-        }
-        const pathname = activityVariantPathname(
-          authorSlug,
-          activitySlug,
-          language,
-          version,
-        );
-        return (
-          <li key={id}>
-            <Link href={pathname}>
-              {`${authorSlug} - ${activitySlug}`}
-            </Link>
-            {` (${getLanguageDisplayName(language)} at version ${version})`}
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
-function ToolboxList({ functions } : { functions: ToolboxFunction[] }) {
-  const { deleteFunction } = useLocalToolbox();
-  const confirm = useConfirm();
-
-  const askDeleteFunction = (fn: ToolboxFunction) => {
-    confirm({
-      description:
-  <Typography component="span">
-    Are you sure you want to delete the function
-    {' '}
-    <Typography fontFamily={theme.pytamaro.monospaceFontFamily} component="span">{fn.name}</Typography>
-    {' '}
-    from your toolbox?
-  </Typography>,
-    }).then(() => {
-      deleteFunction(fn);
-    });
-  };
-
-  return (
-    <>
-      <Typography variant="h4" align="center" marginY={3}>My Toolbox</Typography>
-      {functions.length === 0 ? (
-        <Typography variant="body1" marginY={3}>
-          Toolbox still empty.
-        </Typography>
-      ) : (
-        <>
-          <Typography variant="body1" marginY={3}>
-            The toolbox contains the following functions:
-          </Typography>
-
-          <Stack
-            direction="column"
-            spacing={2}
-          >
-            {functions.map((fn) => (
-              <Card variant="outlined" key={fn.name}>
-                <ToolboxFunctionSummary fn={fn} />
-                <CardActions>
-                  <Button
-                    onClick={() => askDeleteFunction(fn)}
-                    color="primary"
-                    variant="contained"
-                    sx={{ ml: 1 }}
-                  >
-                    Delete
-                  </Button>
-                </CardActions>
-              </Card>
-            ))}
-          </Stack>
-        </>
-      )}
-    </>
-  );
-}
 
 export default function MyData() {
   const { metadata, setMetadata } = useLocalProfile();
-  const cellsModifiedActivityVariantIds = metadata.activities
-    .filter((a) => a.cellsModified)
-    .map((a) => a.id);
-  const completedActivityVariantIds = metadata.activities
-    .filter((a) => a.completed)
-    .map((a) => a.id);
-
-  const { list } = useLocalToolbox();
 
   const [localStorageChanged, setLocalStorageChanged] = useState(0);
   const confirm = useConfirm();
@@ -172,36 +67,6 @@ export default function MyData() {
             You also can configure your privacy settings,
             which influence what data gets sent to our server.
           </Typography>
-          <Typography variant="h4" align="center" marginY={3}>My Source Code</Typography>
-          {cellsModifiedActivityVariantIds.length > 0 && (
-            <>
-              <Typography variant="body1" marginY={3}>
-                You wrote source code for the following activities:
-              </Typography>
-              <ActivityVariantsList ids={cellsModifiedActivityVariantIds} />
-            </>
-          )}
-          {cellsModifiedActivityVariantIds.length === 0 && (
-            <Typography variant="body1" marginY={3}>
-              You haven&apos;t written source code for any activities.
-            </Typography>
-          )}
-          {completedActivityVariantIds.length > 0 && (
-            <>
-              <Typography variant="body1" marginY={3}>
-                You completed the following activities:
-              </Typography>
-              <ActivityVariantsList ids={completedActivityVariantIds} />
-            </>
-          )}
-          {completedActivityVariantIds.length === 0 && (
-            <Typography variant="body1" marginY={3}>
-              You haven&apos;t completed any activities.
-            </Typography>
-          )}
-          <div id="toolbox" className="anchor">
-            <ToolboxList functions={list()} />
-          </div>
           <Typography variant="h4" align="center" marginY={3}>Export and Import</Typography>
           <Typography variant="body1" marginTop={3}>
             The data (e.g., source code) you enter in PyTamaro Web is stored in your browser,

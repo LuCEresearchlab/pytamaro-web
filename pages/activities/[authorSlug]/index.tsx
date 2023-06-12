@@ -1,23 +1,26 @@
-import { useState, useEffect } from 'react';
-import Grid from '@mui/material/Unstable_Grid2';
+import ViewCompactIcon from '@mui/icons-material/ViewCompact';
 import {
-  Stack, TextField,
-  Select,
+  Box, Chip,
   FormControl,
   InputLabel,
   MenuItem,
-  ToggleButton, Tooltip, SelectChangeEvent, OutlinedInput, Box, Chip,
+  OutlinedInput,
+  Select,
+  SelectChangeEvent,
+  Stack, TextField,
+  ToggleButton, Tooltip,
 } from '@mui/material';
-import ViewCompactIcon from '@mui/icons-material/ViewCompact';
+import Grid from '@mui/material/Unstable_Grid2';
 import { useRouter } from 'next/router';
-import theme from '../../../src/theme';
-import NavigationBar from '../../../components/NavigationBar';
+import { useEffect, useState } from 'react';
 import ActivitiesGallery, { ANY_LANGUAGE } from '../../../components/ActivitiesGallery';
+import NavigationBar from '../../../components/NavigationBar';
+import { listActivitiesAllAuthors, listAuthorsProfiles } from '../../../src/fs-content/authors';
 import getLanguageDisplayName from '../../../src/internationalization';
-import { listAuthorsProfiles, listAuthorsWithContent } from '../../../src/fs-content/authors';
-import { AuthorProfile } from '../../../src/schemas/authorSchema';
-import { activitiesByAuthorPathname } from '../../../src/urlUtils';
 import { Activity } from '../../../src/schemas/activitySchema';
+import { AuthorProfile } from '../../../src/schemas/authorSchema';
+import theme from '../../../src/theme';
+import { activitiesByAuthorPathname } from '../../../src/urlUtils';
 
 export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsProfiles }:
 { defaultAuthorSlug: string,
@@ -51,11 +54,11 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
         .filter((activity) => (
           // search by slug and by title and description of language-filtered variant
           (activity.slug.toLowerCase().includes(search.toLowerCase())
-          || activity.variants.some(
-            (avariant) => (languageFilter === ANY_LANGUAGE
-            || avariant.language.toLowerCase() === languageFilter.toLowerCase())
-            && (avariant.description.toLowerCase().includes(search.toLowerCase())
-            || avariant.title.toLowerCase().includes(search.toLowerCase())),
+          || activity.languagesInfo.some(
+            (info) => (languageFilter === ANY_LANGUAGE
+            || info.language.toLowerCase() === languageFilter.toLowerCase())
+            && (info.description.toLowerCase().includes(search.toLowerCase())
+            || info.title.toLowerCase().includes(search.toLowerCase())),
           ))
         )),
     );
@@ -181,7 +184,7 @@ export async function getStaticProps(
     props: {
       defaultAuthorSlug: authorSlug,
       authorsProfiles: await listAuthorsProfiles(),
-      activities: (await listAuthorsWithContent()).map((author) => author.activities).flat(),
+      activities: await listActivitiesAllAuthors(),
     },
   };
 }

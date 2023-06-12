@@ -1,4 +1,4 @@
-import { latestVariant, listVisibleActivities } from './fs-content/activities';
+import { listVisibleActivities } from './fs-content/activities';
 import { readNotebookContent } from './fs-content/notebooks';
 import { cellsVisibleToUser, isCodeCell } from './notebook';
 import { PythonName, imported_names } from './python-analyzer/python_analyzer';
@@ -27,14 +27,18 @@ export default async function getActivitiesWithAPIs(authorSlug: string)
   const activities = await listVisibleActivities(authorSlug);
   return (await Promise.all(
     activities.map((activity) => (
-      Promise.all(activity.variants.map(async (variant) => {
-        const activityVariant = latestVariant(authorSlug, activity.slug, variant);
+      Promise.all(activity.languagesInfo.map(async (info) => {
+        const variant = {
+          authorSlug,
+          activitySlug: activity.slug,
+          language: info.language,
+          version: info.latestVersion,
+        };
         return {
           activity,
-          variant: activityVariant,
-          importedNames: await importedAPIs(activityVariant),
+          variant,
+          importedNames: await importedAPIs(variant),
         };
-      }))
-    )),
+      })))),
   )).flat();
 }

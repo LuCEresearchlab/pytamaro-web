@@ -70,7 +70,7 @@ function SidebarToolboxFunction({ fn }: { fn: ToolboxFunction }) {
         }}
         onClose={handleClose}
       >
-        <ToolboxFunctionSummary fn={fn} showSource={false} />
+        <ToolboxFunctionSummary fn={fn} sourceHidden />
       </Popover>
     </>
   );

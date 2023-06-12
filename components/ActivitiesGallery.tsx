@@ -1,14 +1,22 @@
-import { Verified, HourglassBottom } from '@mui/icons-material';
+import { HourglassBottom, Verified } from '@mui/icons-material';
+import InfoIcon from '@mui/icons-material/Info';
 import {
-  Paper, Card, CardActionArea, CardMedia, CardContent,
-  Typography, Chip, CardActions, Button, Box, IconButton,
+  Box,
+  Button,
+  Card, CardActionArea,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Chip,
+  IconButton,
+  Paper,
+  Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import Link from 'next/link';
 import router from 'next/router';
-import InfoIcon from '@mui/icons-material/Info';
-import { activityVariantPathname, activityAssetPathname, activityPathname } from '../src/urlUtils';
-import { Activity, NotebookVariant } from '../src/schemas/activitySchema';
+import { Activity, ActivityVariant, canonicalVariantForLanguage } from '../src/schemas/activitySchema';
+import { activityAssetPathname, activityPathname, activityVariantPathname } from '../src/urlUtils';
 
 export const ANY_LANGUAGE = 'any';
 
@@ -50,15 +58,22 @@ export default function ActivitiesGallery({
     <Grid container spacing={2}>
       {activities.map((activity) => {
         // get language-filtered variant (if cannot, get first)
-        const defaultVariant = activity.variants.find(
-          (v) => languageFilter === ANY_LANGUAGE
-           || v.language.toLowerCase() === languageFilter.toLowerCase(),
-        ) || activity.variants[0] as NotebookVariant;
-        const variantPathname = (variant: NotebookVariant) => activityVariantPathname(
-          activity.authorSlug,
-          activity.slug,
+        const langInfo = activity.languagesInfo.find(
+          (i) => languageFilter === ANY_LANGUAGE
+           || i.language.toLowerCase() === languageFilter.toLowerCase(),
+        ) || activity.languagesInfo[0];
+        const defaultVariant = canonicalVariantForLanguage(
+          activity,
+          langInfo.language,
+        );
+        if (defaultVariant === undefined) {
+          throw new Error(`Latest version for activity ${activity.slug} in language ${languageFilter} not found`);
+        }
+        const variantPathname = (variant: ActivityVariant) => activityVariantPathname(
+          variant.authorSlug,
+          variant.activitySlug,
           variant.language,
-          variant.latestVersion,
+          variant.version,
         );
         const isDraft = activity.visibility === 'draft';
         return (
@@ -83,13 +98,13 @@ export default function ActivitiesGallery({
                       activity.slug,
                       activity.previewImage.filename,
                     )}
-                    alt={defaultVariant.title}
+                    alt={langInfo.title}
                     sx={{ padding: 1, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
                   />
                   { !compactView && (
                     <CardContent>
                       <Typography gutterBottom variant="h5" component="div">
-                        {defaultVariant.title}
+                        {langInfo.title}
                         {activity.visibility === 'featured'
                           && (
                           <Verified
@@ -106,22 +121,24 @@ export default function ActivitiesGallery({
                           )}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {defaultVariant.description}
+                        {langInfo.description}
                       </Typography>
                     </CardContent>
                   )}
                 </CardActionArea>
                 { !compactView && (
                   <CardActions>
-                    {activity.variants.map((variant) => (
+                    {activity.languagesInfo.map((info) => (
                       <Button
-                        onClick={() => router.push(variantPathname(variant))}
+                        onClick={() => router.push(variantPathname(
+                          canonicalVariantForLanguage(activity, info.language),
+                        ))}
                         size="small"
                         variant="outlined"
-                        key={variant.language}
+                        key={info.language}
                         disabled={isDraft}
                       >
-                        {variant.language}
+                        {info.language}
                       </Button>
                     ))}
                     <Box sx={{ marginLeft: 'auto' }}>

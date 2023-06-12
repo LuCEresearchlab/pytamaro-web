@@ -1,7 +1,8 @@
 import { readFile, readdir } from 'fs/promises';
 import path from 'path';
 import {
-  Activity, ActivityUse, ActivityVariant, LanguageWithLatestVersion, NotebookVariant,
+  Activity, ActivityUse,
+  RawActivity,
 } from '../schemas/activitySchema';
 import { ACTIVITIES_DIR, DATA_DIR, notebookFileNames } from './notebooks';
 
@@ -10,10 +11,34 @@ const ACTIVITY_INFO_FILE = 'info.json';
 export async function readActivity(authorSlug: string, activitySlug: string)
   : Promise<Activity> {
   const content = await readFile(path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR, activitySlug, ACTIVITY_INFO_FILE), 'utf-8');
+  const rawActivity : RawActivity = JSON.parse(content);
+  const notebooks = await notebookFileNames(authorSlug, activitySlug);
+  const notebooksVariants = notebooks.map((filename) => {
+    const components = filename.split('-');
+    const language = components.at(-2);
+    const version = components.at(-1);
+    if (!language || !version) {
+      throw new Error(`Invalid notebook filename ${filename} (cannot detect language or version)`);
+    }
+    return {
+      language,
+      version,
+    };
+  });
   return {
     authorSlug,
     slug: activitySlug,
-    ...JSON.parse(content),
+    previewImage: rawActivity.previewImage,
+    visibility: rawActivity.visibility,
+    uses: rawActivity.uses || [],
+    assets: rawActivity.assets || [],
+    variants: notebooksVariants.map((variant) => ({
+      authorSlug,
+      activitySlug,
+      language: variant.language,
+      version: variant.version,
+    })),
+    languagesInfo: rawActivity.variants,
   };
 }
 
@@ -23,36 +48,6 @@ export async function findVersions(authorSlug: string, activitySlug: string, lan
   return (await notebookFileNames(authorSlug, activitySlug))
     .filter((filename) => filename.startsWith(prefix))
     .map((filename) => filename.replace(prefix, ''));
-}
-
-export async function variantInfo(authorSlug: string, activitySlug: string, language: string)
-  : Promise<NotebookVariant> {
-  const activity = await readActivity(authorSlug, activitySlug);
-  return activity.variants.find((v) => v.language === language) as NotebookVariant;
-}
-
-export function latestVariant(
-  authorSlug: string,
-  activitySlug: string,
-  variant: NotebookVariant,
-) : ActivityVariant {
-  return {
-    authorSlug,
-    activitySlug,
-    language: variant.language,
-    version: variant.latestVersion,
-  };
-}
-
-export async function findLanguages(authorSlug: string, activitySlug: string)
-  : Promise<LanguageWithLatestVersion[]> {
-  const notebooks = await notebookFileNames(authorSlug, activitySlug);
-  const languages = notebooks.map((filename) => filename.split('-').at(-2)) as string[];
-  const uniqueLanguages = Array.from(new Set(languages));
-  return Promise.all(uniqueLanguages.map(async (language) => ({
-    language,
-    latestVersion: (await variantInfo(authorSlug, activitySlug, language)).latestVersion,
-  })));
 }
 
 export async function listActivities(authorSlug: string) : Promise<Activity[]> {

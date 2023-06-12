@@ -7,7 +7,6 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import { MDXRemote } from 'next-mdx-remote';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import { useRef } from 'react';
 import ActivityInfoButton from '../../../../../../components/ActivityInfoButton';
 import ActivityLink from '../../../../../../components/ActivityLink';
@@ -26,13 +25,14 @@ import ResponsiveReactPlayer from '../../../../../../components/ResponsiveReactP
 import SaveToToolboxButton from '../../../../../../components/SaveToToolboxButton';
 import TableOfContents from '../../../../../../components/TableOfContents';
 import VariantSelector from '../../../../../../components/VariantsSelector';
-import { findLanguages, findVersions, variantInfo } from '../../../../../../src/fs-content/activities';
+import { findVersions, readActivity } from '../../../../../../src/fs-content/activities';
 import { listAuthorsWithContent } from '../../../../../../src/fs-content/authors';
 import { CodeCellState } from '../../../../../../src/localStorage/schema';
 import useLocalActivity from '../../../../../../src/localStorage/useLocalActivity';
 import getNotebookContent from '../../../../../../src/notebook';
 import {
-  ActivityVariant, LanguageWithLatestVersion, MarkdownCell, NotebookCell,
+  Activity,
+  ActivityVariant, MarkdownCell, NotebookCell,
 } from '../../../../../../src/schemas/activitySchema';
 import { countLines } from '../../../../../../src/sourceUtils';
 import { activityAssetPathname, activityVariantPathname } from '../../../../../../src/urlUtils';
@@ -133,24 +133,8 @@ function MarkdownCellComponent({ cell, activityVariant } :
   );
 }
 
-export default function NotebookPage({
-  title, cells, versions, languages,
-}:
-{ title : string, cells: NotebookCell[], versions: string[],
-  languages: LanguageWithLatestVersion[] }) {
-  const router = useRouter();
-  const {
-    authorSlug, activitySlug, language, version,
-  } = router.query as {
-    authorSlug: string,
-    activitySlug: string,
-    language: string,
-    version: string,
-  };
-  const activityVariant = {
-    authorSlug, activitySlug, language, version,
-  };
-
+export default function NotebookPage({ activity, activityVariant, cells }:
+{ activity : Activity, activityVariant: ActivityVariant, cells: NotebookCell[] }) {
   const initialCodeCells : CodeCellState[] = cells
     .map((cell, idx) => ({ cell, idx }))
     .filter(({ cell }) => cell.cell_type === 'code')
@@ -166,6 +150,8 @@ export default function NotebookPage({
   } = useLocalActivity(initialCodeCells, activityVariant);
   const cellsRef = useRef<HTMLDivElement>(null);
 
+  const title = activity.languagesInfo.find((i) => i.language === activityVariant.language)?.title;
+
   const pageTitle = `${title} - PyTamaro`;
 
   let nextFirstLineNumber = 1;
@@ -179,15 +165,11 @@ export default function NotebookPage({
       <Box>
         <NavigationBar>
           <VariantSelector
-            authorSlug={authorSlug}
-            activitySlug={activitySlug}
-            language={language}
-            version={version}
-            versions={versions}
-            languages={languages}
+            activity={activity}
+            activityVariant={activityVariant}
           />
           <ResetButton enabled={cellsModified} onReset={handleResetActivity} />
-          <ActivityInfoButton authorSlug={authorSlug} activitySlug={activitySlug} />
+          <ActivityInfoButton authorSlug={activity.authorSlug} activitySlug={activity.slug} />
         </NavigationBar>
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
         <DataSharingPreferenceDialog />
@@ -283,10 +265,11 @@ export async function getStaticProps(
   } = context.params;
   return {
     props: {
-      title: (await variantInfo(authorSlug, activitySlug, language)).title,
+      activity: await readActivity(authorSlug, activitySlug),
+      activityVariant: {
+        authorSlug, activitySlug, language, version,
+      },
       cells: await getNotebookContent(authorSlug, activitySlug, language, version, userType),
-      versions: await findVersions(authorSlug, activitySlug, language),
-      languages: await findLanguages(authorSlug, activitySlug),
     },
   };
 }

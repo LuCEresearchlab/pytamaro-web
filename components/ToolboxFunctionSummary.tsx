@@ -1,10 +1,9 @@
-import { ExpandMore } from '@mui/icons-material';
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  CardContent, Table, TableBody, TableCell, TableHead, TableRow, Typography,
+  Box,
+  CardContent, FormControlLabel, FormGroup, Switch,
+  Table, TableBody, TableCell, TableHead, TableRow, Typography,
 } from '@mui/material';
+import { useState } from 'react';
 import { ToolboxFunction } from '../src/localStorage/schema';
 import theme from '../src/theme';
 import CodeEditor from './CodeEditor';
@@ -17,12 +16,14 @@ function TypeCell({ type } : { type: string }) {
 
 export default function ToolboxFunctionSummary(
   {
-    fn, showSource = true,
+    fn, sourceHidden,
   } :
   { fn : ToolboxFunction,
-    showSource?: boolean
+    sourceHidden: boolean
   },
 ) {
+  const [showSource, setShowSource] = useState(false);
+  const toggleShowSource = () => setShowSource(!showSource);
   return (
     <CardContent sx={{ pb: 1, minWidth: '80ch' }}>
       <Typography color="text.secondary" component="span" mr="1ch" fontWeight="bold">
@@ -71,6 +72,25 @@ export default function ToolboxFunctionSummary(
           </TableRow>
         </TableBody>
       </Table>
+      {!sourceHidden && (
+        <Box sx={{ my: 2 }}>
+          <Typography color="text.secondary" fontWeight="bold" component="span">
+            Implementation
+          </Typography>
+          <FormGroup sx={{ display: 'inline', marginLeft: 2 }}>
+            <FormControlLabel
+              control={<Switch checked={showSource} onChange={toggleShowSource} />}
+              label={<Typography color="text.secondary">{showSource ? 'Hide' : 'Show'}</Typography>}
+            />
+          </FormGroup>
+          {showSource && (
+          <CodeEditor
+            source={fn.source}
+            readOnly
+          />
+          )}
+        </Box>
+      )}
       <Typography color="text.secondary" fontWeight="bold">
         Usage
       </Typography>
@@ -78,23 +98,6 @@ export default function ToolboxFunctionSummary(
         source={fn.usage}
         readOnly
       />
-      {showSource && (
-        <Accordion square sx={{ mt: 2 }}>
-          <AccordionSummary
-            expandIcon={<ExpandMore />}
-            aria-controls="source-content"
-            id="source-header"
-          >
-            <Typography color="text.secondary" fontWeight="bold">Implementation</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <CodeEditor
-              source={fn.source}
-              readOnly
-            />
-          </AccordionDetails>
-        </Accordion>
-      )}
     </CardContent>
   );
 }
