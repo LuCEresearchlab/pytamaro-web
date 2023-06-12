@@ -7,8 +7,15 @@ import {
   CardMedia,
   Container,
   Grid,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemIcon,
+  ListItemText,
   Typography,
 } from '@mui/material';
+import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import LanguageIcon from '@mui/icons-material/Language';
 import SchoolIcon from '@mui/icons-material/School';
 import LandscapeIcon from '@mui/icons-material/Landscape';
@@ -32,7 +39,9 @@ import PanoramaTamaroLemaDry from '../../public/PanoramaTamaroLemaDry.jpg';
 import PanoramaTamaroLemaLugano from '../../public/PanoramaTamaroLemaLugano.jpg';
 import PanoramaUSI from '../../public/PanoramaUSI.jpg';
 import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
+import PyTamaroLogo from '../../public/PyTamaroLogo.png';
 import NavigationBar from '../../components/NavigationBar';
+import { TipsAndUpdates } from '@mui/icons-material';
 
 function SILogo({ height } : { height: number }) {
   return (
@@ -222,18 +231,6 @@ export default function SummerAcademy() {
           />
         </Box>
         <Container maxWidth="lg">
-          <Typography variant="h4" align="center" marginY={3}>Five-Day Summer Academy at the Software Institute at USI in Lugano</Typography>
-        </Container>
-        <Container maxWidth="lg">
-          <Typography variant="h5" align="center" marginY={3}>
-            Learn programming by decomposing graphics and recomposing them as programs.
-            Experience the sound theoretical foundations of programming
-            combined with the unbounded creativity and playfulness of computer graphics.
-            Use the most prevalent programming language, Python,
-            and the (we think) greatest Python graphics library, PyTamaro.
-          </Typography>
-        </Container>
-        <Container maxWidth="lg">
           <Card>
             <CardMedia>
               <div style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -251,6 +248,9 @@ export default function SummerAcademy() {
                 />
               </div>
             </CardMedia>
+            <Container maxWidth="lg">
+              <Typography variant="h4" align="center" marginY={3}>Five-Day Summer Academy at the Software Institute at USI in Lugano</Typography>
+            </Container>
             <CardHeader
               title="Monday, August 14 to Friday, August 18, 2023"
               subheader="Daily Schedule: 9:00 to 17:00, lunch included"
@@ -260,11 +260,51 @@ export default function SummerAcademy() {
               }}
             />
             <CardContent>
-              <Typography variant="h5" align="center" marginY={3} sx={{ color: '#d2071b', fontWeight: 'bold' }}>
-                Registrations Opening Soon
+              <Typography variant="h5" align="center" marginY={3} sx={{ fontWeight: 'bold' }}>
+                <a href="https://usi.qualtrics.com/jfe/form/SV_dgl72CeghvIudbU">Register Here</a>
+              </Typography>
+              <Typography variant="h5" align="center" marginY={3} sx={{ color: '#d2071b' }}>
+                Spaces are limited. The earlier you register, the higher the chance you get a space.
               </Typography>
             </CardContent>
           </Card>
+        </Container>
+        <Container maxWidth="lg" sx={{marginTop: '25px' }}>
+          <List>
+            <ListItem>
+              <ListItemIcon>
+                <AccountTreeIcon fontSize="large" color="primary" />
+              </ListItemIcon>
+              <ListItemText
+                primaryTypographyProps={{ sx: { fontSize: 24 } }}
+                primary="Problem Solving"
+                secondaryTypographyProps={{ sx: { fontSize: 20 } }}
+                secondary="Learn programming by decomposing graphics and recomposing them as programs."
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
+                <TipsAndUpdatesIcon fontSize="large" color="primary" />
+              </ListItemIcon>
+              <ListItemText
+                primaryTypographyProps={{ sx: { fontSize: 24 } }}
+                primary="Theory & Creativity"
+                secondaryTypographyProps={{ sx: { fontSize: 20 } }}
+                secondary="Experience the sound theoretical foundations of programming combined with the unbounded creativity and playfulness of computer graphics."
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemAvatar>
+                <Image width="32" alt="PyTamaro Logo" src={PyTamaroLogo} />
+              </ListItemAvatar>
+              <ListItemText
+                primaryTypographyProps={{ sx: { fontSize: 24 } }}
+                primary="Python & PyTamaro"
+                secondaryTypographyProps={{ sx: { fontSize: 20 } }}
+                secondary="Use the most prevalent programming language, Python, and the greatest (we think) educational graphics library, PyTamaro."
+              />
+            </ListItem>
+          </List>
         </Container>
 
         <div
@@ -810,8 +850,7 @@ export default function SummerAcademy() {
 
         <Container maxWidth="lg">
           <Typography align="center" marginY={3}>
-            For more information or pre-registration,
-            contact&nbsp;
+            For more information contact&nbsp;
             <a href="mailto:Matthias.Hauswirth@usi.ch">Matthias.Hauswirth@usi.ch</a>
             .
           </Typography>
