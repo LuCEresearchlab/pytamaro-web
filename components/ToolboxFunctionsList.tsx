@@ -16,13 +16,31 @@ export default function ToolboxFunctionsList() {
   const askDeleteFunction = (fn: ToolboxFunction) => {
     confirm({
       description:
-  <Typography component="span">
-    Are you sure you want to delete the function
-    {' '}
-    <Typography fontFamily={theme.pytamaro.monospaceFontFamily} component="span">{fn.name}</Typography>
-    {' '}
-    from your toolbox?
-  </Typography>,
+  <>
+    <Typography component="p">
+      Deleting the function
+      {' '}
+      <Typography fontFamily={theme.pytamaro.monospaceFontFamily} component="span">{fn.name}</Typography>
+      {' '}
+      will break every activity and every other toolbox function that imports it.
+    </Typography>
+    <Typography component="p">
+      If no activity and no other toolbox function uses this function,
+      then it is perfectly fine to delete it.
+    </Typography>
+    <Typography component="p">
+      You
+      {' '}
+      <strong>can</strong>
+      {' '}
+      replace this function by deleting it and then saving a new function with
+      the same name and parameters. Any activities and other toolbox functions
+      that used this function will automatically use your newly saved function.
+    </Typography>
+  </>,
+      title: 'Are you sure you want to delete this function?',
+      confirmationText: 'I understand, Delete',
+
     }).then(() => {
       deleteFunction(fn);
     });
