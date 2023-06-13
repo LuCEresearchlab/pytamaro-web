@@ -6,21 +6,18 @@ import {
 import Grid from '@mui/material/Unstable_Grid2';
 import Head from 'next/head';
 import { useRef, useState } from 'react';
-import NavigationBar from '../../../../components/NavigationBar';
-import { getCurriculum } from '../../../../src/fs-content/curricula';
-import { Curriculum } from '../../../../src/schemas/curriculumSchema';
-import { curriculumPathname } from '../../../../src/urlUtils';
 import CurriculumFlow from '../../../../components/Curriculum/CurriculumFlow';
-import useLocalProfile from '../../../../src/localStorage/useLocalProfile';
+import NavigationBar from '../../../../components/NavigationBar';
 import TableOfContents from '../../../../components/TableOfContents';
 import { listAuthorsWithContent } from '../../../../src/fs-content/authors';
+import { getCurriculum } from '../../../../src/fs-content/curricula';
+import useLocalProfile from '../../../../src/localStorage/useLocalProfile';
+import { Curriculum } from '../../../../src/schemas/curriculumSchema';
+import { curriculumPathname } from '../../../../src/urlUtils';
 
 export default function CurriculumPage({ curriculum }:
 { curriculum : Curriculum }) {
   const { metadata } = useLocalProfile();
-  const completedActivityVariantIds = metadata.activities
-    .filter((a) => a.completed)
-    .map((a) => a.id);
   const curriculumFlowRef = useRef<HTMLDivElement>(null);
   const [nodesInitialized, setNodesInitialized] = useState(false);
 
@@ -49,7 +46,7 @@ export default function CurriculumPage({ curriculum }:
             <div ref={curriculumFlowRef}>
               <CurriculumFlow
                 curriculum={curriculum}
-                completedActivityVariantIds={completedActivityVariantIds}
+                metadata={metadata}
                 setNodesInitialized={setNodesInitialized}
               />
             </div>

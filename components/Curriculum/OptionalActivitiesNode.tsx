@@ -1,11 +1,14 @@
-import { useState } from 'react';
 import {
-  Box, Stack, Button, Modal, Typography,
+  Box,
+  Button, Modal,
+  Stack,
+  Typography,
 } from '@mui/material';
+import { useState } from 'react';
 import { Handle, NodeProps, Position } from 'reactflow';
 import ActivityCard from './ActivityCard';
-import { ActivityNodeData } from './utils';
 import LockedTooltip from './LockedTooltip';
+import { ActivityNodeData } from './utils';
 
 type NodeData = {
   activityInfo: ActivityNodeData[],
@@ -77,14 +80,14 @@ export default function OptionalActivitiesNode({ data }: NodeProps<NodeData>) {
             }}
           >
             {activityInfo.map(({
-              id, activity, curriculum, isCompleted, isUnlocked, width: awidth, height: aheight,
+              id, activity, curriculum, status, isUnlocked, width: awidth, height: aheight,
             }) => (
               <ActivityCard
                 key={id}
                 id={id}
                 activity={activity}
                 curriculum={curriculum}
-                isCompleted={isCompleted}
+                status={status}
                 isUnlocked={isUnlocked}
                 width={awidth}
                 height={aheight}

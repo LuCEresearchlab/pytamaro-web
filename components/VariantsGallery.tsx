@@ -4,8 +4,10 @@ import {
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
+import { sortBy } from 'lodash';
 import { useRouter } from 'next/router';
 import getLanguageDisplayName from '../src/internationalization';
+import useLocalProfile from '../src/localStorage/useLocalProfile';
 import { isPlayground } from '../src/playground';
 import {
   Activity, ActivityVariant, activityVariantId, languageInfoForVariant,
@@ -13,6 +15,7 @@ import {
 import { isSpecialActivity } from '../src/specialActivities';
 import { activityVariantPathname } from '../src/urlUtils';
 import ActivityCardMedia from './ActivityCardMedia';
+import ActivityStatusBadge, { activityVariantStatus } from './ActivityStatusBadge';
 
 export default function VariantsGallery({
   activitiesWithVariants,
@@ -22,6 +25,7 @@ export default function VariantsGallery({
   variant: ActivityVariant,
 }[]
 }) {
+  const { metadata } = useLocalProfile();
   const router = useRouter();
   const handleClick = (v: ActivityVariant) => {
     router.push(activityVariantPathname(
@@ -44,10 +48,24 @@ export default function VariantsGallery({
       </Typography>
     );
   }
+  const sortedActivities = sortBy(relevantActivitiesWithVariants, ({ variant }) => {
+    const status = activityVariantStatus(metadata.activities, variant);
+    if (status === 'completed') {
+      return 1;
+    }
+    if (status === 'in-progress') {
+      return 0;
+    }
+    return 2;
+  });
   return (
-    <Grid container spacing={2}>
-      {relevantActivitiesWithVariants.map(({ activity, variant }) => {
+    <Grid container spacing={2} rowSpacing={4}>
+      {sortedActivities.map(({ activity, variant }) => {
         const langInfo = languageInfoForVariant(activity, variant);
+        const status = activityVariantStatus(metadata.activities, variant);
+        if (status === 'initial') {
+          return null;
+        }
         return (
           <Grid
             xs={12}
@@ -55,19 +73,25 @@ export default function VariantsGallery({
             lg={4}
             key={activityVariantId(variant)}
           >
-            <Card>
-              <CardActionArea onClick={() => handleClick(variant)}>
-                <ActivityCardMedia activity={activity} variant={variant} />
-                <CardContent>
-                  <Typography gutterBottom variant="h6">
-                    {langInfo.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {`${getLanguageDisplayName(variant.language)} - ${variant.version}`}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
+            <ActivityStatusBadge status={activityVariantStatus(metadata.activities, variant)}>
+              <Card
+                sx={{
+                  width: '100%', height: '100%',
+                }}
+              >
+                <CardActionArea onClick={() => handleClick(variant)}>
+                  <ActivityCardMedia activity={activity} variant={variant} />
+                  <CardContent>
+                    <Typography gutterBottom variant="h6">
+                      {langInfo.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {`${getLanguageDisplayName(variant.language)} - ${variant.version}`}
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </ActivityStatusBadge>
           </Grid>
         );
       })}

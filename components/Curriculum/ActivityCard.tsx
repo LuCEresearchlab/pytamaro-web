@@ -1,37 +1,23 @@
 import {
+  Box,
   Card,
   CardActionArea,
-  CardMedia,
   CardContent,
+  CardMedia,
   Typography,
-  Box,
-  styled,
-  BadgeProps,
-  Badge,
-  Tooltip,
 } from '@mui/material';
-import {
-  CheckCircleOutlineOutlined,
-} from '@mui/icons-material';
 import { useRouter } from 'next/router';
-import { CURRICULUM_QUERY_PARAM, activityAssetPathname, activityVariantPathname } from '../../src/urlUtils';
 import { Activity, activityVariantFromId, getVariantTitle } from '../../src/schemas/activitySchema';
-import LockedTooltip from './LockedTooltip';
 import { Curriculum, curriculumId } from '../../src/schemas/curriculumSchema';
-
-const CompletedBadge = styled(Badge)<BadgeProps>(() => ({
-  '& .MuiBadge-badge': {
-    right: '1rem',
-    padding: '1rem',
-  },
-  width: '100%',
-}));
+import { CURRICULUM_QUERY_PARAM, activityAssetPathname, activityVariantPathname } from '../../src/urlUtils';
+import ActivityStatusBadge, { ActivityStatus } from '../ActivityStatusBadge';
+import LockedTooltip from './LockedTooltip';
 
 export default function ActivityCard({
   id,
   activity,
   curriculum,
-  isCompleted,
+  status,
   isUnlocked,
   width,
   height,
@@ -39,7 +25,7 @@ export default function ActivityCard({
   id: string,
   activity: Activity,
   curriculum: Curriculum,
-  isCompleted: boolean,
+  status: ActivityStatus,
   isUnlocked: boolean,
   width: number,
   height: number,
@@ -65,11 +51,7 @@ export default function ActivityCard({
         cursor: isUnlocked ? 'auto' : 'not-allowed',
       }}
     >
-      <CompletedBadge
-        badgeContent={<Tooltip title="Activity Completed" arrow><CheckCircleOutlineOutlined /></Tooltip>}
-        color="success"
-        invisible={!isCompleted}
-      >
+      <ActivityStatusBadge status={status}>
         <LockedTooltip unlocked={isUnlocked}>
           <Card
             sx={{
@@ -100,7 +82,7 @@ export default function ActivityCard({
             </CardActionArea>
           </Card>
         </LockedTooltip>
-      </CompletedBadge>
+      </ActivityStatusBadge>
     </Box>
   );
 }

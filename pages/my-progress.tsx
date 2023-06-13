@@ -11,27 +11,11 @@ import NavigationBar from '../components/NavigationBar';
 import ToolboxFunctionsList from '../components/ToolboxFunctionsList';
 import VariantsGallery from '../components/VariantsGallery';
 import { listActivitiesAllAuthors } from '../src/fs-content/authors';
-import useLocalProfile from '../src/localStorage/useLocalProfile';
-import { Activity, activityVariantId } from '../src/schemas/activitySchema';
+import { Activity } from '../src/schemas/activitySchema';
 
 export default function MyProgress({ activities } : { activities: Activity[] }) {
-  const { metadata } = useLocalProfile();
-  const cellsModifiedActivityVariantIds = metadata.activities
-    .filter((a) => a.cellsModified)
-    .map((a) => a.id);
-  const completedActivityVariantIds = metadata.activities
-    .filter((a) => a.completed)
-    .map((a) => a.id);
-
   const activitiesWithVariants = activities.flatMap(
     (a) => a.variants.flatMap((v) => ({ activity: a, variant: v })),
-  );
-  const completedActivityVariants = activitiesWithVariants.filter(
-    ({ variant }) => completedActivityVariantIds.includes(activityVariantId(variant)),
-  );
-  const inProgressActivityVariants = activitiesWithVariants.filter(
-    ({ variant }) => cellsModifiedActivityVariantIds.includes(activityVariantId(variant))
-     && !completedActivityVariantIds.includes(activityVariantId(variant)),
   );
   return (
     <div>
@@ -55,15 +39,11 @@ export default function MyProgress({ activities } : { activities: Activity[] }) 
             {' '}
             page.
           </Alert>
-          <Typography variant="h5" marginTop={6} marginBottom={3}>Completed Activities</Typography>
+          <Typography variant="h5" marginTop={6} marginBottom={3}>My Activities</Typography>
           <VariantsGallery
-            activitiesWithVariants={completedActivityVariants}
+            activitiesWithVariants={activitiesWithVariants}
           />
-          <Typography variant="h5" marginTop={6} marginBottom={3}>In-Progress Activities</Typography>
-          <VariantsGallery
-            activitiesWithVariants={inProgressActivityVariants}
-          />
-          <Typography variant="h5" marginTop={6} marginBottom={3}>Toolbox Functions</Typography>
+          <Typography variant="h5" marginTop={6} marginBottom={3}>My Toolbox</Typography>
           <ToolboxFunctionsList />
         </Container>
       </Box>
