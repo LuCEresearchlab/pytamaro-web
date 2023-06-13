@@ -5,7 +5,7 @@ import { useConfirm } from 'material-ui-confirm';
 import { ToolboxFunction } from '../src/localStorage/schema';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import theme from '../src/theme';
-import ToolboxFunctionSummary from './ToolboxFunctionCard';
+import ToolboxFunctionCard from './ToolboxFunctionCard';
 
 export default function ToolboxFunctionsList() {
   const { list, deleteFunction } = useLocalToolbox();
@@ -58,13 +58,12 @@ export default function ToolboxFunctionsList() {
       >
         {functions.map((fn) => (
           <Card key={fn.name}>
-            <ToolboxFunctionSummary fn={fn} sourceHidden={false} />
-            <CardActions>
+            <ToolboxFunctionCard fn={fn} sourceHidden={false} />
+            <CardActions sx={{ justifyContent: 'center' }}>
               <Button
                 onClick={() => askDeleteFunction(fn)}
-                color="primary"
+                color="error"
                 variant="contained"
-                sx={{ ml: 1 }}
               >
                 Delete
               </Button>
