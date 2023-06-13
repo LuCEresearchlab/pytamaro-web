@@ -46,6 +46,16 @@ export function authorPathname(authorSlug: string) {
   return contentTypeByAuthorPathname('authors', authorSlug);
 }
 
+/* Toolbox */
+
+export function toolboxFunctionAnchor(functionName: string) {
+  return `toolbox-${functionName}`;
+}
+
+export function toolboxFunctionPathname(functionName: string) {
+  return `/my-progress#${toolboxFunctionAnchor(functionName)}`;
+}
+
 /* Extra */
 
 export function playgroundPathname() {
@@ -54,10 +64,4 @@ export function playgroundPathname() {
 
 export function pytamaroDocsUrl() {
   return 'https://pytamaro.readthedocs.org';
-}
-
-/* Anchors */
-
-export function toolboxFunctionAnchor(functionName: string) {
-  return `toolbox-${functionName}`;
 }

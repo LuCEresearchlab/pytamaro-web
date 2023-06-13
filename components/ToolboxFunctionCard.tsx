@@ -10,7 +10,7 @@ import { ToolboxFunction } from '../src/localStorage/schema';
 import useReadOnlyTemporaryActivity from '../src/localStorage/useReadOnlyTemporaryActivity';
 import { toolboxActivityVariant } from '../src/specialActivities';
 import theme from '../src/theme';
-import { activityVariantPathname, toolboxFunctionAnchor } from '../src/urlUtils';
+import { activityVariantPathname, toolboxFunctionPathname } from '../src/urlUtils';
 import CodeEditor from './CodeEditor';
 import SolitaryCodeCell, { initialStateSingleCell } from './SolitaryCodeCell';
 
@@ -49,7 +49,7 @@ export default function ToolboxFunctionCard(
         </Typography>
         <Button
           component={Link}
-          href={summary ? `/my-progress#${toolboxFunctionAnchor(fn.name)}` : originalActivityPathname}
+          href={summary ? toolboxFunctionPathname(fn.name) : originalActivityPathname}
           target="_blank"
           variant="outlined"
           size="small"

@@ -8,6 +8,7 @@ import {
   DialogTitle,
   FormControl, IconButton,
   InputLabel,
+  Link,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -27,6 +28,7 @@ import { ActivityVariant } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
 import { toolboxActivityVariant } from '../src/specialActivities';
 import theme from '../src/theme';
+import { toolboxFunctionPathname } from '../src/urlUtils';
 import { isExecutionError } from './CodeCell';
 import CodeEditor from './CodeEditor';
 import SolitaryCodeCell, { emptySingleCell, initialStateSingleCell } from './SolitaryCodeCell';
@@ -276,7 +278,14 @@ export default function SaveToToolboxDialog({
               />
             </Stack>
             {alreadyExists && (
-              <Alert severity="error">The toolbox already contains this name. Refactor the code to change its name or delete the existing one from the toolbox.</Alert>
+              <Alert severity="error">
+                The toolbox already contains this name. Refactor the code to change its name or
+                {' '}
+                <Link href={toolboxFunctionPathname(selectedFunction)} target="_blank">
+                  delete the existing one from the toolbox
+                </Link>
+                .
+              </Alert>
             )}
             {selectedFunction && !alreadyExists && (!description ? (
               <Alert severity="info">Add a description so that you will remember what this function does</Alert>
