@@ -55,3 +55,9 @@ export function playgroundPathname() {
 export function pytamaroDocsUrl() {
   return 'https://pytamaro.readthedocs.org';
 }
+
+/* Anchors */
+
+export function toolboxFunctionAnchor(functionName: string) {
+  return `toolbox-${functionName}`;
+}

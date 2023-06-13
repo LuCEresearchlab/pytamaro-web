@@ -1,13 +1,16 @@
 import {
   Box,
+  Button,
   CardContent, FormControlLabel, FormGroup, Switch,
   Table, TableBody, TableCell, TableHead, TableRow, Typography,
 } from '@mui/material';
+import Link from 'next/link';
 import { useState } from 'react';
 import { ToolboxFunction } from '../src/localStorage/schema';
 import useReadOnlyTemporaryActivity from '../src/localStorage/useReadOnlyTemporaryActivity';
 import { toolboxActivityVariant } from '../src/specialActivities';
 import theme from '../src/theme';
+import { activityVariantPathname, toolboxFunctionAnchor } from '../src/urlUtils';
 import CodeEditor from './CodeEditor';
 import SolitaryCodeCell, { initialStateSingleCell } from './SolitaryCodeCell';
 
@@ -19,24 +22,42 @@ function TypeCell({ type } : { type: string }) {
 
 export default function ToolboxFunctionCard(
   {
-    fn, sourceHidden,
+    fn, summary = false,
   } :
   { fn : ToolboxFunction,
-    sourceHidden: boolean
+    summary?: boolean
   },
 ) {
   const [showSource, setShowSource] = useState(false);
   const toggleShowSource = () => setShowSource(!showSource);
   const usageCodeCells = initialStateSingleCell(fn.usage);
   const activity = useReadOnlyTemporaryActivity(usageCodeCells, toolboxActivityVariant);
+  const originalActivityPathname = activityVariantPathname(
+    fn.originalActivity.authorSlug,
+    fn.originalActivity.activitySlug,
+    fn.originalActivity.language,
+    fn.originalActivity.version,
+  );
   return (
     <CardContent sx={{ pb: 1, minWidth: '80ch' }}>
-      <Typography color="text.secondary" component="span" mr="1ch" fontWeight="bold">
-        Function
-      </Typography>
-      <Typography component="span" fontFamily={theme.pytamaro.monospaceFontFamily}>
-        {fn.name}
-      </Typography>
+      <Box display="flex">
+        <Typography color="text.secondary" component="span" mr="1ch" fontWeight="bold">
+          Function
+        </Typography>
+        <Typography component="span" fontFamily={theme.pytamaro.monospaceFontFamily}>
+          {fn.name}
+        </Typography>
+        <Button
+          component={Link}
+          href={summary ? `/my-progress#${toolboxFunctionAnchor(fn.name)}` : originalActivityPathname}
+          target="_blank"
+          variant="outlined"
+          size="small"
+          sx={{ ml: 'auto' }}
+        >
+          {summary ? 'View Details' : 'View Original Activity'}
+        </Button>
+      </Box>
       <Typography color="text.secondary">
         {fn.description}
       </Typography>
@@ -77,7 +98,7 @@ export default function ToolboxFunctionCard(
           </TableRow>
         </TableBody>
       </Table>
-      {!sourceHidden && (
+      {!summary && (
         <Box sx={{ my: 2 }}>
           <Typography color="text.secondary" fontWeight="bold" component="span">
             Implementation

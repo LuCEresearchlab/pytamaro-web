@@ -63,10 +63,8 @@ export default function MyProgress({ activities } : { activities: Activity[] }) 
           <VariantsGallery
             activitiesWithVariants={inProgressActivityVariants}
           />
-          <div id="toolbox" className="anchor">
-            <Typography variant="h5" marginTop={6} marginBottom={3}>Toolbox Functions</Typography>
-            <ToolboxFunctionsList />
-          </div>
+          <Typography variant="h5" marginTop={6} marginBottom={3}>Toolbox Functions</Typography>
+          <ToolboxFunctionsList />
         </Container>
       </Box>
     </div>
