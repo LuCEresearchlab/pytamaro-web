@@ -64,7 +64,7 @@ export default function ToolboxFunctionsList() {
         spacing={2}
       >
         {functions.map((fn) => (
-          <Card key={fn.name} id={toolboxFunctionAnchor(fn.name)} className="anchor">
+          <Card key={fn.name} id={toolboxFunctionAnchor(fn.name)} className="anchor" sx={{ overflow: 'visible' }}>
             <ToolboxFunctionCard fn={fn} />
             <CardActions sx={{ justifyContent: 'center' }}>
               <Button
