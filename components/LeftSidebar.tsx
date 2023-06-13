@@ -1,6 +1,7 @@
 import { Code, MenuBook } from '@mui/icons-material';
 import {
   Box,
+  Chip,
   Link,
   Popover,
   Stack,
@@ -40,19 +41,19 @@ function SidebarToolboxFunction({ fn }: { fn: ToolboxFunction }) {
   const toolboxPopoverId = `toolbox-popover-${fn.name}`;
   return (
     <>
-      <Typography
-        width="fit-content"
-        key={fn.name}
-        fontSize={theme.typography.pxToRem(13)}
-        fontFamily={theme.pytamaro.monospaceFontFamily}
-        variant="body2"
+      <Chip
+        label={fn.name}
+        size="small"
+        variant="filled"
         aria-owns={open ? toolboxPopoverId : undefined}
         aria-haspopup="true"
         onClick={handleClick}
-        sx={{ cursor: 'pointer' }}
-      >
-        {fn.name}
-      </Typography>
+        sx={{
+          maxWidth: '25ch',
+          fontFamily: theme.pytamaro.monospaceFontFamily,
+          fontSize: theme.typography.pxToRem(13),
+        }}
+      />
       <Popover
         id={toolboxPopoverId}
         sx={{
