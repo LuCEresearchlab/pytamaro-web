@@ -13,7 +13,7 @@ import theme from '../src/theme';
 import { pytamaroDocsUrl } from '../src/urlUtils';
 import RapidPlayground from './RapidPlayground';
 import { emptySingleCell } from './SolitaryCodeCell';
-import ToolboxFunctionSummary from './ToolboxFunctionSummary';
+import ToolboxFunctionSummary from './ToolboxFunctionCard';
 
 const Title = styled(Typography)(() => ({
   marginTop: theme.spacing(2),

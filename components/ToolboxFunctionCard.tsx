@@ -5,8 +5,11 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { ToolboxFunction } from '../src/localStorage/schema';
+import useReadOnlyTemporaryActivity from '../src/localStorage/useReadOnlyTemporaryActivity';
+import { toolboxActivityVariant } from '../src/specialActivities';
 import theme from '../src/theme';
 import CodeEditor from './CodeEditor';
+import SolitaryCodeCell, { initialStateSingleCell } from './SolitaryCodeCell';
 
 function TypeCell({ type } : { type: string }) {
   return type === ''
@@ -14,7 +17,7 @@ function TypeCell({ type } : { type: string }) {
     : <Typography component="span" fontFamily={theme.pytamaro.monospaceFontFamily}>{type}</Typography>;
 }
 
-export default function ToolboxFunctionSummary(
+export default function ToolboxFunctionCard(
   {
     fn, sourceHidden,
   } :
@@ -24,6 +27,8 @@ export default function ToolboxFunctionSummary(
 ) {
   const [showSource, setShowSource] = useState(false);
   const toggleShowSource = () => setShowSource(!showSource);
+  const usageCodeCells = initialStateSingleCell(fn.usage);
+  const activity = useReadOnlyTemporaryActivity(usageCodeCells, toolboxActivityVariant);
   return (
     <CardContent sx={{ pb: 1, minWidth: '80ch' }}>
       <Typography color="text.secondary" component="span" mr="1ch" fontWeight="bold">
@@ -94,8 +99,9 @@ export default function ToolboxFunctionSummary(
       <Typography color="text.secondary" fontWeight="bold">
         Usage
       </Typography>
-      <CodeEditor
-        source={fn.usage}
+      <SolitaryCodeCell
+        activity={activity}
+        activityVariant={toolboxActivityVariant}
         readOnly
       />
     </CardContent>

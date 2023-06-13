@@ -59,7 +59,7 @@ export function isExecutionError(response: ExecutionResponse | undefined) {
 export default function CodeCell({
   codeCellState, codeCellExecutionState, onSourceChanged, onExecutionRequested,
   firstLineNumber, activityVariant,
-  extraActions = null,
+  extraActions = null, readOnly = false,
 } :
 { codeCellState : CodeCellState,
   codeCellExecutionState: CodeCellExecutionState,
@@ -68,6 +68,7 @@ export default function CodeCell({
   firstLineNumber : number,
   activityVariant: ActivityVariant,
   extraActions?: React.ReactNode
+  readOnly?: boolean
 }) {
   const theme = useTheme();
 
@@ -77,14 +78,16 @@ export default function CodeCell({
   const executionFinished = codeCellExecutionState.outputSynced;
   const noOutput = executionFinished && executionResponse?.content.length === 0;
   return (
-    <Paper elevation={4}>
-      <DocumentationStripe source={codeCellState.source} activityVariant={activityVariant} />
+    <Paper elevation={readOnly ? 0 : 4}>
+      {!readOnly
+        && <DocumentationStripe source={codeCellState.source} activityVariant={activityVariant} />}
       <Card>
         <CardContent>
           <CodeEditor
             source={codeCellState.source}
             onChange={onSourceChanged}
             firstLineNumber={firstLineNumber}
+            readOnly={readOnly}
           />
         </CardContent>
         <CardActions disableSpacing sx={{ paddingLeft: 2, display: 'flex' }}>

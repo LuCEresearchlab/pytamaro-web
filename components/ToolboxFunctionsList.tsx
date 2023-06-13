@@ -5,7 +5,7 @@ import { useConfirm } from 'material-ui-confirm';
 import { ToolboxFunction } from '../src/localStorage/schema';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import theme from '../src/theme';
-import ToolboxFunctionSummary from './ToolboxFunctionSummary';
+import ToolboxFunctionSummary from './ToolboxFunctionCard';
 
 export default function ToolboxFunctionsList() {
   const { list, deleteFunction } = useLocalToolbox();
