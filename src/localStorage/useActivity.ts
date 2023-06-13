@@ -37,12 +37,20 @@ async function importedToolboxFunctions(
 export async function transitivelyImportedToolboxFunctions(
   source: string,
   getFromToolbox: (name: string) => ToolboxFunction | undefined,
+  alreadyImported: ToolboxFunction[] = [],
 ) : Promise<ToolboxFunction[]> {
-  const importedFunctions = await importedToolboxFunctions(source, getFromToolbox);
-  const importsOfImports = await Promise.all(importedFunctions.map((fn) => (
-    transitivelyImportedToolboxFunctions(fn.source, getFromToolbox)
-  )));
-  return [...importedFunctions, ...importsOfImports.flat()];
+  const newlyImportedFunctions = (await importedToolboxFunctions(source, getFromToolbox))
+    .filter((fn) => !alreadyImported.includes(fn));
+  const importsOfImports = await Promise.all(
+    newlyImportedFunctions.map((fn) => (
+      transitivelyImportedToolboxFunctions(
+        fn.source,
+        getFromToolbox,
+        [...alreadyImported, ...newlyImportedFunctions],
+      )
+    )),
+  );
+  return [...newlyImportedFunctions, ...importsOfImports.flat()];
 }
 
 async function executeOnServer(
