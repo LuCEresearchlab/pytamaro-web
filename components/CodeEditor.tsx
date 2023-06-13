@@ -47,6 +47,16 @@ export default function CodeEditor({
       editor.layout({ width: editor.getLayoutInfo().width, height: editor.getContentHeight() });
     };
     editor.onDidContentSizeChange(updateHeight);
+    updateHeight();
+    // After the editor has been loaded and its height has been updated,
+    // (re-)scroll the anchor element into view.
+    const { hash } = window.location;
+    if (hash) {
+      const element = document.getElementById(hash.slice(1));
+      if (element) {
+        element.scrollIntoView();
+      }
+    }
   };
 
   useEffect(() => {
