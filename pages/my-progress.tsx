@@ -1,6 +1,9 @@
+import { TipsAndUpdates } from '@mui/icons-material';
 import {
+  Alert,
   Box,
   Container,
+  Link,
   Typography,
 } from '@mui/material';
 import Head from 'next/head';
@@ -39,6 +42,19 @@ export default function MyProgress({ activities } : { activities: Activity[] }) 
         <NavigationBar />
         <Container maxWidth="md">
           <Typography variant="h3" align="center" marginTop={3}>My Progress</Typography>
+          <Alert
+            iconMapping={{
+              success: <TipsAndUpdates fontSize="inherit" />,
+            }}
+            sx={{ mt: 3 }}
+          >
+            Do you want to export/import your data? Review or change your privacy settings?
+            Visit the
+            {' '}
+            <Link href="/my-data">My Data</Link>
+            {' '}
+            page.
+          </Alert>
           <Typography variant="h5" marginTop={6} marginBottom={3}>Completed Activities</Typography>
           <VariantsGallery
             activitiesWithVariants={completedActivityVariants}

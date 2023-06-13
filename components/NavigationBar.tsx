@@ -1,10 +1,10 @@
+import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar, Box, Button, Divider, IconButton, Menu, MenuItem, Stack, Toolbar,
 } from '@mui/material';
 import { useState } from 'react';
-import MenuIcon from '@mui/icons-material/Menu';
-import FeedbackDialog from './FeedbackDialog';
 import { activitiesByAuthorPathname } from '../src/urlUtils';
+import FeedbackDialog from './FeedbackDialog';
 
 const navItems = [
   {
@@ -20,8 +20,8 @@ const navItems = [
     url: '/curricula',
   },
   {
-    name: 'My Data',
-    url: '/my-data',
+    name: 'My Progress',
+    url: '/my-progress',
   },
   {
     name: 'About',
