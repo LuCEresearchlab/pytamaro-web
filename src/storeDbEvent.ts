@@ -5,6 +5,8 @@ export enum EventName {
   CodeExecution = 'code_execution',
   APILookup = 'api_lookup',
   UserFeedback = 'user_feedback',
+  AddToolboxFunction = 'add_toolbox_function',
+  DeleteToolboxFunction = 'delete_toolbox_function',
 }
 
 export async function alwaysStoreDbEvent(

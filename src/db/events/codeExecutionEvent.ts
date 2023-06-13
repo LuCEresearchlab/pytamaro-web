@@ -5,15 +5,12 @@ import { ActivityVariant } from '../../schemas/activitySchema';
 import { EventName } from '../../storeDbEvent';
 import conn from '../dbConnection';
 import { storeOrRetrieveRow, storeRow, storeRowWithoutId } from '../dbUtils';
-import { eventTableName, storeActivity, storeEvent } from './event';
+import {
+  eventTableName, storeActivity, storeEvent, storeSource,
+} from './event';
 
 async function storeDockerImageTag(sql: postgres.TransactionSql, docker_image: string) {
   return storeOrRetrieveRow(sql, 'docker_images', { tag: docker_image });
-}
-
-async function storeSource(sql: postgres.TransactionSql, source: string) {
-  const SOURCES_TABLE = 'sources';
-  return storeOrRetrieveRow(sql, SOURCES_TABLE, { source });
 }
 
 async function storeToolboxFunction(

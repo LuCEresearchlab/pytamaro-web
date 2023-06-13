@@ -1,7 +1,7 @@
 import postgres from 'postgres';
-import { storeOrRetrieveRow, storeRow } from '../dbUtils';
 import { ActivityVariant } from '../../schemas/activitySchema';
 import { EventName } from '../../storeDbEvent';
+import { storeOrRetrieveRow, storeRow } from '../dbUtils';
 
 export async function storeEvent(
   sql: postgres.TransactionSql,
@@ -30,6 +30,11 @@ export async function storeActivity(
       version: activity_variant.version,
     },
   );
+}
+
+export async function storeSource(sql: postgres.TransactionSql, source: string) {
+  const SOURCES_TABLE = 'sources';
+  return storeOrRetrieveRow(sql, SOURCES_TABLE, { source });
 }
 
 export function eventTableName(event: EventName) {

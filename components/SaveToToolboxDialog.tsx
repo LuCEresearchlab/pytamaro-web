@@ -19,14 +19,17 @@ import {
 import {
   Dispatch, SetStateAction, useEffect, useState,
 } from 'react';
+import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
 import { ExecutionResponse, TOOLBOX_FILE } from '../src/codeExecution';
 import { CodeCellState, ToolboxFunction } from '../src/localStorage/schema';
+import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import useTemporaryActivity from '../src/localStorage/useTemporaryActivity';
 import { PythonFunction, defined_functions } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
 import { toolboxActivityVariant } from '../src/specialActivities';
+import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import theme from '../src/theme';
 import { toolboxFunctionPathname } from '../src/urlUtils';
 import { isExecutionError } from './CodeCell';
@@ -42,9 +45,12 @@ function PermanentlySaveToToolboxButton({
   setSavingSuccess: Dispatch<SetStateAction<boolean>>,
   setSavingError: Dispatch<SetStateAction<boolean>>,
 }) {
+  const { metadata } = useLocalProfile();
   const { add } = useLocalToolbox();
   const saveFunction = () => {
     if (add(fn)) {
+      logAnalyticsEvent(AnalyticsEventName.AddToolboxFunction, { name: fn.name });
+      storeDbEvent(EventName.AddToolboxFunction, metadata, { fn });
       setSavingSuccess(true);
     } else {
       setSavingError(true);

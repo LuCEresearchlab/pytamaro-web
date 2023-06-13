@@ -2,13 +2,17 @@ import {
   Button, Card, CardActions, Stack, Typography,
 } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
+import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
 import { ToolboxFunction } from '../src/localStorage/schema';
+import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
+import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import theme from '../src/theme';
 import { toolboxFunctionAnchor } from '../src/urlUtils';
 import ToolboxFunctionCard from './ToolboxFunctionCard';
 
 export default function ToolboxFunctionsList() {
+  const { metadata } = useLocalProfile();
   const { list, deleteFunction } = useLocalToolbox();
   const confirm = useConfirm();
 
@@ -43,6 +47,8 @@ export default function ToolboxFunctionsList() {
       confirmationText: 'I understand, Delete',
 
     }).then(() => {
+      logAnalyticsEvent(AnalyticsEventName.DeleteToolboxFunction, { name: fn.name });
+      storeDbEvent(EventName.DeleteToolboxFunction, metadata, { fn });
       deleteFunction(fn);
     });
   };
