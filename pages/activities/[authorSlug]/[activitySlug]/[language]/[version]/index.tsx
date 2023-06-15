@@ -5,23 +5,20 @@ import {
 } from '@mui/material';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
-import { MDXRemote } from 'next-mdx-remote';
 import Head from 'next/head';
 import { useRef } from 'react';
 import ActivityInfoButton from '../../../../../../components/ActivityInfoButton';
-import ActivityLink from '../../../../../../components/ActivityLink';
 import BackToCurriculum from '../../../../../../components/BackToCurriculum';
 import CodeCell from '../../../../../../components/CodeCell';
 import CodeDownloadButton from '../../../../../../components/CodeDownloadButton';
 import DataSharingPreferenceDialog from '../../../../../../components/DataSharingPreferenceDialog';
 import LeftSidebar from '../../../../../../components/LeftSidebar';
 import MarkCompletedButton from '../../../../../../components/MarkCompletedButton';
+import MarkdownCellComponent from '../../../../../../components/MarkdownCellComponent';
 import MoreOptionsButton from '../../../../../../components/MoreOptionsButton';
 import NavigationBar from '../../../../../../components/NavigationBar';
 import NetworkErrorSnackbar from '../../../../../../components/NetworkErrorSnackbar';
-import PyTamaroAPI from '../../../../../../components/PyTamaroAPI';
 import ResetButton from '../../../../../../components/ResetButton';
-import ResponsiveReactPlayer from '../../../../../../components/ResponsiveReactPlayer';
 import SaveToToolboxButton from '../../../../../../components/SaveToToolboxButton';
 import TableOfContents from '../../../../../../components/TableOfContents';
 import VariantSelector from '../../../../../../components/VariantsSelector';
@@ -35,59 +32,9 @@ import {
   ActivityVariant, MarkdownCell, NotebookCell,
 } from '../../../../../../src/schemas/activitySchema';
 import { countLines } from '../../../../../../src/sourceUtils';
-import { activityAssetPathname, activityVariantPathname } from '../../../../../../src/urlUtils';
+import { activityVariantPathname } from '../../../../../../src/urlUtils';
 
 const userType = 'student';
-
-function imgSourceTransformer(
-  src: string,
-  cell: NotebookCell,
-  authorSlug: string,
-  activitySlug: string,
-) {
-  const attachmentPrefix = 'attachment:';
-  if (src.startsWith(attachmentPrefix)) {
-    const name = src.substring(attachmentPrefix.length);
-    const attachment = cell.attachments[name];
-    const mimeType = Object.keys(attachment)[0];
-    const data = attachment[mimeType];
-    return `data:${mimeType};base64,${data}`;
-  }
-  try {
-    return new URL(src).href;
-  } catch {
-    return activityAssetPathname(authorSlug, activitySlug, src);
-  }
-}
-
-function imgComponent(props: any, cell: NotebookCell, authorSlug: string, activitySlug: string) {
-  return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      component="span"
-    >
-      <picture>
-        <img
-        // eslint-disable-next-line react/jsx-props-no-spreading
-          {...props}
-          alt={props.alt}
-          src={imgSourceTransformer(props.src, cell, authorSlug, activitySlug)}
-        />
-      </picture>
-    </Box>
-  );
-}
-
-function PyTamaroAPIComponent(
-  name: string,
-  activityVariant: ActivityVariant,
-) {
-  return (
-    <PyTamaroAPI name={name} activityVariant={activityVariant} />
-  );
-}
 
 function InconsistencyMessage() {
   return (
@@ -107,29 +54,6 @@ function InconsistencyMessage() {
       </Typography>
       )}
     </Alert>
-  );
-}
-
-function MarkdownCellComponent({ cell, activityVariant } :
-{ cell: MarkdownCell, activityVariant: ActivityVariant }) {
-  const adHocComponents = {
-    img: (props: any) => (
-      imgComponent(props, cell, activityVariant.authorSlug, activityVariant.activitySlug)
-    ),
-    ReactPlayer: ResponsiveReactPlayer,
-    Stack,
-    API: ({ children: name }: { children: string }) => (
-      PyTamaroAPIComponent(name, activityVariant)
-    ),
-    Activity: ActivityLink,
-  };
-  return (
-    <MDXRemote
-    // eslint-disable-next-line react/jsx-props-no-spreading
-      {...cell.mdxSource}
-      key={cell.id}
-      components={adHocComponents}
-    />
   );
 }
 

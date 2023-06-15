@@ -1,8 +1,12 @@
-import useLocalStorageState from 'use-local-storage-state';
+import produce from 'immer';
 import { Dispatch, SetStateAction } from 'react';
-import { METADATA_KEY, Metadata, getDefaultMetadata } from './schema';
+import useLocalStorageState from 'use-local-storage-state';
+import { ActivityVariant, activityVariantId } from '../schemas/activitySchema';
 import migrateToV2, { MetadataV1 } from './migrations/v2';
 import migrateToV3, { MetadataV2 } from './migrations/v3';
+import {
+  ActivityVariantMetadata, METADATA_KEY, Metadata, getDefaultMetadata,
+} from './schema';
 
 function migrations(metadata: { dataModelVersion: string }) : Metadata {
   if (metadata.dataModelVersion === '1') {
@@ -37,11 +41,35 @@ export default function useLocalProfile() {
       allowSharingAnonData: preference,
     }));
   };
+
+  const findActivity = (activityVariant: ActivityVariant) => metadata.activities.findIndex(
+    (activity) => activity.id === activityVariantId(activityVariant),
+  );
+
+  const getActivityMetadata = (activityVariant: ActivityVariant) => {
+    const idx = findActivity(activityVariant);
+    return idx === -1 ? undefined : metadata.activities[idx];
+  };
+
+  const setActivityMetadata = (
+    activityVariant: ActivityVariant,
+    activityMetadata: ActivityVariantMetadata,
+  ) => {
+    const idx = findActivity(activityVariant);
+    if (idx !== -1) {
+      setMetadata((currentMetadata) => produce(currentMetadata, (draft) => {
+        draft.activities.splice(idx, 1, activityMetadata);
+      }));
+    }
+  };
+
   return {
     metadata,
     dataSharingAllowed,
     requestDataSharingPreference,
     setMetadata,
     setDataSharingPreference,
+    getActivityMetadata,
+    setActivityMetadata,
   };
 }

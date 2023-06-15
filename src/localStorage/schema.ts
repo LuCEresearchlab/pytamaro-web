@@ -33,6 +33,7 @@ export interface ActivityVariantMetadata {
   codeCellsKey: string,
   cellsModified: boolean,
   completed: boolean,
+  doNowCompleted: string[]
 }
 
 export interface CurriculumMetadata {
@@ -68,6 +69,7 @@ export function getDefaultActivityVariantMetadata(activityVariantId: string)
     codeCellsKey: getActivityVariantCodeCellsKey(activityVariantId),
     cellsModified: false,
     completed: false,
+    doNowCompleted: [],
   };
 }
 

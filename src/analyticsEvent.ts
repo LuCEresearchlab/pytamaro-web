@@ -5,6 +5,7 @@ export enum AnalyticsEventName {
   ActivityLink = 'ActivityLink',
   AddToolboxFunction = 'AddToolboxFunction',
   DeleteToolboxFunction = 'DeleteToolboxFunction',
+  DoNowCompleted = 'DoNowCompleted',
 }
 
 export default function logAnalyticsEvent(eventName: AnalyticsEventName, props: any) {

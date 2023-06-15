@@ -10,9 +10,15 @@ export interface MetadataV2 {
 
 export default function migrateToV3(metadata: MetadataV2) : Metadata {
   /* Add new metadata properties */
-  return {
+  const newMetadata = {
     ...getDefaultMetadata(),
     ...metadata,
     dataModelVersion: '3',
   };
+  /* Add empty "doNowCompleted" array to each activity */
+  newMetadata.activities = newMetadata.activities.map((activity) => ({
+    ...activity,
+    doNowCompleted: [],
+  }));
+  return newMetadata;
 }
