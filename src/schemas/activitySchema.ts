@@ -1,13 +1,25 @@
 import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 
+export type VisibilityState = 'featured' | 'visible' | 'draft' | 'hidden';
+export type PreviewImage = { filename: string, backgroundColor: string };
+
 export interface Activity {
   slug: string,
-  previewImage: { filename: string, backgroundColor: string },
-  visibility: 'featured' | 'visible' | 'draft' | 'hidden',
-  variants: NotebookVariant[],
+  previewImage: PreviewImage,
+  visibility: VisibilityState,
+  variants: ActivityVariant[],
+  languagesInfo: ActivityLanguageInfo[],
   uses: ActivityUse[],
   assets: string[],
   authorSlug: string,
+}
+
+export interface RawActivity {
+  variants: ActivityLanguageInfo[],
+  previewImage: PreviewImage,
+  visibility: VisibilityState
+  uses?: ActivityUse[],
+  assets?: string[]
 }
 
 export interface ActivityInfo {
@@ -22,7 +34,9 @@ export interface ActivityVariant {
   version: string,
 }
 
-export interface LanguageWithLatestVersion {
+export interface ActivityLanguageInfo {
+  title: string,
+  description: string,
   language: string,
   latestVersion: string,
 }
@@ -54,13 +68,6 @@ export interface MarkdownCell extends NotebookCell {
   mdxSource: MDXRemoteSerializeResult,
 }
 
-export interface NotebookVariant {
-  title: string,
-  language: string,
-  description: string,
-  latestVersion: string,
-}
-
 export type CellType = 'code' | 'markdown' | 'raw';
 
 export interface JupyterCell {
@@ -85,5 +92,18 @@ export function activityVariantFromId(id: string): ActivityVariant {
 }
 
 export function getVariantTitle(activity: Activity, variant: ActivityVariant) {
-  return activity.variants.find((v) => v.language === variant.language)?.title;
+  return activity.languagesInfo.find((i) => i.language === variant.language)?.title;
+}
+
+export function canonicalVariantForLanguage(activity: Activity, language: string)
+  : ActivityVariant {
+  const languageInfo = activity.languagesInfo.find((i) => i.language === language);
+  return activity.variants.find((v) => v.language === language
+  && v.version === languageInfo?.latestVersion) as ActivityVariant;
+}
+
+export function languageInfoForVariant(activity: Activity, variant: ActivityVariant) {
+  return activity.languagesInfo.find(
+    (i) => i.language === variant.language,
+  ) as ActivityLanguageInfo;
 }

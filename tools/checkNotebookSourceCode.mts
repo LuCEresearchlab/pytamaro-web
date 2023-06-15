@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { parse } from '../src/parser/parser';
+import { parse } from '../src/python-analyzer/python_analyzer';
 import { JupyterCell } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
 import { isCodeCell } from '../src/notebook';

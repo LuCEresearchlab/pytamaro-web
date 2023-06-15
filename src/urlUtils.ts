@@ -51,3 +51,29 @@ export function authorPathname(authorSlug: string) {
 export function playgroundPathname() {
   return '/playground';
 }
+
+export function curriculaPathname() {
+  return '/curricula';
+}
+
+export function myProgressPathname() {
+  return '/my-progress';
+}
+
+export function myDataPathname() {
+  return '/my-data';
+}
+
+export function pytamaroDocsUrl() {
+  return 'https://pytamaro.readthedocs.org';
+}
+
+/* Toolbox */
+
+export function toolboxFunctionAnchor(functionName: string) {
+  return `toolbox-${functionName}`;
+}
+
+export function toolboxFunctionPathname(functionName: string) {
+  return `${myProgressPathname()}#${toolboxFunctionAnchor(functionName)}`;
+}

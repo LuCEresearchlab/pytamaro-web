@@ -3,6 +3,9 @@ export enum AnalyticsEventName {
   APIDocsPopover = 'APIDocsPopover',
   RecommendedActivity = 'RecommendedActivity',
   ActivityLink = 'ActivityLink',
+  AddToolboxFunction = 'AddToolboxFunction',
+  DeleteToolboxFunction = 'DeleteToolboxFunction',
+  DoNowCompleted = 'DoNowCompleted',
 }
 
 export default function logAnalyticsEvent(eventName: AnalyticsEventName, props: any) {

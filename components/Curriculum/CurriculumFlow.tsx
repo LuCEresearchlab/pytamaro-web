@@ -1,23 +1,29 @@
 import {
   Box,
 } from '@mui/material';
+import produce from 'immer';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import ReactFlow, {
   Edge,
-  Node,
   MarkerType,
-  useNodesInitialized,
+  Node,
   ReactFlowProvider,
+  useNodesInitialized,
 } from 'reactflow';
-import { useEffect } from 'react';
+import {
+  Curriculum, CurriculumActivity, CurriculumUnit,
+  curriculumToId,
+} from '../../src/schemas/curriculumSchema';
 import ActivityNode from './ActivityNode';
-import TitleNode from './TitleNode';
-import OptionalActivitiesNode from './OptionalActivitiesNode';
 import JoinNode from './JoinNode';
-import { Curriculum, CurriculumActivity, CurriculumUnit } from '../../src/schemas/curriculumSchema';
+import OptionalActivitiesNode from './OptionalActivitiesNode';
+import TitleNode from './TitleNode';
 import { ActivityNodeData, color } from './utils';
 
 import 'reactflow/dist/style.css';
+import { Metadata } from '../../src/localStorage/schema';
 import useWidth from '../../src/useWidth';
+import { activityVariantStatus } from '../ActivityStatusBadge';
 
 const nodeOptions = {
   position: { x: 0, y: 0 },
@@ -76,18 +82,18 @@ function incomingEdges(
 function addActivitiesStatuses(
   curriculum: Curriculum,
   activities: CurriculumActivity[],
-  completedActivityVariantIds: string[],
+  metadata: Metadata,
   previousStepIsCompleted: boolean,
   { width, height }: { width: number, height: number },
 ) {
   return activities.map((activity) => {
-    const isCompleted = completedActivityVariantIds.includes(activity.id);
+    const status = activityVariantStatus(metadata.activities, activity.variant);
     const isUnlocked = previousStepIsCompleted;
     return {
       id: activity.id,
       activity: activity.activity,
       curriculum,
-      isCompleted,
+      status,
       isUnlocked,
       width,
       height,
@@ -111,7 +117,8 @@ function graphWidth(
 
 function getFlowElements(
   curriculum: Curriculum,
-  completedActivityVariantIds: string[],
+  metadata: Metadata,
+  setMetadata: Dispatch<SetStateAction<Metadata>>,
   windowWidth: number,
 ) {
   const size = (perc: number, minValue: number, maxValue: number) => Math.max(
@@ -150,7 +157,9 @@ function getFlowElements(
 
   let bottom = 0;
   let nodesToBeConnected : string[] = [];
-  let previousStepIsCompleted = true;
+  const existingCurriculum = metadata.curricula.find((c) => c.id === curriculumToId(curriculum));
+  const alreadyStarted = existingCurriculum !== undefined;
+  let previousStepIsCompleted = alreadyStarted;
   const nodes : Node[] = [];
   const edges : Edge[] = [];
 
@@ -229,9 +238,19 @@ function getFlowElements(
     bottom += dim.height + layerSpacing;
   };
 
+  const handleCurriculumStart = () => {
+    setMetadata((currentMetadata) => produce(currentMetadata, (draft) => {
+      draft.curricula.push({
+        id: curriculumToId(curriculum),
+      });
+    }));
+  };
+
   // The curriculum graph contains:
   // - a start node
-  addSingleNode('start', 'startend', { type: 'start', text: 'Start', unlocked: previousStepIsCompleted });
+  addSingleNode('start', 'startend', {
+    type: 'start', text: 'Start', unlocked: true, onClick: handleCurriculumStart,
+  }, !alreadyStarted);
   // - a sequence of units
   curriculum.units.forEach((unit, unitIdx) => {
     // Each unit has a title
@@ -241,11 +260,11 @@ function getFlowElements(
       const activitiesInfo = addActivitiesStatuses(
         curriculum,
         step.activities,
-        completedActivityVariantIds,
+        metadata,
         previousStepIsCompleted,
         nodeTypeDimensions.activity,
       );
-      const currentStepIsCompleted = activitiesInfo.some((a) => a.isUnlocked && a.isCompleted);
+      const currentStepIsCompleted = activitiesInfo.some((a) => a.isUnlocked && a.status === 'completed');
       // A step may be optional (shown as a single collapsed node)
       if (step.isOptional) {
         addSingleNode(`optional-${unitIdx}-${stepIdx}`, 'optional', { activityInfo: activitiesInfo, unlocked: previousStepIsCompleted }, true);
@@ -297,16 +316,19 @@ function Flow({ nodes, edges, setNodesInitialized }:
 }
 
 export default function CurriculumFlow(
-  { curriculum, completedActivityVariantIds, setNodesInitialized }
+  {
+    curriculum, metadata, setMetadata, setNodesInitialized,
+  }
   : { curriculum : Curriculum,
-    completedActivityVariantIds : string[],
+    metadata : Metadata,
+    setMetadata: Dispatch<SetStateAction<Metadata>>,
     setNodesInitialized: (initialized: boolean) => void
   },
 ) {
   const windowWidth = useWidth();
   const {
     nodes, edges, width, height,
-  } = getFlowElements(curriculum, completedActivityVariantIds, windowWidth);
+  } = getFlowElements(curriculum, metadata, setMetadata, windowWidth);
 
   return (
     <Box

@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Accordion,
   AccordionDetails,
@@ -7,65 +8,20 @@ import {
   Button,
   Container, Link, Paper, Stack, TextField, Typography,
 } from '@mui/material';
+import { produce } from 'immer';
+import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
 import NextLink from 'next/link';
-import { produce } from 'immer';
 import { useState } from 'react';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useConfirm } from 'material-ui-confirm';
-import NavigationBar from '../components/NavigationBar';
-import getLanguageDisplayName from '../src/internationalization';
 import ExportLocalStorageButton from '../components/ExportLocalStorageButton';
 import ImportLocalStorageButton from '../components/ImportLocalStorageButton';
-import useLocalProfile from '../src/localStorage/useLocalProfile';
+import NavigationBar from '../components/NavigationBar';
 import getEntireLocalStorage, { clearEntireLocalStorage, replaceEntireLocalStorage } from '../src/localStorage/entireLocalStorage';
-import { activityVariantPathname, playgroundPathname } from '../src/urlUtils';
-import { isPlayground } from '../src/playground';
+import useLocalProfile from '../src/localStorage/useLocalProfile';
 import theme from '../src/theme';
-
-function ActivityVariantsList({ ids } : { ids: string[] }) {
-  return (
-    <ul>
-      {ids.map((id) => {
-        const [authorSlug, activitySlug, language, version] = id.split('/');
-        if (isPlayground(authorSlug, activitySlug, language, version)) {
-          return <li key={id}><Link href={playgroundPathname()}>Playground</Link></li>;
-        }
-        const pathname = activityVariantPathname(
-          authorSlug,
-          activitySlug,
-          language,
-          version,
-        );
-        return (
-          <li key={id}>
-            <Link href={pathname}>
-              {`${authorSlug} - ${activitySlug}`}
-            </Link>
-            {' '}
-            (
-            {getLanguageDisplayName(language)}
-            ,
-            {' '}
-            latest version:
-            {' '}
-            {version}
-            )
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
 
 export default function MyData() {
   const { metadata, setMetadata } = useLocalProfile();
-  const cellsModifiedActivityVariantIds = metadata.activities
-    .filter((a) => a.cellsModified)
-    .map((a) => a.id);
-  const completedActivityVariantIds = metadata.activities
-    .filter((a) => a.completed)
-    .map((a) => a.id);
 
   const [localStorageChanged, setLocalStorageChanged] = useState(0);
   const confirm = useConfirm();
@@ -111,33 +67,6 @@ export default function MyData() {
             You also can configure your privacy settings,
             which influence what data gets sent to our server.
           </Typography>
-          <Typography variant="h4" align="center" marginY={3}>My Source Code</Typography>
-          {cellsModifiedActivityVariantIds.length > 0 && (
-            <>
-              <Typography variant="body1" marginY={3}>
-                You wrote source code for the following activities:
-              </Typography>
-              <ActivityVariantsList ids={cellsModifiedActivityVariantIds} />
-            </>
-          )}
-          {cellsModifiedActivityVariantIds.length === 0 && (
-            <Typography variant="body1" marginY={3}>
-              You haven&apos;t written source code for any activities.
-            </Typography>
-          )}
-          {completedActivityVariantIds.length > 0 && (
-            <>
-              <Typography variant="body1" marginY={3}>
-                You completed the following activities:
-              </Typography>
-              <ActivityVariantsList ids={completedActivityVariantIds} />
-            </>
-          )}
-          {completedActivityVariantIds.length === 0 && (
-            <Typography variant="body1" marginY={3}>
-              You haven&apos;t completed any activities.
-            </Typography>
-          )}
           <Typography variant="h4" align="center" marginY={3}>Export and Import</Typography>
           <Typography variant="body1" marginTop={3}>
             The data (e.g., source code) you enter in PyTamaro Web is stored in your browser,

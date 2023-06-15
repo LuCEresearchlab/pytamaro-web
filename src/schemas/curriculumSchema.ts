@@ -43,6 +43,10 @@ export function curriculumId(authorSlug: string, slug: string) {
   return `${authorSlug}/${slug}`;
 }
 
+export function curriculumToId(curriculum: Curriculum) {
+  return curriculumId(curriculum.authorSlug, curriculum.slug);
+}
+
 export function curriculumFromId(id: string) {
   const [authorSlug, curriculumSlug] = id.split('/');
   return { authorSlug, curriculumSlug };

@@ -6,16 +6,16 @@ import {
   Typography,
 } from '@mui/material';
 import Head from 'next/head';
+import ActivitiesGallery from '../../../components/ActivitiesGallery';
+import CurriculaList from '../../../components/CurriculaList';
 import NavigationBar from '../../../components/NavigationBar';
-import { Curriculum } from '../../../src/schemas/curriculumSchema';
-import { activitiesByAuthorPathname, authorPathname, curriculaByAuthorPathname } from '../../../src/urlUtils';
-import { AuthorProfile } from '../../../src/schemas/authorSchema';
 import {
   getAuthorContent, getAuthorProfile, listAuthorsProfiles,
 } from '../../../src/fs-content/authors';
-import CurriculaList from '../../../components/CurriculaList';
-import ActivitiesGallery from '../../../components/ActivitiesGallery';
 import { Activity } from '../../../src/schemas/activitySchema';
+import { AuthorProfile } from '../../../src/schemas/authorSchema';
+import { Curriculum } from '../../../src/schemas/curriculumSchema';
+import { activitiesByAuthorPathname, authorPathname, curriculaByAuthorPathname } from '../../../src/urlUtils';
 
 export default function AuthorPage({ authorProfile, curricula, activities }:
 { authorProfile: AuthorProfile, curricula: Curriculum[], activities: Activity[] }) {
@@ -46,7 +46,7 @@ export default function AuthorPage({ authorProfile, curricula, activities }:
               {authorProfile.name}
             </Link>
           </Typography>
-          <CurriculaList authorProfile={authorProfile} curricula={curricula} />
+          <CurriculaList curricula={curricula} />
           <Divider sx={{ my: 3 }} />
           <Typography variant="h5" marginY={3}>
             <Link href={activitiesByAuthorPathname(authorProfile.slug)} underline="none">

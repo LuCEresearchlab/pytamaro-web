@@ -14,12 +14,13 @@ const Nav = styled('nav')(({ theme }) => ({
   paddingTop: theme.spacing(1),
   paddingRight: theme.spacing(2),
   display: 'block',
+  float: 'right',
 }));
 
 const NavLabel = styled(Typography)(({ theme }) => ({
   marginTop: theme.spacing(2),
   marginBottom: theme.spacing(1),
-  paddingLeft: theme.spacing(1.4),
+  paddingLeft: theme.spacing(1),
   fontSize: theme.typography.pxToRem(11),
   fontWeight: theme.typography.fontWeightBold,
   textTransform: 'uppercase',

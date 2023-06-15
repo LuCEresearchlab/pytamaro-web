@@ -1,12 +1,13 @@
+import styled from '@emotion/styled';
 import { Stack } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import { uniq } from 'lodash';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import styled from '@emotion/styled';
+import { Activity, ActivityVariant } from '../src/schemas/activitySchema';
 import { activityVariantPathname } from '../src/urlUtils';
-import { LanguageWithLatestVersion } from '../src/schemas/activitySchema';
 
 const VariantSelect = styled(Select)({
   color: 'white',
@@ -15,17 +16,19 @@ const VariantSelect = styled(Select)({
   },
 });
 
-export default function VariantSelector({
-  authorSlug, activitySlug, language, version, versions, languages,
-}:
-{ authorSlug: string, activitySlug: string, language: string, version: string,
-  versions: string[], languages: LanguageWithLatestVersion[] }) {
+export default function VariantSelector({ activity, activityVariant }:
+{ activity: Activity, activityVariant: ActivityVariant }) {
   const router = useRouter();
-  const [selectedVersion, setSelectedVersion] = useState(version);
-  const [selectedLanguage, setSelectedLanguage] = useState(language);
+  const [selectedVersion, setSelectedVersion] = useState(activityVariant.version);
+  const [selectedLanguage, setSelectedLanguage] = useState(activityVariant.language);
   const routeToNewVariant = (newLanguage: string, newVersion: string) => {
     router.push(
-      activityVariantPathname(authorSlug, activitySlug, newLanguage, newVersion),
+      activityVariantPathname(
+        activityVariant.authorSlug,
+        activityVariant.activitySlug,
+        newLanguage,
+        newVersion,
+      ),
     );
   };
   return (
@@ -33,7 +36,7 @@ export default function VariantSelector({
       direction="row"
       alignItems="center"
     >
-      {(version !== selectedVersion || language !== selectedLanguage) && <CircularProgress color="neutral" size="2rem" />}
+      {(activityVariant.version !== selectedVersion || activityVariant.language !== selectedLanguage) && <CircularProgress color="neutral" size="2rem" />}
       <VariantSelect
         value={selectedLanguage}
         label="Language"
@@ -41,19 +44,22 @@ export default function VariantSelector({
         onChange={(selected) => {
           const newLanguage = selected.target.value as string;
           setSelectedLanguage(newLanguage);
-          const versionForNewLanguage = languages.find(
-            (l) => l.language === newLanguage,
-          )?.latestVersion as string;
+          const versionForNewLanguage = activity.languagesInfo.find(
+            (i) => i.language === newLanguage,
+          )?.latestVersion;
+          if (versionForNewLanguage === undefined) {
+            throw new Error(`Latest version for activity ${activity.slug} in language ${newLanguage} not found`);
+          }
           setSelectedVersion(versionForNewLanguage);
           routeToNewVariant(newLanguage, versionForNewLanguage);
         }}
       >
-        {languages.map((l) => (
+        {uniq(activity.variants.map((v) => v.language)).map((lang) => (
           <MenuItem
-            key={l.language}
-            value={l.language}
+            key={lang}
+            value={lang}
           >
-            {l.language.toUpperCase()}
+            {lang.toUpperCase()}
           </MenuItem>
         ))}
       </VariantSelect>
@@ -66,9 +72,10 @@ export default function VariantSelector({
           setSelectedVersion(newVersion);
           routeToNewVariant(selectedLanguage, newVersion);
         }}
-        disabled={language !== selectedLanguage}
+        disabled={activityVariant.language !== selectedLanguage}
       >
-        {versions.map((v) => <MenuItem key={v} value={v}>{v}</MenuItem>)}
+        {activity.variants.filter((v) => v.language === selectedLanguage)
+          .map((v) => <MenuItem key={v.version} value={v.version}>{v.version}</MenuItem>)}
       </VariantSelect>
     </Stack>
   );

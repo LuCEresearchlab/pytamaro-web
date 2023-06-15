@@ -6,21 +6,18 @@ import {
 import Grid from '@mui/material/Unstable_Grid2';
 import Head from 'next/head';
 import { useRef, useState } from 'react';
-import NavigationBar from '../../../../components/NavigationBar';
-import { getCurriculum } from '../../../../src/fs-content/curricula';
-import { Curriculum } from '../../../../src/schemas/curriculumSchema';
-import { curriculumPathname } from '../../../../src/urlUtils';
 import CurriculumFlow from '../../../../components/Curriculum/CurriculumFlow';
-import useLocalProfile from '../../../../src/localStorage/useLocalProfile';
+import NavigationBar from '../../../../components/NavigationBar';
 import TableOfContents from '../../../../components/TableOfContents';
 import { listAuthorsWithContent } from '../../../../src/fs-content/authors';
+import { getCurriculum } from '../../../../src/fs-content/curricula';
+import useLocalProfile from '../../../../src/localStorage/useLocalProfile';
+import { Curriculum } from '../../../../src/schemas/curriculumSchema';
+import { curriculumPathname } from '../../../../src/urlUtils';
 
 export default function CurriculumPage({ curriculum }:
 { curriculum : Curriculum }) {
-  const { metadata } = useLocalProfile();
-  const completedActivityVariantIds = metadata.activities
-    .filter((a) => a.completed)
-    .map((a) => a.id);
+  const { metadata, setMetadata } = useLocalProfile();
   const curriculumFlowRef = useRef<HTMLDivElement>(null);
   const [nodesInitialized, setNodesInitialized] = useState(false);
 
@@ -32,7 +29,15 @@ export default function CurriculumPage({ curriculum }:
 
       <NavigationBar />
       <Grid container>
-        <Grid lg={10} xl={11}>
+        <Grid
+          lg={2}
+          sx={{
+            display: {
+              xs: 'none', sm: 'none', md: 'none', lg: 'block',
+            },
+          }}
+        />
+        <Grid xs={12} lg={8}>
           <Stack spacing={2} alignItems="center">
             <Container maxWidth="md">
               <Typography variant="h3" marginY={3}>{curriculum.title}</Typography>
@@ -41,7 +46,8 @@ export default function CurriculumPage({ curriculum }:
             <div ref={curriculumFlowRef}>
               <CurriculumFlow
                 curriculum={curriculum}
-                completedActivityVariantIds={completedActivityVariantIds}
+                metadata={metadata}
+                setMetadata={setMetadata}
                 setNodesInitialized={setNodesInitialized}
               />
             </div>
@@ -49,7 +55,6 @@ export default function CurriculumPage({ curriculum }:
         </Grid>
         <Grid
           lg={2}
-          xl={1}
           sx={{
             display: {
               xs: 'none', sm: 'none', md: 'none', lg: 'block',

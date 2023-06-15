@@ -1,10 +1,10 @@
+import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar, Box, Button, Divider, IconButton, Menu, MenuItem, Stack, Toolbar,
 } from '@mui/material';
 import { useState } from 'react';
-import MenuIcon from '@mui/icons-material/Menu';
+import { activitiesByAuthorPathname, curriculaPathname, myProgressPathname } from '../src/urlUtils';
 import FeedbackDialog from './FeedbackDialog';
-import { activitiesByAuthorPathname } from '../src/urlUtils';
 
 const navItems = [
   {
@@ -12,20 +12,16 @@ const navItems = [
     url: '/',
   },
   {
-    name: 'Docs',
-    url: 'https://pytamaro.readthedocs.org',
-  },
-  {
     name: 'Activities',
     url: activitiesByAuthorPathname('luce'),
   },
   {
     name: 'Curricula',
-    url: '/curricula',
+    url: curriculaPathname(),
   },
   {
-    name: 'My Data',
-    url: '/my-data',
+    name: 'My Progress',
+    url: myProgressPathname(),
   },
   {
     name: 'About',

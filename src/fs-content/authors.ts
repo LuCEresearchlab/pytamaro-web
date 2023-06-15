@@ -1,10 +1,12 @@
-import path from 'path';
-import { readFile, readdir, stat } from 'fs/promises';
 import { existsSync } from 'fs';
-import { DATA_DIR } from './notebooks';
+import { readFile, readdir, stat } from 'fs/promises';
+import path from 'path';
+import { Activity } from '../schemas/activitySchema';
+import { Author, AuthorProfile } from '../schemas/authorSchema';
+import { Curriculum } from '../schemas/curriculumSchema';
 import { listActivities } from './activities';
 import { listCurricula } from './curricula';
-import { Author, AuthorProfile } from '../schemas/authorSchema';
+import { DATA_DIR } from './notebooks';
 
 export function authorInfoPath(authorSlug: string) {
   return path.join(DATA_DIR, authorSlug, 'author.json');
@@ -39,4 +41,12 @@ export async function listAuthorsProfiles() : Promise<AuthorProfile[]> {
 export async function listAuthorsWithContent() : Promise<Author[]> {
   const profiles = await listAuthorsProfiles();
   return Promise.all(profiles.map(({ slug }) => getAuthorContent(slug)));
+}
+
+export async function listActivitiesAllAuthors() : Promise<Activity[]> {
+  return (await listAuthorsWithContent()).map((author) => author.activities).flat();
+}
+
+export async function listCurriculaAllAuthors() : Promise<Curriculum[]> {
+  return (await listAuthorsWithContent()).map((author) => author.curricula).flat();
 }

@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import {
   Box,
   Button,
@@ -12,23 +11,16 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import NavigationBar from '../../../../components/NavigationBar';
-import getLanguageDisplayName from '../../../../src/internationalization';
-import { activityAssetPathname, activityPathname, activityVariantPathname } from '../../../../src/urlUtils';
-import { Activity, ActivityUse, NotebookVariant } from '../../../../src/schemas/activitySchema';
 import { getActivityUses, readActivity } from '../../../../src/fs-content/activities';
 import { listAuthorsWithContent } from '../../../../src/fs-content/authors';
+import getLanguageDisplayName from '../../../../src/internationalization';
+import { Activity, ActivityUse } from '../../../../src/schemas/activitySchema';
+import { activityAssetPathname, activityPathname, activityVariantPathname } from '../../../../src/urlUtils';
 
 export default function InfoPage({ uses, activity }: {
   uses : ActivityUse[], activity : Activity
 }) {
-  const router = useRouter();
-  const {
-    authorSlug, activitySlug,
-  } = router.query as {
-    authorSlug: string,
-    activitySlug: string,
-  };
-  const title = activitySlug;
+  const title = activity.slug;
   const pageTitle = `${title} - PyTamaro`;
 
   return (
@@ -50,8 +42,12 @@ export default function InfoPage({ uses, activity }: {
           >
             <Image
               fill
-              src={activityAssetPathname(authorSlug, activitySlug, activity.previewImage.filename)}
-              alt={activity.variants[0].title}
+              src={activityAssetPathname(
+                activity.authorSlug,
+                activity.slug,
+                activity.previewImage.filename,
+              )}
+              alt="Activity Image"
               style={{
                 padding: '1rem',
                 objectFit: 'contain',
@@ -66,30 +62,30 @@ export default function InfoPage({ uses, activity }: {
           </Typography>
           <ul>
             {
-              activity.variants.map((variant: NotebookVariant) => (
-                <li key={variant.language}>
+              activity.languagesInfo.map((info) => (
+                <li key={info.language}>
                   { activity.visibility !== 'draft' && (
                     <Link href={activityVariantPathname(
-                      authorSlug,
-                      activitySlug,
-                      variant.language,
-                      variant.latestVersion,
+                      activity.authorSlug,
+                      activity.slug,
+                      info.language,
+                      info.latestVersion,
                     )}
                     >
-                      {variant.title}
+                      {info.title}
                     </Link>
                   )}
                   { activity.visibility === 'draft' && (
-                    variant.title
+                    info.title
                   )}
                   {' '}
                   (
-                  {getLanguageDisplayName(variant.language)}
+                  {getLanguageDisplayName(info.language)}
                   ,
                   {' '}
                   latest version:
                   {' '}
-                  {variant.latestVersion}
+                  {info.latestVersion}
                   )
                 </li>
               ))

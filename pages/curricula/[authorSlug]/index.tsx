@@ -2,13 +2,13 @@ import {
   Box, Container, Typography,
 } from '@mui/material';
 import Head from 'next/head';
+import CurriculaList from '../../../components/CurriculaList';
 import NavigationBar from '../../../components/NavigationBar';
+import { getAuthorProfile, listAuthorsProfiles } from '../../../src/fs-content/authors';
 import { listCurricula } from '../../../src/fs-content/curricula';
+import { AuthorProfile } from '../../../src/schemas/authorSchema';
 import { Curriculum } from '../../../src/schemas/curriculumSchema';
 import { curriculaByAuthorPathname } from '../../../src/urlUtils';
-import { AuthorProfile } from '../../../src/schemas/authorSchema';
-import { getAuthorProfile, listAuthorsProfiles } from '../../../src/fs-content/authors';
-import CurriculaList from '../../../components/CurriculaList';
 
 export default function CurriculaPage({ curricula, authorProfile }:
 { curricula: Curriculum[], authorProfile: AuthorProfile }) {
@@ -28,7 +28,7 @@ export default function CurriculaPage({ curricula, authorProfile }:
             {' '}
             {authorProfile.name}
           </Typography>
-          <CurriculaList curricula={curricula} authorProfile={authorProfile} />
+          <CurriculaList curricula={curricula} />
         </Container>
       </Box>
     </div>

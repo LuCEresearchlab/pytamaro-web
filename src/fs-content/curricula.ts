@@ -1,6 +1,6 @@
-import path from 'path';
 import { readdir, readFile } from 'fs/promises';
-import { DATA_DIR } from './notebooks';
+import path from 'path';
+import { activityVariantFromId } from '../schemas/activitySchema';
 import {
   Curriculum,
   CurriculumStep,
@@ -8,7 +8,7 @@ import {
   RawCurriculumActivity,
 } from '../schemas/curriculumSchema';
 import { readActivity } from './activities';
-import { activityVariantFromId } from '../schemas/activitySchema';
+import { DATA_DIR } from './notebooks';
 
 export const CURRICULA_DIR = 'curricula';
 const CURRICULUM_EXT = '.json';

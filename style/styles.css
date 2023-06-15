@@ -65,6 +65,10 @@ code, pre {
     cursor: default !important;
 }
 
-h1, h2, h3, h4, h5, h6, .curriculum-unit {
-    scroll-margin-top: 64px;
+h1, h2, h3, h4, h5, h6, .curriculum-unit, .anchor {
+    scroll-margin-top: calc(64px + 0.5vh);
+}
+
+.blurred {
+    filter: blur(.5rem);
 }

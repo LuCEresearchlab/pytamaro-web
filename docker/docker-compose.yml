@@ -33,6 +33,7 @@ services:
     volumes: 
       - db:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/migrations:/migrations
   nginx-proxy:
     image: nginxproxy/nginx-proxy
     ports:

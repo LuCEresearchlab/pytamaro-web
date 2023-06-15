@@ -9,7 +9,7 @@ import TerminalIcon from '@mui/icons-material/Terminal';
 import anime from 'animejs';
 import InstallDesktop from '@mui/icons-material/InstallDesktop';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { activitiesByAuthorPathname } from '../src/urlUtils';
+import { activitiesByAuthorPathname, pytamaroDocsUrl } from '../src/urlUtils';
 
 function HomePagePrimaryButton(props: { icon: JSX.Element, text: string, href: string }) {
   const { icon, text, href } = props;
@@ -111,7 +111,7 @@ export default function Home() {
           }}
           marginTop={{ xs: 8, md: 12 }}
         >
-          <HomePagePrimaryButton icon={<MenuBookIcon />} text="Documentation" href="https://pytamaro.readthedocs.org" />
+          <HomePagePrimaryButton icon={<MenuBookIcon />} text="Documentation" href={pytamaroDocsUrl()} />
           <HomePagePrimaryButton icon={<InstallDesktop />} text="How to Install & FAQ" href="/install" />
           <HomePagePrimaryButton icon={<TerminalIcon />} text="Try in the browser" href="/playground" />
         </Stack>

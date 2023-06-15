@@ -1,25 +1,23 @@
-import { useTheme, styled } from '@mui/material/styles';
 import {
+  TipsAndUpdates,
+} from '@mui/icons-material';
+import SyncProblemIcon from '@mui/icons-material/SyncProblem';
+import {
+  Alert,
   Badge,
   BadgeProps,
-  Card, CardActions, CardContent, Collapse, IconButton, ListItemIcon, Menu, MenuItem, Paper,
+  Card, CardActions, CardContent, Collapse, Paper,
+  Stack,
   Tooltip,
 } from '@mui/material';
-import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
-import DoneIcon from '@mui/icons-material/Done';
-import SyncProblemIcon from '@mui/icons-material/SyncProblem';
-import LoadingButton from '@mui/lab/LoadingButton';
-import Editor from '@monaco-editor/react';
-import { editor as EditorNamespace } from 'monaco-editor';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useState } from 'react';
-import {
-  ContentCopy, ErrorOutline, RestartAlt, Visibility, VisibilityOff,
-} from '@mui/icons-material';
-import OutputArea from './OutputArea';
+import { styled, useTheme } from '@mui/material/styles';
+import { ExecutionResponse } from '../src/codeExecution';
 import { CodeCellExecutionState, CodeCellState } from '../src/localStorage/schema';
-import DocumentationStripe from './DocumentationStripe';
 import { ActivityVariant } from '../src/schemas/activitySchema';
+import CodeEditor from './CodeEditor';
+import DocumentationStripe from './DocumentationStripe';
+import OutputArea from './OutputArea';
+import RunButton from './RunButton';
 
 const StaleOutputBadge = styled(Badge)<BadgeProps>(() => ({
   '& .MuiBadge-badge': {
@@ -30,186 +28,86 @@ const StaleOutputBadge = styled(Badge)<BadgeProps>(() => ({
   width: '100%',
 }));
 
-export function MoreOptions({
-  codeCellState, codeCellExecutionState, onShowHideOutput, onReset,
-} :
-{ codeCellState: CodeCellState, codeCellExecutionState: CodeCellExecutionState,
-  onShowHideOutput: () => void, onReset: () => void }) {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+function NoOutputTip({ activityVariant } : { activityVariant: ActivityVariant }) {
+  const showGraphicNames: Record<string, string> = {
+    en: 'show_graphic',
+    it: 'visualizza_grafica',
+    de: 'zeige_grafik',
   };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleCopy = () => {
-    handleClose();
-    navigator.clipboard.writeText(codeCellState.source);
-  };
-  const handleShowHideOutputArea = () => {
-    handleClose();
-    onShowHideOutput();
-  };
-  const handleReset = () => {
-    handleClose();
-    onReset();
-  };
+  const apiName = activityVariant.language in showGraphicNames
+    ? showGraphicNames[activityVariant.language]
+    : showGraphicNames.en;
   return (
-    <>
-      <IconButton
-        aria-label="more"
-        id="long-button"
-        aria-controls={open ? 'long-menu' : undefined}
-        aria-expanded={open ? 'true' : undefined}
-        aria-haspopup="true"
-        onClick={handleClick}
-        sx={{ marginLeft: 'auto' }}
-      >
-        <MoreVertIcon />
-      </IconButton>
-      <Menu
-        id="long-menu"
-        MenuListProps={{
-          'aria-labelledby': 'long-button',
-        }}
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        transformOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
-        PaperProps={{
-          elevation: 0,
-          sx: {
-            overflow: 'visible',
-            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-          },
-        }}
-      >
-        <MenuItem onClick={handleReset}>
-          <ListItemIcon>
-            <RestartAlt fontSize="small" />
-          </ListItemIcon>
-          Reset Cell
-        </MenuItem>
-        <MenuItem onClick={handleCopy}>
-          <ListItemIcon>
-            <ContentCopy fontSize="small" />
-          </ListItemIcon>
-          Copy Code
-        </MenuItem>
-        { codeCellExecutionState.executionResponse && (
-        <MenuItem onClick={handleShowHideOutputArea}>
-          <ListItemIcon>
-            { codeCellExecutionState.outputAreaVisible ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
-          </ListItemIcon>
-          { codeCellExecutionState.outputAreaVisible ? 'Hide' : 'Show' }
-          {' '}
-          Output
-        </MenuItem>
-        )}
-      </Menu>
-    </>
+    <Alert
+      iconMapping={{
+        success: <TipsAndUpdates fontSize="inherit" />,
+      }}
+    >
+      Successfully executed, but no output produced. Did you intend to show a graphic?
+      Use
+      {' '}
+      <code>{apiName}</code>
+      .
+    </Alert>
   );
 }
 
+export function isExecutionError(response: ExecutionResponse | undefined) {
+  return response?.type === 'error';
+}
+
 export default function CodeCell({
-  codeCellState, codeCellExecutionState, onSourceChanged, onExecutionRequested, onOutputAreaToggled,
-  onReset, firstLineNumber, activityVariant,
+  codeCellState, codeCellExecutionState, onSourceChanged, onExecutionRequested,
+  firstLineNumber, activityVariant,
+  extraActions = null, readOnly = false,
 } :
 { codeCellState : CodeCellState,
   codeCellExecutionState: CodeCellExecutionState,
   onSourceChanged: (newSource: string) => void,
   onExecutionRequested: () => Promise<any>,
-  onOutputAreaToggled: () => void,
-  onReset: () => void,
   firstLineNumber : number,
   activityVariant: ActivityVariant,
+  extraActions?: React.ReactNode
+  readOnly?: boolean
 }) {
   const theme = useTheme();
 
-  const handleEditorMount = (editor: EditorNamespace.IStandaloneCodeEditor, monaco: any) => {
-    const themeName = 'luce';
-    monaco.editor.defineTheme(themeName, {
-      base: 'vs', // use vscode light as base theme
-      inherit: true,
-      rules: [],
-      colors: {
-        'editorLineNumber.foreground': '#60bcd9',
-        'editorLineNumber.activeForeground': '#60bcd9',
-        'editor.wordHighlightBackground': '#57575710',
-      },
-    });
-    monaco.editor.setTheme(themeName);
-    const updateHeight = () => {
-      editor.layout({ width: editor.getLayoutInfo().width, height: editor.getContentHeight() });
-    };
-    editor.onDidContentSizeChange(updateHeight);
-  };
-  const executionError = codeCellExecutionState.executionResponse?.type === 'error';
+  const { executionResponse } = codeCellExecutionState;
+  const executionError = isExecutionError(executionResponse);
   const executing = codeCellExecutionState.executionInProgress;
   const executionFinished = codeCellExecutionState.outputSynced;
-  let buttonMessage = 'Run';
-  let buttonTooltip = ''; // Empty tooltips are not displayed
-  let buttonIcon = <PlayCircleFilledIcon />;
-  if (executing) {
-    buttonMessage = 'Running';
-  } else if (executionFinished) {
-    buttonMessage = 'Done';
-    buttonTooltip = 'Execution completed: re-run possible only after changing the code';
-    buttonIcon = executionError ? <ErrorOutline /> : <DoneIcon />;
-  }
+  const noOutput = executionFinished && executionResponse?.content.length === 0;
   return (
-    <Paper elevation={4}>
-      <DocumentationStripe source={codeCellState.source} activityVariant={activityVariant} />
+    <Paper elevation={readOnly ? 0 : 4}>
+      {!readOnly
+        && <DocumentationStripe source={codeCellState.source} activityVariant={activityVariant} />}
       <Card>
         <CardContent>
-          <Editor
-            language="python"
-            theme="luce"
-            value={codeCellState.source}
-            onChange={(value) => value && onSourceChanged(value)}
-            options={{
-              fontFamily: theme.pytamaro.monospaceFontFamily,
-              fontSize: 1.1 * theme.typography.fontSize,
-              lineNumbers: (n) => (n + firstLineNumber - 1).toString(10),
-              lineNumbersMinChars: 2,
-              minimap: { enabled: false },
-              renderLineHighlight: 'none',
-              overviewRulerLanes: 0,
-              scrollBeyondLastLine: false,
-              fixedOverflowWidgets: true,
-            }}
-            onMount={handleEditorMount}
+          <CodeEditor
+            source={codeCellState.source}
+            onChange={onSourceChanged}
+            firstLineNumber={firstLineNumber}
+            readOnly={readOnly}
           />
         </CardContent>
         <CardActions disableSpacing sx={{ paddingLeft: 2, display: 'flex' }}>
-          <Tooltip title={buttonTooltip} placement="right">
-            <span>
-              <LoadingButton
-                onClick={onExecutionRequested}
-                endIcon={buttonIcon}
-                loading={executing}
-                loadingPosition="end"
-                variant="contained"
-                sx={{ minWidth: '10rem' }}
-                disabled={executing || executionFinished}
-              >
-                <span>{buttonMessage}</span>
-              </LoadingButton>
-            </span>
-          </Tooltip>
-          <MoreOptions
-            codeCellState={codeCellState}
-            codeCellExecutionState={codeCellExecutionState}
-            onShowHideOutput={onOutputAreaToggled}
-            onReset={onReset}
+          <RunButton
+            onExecutionRequested={onExecutionRequested}
+            executing={executing}
+            executionFinished={executionFinished}
+            executionError={executionError}
           />
+          <Stack direction="row" sx={{ marginLeft: 'auto' }}>
+            {extraActions}
+          </Stack>
         </CardActions>
+        {noOutput && (
+          <NoOutputTip activityVariant={activityVariant} />
+        )}
         <Collapse in={codeCellExecutionState.outputAreaVisible} timeout="auto" unmountOnExit>
           <CardContent>
             <StaleOutputBadge
-              badgeContent={<Tooltip title="Stale output: re-run your code to refresh it"><SyncProblemIcon /></Tooltip>}
+              badgeContent={<Tooltip title="Stale output: re-run the code to refresh it"><SyncProblemIcon /></Tooltip>}
               color="error"
               invisible={codeCellExecutionState.outputSynced}
             >
@@ -222,8 +120,7 @@ export default function CodeCell({
                   width: '100%',
                 }}
               >
-                {codeCellExecutionState.executionResponse
-                  && <OutputArea executionResponse={codeCellExecutionState.executionResponse} />}
+                <OutputArea executionResponse={executionResponse} />
               </Card>
             </StaleOutputBadge>
           </CardContent>

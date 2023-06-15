@@ -34,7 +34,7 @@ export default function BackToCurriculum() {
         startIcon={<Route />}
         onClick={() => router.push(curriculumPathname(authorSlug, curriculumSlug))}
       >
-        Back to your curriculum
+        Back to my curriculum
       </Button>
     </Box>
   );
