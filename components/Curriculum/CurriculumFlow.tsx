@@ -1,7 +1,8 @@
 import {
   Box,
 } from '@mui/material';
-import { useEffect } from 'react';
+import produce from 'immer';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import ReactFlow, {
   Edge,
   MarkerType,
@@ -9,7 +10,10 @@ import ReactFlow, {
   ReactFlowProvider,
   useNodesInitialized,
 } from 'reactflow';
-import { Curriculum, CurriculumActivity, CurriculumUnit } from '../../src/schemas/curriculumSchema';
+import {
+  Curriculum, CurriculumActivity, CurriculumUnit,
+  curriculumToId,
+} from '../../src/schemas/curriculumSchema';
 import ActivityNode from './ActivityNode';
 import JoinNode from './JoinNode';
 import OptionalActivitiesNode from './OptionalActivitiesNode';
@@ -114,6 +118,7 @@ function graphWidth(
 function getFlowElements(
   curriculum: Curriculum,
   metadata: Metadata,
+  setMetadata: Dispatch<SetStateAction<Metadata>>,
   windowWidth: number,
 ) {
   const size = (perc: number, minValue: number, maxValue: number) => Math.max(
@@ -152,7 +157,9 @@ function getFlowElements(
 
   let bottom = 0;
   let nodesToBeConnected : string[] = [];
-  let previousStepIsCompleted = true;
+  const existingCurriculum = metadata.curricula.find((c) => c.id === curriculumToId(curriculum));
+  const alreadyStarted = existingCurriculum !== undefined;
+  let previousStepIsCompleted = alreadyStarted;
   const nodes : Node[] = [];
   const edges : Edge[] = [];
 
@@ -231,9 +238,19 @@ function getFlowElements(
     bottom += dim.height + layerSpacing;
   };
 
+  const handleCurriculumStart = () => {
+    setMetadata((currentMetadata) => produce(currentMetadata, (draft) => {
+      draft.curricula.push({
+        id: curriculumToId(curriculum),
+      });
+    }));
+  };
+
   // The curriculum graph contains:
   // - a start node
-  addSingleNode('start', 'startend', { type: 'start', text: 'Start', unlocked: previousStepIsCompleted });
+  addSingleNode('start', 'startend', {
+    type: 'start', text: 'Start', unlocked: true, onClick: handleCurriculumStart,
+  }, !alreadyStarted);
   // - a sequence of units
   curriculum.units.forEach((unit, unitIdx) => {
     // Each unit has a title
@@ -299,16 +316,19 @@ function Flow({ nodes, edges, setNodesInitialized }:
 }
 
 export default function CurriculumFlow(
-  { curriculum, metadata, setNodesInitialized }
+  {
+    curriculum, metadata, setMetadata, setNodesInitialized,
+  }
   : { curriculum : Curriculum,
     metadata : Metadata,
+    setMetadata: Dispatch<SetStateAction<Metadata>>,
     setNodesInitialized: (initialized: boolean) => void
   },
 ) {
   const windowWidth = useWidth();
   const {
     nodes, edges, width, height,
-  } = getFlowElements(curriculum, metadata, windowWidth);
+  } = getFlowElements(curriculum, metadata, setMetadata, windowWidth);
 
   return (
     <Box

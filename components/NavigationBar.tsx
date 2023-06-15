@@ -3,7 +3,7 @@ import {
   AppBar, Box, Button, Divider, IconButton, Menu, MenuItem, Stack, Toolbar,
 } from '@mui/material';
 import { useState } from 'react';
-import { activitiesByAuthorPathname } from '../src/urlUtils';
+import { activitiesByAuthorPathname, curriculaPathname, myProgressPathname } from '../src/urlUtils';
 import FeedbackDialog from './FeedbackDialog';
 
 const navItems = [
@@ -17,11 +17,11 @@ const navItems = [
   },
   {
     name: 'Curricula',
-    url: '/curricula',
+    url: curriculaPathname(),
   },
   {
     name: 'My Progress',
-    url: '/my-progress',
+    url: myProgressPathname(),
   },
   {
     name: 'About',

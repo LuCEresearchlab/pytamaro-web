@@ -17,7 +17,7 @@ import { curriculumPathname } from '../../../../src/urlUtils';
 
 export default function CurriculumPage({ curriculum }:
 { curriculum : Curriculum }) {
-  const { metadata } = useLocalProfile();
+  const { metadata, setMetadata } = useLocalProfile();
   const curriculumFlowRef = useRef<HTMLDivElement>(null);
   const [nodesInitialized, setNodesInitialized] = useState(false);
 
@@ -47,6 +47,7 @@ export default function CurriculumPage({ curriculum }:
               <CurriculumFlow
                 curriculum={curriculum}
                 metadata={metadata}
+                setMetadata={setMetadata}
                 setNodesInitialized={setNodesInitialized}
               />
             </div>

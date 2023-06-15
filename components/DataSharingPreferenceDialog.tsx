@@ -1,11 +1,8 @@
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Link from 'next/link';
+import {
+  Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link,
+} from '@mui/material';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
+import { myDataPathname } from '../src/urlUtils';
 
 export default function DataSharingPreferenceDialog() {
   const { requestDataSharingPreference, setDataSharingPreference } = useLocalProfile();
@@ -15,7 +12,7 @@ export default function DataSharingPreferenceDialog() {
   };
 
   const handleLearnMore = () => {
-    window.open('/my-data#privacy-settings', '_blank');
+    window.open(`${myDataPathname()}#privacy-settings`, '_blank');
   };
 
   return (requestDataSharingPreference

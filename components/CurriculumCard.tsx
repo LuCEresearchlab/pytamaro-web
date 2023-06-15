@@ -2,15 +2,15 @@ import {
   Card, CardActionArea, CardContent, Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import { useRouter } from 'next/router';
 import { shuffle } from 'lodash';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Curriculum, CurriculumActivity } from '../src/schemas/curriculumSchema';
 import { curriculumPathname } from '../src/urlUtils';
 import ActivityCardMedia from './ActivityCardMedia';
 
-export default function CurriculumCard({ curriculum, authorSlug }:
-{ curriculum: Curriculum, authorSlug: string }) {
+export default function CurriculumCard({ curriculum }:
+{ curriculum: Curriculum }) {
   const [randomActivities, setRandomActivities] = useState<CurriculumActivity[]>([]);
   useEffect(() => {
     const activities = curriculum.units.flatMap((unit) => unit.steps.flatMap(
@@ -23,7 +23,7 @@ export default function CurriculumCard({ curriculum, authorSlug }:
   const clickable = curriculum.visibility === 'featured' || curriculum.visibility === 'visible';
   const handleClick = () => {
     if (clickable) {
-      router.push(curriculumPathname(authorSlug, curriculum.slug));
+      router.push(curriculumPathname(curriculum.authorSlug, curriculum.slug));
     }
   };
   return (

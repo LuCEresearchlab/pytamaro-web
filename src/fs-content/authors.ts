@@ -3,6 +3,7 @@ import { readFile, readdir, stat } from 'fs/promises';
 import path from 'path';
 import { Activity } from '../schemas/activitySchema';
 import { Author, AuthorProfile } from '../schemas/authorSchema';
+import { Curriculum } from '../schemas/curriculumSchema';
 import { listActivities } from './activities';
 import { listCurricula } from './curricula';
 import { DATA_DIR } from './notebooks';
@@ -44,4 +45,8 @@ export async function listAuthorsWithContent() : Promise<Author[]> {
 
 export async function listActivitiesAllAuthors() : Promise<Activity[]> {
   return (await listAuthorsWithContent()).map((author) => author.activities).flat();
+}
+
+export async function listCurriculaAllAuthors() : Promise<Curriculum[]> {
+  return (await listAuthorsWithContent()).map((author) => author.curricula).flat();
 }

@@ -10,6 +10,7 @@ export interface Metadata {
   allowSharingAnonData: 'yes' | 'no' | 'unknown'
   activities: ActivityVariantMetadata[],
   toolbox: ToolboxFunction[],
+  curricula: CurriculumMetadata[]
 }
 
 export interface ToolboxFunction {
@@ -32,6 +33,10 @@ export interface ActivityVariantMetadata {
   codeCellsKey: string,
   cellsModified: boolean,
   completed: boolean,
+}
+
+export interface CurriculumMetadata {
+  id: string,
 }
 
 export interface CodeCellState {
@@ -74,5 +79,6 @@ export function getDefaultMetadata() : Metadata {
     allowSharingAnonData: 'unknown',
     experimentKey: '',
     toolbox: [],
+    curricula: [],
   };
 }

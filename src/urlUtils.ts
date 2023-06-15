@@ -46,6 +46,28 @@ export function authorPathname(authorSlug: string) {
   return contentTypeByAuthorPathname('authors', authorSlug);
 }
 
+/* Extra */
+
+export function playgroundPathname() {
+  return '/playground';
+}
+
+export function curriculaPathname() {
+  return '/curricula';
+}
+
+export function myProgressPathname() {
+  return '/my-progress';
+}
+
+export function myDataPathname() {
+  return '/my-data';
+}
+
+export function pytamaroDocsUrl() {
+  return 'https://pytamaro.readthedocs.org';
+}
+
 /* Toolbox */
 
 export function toolboxFunctionAnchor(functionName: string) {
@@ -53,15 +75,5 @@ export function toolboxFunctionAnchor(functionName: string) {
 }
 
 export function toolboxFunctionPathname(functionName: string) {
-  return `/my-progress#${toolboxFunctionAnchor(functionName)}`;
-}
-
-/* Extra */
-
-export function playgroundPathname() {
-  return '/playground';
-}
-
-export function pytamaroDocsUrl() {
-  return 'https://pytamaro.readthedocs.org';
+  return `${myProgressPathname()}#${toolboxFunctionAnchor(functionName)}`;
 }
