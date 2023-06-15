@@ -12,8 +12,17 @@ const nextConfig = {
   env: {
     PLATFORM_VERSION: require('child_process').execSync('git rev-parse --short HEAD').toString().trim(),
   },
-  webpack: (config, options) => {
-    patchWasmModuleImport(config, options.isServer);
+  webpack(config, { isServer, dev }) {
+    config.experiments = {
+      asyncWebAssembly: true,
+      layers: true,
+    };
+
+    if (!dev && isServer) {
+      config.output.webassemblyModuleFilename = "chunks/[id].wasm";
+      config.plugins.push(new WasmChunksFixPlugin());
+    }
+
     return config;
   },
 }
@@ -26,22 +35,22 @@ module.exports = withSentryConfig(
   { hideSourceMaps: true },
 );
 
-function patchWasmModuleImport(config, isServer) {
-  config.experiments = Object.assign(config.experiments || {}, {
-      asyncWebAssembly: true,
-  });
+// Workaround from https://github.com/vercel/next.js/issues/29362#issuecomment-971377869
+class WasmChunksFixPlugin {
+  apply(compiler) {
+    compiler.hooks.thisCompilation.tap("WasmChunksFixPlugin", (compilation) => {
+      compilation.hooks.processAssets.tap(
+        { name: "WasmChunksFixPlugin" },
+        (assets) =>
+          Object.entries(assets).forEach(([pathname, source]) => {
+            if (!pathname.match(/\.wasm$/)) return;
+            compilation.deleteAsset(pathname);
 
-  config.optimization.moduleIds = 'named';
-
-  config.module.rules.push({
-      test: /\.wasm$/,
-      type: 'webassembly/async',
-  });
-
-  // TODO: improve this function -> track https://github.com/vercel/next.js/issues/25852
-  if (isServer) {
-      config.output.webassemblyModuleFilename = './../static/wasm/[contenthash].wasm';
-  } else {
-      config.output.webassemblyModuleFilename = 'static/wasm/[contenthash].wasm';
+            const name = pathname.split("/")[1];
+            const info = compilation.assetsInfo.get(pathname);
+            compilation.emitAsset(name, source, info);
+          })
+      );
+    });
   }
 }
