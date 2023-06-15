@@ -40,8 +40,8 @@ function patchWasmModuleImport(config, isServer) {
 
   // TODO: improve this function -> track https://github.com/vercel/next.js/issues/25852
   if (isServer) {
-      config.output.webassemblyModuleFilename = './../static/wasm/[modulehash].wasm';
+      config.output.webassemblyModuleFilename = './../static/wasm/[contenthash].wasm';
   } else {
-      config.output.webassemblyModuleFilename = 'static/wasm/[modulehash].wasm';
+      config.output.webassemblyModuleFilename = 'static/wasm/[contenthash].wasm';
   }
 }
