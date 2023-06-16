@@ -229,12 +229,9 @@ export function useActivity(
   };
 
   const confirm = useConfirm();
-  const handleResetActivity = () => {
-    confirm({ description: 'You are about to reset all the code you have written in this activity. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete my code' })
-      .then(() => {
-        setCodeCells(initialCodeCells);
-        setCodeExecutionStates(initialCodeExecutionStates());
-      });
+  const handleResetAllCellsNoConfirm = () => {
+    setCodeCells(initialCodeCells);
+    setCodeExecutionStates(initialCodeExecutionStates());
   };
 
   const handleResetSingleCell = (idx: number) => {
@@ -265,7 +262,7 @@ export function useActivity(
     handleSourceChanged,
     handleExecute,
     handleToggleOutputArea,
-    handleResetActivity,
+    handleResetAllCellsNoConfirm,
     handleResetSingleCell,
   };
 }

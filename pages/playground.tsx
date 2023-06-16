@@ -6,6 +6,7 @@ import {
   Box,
   Container, Typography, styled,
 } from '@mui/material';
+import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import ActivitiesStripe from '../components/ActivitiesStripe';
@@ -38,7 +39,7 @@ export default function Playground({ activitiesWithNames } :
   );
   const {
     codeCells, codeExecutionStates, cellsModified, networkError, setNetworkError,
-    handleResetActivity,
+    handleResetAllCellsNoConfirm,
   } = localActivity;
   const { outputSynced } = codeExecutionStates[0];
 
@@ -46,6 +47,15 @@ export default function Playground({ activitiesWithNames } :
     setRecommendedActivities] = useState<ActivityVariantWithNames[]>([]);
 
   const [showRecommendedActivities, setShowRecommendedActivities] = useState(false);
+
+  const confirm = useConfirm();
+
+  const handleReset = () => {
+    confirm({ description: 'You are about to reset the playground to its initial state: this will delete all the code you have written. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete my code' })
+      .then(() => {
+        handleResetAllCellsNoConfirm();
+      });
+  };
 
   useEffect(() => {
     const recommendActivities = () => {
@@ -84,7 +94,7 @@ export default function Playground({ activitiesWithNames } :
       </Head>
       <Box>
         <NavigationBar>
-          <ResetButton enabled={cellsModified} onReset={handleResetActivity} />
+          <ResetButton enabled={cellsModified} onReset={handleReset} />
         </NavigationBar>
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
         <DataSharingPreferenceDialog />

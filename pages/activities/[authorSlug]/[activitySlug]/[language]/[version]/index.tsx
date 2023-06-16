@@ -5,6 +5,8 @@ import {
 } from '@mui/material';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
+import { isEqual } from 'lodash';
+import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
 import { useRef } from 'react';
 import ActivityInfoButton from '../../../../../../components/ActivityInfoButton';
@@ -24,12 +26,13 @@ import TableOfContents from '../../../../../../components/TableOfContents';
 import VariantSelector from '../../../../../../components/VariantsSelector';
 import { findVersions, readActivity } from '../../../../../../src/fs-content/activities';
 import { listAuthorsWithContent } from '../../../../../../src/fs-content/authors';
-import { CodeCellState } from '../../../../../../src/localStorage/schema';
+import { CodeCellState, getDefaultActivityVariantMetadata } from '../../../../../../src/localStorage/schema';
 import useLocalActivity from '../../../../../../src/localStorage/useLocalActivity';
+import useLocalProfile from '../../../../../../src/localStorage/useLocalProfile';
 import getNotebookContent from '../../../../../../src/notebook';
 import {
   Activity,
-  ActivityVariant, MarkdownCell, NotebookCell,
+  ActivityVariant, MarkdownCell, NotebookCell, activityVariantId,
 } from '../../../../../../src/schemas/activitySchema';
 import { countLines } from '../../../../../../src/sourceUtils';
 import { activityVariantPathname } from '../../../../../../src/urlUtils';
@@ -70,9 +73,24 @@ export default function NotebookPage({ activity, activityVariant, cells }:
     codeCells, codeExecutionStates, cellsModified,
     completed, networkError, localCodeCellsWrongLength, sourcesUpTo,
     toggleCompleted, setNetworkError, handleSourceChanged, handleExecute,
-    handleToggleOutputArea, handleResetActivity, handleResetSingleCell,
+    handleToggleOutputArea, handleResetAllCellsNoConfirm, handleResetSingleCell,
   } = useLocalActivity(initialCodeCells, activityVariant);
   const cellsRef = useRef<HTMLDivElement>(null);
+
+  const { getActivityMetadata, setActivityMetadata } = useLocalProfile();
+  const currentMetadata = getActivityMetadata(activityVariant);
+  const defaultMetadata = getDefaultActivityVariantMetadata(activityVariantId(activityVariant));
+  const metadataModified = !isEqual(currentMetadata, defaultMetadata);
+
+  const confirm = useConfirm();
+
+  const handleGlobalReset = () => {
+    confirm({ description: 'You are about to reset the entire activity, including all the code you have written. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete my code' })
+      .then(() => {
+        handleResetAllCellsNoConfirm();
+        setActivityMetadata(activityVariant, defaultMetadata);
+      });
+  };
 
   const title = activity.languagesInfo.find((i) => i.language === activityVariant.language)?.title;
 
@@ -92,7 +110,7 @@ export default function NotebookPage({ activity, activityVariant, cells }:
             activity={activity}
             activityVariant={activityVariant}
           />
-          <ResetButton enabled={cellsModified} onReset={handleResetActivity} />
+          <ResetButton enabled={cellsModified || metadataModified} onReset={handleGlobalReset} />
           <ActivityInfoButton authorSlug={activity.authorSlug} activitySlug={activity.slug} />
         </NavigationBar>
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
