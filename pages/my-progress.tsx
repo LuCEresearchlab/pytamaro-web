@@ -79,7 +79,6 @@ export default function MyProgress({ activities, curricula } :
                 <Link href={curriculaPathname()}>Explore our curricula!</Link>
               </Typography>
             )}
-          <CurriculaList curricula={userCurricula} />
           <Typography variant="h5" marginTop={6} marginBottom={3}>My Activities</Typography>
           {sortedActivities.length > 0
             ? <VariantsGallery activitiesWithVariants={sortedActivities} />
