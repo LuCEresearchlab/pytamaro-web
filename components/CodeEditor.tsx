@@ -27,6 +27,8 @@ const luceTheme = {
 
 const LANGUAGE = 'python';
 
+export const COLORIZE_CLASSNAME = 'monaco-colorize';
+
 export default function CodeEditor({
   source, onChange = () => {}, firstLineNumber = 1, readOnly = false,
 } :
@@ -36,6 +38,7 @@ export default function CodeEditor({
   const monacoRef = useRef<any>(null);
   const monacoInstance = monacoRef.current;
   const toolboxFunctions = list();
+
   const handleEditorMount = (
     editor: EditorNamespace.IStandaloneCodeEditor,
     monaco: any,
@@ -47,9 +50,15 @@ export default function CodeEditor({
       editor.layout({ width: editor.getLayoutInfo().width, height: editor.getContentHeight() });
     };
     editor.onDidContentSizeChange(updateHeight);
-    updateHeight();
+
+    // Colorize code
+    document.querySelectorAll(`.${COLORIZE_CLASSNAME}`).forEach((element) => {
+      monaco.editor.colorizeElement(element, {});
+    });
+
     // After the editor has been loaded and its height has been updated,
     // (re-)scroll the anchor element into view.
+    updateHeight();
     const { hash } = window.location;
     if (hash) {
       const element = document.getElementById(hash.slice(1));
