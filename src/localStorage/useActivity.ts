@@ -196,7 +196,7 @@ export function useActivity(
       return getFunction(name);
     };
 
-    const sources = codeCells.map(sourceFromCell);
+    const sources = sourcesUpTo(idx);
     const toolboxFunctions = await transitivelyImportedToolboxFunctions(
       joinLines(sources),
       functionLookup,
