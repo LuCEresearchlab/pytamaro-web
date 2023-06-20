@@ -136,7 +136,7 @@ function getFlowElements(
     },
     startend: {
       width: size(0.8, 300, 1000),
-      height: size(0.035, 15, 30),
+      height: size(0.04, 20, 40),
     },
     title: {
       width: size(0.8, 300, 1000),
@@ -249,7 +249,7 @@ function getFlowElements(
   // The curriculum graph contains:
   // - a start node
   addSingleNode('start', 'startend', {
-    type: 'start', text: 'Start', unlocked: true, onClick: handleCurriculumStart,
+    type: 'start', text: 'Start', unlocked: true, onClick: handleCurriculumStart, started: alreadyStarted,
   }, !alreadyStarted);
   // - a sequence of units
   curriculum.units.forEach((unit, unitIdx) => {
