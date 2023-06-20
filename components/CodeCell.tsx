@@ -10,7 +10,7 @@ import {
   Stack,
   Tooltip,
 } from '@mui/material';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import { ExecutionResponse } from '../src/codeExecution';
 import { CodeCellExecutionState, CodeCellState } from '../src/localStorage/schema';
 import { ActivityVariant } from '../src/schemas/activitySchema';
@@ -70,8 +70,6 @@ export default function CodeCell({
   extraActions?: React.ReactNode
   readOnly?: boolean
 }) {
-  const theme = useTheme();
-
   const { executionResponse } = codeCellExecutionState;
   const executionError = isExecutionError(executionResponse);
   const executing = codeCellExecutionState.executionInProgress;
@@ -112,12 +110,12 @@ export default function CodeCell({
               invisible={codeCellExecutionState.outputSynced}
             >
               <Card
+                variant="outlined"
                 sx={{
-                  backgroundColor: executionError ? '#101010' : theme.palette.grey[100],
-                  color: executionError ? 'white' : 'black',
-                  p: 2,
+                  backgroundColor: executionError ? '#101010' : 'white',
                   overflowX: 'auto',
                   width: '100%',
+                  px: 2,
                 }}
               >
                 <OutputArea executionResponse={executionResponse} />

@@ -1,3 +1,4 @@
+import { Box } from '@mui/material';
 import AnsiUp from 'ansi_up';
 import { isEmpty, negate } from 'lodash';
 import { ExecutionResponse } from '../src/codeExecution';
@@ -14,8 +15,20 @@ const OUTPUT_ELEMENT_STYLE = {
 };
 
 function imgElement(dataURI: string) {
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img src={dataURI} style={OUTPUT_ELEMENT_STYLE} alt="Graphical output from execution result" />;
+  return (
+    <Box sx={{
+      ...OUTPUT_ELEMENT_STYLE,
+      width: 'max-content',
+      height: 'max-content',
+      '&:hover': {
+        background: `repeating-conic-gradient(${theme.palette.grey[300]} 0% 25%, transparent 0 50%) 50% / ${theme.spacing(1)} ${theme.spacing(1)}`,
+      },
+    }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img style={{ display: 'block' }} src={dataURI} alt="Graphical output from execution result" />
+    </Box>
+  );
 }
 
 function preElement(htmlContent: string) {
