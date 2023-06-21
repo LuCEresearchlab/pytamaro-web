@@ -93,7 +93,7 @@ export function useActivity(
   const variantId = activityVariantId(activityVariant);
   const variantMetadata = metadata.activities.find((a) => a.id === variantId);
 
-  const initialCodeExecutionStates = () => Array(codeCells.length).fill(undefined)
+  const initialCodeExecutionStates = () => Array(initialCodeCells.length).fill(undefined)
     .map(initialCodeExecutionState);
 
   const [codeExecutionStates,
