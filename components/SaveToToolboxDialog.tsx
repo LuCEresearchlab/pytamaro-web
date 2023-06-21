@@ -65,6 +65,7 @@ function PermanentlySaveToToolboxButton({
         color="primary"
         variant="contained"
         sx={{ marginTop: 2, minWidth: '30ch' }}
+        className="save-to-toolbox-button"
       >
         Save to toolbox
       </Button>
@@ -281,6 +282,7 @@ export default function SaveToToolboxDialog({
                 onChange={(event : React.ChangeEvent<HTMLInputElement>) => {
                   setDescription(event.target.value);
                 }}
+                className="function-description"
               />
             </Stack>
             {alreadyExists && (

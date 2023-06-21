@@ -28,6 +28,7 @@ export default function RunButton({
             variant="contained"
             sx={{ minWidth: '10rem' }}
             disabled={executing || executionFinished}
+            className="run-button"
           >
             <span>{buttonMessage}</span>
           </LoadingButton>
