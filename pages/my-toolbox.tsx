@@ -1,6 +1,6 @@
 import {
   Box,
-  Container
+  Container,
 } from '@mui/material';
 import Head from 'next/head';
 import NavigationBar from '../components/NavigationBar';
