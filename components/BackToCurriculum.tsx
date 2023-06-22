@@ -1,9 +1,9 @@
-import { Box, Button } from '@mui/material';
 import { Route } from '@mui/icons-material';
+import { Box, Button } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { CURRICULUM_QUERY_PARAM, curriculumPathname } from '../src/urlUtils';
 import { curriculumFromId } from '../src/schemas/curriculumSchema';
+import { CURRICULUM_QUERY_PARAM, curriculumPathname } from '../src/urlUtils';
 
 export default function BackToCurriculum() {
   const router = useRouter();
@@ -27,7 +27,7 @@ export default function BackToCurriculum() {
   } = curriculumFromId(curriculumId);
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center', mb: 6 }}>
       <Button
         variant="outlined"
         color="error"
