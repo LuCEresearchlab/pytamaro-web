@@ -51,10 +51,14 @@ export default function CodeEditor({
     };
     editor.onDidContentSizeChange(updateHeight);
 
-    // Colorize code
-    document.querySelectorAll(`.${COLORIZE_CLASSNAME}`).forEach((element) => {
-      monaco.editor.colorizeElement(element, {});
-    });
+    if (monaco.pytamaroColorized === undefined) {
+      // Colorize code
+      document.querySelectorAll(`.${COLORIZE_CLASSNAME}`).forEach((element) => {
+        monaco.editor.colorizeElement(element, {});
+      });
+      // eslint-disable-next-line no-param-reassign
+      monaco.pytamaroColorized = true;
+    }
 
     // After the editor has been loaded and its height has been updated,
     // (re-)scroll the anchor element into view.
