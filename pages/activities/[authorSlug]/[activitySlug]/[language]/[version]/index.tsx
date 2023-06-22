@@ -1,7 +1,7 @@
 import {
   Alert,
   AlertTitle,
-  Box, Stack, Typography,
+  Box, Divider, Stack, Typography,
 } from '@mui/material';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -10,6 +10,7 @@ import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
 import { useRef } from 'react';
 import ActivityInfoButton from '../../../../../../components/ActivityInfoButton';
+import AttributionInfo from '../../../../../../components/AttributionInfo';
 import BackToCurriculum from '../../../../../../components/BackToCurriculum';
 import CodeCell from '../../../../../../components/CodeCell';
 import CodeDownloadButton from '../../../../../../components/CodeDownloadButton';
@@ -25,7 +26,7 @@ import SaveToToolboxButton from '../../../../../../components/SaveToToolboxButto
 import TableOfContents from '../../../../../../components/TableOfContents';
 import VariantSelector from '../../../../../../components/VariantsSelector';
 import { findVersions, readActivity } from '../../../../../../src/fs-content/activities';
-import { listAuthorsWithContent } from '../../../../../../src/fs-content/authors';
+import { getAuthorProfile, listAuthorsWithContent } from '../../../../../../src/fs-content/authors';
 import { CodeCellState, getDefaultActivityVariantMetadata } from '../../../../../../src/localStorage/schema';
 import useLocalActivity from '../../../../../../src/localStorage/useLocalActivity';
 import useLocalProfile from '../../../../../../src/localStorage/useLocalProfile';
@@ -34,8 +35,9 @@ import {
   Activity,
   ActivityVariant, MarkdownCell, NotebookCell, activityVariantId,
 } from '../../../../../../src/schemas/activitySchema';
+import { AuthorProfile } from '../../../../../../src/schemas/authorSchema';
 import { countLines } from '../../../../../../src/sourceUtils';
-import { activityVariantPathname } from '../../../../../../src/urlUtils';
+import { activityVariantPathnameFromParts } from '../../../../../../src/urlUtils';
 
 const userType = 'student';
 
@@ -60,8 +62,11 @@ function InconsistencyMessage() {
   );
 }
 
-export default function NotebookPage({ activity, activityVariant, cells }:
-{ activity : Activity, activityVariant: ActivityVariant, cells: NotebookCell[] }) {
+export default function NotebookPage({
+  activity, author, activityVariant, cells,
+}:
+{ activity : Activity, author: AuthorProfile,
+  activityVariant: ActivityVariant, cells: NotebookCell[] }) {
   const initialCodeCells : CodeCellState[] = cells
     .map((cell, idx) => ({ cell, idx }))
     .filter(({ cell }) => cell.cell_type === 'code')
@@ -177,6 +182,10 @@ export default function NotebookPage({ activity, activityVariant, cells }:
               <MarkCompletedButton completed={completed} toggleCompleted={toggleCompleted} />
             </Stack>
             <BackToCurriculum />
+            <Container maxWidth="md" sx={{ textAlign: 'center' }}>
+              <Divider sx={{ mb: 3 }} />
+              <AttributionInfo type="activity" author={author} derivedFrom={activity.derivedFrom} />
+            </Container>
           </Grid>
           <Grid
             lg={2}
@@ -207,6 +216,7 @@ export async function getStaticProps(
   } = context.params;
   return {
     props: {
+      author: await getAuthorProfile(authorSlug),
       activity: await readActivity(authorSlug, activitySlug),
       activityVariant: {
         authorSlug, activitySlug, language, version,
@@ -223,7 +233,12 @@ export async function getStaticPaths() {
       .flatMap((activity) => activity.variants
         .flatMap(
           async (notebook) => (await findVersions(author.slug, activity.slug, notebook.language))
-            .map((v) => activityVariantPathname(author.slug, activity.slug, notebook.language, v)),
+            .map((v) => activityVariantPathnameFromParts(
+              author.slug,
+              activity.slug,
+              notebook.language,
+              v,
+            )),
         )));
   return {
     paths: (await Promise.all(paths)).flat(),

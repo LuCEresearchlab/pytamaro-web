@@ -37,6 +37,7 @@ export interface Curriculum {
   visibility: 'featured' | 'visible' | 'draft' | 'hidden',
   competencies: CurriculumCompetency[],
   units: CurriculumUnit[],
+  derivedFrom: string[],
 }
 
 export function curriculumId(authorSlug: string, slug: string) {

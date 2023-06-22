@@ -34,12 +34,7 @@ export default function ActivityCard({
   const variant = activityVariantFromId(id);
   const title = getVariantTitle(activity, variant) || activity.slug;
 
-  const url = `${activityVariantPathname(
-    variant.authorSlug,
-    variant.activitySlug,
-    variant.language,
-    variant.version,
-  )}?${new URLSearchParams({ [CURRICULUM_QUERY_PARAM]: curriculumId(curriculum.authorSlug, curriculum.slug) }).toString()}`;
+  const url = `${activityVariantPathname(variant)}?${new URLSearchParams({ [CURRICULUM_QUERY_PARAM]: curriculumId(curriculum.authorSlug, curriculum.slug) }).toString()}`;
 
   return (
     <Box

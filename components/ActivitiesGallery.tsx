@@ -15,7 +15,7 @@ import {
 import Grid from '@mui/material/Unstable_Grid2';
 import Link from 'next/link';
 import router from 'next/router';
-import { Activity, ActivityVariant, canonicalVariantForLanguage } from '../src/schemas/activitySchema';
+import { Activity, canonicalVariantForLanguage } from '../src/schemas/activitySchema';
 import { activityAssetPathname, activityPathname, activityVariantPathname } from '../src/urlUtils';
 
 export const ANY_LANGUAGE = 'any';
@@ -69,12 +69,6 @@ export default function ActivitiesGallery({
         if (defaultVariant === undefined) {
           throw new Error(`Latest version for activity ${activity.slug} in language ${languageFilter} not found`);
         }
-        const variantPathname = (variant: ActivityVariant) => activityVariantPathname(
-          variant.authorSlug,
-          variant.activitySlug,
-          variant.language,
-          variant.version,
-        );
         const isDraft = activity.visibility === 'draft';
         return (
           <Grid
@@ -87,7 +81,7 @@ export default function ActivitiesGallery({
             <Paper elevation={8}>
               <Card>
                 <CardActionArea
-                  onClick={() => router.push(variantPathname(defaultVariant))}
+                  onClick={() => router.push(activityVariantPathname(defaultVariant))}
                   disabled={isDraft}
                 >
                   <CardMedia
@@ -130,7 +124,7 @@ export default function ActivitiesGallery({
                   <CardActions>
                     {activity.languagesInfo.map((info) => (
                       <Button
-                        onClick={() => router.push(variantPathname(
+                        onClick={() => router.push(activityVariantPathname(
                           canonicalVariantForLanguage(activity, info.language),
                         ))}
                         size="small"

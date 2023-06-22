@@ -7,7 +7,7 @@ import { uniq } from 'lodash';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { Activity, ActivityVariant } from '../src/schemas/activitySchema';
-import { activityVariantPathname } from '../src/urlUtils';
+import { activityVariantPathnameFromParts } from '../src/urlUtils';
 
 const VariantSelect = styled(Select)({
   color: 'white',
@@ -23,7 +23,7 @@ export default function VariantSelector({ activity, activityVariant }:
   const [selectedLanguage, setSelectedLanguage] = useState(activityVariant.language);
   const routeToNewVariant = (newLanguage: string, newVersion: string) => {
     router.push(
-      activityVariantPathname(
+      activityVariantPathnameFromParts(
         activityVariant.authorSlug,
         activityVariant.activitySlug,
         newLanguage,

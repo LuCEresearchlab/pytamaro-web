@@ -10,18 +10,24 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
+import ActivityAuthorInfo from '../../../../components/AttributionInfo';
 import NavigationBar from '../../../../components/NavigationBar';
-import { getActivityUses, readActivity } from '../../../../src/fs-content/activities';
-import { listAuthorsWithContent } from '../../../../src/fs-content/authors';
+import { readActivity } from '../../../../src/fs-content/activities';
+import { getAuthorProfile, listAuthorsWithContent } from '../../../../src/fs-content/authors';
 import getLanguageDisplayName from '../../../../src/internationalization';
-import { Activity, ActivityUse } from '../../../../src/schemas/activitySchema';
-import { activityAssetPathname, activityPathname, activityVariantPathname } from '../../../../src/urlUtils';
+import { Activity } from '../../../../src/schemas/activitySchema';
+import { AuthorProfile } from '../../../../src/schemas/authorSchema';
+import {
+  activityAssetPathname, activityPathname,
+  activityVariantPathnameFromParts,
+} from '../../../../src/urlUtils';
 
-export default function InfoPage({ uses, activity }: {
-  uses : ActivityUse[], activity : Activity
-}) {
+export default function ActivityInfoPage({ activity, author }:
+{ activity : Activity, author: AuthorProfile }) {
   const title = activity.slug;
   const pageTitle = `${title} - PyTamaro`;
+
+  const uses = activity.uses.filter((use) => !use.hidden);
 
   return (
     <div>
@@ -54,7 +60,9 @@ export default function InfoPage({ uses, activity }: {
               }}
             />
           </div>
-          <Typography variant="h3" marginY={3}>Languages</Typography>
+          <Typography variant="h4" marginY={3}>Author & License</Typography>
+          <ActivityAuthorInfo type="activity" author={author} derivedFrom={activity.derivedFrom} />
+          <Typography variant="h4" marginY={3}>Languages</Typography>
           <Typography variant="body1" marginY={3}>
             This activity is
             { activity.visibility === 'draft' ? ' under development ' : '  available ' }
@@ -65,7 +73,7 @@ export default function InfoPage({ uses, activity }: {
               activity.languagesInfo.map((info) => (
                 <li key={info.language}>
                   { activity.visibility !== 'draft' && (
-                    <Link href={activityVariantPathname(
+                    <Link href={activityVariantPathnameFromParts(
                       activity.authorSlug,
                       activity.slug,
                       info.language,
@@ -91,7 +99,7 @@ export default function InfoPage({ uses, activity }: {
               ))
             }
           </ul>
-          <Typography variant="h3" marginY={3}>Activity Usage</Typography>
+          <Typography variant="h4" marginY={3}>Uses</Typography>
           {uses.length === 0 && (
             <Typography variant="body1" marginY={3}>
               We do not currently have information about courses using this activity.
@@ -152,7 +160,7 @@ export async function getStaticProps(
   } = context.params;
   return {
     props: {
-      uses: await getActivityUses(authorSlug, activitySlug),
+      author: await getAuthorProfile(authorSlug),
       activity: await readActivity(authorSlug, activitySlug),
     },
   };

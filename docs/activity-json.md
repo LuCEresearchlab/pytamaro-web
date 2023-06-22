@@ -28,5 +28,6 @@
     },
     ...
   ],
+  derivedFrom: activityId[], // string (<author-slug>/<activity-slug>/<language>/<version>)
 }
 ```

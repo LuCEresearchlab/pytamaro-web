@@ -1,8 +1,8 @@
 import { Card, CardActionArea } from '@mui/material';
 import { useRouter } from 'next/router';
+import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
 import { Activity, ActivityVariant, activityVariantId } from '../src/schemas/activitySchema';
 import { activityVariantPathname } from '../src/urlUtils';
-import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
 import ActivityCardMedia from './ActivityCardMedia';
 
 export default function CompactActivityVariantCard({ activity, variant } :
@@ -12,12 +12,7 @@ export default function CompactActivityVariantCard({ activity, variant } :
     logAnalyticsEvent(AnalyticsEventName.RecommendedActivity, {
       activityVariant: activityVariantId(variant),
     });
-    router.push(activityVariantPathname(
-      variant.authorSlug,
-      variant.activitySlug,
-      variant.language,
-      variant.version,
-    ));
+    router.push(activityVariantPathname(variant));
   };
   return (
     <Card>

@@ -24,13 +24,8 @@ export default function VariantsGallery({
 }) {
   const { metadata } = useLocalProfile();
   const router = useRouter();
-  const handleClick = (v: ActivityVariant) => {
-    router.push(activityVariantPathname(
-      v.authorSlug,
-      v.activitySlug,
-      v.language,
-      v.version,
-    ));
+  const handleClick = (variant: ActivityVariant) => {
+    router.push(activityVariantPathname(variant));
   };
   return (
     <Grid container spacing={2} rowSpacing={4}>

@@ -1,4 +1,4 @@
-import { activityVariantPathname, playgroundPathname } from '../../src/urlUtils';
+import { activityVariantPathnameFromParts, playgroundPathname } from '../../src/urlUtils';
 
 export { };
 
@@ -19,7 +19,7 @@ describe('Code Execution', () => {
   });
 
   it('should keep state over multiple cells', () => {
-    cy.visit(activityVariantPathname('luce', 'swiss-flag', 'en', 'v1'));
+    cy.visit(activityVariantPathnameFromParts('luce', 'swiss-flag', 'en', 'v1'));
     dismissDataCollectionModal();
     waitForMonacoEditor();
     cy.get('.monaco-editor').first().type('{selectall}{backspace}');
@@ -32,7 +32,7 @@ describe('Code Execution', () => {
 
   it('should save and import a toolbox function', () => {
     // Save function 'f' to the toolbox
-    cy.visit(activityVariantPathname('luce', 'swiss-flag', 'en', 'v1'));
+    cy.visit(activityVariantPathnameFromParts('luce', 'swiss-flag', 'en', 'v1'));
     dismissDataCollectionModal();
     waitForMonacoEditor();
     cy.get('.monaco-editor').first().type('{selectall}{backspace}');
@@ -45,7 +45,7 @@ describe('Code Execution', () => {
     cy.get('.save-to-toolbox-button').click();
 
     // Use the toolbox function in another activity
-    cy.visit(activityVariantPathname('luce', 'swiss-flag', 'en', 'v2'));
+    cy.visit(activityVariantPathnameFromParts('luce', 'swiss-flag', 'en', 'v2'));
     waitForMonacoEditor();
     cy.get('.monaco-editor').first().type('{selectall}{backspace}');
     cy.get('.monaco-editor').first().type('from toolbox import f; f()');

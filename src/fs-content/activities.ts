@@ -1,7 +1,7 @@
 import { readFile, readdir } from 'fs/promises';
 import path from 'path';
 import {
-  Activity, ActivityUse,
+  Activity,
   RawActivity,
 } from '../schemas/activitySchema';
 import { ACTIVITIES_DIR, DATA_DIR, notebookFileNames } from './notebooks';
@@ -32,6 +32,7 @@ export async function readActivity(authorSlug: string, activitySlug: string)
     visibility: rawActivity.visibility,
     uses: rawActivity.uses || [],
     assets: rawActivity.assets || [],
+    derivedFrom: rawActivity.derivedFrom || [],
     variants: notebooksVariants.map((variant) => ({
       authorSlug,
       activitySlug,
@@ -67,12 +68,4 @@ export async function listActivities(authorSlug: string) : Promise<Activity[]> {
 export async function listVisibleActivities(authorSlug: string) : Promise<Activity[]> {
   const activities = await listActivities(authorSlug);
   return activities.filter((activity) => activity.visibility === 'featured' || activity.visibility === 'visible');
-}
-
-export async function getActivityUses(
-  authorSlug: string,
-  activitySlug: string,
-) : Promise<ActivityUse[]> {
-  const mod = await readActivity(authorSlug, activitySlug);
-  return mod.uses.filter((use) => use?.hidden !== true);
 }

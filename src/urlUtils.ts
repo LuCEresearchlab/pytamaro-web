@@ -1,3 +1,5 @@
+import { ActivityVariant } from './schemas/activitySchema';
+
 function contentTypeByAuthorPathname(contentType: string, authorSlug: string) {
   return `/${contentType}/${authorSlug}`;
 }
@@ -15,13 +17,24 @@ export function activityPathname(
   return `${activitiesByAuthorPathname(authorSlug)}/${activitySlug}`;
 }
 
-export function activityVariantPathname(
+export function activityVariantPathnameFromParts(
   authorSlug: string,
   activitySlug: string,
   language: string,
   version: string,
 ) {
   return `${activityPathname(authorSlug, activitySlug)}/${language}/${version}`;
+}
+
+export function activityVariantPathname(
+  variant: ActivityVariant,
+) {
+  return activityVariantPathnameFromParts(
+    variant.authorSlug,
+    variant.activitySlug,
+    variant.language,
+    variant.version,
+  );
 }
 
 export function activityAssetPathname(authorSlug: string, activitySlug: string, asset: string) {

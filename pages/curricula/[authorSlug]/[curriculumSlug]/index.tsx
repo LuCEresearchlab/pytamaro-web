@@ -1,22 +1,25 @@
 import {
   Container,
+  Divider,
   Stack,
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import Head from 'next/head';
 import { useRef, useState } from 'react';
+import AttributionInfo from '../../../../components/AttributionInfo';
 import CurriculumFlow from '../../../../components/Curriculum/CurriculumFlow';
 import NavigationBar from '../../../../components/NavigationBar';
 import TableOfContents from '../../../../components/TableOfContents';
-import { listAuthorsWithContent } from '../../../../src/fs-content/authors';
+import { getAuthorProfile, listAuthorsWithContent } from '../../../../src/fs-content/authors';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
 import useLocalProfile from '../../../../src/localStorage/useLocalProfile';
+import { AuthorProfile } from '../../../../src/schemas/authorSchema';
 import { Curriculum } from '../../../../src/schemas/curriculumSchema';
 import { curriculumPathname } from '../../../../src/urlUtils';
 
-export default function CurriculumPage({ curriculum }:
-{ curriculum : Curriculum }) {
+export default function CurriculumPage({ curriculum, author }:
+{ curriculum : Curriculum, author: AuthorProfile }) {
   const { metadata, setMetadata } = useLocalProfile();
   const curriculumFlowRef = useRef<HTMLDivElement>(null);
   const [nodesInitialized, setNodesInitialized] = useState(false);
@@ -51,6 +54,10 @@ export default function CurriculumPage({ curriculum }:
                 setNodesInitialized={setNodesInitialized}
               />
             </div>
+            <Container maxWidth="md" sx={{ textAlign: 'center' }}>
+              <Divider sx={{ mb: 3 }} />
+              <AttributionInfo type="curriculum" author={author} derivedFrom={curriculum.derivedFrom} />
+            </Container>
           </Stack>
         </Grid>
         <Grid
@@ -77,9 +84,11 @@ export async function getStaticProps(
   const {
     authorSlug, curriculumSlug,
   } = context.params;
+  const author = await getAuthorProfile(authorSlug);
   const curriculum = await getCurriculum(authorSlug, curriculumSlug);
   return {
     props: {
+      author,
       curriculum,
     },
   };

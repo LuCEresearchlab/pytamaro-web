@@ -32,12 +32,7 @@ export default function ToolboxFunctionCard(
   const toggleShowSource = () => setShowSource(!showSource);
   const usageCodeCells = initialStateSingleCell(fn.usage);
   const activity = useReadOnlyTemporaryActivity(usageCodeCells, toolboxActivityVariant);
-  const originalActivityPathname = activityVariantPathname(
-    fn.originalActivity.authorSlug,
-    fn.originalActivity.activitySlug,
-    fn.originalActivity.language,
-    fn.originalActivity.version,
-  );
+  const originalActivityPathname = activityVariantPathname(fn.originalActivity);
   return (
     <CardContent sx={{ pb: 1, minWidth: '80ch' }}>
       <Box display="flex">

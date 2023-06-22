@@ -35,6 +35,7 @@
     },
     ...
   ],
+  derivedFrom: curriculumId[], // string (<author-slug>/<curriculum-slug>)
 }
 ```
 

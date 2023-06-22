@@ -12,6 +12,7 @@ export interface Activity {
   uses: ActivityUse[],
   assets: string[],
   authorSlug: string,
+  derivedFrom: string[],
 }
 
 export interface RawActivity {
@@ -19,7 +20,8 @@ export interface RawActivity {
   previewImage: PreviewImage,
   visibility: VisibilityState
   uses?: ActivityUse[],
-  assets?: string[]
+  assets?: string[],
+  derivedFrom?: string[],
 }
 
 export interface ActivityInfo {
