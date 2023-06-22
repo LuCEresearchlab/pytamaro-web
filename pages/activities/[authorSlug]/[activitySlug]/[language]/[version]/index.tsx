@@ -116,7 +116,7 @@ export default function NotebookPage({
             activity={activity}
             activityVariant={activityVariant}
           />
-          <ResetButton enabled={cellsModified || metadataModified} onReset={handleGlobalReset} />
+          <ResetButton enabled={cellsModified || metadataModified} onReset={handleGlobalReset} tooltip="Reset Activity" />
           {!isSpecialActivity(activityVariant) && (
           <ActivityInfoButton authorSlug={activity.authorSlug} activitySlug={activity.slug} />
           )}

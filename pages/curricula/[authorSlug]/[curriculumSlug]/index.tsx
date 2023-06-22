@@ -5,11 +5,13 @@ import {
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
+import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
 import { useRef, useState } from 'react';
 import AttributionInfo from '../../../../components/AttributionInfo';
 import CurriculumFlow from '../../../../components/Curriculum/CurriculumFlow';
 import NavigationBar from '../../../../components/NavigationBar';
+import ResetButton from '../../../../components/ResetButton';
 import TableOfContents from '../../../../components/TableOfContents';
 import { getAuthorProfile, listAuthorsWithContent } from '../../../../src/fs-content/authors';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
@@ -20,9 +22,22 @@ import { curriculumPathname } from '../../../../src/urlUtils';
 
 export default function CurriculumPage({ curriculum, author }:
 { curriculum : Curriculum, author: AuthorProfile }) {
-  const { metadata, setMetadata } = useLocalProfile();
+  const {
+    metadata, setMetadata, findCurriculum, removeCurriculum,
+  } = useLocalProfile();
   const curriculumFlowRef = useRef<HTMLDivElement>(null);
   const [nodesInitialized, setNodesInitialized] = useState(false);
+
+  const curriculumStarted = findCurriculum(curriculum) !== -1;
+
+  const confirm = useConfirm();
+
+  const handleReset = () => {
+    confirm({ description: 'You are about to reset the status of this curriculum. This will NOT affect the activities.', confirmationText: 'Ok, reset the curriculum' })
+      .then(() => {
+        removeCurriculum(curriculum);
+      });
+  };
 
   return (
     <>
@@ -30,7 +45,9 @@ export default function CurriculumPage({ curriculum, author }:
         <title>{curriculum.title}</title>
       </Head>
 
-      <NavigationBar />
+      <NavigationBar>
+        <ResetButton enabled={curriculumStarted} onReset={handleReset} tooltip="Reset Curriculum" />
+      </NavigationBar>
       <Grid container>
         <Grid
           lg={2}

@@ -2,6 +2,7 @@ import produce from 'immer';
 import { Dispatch, SetStateAction } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
 import { ActivityVariant, activityVariantId } from '../schemas/activitySchema';
+import { Curriculum, curriculumToId } from '../schemas/curriculumSchema';
 import migrateToV2, { MetadataV1 } from './migrations/v2';
 import migrateToV3, { MetadataV2 } from './migrations/v3';
 import {
@@ -63,6 +64,19 @@ export default function useLocalProfile() {
     }
   };
 
+  const findCurriculum = (curriculum: Curriculum) => metadata.curricula.findIndex(
+    (c) => c.id === curriculumToId(curriculum),
+  );
+
+  const removeCurriculum = (curriculum: Curriculum) => {
+    const idx = findCurriculum(curriculum);
+    if (idx !== -1) {
+      setMetadata((currentMetadata) => produce(currentMetadata, (draft) => {
+        draft.curricula.splice(idx, 1);
+      }));
+    }
+  };
+
   return {
     metadata,
     dataSharingAllowed,
@@ -71,5 +85,7 @@ export default function useLocalProfile() {
     setDataSharingPreference,
     getActivityMetadata,
     setActivityMetadata,
+    findCurriculum,
+    removeCurriculum,
   };
 }

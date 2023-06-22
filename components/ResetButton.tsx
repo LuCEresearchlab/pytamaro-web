@@ -1,10 +1,10 @@
 import { RestartAlt } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 
-export default function ResetButton({ enabled, onReset }:
-{ enabled: boolean, onReset: () => void }) {
+export default function ResetButton({ enabled, onReset, tooltip }:
+{ enabled: boolean, onReset: () => void, tooltip: string }) {
   return (
-    <Tooltip title="Reset Activity">
+    <Tooltip title={tooltip}>
       <span>
         <IconButton
           sx={{ ml: 1 }}

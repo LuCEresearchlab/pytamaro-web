@@ -94,7 +94,7 @@ export default function Playground({ activitiesWithNames } :
       </Head>
       <Box>
         <NavigationBar>
-          <ResetButton enabled={cellsModified} onReset={handleReset} />
+          <ResetButton enabled={cellsModified} onReset={handleReset} tooltip="Reset Playground" />
         </NavigationBar>
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
         <DataSharingPreferenceDialog />
