@@ -37,6 +37,7 @@ import {
 } from '../../../../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../../../../src/schemas/authorSchema';
 import { countLines } from '../../../../../../src/sourceUtils';
+import { isSpecialActivity } from '../../../../../../src/specialActivities';
 import { activityVariantPathnameFromParts } from '../../../../../../src/urlUtils';
 
 const userType = 'student';
@@ -116,7 +117,9 @@ export default function NotebookPage({
             activityVariant={activityVariant}
           />
           <ResetButton enabled={cellsModified || metadataModified} onReset={handleGlobalReset} />
+          {!isSpecialActivity(activityVariant) && (
           <ActivityInfoButton authorSlug={activity.authorSlug} activitySlug={activity.slug} />
+          )}
         </NavigationBar>
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
         <DataSharingPreferenceDialog />
@@ -133,7 +136,7 @@ export default function NotebookPage({
           </Grid>
           <Grid xs={12} lg={8}>
             <Container maxWidth="md" ref={cellsRef}>
-              <Typography variant="h3" marginTop={2}>{title}</Typography>
+              <Typography variant="h3" marginY={3}>{title}</Typography>
               {localCodeCellsWrongLength
                 ? <InconsistencyMessage />
                 : cells.map((cell: NotebookCell, idx) => {
@@ -177,15 +180,19 @@ export default function NotebookPage({
                   );
                 })}
             </Container>
-            <Stack mt={12} mb={6} direction="row" justifyContent="center" spacing={4}>
-              <CodeDownloadButton codeCells={codeCells} />
-              <MarkCompletedButton completed={completed} toggleCompleted={toggleCompleted} />
-            </Stack>
-            <BackToCurriculum />
-            <Container maxWidth="md" sx={{ textAlign: 'center' }}>
-              <Divider sx={{ mb: 3 }} />
-              <AttributionInfo type="activity" author={author} derivedFrom={activity.derivedFrom} />
-            </Container>
+            {!isSpecialActivity(activityVariant) && (
+              <>
+                <Stack mt={12} mb={6} direction="row" justifyContent="center" spacing={4}>
+                  <CodeDownloadButton codeCells={codeCells} />
+                  <MarkCompletedButton completed={completed} toggleCompleted={toggleCompleted} />
+                </Stack>
+                <BackToCurriculum />
+                <Container maxWidth="md" sx={{ textAlign: 'center' }}>
+                  <Divider sx={{ mb: 3 }} />
+                  <AttributionInfo type="activity" author={author} derivedFrom={activity.derivedFrom} />
+                </Container>
+              </>
+            )}
           </Grid>
           <Grid
             lg={2}

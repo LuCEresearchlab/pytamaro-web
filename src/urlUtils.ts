@@ -77,6 +77,18 @@ export function myDataPathname() {
   return '/my-data';
 }
 
+export function myActivitiesPathname() {
+  return '/my-activities';
+}
+
+export function myCurriculaPathname() {
+  return '/my-curricula';
+}
+
+export function myToolboxPathname() {
+  return '/my-toolbox';
+}
+
 export function pytamaroDocsUrl() {
   return 'https://pytamaro.readthedocs.org';
 }
@@ -88,5 +100,5 @@ export function toolboxFunctionAnchor(functionName: string) {
 }
 
 export function toolboxFunctionPathname(functionName: string) {
-  return `${myProgressPathname()}#${toolboxFunctionAnchor(functionName)}`;
+  return `${myToolboxPathname()}#${toolboxFunctionAnchor(functionName)}`;
 }

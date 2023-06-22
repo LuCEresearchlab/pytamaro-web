@@ -16,6 +16,7 @@ import { useState } from 'react';
 import ExportLocalStorageButton from '../components/ExportLocalStorageButton';
 import ImportLocalStorageButton from '../components/ImportLocalStorageButton';
 import NavigationBar from '../components/NavigationBar';
+import PageTitle from '../components/PageTitle';
 import getEntireLocalStorage, { clearEntireLocalStorage, replaceEntireLocalStorage } from '../src/localStorage/entireLocalStorage';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import theme from '../src/theme';
@@ -59,7 +60,7 @@ export default function MyData() {
       <Box>
         <NavigationBar />
         <Container maxWidth="md">
-          <Typography variant="h3" align="center" marginY={3}>My Data</Typography>
+          <PageTitle>My Data</PageTitle>
           <Typography variant="body1" marginY={3}>
             Your data is stored in your browser&apos;s local storage.
             On this page you can see what is stored there,

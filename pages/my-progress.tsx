@@ -1,52 +1,68 @@
-import { TipsAndUpdates } from '@mui/icons-material';
+import {
+  Assignment,
+  Handyman, Route, TipsAndUpdates,
+} from '@mui/icons-material';
 import {
   Alert,
   Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
   Container,
   Link,
   Typography,
+  styled,
 } from '@mui/material';
-import { sortBy } from 'lodash';
+import Grid from '@mui/material/Unstable_Grid2';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { activityVariantStatus } from '../components/ActivityStatusBadge';
-import CurriculaList from '../components/CurriculaList';
 import NavigationBar from '../components/NavigationBar';
-import ToolboxFunctionsList from '../components/ToolboxFunctionsList';
-import VariantsGallery from '../components/VariantsGallery';
+import PageTitle from '../components/PageTitle';
 import { listActivitiesAllAuthors, listCurriculaAllAuthors } from '../src/fs-content/authors';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
-import { isPlayground } from '../src/playground';
+import { findStartedCurricula, findUserActivities } from '../src/progress';
 import { Activity } from '../src/schemas/activitySchema';
-import { Curriculum, curriculumToId } from '../src/schemas/curriculumSchema';
-import { isSpecialActivity } from '../src/specialActivities';
-import { activitiesByAuthorPathname, curriculaPathname, myDataPathname } from '../src/urlUtils';
+import { Curriculum } from '../src/schemas/curriculumSchema';
+import { toolboxDemoActivityVariant } from '../src/specialActivities';
+import th from '../src/theme';
+import {
+  activitiesByAuthorPathname,
+  activityVariantPathname,
+  curriculaPathname,
+  myActivitiesPathname,
+  myCurriculaPathname,
+  myDataPathname,
+  myToolboxPathname,
+} from '../src/urlUtils';
+
+function format(n: number, singular: string, plural: string) {
+  return (n === 1) ? `1 ${singular}` : `${n} ${plural}`;
+}
+
+const ResourceCard = styled(Card)(() => ({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+}));
+
+const CardIcon = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  marginTop: theme.spacing(1),
+}));
 
 export default function MyProgress({ activities, curricula } :
 { activities: Activity[],
   curricula: Curriculum[] }) {
   const { metadata } = useLocalProfile();
-  const userCurriculaIds = metadata.curricula.map((c) => c.id);
-  const userCurricula = curricula.filter((c) => userCurriculaIds.includes(curriculumToId(c)));
-  const activitiesWithVariants = activities.flatMap(
-    (a) => a.variants.flatMap((v) => ({ activity: a, variant: v })),
-  );
-  const sortedActivities = sortBy(activitiesWithVariants, ({ variant }) => {
-    const status = activityVariantStatus(metadata.activities, variant);
-    if (status === 'completed') {
-      return 1;
-    }
-    if (status === 'in-progress') {
-      return 0;
-    }
-    return 2;
-  }).filter(({ variant: v }) => {
-    if (isPlayground(v.authorSlug, v.activitySlug, v.language, v.version)
-      || isSpecialActivity(v.authorSlug, v.activitySlug, v.language, v.version)) {
-      return false;
-    }
-    const status = activityVariantStatus(metadata.activities, v);
-    return status !== 'initial';
-  });
+  const startedCurricula = findStartedCurricula(metadata.curricula, curricula);
+  const userActivities = findUserActivities(metadata.activities, activities);
+  const inProgressActivities = userActivities.filter(({ variant }) => activityVariantStatus(metadata.activities, variant) === 'in-progress');
+  const completedActivities = userActivities.filter(({ variant }) => activityVariantStatus(metadata.activities, variant) === 'completed');
+  const router = useRouter();
   return (
     <div>
       <Head>
@@ -54,43 +70,109 @@ export default function MyProgress({ activities, curricula } :
       </Head>
       <Box>
         <NavigationBar />
-        <Container maxWidth="md">
-          <Typography variant="h3" align="center" marginTop={3}>My Progress</Typography>
+        <Container maxWidth="lg">
+          <PageTitle>My Progress</PageTitle>
+          <Grid container spacing={2} sx={{ mb: 6 }}>
+            <Grid xs={12} lg={4}>
+              <ResourceCard>
+                <CardIcon>
+                  <Route sx={{ fontSize: th.typography.h3.fontSize }} />
+                </CardIcon>
+                <CardHeader
+                  title="My Curricula"
+                  titleTypographyProps={{ align: 'center' }}
+                />
+                <CardContent>
+                  <Typography>
+                    {startedCurricula.length === 0 ? 'No curriculum started so far.' : `${format(startedCurricula.length, 'curriculum', 'curricula')} started.`}
+                  </Typography>
+                </CardContent>
+                <CardActions sx={{ marginTop: 'auto' }}>
+                  {startedCurricula.length > 0 ? (
+                    <Button onClick={() => router.push(myCurriculaPathname())}>
+                      See My Curricula
+                    </Button>
+                  ) : (
+                    <Button onClick={() => router.push(curriculaPathname())}>
+                      Explore Curricula
+                    </Button>
+                  )}
+                </CardActions>
+              </ResourceCard>
+            </Grid>
+            <Grid xs={12} lg={4}>
+              <ResourceCard>
+                <CardIcon>
+                  <Assignment sx={{ fontSize: th.typography.h3.fontSize }} />
+                </CardIcon>
+                <CardHeader
+                  title="My Activities"
+                  titleTypographyProps={{ align: 'center' }}
+                />
+                <CardContent>
+                  <Typography>
+                    {(inProgressActivities.length === 0 && completedActivities.length === 0) ? 'No activity started so far.'
+                      : `${format(inProgressActivities.length, 'activity', 'activities')} started and ${format(completedActivities.length, 'activity', 'activities')} completed.`}
+                  </Typography>
+                </CardContent>
+                <CardActions sx={{ marginTop: 'auto' }}>
+                  {inProgressActivities.length > 0 || completedActivities.length > 0 ? (
+                    <Button onClick={() => router.push(myActivitiesPathname())}>
+                      See My Activities
+                    </Button>
+                  ) : (
+                    <Button onClick={() => router.push(activitiesByAuthorPathname('luce'))}>
+                      Explore Activities
+                    </Button>
+                  )}
+                </CardActions>
+              </ResourceCard>
+            </Grid>
+            <Grid xs={12} lg={4}>
+              <ResourceCard>
+                <CardIcon>
+                  <Handyman sx={{ fontSize: th.typography.h3.fontSize }} />
+                </CardIcon>
+                <CardHeader
+                  title="My Toolbox"
+                  titleTypographyProps={{ align: 'center' }}
+                />
+                <CardContent>
+                  <Typography>
+                    {metadata.toolbox.length === 0 ? 'Toolbox still empty.' : `${format(metadata.toolbox.length, 'function', 'functions')} in the toolbox.`}
+                  </Typography>
+                </CardContent>
+                <CardActions sx={{ marginTop: 'auto' }}>
+                  {metadata.toolbox.length > 0 ? (
+                    <Button onClick={() => router.push(myToolboxPathname())}>
+                      See My Toolbox
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => router.push(
+                        activityVariantPathname(toolboxDemoActivityVariant),
+                      )}
+                    >
+                      Learn How to Use the Toolbox
+                    </Button>
+                  )}
+                </CardActions>
+              </ResourceCard>
+            </Grid>
+          </Grid>
           <Alert
             iconMapping={{
               success: <TipsAndUpdates fontSize="inherit" />,
             }}
-            sx={{ mt: 3 }}
+            sx={{ my: 3 }}
           >
-            Do you want to export/import your data? Review or change your privacy settings?
+            Do you want to export/import all your data? Review or change your privacy settings?
             Visit the
             {' '}
             <Link href={myDataPathname()}>My Data</Link>
             {' '}
             page.
           </Alert>
-          <Typography variant="h5" marginTop={6} marginBottom={3}>My Curricula</Typography>
-          {userCurricula.length > 0
-            ? <CurriculaList curricula={userCurricula} />
-            : (
-              <Typography>
-                No curriculum started so far.
-                {' '}
-                <Link href={curriculaPathname()}>Explore our curricula!</Link>
-              </Typography>
-            )}
-          <Typography variant="h5" marginTop={6} marginBottom={3}>My Activities</Typography>
-          {sortedActivities.length > 0
-            ? <VariantsGallery activitiesWithVariants={sortedActivities} />
-            : (
-              <Typography>
-                No activity started so far.
-                {' '}
-                <Link href={activitiesByAuthorPathname('luce')}>Explore our activities!</Link>
-              </Typography>
-            )}
-          <Typography variant="h5" marginTop={6} marginBottom={3}>My Toolbox</Typography>
-          <ToolboxFunctionsList />
         </Container>
       </Box>
     </div>

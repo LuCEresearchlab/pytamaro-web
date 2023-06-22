@@ -1,4 +1,5 @@
 import { isEqual } from 'lodash';
+import { ActivityVariant } from './schemas/activitySchema';
 
 export const toolboxActivityVariant = {
   authorSlug: 'luce',
@@ -14,15 +15,15 @@ export const rapidPlaygroundActivityVariant = {
   version: 'v1',
 };
 
-export function isSpecialActivity(
-  authorSlug: string,
-  activitySlug: string,
-  language: string,
-  version: string,
-) {
-  const variant = {
-    authorSlug, activitySlug, language, version,
-  };
+export const toolboxDemoActivityVariant = {
+  authorSlug: 'luce',
+  activitySlug: 'learn-toolbox',
+  language: 'en',
+  version: 'v1',
+};
+
+export function isSpecialActivity(variant: ActivityVariant) {
   return isEqual(variant, toolboxActivityVariant)
-  || isEqual(variant, rapidPlaygroundActivityVariant);
+  || isEqual(variant, rapidPlaygroundActivityVariant)
+  || isEqual(variant, toolboxDemoActivityVariant);
 }
