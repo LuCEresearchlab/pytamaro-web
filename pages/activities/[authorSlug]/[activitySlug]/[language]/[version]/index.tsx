@@ -15,7 +15,6 @@ import BackToCurriculum from '../../../../../../components/BackToCurriculum';
 import CodeCell from '../../../../../../components/CodeCell';
 import CodeDownloadButton from '../../../../../../components/CodeDownloadButton';
 import DataSharingPreferenceDialog from '../../../../../../components/DataSharingPreferenceDialog';
-import LeftSidebar from '../../../../../../components/LeftSidebar';
 import MarkCompletedButton from '../../../../../../components/MarkCompletedButton';
 import MarkdownCellComponent from '../../../../../../components/MarkdownCellComponent';
 import MoreOptionsButton from '../../../../../../components/MoreOptionsButton';
@@ -23,7 +22,9 @@ import NavigationBar from '../../../../../../components/NavigationBar';
 import NetworkErrorSnackbar from '../../../../../../components/NetworkErrorSnackbar';
 import ResetButton from '../../../../../../components/ResetButton';
 import SaveToToolboxButton from '../../../../../../components/SaveToToolboxButton';
-import TableOfContents from '../../../../../../components/TableOfContents';
+import LeftSidebar from '../../../../../../components/Sidebar/LeftSidebar';
+import TableOfContents from '../../../../../../components/Sidebar/TableOfContents';
+import ToolboxListSidebar from '../../../../../../components/Sidebar/ToolboxListSidebar';
 import VariantSelector from '../../../../../../components/VariantsSelector';
 import { findVersions, readActivity } from '../../../../../../src/fs-content/activities';
 import { getAuthorProfile, listAuthorsWithContent } from '../../../../../../src/fs-content/authors';
@@ -132,7 +133,9 @@ export default function NotebookPage({
               },
             }}
           >
-            <LeftSidebar />
+            <LeftSidebar>
+              <ToolboxListSidebar />
+            </LeftSidebar>
           </Grid>
           <Grid xs={12} lg={8}>
             <Container maxWidth="md" ref={cellsRef}>

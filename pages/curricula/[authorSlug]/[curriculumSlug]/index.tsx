@@ -12,7 +12,7 @@ import AttributionInfo from '../../../../components/AttributionInfo';
 import CurriculumFlow from '../../../../components/Curriculum/CurriculumFlow';
 import NavigationBar from '../../../../components/NavigationBar';
 import ResetButton from '../../../../components/ResetButton';
-import TableOfContents from '../../../../components/TableOfContents';
+import TableOfContents from '../../../../components/Sidebar/TableOfContents';
 import { getAuthorProfile, listAuthorsWithContent } from '../../../../src/fs-content/authors';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
 import useLocalProfile from '../../../../src/localStorage/useLocalProfile';

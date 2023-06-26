@@ -1,12 +1,13 @@
 /* Adapted from https://github.com/mui/material-ui/blob/6444a85dc811caac6232ba00230a93b31074fc40/docs/src/modules/components/AppTableOfContents.js */
 
 /* eslint-disable react/no-danger */
-import * as React from 'react';
-import throttle from 'lodash/throttle';
-import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
+import { styled } from '@mui/material/styles';
+import throttle from 'lodash/throttle';
 import Link from 'next/link';
+import * as React from 'react';
 import { RefObject } from 'react';
+import SidebarTitle from './SidebarTitle';
 
 const Nav = styled('nav')(({ theme }) => ({
   top: theme.spacing(8),
@@ -17,15 +18,8 @@ const Nav = styled('nav')(({ theme }) => ({
   float: 'right',
 }));
 
-const NavLabel = styled(Typography)(({ theme }) => ({
-  marginTop: theme.spacing(2),
-  marginBottom: theme.spacing(1),
-  paddingLeft: theme.spacing(1),
-  fontSize: theme.typography.pxToRem(11),
-  fontWeight: theme.typography.fontWeightBold,
-  textTransform: 'uppercase',
-  letterSpacing: '.08rem',
-  color: theme.palette.grey[600],
+const NavLabel = styled(SidebarTitle)(({ theme }) => ({
+  paddingLeft: `calc(1px + ${theme.spacing(1)}`,
 }));
 
 const NavList = styled(Typography)({
@@ -184,7 +178,7 @@ export default function TableOfContents({
     <Nav>
       {items.length > 0 ? (
         <>
-          <NavLabel gutterBottom>{title}</NavLabel>
+          <NavLabel>{title}</NavLabel>
           <NavList>
             {items.map((item) => (
               <li key={item.text}>
