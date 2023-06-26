@@ -1,6 +1,6 @@
 import Editor, { loader } from '@monaco-editor/react';
 import type { editor as EditorNamespace } from 'monaco-editor';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import { moduleImportCompletionProvider, pytamaroImportCompletionProvider, toolboxImportCompletionProvider } from '../src/monacoSuggestions';
 import theme from '../src/theme';
@@ -26,17 +26,24 @@ const luceTheme = {
 };
 
 const LANGUAGE = 'python';
-
+const RUN_CODE_CONDITION_KEY = 'executionAllowedCondition';
 export const COLORIZE_CLASSNAME = 'monaco-colorize';
 
 export default function CodeEditor({
-  source, onChange = () => {}, firstLineNumber = 1, readOnly = false,
+  source, onChange = () => {}, onExecutionRequested = undefined,
+  executionAllowed = false, firstLineNumber = 1, readOnly = false,
 } :
-{ source: string, onChange?: (source: string) => void, firstLineNumber?: number,
+{ source: string, onChange?: (source: string) => void, onExecutionRequested? : () => void,
+  executionAllowed: boolean, firstLineNumber?: number,
   readOnly?: boolean }) {
   const { list } = useLocalToolbox();
   const monacoRef = useRef<any>(null);
+  const editorRef = useRef<any>(null);
   const monacoInstance = monacoRef.current;
+  const editorInstance = editorRef.current;
+  const [
+    executionAllowedCondition,
+    setExecutionAllowedCondition] = useState<EditorNamespace.IContextKey<boolean> | null>(null);
   const toolboxFunctions = list();
 
   const handleEditorMount = (
@@ -44,8 +51,16 @@ export default function CodeEditor({
     monaco: any,
   ) => {
     monacoRef.current = monaco;
+    editorRef.current = editor;
+
     monaco.editor.defineTheme(themeName, luceTheme);
     monaco.editor.setTheme(themeName);
+
+    setExecutionAllowedCondition(editor.createContextKey(
+      RUN_CODE_CONDITION_KEY,
+      executionAllowed,
+    ));
+
     const updateHeight = () => {
       editor.layout({ width: editor.getLayoutInfo().width, height: editor.getContentHeight() });
     };
@@ -72,6 +87,37 @@ export default function CodeEditor({
     }
   };
 
+  // Effect to update the condition that determines whether the code execution is allowed or not.
+  useEffect(() => {
+    if (executionAllowedCondition) {
+      executionAllowedCondition.set(executionAllowed);
+    }
+  }, [executionAllowed, executionAllowedCondition]);
+
+  // Effect to register the action that triggers the code execution.
+  useEffect(() => {
+    if (monacoInstance && editorInstance && onExecutionRequested) {
+      const actionDisposer = editorInstance.addAction({
+        id: 'code-execution',
+        label: 'Run Code Cell',
+        keybindings: [
+          // eslint-disable-next-line no-bitwise
+          monacoInstance.KeyMod.CtrlCmd | monacoInstance.KeyCode.Enter,
+        ],
+        precondition: RUN_CODE_CONDITION_KEY,
+        contextMenuGroupId: 'navigation',
+        run() {
+          onExecutionRequested();
+        },
+      });
+      return () => {
+        actionDisposer.dispose();
+      };
+    }
+    return () => {};
+  }, [editorInstance, monacoInstance, onExecutionRequested]);
+
+  // Effect to register the completion providers.
   useEffect(() => {
     if (monacoInstance && monacoInstance.pytamaroProvidesRegistered === undefined) {
       const providers = [

@@ -84,6 +84,8 @@ export default function CodeCell({
           <CodeEditor
             source={codeCellState.source}
             onChange={onSourceChanged}
+            onExecutionRequested={onExecutionRequested}
+            executionAllowed={!executing && !executionFinished}
             firstLineNumber={firstLineNumber}
             readOnly={readOnly}
           />
