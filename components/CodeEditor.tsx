@@ -34,7 +34,7 @@ export default function CodeEditor({
   executionAllowed = false, firstLineNumber = 1, readOnly = false,
 } :
 { source: string, onChange?: (source: string) => void, onExecutionRequested? : () => void,
-  executionAllowed: boolean, firstLineNumber?: number,
+  executionAllowed?: boolean, firstLineNumber?: number,
   readOnly?: boolean }) {
   const { list } = useLocalToolbox();
   const monacoRef = useRef<any>(null);
