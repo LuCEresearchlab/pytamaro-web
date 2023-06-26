@@ -11,7 +11,6 @@ import { Activity, activityVariantFromId, getVariantTitle } from '../../src/sche
 import { Curriculum, curriculumId } from '../../src/schemas/curriculumSchema';
 import { CURRICULUM_QUERY_PARAM, activityAssetPathname, activityVariantPathname } from '../../src/urlUtils';
 import ActivityStatusBadge, { ActivityStatus } from '../ActivityStatusBadge';
-import LockedTooltip from './LockedTooltip';
 
 export default function ActivityCard({
   id,
@@ -46,37 +45,35 @@ export default function ActivityCard({
         cursor: isUnlocked ? 'auto' : 'not-allowed',
       }}
     >
-      <ActivityStatusBadge status={status}>
-        <LockedTooltip unlocked={isUnlocked}>
-          <Card
-            sx={{
-              width: '100%', height: '100%', paddingBottom: 0,
-            }}
+      <ActivityStatusBadge status={status} locked={!isUnlocked}>
+        <Card
+          sx={{
+            width: '100%', height: '100%', paddingBottom: 0,
+          }}
+        >
+          <CardActionArea
+            onClick={() => router.push(url, url)}
+            disabled={!isUnlocked}
           >
-            <CardActionArea
-              onClick={() => router.push(url, url)}
-              disabled={!isUnlocked}
-            >
-              <CardMedia
-                component="img"
-                height={0.8 * height}
-                color="red"
-                image={activityAssetPathname(
-                  variant.authorSlug,
-                  variant.activitySlug,
-                  activity.previewImage.filename,
-                )}
-                alt={title}
-                sx={{ padding: 1, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
-              />
-              <CardContent sx={{ paddingY: { xs: 0, sm: 1 }, maxHeight: 0.2 * height }}>
-                <Typography gutterBottom variant="h5" component="div" sx={{ fontSize: { xs: '1rem', sm: '1.2rem' } }}>
-                  {title}
-                </Typography>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </LockedTooltip>
+            <CardMedia
+              component="img"
+              height={0.8 * height}
+              color="red"
+              image={activityAssetPathname(
+                variant.authorSlug,
+                variant.activitySlug,
+                activity.previewImage.filename,
+              )}
+              alt={title}
+              sx={{ padding: 1, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
+            />
+            <CardContent sx={{ paddingY: { xs: 0, sm: 1 }, maxHeight: 0.2 * height }}>
+              <Typography gutterBottom variant="h5" component="div" sx={{ fontSize: { xs: '1rem', sm: '1.2rem' } }}>
+                {title}
+              </Typography>
+            </CardContent>
+          </CardActionArea>
+        </Card>
       </ActivityStatusBadge>
     </Box>
   );

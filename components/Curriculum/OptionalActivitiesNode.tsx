@@ -7,7 +7,6 @@ import {
 import { useState } from 'react';
 import { Handle, NodeProps, Position } from 'reactflow';
 import ActivityCard from './ActivityCard';
-import LockedTooltip from './LockedTooltip';
 import { ActivityNodeData } from './utils';
 
 type NodeData = {
@@ -42,23 +41,19 @@ export default function OptionalActivitiesNode({ data }: NodeProps<NodeData>) {
   return (
     <Box sx={{ cursor: unlocked ? 'auto' : 'not-allowed' }}>
       <Handle type="target" position={Position.Top} isConnectable={false} />
-      <LockedTooltip unlocked={unlocked}>
-        <span>
-          <Button
-            onClick={handleOpen}
-            variant="contained"
-            color="primary"
-            style={{
-              width, height, overflow: 'hidden', textOverflow: 'ellipsis',
-            }}
-            disabled={!unlocked}
-          >
-            <Typography variant="h6">
-              {text.toUpperCase()}
-            </Typography>
-          </Button>
-        </span>
-      </LockedTooltip>
+      <Button
+        onClick={handleOpen}
+        variant="contained"
+        color="primary"
+        style={{
+          width, height, overflow: 'hidden', textOverflow: 'ellipsis',
+        }}
+        disabled={!unlocked}
+      >
+        <Typography variant="h6">
+          {text.toUpperCase()}
+        </Typography>
+      </Button>
       <Modal
         open={open}
         onClose={handleClose}
