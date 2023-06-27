@@ -19,7 +19,7 @@ const Nav = styled('nav')(({ theme }) => ({
 }));
 
 const NavLabel = styled(SidebarTitle)(({ theme }) => ({
-  paddingLeft: `calc(1px + ${theme.spacing(1)}`,
+  paddingLeft: `calc(1px + ${theme.spacing(1)})`,
 }));
 
 const NavList = styled(Typography)({
