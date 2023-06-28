@@ -9,6 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 import { competencyColor } from '../../src/curriculumCompetencies';
 import { activityVariantFromId, getVariantTitle } from '../../src/schemas/activitySchema';
 import { Curriculum, CurriculumActivity, curriculumId } from '../../src/schemas/curriculumSchema';
@@ -42,6 +43,10 @@ export default function ActivityCard({
   const url = `${activityVariantPathname(variant)}?${new URLSearchParams({ [CURRICULUM_QUERY_PARAM]: curriculumId(curriculum.authorSlug, curriculum.slug) }).toString()}`;
 
   const avatarFontSize = theme.typography.pxToRem(16);
+
+  const COMPACT_MAX_COMPETENCIES_SHOWN = 4;
+  const EXPANDED_MAX_COMPETENCIES_SHOWN = 20;
+  const [maxCompetenciesShown, setMaxCompetenciesShown] = useState(COMPACT_MAX_COMPETENCIES_SHOWN);
 
   return (
     <Box
@@ -87,7 +92,7 @@ export default function ActivityCard({
                 {title}
               </Typography>
               <AvatarGroup
-                max={4}
+                max={maxCompetenciesShown}
                 sx={{
                   marginLeft: 'auto',
                   '& .MuiAvatarGroup-avatar': {
@@ -96,6 +101,8 @@ export default function ActivityCard({
                     fontSize: avatarFontSize,
                   },
                 }}
+                onMouseOver={() => setMaxCompetenciesShown(EXPANDED_MAX_COMPETENCIES_SHOWN)}
+                onMouseLeave={() => setMaxCompetenciesShown(COMPACT_MAX_COMPETENCIES_SHOWN)}
               >
                 {curriculumActivity.learningObjectives.map((objective) => {
                   const competency = curriculum.competencies.find((c) => c.id === objective);
