@@ -10,8 +10,11 @@ import Head from 'next/head';
 import { useRef, useState } from 'react';
 import AttributionInfo from '../../../../components/AttributionInfo';
 import CurriculumFlow from '../../../../components/Curriculum/CurriculumFlow';
+import InfoButton from '../../../../components/InfoButton';
 import NavigationBar from '../../../../components/NavigationBar';
 import ResetButton from '../../../../components/ResetButton';
+import CurriculumCompetenciesSidebar from '../../../../components/Sidebar/CurriculumCompetenciesSidebar';
+import LeftSidebar from '../../../../components/Sidebar/LeftSidebar';
 import TableOfContents from '../../../../components/Sidebar/TableOfContents';
 import { getAuthorProfile, listAuthorsWithContent } from '../../../../src/fs-content/authors';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
@@ -47,6 +50,7 @@ export default function CurriculumPage({ curriculum, author }:
 
       <NavigationBar>
         <ResetButton enabled={curriculumStarted} onReset={handleReset} tooltip="Reset Curriculum" />
+        <InfoButton type="curriculum" authorSlug={curriculum.authorSlug} slug={curriculum.slug} />
       </NavigationBar>
       <Grid container>
         <Grid
@@ -56,7 +60,14 @@ export default function CurriculumPage({ curriculum, author }:
               xs: 'none', sm: 'none', md: 'none', lg: 'block',
             },
           }}
-        />
+        >
+          <LeftSidebar>
+            <CurriculumCompetenciesSidebar
+              curriculum={curriculum}
+              userActivities={metadata.activities}
+            />
+          </LeftSidebar>
+        </Grid>
         <Grid xs={12} lg={8}>
           <Stack spacing={2} alignItems="center">
             <Container maxWidth="md">

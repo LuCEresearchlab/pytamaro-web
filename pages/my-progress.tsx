@@ -22,6 +22,7 @@ import { activityVariantStatus } from '../components/ActivityStatusBadge';
 import NavigationBar from '../components/NavigationBar';
 import PageTitle from '../components/PageTitle';
 import { listActivitiesAllAuthors, listCurriculaAllAuthors } from '../src/fs-content/authors';
+import { format } from '../src/internationalization';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import { findStartedCurricula, findUserActivities } from '../src/progress';
 import { Activity } from '../src/schemas/activitySchema';
@@ -37,10 +38,6 @@ import {
   myDataPathname,
   myToolboxPathname,
 } from '../src/urlUtils';
-
-function format(n: number, singular: string, plural: string) {
-  return (n === 1) ? `1 ${singular}` : `${n} ${plural}`;
-}
 
 const ResourceCard = styled(Card)(() => ({
   display: 'flex',

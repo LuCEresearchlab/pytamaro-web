@@ -53,6 +53,10 @@ export function curriculumPathname(authorSlug: string, curriculumSlug: string) {
   return `${curriculaByAuthorPathname(authorSlug)}/${curriculumSlug}`;
 }
 
+export function curriculumInfoPathname(authorSlug: string, curriculumSlug: string) {
+  return `${curriculumPathname(authorSlug, curriculumSlug)}/info`;
+}
+
 /* Authors */
 
 export function authorPathname(authorSlug: string) {

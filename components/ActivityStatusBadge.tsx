@@ -14,7 +14,6 @@ export type ActivityStatus = 'initial' | 'in-progress' | 'completed';
 const StatusBadge = styled(Badge)<BadgeProps>(() => ({
   '& .MuiBadge-badge': {
     backgroundColor: 'transparent',
-    fontSize: theme.typography.h3.fontSize,
   },
   width: '100%',
 }));
@@ -33,9 +32,12 @@ export function activityVariantStatus(
   return activity.cellsModified ? 'in-progress' : 'initial';
 }
 
-export default function ActivityStatusBadge({ children, status, locked = false } :
-{ children: JSX.Element, status: ActivityStatus, locked ?: boolean }) {
-  if (!locked && status === 'initial') {
+export default function ActivityStatusBadge({
+  children, status, locked = false, small = false, noInProgress = false,
+} :
+{ children: JSX.Element, status: ActivityStatus, locked ?: boolean,
+  small ?: boolean, noInProgress ?: boolean }) {
+  if (!locked && (status === 'initial' || (noInProgress && status === 'in-progress'))) {
     return children;
   }
 
@@ -55,7 +57,12 @@ export default function ActivityStatusBadge({ children, status, locked = false }
   }
   return (
     <StatusBadge
-      badgeContent={<Tooltip title={tooltipTitle} arrow><Icon component={badgeIcon} fontSize="inherit" color="primary" sx={{ filter: 'drop-shadow(0 0 .15rem)' }} /></Tooltip>}
+      sx={{
+        '& .MuiBadge-badge': {
+          fontSize: theme.typography[small ? 'h4' : 'h3'].fontSize,
+        },
+      }}
+      badgeContent={<Tooltip title={tooltipTitle} arrow><Icon component={badgeIcon} color="primary" fontSize="inherit" sx={{ filter: 'drop-shadow(0 0 .15rem)' }} /></Tooltip>}
     >
       {children}
     </StatusBadge>

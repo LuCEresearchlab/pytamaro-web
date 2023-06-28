@@ -1,13 +1,10 @@
-import {
-  Chip,
-  Popover,
-  Stack,
-} from '@mui/material';
+import { Chip, Stack } from '@mui/material';
 import { useState } from 'react';
 import { ToolboxFunction } from '../../src/localStorage/schema';
 import useLocalToolbox from '../../src/localStorage/useLocalToolbox';
 import theme from '../../src/theme';
 import ToolboxFunctionCard from '../ToolboxFunctionCard';
+import SidebarItemPopover from './SidebarItemPopover';
 import SidebarTitle from './SidebarTitle';
 
 function SidebarToolboxFunction({ fn }: { fn: ToolboxFunction }) {
@@ -38,25 +35,14 @@ function SidebarToolboxFunction({ fn }: { fn: ToolboxFunction }) {
           fontSize: theme.typography.pxToRem(13),
         }}
       />
-      <Popover
+      <SidebarItemPopover
         id={toolboxPopoverId}
-        sx={{
-          marginLeft: 1,
-        }}
         open={open}
         anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: 'center',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'center',
-          horizontal: 'left',
-        }}
         onClose={handleClose}
       >
         <ToolboxFunctionCard fn={fn} summary />
-      </Popover>
+      </SidebarItemPopover>
     </>
   );
 }

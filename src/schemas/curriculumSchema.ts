@@ -21,12 +21,15 @@ export interface CurriculumUnit {
   steps: CurriculumStep[],
 }
 
+export type CurriculumCategory = 'programming' | 'graphics';
+
 export interface CurriculumCompetency {
   id: string,
   name: string,
   description: string,
   longDescription: string,
   icon: string,
+  category: CurriculumCategory,
 }
 
 export interface Curriculum {

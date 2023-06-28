@@ -9,12 +9,12 @@ import { isEqual } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
 import { useRef } from 'react';
-import ActivityInfoButton from '../../../../../../components/ActivityInfoButton';
 import AttributionInfo from '../../../../../../components/AttributionInfo';
 import BackToCurriculum from '../../../../../../components/BackToCurriculum';
 import CodeCell from '../../../../../../components/CodeCell';
 import CodeDownloadButton from '../../../../../../components/CodeDownloadButton';
 import DataSharingPreferenceDialog from '../../../../../../components/DataSharingPreferenceDialog';
+import InfoButton from '../../../../../../components/InfoButton';
 import MarkCompletedButton from '../../../../../../components/MarkCompletedButton';
 import MarkdownCellComponent from '../../../../../../components/MarkdownCellComponent';
 import MoreOptionsButton from '../../../../../../components/MoreOptionsButton';
@@ -119,7 +119,7 @@ export default function NotebookPage({
           />
           <ResetButton enabled={cellsModified || metadataModified} onReset={handleGlobalReset} tooltip="Reset Activity" />
           {!isSpecialActivity(activityVariant) && (
-          <ActivityInfoButton authorSlug={activity.authorSlug} activitySlug={activity.slug} />
+          <InfoButton type="activity" authorSlug={activity.authorSlug} slug={activity.slug} />
           )}
         </NavigationBar>
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />

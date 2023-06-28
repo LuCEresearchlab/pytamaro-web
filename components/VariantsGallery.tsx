@@ -14,13 +14,28 @@ import { activityVariantPathname } from '../src/urlUtils';
 import ActivityCardMedia from './ActivityCardMedia';
 import ActivityStatusBadge, { activityVariantStatus } from './ActivityStatusBadge';
 
+function MaybeActionArea({ disabled, children, onClick }:
+{ disabled: boolean, children: JSX.Element, onClick: () => void }) {
+  if (disabled) {
+    return children;
+  }
+  return (
+    <CardActionArea onClick={onClick}>
+      {children}
+    </CardActionArea>
+  );
+}
+
 export default function VariantsGallery({
-  activitiesWithVariants,
+  activitiesWithVariants, noVariantInfo = false, noInProgress = false, clickingDisabled = false,
 } :
 { activitiesWithVariants : {
   activity: Activity,
   variant: ActivityVariant,
-}[]
+}[],
+noVariantInfo?: boolean,
+noInProgress?: boolean,
+clickingDisabled?: boolean,
 }) {
   const { metadata } = useLocalProfile();
   const router = useRouter();
@@ -38,23 +53,31 @@ export default function VariantsGallery({
             lg={4}
             key={activityVariantId(variant)}
           >
-            <ActivityStatusBadge status={activityVariantStatus(metadata.activities, variant)}>
+            <ActivityStatusBadge
+              status={activityVariantStatus(metadata.activities, variant)}
+              small
+              noInProgress={noInProgress}
+            >
               <Card
                 sx={{
                   width: '100%', height: '100%',
                 }}
               >
-                <CardActionArea onClick={() => handleClick(variant)}>
-                  <ActivityCardMedia activity={activity} variant={variant} />
-                  <CardContent>
-                    <Typography gutterBottom variant="h6">
-                      {langInfo.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {`${getLanguageDisplayName(variant.language)} - ${variant.version}`}
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
+                <MaybeActionArea disabled={clickingDisabled} onClick={() => handleClick(variant)}>
+                  <>
+                    <ActivityCardMedia activity={activity} variant={variant} />
+                    <CardContent>
+                      <Typography gutterBottom variant="h6">
+                        {langInfo.title}
+                      </Typography>
+                      {!noVariantInfo && (
+                      <Typography variant="body2" color="text.secondary">
+                        {`${getLanguageDisplayName(variant.language)} - ${variant.version}`}
+                      </Typography>
+                      )}
+                    </CardContent>
+                  </>
+                </MaybeActionArea>
               </Card>
             </ActivityStatusBadge>
           </Grid>

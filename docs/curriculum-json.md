@@ -12,6 +12,7 @@
       description: string,
       longDescription: string,
       icon: string,
+      category: 'programming' | 'graphics',
     },
     ...
   ],
