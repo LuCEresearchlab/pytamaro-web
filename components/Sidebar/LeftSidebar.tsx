@@ -5,6 +5,9 @@ import { pytamaroDocsUrl } from '../../src/urlUtils';
 import SidebarPlayground from './SidebarPlayground';
 import SidebarTitle from './SidebarTitle';
 
+export const SIDEBAR_CHIPS_WIDTH = '15em';
+export const SIDEBAR_CHIPS_FONT_SIZE = theme.typography.pxToRem(13);
+
 export default function LeftSidebar({ children } : { children: React.ReactNode }) {
   return (
     <Box

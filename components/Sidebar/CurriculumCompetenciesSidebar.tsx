@@ -12,6 +12,7 @@ import { Curriculum, CurriculumActivity, CurriculumCompetency } from '../../src/
 import theme from '../../src/theme';
 import CompetencyCard from '../CompetencyCard';
 import GenericMuiIcon from '../GenericMuiIcon';
+import { SIDEBAR_CHIPS_FONT_SIZE, SIDEBAR_CHIPS_WIDTH } from './LeftSidebar';
 import SidebarItemPopover from './SidebarItemPopover';
 import SidebarTitle from './SidebarTitle';
 
@@ -57,8 +58,8 @@ function UserCompetencyChip({ curriculum, competency, completedActivities }:
         aria-haspopup="true"
         onClick={handleClick}
         sx={{
-          width: '28ch',
-          fontSize: theme.typography.pxToRem(13),
+          width: SIDEBAR_CHIPS_WIDTH,
+          fontSize: SIDEBAR_CHIPS_FONT_SIZE,
           justifyContent: 'flex-start',
           paddingX: 0.5,
           '& .MuiChip-label': {

@@ -22,12 +22,13 @@ import NavigationBar from '../../../../../../components/NavigationBar';
 import NetworkErrorSnackbar from '../../../../../../components/NetworkErrorSnackbar';
 import ResetButton from '../../../../../../components/ResetButton';
 import SaveToToolboxButton from '../../../../../../components/SaveToToolboxButton';
+import CurriculumCompetenciesSidebar from '../../../../../../components/Sidebar/CurriculumCompetenciesSidebar';
 import LeftSidebar from '../../../../../../components/Sidebar/LeftSidebar';
 import TableOfContents from '../../../../../../components/Sidebar/TableOfContents';
 import ToolboxListSidebar from '../../../../../../components/Sidebar/ToolboxListSidebar';
 import VariantSelector from '../../../../../../components/VariantsSelector';
 import { findVersions, readActivity } from '../../../../../../src/fs-content/activities';
-import { getAuthorProfile, listAuthorsWithContent } from '../../../../../../src/fs-content/authors';
+import { getAuthorProfile, listAuthorsWithContent, listCurriculaAllAuthors } from '../../../../../../src/fs-content/authors';
 import { CodeCellState, getDefaultActivityVariantMetadata } from '../../../../../../src/localStorage/schema';
 import useLocalActivity from '../../../../../../src/localStorage/useLocalActivity';
 import useLocalProfile from '../../../../../../src/localStorage/useLocalProfile';
@@ -37,9 +38,11 @@ import {
   ActivityVariant, MarkdownCell, NotebookCell, activityVariantId,
 } from '../../../../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../../../../src/schemas/authorSchema';
+import { Curriculum, curriculumToId } from '../../../../../../src/schemas/curriculumSchema';
 import { countLines } from '../../../../../../src/sourceUtils';
 import { isSpecialActivity } from '../../../../../../src/specialActivities';
 import { activityVariantPathnameFromParts } from '../../../../../../src/urlUtils';
+import useCurriculumFromQuery from '../../../../../../src/useCurriculumFromQuery';
 
 const userType = 'student';
 
@@ -65,10 +68,10 @@ function InconsistencyMessage() {
 }
 
 export default function NotebookPage({
-  activity, author, activityVariant, cells,
+  activity, author, activityVariant, cells, curricula,
 }:
 { activity : Activity, author: AuthorProfile,
-  activityVariant: ActivityVariant, cells: NotebookCell[] }) {
+  activityVariant: ActivityVariant, cells: NotebookCell[], curricula: Curriculum[] }) {
   const initialCodeCells : CodeCellState[] = cells
     .map((cell, idx) => ({ cell, idx }))
     .filter(({ cell }) => cell.cell_type === 'code')
@@ -84,7 +87,7 @@ export default function NotebookPage({
   } = useLocalActivity(initialCodeCells, activityVariant);
   const cellsRef = useRef<HTMLDivElement>(null);
 
-  const { getActivityMetadata, setActivityMetadata } = useLocalProfile();
+  const { metadata, getActivityMetadata, setActivityMetadata } = useLocalProfile();
   const currentMetadata = getActivityMetadata(activityVariant);
   const defaultMetadata = getDefaultActivityVariantMetadata(activityVariantId(activityVariant));
   const metadataModified = !isEqual(currentMetadata, defaultMetadata);
@@ -99,6 +102,8 @@ export default function NotebookPage({
       });
   };
 
+  const curriculumId = useCurriculumFromQuery();
+  const curriculum = curricula.find((c) => curriculumToId(c) === curriculumId);
   const title = activity.languagesInfo.find((i) => i.language === activityVariant.language)?.title;
 
   const pageTitle = `${title} - PyTamaro`;
@@ -135,6 +140,12 @@ export default function NotebookPage({
           >
             <LeftSidebar>
               <ToolboxListSidebar />
+              {curriculum && (
+                <CurriculumCompetenciesSidebar
+                  curriculum={curriculum}
+                  userActivities={metadata.activities}
+                />
+              )}
             </LeftSidebar>
           </Grid>
           <Grid xs={12} lg={8}>
@@ -232,6 +243,7 @@ export async function getStaticProps(
         authorSlug, activitySlug, language, version,
       },
       cells: await getNotebookContent(authorSlug, activitySlug, language, version, userType),
+      curricula: await listCurriculaAllAuthors(),
     },
   };
 }

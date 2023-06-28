@@ -1,23 +1,15 @@
 import { Route } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
 import { curriculumFromId } from '../src/schemas/curriculumSchema';
-import { CURRICULUM_QUERY_PARAM, curriculumPathname } from '../src/urlUtils';
+import { curriculumPathname } from '../src/urlUtils';
+import useCurriculumFromQuery from '../src/useCurriculumFromQuery';
 
 export default function BackToCurriculum() {
   const router = useRouter();
-  const [curriculumId, setCurriculumId] = useState<string | null>(null);
-  useEffect(() => {
-    if (router.isReady) {
-      const queryCurriculumId = router.query[CURRICULUM_QUERY_PARAM];
-      if (typeof queryCurriculumId === 'string') {
-        setCurriculumId(queryCurriculumId);
-      }
-    }
-  }, [router.isReady, router.query]);
+  const curriculumId = useCurriculumFromQuery();
 
-  if (curriculumId === null) {
+  if (!curriculumId) {
     return null;
   }
 

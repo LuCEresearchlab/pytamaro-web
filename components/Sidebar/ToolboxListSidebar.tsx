@@ -4,6 +4,7 @@ import { ToolboxFunction } from '../../src/localStorage/schema';
 import useLocalToolbox from '../../src/localStorage/useLocalToolbox';
 import theme from '../../src/theme';
 import ToolboxFunctionCard from '../ToolboxFunctionCard';
+import { SIDEBAR_CHIPS_FONT_SIZE, SIDEBAR_CHIPS_WIDTH } from './LeftSidebar';
 import SidebarItemPopover from './SidebarItemPopover';
 import SidebarTitle from './SidebarTitle';
 
@@ -30,9 +31,9 @@ function SidebarToolboxFunction({ fn }: { fn: ToolboxFunction }) {
         aria-haspopup="true"
         onClick={handleClick}
         sx={{
-          maxWidth: '25ch',
+          width: SIDEBAR_CHIPS_WIDTH,
           fontFamily: theme.pytamaro.monospaceFontFamily,
-          fontSize: theme.typography.pxToRem(13),
+          fontSize: SIDEBAR_CHIPS_FONT_SIZE,
         }}
       />
       <SidebarItemPopover
