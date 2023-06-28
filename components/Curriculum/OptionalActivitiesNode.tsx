@@ -75,12 +75,13 @@ export default function OptionalActivitiesNode({ data }: NodeProps<NodeData>) {
             }}
           >
             {activityInfo.map(({
-              id, activity, curriculum, status, isUnlocked, width: awidth, height: aheight,
+              id, curriculumActivity, curriculum, status, isUnlocked,
+              width: awidth, height: aheight,
             }) => (
               <ActivityCard
                 key={id}
                 id={id}
-                activity={activity}
+                curriculumActivity={curriculumActivity}
                 curriculum={curriculum}
                 status={status}
                 isUnlocked={isUnlocked}

@@ -52,7 +52,7 @@ function UserCompetencyChip({ curriculum, competency, completedActivities }:
         size="small"
         variant="outlined"
         color={competencyColor(competency)}
-        icon={<GenericMuiIcon iconName={competency.icon} />}
+        icon={<GenericMuiIcon fontSize={theme.typography.pxToRem(20)} iconName={competency.icon} />}
         aria-owns={open ? popoverId : undefined}
         aria-haspopup="true"
         onClick={handleClick}

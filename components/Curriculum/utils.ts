@@ -1,11 +1,10 @@
-import { Activity } from '../../src/schemas/activitySchema';
-import { Curriculum } from '../../src/schemas/curriculumSchema';
+import { Curriculum, CurriculumActivity } from '../../src/schemas/curriculumSchema';
 import theme from '../../src/theme';
 import { ActivityStatus } from '../ActivityStatusBadge';
 
 export type ActivityNodeData = {
   id: string;
-  activity: Activity;
+  curriculumActivity: CurriculumActivity;
   curriculum: Curriculum;
   status: ActivityStatus;
   isUnlocked: boolean;

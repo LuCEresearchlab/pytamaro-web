@@ -91,7 +91,7 @@ function addActivitiesStatuses(
     const isUnlocked = previousStepIsCompleted;
     return {
       id: activity.id,
-      activity: activity.activity,
+      curriculumActivity: activity,
       curriculum,
       status,
       isUnlocked,

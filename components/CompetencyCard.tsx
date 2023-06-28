@@ -16,7 +16,7 @@ export default function CompetencyCard({ curriculum, competency, fullWidth = fal
   return (
     <CardContent sx={{ pb: 1, minWidth: '80ch', maxWidth: fullWidth ? 'none' : '100ch' }}>
       <Box display="flex" alignItems="center">
-        <GenericMuiIcon iconName={competency.icon} />
+        <GenericMuiIcon fontSize="1.1em" iconName={competency.icon} />
         <Typography fontSize="1.1em" fontWeight="bold" mx="1ch">
           {competency.name}
         </Typography>
