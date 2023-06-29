@@ -38,21 +38,25 @@ export default function CurriculumInfoPage({ curriculum, author }:
           <CurriculumCard curriculum={curriculum} />
           <Typography variant="h4" marginY={3}>Author & License</Typography>
           <AttributionInfo type="curriculum" author={author} derivedFrom={curriculum.derivedFrom} />
-          <Typography variant="h4" marginY={3}>Competencies</Typography>
-          <Stack
-            direction="column"
-            spacing={2}
-          >
-            {sortBy(curriculum.competencies, (competency) => (competency.category === 'programming' ? 0 : 1)).map((competency) => (
-              <Card key={competency.id}>
-                <CompetencyCard
-                  curriculum={curriculum}
-                  competency={competency}
-                  fullWidth
-                />
-              </Card>
-            ))}
-          </Stack>
+          {curriculum.competencies.length > 0 && (
+            <>
+              <Typography variant="h4" marginY={3}>Competencies</Typography>
+              <Stack
+                direction="column"
+                spacing={2}
+              >
+                {sortBy(curriculum.competencies, (competency) => (competency.category === 'programming' ? 0 : 1)).map((competency) => (
+                  <Card key={competency.id}>
+                    <CompetencyCard
+                      curriculum={curriculum}
+                      competency={competency}
+                      fullWidth
+                    />
+                  </Card>
+                ))}
+              </Stack>
+            </>
+          )}
         </Container>
       </Box>
     </div>
