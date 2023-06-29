@@ -44,25 +44,29 @@ export default function ActivityStatusBadge({
   // Assume locked (overrides activity status)
   let tooltipTitle = 'Complete previous activities to unlock';
   let badgeIcon = Lock;
+  let badgeColor = theme.palette.grey[600];
 
   // If not, check activity status
   if (!locked) {
     if (status === 'in-progress') {
       tooltipTitle = 'Activity In Progress';
       badgeIcon = Timeline;
+      badgeColor = theme.palette.primary.main;
     } else if (status === 'completed') {
       tooltipTitle = 'Activity Completed';
       badgeIcon = EmojiEvents;
+      badgeColor = 'gold';
     }
   }
   return (
     <StatusBadge
       sx={{
+        color: badgeColor,
         '& .MuiBadge-badge': {
           fontSize: theme.typography[small ? 'h4' : 'h3'].fontSize,
         },
       }}
-      badgeContent={<Tooltip title={tooltipTitle} arrow><Icon component={badgeIcon} color="primary" fontSize="inherit" sx={{ filter: 'drop-shadow(0 0 .15rem)' }} /></Tooltip>}
+      badgeContent={<Tooltip title={tooltipTitle} arrow><Icon component={badgeIcon} fontSize="inherit" sx={{ filter: 'drop-shadow(0 0 .05em)' }} /></Tooltip>}
     >
       {children}
     </StatusBadge>
