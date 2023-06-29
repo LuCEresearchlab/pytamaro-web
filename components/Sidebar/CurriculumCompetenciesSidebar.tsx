@@ -51,7 +51,7 @@ function UserCompetencyChip({ curriculum, competency, completedActivities }:
           </Box>
         )}
         size="small"
-        variant="outlined"
+        variant="filled"
         color={competencyColor(competency)}
         icon={<GenericMuiIcon fontSize={theme.typography.pxToRem(20)} iconName={competency.icon} />}
         aria-owns={open ? popoverId : undefined}
