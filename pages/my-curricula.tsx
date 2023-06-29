@@ -25,10 +25,10 @@ export default function MyCurricula({ curricula } :
       </Head>
       <Box>
         <NavigationBar />
-        <Container maxWidth="md">
+        <Container maxWidth="lg">
           <PageTitle>My Curricula</PageTitle>
           {startedCurricula.length > 0
-            ? <CurriculaList curricula={startedCurricula} />
+            ? <CurriculaList curricula={startedCurricula} userActivities={metadata.activities} />
             : (
               <Typography>
                 No curriculum started so far.

@@ -6,7 +6,7 @@ import { Curriculum, CurriculumCompetency } from '../../src/schemas/curriculumSc
 import theme from '../../src/theme';
 import CompetencyCard from '../CompetencyCard';
 import GenericMuiIcon from '../GenericMuiIcon';
-import { myCompetencyChipId } from './CurriculumCompetenciesSidebar';
+import { myCompetencyChipId } from '../UserCompetenciesStack';
 import SidebarItemPopover from './SidebarItemPopover';
 
 const AVATAR_SIZE = 24;

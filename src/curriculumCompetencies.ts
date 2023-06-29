@@ -29,3 +29,24 @@ export function completedActivitiesForCompetency(
 export function competencyColor(competency: CurriculumCompetency) {
   return competency.category === 'programming' ? 'primary' : 'secondary';
 }
+
+export function findUserCompetencies(
+  curriculum: Curriculum,
+  userActivities: ActivityVariantMetadata[],
+) {
+  const competenciesWithActivities = curriculum.competencies.map(
+    (competency) => {
+      const activities = allActivitiesForCompetency(curriculum, competency);
+      const completedActivities = completedActivitiesForCompetency(activities, userActivities);
+      return {
+        competency,
+        allActivities: activities,
+        completedActivities,
+      };
+    },
+  );
+
+  return competenciesWithActivities.filter(
+    ({ completedActivities }) => completedActivities.length > 0,
+  );
+}
