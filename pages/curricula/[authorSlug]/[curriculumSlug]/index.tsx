@@ -13,8 +13,10 @@ import CurriculumFlow from '../../../../components/Curriculum/CurriculumFlow';
 import InfoButton from '../../../../components/InfoButton';
 import NavigationBar from '../../../../components/NavigationBar';
 import ResetButton from '../../../../components/ResetButton';
+import CentralContent from '../../../../components/Sidebar/CentralContent';
 import CurriculumCompetenciesSidebar from '../../../../components/Sidebar/CurriculumCompetenciesSidebar';
 import LeftSidebar from '../../../../components/Sidebar/LeftSidebar';
+import RightSidebar from '../../../../components/Sidebar/RightSidebar';
 import TableOfContents from '../../../../components/Sidebar/TableOfContents';
 import { getAuthorProfile, listAuthorsWithContent } from '../../../../src/fs-content/authors';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
@@ -53,22 +55,13 @@ export default function CurriculumPage({ curriculum, author }:
         <InfoButton type="curriculum" authorSlug={curriculum.authorSlug} slug={curriculum.slug} />
       </NavigationBar>
       <Grid container>
-        <Grid
-          lg={2}
-          sx={{
-            display: {
-              xs: 'none', sm: 'none', md: 'none', lg: 'block',
-            },
-          }}
-        >
-          <LeftSidebar>
-            <CurriculumCompetenciesSidebar
-              curriculum={curriculum}
-              userActivities={metadata.activities}
-            />
-          </LeftSidebar>
-        </Grid>
-        <Grid xs={12} lg={8}>
+        <LeftSidebar>
+          <CurriculumCompetenciesSidebar
+            curriculum={curriculum}
+            userActivities={metadata.activities}
+          />
+        </LeftSidebar>
+        <CentralContent>
           <Stack spacing={2} alignItems="center">
             <Container maxWidth="md">
               <Typography variant="h3" marginY={3}>{curriculum.title}</Typography>
@@ -87,17 +80,10 @@ export default function CurriculumPage({ curriculum, author }:
               <AttributionInfo type="curriculum" author={author} derivedFrom={curriculum.derivedFrom} />
             </Container>
           </Stack>
-        </Grid>
-        <Grid
-          lg={2}
-          sx={{
-            display: {
-              xs: 'none', sm: 'none', md: 'none', lg: 'block',
-            },
-          }}
-        >
+        </CentralContent>
+        <RightSidebar>
           <TableOfContents elementRef={curriculumFlowRef} initialized={nodesInitialized} selector=".curriculum-unit[id]" title="In this curriculum" />
-        </Grid>
+        </RightSidebar>
       </Grid>
     </>
   );

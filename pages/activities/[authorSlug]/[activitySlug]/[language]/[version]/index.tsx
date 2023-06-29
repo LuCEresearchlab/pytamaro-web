@@ -22,8 +22,11 @@ import NavigationBar from '../../../../../../components/NavigationBar';
 import NetworkErrorSnackbar from '../../../../../../components/NetworkErrorSnackbar';
 import ResetButton from '../../../../../../components/ResetButton';
 import SaveToToolboxButton from '../../../../../../components/SaveToToolboxButton';
+import ActivityCompetenciesSidebar from '../../../../../../components/Sidebar/ActivityCompetenciesSidebar';
+import CentralContent from '../../../../../../components/Sidebar/CentralContent';
 import CurriculumCompetenciesSidebar from '../../../../../../components/Sidebar/CurriculumCompetenciesSidebar';
 import LeftSidebar from '../../../../../../components/Sidebar/LeftSidebar';
+import RightSidebar from '../../../../../../components/Sidebar/RightSidebar';
 import TableOfContents from '../../../../../../components/Sidebar/TableOfContents';
 import ToolboxListSidebar from '../../../../../../components/Sidebar/ToolboxListSidebar';
 import VariantSelector from '../../../../../../components/VariantsSelector';
@@ -130,25 +133,16 @@ export default function NotebookPage({
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
         <DataSharingPreferenceDialog />
         <Grid container>
-          <Grid
-            lg={2}
-            sx={{
-              display: {
-                xs: 'none', sm: 'none', md: 'none', lg: 'block',
-              },
-            }}
-          >
-            <LeftSidebar>
-              <ToolboxListSidebar />
-              {curriculum && (
-                <CurriculumCompetenciesSidebar
-                  curriculum={curriculum}
-                  userActivities={metadata.activities}
-                />
-              )}
-            </LeftSidebar>
-          </Grid>
-          <Grid xs={12} lg={8}>
+          <LeftSidebar>
+            <ToolboxListSidebar />
+            {curriculum && (
+            <CurriculumCompetenciesSidebar
+              curriculum={curriculum}
+              userActivities={metadata.activities}
+            />
+            )}
+          </LeftSidebar>
+          <CentralContent>
             <Container maxWidth="md" ref={cellsRef}>
               <Typography variant="h3" marginY={3}>{title}</Typography>
               {localCodeCellsWrongLength
@@ -207,17 +201,16 @@ export default function NotebookPage({
                 </Container>
               </>
             )}
-          </Grid>
-          <Grid
-            lg={2}
-            sx={{
-              display: {
-                xs: 'none', sm: 'none', md: 'none', lg: 'block',
-              },
-            }}
-          >
+          </CentralContent>
+          <RightSidebar>
             <TableOfContents initialized elementRef={cellsRef} selector="h2[id], h3[id]" title="In this activity" />
-          </Grid>
+            {curriculum && (
+              <ActivityCompetenciesSidebar
+                curriculum={curriculum}
+                activityVariant={activityVariant}
+              />
+            )}
+          </RightSidebar>
         </Grid>
       </Box>
     </div>

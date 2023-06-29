@@ -10,8 +10,12 @@ import { Curriculum, CurriculumCompetency } from '../src/schemas/curriculumSchem
 import GenericMuiIcon from './GenericMuiIcon';
 import VariantCard from './VariantCard';
 
-export default function CompetencyCard({ curriculum, competency, fullWidth = false }:
-{ curriculum: Curriculum, competency: CurriculumCompetency, fullWidth?: boolean }) {
+export default function CompetencyCard({
+  curriculum, competency, fullWidth = false, noActivities = false,
+}: {
+  curriculum: Curriculum, competency: CurriculumCompetency,
+  fullWidth?: boolean, noActivities?: boolean
+}) {
   const { metadata } = useLocalProfile();
   const allActivities = allActivitiesForCompetency(curriculum, competency);
   const completedActivities = completedActivitiesForCompetency(allActivities, metadata.activities);
@@ -32,25 +36,29 @@ export default function CompetencyCard({ curriculum, competency, fullWidth = fal
       <Typography fontWeight="bold" marginY={1}>
         {competency.description}
       </Typography>
-      <Typography marginTop={2}>
-        {`Practiced in ${completedActivities.length} out of ${format(allActivities.length, 'activity', 'activities')}:`}
-      </Typography>
-      <Box sx={{ overflow: 'auto' }}>
-        <Box sx={{ display: 'flex', width: 'fit-content' }} p={1}>
-          <Stack mt={2} direction="row" spacing={2}>
-            {allActivities.map((activityWithVariant) => (
-              <VariantCard
-                key={activityVariantId(activityWithVariant.variant)}
-                activityWithVariant={activityWithVariant}
-                width="30ch"
-                noVariantInfo
-                noInProgress
-                clickingDisabled
-              />
-            ))}
-          </Stack>
-        </Box>
-      </Box>
+      {!noActivities && (
+        <>
+          <Typography marginTop={2}>
+            {`Practiced in ${completedActivities.length} out of ${format(allActivities.length, 'activity', 'activities')}:`}
+          </Typography>
+          <Box sx={{ overflow: 'auto' }}>
+            <Box sx={{ display: 'flex', width: 'fit-content' }} p={1}>
+              <Stack mt={2} direction="row" spacing={2}>
+                {allActivities.map((activityWithVariant) => (
+                  <VariantCard
+                    key={activityVariantId(activityWithVariant.variant)}
+                    activityWithVariant={activityWithVariant}
+                    width="30ch"
+                    noVariantInfo
+                    noInProgress
+                    clickingDisabled
+                  />
+                ))}
+              </Stack>
+            </Box>
+          </Box>
+        </>
+      )}
       {competency.longDescription && (
         <Typography color="text.secondary" marginTop={3}>
           {competency.longDescription}

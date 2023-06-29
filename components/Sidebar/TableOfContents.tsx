@@ -9,15 +9,6 @@ import * as React from 'react';
 import { RefObject } from 'react';
 import SidebarTitle from './SidebarTitle';
 
-const Nav = styled('nav')(({ theme }) => ({
-  top: theme.spacing(8),
-  position: 'sticky',
-  paddingTop: theme.spacing(1),
-  paddingRight: theme.spacing(2),
-  display: 'block',
-  float: 'right',
-}));
-
 const NavLabel = styled(SidebarTitle)(({ theme }) => ({
   paddingLeft: `calc(1px + ${theme.spacing(1)})`,
 }));
@@ -174,20 +165,16 @@ export default function TableOfContents({
     </NavItem>
   );
 
-  return (
-    <Nav>
-      {items.length > 0 ? (
-        <>
-          <NavLabel>{title}</NavLabel>
-          <NavList>
-            {items.map((item) => (
-              <li key={item.text}>
-                {itemLink(item)}
-              </li>
-            ))}
-          </NavList>
-        </>
-      ) : null}
-    </Nav>
-  );
+  return items.length > 0 ? (
+    <>
+      <NavLabel>{title}</NavLabel>
+      <NavList>
+        {items.map((item) => (
+          <li key={item.text}>
+            {itemLink(item)}
+          </li>
+        ))}
+      </NavList>
+    </>
+  ) : null;
 }

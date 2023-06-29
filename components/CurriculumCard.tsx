@@ -5,6 +5,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { shuffle } from 'lodash';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { allActivities } from '../src/curriculumCompetencies';
 import { Curriculum, CurriculumActivity } from '../src/schemas/curriculumSchema';
 import { curriculumPathname } from '../src/urlUtils';
 import ActivityCardMedia from './ActivityCardMedia';
@@ -13,9 +14,7 @@ export default function CurriculumCard({ curriculum }:
 { curriculum: Curriculum }) {
   const [randomActivities, setRandomActivities] = useState<CurriculumActivity[]>([]);
   useEffect(() => {
-    const activities = curriculum.units.flatMap((unit) => unit.steps.flatMap(
-      (step) => step.activities,
-    ));
+    const activities = allActivities(curriculum);
     setRandomActivities(shuffle(activities));
   }, [curriculum]);
 

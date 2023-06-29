@@ -2,7 +2,7 @@ import { activityVariantStatus } from '../components/ActivityStatusBadge';
 import { ActivityVariantMetadata } from './localStorage/schema';
 import { Curriculum, CurriculumActivity, CurriculumCompetency } from './schemas/curriculumSchema';
 
-function allActivities(curriculum: Curriculum) {
+export function allActivities(curriculum: Curriculum) {
   return curriculum.units.flatMap(
     (unit) => unit.steps.flatMap((step) => step.activities),
   );

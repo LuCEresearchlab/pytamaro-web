@@ -16,6 +16,10 @@ import { SIDEBAR_CHIPS_FONT_SIZE, SIDEBAR_CHIPS_WIDTH } from './LeftSidebar';
 import SidebarItemPopover from './SidebarItemPopover';
 import SidebarTitle from './SidebarTitle';
 
+export function myCompetencyChipId(competency: CurriculumCompetency) {
+  return `my-competency-${competency.id}`;
+}
+
 function UserCompetencyChip({ curriculum, competency, completedActivities }:
 { curriculum: Curriculum, competency: CurriculumCompetency,
   completedActivities: CurriculumActivity[] }) {
@@ -34,6 +38,7 @@ function UserCompetencyChip({ curriculum, competency, completedActivities }:
   return (
     <>
       <Chip
+        id={myCompetencyChipId(competency)}
         label={(
           <Box display="flex" justifyContent="space-between">
             <Box sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{competency.name}</Box>

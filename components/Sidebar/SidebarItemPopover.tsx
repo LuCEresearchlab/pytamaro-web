@@ -1,13 +1,14 @@
 import { Popover } from '@mui/material';
 
 export default function SidebarItemPopover({
-  children, id, anchorEl, onClose, open,
+  children, id, anchorEl, onClose, open, fromRight = false,
 } : {
   children: React.ReactNode,
   id: string,
   anchorEl: HTMLElement | null,
   onClose: () => void,
   open: boolean,
+  fromRight?: boolean,
 }) {
   return (
     <Popover
@@ -19,11 +20,11 @@ export default function SidebarItemPopover({
       anchorEl={anchorEl}
       anchorOrigin={{
         vertical: 'center',
-        horizontal: 'right',
+        horizontal: fromRight ? 'left' : 'right',
       }}
       transformOrigin={{
         vertical: 'center',
-        horizontal: 'left',
+        horizontal: fromRight ? 'right' : 'left',
       }}
       onClose={onClose}
     >
