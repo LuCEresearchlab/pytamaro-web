@@ -2,6 +2,7 @@ import {
   Box, CardContent, Chip,
   Stack, Typography,
 } from '@mui/material';
+import { MDXRemote } from 'next-mdx-remote';
 import { allActivitiesForCompetency, competencyColor, completedActivitiesForCompetency } from '../src/curriculumCompetencies';
 import { format } from '../src/internationalization';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
@@ -61,7 +62,8 @@ export default function CompetencyCard({
       )}
       {competency.longDescription && (
         <Typography color="text.secondary" marginTop={3}>
-          {competency.longDescription}
+          {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+          <MDXRemote {...competency.longDescription} />
         </Typography>
       )}
     </CardContent>

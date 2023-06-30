@@ -1,5 +1,6 @@
 import { existsSync } from 'fs';
 import { readFile, readdir, stat } from 'fs/promises';
+import { serialize } from 'next-mdx-remote/serialize';
 import path from 'path';
 import { Activity } from '../schemas/activitySchema';
 import { Author, AuthorProfile } from '../schemas/authorSchema';
@@ -25,7 +26,7 @@ export async function getAuthorProfile(authorSlug: string) : Promise<AuthorProfi
   return {
     slug: authorSlug,
     name,
-    description,
+    description: await serialize(description),
   };
 }
 

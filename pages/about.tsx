@@ -1,6 +1,7 @@
 import {
   Avatar, Box, Container, Divider, Link, List, ListItem, ListItemAvatar, ListItemText, Typography,
 } from '@mui/material';
+import { MDXRemote } from 'next-mdx-remote';
 import Head from 'next/head';
 import NavigationBar from '../components/NavigationBar';
 import { listAuthorsProfiles } from '../src/fs-content/authors';
@@ -29,6 +30,14 @@ const collaborators = [
     avatar: 'MatthiasHauswirth.jpg',
   },
 ];
+
+export function Body2Typography({ children = null } : { children?: React.ReactNode }) {
+  return (
+    <Typography variant="body2">
+      {children}
+    </Typography>
+  );
+}
 
 export default function AboutPage({ authorsProfiles } : { authorsProfiles: AuthorProfile[] }) {
   return (
@@ -132,11 +141,13 @@ export default function AboutPage({ authorsProfiles } : { authorsProfiles: Autho
                     </Link>
                 )}
                   secondary={(
-                    <Typography
-                      variant="body2"
-                    >
-                      {authorProfile.description}
-                    </Typography>
+                    <MDXRemote
+                      // eslint-disable-next-line react/jsx-props-no-spreading
+                      {...authorProfile.description}
+                      components={{
+                        p: Body2Typography,
+                      }}
+                    />
                 )}
                 />
               </ListItem>

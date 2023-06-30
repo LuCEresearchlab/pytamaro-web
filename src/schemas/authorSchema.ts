@@ -1,3 +1,4 @@
+import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { Activity } from './activitySchema';
 import { Curriculum } from './curriculumSchema';
 
@@ -10,5 +11,5 @@ export interface Author {
 export interface AuthorProfile {
   slug: string;
   name: string;
-  description: string;
+  description: MDXRemoteSerializeResult;
 }

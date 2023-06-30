@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { useConfirm } from 'material-ui-confirm';
+import { MDXRemote } from 'next-mdx-remote';
 import Head from 'next/head';
 import { useRef, useState } from 'react';
 import AttributionInfo from '../../../../components/AttributionInfo';
@@ -65,7 +66,10 @@ export default function CurriculumPage({ curriculum, author }:
           <Stack spacing={2} alignItems="center">
             <Container maxWidth="md">
               <Typography variant="h3" marginY={3}>{curriculum.title}</Typography>
-              <Typography variant="subtitle1" marginY={3}>{curriculum.description}</Typography>
+              <Typography variant="subtitle1" marginY={3}>
+                {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+                <MDXRemote {...curriculum.description} />
+              </Typography>
             </Container>
             <div ref={curriculumFlowRef}>
               <CurriculumFlow

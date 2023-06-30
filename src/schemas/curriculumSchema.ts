@@ -1,3 +1,4 @@
+import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { Activity, ActivityVariant } from './activitySchema';
 
 export interface RawCurriculumActivity {
@@ -11,33 +12,66 @@ export interface CurriculumActivity extends RawCurriculumActivity {
   activity: Activity,
 }
 
-export interface CurriculumStep {
-  activities: CurriculumActivity[],
+interface BaseCurriculumStep {
   isOptional?: boolean,
 }
 
-export interface CurriculumUnit {
+export interface RawCurriculumStep extends BaseCurriculumStep {
+  activities: RawCurriculumActivity[],
+}
+
+export interface CurriculumStep extends BaseCurriculumStep {
+  activities: CurriculumActivity[],
+}
+
+interface BaseCurriculumUnit {
   title?: string,
+}
+
+export interface RawCurriculumUnit extends BaseCurriculumUnit {
+  steps: RawCurriculumStep[],
+}
+
+export interface CurriculumUnit extends BaseCurriculumUnit {
   steps: CurriculumStep[],
 }
 
 export type CurriculumCategory = 'programming' | 'graphics';
 
-export interface CurriculumCompetency {
+interface BaseCurriculumCompetency {
   id: string,
   name: string,
   description: string,
-  longDescription: string,
   icon: string,
   category: CurriculumCategory,
 }
 
-export interface Curriculum {
+export interface RawCurriculumCompetency extends BaseCurriculumCompetency {
+  longDescription: string,
+}
+
+export interface CurriculumCompetency extends BaseCurriculumCompetency {
+  longDescription: MDXRemoteSerializeResult,
+}
+
+export type CurriculumVisibility = 'featured' | 'visible' | 'draft' | 'hidden';
+
+interface BaseCurriculum {
+  title: string,
+  visibility: CurriculumVisibility,
+}
+
+export interface RawCurriculum extends BaseCurriculum {
+  description: string,
+  competencies: RawCurriculumCompetency[],
+  units: RawCurriculumUnit[],
+  derivedFrom?: string[],
+}
+
+export interface Curriculum extends BaseCurriculum {
   authorSlug: string,
   slug: string,
-  title: string,
-  description: string,
-  visibility: 'featured' | 'visible' | 'draft' | 'hidden',
+  description: MDXRemoteSerializeResult,
   competencies: CurriculumCompetency[],
   units: CurriculumUnit[],
   derivedFrom: string[],

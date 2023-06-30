@@ -5,6 +5,7 @@ import {
   Link,
   Typography,
 } from '@mui/material';
+import { MDXRemote } from 'next-mdx-remote';
 import Head from 'next/head';
 import ActivitiesGallery from '../../../components/ActivitiesGallery';
 import CurriculaList from '../../../components/CurriculaList';
@@ -34,9 +35,8 @@ export default function AuthorPage({ authorProfile, curricula, activities }:
             {authorProfile.name}
           </Typography>
           {authorProfile.description && (
-          <Typography variant="body1" marginY={3}>
-            {authorProfile.description}
-          </Typography>
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            <MDXRemote {...authorProfile.description} />
           )}
           <Divider />
           <Typography variant="h5" marginY={3}>

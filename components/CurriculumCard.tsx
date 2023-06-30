@@ -3,6 +3,7 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { shuffle } from 'lodash';
+import { MDXRemote } from 'next-mdx-remote';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { allActivities, findUserCompetencies } from '../src/curriculumCompetencies';
@@ -12,6 +13,14 @@ import theme from '../src/theme';
 import { curriculumPathname } from '../src/urlUtils';
 import ActivityCardMedia from './ActivityCardMedia';
 import UserCompetenciesStack from './UserCompetenciesStack';
+
+function CurriculumDescriptionTypography({ children = null }: { children?: React.ReactNode }) {
+  return (
+    <Typography variant="subtitle1" color="text.secondary" component="div">
+      {children}
+    </Typography>
+  );
+}
 
 export default function CurriculumCard({ curriculum, userActivities = undefined }:
 { curriculum: Curriculum, userActivities?: ActivityVariantMetadata[] }) {
@@ -38,9 +47,11 @@ export default function CurriculumCard({ curriculum, userActivities = undefined 
               <Typography component="div" variant="h5" gutterBottom>
                 {curriculum.title}
               </Typography>
-              <Typography variant="subtitle1" color="text.secondary" component="div">
-                {curriculum.description}
-              </Typography>
+              <MDXRemote
+                // eslint-disable-next-line react/jsx-props-no-spreading
+                {...curriculum.description}
+                components={{ p: CurriculumDescriptionTypography }}
+              />
             </CardContent>
           </Grid>
           <Grid xs={3}>
