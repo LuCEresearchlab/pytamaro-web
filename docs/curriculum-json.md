@@ -3,14 +3,14 @@
 ```javascript
 {
   title: string,
-  description: string,
+  description: string, // markdown supported 
   visibility: 'featured' | 'visible' | 'draft' | 'hidden',
   competencies: [
     {
-      id: competencyId // string,
+      id: competencyId, // string
       name: string,
       description: string,
-      longDescription: string,
+      longDescription: string, // markdown supported
       icon: string,
       category: 'programming' | 'graphics',
     },

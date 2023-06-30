@@ -2,6 +2,10 @@
 
 A content repository is maintained by an author and contains activities and curricula.
 
+The profile of an author is described in a file named `author.json`. It contains the following fields:
+- `name`: the name of the author
+- `description`: free description (e.g., institution, members of a group; supports Markdown)
+
 ### Activities
 
 Each activity is available in variants.
