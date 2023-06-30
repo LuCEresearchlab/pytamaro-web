@@ -1,10 +1,12 @@
 import {
   Box,
   Card,
-  Container, Stack, Typography,
+  Container, FormControlLabel, Stack, Switch, Typography,
 } from '@mui/material';
 import { sortBy } from 'lodash';
 import Head from 'next/head';
+import { useState } from 'react';
+import ActivitiesCompetenciesMatrix, { competencyAnchor } from '../../../../components/ActivitiesCompetenciesMatrix';
 import AttributionInfo from '../../../../components/AttributionInfo';
 import CompetencyCard from '../../../../components/CompetencyCard';
 import CurriculumCard from '../../../../components/CurriculumCard';
@@ -20,6 +22,12 @@ export default function CurriculumInfoPage({ curriculum, author }:
 { curriculum : Curriculum, author: AuthorProfile }) {
   const { title } = curriculum;
   const pageTitle = `${title} - PyTamaro`;
+
+  const [showMatrix, setShowMatrix] = useState(false);
+
+  const handleShowMatrixChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setShowMatrix(event.target.checked);
+  };
 
   return (
     <div>
@@ -40,13 +48,27 @@ export default function CurriculumInfoPage({ curriculum, author }:
           <AttributionInfo type="curriculum" author={author} derivedFrom={curriculum.derivedFrom} />
           {curriculum.competencies.length > 0 && (
             <>
-              <Typography variant="h4" marginY={3}>Competencies</Typography>
+              <Box display="flex" alignItems="baseline" marginY={3}>
+                <Typography variant="h4">Competencies</Typography>
+                <Box marginLeft="auto">
+                  <FormControlLabel
+                    control={<Switch color="primary" checked={showMatrix} onChange={handleShowMatrixChange} />}
+                    label={<Typography color="text.secondary">Show Activities/Competencies Matrix</Typography>}
+                    labelPlacement="start"
+                  />
+                </Box>
+              </Box>
+              {showMatrix && (
+              <Box mb={6}>
+                <ActivitiesCompetenciesMatrix curriculum={curriculum} />
+              </Box>
+              )}
               <Stack
                 direction="column"
                 spacing={2}
               >
                 {sortBy(curriculum.competencies, (competency) => (competency.category === 'programming' ? 0 : 1)).map((competency) => (
-                  <Card key={competency.id}>
+                  <Card key={competency.id} id={competencyAnchor(competency)} className="anchor" sx={{ overflow: 'visible' }}>
                     <CompetencyCard
                       curriculum={curriculum}
                       competency={competency}

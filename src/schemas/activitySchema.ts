@@ -94,7 +94,8 @@ export function activityVariantFromId(id: string): ActivityVariant {
 }
 
 export function getVariantTitle(activity: Activity, variant: ActivityVariant) {
-  return activity.languagesInfo.find((i) => i.language === variant.language)?.title;
+  const maybeInfo = activity.languagesInfo.find((i) => i.language === variant.language);
+  return maybeInfo?.title || activity.slug;
 }
 
 export function canonicalVariantForLanguage(activity: Activity, language: string)

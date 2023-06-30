@@ -1,5 +1,4 @@
 import {
-  Avatar,
   AvatarGroup,
   Box,
   Card,
@@ -10,13 +9,12 @@ import {
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { competencyColor } from '../../src/curriculumCompetencies';
 import { activityVariantFromId, getVariantTitle } from '../../src/schemas/activitySchema';
 import { Curriculum, CurriculumActivity, curriculumId } from '../../src/schemas/curriculumSchema';
 import theme from '../../src/theme';
 import { CURRICULUM_QUERY_PARAM, activityAssetPathname, activityVariantPathname } from '../../src/urlUtils';
 import ActivityStatusBadge, { ActivityStatus } from '../ActivityStatusBadge';
-import GenericMuiIcon from '../GenericMuiIcon';
+import CompetencyAvatar from '../CompetencyAvatar';
 
 export default function ActivityCard({
   id,
@@ -38,7 +36,7 @@ export default function ActivityCard({
   const router = useRouter();
   const variant = activityVariantFromId(id);
   const { activity } = curriculumActivity;
-  const title = getVariantTitle(activity, variant) || activity.slug;
+  const title = getVariantTitle(activity, variant);
 
   const url = `${activityVariantPathname(variant)}?${new URLSearchParams({ [CURRICULUM_QUERY_PARAM]: curriculumId(curriculum.authorSlug, curriculum.slug) }).toString()}`;
 
@@ -107,17 +105,11 @@ export default function ActivityCard({
                 {curriculumActivity.learningObjectives.map((objective) => {
                   const competency = curriculum.competencies.find((c) => c.id === objective);
                   return competency ? (
-                    <Avatar
-                      sx={{
-                        bgcolor: theme.palette[competencyColor(competency)].main,
-                      }}
+                    <CompetencyAvatar
                       key={competency.id}
-                    >
-                      <GenericMuiIcon
-                        iconName={competency.icon}
-                        fontSize={avatarFontSize}
-                      />
-                    </Avatar>
+                      competency={competency}
+                      fontSize={avatarFontSize}
+                    />
                   ) : null;
                 })}
               </AvatarGroup>
