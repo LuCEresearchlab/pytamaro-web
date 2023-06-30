@@ -107,9 +107,11 @@ export default function ActivityCard({
                 {curriculumActivity.learningObjectives.map((objective) => {
                   const competency = curriculum.competencies.find((c) => c.id === objective);
                   return competency ? (
-                    <Avatar sx={{
-                      bgcolor: theme.palette[competencyColor(competency)].main,
-                    }}
+                    <Avatar
+                      sx={{
+                        bgcolor: theme.palette[competencyColor(competency)].main,
+                      }}
+                      key={competency.id}
                     >
                       <GenericMuiIcon
                         iconName={competency.icon}
