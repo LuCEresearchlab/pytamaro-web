@@ -11,6 +11,14 @@ import { Curriculum, CurriculumCompetency } from '../src/schemas/curriculumSchem
 import GenericMuiIcon from './GenericMuiIcon';
 import VariantCard from './VariantCard';
 
+function LongDescriptionTypography({ children = null }: { children?: React.ReactNode }) {
+  return (
+    <Typography color="text.secondary">
+      {children}
+    </Typography>
+  );
+}
+
 export default function CompetencyCard({
   curriculum, competency, fullWidth = false, noActivities = false,
 }: {
@@ -61,10 +69,13 @@ export default function CompetencyCard({
         </>
       )}
       {competency.longDescription && (
-        <Typography color="text.secondary" marginTop={3}>
-          {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-          <MDXRemote {...competency.longDescription} />
-        </Typography>
+        <Box marginTop={3}>
+          <MDXRemote
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...competency.longDescription}
+            components={{ p: LongDescriptionTypography }}
+          />
+        </Box>
       )}
     </CardContent>
   );
