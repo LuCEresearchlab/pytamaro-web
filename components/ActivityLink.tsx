@@ -2,7 +2,6 @@
 import {
   Link, useTheme,
 } from '@mui/material';
-import { useRouter } from 'next/router';
 import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
 import { activityVariantFromId } from '../src/schemas/activitySchema';
 import { activityVariantPathname } from '../src/urlUtils';
@@ -10,16 +9,12 @@ import { activityVariantPathname } from '../src/urlUtils';
 export default function ActivityLink({ id, fragment = undefined, children }:
 { id: string, fragment?: string, children: React.ReactNode }) {
   const theme = useTheme();
-  const router = useRouter();
-
   const variant = activityVariantFromId(id);
-
   const target = `${activityVariantPathname(variant)}${fragment ? `#${fragment}` : ''}`;
 
   const handleClick = () => {
     logAnalyticsEvent(AnalyticsEventName.ActivityLink, { variant, fragment });
-    router.push(target);
-    return false;
+    return true;
   };
 
   return (
