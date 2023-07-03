@@ -68,7 +68,7 @@ export default function ActivityCard({
           >
             <CardMedia
               component="img"
-              height={0.8 * height}
+              height={0.82 * height}
               color="red"
               image={activityAssetPathname(
                 variant.authorSlug,
@@ -80,19 +80,36 @@ export default function ActivityCard({
             />
             <CardContent sx={{
               paddingY: { xs: 0, sm: 1 },
-              maxHeight: 0.2 * height,
+              height: 0.18 * height,
               display: 'flex',
-              alignItems: 'center',
+              alignItems: 'baseline',
               paddingRight: 0.5,
             }}
             >
-              <Typography gutterBottom variant="h5" component="div" sx={{ fontSize: { xs: '1rem', sm: '1.2rem' } }}>
+              <Typography
+                variant="h5"
+                component="div"
+                sx={{
+                  fontSize: {
+                    xs: '1rem', sm: '1.2rem', textOverflow: 'ellipsis',
+                  },
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  flexShrink: 0,
+                  flexGrow: 1,
+                  flexBasis: 0,
+                  minWidth: 0,
+                }}
+              >
                 {title}
               </Typography>
               <AvatarGroup
                 max={maxCompetenciesShown}
                 sx={{
                   marginLeft: 'auto',
+                  flexShrink: 1,
+                  flexGrow: 0,
                   '& .MuiAvatarGroup-avatar': {
                     width: 24,
                     height: 24,
