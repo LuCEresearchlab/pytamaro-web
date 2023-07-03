@@ -23,10 +23,10 @@ import NetworkErrorSnackbar from '../../../../../../components/NetworkErrorSnack
 import ResetButton from '../../../../../../components/ResetButton';
 import SaveToToolboxButton from '../../../../../../components/SaveToToolboxButton';
 import ActivityCompetenciesSidebar from '../../../../../../components/Sidebar/ActivityCompetenciesSidebar';
+import ActivityImage from '../../../../../../components/Sidebar/ActivityImage';
 import CentralContent from '../../../../../../components/Sidebar/CentralContent';
 import CurriculumCompetenciesSidebar from '../../../../../../components/Sidebar/CurriculumCompetenciesSidebar';
-import LeftSidebar from '../../../../../../components/Sidebar/LeftSidebar';
-import RightSidebar from '../../../../../../components/Sidebar/RightSidebar';
+import Sidebar from '../../../../../../components/Sidebar/Sidebar';
 import TableOfContents from '../../../../../../components/Sidebar/TableOfContents';
 import ToolboxListSidebar from '../../../../../../components/Sidebar/ToolboxListSidebar';
 import VariantSelector from '../../../../../../components/VariantsSelector';
@@ -38,7 +38,7 @@ import useLocalProfile from '../../../../../../src/localStorage/useLocalProfile'
 import getNotebookContent from '../../../../../../src/notebook';
 import {
   Activity,
-  ActivityVariant, MarkdownCell, NotebookCell, activityVariantId,
+  ActivityVariant, MarkdownCell, NotebookCell, activityVariantId, getVariantTitle,
 } from '../../../../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../../../../src/schemas/authorSchema';
 import { Curriculum, curriculumToId } from '../../../../../../src/schemas/curriculumSchema';
@@ -107,7 +107,7 @@ export default function NotebookPage({
 
   const curriculumId = useCurriculumFromQuery();
   const curriculum = curricula.find((c) => curriculumToId(c) === curriculumId);
-  const title = activity.languagesInfo.find((i) => i.language === activityVariant.language)?.title;
+  const title = getVariantTitle(activity, activityVariant);
 
   const pageTitle = `${title} - PyTamaro`;
 
@@ -133,7 +133,7 @@ export default function NotebookPage({
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
         <DataSharingPreferenceDialog />
         <Grid container>
-          <LeftSidebar>
+          <Sidebar side="left">
             <ToolboxListSidebar />
             {curriculum && (
             <CurriculumCompetenciesSidebar
@@ -141,7 +141,7 @@ export default function NotebookPage({
               userActivities={metadata.activities}
             />
             )}
-          </LeftSidebar>
+          </Sidebar>
           <CentralContent>
             <Container maxWidth="md" ref={cellsRef}>
               <Typography variant="h3" marginY={3}>{title}</Typography>
@@ -202,15 +202,16 @@ export default function NotebookPage({
               </>
             )}
           </CentralContent>
-          <RightSidebar>
-            <TableOfContents initialized elementRef={cellsRef} selector="h2[id], h3[id]" title="In this activity" />
+          <Sidebar side="right">
+            <ActivityImage activity={activity} variant={activityVariant} title={title} />
+            <TableOfContents initialized elementRef={cellsRef} selector="h2[id], h3[id]" title="Contents" />
             {curriculum && (
               <ActivityCompetenciesSidebar
                 curriculum={curriculum}
                 activityVariant={activityVariant}
               />
             )}
-          </RightSidebar>
+          </Sidebar>
         </Grid>
       </Box>
     </div>

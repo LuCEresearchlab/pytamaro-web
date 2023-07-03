@@ -1,4 +1,4 @@
-import { Avatar, Stack } from '@mui/material';
+import { Avatar, Box, Stack } from '@mui/material';
 import { useState } from 'react';
 import { allActivities, competencyColor } from '../../src/curriculumCompetencies';
 import { ActivityVariant, activityVariantId } from '../../src/schemas/activitySchema';
@@ -8,6 +8,7 @@ import CompetencyCard from '../CompetencyCard';
 import GenericMuiIcon from '../GenericMuiIcon';
 import { myCompetencyChipId } from '../UserCompetenciesStack';
 import SidebarItemPopover from './SidebarItemPopover';
+import SidebarTitle from './SidebarTitle';
 
 const AVATAR_SIZE = 24;
 
@@ -74,23 +75,26 @@ export default function ActivityCompetenciesSidebar({ curriculum, activityVarian
     return null;
   }
   return (
-    <Stack
-      direction="row"
-      flexWrap="wrap"
-      useFlexGap
-      spacing={1}
-      sx={{
-        mt: 3,
-        ml: `calc(1px + ${theme.spacing(1)})`,
-        maxWidth: `calc(6 * (${AVATAR_SIZE}px + ${theme.spacing(1)}))`,
-      }}
-    >
-      {curriculumActivity.learningObjectives.map((objective) => {
-        const competency = curriculum.competencies.find((c) => c.id === objective);
-        return competency ? (
-          <CompetencyAvatar curriculum={curriculum} competency={competency} key={competency.id} />
-        ) : null;
-      })}
-    </Stack>
+    <Box>
+      <SidebarTitle>
+        Competencies
+      </SidebarTitle>
+      <Stack
+        direction="row"
+        flexWrap="wrap"
+        useFlexGap
+        spacing={1}
+        sx={{
+          maxWidth: `calc(6 * (${AVATAR_SIZE}px + ${theme.spacing(1)}))`,
+        }}
+      >
+        {curriculumActivity.learningObjectives.map((objective) => {
+          const competency = curriculum.competencies.find((c) => c.id === objective);
+          return competency ? (
+            <CompetencyAvatar curriculum={curriculum} competency={competency} key={competency.id} />
+          ) : null;
+        })}
+      </Stack>
+    </Box>
   );
 }

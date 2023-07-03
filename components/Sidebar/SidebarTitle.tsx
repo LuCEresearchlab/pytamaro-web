@@ -3,8 +3,7 @@ import { Typography } from '@mui/material';
 import theme from '../../src/theme';
 
 const SidebarTitle = styled(Typography)(() => ({
-  marginTop: theme.spacing(2),
-  marginBottom: theme.spacing(1.5),
+  paddingBottom: theme.spacing(1),
   fontSize: theme.typography.pxToRem(11),
   fontWeight: theme.typography.fontWeightBold,
   textTransform: 'uppercase',

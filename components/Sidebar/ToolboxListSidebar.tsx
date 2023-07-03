@@ -4,9 +4,9 @@ import { ToolboxFunction } from '../../src/localStorage/schema';
 import useLocalToolbox from '../../src/localStorage/useLocalToolbox';
 import theme from '../../src/theme';
 import ToolboxFunctionCard from '../ToolboxFunctionCard';
-import { SIDEBAR_CHIPS_FONT_SIZE, SIDEBAR_CHIPS_WIDTH } from './LeftSidebar';
+import { SIDEBAR_CHIPS_FONT_SIZE, SIDEBAR_CHIPS_WIDTH } from './Sidebar';
+import SidebarItem from './SidebarItem';
 import SidebarItemPopover from './SidebarItemPopover';
-import SidebarTitle from './SidebarTitle';
 
 function SidebarToolboxFunction({ fn }: { fn: ToolboxFunction }) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -52,10 +52,7 @@ export default function ToolboxListSidebar() {
   const { list } = useLocalToolbox();
   const toolboxFunctions = list();
   return toolboxFunctions.length > 0 ? (
-    <>
-      <SidebarTitle>
-        My Toolbox
-      </SidebarTitle>
+    <SidebarItem title="My Toolbox">
       <Stack
         spacing={1}
       >
@@ -63,6 +60,6 @@ export default function ToolboxListSidebar() {
           <SidebarToolboxFunction key={fn.name} fn={fn} />
         ))}
       </Stack>
-    </>
+    </SidebarItem>
   ) : null;
 }

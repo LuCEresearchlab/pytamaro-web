@@ -16,8 +16,7 @@ import NavigationBar from '../../../../components/NavigationBar';
 import ResetButton from '../../../../components/ResetButton';
 import CentralContent from '../../../../components/Sidebar/CentralContent';
 import CurriculumCompetenciesSidebar from '../../../../components/Sidebar/CurriculumCompetenciesSidebar';
-import LeftSidebar from '../../../../components/Sidebar/LeftSidebar';
-import RightSidebar from '../../../../components/Sidebar/RightSidebar';
+import Sidebar from '../../../../components/Sidebar/Sidebar';
 import TableOfContents from '../../../../components/Sidebar/TableOfContents';
 import { getAuthorProfile, listAuthorsWithContent } from '../../../../src/fs-content/authors';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
@@ -56,12 +55,12 @@ export default function CurriculumPage({ curriculum, author }:
         <InfoButton type="curriculum" authorSlug={curriculum.authorSlug} slug={curriculum.slug} />
       </NavigationBar>
       <Grid container>
-        <LeftSidebar>
+        <Sidebar side="left">
           <CurriculumCompetenciesSidebar
             curriculum={curriculum}
             userActivities={metadata.activities}
           />
-        </LeftSidebar>
+        </Sidebar>
         <CentralContent>
           <Stack spacing={2} alignItems="center">
             <Container maxWidth="md">
@@ -85,9 +84,9 @@ export default function CurriculumPage({ curriculum, author }:
             </Container>
           </Stack>
         </CentralContent>
-        <RightSidebar>
+        <Sidebar side="right">
           <TableOfContents elementRef={curriculumFlowRef} initialized={nodesInitialized} selector=".curriculum-unit[id]" title="In this curriculum" />
-        </RightSidebar>
+        </Sidebar>
       </Grid>
     </>
   );
