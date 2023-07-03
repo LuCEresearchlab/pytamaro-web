@@ -7,14 +7,14 @@ import throttle from 'lodash/throttle';
 import Link from 'next/link';
 import * as React from 'react';
 import { RefObject } from 'react';
-import theme from '../../src/theme';
+import th from '../../src/theme';
 import SidebarItem from './SidebarItem';
 
 const NavList = styled(Typography)({
   padding: 0,
   margin: 0,
   listStyle: 'none',
-  marginLeft: `calc(-1 * (1px + ${theme.spacing(1)}))`,
+  marginLeft: `calc(-1 * (1px + ${th.spacing(1)}))`,
 });
 
 const NavItem = styled(Link, {
