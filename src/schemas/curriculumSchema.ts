@@ -66,6 +66,7 @@ export interface RawCurriculum extends BaseCurriculum {
   competencies: RawCurriculumCompetency[],
   units: RawCurriculumUnit[],
   derivedFrom?: string[],
+  activitiesPreviewImage?: string[],
 }
 
 export interface Curriculum extends BaseCurriculum {
@@ -75,6 +76,7 @@ export interface Curriculum extends BaseCurriculum {
   competencies: CurriculumCompetency[],
   units: CurriculumUnit[],
   derivedFrom: string[],
+  activitiesPreviewImage: string[],
 }
 
 export function curriculumId(authorSlug: string, slug: string) {

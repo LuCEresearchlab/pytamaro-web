@@ -2,7 +2,7 @@ import {
   Card, CardActionArea, CardContent, Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import { shuffle } from 'lodash';
+import { concat, shuffle } from 'lodash';
 import { MDXRemote } from 'next-mdx-remote';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -24,10 +24,16 @@ function CurriculumDescriptionTypography({ children = null }: { children?: React
 
 export default function CurriculumCard({ curriculum, userActivities = undefined }:
 { curriculum: Curriculum, userActivities?: ActivityVariantMetadata[] }) {
-  const [randomActivities, setRandomActivities] = useState<CurriculumActivity[]>([]);
+  const [previewActivities, setPreviewActivities] = useState<CurriculumActivity[]>([]);
   useEffect(() => {
     const activities = allActivities(curriculum);
-    setRandomActivities(shuffle(activities));
+    const fixedActivities = curriculum.activitiesPreviewImage.map(
+      (activityId) => activities.find((a) => a.id === activityId),
+    ).filter((a) => a !== undefined) as CurriculumActivity[];
+    const otherActivities = shuffle(allActivities(curriculum).filter(
+      (a) => !curriculum.activitiesPreviewImage.includes(a.id),
+    ));
+    setPreviewActivities(concat(fixedActivities, otherActivities));
   }, [curriculum]);
   const userCompetencies = findUserCompetencies(curriculum, userActivities || []);
 
@@ -56,7 +62,7 @@ export default function CurriculumCard({ curriculum, userActivities = undefined 
           </Grid>
           <Grid xs={3}>
             <Grid container>
-              {randomActivities.slice(0, 4).map((activity) => (
+              {previewActivities.slice(0, 4).map((activity) => (
                 <Grid
                   md={6}
                   key={activity.id}

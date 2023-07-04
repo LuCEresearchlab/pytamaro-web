@@ -13,6 +13,7 @@ The object describing a curriculum contains the following fields:
 - `title`: the title of the curriculum
 - `description`: the description of the curriculum (supports Markdown)
 - `visibility`: ignored for now
+- `activitiesPreviewImage`: an optional list of activity IDs that belong to this curriculum and are to be preferred when generating a preview image for the curriculum
 - `competencies`: an array of objects with an `id`, `name`, `description`, `longDescription` (supports Markdown), `icon` (the name of a [Material Icon](https://mui.com/material-ui/material-icons/) representing the competency), and `category` (whether the competency is about learning a general `programming` skill or about `graphics`).
 - `units`: an array of objects with a `title` and `steps`. Each unit represents a sequence of `steps` that must be completed in order.
   - Each step contains multiple alternative `activities`; learners are required to complete at least one of them to complete the step. A step can be optional by setting `isOptional` to `true`.
