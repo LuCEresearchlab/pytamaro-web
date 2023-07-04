@@ -22,6 +22,7 @@ import { ActivityNodeData, color } from './utils';
 
 import 'reactflow/dist/style.css';
 import { Metadata } from '../../src/localStorage/schema';
+import scrollToAnchor from '../../src/scrollToAnchor';
 import useWidth from '../../src/useWidth';
 import { activityVariantStatus } from '../ActivityStatusBadge';
 
@@ -297,6 +298,7 @@ function Flow({ nodes, edges, setNodesInitialized }:
   const nodesInitialized = useNodesInitialized();
   useEffect(() => {
     setNodesInitialized(nodesInitialized);
+    scrollToAnchor();
   }, [nodesInitialized, setNodesInitialized]);
   return (
     <ReactFlow

@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { getVariantTitle } from '../../src/schemas/activitySchema';
+import { activityVariantId, getVariantTitle } from '../../src/schemas/activitySchema';
 import { Curriculum, CurriculumActivity, curriculumId } from '../../src/schemas/curriculumSchema';
 import theme from '../../src/theme';
 import { CURRICULUM_QUERY_PARAM, activityAssetPathname, activityVariantPathname } from '../../src/urlUtils';
@@ -45,12 +45,14 @@ export default function ActivityCard({
 
   return (
     <Box
+      id={activityVariantId(variant)}
       sx={{
         width: width || '100%',
         height: height || '100%',
         opacity: isUnlocked ? 1 : 0.38,
         position: 'relative',
         cursor: isUnlocked ? 'auto' : 'not-allowed',
+        scrollMarginTop: 'calc(64px + 20px + 0.5vh)',
       }}
     >
       <ActivityStatusBadge status={status} locked={!isUnlocked}>

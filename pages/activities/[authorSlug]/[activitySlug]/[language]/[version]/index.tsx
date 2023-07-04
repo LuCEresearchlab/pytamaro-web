@@ -194,7 +194,7 @@ export default function NotebookPage({
                   <CodeDownloadButton codeCells={codeCells} />
                   <MarkCompletedButton completed={completed} toggleCompleted={toggleCompleted} />
                 </Stack>
-                <BackToCurriculum />
+                <BackToCurriculum activityVariant={activityVariant} />
                 <Container maxWidth="md" sx={{ textAlign: 'center' }}>
                   <Divider sx={{ mb: 3 }} />
                   <AttributionInfo type="activity" author={author} derivedFrom={activity.derivedFrom} />

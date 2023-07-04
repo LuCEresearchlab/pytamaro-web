@@ -3,6 +3,7 @@ import type { editor as EditorNamespace } from 'monaco-editor';
 import { useEffect, useRef, useState } from 'react';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import { moduleImportCompletionProvider, pytamaroImportCompletionProvider, toolboxImportCompletionProvider } from '../src/monacoSuggestions';
+import scrollToAnchor from '../src/scrollToAnchor';
 import theme from '../src/theme';
 
 // Load the same version of monaco-editor specified in the package.json from a
@@ -78,13 +79,7 @@ export default function CodeEditor({
     // After the editor has been loaded and its height has been updated,
     // (re-)scroll the anchor element into view.
     updateHeight();
-    const { hash } = window.location;
-    if (hash) {
-      const element = document.getElementById(hash.slice(1));
-      if (element) {
-        element.scrollIntoView();
-      }
-    }
+    scrollToAnchor();
   };
 
   // Effect to update the condition that determines whether the code execution is allowed or not.
