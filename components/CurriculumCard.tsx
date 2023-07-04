@@ -1,5 +1,6 @@
 import {
-  Card, CardActionArea, CardContent, Typography,
+  Card, CardActionArea, CardContent,
+  Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { concat, shuffle } from 'lodash';
@@ -19,6 +20,16 @@ function CurriculumDescriptionTypography({ children = null }: { children?: React
     <Typography variant="subtitle1" color="text.secondary" component="div">
       {children}
     </Typography>
+  );
+}
+
+function CurriculumDescriptionListItem({ children = null }: { children?: React.ReactNode }) {
+  return (
+    <li>
+      <CurriculumDescriptionTypography>
+        {children}
+      </CurriculumDescriptionTypography>
+    </li>
   );
 }
 
@@ -56,11 +67,14 @@ export default function CurriculumCard({ curriculum, userActivities = undefined 
               <MDXRemote
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...curriculum.description}
-                components={{ p: CurriculumDescriptionTypography }}
+                components={{
+                  p: CurriculumDescriptionTypography,
+                  li: CurriculumDescriptionListItem,
+                }}
               />
             </CardContent>
           </Grid>
-          <Grid xs={3}>
+          <Grid xs={3} display="flex" alignItems="center">
             <Grid container>
               {previewActivities.slice(0, 4).map((activity) => (
                 <Grid
