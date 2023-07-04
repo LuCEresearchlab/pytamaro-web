@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { Handle, NodeProps, Position } from 'reactflow';
+import { activityVariantId } from '../../src/schemas/activitySchema';
 import ActivityCard from './ActivityCard';
 import { ActivityNodeData } from './utils';
 
@@ -75,12 +76,11 @@ export default function OptionalActivitiesNode({ data }: NodeProps<NodeData>) {
             }}
           >
             {activityInfo.map(({
-              id, curriculumActivity, curriculum, status, isUnlocked,
+              curriculumActivity, curriculum, status, isUnlocked,
               width: awidth, height: aheight,
             }) => (
               <ActivityCard
-                key={id}
-                id={id}
+                key={activityVariantId(curriculumActivity.variant)}
                 curriculumActivity={curriculumActivity}
                 curriculum={curriculum}
                 status={status}
