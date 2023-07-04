@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { activityVariantFromId, getVariantTitle } from '../../src/schemas/activitySchema';
+import { getVariantTitle } from '../../src/schemas/activitySchema';
 import { Curriculum, CurriculumActivity, curriculumId } from '../../src/schemas/curriculumSchema';
 import theme from '../../src/theme';
 import { CURRICULUM_QUERY_PARAM, activityAssetPathname, activityVariantPathname } from '../../src/urlUtils';
@@ -17,25 +17,22 @@ import ActivityStatusBadge, { ActivityStatus } from '../ActivityStatusBadge';
 import CompetencyAvatar from '../CompetencyAvatar';
 
 export default function ActivityCard({
-  id,
   curriculumActivity,
   curriculum,
   status,
   isUnlocked,
-  width,
-  height,
+  width = undefined,
+  height = undefined,
 }: {
-  id: string,
   curriculumActivity: CurriculumActivity,
   curriculum: Curriculum,
   status: ActivityStatus,
   isUnlocked: boolean,
-  width: number,
-  height: number,
+  width?: number | undefined,
+  height?: number | undefined,
 }) {
   const router = useRouter();
-  const variant = activityVariantFromId(id);
-  const { activity } = curriculumActivity;
+  const { activity, variant } = curriculumActivity;
   const title = getVariantTitle(activity, variant);
 
   const url = `${activityVariantPathname(variant)}?${new URLSearchParams({ [CURRICULUM_QUERY_PARAM]: curriculumId(curriculum.authorSlug, curriculum.slug) }).toString()}`;
@@ -49,8 +46,8 @@ export default function ActivityCard({
   return (
     <Box
       sx={{
-        width,
-        height,
+        width: width || '100%',
+        height: height || '100%',
         opacity: isUnlocked ? 1 : 0.38,
         position: 'relative',
         cursor: isUnlocked ? 'auto' : 'not-allowed',
@@ -68,7 +65,7 @@ export default function ActivityCard({
           >
             <CardMedia
               component="img"
-              height={0.82 * height}
+              height={height ? 0.82 * height : '82%'}
               color="red"
               image={activityAssetPathname(
                 variant.authorSlug,
@@ -80,7 +77,7 @@ export default function ActivityCard({
             />
             <CardContent sx={{
               paddingY: { xs: 0, sm: 1 },
-              height: 0.18 * height,
+              height: height ? 0.18 * height : '18%',
               display: 'flex',
               alignItems: 'baseline',
               paddingRight: 0.5,

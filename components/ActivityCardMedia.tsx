@@ -2,12 +2,12 @@ import { CardMedia } from '@mui/material';
 import { Activity, ActivityVariant } from '../src/schemas/activitySchema';
 import { activityAssetPathname } from '../src/urlUtils';
 
-export default function CompactActivityVariantCard({ activity, variant } :
-{ activity: Activity, variant: ActivityVariant }) {
+export default function CompactActivityVariantCard({ activity, variant, height = '100rem' } :
+{ activity: Activity, variant: ActivityVariant, height?: string }) {
   return (
     <CardMedia
       component="img"
-      height="100rem"
+      height={height}
       image={activityAssetPathname(
         variant.authorSlug,
         variant.activitySlug,
