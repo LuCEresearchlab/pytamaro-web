@@ -1,10 +1,11 @@
-import * as React from 'react';
-import Document, {
-  Html, Head, Main, NextScript,
-} from 'next/document';
 import createEmotionServer from '@emotion/server/create-instance';
-import theme from '../src/theme';
+import Document, {
+  Head,
+  Html,
+  Main, NextScript,
+} from 'next/document';
 import createEmotionCache from '../src/createEmotionCache';
+import theme from '../src/theme';
 
 export default class MyDocument extends Document {
   render() {
@@ -17,7 +18,7 @@ export default class MyDocument extends Document {
           <meta name="emotion-insertion-point" content="" />
           {(this.props as any).emotionStyleTags}
         </Head>
-        <body>
+        <body style={{ backgroundColor: '#e0f6ff' }}>
           <Main />
           <NextScript />
         </body>
