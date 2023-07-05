@@ -114,7 +114,7 @@ export default function CodeEditor({
 
   // Effect to register the completion providers.
   useEffect(() => {
-    if (monacoInstance && monacoInstance.pytamaroProvidesRegistered === undefined) {
+    if (monacoInstance && !monacoInstance.pytamaroCompletionProvidersRegistered) {
       const providers = [
         toolboxImportCompletionProvider(monacoInstance, toolboxFunctions),
         moduleImportCompletionProvider(monacoInstance),
@@ -123,9 +123,10 @@ export default function CodeEditor({
       const disposers = providers.map(
         (provider) => monacoInstance.languages.registerCompletionItemProvider(LANGUAGE, provider),
       );
-      monacoInstance.pytamaroProvidesRegistered = true;
+      monacoInstance.pytamaroCompletionProvidersRegistered = true;
       return () => {
         disposers.forEach((disposer) => disposer.dispose());
+        monacoInstance.pytamaroCompletionProvidersRegistered = false;
       };
     }
     return () => {};
