@@ -58,7 +58,7 @@ async function executeOnServer(
   idx: number,
   toolboxFunctions: ToolboxFunction[],
 )
-  : Promise<ExecutionResponse | undefined> {
+  : Promise<ExecutionResponse> {
   try {
     return (await axios.post('/api/execute', {
       sources,
@@ -66,7 +66,7 @@ async function executeOnServer(
       toolboxFunctions,
     })).data;
   } catch {
-    return undefined;
+    return { type: 'network-error', content: '' };
   }
 }
 
@@ -87,7 +87,7 @@ export function useActivity(
   activityVariant: ActivityVariant,
   preExecute: () => ToolboxFunction | undefined = () => undefined,
   postExecuteSingleCell:
-  (idx: number, executionResponse: ExecutionResponse | undefined) => void = () => undefined,
+  (idx: number, executionResponse: ExecutionResponse) => void = () => {},
 ) {
   const { getFunction } = useLocalToolbox();
   const variantId = activityVariantId(activityVariant);
@@ -166,9 +166,13 @@ export function useActivity(
       (currentCodeExecutionStates) => produce(currentCodeExecutionStates, (draft) => {
         draft[idx].executionInProgress = false;
         if (response !== undefined) {
-          draft[idx].executionResponse = response;
-          draft[idx].outputSynced = true;
-          draft[idx].outputAreaVisible = response.content.length > 0;
+          if (response.type === 'network-error') {
+            setNetworkError(true);
+          } else {
+            draft[idx].executionResponse = response;
+            draft[idx].outputSynced = true;
+            draft[idx].outputAreaVisible = response.content.length > 0;
+          }
         }
       }),
     );

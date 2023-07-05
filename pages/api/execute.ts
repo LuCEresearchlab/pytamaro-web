@@ -71,8 +71,10 @@ async function doExecution(sources: string[], idx: number, toolboxFunctions: Too
       resData = { type: 'success', content: glotResponse.stdout };
     }
   } catch (e) {
-    // @ts-ignore
-    resData = { type: 'error', content: e.response?.data?.message };
+    // Log the error on the server
+    // eslint-disable-next-line no-console
+    console.error(e);
+    resData = { type: 'network-error', content: '' };
   }
   return resData;
 }

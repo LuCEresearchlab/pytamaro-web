@@ -4,7 +4,7 @@ import { PythonName, imported_names } from './python-analyzer/python_analyzer';
 import { countLines, emptyLines, joinLines } from './sourceUtils';
 
 export interface ExecutionResponse {
-  type: string,
+  type: 'success' | 'error' | 'network-error',
   content: string,
 }
 
