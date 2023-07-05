@@ -551,6 +551,84 @@ export default function SummerAcademy() {
 
         <Container maxWidth="lg" component="main">
           <Grid container spacing={5} alignItems="flex-end">
+
+            <Grid
+              item
+              xs={12}
+              sm={4}
+            >
+              <Card>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    margin: '1rem 0',
+                  }}
+                >
+                  <Avatar
+                    src="people/AgneseZamboni.jpg"
+                    sx={{ width: 80, height: 80 }}
+                  />
+                </Box>
+                <CardHeader
+                  title="Agnese Zamboni"
+                  subheader="Student of Informatics"
+                  titleTypographyProps={{ align: 'center' }}
+                  subheaderTypographyProps={{
+                    align: 'center',
+                  }}
+                />
+                <CardContent>
+                  <Typography
+                    component="p"
+                    variant="subtitle1"
+                  >
+                    Agnese is studying informatics at USI, and she is
+                    contributing to PyTamaro funded by an USI Didactics Innovation grant.
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid
+              item
+              xs={12}
+              sm={4}
+            >
+              <Card>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    margin: '1rem 0',
+                  }}
+                >
+                  <Avatar
+                    src="people/LucaChiodini.jpg"
+                    sx={{ width: 80, height: 80 }}
+                  />
+                </Box>
+                <CardHeader
+                  title="Luca Chiodini"
+                  subheader="PhD Student of Informatics"
+                  titleTypographyProps={{ align: 'center' }}
+                  subheaderTypographyProps={{
+                    align: 'center',
+                  }}
+                />
+                <CardContent>
+                  <Typography
+                    component="p"
+                    variant="subtitle1"
+                  >
+                    Luca is leading the PyTamaro effort
+                    with the goal of making programming education
+                    fun and effective at the same time.
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
             <Grid
               item
               xs={12}
@@ -604,12 +682,12 @@ export default function SummerAcademy() {
                   }}
                 >
                   <Avatar
-                    src="people/AgneseZamboni.jpg"
+                    src="people/CostanzaRodriguezGavazzi.jpg"
                     sx={{ width: 80, height: 80 }}
                   />
                 </Box>
                 <CardHeader
-                  title="Agnese Zamboni"
+                  title="Costanza Rodriguez Gavazzi"
                   subheader="Student of Informatics"
                   titleTypographyProps={{ align: 'center' }}
                   subheaderTypographyProps={{
@@ -621,8 +699,49 @@ export default function SummerAcademy() {
                     component="p"
                     variant="subtitle1"
                   >
-                    Agnese is studying informatics at USI, and she is
-                    contributing to PyTamaro funded by an USI Didactics Innovation grant.
+                    Costanza is studying informatics at USI,
+                    and she is assisting in the PyTamaro Summer Academy
+                    to help you learn programming.
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+
+            <Grid
+              item
+              xs={12}
+              sm={4}
+            >
+              <Card>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    margin: '1rem 0',
+                  }}
+                >
+                  <Avatar
+                    src="people/DavideFrova.jpg"
+                    sx={{ width: 80, height: 80 }}
+                  />
+                </Box>
+                <CardHeader
+                  title="Davide Frova"
+                  subheader="Student of Informatics"
+                  titleTypographyProps={{ align: 'center' }}
+                  subheaderTypographyProps={{
+                    align: 'center',
+                  }}
+                />
+                <CardContent>
+                  <Typography
+                    component="p"
+                    variant="subtitle1"
+                  >
+                    Davide is studying informatics at USI,
+                    and he is assisting in the PyTamaro Summer Academy
+                    to help you learn programming.
                   </Typography>
                 </CardContent>
               </Card>
