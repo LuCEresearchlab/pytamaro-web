@@ -18,7 +18,7 @@ const NavList = styled(Typography)({
 });
 
 const NavItem = styled(Link, {
-  shouldForwardProp: (prop) => prop !== 'active',
+  shouldForwardProp: (prop) => prop !== 'active' && prop !== 'indent',
 })<{ active: boolean, theme: any, indent: boolean }>(({ active, theme, indent }) => {
   const activeStyles = {
     borderLeftColor: theme.pytamaro.redColor,
