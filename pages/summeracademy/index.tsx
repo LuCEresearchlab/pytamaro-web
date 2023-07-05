@@ -707,7 +707,6 @@ export default function SummerAcademy() {
               </Card>
             </Grid>
 
-
             <Grid
               item
               xs={12}
