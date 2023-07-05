@@ -19,7 +19,7 @@ const NavList = styled(Typography)({
 
 const NavItem = styled(Link, {
   shouldForwardProp: (prop) => prop !== 'active',
-})<{ active: boolean, theme: any }>(({ active, theme }) => {
+})<{ active: boolean, theme: any, indent: boolean }>(({ active, theme, indent }) => {
   const activeStyles = {
     borderLeftColor: theme.pytamaro.redColor,
     color: theme.pytamaro.redColor,
@@ -31,7 +31,7 @@ const NavItem = styled(Link, {
   return [
     {
       fontSize: theme.typography.pxToRem(13),
-      padding: theme.spacing(0, 1, 0, 1),
+      padding: theme.spacing(0, 1, 0, indent ? 2.5 : 1),
       margin: theme.spacing(0.5, 0, 1, 0),
       borderLeft: '1px solid transparent',
       boxSizing: 'border-box',
@@ -77,6 +77,7 @@ function useThrottledOnScroll(callback: any, delay: number) {
 interface TOCItem {
   text: string;
   hash: string;
+  indent: boolean;
 }
 
 export default function TableOfContents({
@@ -89,6 +90,7 @@ export default function TableOfContents({
       const headings = Array.from(elementRef.current.querySelectorAll(selector)).map((heading) => ({
         text: heading.textContent || '',
         hash: heading.id,
+        indent: parseInt(heading.tagName[1], 10) >= 3,
       }));
       setItems(headings);
     }
@@ -158,6 +160,7 @@ export default function TableOfContents({
       href={`#${item.hash}`}
       onClick={handleClick(item.hash)}
       active={activeState === item.hash}
+      indent={item.indent}
     >
       <span dangerouslySetInnerHTML={{ __html: item.text }} />
     </NavItem>
