@@ -623,7 +623,7 @@ export default function SummerAcademy() {
                   >
                     Luca is leading the PyTamaro effort
                     with the goal of making programming education
-                    fun and effective at the same time.
+                    interesting and effective at the same time.
                   </Typography>
                 </CardContent>
               </Card>
