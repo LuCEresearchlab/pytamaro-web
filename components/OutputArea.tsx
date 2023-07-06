@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Card } from '@mui/material';
 import AnsiUp from 'ansi_up';
 import { isEmpty, negate } from 'lodash';
 import { ExecutionResponse } from '../src/codeExecution';
@@ -14,6 +14,8 @@ const OUTPUT_ELEMENT_STYLE = {
   marginBottom: theme.spacing(1),
 };
 
+const GRAPHIC_BACKGROUND = theme.palette.grey[50];
+
 function imgElement(dataURI: string) {
   return (
     <Box sx={{
@@ -21,8 +23,9 @@ function imgElement(dataURI: string) {
       justifyContent: 'center',
       display: 'flex',
       padding: theme.spacing(0.5),
+      backgroundColor: GRAPHIC_BACKGROUND,
       '&:hover': {
-        background: `repeating-conic-gradient(${theme.palette.grey[300]} 0% 25%, transparent 0 50%) 50% / ${theme.spacing(1)} ${theme.spacing(1)}`,
+        background: `repeating-conic-gradient(${theme.palette.grey[300]} 0% 25%, ${GRAPHIC_BACKGROUND} 0 50%) 50% / ${theme.spacing(1)} ${theme.spacing(1)}`,
       },
     }}
     >
@@ -38,17 +41,28 @@ function preElement(htmlContent: string) {
 }
 
 export default function OutputArea(
-  { executionResponse }: { executionResponse: ExecutionResponse },
+  { executionError, executionResponse }:
+  { executionError: boolean, executionResponse: ExecutionResponse },
 ) {
   const pytamaroDataUriRegex = /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
   const htmlContent = new AnsiUp().ansi_to_html(executionResponse.content);
   return (
-    <div className="output-area">
-      {htmlContent.split(pytamaroDataUriRegex).filter(negate(isEmpty)).map((chunk: string) => (
-        chunk.startsWith(dataURIPrefix('image/png')) || chunk.startsWith(dataURIPrefix('image/gif'))
-          ? imgElement(chunk)
-          : preElement(chunk)
-      ))}
-    </div>
+    <Card
+      variant="outlined"
+      sx={{
+        backgroundColor: executionError ? '#101010' : GRAPHIC_BACKGROUND,
+        overflowX: 'auto',
+        width: '100%',
+        px: 2,
+      }}
+    >
+      <div className="output-area">
+        {htmlContent.split(pytamaroDataUriRegex).filter(negate(isEmpty)).map((chunk: string) => (
+          chunk.startsWith(dataURIPrefix('image/png')) || chunk.startsWith(dataURIPrefix('image/gif'))
+            ? imgElement(chunk)
+            : preElement(chunk)
+        ))}
+      </div>
+    </Card>
   );
 }

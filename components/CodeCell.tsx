@@ -14,7 +14,6 @@ import { styled } from '@mui/material/styles';
 import { ExecutionResponse } from '../src/codeExecution';
 import { CodeCellExecutionState, CodeCellState } from '../src/localStorage/schema';
 import { ActivityVariant } from '../src/schemas/activitySchema';
-import theme from '../src/theme';
 import CodeEditor from './CodeEditor';
 import DocumentationStripe from './DocumentationStripe';
 import OutputArea from './OutputArea';
@@ -112,17 +111,10 @@ export default function CodeCell({
               color="error"
               invisible={codeCellExecutionState.outputSynced}
             >
-              <Card
-                variant="outlined"
-                sx={{
-                  backgroundColor: executionError ? '#101010' : theme.palette.grey[50],
-                  overflowX: 'auto',
-                  width: '100%',
-                  px: 2,
-                }}
-              >
-                <OutputArea executionResponse={executionResponse} />
-              </Card>
+              <OutputArea
+                executionError={executionError}
+                executionResponse={executionResponse}
+              />
             </StaleOutputBadge>
           </CardContent>
         </Collapse>
