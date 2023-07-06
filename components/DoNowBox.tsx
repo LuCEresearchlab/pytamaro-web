@@ -1,20 +1,28 @@
 import { AccessAlarm } from '@mui/icons-material';
 import {
-  Alert, AlertTitle, Button, Collapse,
+  Alert, AlertTitle, Button, Collapse, TextField,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import { ActivityVariant } from '../src/schemas/activitySchema';
+import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import theme from '../src/theme';
 
 const doNowBoxClassName = 'do-now-box';
 
-export default function DoNowBox({ id, children, activityVariant }:
-{ id: string, children: React.ReactNode, activityVariant: ActivityVariant }) {
-  const { getActivityMetadata, setActivityMetadata } = useLocalProfile();
+export default function DoNowBox({
+  id, requireAnswer, children, activityVariant,
+}:
+{ id: string,
+  requireAnswer: boolean, children: React.ReactNode, activityVariant: ActivityVariant }) {
+  const { metadata, getActivityMetadata, setActivityMetadata } = useLocalProfile();
   const currentActivity = getActivityMetadata(activityVariant);
-  const alreadyDidIt = currentActivity?.doNowCompleted.includes(id) ?? false;
+  const currentDoNowInfo = currentActivity?.doNowCompleted.find(
+    ({ id: completedId }) => completedId === id,
+  );
+  const alreadyDidIt = currentDoNowInfo !== undefined;
+  const [answer, setAnswer] = useState(currentDoNowInfo?.answer || '');
   const setBlurred = useCallback((blurred: boolean) => {
     const className = 'blurred';
     let nextDoNowEncountered = false;
@@ -53,15 +61,16 @@ export default function DoNowBox({ id, children, activityVariant }:
     setBlurred(false);
     setShowDidItButton(false);
     logAnalyticsEvent(AnalyticsEventName.DoNowCompleted, { activity: activityVariant, id });
-    // Wait a second to allow the collapse animation to finish
+    storeDbEvent(EventName.DoNowCompleted, metadata, { activityVariant, id, answer });
+    // Wait before updating the metadata, allowing the collapse animation to finish
     setTimeout(() => {
       if (currentActivity) {
         setActivityMetadata(activityVariant, {
           ...currentActivity,
-          doNowCompleted: [...currentActivity.doNowCompleted, id],
+          doNowCompleted: [...currentActivity.doNowCompleted, { id, answer }],
         });
       }
-    }, 1000);
+    }, 250);
   };
 
   return (
@@ -74,8 +83,22 @@ export default function DoNowBox({ id, children, activityVariant }:
     >
       <AlertTitle sx={{ fontSize: '1rem' }}>Do Now!</AlertTitle>
       {children}
+      {requireAnswer && (
+      <TextField
+        sx={{ mb: showDidItButton ? 2 : 0 }}
+        size="small"
+        label="Your answer"
+        variant="outlined"
+        fullWidth
+        value={answer}
+        onChange={(event) => setAnswer(event.target.value)}
+        disabled={alreadyDidIt}
+      />
+      )}
       <Collapse in={showDidItButton}>
-        <Button variant="outlined" color="warning" onClick={handleDidIt}>I did it!</Button>
+        <Button variant="outlined" color="warning" onClick={handleDidIt} disabled={requireAnswer && !answer}>
+          {requireAnswer ? 'Save and Continue' : 'I did it!'}
+        </Button>
       </Collapse>
     </Alert>
   );

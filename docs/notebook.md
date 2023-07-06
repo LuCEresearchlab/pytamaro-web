@@ -49,7 +49,11 @@ Special components that can be used:
   You can optionally specify a fragment to link to a specific section of the activity. The `id` should refer to a fully qualified activity variant identifier,
   i.e. it should include the author's slug, the activity's slug, the language, and the version.
   The content of the tag will be rendered as the link's text.
-- `<DoNow id="describe-rectangle">How would you describe the figure so that your friend can draw it?</DoNow>` to render a "Do Now" box with the specified content. A "Do Now" box blurs the rest of the activity until the user has clicked on a "I did it" button. This forces learners to think before proceeding. The `id` just needs to be unique within an activity, so that we can keep track of which "Do Now" boxes the user has already completed and avoid blurring the content again on subsequent visits.
+- `<DoNow id="describe-rectangle">How would you describe the figure so that your friend can draw it?</DoNow>` to render a "Do Now" box with the specified content. A "Do Now" box blurs the rest of the activity until the user has clicked on a "I did it" button.
+This forces learners to think before proceeding.
+The `id` just needs to be unique within an activity, so that we can keep track of which "Do Now" boxes the user has already completed and avoid blurring the content again on subsequent visits.
+  
+  Optionally, you can add a `requireAnswer` attribute (e.g., `<DoNow id="..." requireAnswer>...</DoNow>`) to force the user to type an answer before being able to unblur the rest of the activity.
 - `<ReactPlayer url='...' />` (see [more on usage](https://github.com/cookpete/react-player)).
 - Material UI's [Stack](https://mui.com/material-ui/react-stack/). For instance, you might want to display multiple images side by side with some spacing:
   ```

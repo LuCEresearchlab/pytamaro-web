@@ -5,6 +5,7 @@ import { ActivityVariant, activityVariantId } from '../schemas/activitySchema';
 import { Curriculum, curriculumToId } from '../schemas/curriculumSchema';
 import migrateToV2, { MetadataV1 } from './migrations/v2';
 import migrateToV3, { MetadataV2 } from './migrations/v3';
+import migrateToV4, { MetadataV3 } from './migrations/v4';
 import {
   ActivityVariantMetadata, METADATA_KEY, Metadata, getDefaultMetadata,
 } from './schema';
@@ -15,6 +16,9 @@ function migrations(metadata: { dataModelVersion: string }) : Metadata {
   }
   if (metadata.dataModelVersion === '2') {
     return migrations(migrateToV3(metadata as MetadataV2));
+  }
+  if (metadata.dataModelVersion === '3') {
+    return migrations(migrateToV4(metadata as MetadataV3));
   }
   return metadata as Metadata;
 }

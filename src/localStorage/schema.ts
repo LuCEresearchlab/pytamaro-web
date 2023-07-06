@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { ActivityVariant } from '../schemas/activitySchema';
 
-export const CURRENT_VERSION = '3';
+export const CURRENT_VERSION = '4';
 
 export interface Metadata {
   dataModelVersion: string;
@@ -28,12 +28,17 @@ export interface PythonFunctionArgument {
   typeUnparsed: string,
 }
 
+export interface DoNowMetadata {
+  id: string,
+  answer: string,
+}
+
 export interface ActivityVariantMetadata {
   id: string,
   codeCellsKey: string,
   cellsModified: boolean,
   completed: boolean,
-  doNowCompleted: string[]
+  doNowCompleted: DoNowMetadata[],
 }
 
 export interface CurriculumMetadata {

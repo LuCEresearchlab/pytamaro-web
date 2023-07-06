@@ -90,8 +90,11 @@ export default function MarkdownCellComponent({ cell, activityVariant } :
       PyTamaroAPIComponent(name, activityVariant)
     ),
     Activity: ActivityLink,
-    DoNow: ({ id, children } : { id: string, children: ReactNode }) => (
-      DoNowBox({ id, children, activityVariant })
+    DoNow: ({ id, requireAnswer = false, children } :
+    { id: string, requireAnswer?: boolean, children: ReactNode }) => (
+      DoNowBox({
+        id, requireAnswer, children, activityVariant,
+      })
     ),
   };
   return (

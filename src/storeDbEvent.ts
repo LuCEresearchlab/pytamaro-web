@@ -7,6 +7,7 @@ export enum EventName {
   UserFeedback = 'user_feedback',
   AddToolboxFunction = 'add_toolbox_function',
   DeleteToolboxFunction = 'delete_toolbox_function',
+  DoNowCompleted = 'do_now_completed',
 }
 
 export async function alwaysStoreDbEvent(
