@@ -18,8 +18,8 @@ function imgElement(dataURI: string) {
   return (
     <Box sx={{
       ...OUTPUT_ELEMENT_STYLE,
-      width: 'max-content',
-      height: 'max-content',
+      justifyContent: 'center',
+      display: 'flex',
       padding: theme.spacing(0.5),
       '&:hover': {
         background: `repeating-conic-gradient(${theme.palette.grey[300]} 0% 25%, transparent 0 50%) 50% / ${theme.spacing(1)} ${theme.spacing(1)}`,
@@ -43,7 +43,7 @@ export default function OutputArea(
   const pytamaroDataUriRegex = /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
   const htmlContent = new AnsiUp().ansi_to_html(executionResponse.content);
   return (
-    <div className="output-area" style={{ width: 'max-content' }}>
+    <div className="output-area">
       {htmlContent.split(pytamaroDataUriRegex).filter(negate(isEmpty)).map((chunk: string) => (
         chunk.startsWith(dataURIPrefix('image/png')) || chunk.startsWith(dataURIPrefix('image/gif'))
           ? imgElement(chunk)
