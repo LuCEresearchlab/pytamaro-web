@@ -14,8 +14,6 @@ const OUTPUT_ELEMENT_STYLE = {
   marginBottom: theme.spacing(1),
 };
 
-const GRAPHIC_BACKGROUND = theme.palette.grey[50];
-
 function imgElement(dataURI: string) {
   return (
     <Box sx={{
@@ -23,9 +21,8 @@ function imgElement(dataURI: string) {
       justifyContent: 'center',
       display: 'flex',
       padding: theme.spacing(0.5),
-      backgroundColor: GRAPHIC_BACKGROUND,
       '&:hover': {
-        background: `repeating-conic-gradient(${theme.palette.grey[300]} 0% 25%, ${GRAPHIC_BACKGROUND} 0 50%) 50% / ${theme.spacing(1)} ${theme.spacing(1)}`,
+        background: `repeating-conic-gradient(${theme.palette.grey[300]} 0% 25%, transparent 0 50%) 50% / ${theme.spacing(1)} ${theme.spacing(1)}`,
       },
     }}
     >
@@ -50,10 +47,11 @@ export default function OutputArea(
     <Card
       variant="outlined"
       sx={{
-        backgroundColor: executionError ? '#101010' : GRAPHIC_BACKGROUND,
+        backgroundColor: theme.palette.grey[50],
         overflowX: 'auto',
         width: '100%',
         px: 2,
+        borderColor: executionError ? 'error.main' : undefined,
       }}
     >
       <div className="output-area">
