@@ -738,9 +738,9 @@ export default function SummerAcademy() {
                     component="p"
                     variant="subtitle1"
                   >
-                    Davide is studying informatics at USI,
-                    and he is assisting in the PyTamaro Summer Academy
-                    to help you learn programming.
+                    Davide is studying informatics at USI.
+                    He is passionate about robotics,
+                    where code meets the real world, &amp; having fun together.
                   </Typography>
                 </CardContent>
               </Card>
