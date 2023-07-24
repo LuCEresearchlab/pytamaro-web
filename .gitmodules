@@ -19,3 +19,6 @@
 [submodule "lardelli"]
 	path = data/lardelli
 	url = git@github.com:LuCEresearchlab/pytamaro-web-lardelli.git
+[submodule "other-contributors"]
+	path = data/other-contributors
+	url = git@github.com:LuCEresearchlab/pytamaro-web-other-contributors.git
