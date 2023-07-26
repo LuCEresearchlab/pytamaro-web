@@ -48,8 +48,14 @@ function main() {
 
         // For each activity, copy the referenced assets into the public folder
         activitySlugs.forEach(async activitySlug => {
-            const infoFileContent = JSON.parse(fs.readFileSync(path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR, activitySlug, INFO_FILE), "utf-8"));
-            copyAssets(authorSlug, activitySlug, infoFileContent);
+            const fileName = path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR, activitySlug, INFO_FILE);
+            try {
+                const infoFileContent = JSON.parse(fs.readFileSync(fileName, "utf-8"));
+                copyAssets(authorSlug, activitySlug, infoFileContent);
+            } catch (error) {
+                console.log(error);
+                console.log("Error reading JSON file: " + fileName);
+            }
         });
     });
 }
