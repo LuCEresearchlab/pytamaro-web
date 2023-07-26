@@ -74,7 +74,12 @@ export default function ActivityCompetenciesSidebar({ curriculum, activityVarian
   if (!curriculumActivity) {
     return null;
   }
-  return (
+
+  const competencies = curriculumActivity.learningObjectives
+    .map((objective) => curriculum.competencies.find((c) => c.id === objective))
+    .filter((c): c is CurriculumCompetency => c !== undefined);
+
+  return competencies.length > 0 ? (
     <Box>
       <SidebarTitle>
         Competencies
@@ -88,13 +93,14 @@ export default function ActivityCompetenciesSidebar({ curriculum, activityVarian
           maxWidth: `calc(6 * (${AVATAR_SIZE}px + ${theme.spacing(1)}))`,
         }}
       >
-        {curriculumActivity.learningObjectives.map((objective) => {
-          const competency = curriculum.competencies.find((c) => c.id === objective);
-          return competency ? (
-            <CompetencyAvatar curriculum={curriculum} competency={competency} key={competency.id} />
-          ) : null;
-        })}
+        {competencies.map((competency) => (
+          <CompetencyAvatar
+            curriculum={curriculum}
+            competency={competency}
+            key={competency.id}
+          />
+        ))}
       </Stack>
     </Box>
-  );
+  ) : null;
 }
