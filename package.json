@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "NODE_OPTIONS=--experimental-wasm-modules npx ts-node tools/checkNotebookSourceCode.mts && npx ts-node tools/createNotebookAssets.mts",
+    "prebuild": "cross-env NODE_OPTIONS=--experimental-wasm-modules npx ts-node tools/checkNotebookSourceCode.mts && npx ts-node tools/createNotebookAssets.mts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -61,6 +61,7 @@
     "@types/react-dom": "18.0.7",
     "@typescript-eslint/eslint-plugin": "^5.42.1",
     "@typescript-eslint/parser": "^5.42.1",
+    "cross-env": "^7.0.3",
     "cypress": "^12.9.0",
     "eslint": "^8.27.0",
     "eslint-config-airbnb": "^19.0.4",
