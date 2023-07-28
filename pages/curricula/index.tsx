@@ -7,13 +7,12 @@ import {
 } from '@mui/material';
 import { orderBy } from 'lodash';
 import Head from 'next/head';
-import CurriculumCard from '../../components/CurriculumCard';
+import CurriculaList from '../../components/CurriculaList';
 import NavigationBar from '../../components/NavigationBar';
 import { visibleActivities } from '../../src/fs-content/activities';
 import { listAuthorsProfiles, listAuthorsWithContent } from '../../src/fs-content/authors';
 import { visibleCurricula } from '../../src/fs-content/curricula';
 import { Author, AuthorProfile } from '../../src/schemas/authorSchema';
-import { Curriculum } from '../../src/schemas/curriculumSchema';
 import { curriculaByAuthorPathname } from '../../src/urlUtils';
 
 export default function CurriculaPage({ authors, authorsProfiles }:
@@ -50,9 +49,7 @@ export default function CurriculaPage({ authors, authorsProfiles }:
                   <Typography variant="h4" marginY={2}>
                     <Link href={curriculaByAuthorPathname(author.slug)} sx={{ textDecoration: 'none' }}>{name}</Link>
                   </Typography>
-                  {author.curricula.map((curriculum: Curriculum) => (
-                    <CurriculumCard key={`${author.slug}/${curriculum.slug}`} curriculum={curriculum} />
-                  ))}
+                  <CurriculaList curricula={author.curricula} />
                 </Stack>
               );
             })}

@@ -6,6 +6,7 @@
   description: string, // markdown supported 
   visibility: 'visible' | 'hidden',
   activitiesPreviewImage?: activityId[],
+  orderingKey?: string,
   competencies: [
     {
       id: competencyId, // string
