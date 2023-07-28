@@ -41,6 +41,7 @@ describe('Code Execution', () => {
     cy.get('#select-function').click();
     cy.get('li[data-value="f"]').click();
     cy.get('.function-description').type('f');
+    cy.get('#usage .monaco-editor').first().type('{selectall}{backspace}');
     cy.get('.MuiDialog-container .run-button').first().click();
     cy.get('.save-to-toolbox-button').click();
 

@@ -298,7 +298,7 @@ export default function SaveToToolboxDialog({
             {selectedFunction && !alreadyExists && (!description ? (
               <Alert severity="info">Add a description so that you will remember what this function does</Alert>
             ) : (
-              <>
+              <div id="usage">
                 <Typography color="text.secondary" marginTop={2} marginBottom={2} fontWeight="bold">
                   Example that uses this function
                 </Typography>
@@ -310,7 +310,7 @@ export default function SaveToToolboxDialog({
                     setUsageExecutedSuccessfully(false);
                   }}
                 />
-              </>
+              </div>
             ))}
             {selectedPythonFunction && !alreadyExists && description && (
             <>
