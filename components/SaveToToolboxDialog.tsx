@@ -184,7 +184,7 @@ export default function SaveToToolboxDialog({
   const initUsage = (newSelectedFn: string) => {
     // Do not overwrite the usage if the user has edited it at least once in the past
     if (newSelectedFn && newSelectedFn !== selectedFunction && !usageEdited) {
-      const newUsage = joinLines([`from ${TOOLBOX_FILE} import ${newSelectedFn}`, '...']);
+      const newUsage = joinLines([`from ${TOOLBOX_FILE} import ${newSelectedFn}`, 'from pytamaro import _', '', '...']);
       activity.handleSourceChanged(newUsage, 0);
       setUsageExecutedSuccessfully(false);
     }
