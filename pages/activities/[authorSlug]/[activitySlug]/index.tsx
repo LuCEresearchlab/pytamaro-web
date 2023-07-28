@@ -11,19 +11,23 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import ActivityAuthorInfo from '../../../../components/AttributionInfo';
+import CurriculaList from '../../../../components/CurriculaList';
 import NavigationBar from '../../../../components/NavigationBar';
+import { allActivities } from '../../../../src/curriculumCompetencies';
 import { readActivity } from '../../../../src/fs-content/activities';
-import { getAuthorProfile, listAuthorsWithContent } from '../../../../src/fs-content/authors';
-import getLanguageDisplayName from '../../../../src/internationalization';
+import { getAuthorProfile, listAuthorsWithContent, listCurriculaAllAuthors } from '../../../../src/fs-content/authors';
+import { visibleCurricula } from '../../../../src/fs-content/curricula';
+import getLanguageDisplayName, { format } from '../../../../src/internationalization';
 import { Activity } from '../../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../../src/schemas/authorSchema';
+import { Curriculum } from '../../../../src/schemas/curriculumSchema';
 import {
   activityAssetPathname, activityPathname,
   activityVariantPathnameFromParts,
 } from '../../../../src/urlUtils';
 
-export default function ActivityInfoPage({ activity, author }:
-{ activity : Activity, author: AuthorProfile }) {
+export default function ActivityInfoPage({ activity, author, includingCurricula }:
+{ activity : Activity, author: AuthorProfile, includingCurricula: Curriculum[] }) {
   const title = activity.slug;
   const pageTitle = `${title} - PyTamaro`;
 
@@ -99,6 +103,15 @@ export default function ActivityInfoPage({ activity, author }:
               ))
             }
           </ul>
+          {includingCurricula.length > 0 && (
+            <>
+              <Typography variant="h4" marginY={3}>Curricula</Typography>
+              <Typography variant="body1" marginY={3}>
+                {`${format(includingCurricula.length, 'curriculum includes', 'curricula include')} this activity:`}
+              </Typography>
+              <CurriculaList curricula={includingCurricula} />
+            </>
+          )}
           <Typography variant="h4" marginY={3}>Uses</Typography>
           {uses.length === 0 && (
             <Typography variant="body1" marginY={3}>
@@ -108,13 +121,10 @@ export default function ActivityInfoPage({ activity, author }:
           {uses.length > 0 && (
             <>
               <Typography variant="body1" marginY={3}>
-                This activity has been used in the following
-                {' '}
-                {uses.length === 1 ? 'course' : `${uses.length} courses`}
-                :
+                {`This activity has been used in ${format(uses.length, 'course', 'courses')}:`}
               </Typography>
               {uses.map((use) => (
-                <Box m={2} key={use.url}>
+                <Box sx={{ mY: 2 }} key={use.url}>
                   <Card>
                     <CardContent>
                       <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
@@ -158,10 +168,17 @@ export async function getStaticProps(
   const {
     authorSlug, activitySlug,
   } = context.params;
+  const allCurricula = await listCurriculaAllAuthors();
+  const includingCurricula = visibleCurricula(allCurricula).filter((curriculum) => {
+    const activities = allActivities(curriculum);
+    return activities.some((activity) => activity.variant.authorSlug === authorSlug
+      && activity.variant.activitySlug === activitySlug);
+  });
   return {
     props: {
       author: await getAuthorProfile(authorSlug),
       activity: await readActivity(authorSlug, activitySlug),
+      includingCurricula,
     },
   };
 }
