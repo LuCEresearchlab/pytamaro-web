@@ -12,7 +12,7 @@ See the [`comprehensive` curriculum inside the `luce` folder](../data/luce/curri
 The object describing a curriculum contains the following fields:
 - `title`: the title of the curriculum
 - `description`: the description of the curriculum (supports Markdown)
-- `visibility`: ignored for now
+- `visibility`: either `'visible'` or `'hidden'`. Hidden curricula are not shown on the platform, but can still be accessed with a direct link or by a user who has already started them.
 - `activitiesPreviewImage`: an optional list of activity IDs that belong to this curriculum and are to be preferred when generating a preview image for the curriculum
 - `competencies`: an array of objects with an `id`, `name`, `description`, `longDescription` (supports Markdown), `icon` (the name of a [Material Icon](https://mui.com/material-ui/material-icons/) representing the competency), and `category` (whether the competency is about learning a general `programming` skill or about `graphics`).
 - `units`: an array of objects with a `title` and `steps`. Each unit represents a sequence of `steps` that must be completed in order.

@@ -69,3 +69,7 @@ export async function listVisibleActivities(authorSlug: string) : Promise<Activi
   const activities = await listActivities(authorSlug);
   return activities.filter((activity) => activity.visibility === 'featured' || activity.visibility === 'visible');
 }
+
+export function visibleActivities(activities: Activity[]) : Activity[] {
+  return activities.filter((activity) => activity.visibility !== 'hidden');
+}

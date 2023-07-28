@@ -4,7 +4,7 @@
 {
   title: string,
   description: string, // markdown supported 
-  visibility: 'featured' | 'visible' | 'draft' | 'hidden',
+  visibility: 'visible' | 'hidden',
   activitiesPreviewImage?: activityId[],
   competencies: [
     {

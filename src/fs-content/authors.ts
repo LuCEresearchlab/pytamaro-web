@@ -13,7 +13,7 @@ export function authorInfoPath(authorSlug: string) {
   return path.join(DATA_DIR, authorSlug, 'author.json');
 }
 
-export async function getAuthorContent(authorSlug: string) {
+export async function getAuthorContent(authorSlug: string) : Promise<Author> {
   return {
     slug: authorSlug,
     activities: await listActivities(authorSlug),
@@ -39,7 +39,7 @@ export async function listAuthorsProfiles() : Promise<AuthorProfile[]> {
   return Promise.all(authorSlugs.map(getAuthorProfile));
 }
 
-export async function listAuthorsWithContent() : Promise<Author[]> {
+export async function listAuthorsWithContent() {
   const profiles = await listAuthorsProfiles();
   return Promise.all(profiles.map(({ slug }) => getAuthorContent(slug)));
 }

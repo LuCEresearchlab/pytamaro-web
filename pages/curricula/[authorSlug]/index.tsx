@@ -5,7 +5,7 @@ import Head from 'next/head';
 import CurriculaList from '../../../components/CurriculaList';
 import NavigationBar from '../../../components/NavigationBar';
 import { getAuthorProfile, listAuthorsProfiles } from '../../../src/fs-content/authors';
-import { listCurricula } from '../../../src/fs-content/curricula';
+import { listCurricula, visibleCurricula } from '../../../src/fs-content/curricula';
 import { AuthorProfile } from '../../../src/schemas/authorSchema';
 import { Curriculum } from '../../../src/schemas/curriculumSchema';
 import { curriculaByAuthorPathname } from '../../../src/urlUtils';
@@ -43,7 +43,7 @@ export async function getStaticProps(
   } = context.params;
   return {
     props: {
-      curricula: await listCurricula(authorSlug),
+      curricula: visibleCurricula(await listCurricula(authorSlug)),
       authorProfile: await getAuthorProfile(authorSlug),
     },
   };

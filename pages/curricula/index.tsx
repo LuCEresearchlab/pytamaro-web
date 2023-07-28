@@ -9,7 +9,9 @@ import { orderBy } from 'lodash';
 import Head from 'next/head';
 import CurriculumCard from '../../components/CurriculumCard';
 import NavigationBar from '../../components/NavigationBar';
+import { visibleActivities } from '../../src/fs-content/activities';
 import { listAuthorsProfiles, listAuthorsWithContent } from '../../src/fs-content/authors';
+import { visibleCurricula } from '../../src/fs-content/curricula';
 import { Author, AuthorProfile } from '../../src/schemas/authorSchema';
 import { Curriculum } from '../../src/schemas/curriculumSchema';
 import { curriculaByAuthorPathname } from '../../src/urlUtils';
@@ -63,10 +65,16 @@ export default function CurriculaPage({ authors, authorsProfiles }:
 }
 
 export async function getStaticProps() {
+  const authorsWithContent = await listAuthorsWithContent();
+  const authorsWithVisibleContent = authorsWithContent.map((content) => ({
+    slug: content.slug,
+    activities: visibleActivities(content.activities),
+    curricula: visibleCurricula(content.curricula),
+  }));
   return {
     props: {
       authorsProfiles: await listAuthorsProfiles(),
-      authors: await listAuthorsWithContent(),
+      authors: authorsWithVisibleContent,
     },
   };
 }
