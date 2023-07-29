@@ -56,10 +56,7 @@ export default function CurriculumPage({ curriculum, author }:
       </NavigationBar>
       <Grid container>
         <Sidebar side="left">
-          <CurriculumCompetenciesSidebar
-            curriculum={curriculum}
-            userActivities={metadata.activities}
-          />
+          <CurriculumCompetenciesSidebar curriculum={curriculum} />
         </Sidebar>
         <CentralContent>
           <Stack spacing={2} alignItems="center">
