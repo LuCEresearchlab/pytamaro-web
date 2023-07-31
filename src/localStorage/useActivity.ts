@@ -70,12 +70,8 @@ async function executeOnServer(
   }
 }
 
-function sourceFromCell(cell: CodeCellState) {
+export function sourceFromCell(cell: CodeCellState) {
   return cell.source;
-}
-
-export function asSingleSource(cells: CodeCellState[]) {
-  return joinLines(cells.map(sourceFromCell));
 }
 
 export function useActivity(
