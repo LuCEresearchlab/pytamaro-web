@@ -19,7 +19,7 @@ function InconsistencyMessage() {
       </Typography>
       <Typography gutterBottom>
         If you wish to work on this activity, you can delete the code saved in your browser
-        using the "Reset Activity" button in the navigation bar at the top of this page.
+        using the &ldquo;Reset Activity&rdquo; button in the navigation bar at the top of this page.
         Note that doing this will delete all the code you previosuly wrote for this activity!
       </Typography>
       {process.env.NODE_ENV === 'development' && (
