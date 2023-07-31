@@ -5,7 +5,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
-import { ActivityVariant } from '../src/schemas/activitySchema';
+import { ActivityVariant, activityVariantId } from '../src/schemas/activitySchema';
 import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import theme from '../src/theme';
 
@@ -60,7 +60,7 @@ export default function DoNowBox({
   const handleDidIt = () => {
     setBlurred(false);
     setShowDidItButton(false);
-    logAnalyticsEvent(AnalyticsEventName.DoNowCompleted, { activity: activityVariant, id });
+    logAnalyticsEvent(AnalyticsEventName.DoNowCompleted, { id: `${activityVariantId(activityVariant)}/${id}` });
     storeDbEvent(EventName.DoNowCompleted, metadata, { activityVariant, id, answer });
     // Wait before updating the metadata, allowing the collapse animation to finish
     setTimeout(() => {
