@@ -14,10 +14,13 @@ function InconsistencyMessage() {
       <AlertTitle>Inconsistency Detected</AlertTitle>
       <Typography>
         Code cells saved in your browser do not match the ones in the original notebook.
-        This should not happen.
+        This is a mistake on our side.
+        Please send us a report using the feedback button.
       </Typography>
       <Typography gutterBottom>
-        Please send us a report using the feedback button.
+        If you wish to work on this activity, you can delete the code saved in your browser
+        using the "Reset Activity" button in the navigation bar at the top of this page.
+        Note that doing this will delete all the code you previosuly wrote for this activity!
       </Typography>
       {process.env.NODE_ENV === 'development' && (
       <Typography fontWeight="bold">
