@@ -1,4 +1,5 @@
 import {
+  Box,
   Card, CardActionArea, CardContent,
   Typography,
 } from '@mui/material';
@@ -64,14 +65,21 @@ export default function CurriculumCard({ curriculum, userActivities = undefined 
               <Typography component="div" variant="h5" gutterBottom>
                 {curriculum.title}
               </Typography>
-              <MDXRemote
-                // eslint-disable-next-line react/jsx-props-no-spreading
-                {...curriculum.description}
-                components={{
-                  p: CurriculumDescriptionTypography,
-                  li: CurriculumDescriptionListItem,
+              <Box
+                sx={{
+                  maxHeight: '20em',
+                  overflowY: 'auto',
                 }}
-              />
+              >
+                <MDXRemote
+                // eslint-disable-next-line react/jsx-props-no-spreading
+                  {...curriculum.description}
+                  components={{
+                    p: CurriculumDescriptionTypography,
+                    li: CurriculumDescriptionListItem,
+                  }}
+                />
+              </Box>
             </CardContent>
           </Grid>
           <Grid xs={3} display="flex" alignItems="center">

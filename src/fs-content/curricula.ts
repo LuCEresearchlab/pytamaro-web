@@ -75,10 +75,6 @@ export async function listCurricula(authorSlug: string) : Promise<Curriculum[]> 
   ));
 }
 
-export function visibleCurricula(curricula: Curriculum[]) : Curriculum[] {
-  return curricula.filter((curriculum) => curriculum.visibility !== 'hidden');
-}
-
 export async function getCurriculum(
   authorSlug: string,
   curriculumSlug: string,

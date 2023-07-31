@@ -10,11 +10,11 @@ import Head from 'next/head';
 import ActivitiesGallery from '../../../components/ActivitiesGallery';
 import CurriculaList from '../../../components/CurriculaList';
 import NavigationBar from '../../../components/NavigationBar';
+import visibleCurricula from '../../../src/curricula';
 import { visibleActivities } from '../../../src/fs-content/activities';
 import {
   getAuthorContent, getAuthorProfile, listAuthorsProfiles,
 } from '../../../src/fs-content/authors';
-import { visibleCurricula } from '../../../src/fs-content/curricula';
 import { Activity } from '../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../src/schemas/authorSchema';
 import { Curriculum } from '../../../src/schemas/curriculumSchema';

@@ -9,9 +9,9 @@ import { orderBy } from 'lodash';
 import Head from 'next/head';
 import CurriculaList from '../../components/CurriculaList';
 import NavigationBar from '../../components/NavigationBar';
+import visibleCurricula from '../../src/curricula';
 import { visibleActivities } from '../../src/fs-content/activities';
 import { listAuthorsProfiles, listAuthorsWithContent } from '../../src/fs-content/authors';
-import { visibleCurricula } from '../../src/fs-content/curricula';
 import { Author, AuthorProfile } from '../../src/schemas/authorSchema';
 import { curriculaByAuthorPathname } from '../../src/urlUtils';
 

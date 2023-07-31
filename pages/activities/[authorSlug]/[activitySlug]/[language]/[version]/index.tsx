@@ -1,6 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
+import { isEqual } from 'lodash';
 import Head from 'next/head';
 import { useRef } from 'react';
 import ActivityCodeCell from '../../../../../../components/ActivityCodeCell';
@@ -8,6 +9,7 @@ import ActivityFooter from '../../../../../../components/ActivityFooter';
 import ActivityNetworkErrorSnackbar from '../../../../../../components/ActivityNetworkErrorSnackbar';
 import ActivityResetButton from '../../../../../../components/ActivityResetButton';
 import DataSharingPreferenceDialog from '../../../../../../components/DataSharingPreferenceDialog';
+import GoToCurriculaBanner from '../../../../../../components/GoToCurriculaBanner';
 import InfoButton from '../../../../../../components/InfoButton';
 import MarkdownCellComponent from '../../../../../../components/MarkdownCellComponent';
 import NavigationBar from '../../../../../../components/NavigationBar';
@@ -19,6 +21,8 @@ import Sidebar from '../../../../../../components/Sidebar/Sidebar';
 import TableOfContents from '../../../../../../components/Sidebar/TableOfContents';
 import ToolboxListSidebar from '../../../../../../components/Sidebar/ToolboxListSidebar';
 import VariantSelector from '../../../../../../components/VariantsSelector';
+import visibleCurricula from '../../../../../../src/curricula';
+import { allActivities } from '../../../../../../src/curriculumCompetencies';
 import { findVersions, readActivity } from '../../../../../../src/fs-content/activities';
 import { getAuthorProfile, listAuthorsWithContent, listCurriculaAllAuthors } from '../../../../../../src/fs-content/authors';
 import { CodeCellState } from '../../../../../../src/localStorage/schema';
@@ -35,6 +39,14 @@ import { activityVariantPathnameFromParts } from '../../../../../../src/urlUtils
 import useCurriculumFromQuery from '../../../../../../src/useCurriculumFromQuery';
 
 const userType = 'student';
+
+function findIncludingCurricula(curricula: Curriculum[], activityVariant: ActivityVariant) {
+  return visibleCurricula(curricula).filter(
+    (curriculum) => allActivities(curriculum).some(
+      (activity) => isEqual(activity.variant, activityVariant),
+    ),
+  );
+}
 
 export default function NotebookPage({
   activity, author, activityVariant, cells, curricula,
@@ -53,8 +65,9 @@ export default function NotebookPage({
   const curriculumId = useCurriculumFromQuery();
   const curriculum = curricula.find((c) => curriculumToId(c) === curriculumId);
   const title = getVariantTitle(activity, activityVariant);
-
   const pageTitle = `${title} - PyTamaro`;
+
+  const includingCurricula = findIncludingCurricula(curricula, activityVariant);
 
   return (
     <div>
@@ -91,6 +104,7 @@ export default function NotebookPage({
           <CentralContent>
             <Container maxWidth="md" ref={cellsRef}>
               <Typography variant="h3" marginY={3}>{title}</Typography>
+              {!curriculum && <GoToCurriculaBanner curricula={includingCurricula} />}
               {cells.map((cell: NotebookCell, idx) => (cell.cell_type === 'markdown'
                 ? (
                   <MarkdownCellComponent
