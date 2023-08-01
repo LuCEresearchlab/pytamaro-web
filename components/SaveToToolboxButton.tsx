@@ -54,7 +54,7 @@ export default function SaveToToolboxButton({ sources, originalActivity } :
       <SaveToToolboxDialog
         open={open}
         onClose={() => setOpen(false)}
-        initialImplementation={implementation}
+        externalImplementation={implementation}
         originalActivity={originalActivity}
         setSavingSuccess={setSavingSuccess}
         setSavingError={setSavingError}

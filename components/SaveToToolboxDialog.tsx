@@ -34,21 +34,23 @@ import theme from '../src/theme';
 import { toolboxFunctionPathname } from '../src/urlUtils';
 import { isExecutionError } from './CodeCell';
 import CodeEditor from './CodeEditor';
-import SolitaryCodeCell, { emptySingleCell, initialStateSingleCell } from './SolitaryCodeCell';
+import SolitaryCodeCell, { initialStateSingleCell } from './SolitaryCodeCell';
 
 function PermanentlySaveToToolboxButton({
-  fn, enabled, onSave, setSavingSuccess, setSavingError,
+  fn, replace, enabled, onSave, setSavingSuccess, setSavingError,
 } : {
   fn: ToolboxFunction,
+  replace: boolean,
   enabled: boolean,
   onSave: () => void,
   setSavingSuccess: Dispatch<SetStateAction<boolean>>,
   setSavingError: Dispatch<SetStateAction<boolean>>,
 }) {
   const { metadata } = useLocalProfile();
-  const { add } = useLocalToolbox();
+  const { add, replaceFunction } = useLocalToolbox();
   const saveFunction = () => {
-    if (add(fn)) {
+    const result = replace ? replaceFunction(fn) : add(fn);
+    if (result) {
       logAnalyticsEvent(AnalyticsEventName.AddToolboxFunction, { name: fn.name });
       storeDbEvent(EventName.AddToolboxFunction, metadata, { fn });
       setSavingSuccess(true);
@@ -67,7 +69,7 @@ function PermanentlySaveToToolboxButton({
         sx={{ marginTop: 2, minWidth: '30ch' }}
         className="save-to-toolbox-button"
       >
-        Save to toolbox
+        {replace ? 'Save edited function' : 'Save to toolbox'}
       </Button>
     </Box>
   );
@@ -118,22 +120,24 @@ function functionForToolbox(
 }
 
 export default function SaveToToolboxDialog({
-  open, onClose, initialImplementation, originalActivity, setSavingSuccess, setSavingError,
+  open, onClose, replaceExistingFunction = false,
+  externalImplementation, initialName = undefined, initialDescription = undefined,
+  initialUsage = undefined, originalActivity, setSavingSuccess, setSavingError,
 }:
-{ open: boolean, onClose: () => void, initialImplementation: string,
-  originalActivity: ActivityVariant,
+{ open: boolean, onClose: () => void, replaceExistingFunction?: boolean,
+  externalImplementation: string, initialName?: string, initialDescription?: string,
+  initialUsage?: string, originalActivity: ActivityVariant,
   setSavingSuccess: Dispatch<SetStateAction<boolean>>,
   setSavingError: Dispatch<SetStateAction<boolean>>
 }) {
-  const [implementation, setImplementation] = useState(initialImplementation);
-  const initialCodeCells = initialStateSingleCell(implementation);
-  const [codeCells, setCodeCells] = useState<CodeCellState[]>(initialCodeCells);
+  const [implementation, setImplementation] = useState(externalImplementation);
   const [functions, setFunctions] = useState<PythonFunction[]>([]);
-  const [selectedFunction, setSelectedFunction] = useState<string>('');
-  const [description, setDescription] = useState('');
+  const [selectedFunction, setSelectedFunction] = useState<string>(initialName || '');
+  const [description, setDescription] = useState(initialDescription || '');
   const [usageExecutedSuccessfully, setUsageExecutedSuccessfully] = useState(false);
   const [usageEdited, setUsageEdited] = useState(false);
   const selectedPythonFunction = functions.find((f) => f.name === selectedFunction);
+  const replacingFunctionFound = functions.some((f) => f.name === initialName);
   const { exists } = useLocalToolbox();
   const alreadyExists = exists(selectedFunction);
 
@@ -155,19 +159,9 @@ export default function SaveToToolboxDialog({
     }
   };
 
-  const activity = useTemporaryActivity(
-    emptySingleCell(),
-    codeCells,
-    setCodeCells,
-    toolboxActivityVariant,
-    preExecute,
-    postExecuteSingleCell,
-  );
-
   useEffect(() => {
-    setImplementation(initialImplementation);
-    setCodeCells(initialStateSingleCell(initialImplementation));
-  }, [initialImplementation]);
+    setImplementation(externalImplementation);
+  }, [externalImplementation]);
 
   useEffect(() => {
     const findNewFunctions = async () => {
@@ -180,6 +174,17 @@ export default function SaveToToolboxDialog({
     };
     findNewFunctions();
   }, [implementation]);
+
+  const initialCodeCells = initialStateSingleCell(initialUsage || '');
+  const [codeCells, setCodeCells] = useState<CodeCellState[]>(initialCodeCells);
+  const activity = useTemporaryActivity(
+    initialCodeCells,
+    codeCells,
+    setCodeCells,
+    toolboxActivityVariant,
+    preExecute,
+    postExecuteSingleCell,
+  );
 
   const initUsage = (newSelectedFn: string) => {
     // Do not overwrite the usage if the user has edited it at least once in the past
@@ -200,14 +205,16 @@ export default function SaveToToolboxDialog({
 
   const handleImplementationChange = (newImplementation: string) => {
     setImplementation(newImplementation);
-    resetSelectedFunction();
     setUsageExecutedSuccessfully(false);
+    if (!replaceExistingFunction) {
+      resetSelectedFunction();
+    }
   };
 
   return (
     <Dialog onClose={() => onClose()} open={open} maxWidth="md" fullWidth>
       <DialogTitle>
-        Save a function to my toolbox
+        {replaceExistingFunction ? 'Edit Toolbox Function' : 'Save Function to Toolbox'}
         <IconButton
           aria-label="close"
           onClick={onClose}
@@ -225,6 +232,7 @@ export default function SaveToToolboxDialog({
         <Typography color="text.secondary" fontWeight="bold" marginBottom={2}>
           Implementation
         </Typography>
+        {!replaceExistingFunction && (
         <Alert severity="info" sx={{ mb: 2 }}>
           Clean up your code before saving a function to the toolbox. Here are some tips:
           <ul style={{
@@ -252,6 +260,7 @@ export default function SaveToToolboxDialog({
             </li>
           </ul>
         </Alert>
+        )}
         <CodeEditor
           source={implementation}
           onChange={handleImplementationChange}
@@ -261,16 +270,24 @@ export default function SaveToToolboxDialog({
           <>
             <Stack direction="row" spacing="2ch" alignItems="baseline" marginBottom={2}>
               <Typography color="text.secondary" minWidth="max-content" fontWeight="bold">
-                Function to save
+                Function to
+                {' '}
+                {replaceExistingFunction ? 'edit' : 'save'}
               </Typography>
-              <SelectFunction
-                functions={functions}
-                selectedFunction={selectedFunction}
-                setSelectedFunction={(newSelectedFn) => {
-                  initUsage(newSelectedFn);
-                  setSelectedFunction(newSelectedFn);
-                }}
-              />
+              {replaceExistingFunction ? (
+                <Typography color="text.secondary" fontWeight="bold" fontFamily={theme.pytamaro.monospaceFontFamily}>
+                  {initialName}
+                </Typography>
+              ) : (
+                <SelectFunction
+                  functions={functions}
+                  selectedFunction={selectedFunction}
+                  setSelectedFunction={(newSelectedFn) => {
+                    initUsage(newSelectedFn);
+                    setSelectedFunction(newSelectedFn);
+                  }}
+                />
+              )}
               <TextField
                 variant="filled"
                 size="small"
@@ -285,7 +302,7 @@ export default function SaveToToolboxDialog({
                 className="function-description"
               />
             </Stack>
-            {alreadyExists && (
+            {alreadyExists && !replaceExistingFunction && (
               <Alert severity="error">
                 The toolbox already contains this name. Refactor the code to change its name or
                 {' '}
@@ -295,7 +312,13 @@ export default function SaveToToolboxDialog({
                 .
               </Alert>
             )}
-            {selectedFunction && !alreadyExists && (!description ? (
+            {replaceExistingFunction && !replacingFunctionFound && (
+              <Alert severity="error">
+                The implementation above does not define anymore
+                the function you are trying to edit.
+              </Alert>
+            )}
+            {selectedFunction && (!alreadyExists || replaceExistingFunction) && (!description ? (
               <Alert severity="info">Add a description so that you will remember what this function does</Alert>
             ) : (
               <div id="usage">
@@ -312,7 +335,8 @@ export default function SaveToToolboxDialog({
                 />
               </div>
             ))}
-            {selectedPythonFunction && !alreadyExists && description && (
+            {selectedPythonFunction && (!alreadyExists || replaceExistingFunction)
+            && description && (
             <>
               {!usageExecutedSuccessfully && (
               <Alert sx={{ mt: 2 }} severity="info">
@@ -328,8 +352,14 @@ export default function SaveToToolboxDialog({
                   originalActivity,
                   activity.codeCells[0].source,
                 )}
+                replace={replaceExistingFunction}
                 enabled={usageExecutedSuccessfully}
-                onSave={() => { resetSelectedFunction(); resetDescription(); onClose(); }}
+                onSave={() => {
+                  if (!replaceExistingFunction) {
+                    resetSelectedFunction(); resetDescription();
+                  }
+                  onClose();
+                }}
                 setSavingSuccess={setSavingSuccess}
                 setSavingError={setSavingError}
               />

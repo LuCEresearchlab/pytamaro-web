@@ -1,6 +1,6 @@
 import produce from 'immer';
-import useLocalProfile from './useLocalProfile';
 import { ToolboxFunction } from './schema';
+import useLocalProfile from './useLocalProfile';
 
 export default function useLocalToolbox() {
   const { metadata, setMetadata } = useLocalProfile();
@@ -21,6 +21,19 @@ export default function useLocalToolbox() {
     return true;
   };
 
+  const replaceFunction = (fn: ToolboxFunction) => {
+    const idx = metadata.toolbox.findIndex((t) => t.name === fn.name);
+    if (idx === -1) {
+      return false;
+    }
+    setMetadata(
+      (currentMetadata) => produce(currentMetadata, (draft) => {
+        draft.toolbox[idx] = fn;
+      }),
+    );
+    return true;
+  };
+
   const deleteFunction = (fn: ToolboxFunction) => {
     setMetadata(
       (currentMetadata) => produce(currentMetadata, (draft) => {
@@ -34,6 +47,7 @@ export default function useLocalToolbox() {
   return {
     add,
     getFunction,
+    replaceFunction,
     deleteFunction,
     list,
     exists,

@@ -9,6 +9,7 @@ import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import theme from '../src/theme';
 import { toolboxFunctionAnchor } from '../src/urlUtils';
+import EditToolboxFunctionButton from './EditToolboxFunctionButton';
 import ToolboxFunctionCard from './ToolboxFunctionCard';
 
 export default function ToolboxFunctionsList() {
@@ -22,25 +23,19 @@ export default function ToolboxFunctionsList() {
     confirm({
       description:
   <>
-    <Typography component="p">
+    <Typography gutterBottom>
       Deleting the function
       {' '}
       <Typography fontFamily={theme.pytamaro.monospaceFontFamily} component="span">{fn.name}</Typography>
       {' '}
       will break every activity and every other toolbox function that imports it.
     </Typography>
-    <Typography component="p">
+    <Typography gutterBottom>
       If no activity and no other toolbox function uses this function,
       then it is perfectly fine to delete it.
     </Typography>
-    <Typography component="p">
-      You
-      {' '}
-      <strong>can</strong>
-      {' '}
-      replace this function by deleting it and then saving a new function with
-      the same name and parameters. Any activities and other toolbox functions
-      that used this function will automatically use your newly saved function.
+    <Typography gutterBottom>
+      You can change all the details of this function (except for its name) using the Edit button.
     </Typography>
   </>,
       title: 'Are you sure you want to delete this function?',
@@ -61,18 +56,19 @@ export default function ToolboxFunctionsList() {
     ) : (
       <Stack
         direction="column"
-        spacing={2}
+        spacing={3}
       >
         {functions.map((fn) => (
           <Card key={fn.name} id={toolboxFunctionAnchor(fn.name)} className="anchor" sx={{ overflow: 'visible' }}>
             <ToolboxFunctionCard fn={fn} />
             <CardActions sx={{ justifyContent: 'center' }}>
+              <EditToolboxFunctionButton toolboxFunction={fn} />
               <Button
                 onClick={() => askDeleteFunction(fn)}
                 color="error"
                 variant="contained"
               >
-                Delete
+                Delete Function
               </Button>
             </CardActions>
           </Card>
