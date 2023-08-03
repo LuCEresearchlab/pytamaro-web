@@ -30,7 +30,7 @@ export default function PageFooter() {
         <Link component={NextLink} href="/privacy">Privacy Policy</Link>
         {' • '}
         {`Platform Version ${process.env.PLATFORM_VERSION}`}
-        {process.env.BUILD_TIMESTAMP && ` (${new Date(process.env.BUILD_TIMESTAMP).toLocaleString()})`}
+        {process.env.BUILD_TIMESTAMP && ` (${new Date(process.env.BUILD_TIMESTAMP).toUTCString()})`}
       </Typography>
     </Container>
   );
