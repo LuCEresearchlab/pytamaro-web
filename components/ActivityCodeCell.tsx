@@ -1,4 +1,6 @@
-import { Alert, AlertTitle, Typography } from '@mui/material';
+import {
+  Alert, AlertTitle, Box, Typography,
+} from '@mui/material';
 import { sum } from 'lodash';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
@@ -46,27 +48,29 @@ export default function ActivityCodeCell({ activityVariant, initialCodeCells, ce
   const precedingLines = sum(codeCells.slice(0, cellIdx).map((cell) => countLines(cell.source)));
   const currentCodeCell = codeCells[cellIdx];
   return localCodeCellsWrongLength ? <InconsistencyMessage /> : (
-    <CodeCell
-      codeCellState={currentCodeCell}
-      codeCellExecutionState={codeExecutionStates[cellIdx]}
-      onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
-      onExecutionRequested={() => handleExecute(cellIdx)}
-      firstLineNumber={1 + precedingLines}
-      activityVariant={activityVariant}
-      extraActions={(
-        <>
-          <SaveToToolboxButton
-            sources={sourcesUpTo(cellIdx)}
-            originalActivity={activityVariant}
-          />
-          <MoreOptionsButton
-            codeCellState={currentCodeCell}
-            codeCellExecutionState={codeExecutionStates[cellIdx]}
-            onShowHideOutput={() => handleToggleOutputArea(cellIdx)}
-            onReset={() => handleResetSingleCell(cellIdx)}
-          />
-        </>
+    <Box marginY={2}>
+      <CodeCell
+        codeCellState={currentCodeCell}
+        codeCellExecutionState={codeExecutionStates[cellIdx]}
+        onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
+        onExecutionRequested={() => handleExecute(cellIdx)}
+        firstLineNumber={1 + precedingLines}
+        activityVariant={activityVariant}
+        extraActions={(
+          <>
+            <SaveToToolboxButton
+              sources={sourcesUpTo(cellIdx)}
+              originalActivity={activityVariant}
+            />
+            <MoreOptionsButton
+              codeCellState={currentCodeCell}
+              codeCellExecutionState={codeExecutionStates[cellIdx]}
+              onShowHideOutput={() => handleToggleOutputArea(cellIdx)}
+              onReset={() => handleResetSingleCell(cellIdx)}
+            />
+          </>
     )}
-    />
+      />
+    </Box>
   );
 }

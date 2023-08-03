@@ -76,7 +76,7 @@ export default function CodeCell({
   const executionFinished = codeCellExecutionState.outputSynced;
   const noOutput = executionFinished && executionResponse?.content.length === 0;
   return (
-    <Paper elevation={readOnly ? 0 : 4} sx={{ marginY: 2 }}>
+    <Paper elevation={readOnly ? 0 : 4}>
       {!readOnly
         && <DocumentationStripe source={codeCellState.source} activityVariant={activityVariant} />}
       <Card>

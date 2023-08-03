@@ -79,7 +79,7 @@ export default function DoNowBox({
       id={id}
       className={doNowBoxClassName}
       icon={<AccessAlarm />}
-      sx={{ fontSize: theme.typography.body1.fontSize }}
+      sx={{ fontSize: theme.typography.body1.fontSize, marginY: 2 }}
     >
       <AlertTitle sx={{ fontSize: '1rem' }}>Do Now!</AlertTitle>
       {children}
