@@ -12,12 +12,14 @@ export function emptySingleCell() {
 
 export default function SolitaryCodeCell({
   activity, activityVariant, readOnly = false,
-  postSourceChange = () => { },
+  postSourceChange = () => { }, extraActions = null,
 } :
 { activity: ReturnType<typeof useActivity>,
   activityVariant: ActivityVariant,
   readOnly?: boolean,
-  postSourceChange?: (newSource: string) => void }) {
+  postSourceChange?: (newSource: string) => void,
+  extraActions?: React.ReactNode
+}) {
   const {
     codeCells, codeExecutionStates,
     handleSourceChanged, handleExecute,
@@ -34,6 +36,7 @@ export default function SolitaryCodeCell({
       firstLineNumber={1}
       activityVariant={activityVariant}
       readOnly={readOnly}
+      extraActions={extraActions}
     />
   );
 }

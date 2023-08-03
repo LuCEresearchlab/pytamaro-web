@@ -8,7 +8,7 @@ import RapidActions from './RapidActions';
 export const SIDEBAR_CHIPS_WIDTH = '15em';
 export const SIDEBAR_CHIPS_FONT_SIZE = theme.typography.pxToRem(13);
 
-export default function Sidebar({ side, children } : { side: 'left' | 'right', children: React.ReactNode }) {
+export default function Sidebar({ side, children = null } : { side: 'left' | 'right', children?: React.ReactNode }) {
   return (
     <Grid
       lg={2}

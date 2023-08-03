@@ -6,6 +6,7 @@ import {
   Box,
   Container, Typography, styled,
 } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
 import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
@@ -15,6 +16,10 @@ import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDial
 import NavigationBar from '../components/NavigationBar';
 import NetworkErrorSnackbar from '../components/NetworkErrorSnackbar';
 import ResetButton from '../components/ResetButton';
+import SaveToToolboxButton from '../components/SaveToToolboxButton';
+import CentralContent from '../components/Sidebar/CentralContent';
+import Sidebar from '../components/Sidebar/Sidebar';
+import ToolboxListSidebar from '../components/Sidebar/ToolboxListSidebar';
 import SolitaryCodeCell, { initialStateSingleCell } from '../components/SolitaryCodeCell';
 import getActivitiesWithAPIs, { ActivityVariantWithNames } from '../src/activitiesAPIs';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
@@ -38,8 +43,8 @@ export default function Playground({ activitiesWithNames } :
     playgroundActivityVariant,
   );
   const {
-    codeCells, codeExecutionStates, cellsModified, networkError, setNetworkError,
-    handleResetAllCellsNoConfirm,
+    codeCells, codeExecutionStates, cellsModified, networkError, sourcesUpTo,
+    setNetworkError, handleResetAllCellsNoConfirm,
   } = localActivity;
   const { outputSynced } = codeExecutionStates[0];
 
@@ -98,29 +103,43 @@ export default function Playground({ activitiesWithNames } :
         </NavigationBar>
         <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
         <DataSharingPreferenceDialog />
-        <Container maxWidth="md">
-          <Typography variant="h2" align="center" marginY={3}>Playground</Typography>
-          <SolitaryCodeCell
-            activity={localActivity}
-            activityVariant={playgroundActivityVariant}
-          />
-          <Box sx={{ display: 'flex', my: 4 }} justifyContent="center">
-            <DownloadCodeButton codeCells={codeCells} />
-          </Box>
-          { showRecommendedActivities && (
-          <FullWidthAlert
-            icon={<TipsAndUpdatesIcon fontSize="inherit" />}
-            onClose={() => { setShowRecommendedActivities(false); }}
-            severity="success"
-          >
-            <AlertTitle>Try out these activities!</AlertTitle>
-            <Typography variant="body1" gutterBottom>
-              Based on your code, these are recommended activites you can try to do next:
-            </Typography>
-            <ActivitiesStripe activities={recommendedActivities} />
-          </FullWidthAlert>
-          )}
-        </Container>
+        <Grid container>
+          <Sidebar side="left">
+            <ToolboxListSidebar />
+          </Sidebar>
+          <CentralContent>
+            <Container maxWidth="md">
+              <Typography variant="h2" align="center" marginY={3}>Playground</Typography>
+              <SolitaryCodeCell
+                activity={localActivity}
+                activityVariant={playgroundActivityVariant}
+                extraActions={(
+                  <SaveToToolboxButton
+                    sources={sourcesUpTo(0)}
+                    originalActivity={playgroundActivityVariant}
+                  />
+            )}
+              />
+              <Box sx={{ display: 'flex', my: 4 }} justifyContent="center">
+                <DownloadCodeButton codeCells={codeCells} />
+              </Box>
+              { showRecommendedActivities && (
+              <FullWidthAlert
+                icon={<TipsAndUpdatesIcon fontSize="inherit" />}
+                onClose={() => { setShowRecommendedActivities(false); }}
+                severity="success"
+              >
+                <AlertTitle>Try out these activities!</AlertTitle>
+                <Typography variant="body1" gutterBottom>
+                  Based on your code, these are recommended activites you can try to do next:
+                </Typography>
+                <ActivitiesStripe activities={recommendedActivities} />
+              </FullWidthAlert>
+              )}
+            </Container>
+          </CentralContent>
+          <Sidebar side="right" />
+        </Grid>
       </Box>
     </div>
   );
