@@ -170,7 +170,7 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
         compactView={compactView}
         languageFilter={languageFilter}
       />
-      <Typography color="textSecondary" textAlign="center">
+      <Typography color="textSecondary" textAlign="center" paddingTop={2}>
         {`${format(filteredActivities.length, 'activity matches', 'activities match')} the search criteria`}
       </Typography>
     </Stack>
