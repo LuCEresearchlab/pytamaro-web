@@ -8,7 +8,7 @@ import {
   Select,
   SelectChangeEvent,
   Stack, TextField,
-  ToggleButton, Tooltip,
+  ToggleButton, Tooltip, Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { useRouter } from 'next/router';
@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 import ActivitiesGallery, { ANY_LANGUAGE } from '../../../components/ActivitiesGallery';
 import NavigationBar from '../../../components/NavigationBar';
 import { listActivitiesAllAuthors, listAuthorsProfiles } from '../../../src/fs-content/authors';
-import getLanguageDisplayName from '../../../src/internationalization';
+import getLanguageDisplayName, { format } from '../../../src/internationalization';
 import { Activity } from '../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../src/schemas/authorSchema';
 import theme from '../../../src/theme';
@@ -170,6 +170,9 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
         compactView={compactView}
         languageFilter={languageFilter}
       />
+      <Typography color="textSecondary" textAlign="center">
+        {`${format(filteredActivities.length, 'activity matches', 'activities match')} the search criteria`}
+      </Typography>
     </Stack>
   );
 }

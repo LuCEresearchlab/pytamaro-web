@@ -47,13 +47,6 @@ export default function ActivitiesGallery({
     return a1.slug < a2.slug ? -1 : 1;
   });
 
-  if (activities.length === 0) {
-    return (
-      <Typography variant="body1" align="center" sx={{ marginTop: 4, fontStyle: 'italic' }}>
-        No activities match the searching criteria.
-      </Typography>
-    );
-  }
   return (
     <Grid container spacing={2}>
       {activities.map((activity) => {
