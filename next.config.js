@@ -28,7 +28,7 @@ const nextConfig = {
   },
   experimental: {
     outputFileTracingIncludes: {
-      '/**/*': ['./src/python-analyzer/*.wasm'],
+      '**': ['./**/*.wasm'],
     },
   },
 }
