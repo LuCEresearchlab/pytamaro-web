@@ -22,3 +22,6 @@
 [submodule "other-contributors"]
 	path = data/other-contributors
 	url = git@github.com:LuCEresearchlab/pytamaro-web-other-contributors.git
+[submodule "bernhard"]
+	path = data/bernhard
+	url = git@github.com:LuCEresearchlab/pytamaro-web-bernhard.git
