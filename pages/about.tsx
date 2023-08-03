@@ -120,7 +120,7 @@ export default function AboutPage({ authorsProfiles } : { authorsProfiles: Autho
             multiple authors:
           </Typography>
           <List>
-            {authorsProfiles.map((authorProfile) => (authorProfile.name !== '' && (
+            {authorsProfiles.map((authorProfile) => (
               <ListItem key={`author_${authorProfile.slug}`}>
                 <ListItemAvatar>
                   <Avatar
@@ -151,7 +151,7 @@ export default function AboutPage({ authorsProfiles } : { authorsProfiles: Autho
                 )}
                 />
               </ListItem>
-            )))}
+            ))}
           </List>
           <Typography variant="h4" sx={{ mt: 3 }} gutterBottom>Why?</Typography>
           <Typography variant="body1" paragraph>

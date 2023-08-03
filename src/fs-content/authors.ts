@@ -36,7 +36,8 @@ export async function listAuthorsProfiles() : Promise<AuthorProfile[]> {
     .filter((entry) => existsSync(authorInfoPath(entry.name)))
     .map((dir) => dir.name)
     .filter((name) => !/^\./.test(name)); // skip hidden directories starting with a '.', such as '.DS_Store'
-  return Promise.all(authorSlugs.map(getAuthorProfile));
+  const profiles = await Promise.all(authorSlugs.map(getAuthorProfile));
+  return profiles.filter((profile) => profile.name !== '');
 }
 
 export async function listAuthorsWithContent() {
