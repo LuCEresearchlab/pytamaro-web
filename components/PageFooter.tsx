@@ -1,6 +1,6 @@
+import { Container, Link, Typography } from '@mui/material';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import { Container, Link, Typography } from '@mui/material';
 import PyTamaroLogo from '../public/PyTamaroLogo.png';
 
 export default function PageFooter() {
@@ -30,6 +30,7 @@ export default function PageFooter() {
         <Link component={NextLink} href="/privacy">Privacy Policy</Link>
         {' • '}
         {`Platform Version ${process.env.PLATFORM_VERSION}`}
+        {process.env.BUILD_TIMESTAMP && ` (${new Date(process.env.BUILD_TIMESTAMP).toLocaleString()})`}
       </Typography>
     </Container>
   );

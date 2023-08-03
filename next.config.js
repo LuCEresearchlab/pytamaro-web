@@ -11,6 +11,7 @@ const nextConfig = {
   output: 'standalone',
   env: {
     PLATFORM_VERSION: require('child_process').execSync('git rev-parse --short HEAD').toString().trim(),
+    BUILD_TIMESTAMP: Date.now(),
   },
   webpack(config, { isServer, dev }) {
     config.experiments = {
