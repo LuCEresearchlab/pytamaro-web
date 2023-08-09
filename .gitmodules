@@ -25,3 +25,6 @@
 [submodule "bernhard"]
 	path = data/bernhard
 	url = git@github.com:LuCEresearchlab/pytamaro-web-bernhard.git
+[submodule "gall"]
+	path = data/gall
+	url = git@github.com:LuCEresearchlab/pytamaro-web-gall.git
