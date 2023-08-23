@@ -136,6 +136,7 @@ export default function SaveToToolboxDialog({
   const [description, setDescription] = useState(initialDescription || '');
   const [usageExecutedSuccessfully, setUsageExecutedSuccessfully] = useState(false);
   const [usageEdited, setUsageEdited] = useState(false);
+  const [invalidUsageExecution, setInvalidUsageExecution] = useState(false);
   const selectedPythonFunction = functions.find((f) => f.name === selectedFunction);
   const replacingFunctionFound = functions.some((f) => f.name === initialName);
   const { exists } = useLocalToolbox();
@@ -206,6 +207,7 @@ export default function SaveToToolboxDialog({
   const handleImplementationChange = (newImplementation: string) => {
     setImplementation(newImplementation);
     setUsageExecutedSuccessfully(false);
+    setInvalidUsageExecution(true);
     if (!replaceExistingFunction) {
       resetSelectedFunction();
     }
@@ -328,9 +330,13 @@ export default function SaveToToolboxDialog({
                 <SolitaryCodeCell
                   activity={activity}
                   activityVariant={toolboxActivityVariant}
+                  requireNewExecution={invalidUsageExecution}
                   postSourceChange={() => {
                     setUsageEdited(true);
                     setUsageExecutedSuccessfully(false);
+                  }}
+                  onExecutionRequest={() => {
+                    setInvalidUsageExecution(false);
                   }}
                 />
               </div>

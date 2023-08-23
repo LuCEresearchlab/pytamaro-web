@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useActivity } from '../src/localStorage/useActivity';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import CodeCell from './CodeCell';
@@ -11,19 +12,28 @@ export function emptySingleCell() {
 }
 
 export default function SolitaryCodeCell({
-  activity, activityVariant, readOnly = false,
-  postSourceChange = () => { }, extraActions = null,
+  activity, activityVariant, readOnly = false, requireNewExecution = false,
+  postSourceChange = () => {}, onExecutionRequest = () => {},
+  extraActions = null,
 } :
 { activity: ReturnType<typeof useActivity>,
   activityVariant: ActivityVariant,
   readOnly?: boolean,
+  requireNewExecution?: boolean,
   postSourceChange?: (newSource: string) => void,
+  onExecutionRequest?: () => void,
   extraActions?: React.ReactNode
 }) {
   const {
     codeCells, codeExecutionStates,
     handleSourceChanged, handleExecute,
   } = activity;
+  useEffect(() => {
+    if (requireNewExecution) {
+      // Simulate a change in the source code to invalidate an eventual previous execution
+      handleSourceChanged(codeCells[0].source, 0);
+    }
+  });
   return (
     <CodeCell
       codeCellState={codeCells[0]}
@@ -32,7 +42,10 @@ export default function SolitaryCodeCell({
         handleSourceChanged(newSource, 0);
         postSourceChange(newSource);
       }}
-      onExecutionRequested={() => handleExecute(0)}
+      onExecutionRequested={() => {
+        onExecutionRequest();
+        return handleExecute(0);
+      }}
       firstLineNumber={1}
       activityVariant={activityVariant}
       readOnly={readOnly}
