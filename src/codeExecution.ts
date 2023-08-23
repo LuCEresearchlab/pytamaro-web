@@ -20,6 +20,11 @@ const PREVIOUS_CELLS_FILE = 'previous_cells';
 const CURRENT_CELL_FILE = 'cell';
 export const TOOLBOX_FILE = 'toolbox';
 
+export interface BareboneToolboxFunction {
+  name: string,
+  source: string,
+}
+
 // The source of the previous cells is embedded within a context manager that
 // redirects stdout and stderr to None, so that the only the stdout/stderr of
 // the current cell is considered.
@@ -38,7 +43,7 @@ with redirect_stdout(None), redirect_stderr(None):
 import ${CURRENT_CELL_FILE}
 `;
 
-function toolboxSingleModuleName(fn: ToolboxFunction) {
+function toolboxSingleModuleName(fn: BareboneToolboxFunction) {
   return `${TOOLBOX_FILE}_${fn.name}`;
 }
 
@@ -51,7 +56,7 @@ export async function importedToolboxNames(source: string) {
   }
 }
 
-async function toposortImports(functions: ToolboxFunction[]) {
+async function toposortImports(functions: BareboneToolboxFunction[]) {
   const imports = new Topo.Sorter<string>();
   const deps = await Promise.all(functions.map(async (fn) => (
     { name: fn.name, neededNames: await importedToolboxNames(fn.source) }
@@ -62,7 +67,7 @@ async function toposortImports(functions: ToolboxFunction[]) {
   return imports.nodes.map((name) => functions.find((fn) => fn.name === name) as ToolboxFunction);
 }
 
-async function toolboxDriverSource(functions: ToolboxFunction[]) {
+async function toolboxDriverSource(functions: BareboneToolboxFunction[]) {
   let sortedFunctions = functions;
   try {
     sortedFunctions = await toposortImports(functions);
@@ -72,7 +77,7 @@ async function toolboxDriverSource(functions: ToolboxFunction[]) {
   return joinLines(sortedFunctions.map((fn) => `from ${toolboxSingleModuleName(fn)} import ${fn.name}`));
 }
 
-export async function toolboxFiles(functions: ToolboxFunction[]) {
+export async function toolboxFiles(functions: BareboneToolboxFunction[]) {
   const singleFiles = functions.map((fn) => ({
     name: `${toolboxSingleModuleName(fn)}.py`,
     content: fn.source,
@@ -90,7 +95,7 @@ export async function toolboxFiles(functions: ToolboxFunction[]) {
 export async function cellsToFiles(
   sources: string[],
   idx: number,
-  toolboxFunctions: ToolboxFunction[],
+  toolboxFunctions: BareboneToolboxFunction[],
 ) {
   // Get the concatenated source of all the previous cells.
   const previousCellsSource = joinLines(sources.slice(0, idx));
