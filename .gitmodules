@@ -28,3 +28,6 @@
 [submodule "gall"]
 	path = data/gall
 	url = git@github.com:LuCEresearchlab/pytamaro-web-gall.git
+[submodule "luce-hoc"]
+	path = data/luce-hoc
+	url = git@github.com:LuCEresearchlab/pytamaro-web-luce-hoc.git
