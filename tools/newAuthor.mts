@@ -1,8 +1,8 @@
-import path from "path";
-import fs from "fs";
 import { execSync } from "child_process";
-import { ACTIVITIES_DIR, CURRICULA_DIR, DATA_DIR } from "./utils.mjs";
+import fs from "fs";
 import { tmpdir } from "os";
+import path from "path";
+import { ACTIVITIES_DIR, CURRICULA_DIR, DATA_DIR } from "./utils.mjs";
 const authorSlug = process.argv[2];
 
 // Create new author folder
@@ -47,6 +47,13 @@ const fullRepoName = `LuCEresearchlab/pytamaro-web-${authorSlug}`;
 
 // Create on GitHub
 execSync(`gh repo create ${fullRepoName} --source=${authorFolder} --push --private --description "Content by ${authorSlug} for pytamaro-web"`);
+
+// Create `live` branch at this initial commit
+execSync(`git -C ${authorFolder} checkout -b live`);
+// Push it on the remote
+execSync(`git -C ${authorFolder} push -u origin live`)
+// Restore `main`
+execSync(`git -C ${authorFolder} checkout main`);
 
 // Add it as submodule
 const submodulePath = path.join(DATA_DIR, authorSlug);
