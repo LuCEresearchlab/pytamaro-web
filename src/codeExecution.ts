@@ -1,4 +1,5 @@
 import Topo from '@hapi/topo';
+import { uniq } from 'lodash';
 import { ToolboxFunction } from './localStorage/schema';
 import { PythonName, imported_names } from './python-analyzer/python_analyzer';
 import { countLines, emptyLines, joinLines } from './sourceUtils';
@@ -50,7 +51,8 @@ function toolboxSingleModuleName(fn: BareboneToolboxFunction) {
 export async function importedToolboxNames(source: string) {
   try {
     const imports : PythonName[] = await imported_names(source);
-    return imports.filter(({ module }) => module === TOOLBOX_FILE).map(({ name }) => name);
+    const toolboxImports = imports.filter(({ module }) => module === TOOLBOX_FILE);
+    return uniq(toolboxImports.map(({ name }) => name));
   } catch {
     return [];
   }
