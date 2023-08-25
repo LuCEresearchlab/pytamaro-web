@@ -111,10 +111,12 @@ export default function CodeCell({
               color="error"
               invisible={codeCellExecutionState.outputSynced}
             >
-              <OutputArea
-                executionError={executionError}
-                executionResponse={executionResponse}
-              />
+              {executionResponse && (
+                <OutputArea
+                  executionError={executionError}
+                  executionResponse={executionResponse}
+                />
+              )}
             </StaleOutputBadge>
           </CardContent>
         </Collapse>

@@ -4,6 +4,7 @@ import { useConfirm } from 'material-ui-confirm';
 import {
   Dispatch, SetStateAction, useEffect, useState,
 } from 'react';
+import useSessionStorageState from 'use-session-storage-state';
 import logAnalyticsEvent, { AnalyticsEventName } from '../analyticsEvent';
 import { ExecutionResponse, importedToolboxNames } from '../codeExecution';
 import { ActivityVariant, activityVariantId } from '../schemas/activitySchema';
@@ -92,8 +93,10 @@ export function useActivity(
   const initialCodeExecutionStates = () => Array(initialCodeCells.length).fill(undefined)
     .map(initialCodeExecutionState);
 
-  const [codeExecutionStates,
-    setCodeExecutionStates] = useState<CodeCellExecutionState[]>(initialCodeExecutionStates());
+  const [codeExecutionStates, setCodeExecutionStates] = useSessionStorageState(
+    `pytamaro-web-execution-${variantId}`,
+    { defaultValue: initialCodeExecutionStates() },
+  );
   const [networkError, setNetworkError] = useState(false);
 
   const completed = !!variantMetadata?.completed;
