@@ -4,6 +4,7 @@ import {
   Lightbulb,
   People,
   Route,
+  School,
 } from '@mui/icons-material';
 import InstallDesktop from '@mui/icons-material/InstallDesktop';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -279,6 +280,44 @@ export default function Home({ welcomeCurriculum, activities } :
                   </Box>
                 </Grid>
               </Grid>
+            </Card>
+          </Paper>
+          <Paper elevation={4}>
+            <Card>
+              <CardActionArea href="/tamarocards">
+                <Grid container>
+                  <Grid xs={12} md={7}>
+                    <CardHeader
+                      avatar={<School color="primary" />}
+                      title="Teaching with PyTamaro? Get your TamaroCards!"
+                      titleTypographyProps={{ variant: 'h5', color: 'primary', fontWeight: 'bold' }}
+                      sx={{ pb: 0 }}
+                    />
+                    <CardContent>
+                      <Typography fontSize="1.1rem" paragraph gutterBottom>
+                        Use our simple paper cards to teach programming with PyTamaro.
+                      </Typography>
+                      <Typography fontSize="1.1rem" paragraph gutterBottom>
+                        Let students compose PyTamaro code by arranging and connecting cards,
+                        and let them interpret other students&apos; card compositions.
+                      </Typography>
+                    </CardContent>
+                  </Grid>
+                  <Grid xs={12} md={5}>
+                    <Box padding={2} position="relative" height="12rem" alignItems="center" justifyContent="center" display="flex">
+                      <Image
+                        src="/SA-2023-Table3.jpg"
+                        alt="Alpe Foppa panorama"
+                        fill
+                        style={{
+                          objectFit: 'contain',
+                          padding: theme.spacing(1),
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                </Grid>
+              </CardActionArea>
             </Card>
           </Paper>
           <Paper elevation={4}>
