@@ -1,7 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
-import { isEqual } from 'lodash';
 import Head from 'next/head';
 import { useRef } from 'react';
 import ActivityCodeCell from '../../../../../../components/ActivityCodeCell';
@@ -21,8 +20,7 @@ import Sidebar from '../../../../../../components/Sidebar/Sidebar';
 import TableOfContents from '../../../../../../components/Sidebar/TableOfContents';
 import ToolboxListSidebar from '../../../../../../components/Sidebar/ToolboxListSidebar';
 import VariantSelector from '../../../../../../components/VariantsSelector';
-import visibleCurricula from '../../../../../../src/curricula';
-import { allActivities } from '../../../../../../src/curriculumCompetencies';
+import { findIncludingCurricula } from '../../../../../../src/curricula';
 import { findVersions, readActivity } from '../../../../../../src/fs-content/activities';
 import { getAuthorProfile, listAuthorsWithContent, listCurriculaAllAuthors } from '../../../../../../src/fs-content/authors';
 import { CodeCellState } from '../../../../../../src/localStorage/schema';
@@ -39,14 +37,6 @@ import { activityVariantPathnameFromParts } from '../../../../../../src/urlUtils
 import useCurriculumFromQuery from '../../../../../../src/useCurriculumFromQuery';
 
 const userType = 'student';
-
-function findIncludingCurricula(curricula: Curriculum[], activityVariant: ActivityVariant) {
-  return visibleCurricula(curricula).filter(
-    (curriculum) => allActivities(curriculum).some(
-      (activity) => isEqual(activity.variant, activityVariant),
-    ),
-  );
-}
 
 export default function NotebookPage({
   activity, author, activityVariant, cells, curricula,
@@ -66,8 +56,6 @@ export default function NotebookPage({
   const curriculum = curricula.find((c) => curriculumToId(c) === curriculumId);
   const title = getVariantTitle(activity, activityVariant);
   const pageTitle = `${title} - PyTamaro`;
-
-  const includingCurricula = findIncludingCurricula(curricula, activityVariant);
 
   return (
     <div>
@@ -104,7 +92,7 @@ export default function NotebookPage({
           <CentralContent>
             <Container maxWidth="md" ref={cellsRef}>
               <Typography variant="h3" marginY={3}>{title}</Typography>
-              {!curriculum && <GoToCurriculaBanner curricula={includingCurricula} />}
+              {!curriculum && <GoToCurriculaBanner curricula={curricula} />}
               {cells.map((cell: NotebookCell, idx) => (cell.cell_type === 'markdown'
                 ? (
                   <MarkdownCellComponent
@@ -158,15 +146,16 @@ export async function getStaticProps(
   const {
     authorSlug, activitySlug, language, version,
   } = context.params;
+  const activityVariant = {
+    authorSlug, activitySlug, language, version,
+  };
   return {
     props: {
       author: await getAuthorProfile(authorSlug),
       activity: await readActivity(authorSlug, activitySlug),
-      activityVariant: {
-        authorSlug, activitySlug, language, version,
-      },
+      activityVariant,
       cells: await getNotebookContent(authorSlug, activitySlug, language, version, userType),
-      curricula: await listCurriculaAllAuthors(),
+      curricula: findIncludingCurricula(await listCurriculaAllAuthors(), activityVariant),
     },
   };
 }
