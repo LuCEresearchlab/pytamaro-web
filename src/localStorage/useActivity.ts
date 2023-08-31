@@ -1,5 +1,6 @@
 import axios from 'axios';
 import produce from 'immer';
+import { uniqBy } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import {
   Dispatch, SetStateAction, useEffect, useState,
@@ -8,7 +9,6 @@ import useSessionStorageState from 'use-session-storage-state';
 import logAnalyticsEvent, { AnalyticsEventName } from '../analyticsEvent';
 import { ExecutionResponse, importedToolboxNames } from '../codeExecution';
 import { ActivityVariant, activityVariantId } from '../schemas/activitySchema';
-import { joinLines } from '../sourceUtils';
 import { EventName, storeDbEvent } from '../storeDbEvent';
 import {
   CodeCellExecutionState,
@@ -200,10 +200,10 @@ export function useActivity(
     };
 
     const sources = sourcesUpTo(idx);
-    const toolboxFunctions = await transitivelyImportedToolboxFunctions(
-      joinLines(sources),
-      functionLookup,
-    );
+    const toolboxFunctionsByCell = await Promise.all(sources.map(
+      (source) => transitivelyImportedToolboxFunctions(source, functionLookup),
+    ));
+    const toolboxFunctions = uniqBy(toolboxFunctionsByCell.flat(), (fn) => fn.name);
     logAnalyticsEvent(AnalyticsEventName.CodeExecution, { activity: variantId });
     storeDbEvent(EventName.CodeExecution, metadata, {
       sources,
