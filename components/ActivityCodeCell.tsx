@@ -4,10 +4,11 @@ import {
 import { sum } from 'lodash';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
-import { ActivityVariant } from '../src/schemas/activitySchema';
+import { ActivityVariant, PythonFile } from '../src/schemas/activitySchema';
 import { countLines } from '../src/sourceUtils';
 import CodeCell from './CodeCell';
 import MoreOptionsButton from './MoreOptionsButton';
+import NetworkErrorSnackbar from './NetworkErrorSnackbar';
 import SaveToToolboxButton from './SaveToToolboxButton';
 
 function InconsistencyMessage() {
@@ -34,21 +35,27 @@ function InconsistencyMessage() {
   );
 }
 
-export default function ActivityCodeCell({ activityVariant, initialCodeCells, cellIdx } : {
+export default function ActivityCodeCell({
+  activityVariant, initialCodeCells, cellIdx,
+  extraPythonFiles,
+} : {
   activityVariant: ActivityVariant,
   initialCodeCells: CodeCellState[],
   cellIdx: number,
+  extraPythonFiles: PythonFile[],
 }) {
   const {
     codeCells, codeExecutionStates,
+    networkError, setNetworkError,
     handleSourceChanged, handleExecute, sourcesUpTo,
     handleToggleOutputArea, handleResetSingleCell,
     localCodeCellsWrongLength,
-  } = useLocalActivity(initialCodeCells, activityVariant);
+  } = useLocalActivity(initialCodeCells, activityVariant, extraPythonFiles);
   const precedingLines = sum(codeCells.slice(0, cellIdx).map((cell) => countLines(cell.source)));
   const currentCodeCell = codeCells[cellIdx];
   return localCodeCellsWrongLength ? <InconsistencyMessage /> : (
     <Box marginY={2}>
+      <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
       <CodeCell
         codeCellState={currentCodeCell}
         codeCellExecutionState={codeExecutionStates[cellIdx]}

@@ -4,6 +4,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from 'redis';
 import { CODE_EXECUTION_CELLS_TO_FILES_VERSION, ExecutionResponse, cellsToFiles } from '../../src/codeExecution';
 import { ToolboxFunction } from '../../src/localStorage/schema';
+import { PythonFile } from '../../src/schemas/activitySchema';
 
 const redisClient = createClient({
   socket: {
@@ -43,8 +44,13 @@ async function saveToCache(key: string, value: string) {
   }
 }
 
-async function doExecution(sources: string[], idx: number, toolboxFunctions: ToolboxFunction[]) {
-  const files = await cellsToFiles(sources, idx, toolboxFunctions);
+async function doExecution(
+  sources: string[],
+  idx: number,
+  toolboxFunctions: ToolboxFunction[],
+  extraPythonFiles: PythonFile[],
+) {
+  const files = await cellsToFiles(sources, idx, toolboxFunctions, extraPythonFiles);
   const data = {
     image: process.env.GLOT_IMAGE_TAG,
     payload: {
@@ -98,14 +104,18 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ExecutionResponse>,
 ) {
-  const { sources, idx, toolboxFunctions } = req.body;
-  const key = await computeKey(dataForKey({ sources, idx, toolboxFunctions }));
+  const {
+    sources, idx, toolboxFunctions, extraPythonFiles,
+  } = req.body;
+  const key = await computeKey(dataForKey({
+    sources, idx, toolboxFunctions, extraPythonFiles,
+  }));
   const cacheResult = await retrieveFromCache(key);
   let response;
   if (cacheResult) {
     response = JSON.parse(cacheResult);
   } else {
-    response = await doExecution(sources, idx, toolboxFunctions);
+    response = await doExecution(sources, idx, toolboxFunctions, extraPythonFiles);
     saveToCache(key, JSON.stringify(response));
   }
   res.status(200).json(response);

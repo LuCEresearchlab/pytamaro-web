@@ -7,7 +7,7 @@ export default async function handler(
 ) {
   const {
     uuid, experimentKey, sources, initialSources, requestedCellSequenceNumber, activityVariant,
-    toolboxFunctions,
+    toolboxFunctions, extraPythonFiles,
   } = req.body;
   const image = process.env.GLOT_IMAGE_TAG;
   if (image === undefined) {
@@ -23,6 +23,7 @@ export default async function handler(
     image,
     requestedCellSequenceNumber,
     toolboxFunctions,
+    extraPythonFiles,
   );
   res.status(saved ? 200 : 500).send({});
 }

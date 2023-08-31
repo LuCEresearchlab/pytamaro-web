@@ -1,7 +1,7 @@
 import postgres from 'postgres';
 import { CODE_EXECUTION_CELLS_TO_FILES_VERSION } from '../../codeExecution';
 import { ToolboxFunction } from '../../localStorage/schema';
-import { ActivityVariant } from '../../schemas/activitySchema';
+import { ActivityVariant, PythonFile } from '../../schemas/activitySchema';
 import { EventName } from '../../storeDbEvent';
 import conn from '../dbConnection';
 import { storeOrRetrieveRow, storeRow, storeRowWithoutId } from '../dbUtils';
@@ -13,14 +13,18 @@ async function storeDockerImageTag(sql: postgres.TransactionSql, docker_image: s
   return storeOrRetrieveRow(sql, 'docker_images', { tag: docker_image });
 }
 
-async function storeToolboxFunction(
+export const TOOLBOX_FUNCTIONS_TABLE = 'code_execution_toolbox_functions';
+export const EXTRA_PYTHON_FILES_TABLE = 'code_execution_extra_python_files';
+
+async function storeFile(
   sql: postgres.TransactionSql,
   event_id: number,
+  table: string,
   name: string,
   source: string,
 ) {
   const pSourceId = storeSource(sql, source);
-  storeRowWithoutId(sql, 'code_execution_toolbox_functions', {
+  storeRowWithoutId(sql, table, {
     event_id,
     name,
     source_id: await pSourceId,
@@ -69,6 +73,7 @@ export default async function saveCodeExecutionEvent(
   docker_image: string,
   requested_cell_seq_number: number,
   toolboxFunctions: ToolboxFunction[],
+  extraPythonFiles: PythonFile[],
 ) : Promise<boolean> {
   try {
     await conn.begin(async (sql) => {
@@ -82,7 +87,7 @@ export default async function saveCodeExecutionEvent(
         await pActivityId,
         requested_cell_seq_number,
       );
-      await Promise.all(
+      await Promise.all([
         sources.map(async (source, idx) => storeCell(
           sql,
           await pEventId,
@@ -90,15 +95,21 @@ export default async function saveCodeExecutionEvent(
           initial_sources[idx],
           idx,
         )),
-      );
-      await Promise.all(
-        toolboxFunctions.map(async (fn) => storeToolboxFunction(
+        toolboxFunctions.map(async (fn) => storeFile(
           sql,
           await pEventId,
+          TOOLBOX_FUNCTIONS_TABLE,
           fn.name,
           fn.source,
         )),
-      );
+        extraPythonFiles.map(async (file) => storeFile(
+          sql,
+          await pEventId,
+          EXTRA_PYTHON_FILES_TABLE,
+          file.name,
+          file.content,
+        )),
+      ].flat());
     });
     return true;
   } catch (e) {

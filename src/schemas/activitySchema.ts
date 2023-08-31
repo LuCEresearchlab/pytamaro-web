@@ -13,6 +13,7 @@ export interface Activity {
   assets: string[],
   authorSlug: string,
   derivedFrom: string[],
+  extraPythonFiles: PythonFile[],
 }
 
 export interface RawActivity {
@@ -22,6 +23,17 @@ export interface RawActivity {
   uses?: ActivityUse[],
   assets?: string[],
   derivedFrom?: string[],
+  extraPythonFiles?: PythonFileInfo[],
+}
+
+export interface PythonFile {
+  name: string, // 'name' to be consistent with glot, but it is potentially a path
+  content: string
+}
+
+export interface PythonFileInfo {
+  sourcePath: string,
+  destinationPath: string,
 }
 
 export interface ActivityInfo {

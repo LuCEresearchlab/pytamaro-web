@@ -5,7 +5,6 @@ import Head from 'next/head';
 import { useRef } from 'react';
 import ActivityCodeCell from '../../../../../../components/ActivityCodeCell';
 import ActivityFooter from '../../../../../../components/ActivityFooter';
-import ActivityNetworkErrorSnackbar from '../../../../../../components/ActivityNetworkErrorSnackbar';
 import ActivityResetButton from '../../../../../../components/ActivityResetButton';
 import DataSharingPreferenceDialog from '../../../../../../components/DataSharingPreferenceDialog';
 import GoToCurriculaBanner from '../../../../../../components/GoToCurriculaBanner';
@@ -77,10 +76,6 @@ export default function NotebookPage({
           <InfoButton type="activity" authorSlug={activity.authorSlug} slug={activity.slug} />
           )}
         </NavigationBar>
-        <ActivityNetworkErrorSnackbar
-          initialCodeCells={initialCodeCells}
-          activityVariant={activityVariant}
-        />
         <DataSharingPreferenceDialog />
         <Grid container>
           <Sidebar side="left">
@@ -107,6 +102,7 @@ export default function NotebookPage({
                     activityVariant={activityVariant}
                     initialCodeCells={initialCodeCells}
                     cellIdx={originalIdxToCodeCellIdx.get(idx) as number}
+                    extraPythonFiles={activity.extraPythonFiles}
                   />
                 )))}
             </Container>
