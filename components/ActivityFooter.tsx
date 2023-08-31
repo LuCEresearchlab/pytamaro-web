@@ -23,7 +23,7 @@ export default function ActivityFooter({
   return (
     <>
       <Stack mt={12} mb={6} direction="row" justifyContent="center" spacing={4}>
-        <CodeDownloadButton codeCells={codeCells} />
+        <CodeDownloadButton codeCells={codeCells} extraPythonFiles={activity.extraPythonFiles} />
         <MarkCompletedButton completed={completed} toggleCompleted={toggleCompleted} />
       </Stack>
       <BackToCurriculum activityVariant={activityVariant} />

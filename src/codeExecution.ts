@@ -87,6 +87,9 @@ export async function toolboxFiles(functions: BareboneToolboxFunction[]) {
     name: `${toolboxSingleModuleName(fn)}.py`,
     content: fn.source,
   }));
+  if (singleFiles.length === 0) {
+    return [];
+  }
   const toolboxMainFile = {
     name: `${TOOLBOX_FILE}.py`,
     content: await toolboxDriverSource(functions),
