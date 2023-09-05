@@ -1,3 +1,4 @@
+import FolderZipIcon from '@mui/icons-material/FolderZip';
 import {
   Avatar,
   Box,
@@ -14,18 +15,17 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import FolderZipIcon from '@mui/icons-material/FolderZip';
+import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import Head from 'next/head';
 import NavigationBar from '../../components/NavigationBar';
 import SA23_TableImage from '../../public/SA-2023-Table.jpg';
 import SA23_TableImage2 from '../../public/SA-2023-Table2.jpg';
 import SA23_TableImage3 from '../../public/SA-2023-Table3.jpg';
 import TamaroCardAPIColors from '../../public/tamarocards/v1/api/PyTamaro-Cards-API-Colors.png';
-import TamaroCardAPIPrimitives from '../../public/tamarocards/v1/api/PyTamaro-Cards-API-Primitives.png';
 import TamaroCardAPICombinators from '../../public/tamarocards/v1/api/PyTamaro-Cards-API-Combinators.png';
 import TamaroCardAPIPinning from '../../public/tamarocards/v1/api/PyTamaro-Cards-API-Pinning.png';
+import TamaroCardAPIPrimitives from '../../public/tamarocards/v1/api/PyTamaro-Cards-API-Primitives.png';
 import TamaroCardSheetsConstants from '../../public/tamarocards/v1/sheets/PyTamaro-Cards-Constants.png';
 import TamaroCardSheetsFunctionsCommon from '../../public/tamarocards/v1/sheets/PyTamaro-Cards-Functions-Common.png';
 import TamaroCardSheetsFunctions from '../../public/tamarocards/v1/sheets/PyTamaro-Cards-Functions.png';
@@ -73,7 +73,7 @@ export default function TamaroCardsPage() {
     },
     {
       name: 'Names',
-      desc: 'Cards for fefinition and use of own constants and functions',
+      desc: 'Cards for definition and use of own constants and functions',
       img: TamaroCardSheetsNames,
     },
   ];
