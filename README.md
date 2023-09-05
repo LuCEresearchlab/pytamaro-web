@@ -8,23 +8,18 @@ The web plaform is implemented using [Next.js](https://nextjs.org/).
 The actual content is stored in separate repositories, one for each author, which are imported as git submodules.
 Activities are created as [Jupyter notebooks](https://jupyter.org/).
 
-## I am a content author. What do I need to know to operate with submodules?
+## I am a content author. How can I add my activities and curricula?
 <details>
 <summary>Expand</summary>
 
-Activites and curricula are responsiblity of a certain author and are maintained in external repositories.
-See the [Luce repository](https://github.com/LuCEresearchlab/pytamaro-web-luce/) for an example.
-Such repositories are imported to this repository as git submodules.
+First, set up a local development environment
+as described in the "How do I set up a development enviroment..." section below.
 
-When a new author is added, one of the maintainers needs to create their repository and add it to this one as a submodule.
-A script that performs all the necessary steps is available by running:
-```sh
-npx ts-node tools/newAuthor.mts <author-slug>
-```
-where `<author-slug>` is the name of the author's repository (e.g., `luce` for the Luce repository).
+As a very first step, complete your author profile in the `author.json` file.
+Your content will NOT appear until you add at the very least your name.
 
-Set up a local development environment as described in the "How do I set up a development enviroment..." section below.
-Then, you can work on your content as usual by making changes to the files in the submodule's folder (`data/<author-slug>/...`). 
+You can work on your content (activites and curricula) by adding and changing the files in your submodule's folder (locateda at `data/<author-slug>/...`).
+Check out the LuCE's content folder at `data/luce` for examples of activities and curricula.
 
 When you are ready and want to commit your changes:
 1. if not there already, move to a folder inside your submodule:
@@ -57,6 +52,19 @@ Finally, the redeployment of the entire platform will be automatically triggered
 The entire process should take less than 10 minutes.
 </details>
 
+## How do I set up a development environment to run the platform locally?
+<details>
+<summary>Expand</summary>
+
+1. Clone this repository `git clone git@github.com:LuCEresearchlab/pytamaro-web.git`
+1. Change directory to the newly cloned repository (e.g., `cd pytamaro-web`) 
+1. Clone the submodules you have access to (e.g., `git submodule update --init data/luce`, or `git submodule update --init` to clone all of them)
+1. Install the dependencies of this project: `npm install`
+1. Populate the `public` folder with notebooks-related assets: `npx ts-node tools/createNotebookAssets.mts`
+1. Start the Next.js server: `npm run dev`
+1. Browse at [http://localhost:3000](http://localhost:3000)
+</details>
+
 ## I am a content author. What do I need to know to create a new activity?
 <details>
 <summary>Expand</summary>
@@ -71,25 +79,25 @@ See this document for [creating a new activity](docs/activity.md).
 See this document for [creating a new curriculum](docs/curriculum.md).
 </details>
 
-## How do I set up a development environment to run the platform locally?
-<details>
-<summary>Expand</summary>
-
-1. Clone this repository `git clone git@github.com:LuCEresearchlab/pytamaro-web.git`
-1. Change directory to the newly cloned repository (e.g., `cd pytamaro-web`) 
-1. Clone the submodules you have access to (e.g., `git submodule update --init data/luce`, or `git submodule update --init` to clone all of them)
-1. Install the dependencies of this project: `npm install`
-1. Populate the `public` folder with notebooks-related assets: `npx ts-node tools/createNotebookAssets.mts`
-1. Start the Next.js server: `npm run dev`
-1. Browse at [http://localhost:3000](http://localhost:3000)
-</details>
-
 ## Activities, Curricula... give me a comprehensive picture!
 <details>
 <summary>Expand</summary>
 
 See this document for [the structure of a content repository](docs/content-repo.md).
 </details>
+
+## I am a maintainer of the platform. How do I add a new author?
+
+Activites and curricula are responsiblity of a certain author and are maintained in external repositories.
+See the [Luce repository](https://github.com/LuCEresearchlab/pytamaro-web-luce/) for an example.
+Such repositories are imported to this repository as git submodules.
+
+When a new author is added, one of the maintainers needs to create their repository and add it to this one as a submodule.
+A script that performs all the necessary steps is available by running:
+```sh
+npx ts-node tools/newAuthor.mts <author-slug>
+```
+where `<author-slug>` is the name of the author's repository (e.g., `luce` for the Luce repository).
 
 ## I am a developer of the platform. Which coding guidelines should I follow?
 <details>
