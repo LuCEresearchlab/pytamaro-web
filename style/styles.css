@@ -37,6 +37,9 @@ h1, h2, h3, h4, h5, h6, .curriculum-unit, .anchor {
 
 .blurred {
     filter: blur(.5rem);
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 pre:has(code) {
