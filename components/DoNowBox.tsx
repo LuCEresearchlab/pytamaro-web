@@ -42,8 +42,6 @@ export default function DoNowBox({
       }
     });
   }, [id]);
-  const [showDidItButton, setShowDidItButton] = useState(!alreadyDidIt);
-
   useEffect(() => {
     const performedBlur = true;
     if (!alreadyDidIt) {
@@ -59,18 +57,14 @@ export default function DoNowBox({
 
   const handleDidIt = () => {
     setBlurred(false);
-    setShowDidItButton(false);
     logAnalyticsEvent(AnalyticsEventName.DoNowCompleted, { id: `${activityVariantId(activityVariant)}/${id}` });
     storeDbEvent(EventName.DoNowCompleted, metadata, { activityVariant, id, answer });
-    // Wait before updating the metadata, allowing the collapse animation to finish
-    setTimeout(() => {
-      if (currentActivity) {
-        setActivityMetadata(activityVariant, {
-          ...currentActivity,
-          doNowCompleted: [...currentActivity.doNowCompleted, { id, answer }],
-        });
-      }
-    }, 250);
+    if (currentActivity) {
+      setActivityMetadata(activityVariant, {
+        ...currentActivity,
+        doNowCompleted: [...currentActivity.doNowCompleted, { id, answer }],
+      });
+    }
   };
 
   return (
@@ -85,7 +79,7 @@ export default function DoNowBox({
       {children}
       {requireAnswer && (
       <TextField
-        sx={{ mb: showDidItButton ? 2 : 0 }}
+        sx={{ mb: alreadyDidIt ? 0 : 2 }}
         size="small"
         label="Your answer"
         variant="outlined"
@@ -95,7 +89,7 @@ export default function DoNowBox({
         disabled={alreadyDidIt}
       />
       )}
-      <Collapse in={showDidItButton}>
+      <Collapse in={!alreadyDidIt}>
         <Button variant="outlined" color="warning" onClick={handleDidIt} disabled={requireAnswer && !answer}>
           {requireAnswer ? 'Save and Continue' : 'I did it!'}
         </Button>
