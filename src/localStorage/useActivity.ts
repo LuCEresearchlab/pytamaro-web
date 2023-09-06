@@ -3,7 +3,7 @@ import produce from 'immer';
 import { uniqBy } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import {
-  Dispatch, SetStateAction, useEffect, useState,
+  Dispatch, SetStateAction, useEffect,
 } from 'react';
 import useSessionStorageState from 'use-session-storage-state';
 import logAnalyticsEvent, { AnalyticsEventName } from '../analyticsEvent';
@@ -97,7 +97,10 @@ export function useActivity(
     `pytamaro-web-execution-${variantId}`,
     { defaultValue: initialCodeExecutionStates() },
   );
-  const [networkError, setNetworkError] = useState(false);
+  const [networkError, setNetworkError] = useSessionStorageState(
+    `pytamaro-web-networkerror-${variantId}`,
+    { defaultValue: false },
+  );
 
   const completed = !!variantMetadata?.completed;
   const cellsModified = !!variantMetadata?.cellsModified;
