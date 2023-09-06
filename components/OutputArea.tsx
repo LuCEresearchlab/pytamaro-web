@@ -20,6 +20,8 @@ function imgElement(dataURI: string) {
       ...OUTPUT_ELEMENT_STYLE,
       justifyContent: 'center',
       display: 'flex',
+      width: 'fit-content',
+      height: 'fit-content',
       padding: theme.spacing(0.5),
       '&:hover': {
         background: `repeating-conic-gradient(${theme.palette.grey[300]} 0% 25%, transparent 0 50%) 50% / ${theme.spacing(1)} ${theme.spacing(1)}`,
