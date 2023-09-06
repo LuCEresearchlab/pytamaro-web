@@ -1,6 +1,6 @@
 import { AccessAlarm } from '@mui/icons-material';
 import {
-  Alert, AlertTitle, Button, Collapse, TextField,
+  Alert, AlertTitle, Box, Button, Collapse, TextField,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
@@ -77,23 +77,25 @@ export default function DoNowBox({
     >
       <AlertTitle sx={{ fontSize: '1rem' }}>Do Now!</AlertTitle>
       {children}
-      {requireAnswer && (
-      <TextField
-        sx={{ mb: alreadyDidIt ? 0 : 2 }}
-        size="small"
-        label="Your answer"
-        variant="outlined"
-        fullWidth
-        value={answer}
-        onChange={(event) => setAnswer(event.target.value)}
-        disabled={alreadyDidIt}
-      />
-      )}
-      <Collapse in={!alreadyDidIt}>
-        <Button variant="outlined" color="warning" onClick={handleDidIt} disabled={requireAnswer && !answer}>
-          {requireAnswer ? 'Save and Continue' : 'I did it!'}
-        </Button>
-      </Collapse>
+      <Box sx={{ mt: 1 }}>
+        {requireAnswer && (
+        <TextField
+          sx={{ mb: alreadyDidIt ? 0 : 2 }}
+          size="small"
+          label="Your answer"
+          variant="outlined"
+          fullWidth
+          value={answer}
+          onChange={(event) => setAnswer(event.target.value)}
+          disabled={alreadyDidIt}
+        />
+        )}
+        <Collapse in={!alreadyDidIt}>
+          <Button variant="outlined" color="warning" onClick={handleDidIt} disabled={requireAnswer && !answer}>
+            {requireAnswer ? 'Save and Continue' : 'I did it!'}
+          </Button>
+        </Collapse>
+      </Box>
     </Alert>
   );
 }
