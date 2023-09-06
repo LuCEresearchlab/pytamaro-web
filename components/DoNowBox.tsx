@@ -22,7 +22,11 @@ export default function DoNowBox({
     ({ id: completedId }) => completedId === id,
   );
   const alreadyDidIt = currentDoNowInfo !== undefined;
-  const [answer, setAnswer] = useState(currentDoNowInfo?.answer || '');
+  const answerFromLocalStorage = currentDoNowInfo?.answer || '';
+  const [answer, setAnswer] = useState(answerFromLocalStorage);
+  useEffect(() => {
+    setAnswer(answerFromLocalStorage);
+  }, [answerFromLocalStorage]);
   const setBlurred = useCallback((blurred: boolean) => {
     const className = 'blurred';
     let nextDoNowEncountered = false;
