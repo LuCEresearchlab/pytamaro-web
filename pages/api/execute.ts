@@ -106,7 +106,9 @@ export default async function handler(
     response = JSON.parse(cacheResult);
   } else {
     response = await doExecution(sources, idx, toolboxFunctions);
-    saveToCache(key, JSON.stringify(response));
+    if (response.type !== 'network-error') {
+      saveToCache(key, JSON.stringify(response));
+    }
   }
   res.status(200).json(response);
 }
