@@ -116,6 +116,7 @@ export default function NotebookPage({
                 initialCodeCells={initialCodeCells}
                 author={author}
                 activity={activity}
+                curriculum={curriculum}
               />
             )}
           </CentralContent>
