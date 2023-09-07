@@ -1,5 +1,7 @@
 import { Route } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
+import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
+import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import { useRouter } from 'next/router';
 import { ActivityVariant, activityVariantId } from '../src/schemas/activitySchema';
 import { Curriculum, curriculumFromId } from '../src/schemas/curriculumSchema';
@@ -50,9 +52,9 @@ export default function BackToCurriculum({
       {previousActivityPath && (
         <Button
           variant="outlined"
-          color="success"
-          onClick={() => router.push(previousActivityPath)}
-          sx={{ ml: 2, mr: 2 }}
+          color="warning"
+          startIcon={<ArrowCircleLeftIcon />}
+          href={previousActivityPath}
         >
           Previous Activity
         </Button>
@@ -62,6 +64,7 @@ export default function BackToCurriculum({
         color="error"
         startIcon={<Route />}
         onClick={() => router.push(href)}
+        sx={{ ml: 2, mr: 2 }}
       >
         Back to my curriculum
       </Button>
@@ -69,8 +72,8 @@ export default function BackToCurriculum({
         <Button
           variant="outlined"
           color="success"
-          onClick={() => router.push(nextActivityPath)}
-          sx={{ ml: 2 }}
+          endIcon={<ArrowCircleRightIcon />}
+          href={nextActivityPath}
         >
           Next Activity
         </Button>
