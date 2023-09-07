@@ -29,8 +29,9 @@ export default function BackToCurriculum({
 
   const href = `${curriculumPathname(authorSlug, curriculumSlug)}#${activityVariantId(activityVariant)}`;
 
+  
   const currentActivityVariantId = activityVariantId(activityVariant);
-  const units = curriculum.units;
+  const units = curriculum ? curriculum.units : [];
   const steps = units.flatMap((unit) => unit.steps);
   const activities = steps.flatMap((step) => step.activities);
   const currenctActivityId = activities.findIndex((activity) => activityVariantId(activity.variant) === currentActivityVariantId);
