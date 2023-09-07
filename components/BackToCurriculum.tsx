@@ -44,9 +44,6 @@ export default function BackToCurriculum({
   const nextActivityPath = nextActivity && completed ? activityVariantPathname(nextActivity.variant) + '?' + currentUrlLastPart : null;
   const previousActivityPath = previousActivity ? activityVariantPathname(previousActivity.variant) + '?' + currentUrlLastPart : null;
 
-  // compute nextActivityPath only if the current activity is marked as completed
-  console.log(activities[currenctActivityId])
-
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', mb: 6 }}>
       {previousActivityPath && (
