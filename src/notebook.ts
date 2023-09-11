@@ -1,5 +1,6 @@
 import { serialize } from 'next-mdx-remote/serialize';
 import rehypeSlug from 'rehype-slug';
+import remarkGfm from 'remark-gfm';
 import { readNotebookContent } from './fs-content/notebooks';
 import { JupyterCell, NotebookCell } from './schemas/activitySchema';
 
@@ -59,6 +60,7 @@ export default async function getNotebookContent(
       mdxSource: cell.cell_type === 'markdown' ? await serialize(source, {
         mdxOptions: {
           rehypePlugins: [rehypeSlug],
+          remarkPlugins: [remarkGfm],
         },
       }) : null,
     };
