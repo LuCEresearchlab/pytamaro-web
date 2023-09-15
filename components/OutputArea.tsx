@@ -33,9 +33,26 @@ function ImgElement({ dataURI } : { dataURI: string }) {
   const imgRef = useRef<HTMLImageElement>(null);
   const [showFullScreenButton, setShowFullScreenButton] = useState(false);
   const [fullScreenOpen, setFullScreenOpen] = useState(false);
-  const imgTag = (primary = false) => {
-    const style = { display: 'block', ...primary ? { maxWidth: '100%', maxHeight: '100%' } : {} };
-    return <img ref={primary ? imgRef : undefined} style={style} src={dataURI} alt="Graphical output from execution result" />;
+  const imgTag = (dialog: boolean) => {
+    const baseStyle = {
+      display: 'block',
+      width: '100%',
+      objectFit: 'contain',
+    };
+    const dialogStyle = {
+      ...baseStyle,
+      maxWidth: `calc(100vw - ${theme.spacing(16)})`,
+      maxHeight: `calc(100vh - ${theme.spacing(16)})`,
+    };
+    return (
+      <img
+        ref={dialog ? undefined : imgRef}
+        // @ts-ignore
+        style={dialog ? dialogStyle : baseStyle}
+        src={dataURI}
+        alt="Graphical output from execution result"
+      />
+    );
   };
   useEffect(() => {
     if (imgRef.current && boxRef.current) {
@@ -52,6 +69,7 @@ function ImgElement({ dataURI } : { dataURI: string }) {
       sx={{
         ...OUTPUT_ELEMENT_STYLE,
         justifyContent: 'center',
+        maxWidth: '100%',
         maxHeight: '600px',
         display: 'flex',
         padding: theme.spacing(0.5),
@@ -73,7 +91,7 @@ function ImgElement({ dataURI } : { dataURI: string }) {
                 ...CHECKERED_PATTERN,
               }}
             >
-              {imgTag()}
+              {imgTag(true)}
             </Card>
           </Dialog>
           <Button
@@ -86,7 +104,7 @@ function ImgElement({ dataURI } : { dataURI: string }) {
           </Button>
         </>
       )}
-      {imgTag(true)}
+      {imgTag(false)}
     </Box>
   );
 }
