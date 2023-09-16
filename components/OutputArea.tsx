@@ -6,7 +6,11 @@ import {
 } from '@mui/material';
 import AnsiUp from 'ansi_up';
 import { isEmpty, negate } from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { ExecutionResponse } from '../src/codeExecution';
 import theme from '../src/theme';
 
@@ -29,15 +33,33 @@ const CHECKERED_PATTERN = {
 };
 
 function ImgElement({ dataURI } : { dataURI: string }) {
+  const [availableSize, setAvailableSize] = useState([0, 0]);
+  const [wantedSize, setWantedSize] = useState([0, 0]);
+
+  // Monitor the size of the box containing the image to determine if we need to show the
+  // full screen button.
+  // The size potentially changes when a new image is loaded or the window is resized.
   const boxRef = useRef<HTMLDivElement>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
-  const [showFullScreenButton, setShowFullScreenButton] = useState(false);
+  useEffect(() => {
+    if (!boxRef.current) return () => {};
+    const observer = new ResizeObserver(() => {
+      if (boxRef.current) {
+        setAvailableSize([boxRef.current.clientWidth, boxRef.current.clientHeight]);
+      }
+    });
+    observer.observe(boxRef.current);
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+  const showFullScreenButton = wantedSize[0] > availableSize[0] || wantedSize[1] > availableSize[1];
+
   const [fullScreenOpen, setFullScreenOpen] = useState(false);
-  const imgTag = (dialog: boolean) => {
+  const imgTag = (mainImage: boolean) => {
     const baseStyle = {
       display: 'block',
-      width: '100%',
-      objectFit: 'contain',
+      maxWidth: '100%',
+      objectFit: 'scale-down',
     };
     const dialogStyle = {
       ...baseStyle,
@@ -46,23 +68,20 @@ function ImgElement({ dataURI } : { dataURI: string }) {
     };
     return (
       <img
-        ref={dialog ? undefined : imgRef}
+        onLoad={(ev) => {
+          // Measure the image "natural" size after it has been loaded.
+          if (mainImage) {
+            const img = ev.target as HTMLImageElement;
+            setWantedSize([img.naturalWidth, img.naturalHeight]);
+          }
+        }}
         // @ts-ignore
-        style={dialog ? dialogStyle : baseStyle}
+        style={mainImage ? baseStyle : dialogStyle}
         src={dataURI}
         alt="Graphical output from execution result"
       />
     );
   };
-  useEffect(() => {
-    if (imgRef.current && boxRef.current) {
-      const wantedWidth = imgRef.current.naturalWidth;
-      const wantedHeight = imgRef.current.naturalHeight;
-      const availableWidth = boxRef.current.clientWidth;
-      const availableHeight = boxRef.current.clientHeight;
-      setShowFullScreenButton(wantedWidth > availableWidth || wantedHeight > availableHeight);
-    }
-  }, [imgRef, boxRef, dataURI]);
   return (
     <Box
       ref={boxRef}
@@ -91,7 +110,7 @@ function ImgElement({ dataURI } : { dataURI: string }) {
                 ...CHECKERED_PATTERN,
               }}
             >
-              {imgTag(true)}
+              {imgTag(false)}
             </Card>
           </Dialog>
           <Button
@@ -104,7 +123,7 @@ function ImgElement({ dataURI } : { dataURI: string }) {
           </Button>
         </>
       )}
-      {imgTag(false)}
+      {imgTag(true)}
     </Box>
   );
 }
