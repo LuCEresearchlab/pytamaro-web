@@ -1,4 +1,4 @@
-import { ActivityVariant } from './schemas/activitySchema';
+import { ActivityVariant, activityVariantId } from './schemas/activitySchema';
 
 function contentTypeByAuthorPathname(contentType: string, authorSlug: string) {
   return `/${contentType}/${authorSlug}`;
@@ -51,6 +51,14 @@ export function curriculaByAuthorPathname(authorSlug: string) {
 
 export function curriculumPathname(authorSlug: string, curriculumSlug: string) {
   return `${curriculaByAuthorPathname(authorSlug)}/${curriculumSlug}`;
+}
+
+export function curriculumWithAnchor(
+  authorSlug: string,
+  curriculumSlug: string,
+  activityVariant: ActivityVariant,
+) {
+  return `${curriculumPathname(authorSlug, curriculumSlug)}#${activityVariantId(activityVariant)}`;
 }
 
 export function curriculumInfoPathname(authorSlug: string, curriculumSlug: string) {

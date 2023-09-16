@@ -21,7 +21,7 @@ export default function DownloadCodeButton({ codeCells }: { codeCells: CodeCellS
       startIcon={<DownloadIcon />}
       onClick={() => downloadSourceCode(formatCells(codeCells), getFunction)}
     >
-      Export as Python file
+      Download Python Source
     </Button>
   );
 }

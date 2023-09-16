@@ -16,6 +16,7 @@ import ActivityCompetenciesSidebar from '../../../../../../components/Sidebar/Ac
 import ActivityImage from '../../../../../../components/Sidebar/ActivityImage';
 import CentralContent from '../../../../../../components/Sidebar/CentralContent';
 import CurriculumCompetenciesSidebar from '../../../../../../components/Sidebar/CurriculumCompetenciesSidebar';
+import CurriculumUnitSidebar from '../../../../../../components/Sidebar/CurriculumUnitSidebar';
 import Sidebar from '../../../../../../components/Sidebar/Sidebar';
 import TableOfContents from '../../../../../../components/Sidebar/TableOfContents';
 import ToolboxListSidebar from '../../../../../../components/Sidebar/ToolboxListSidebar';
@@ -121,6 +122,9 @@ export default function NotebookPage({
           </CentralContent>
           <Sidebar side="right">
             <ActivityImage activity={activity} variant={activityVariant} title={title} />
+            {curriculum && (
+              <CurriculumUnitSidebar curriculum={curriculum} activityVariant={activityVariant} />
+            )}
             <TableOfContents initialized elementRef={cellsRef} selector="h2[id], h3[id]" title="Contents" />
             {curriculum && (
               <ActivityCompetenciesSidebar
