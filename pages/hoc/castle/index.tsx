@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Container,
-  Link,
   Typography,
 } from '@mui/material';
 import Head from 'next/head';
@@ -93,7 +92,7 @@ export default function HocCastlePage() {
             <strong>If you fail</strong>
             ,
             we will have to rewrite history.
-            And we'd rather not do that!
+            And we&apos;d rather not do that!
           </Typography>
 
           <Typography marginY={3} align="center">
