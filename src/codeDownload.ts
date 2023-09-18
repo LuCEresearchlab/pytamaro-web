@@ -3,9 +3,11 @@ import JSZip from 'jszip';
 import { toolboxFiles } from './codeExecution';
 import { ToolboxFunction } from './localStorage/schema';
 import { transitivelyImportedToolboxFunctions } from './localStorage/useActivity';
+import { PythonFile } from './schemas/activitySchema';
 
 export default async function downloadSourceCode(
   source: string,
+  extraPythonFiles: PythonFile[],
   getToolboxFunction: (name: string) => ToolboxFunction | undefined,
 ) {
   const mainFile = {
@@ -16,16 +18,17 @@ export default async function downloadSourceCode(
     source,
     getToolboxFunction,
   );
-  // If no toolbox functions are imported, download the source as a single
-  // Python file. Otherwise, download a zip file containing the main source and
-  // all the files needed for the toolbox.
-  if (toolboxFunctions.length === 0) {
+  // If no toolbox functions are imported or extra Python files are included,
+  // download the source as a single Python file. Otherwise, download a zip file
+  // containing the main source and all the files needed.
+  if (toolboxFunctions.length + extraPythonFiles.length === 0) {
     const blob = new Blob([mainFile.content], { type: 'text/plain;charset=utf-8' });
     saveAs(blob, mainFile.name);
   } else {
     const files = [
       mainFile,
       ...await toolboxFiles(toolboxFunctions),
+      ...extraPythonFiles,
     ];
     const zip = new JSZip();
     files.forEach(({ name, content }) => zip.file(name, content));

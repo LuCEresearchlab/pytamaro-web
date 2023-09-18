@@ -60,7 +60,7 @@ The entire process should take less than 10 minutes.
 1. Change directory to the newly cloned repository (e.g., `cd pytamaro-web`) 
 1. Clone the submodules you have access to (e.g., `git submodule update --init data/luce`, or `git submodule update --init` to clone all of them)
 1. Install the dependencies of this project: `npm install`
-1. Populate the `public` folder with notebooks-related assets: `npx ts-node tools/createNotebookAssets.mts`
+1. Populate the `public` folder with notebooks-related assets: `npm run create-assets`
 1. Start the Next.js server: `npm run dev`
 1. Browse at [http://localhost:3000](http://localhost:3000)
 </details>

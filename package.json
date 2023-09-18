@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "cross-env NODE_OPTIONS=--experimental-wasm-modules npx ts-node tools/checkNotebookSourceCode.mts && npx ts-node tools/createNotebookAssets.mts",
+    "prebuild": "npm run check-python-sources && npm run create-assets",
+    "check-python-sources": "cross-env NODE_OPTIONS=--experimental-wasm-modules npx ts-node tools/checkNotebookSourceCode.mts",
+    "create-assets": "cross-env NODE_OPTIONS=--experimental-wasm-modules npx ts-node tools/createNotebookAssets.mts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

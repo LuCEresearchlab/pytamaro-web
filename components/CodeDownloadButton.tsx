@@ -4,6 +4,7 @@ import downloadSourceCode from '../src/codeDownload';
 import { CodeCellState } from '../src/localStorage/schema';
 import { sourceFromCell } from '../src/localStorage/useActivity';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
+import { PythonFile } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
 
 function formatCells(codeCells: CodeCellState[]) {
@@ -12,14 +13,16 @@ function formatCells(codeCells: CodeCellState[]) {
   return joinLines(formattedSources);
 }
 
-export default function DownloadCodeButton({ codeCells }: { codeCells: CodeCellState[] }) {
+export default function DownloadCodeButton({ codeCells, extraPythonFiles = [] }:
+{ codeCells: CodeCellState[],
+  extraPythonFiles?: PythonFile[] }) {
   const { getFunction } = useLocalToolbox();
   return (
     <Button
       variant="contained"
       color="primary"
       startIcon={<DownloadIcon />}
-      onClick={() => downloadSourceCode(formatCells(codeCells), getFunction)}
+      onClick={() => downloadSourceCode(formatCells(codeCells), extraPythonFiles, getFunction)}
     >
       Download Python Source
     </Button>

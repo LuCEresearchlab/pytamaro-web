@@ -8,8 +8,7 @@ import {
 import useSessionStorageState from 'use-session-storage-state';
 import logAnalyticsEvent, { AnalyticsEventName } from '../analyticsEvent';
 import { ExecutionResponse, importedToolboxNames } from '../codeExecution';
-import { ActivityVariant, activityVariantId } from '../schemas/activitySchema';
-import { EventName, storeDbEvent } from '../storeDbEvent';
+import { ActivityVariant, PythonFile, activityVariantId } from '../schemas/activitySchema';
 import {
   CodeCellExecutionState,
   CodeCellState, Metadata, ToolboxFunction,
@@ -58,14 +57,16 @@ async function executeOnServer(
   sources: string[],
   idx: number,
   toolboxFunctions: ToolboxFunction[],
-)
-  : Promise<ExecutionResponse> {
+  extraPythonFiles: PythonFile[],
+) : Promise<ExecutionResponse> {
   try {
-    return (await axios.post('/api/execute', {
+    const response = await axios.post('/api/execute', {
       sources,
       idx,
       toolboxFunctions,
-    })).data;
+      extraPythonFiles,
+    });
+    return response.data;
   } catch {
     return { type: 'network-error', content: '' };
   }
@@ -82,6 +83,7 @@ export function useActivity(
   metadata: Metadata,
   setMetadata: Dispatch<SetStateAction<Metadata>>,
   activityVariant: ActivityVariant,
+  extraPythonFiles: PythonFile[],
   preExecute: () => ToolboxFunction | undefined = () => undefined,
   postExecuteSingleCell:
   (idx: number, executionResponse: ExecutionResponse) => void = () => {},
@@ -186,7 +188,7 @@ export function useActivity(
     idx: number,
   ) => {
     executionStarted(idx);
-    const response = await executeOnServer(sources, idx, toolboxFunctions);
+    const response = await executeOnServer(sources, idx, toolboxFunctions, extraPythonFiles);
     executionFinished(idx, response);
     postExecuteSingleCell(idx, response);
     return response !== undefined;
@@ -214,6 +216,7 @@ export function useActivity(
       requestedCellSequenceNumber: idx,
       toolboxFunctions,
       activityVariant,
+      extraPythonFiles,
     });
     setNetworkError(false);
     // (Re-)Execute all cells from the first one to the current one, included.

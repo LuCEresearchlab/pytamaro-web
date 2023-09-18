@@ -1,16 +1,41 @@
 import { readFile, readdir } from 'fs/promises';
 import path from 'path';
 import {
+  CURRENT_CELL_FILE, DRIVER_FILE, PREVIOUS_CELLS_FILE, TOOLBOX_FILE,
+} from '../codeExecution';
+import {
   Activity,
+  PythonFileInfo,
   RawActivity,
 } from '../schemas/activitySchema';
 import { ACTIVITIES_DIR, DATA_DIR, notebookFileNames } from './notebooks';
 
 const ACTIVITY_INFO_FILE = 'info.json';
+const PYTHON_FILES_DIR = 'python-files';
+
+async function readPythonFiles(files: PythonFileInfo[], authorDir: string) {
+  // Ensure that destination paths are unique
+  const destinationPaths = files.map((file) => file.destinationPath);
+  if (new Set(destinationPaths).size !== destinationPaths.length) {
+    throw new Error('Non-unique destination path in extraPythonFiles');
+  }
+  // Ensure that destination paths are not reserved
+  const reservedFilenames = [DRIVER_FILE, PREVIOUS_CELLS_FILE, CURRENT_CELL_FILE, TOOLBOX_FILE];
+  const reservedPaths = reservedFilenames.map((filename) => `${filename}.py`);
+  if (reservedPaths.some((reservedPath) => destinationPaths.includes(reservedPath))) {
+    throw new Error('Reserved path used as destination path in extraPythonFiles');
+  }
+  // Read content
+  return Promise.all(files.map(async (file) => ({
+    name: file.destinationPath,
+    content: await readFile(path.join(authorDir, PYTHON_FILES_DIR, file.sourcePath), 'utf-8'),
+  })));
+}
 
 export async function readActivity(authorSlug: string, activitySlug: string)
   : Promise<Activity> {
-  const content = await readFile(path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR, activitySlug, ACTIVITY_INFO_FILE), 'utf-8');
+  const authorDir = path.join(DATA_DIR, authorSlug);
+  const content = await readFile(path.join(authorDir, ACTIVITIES_DIR, activitySlug, ACTIVITY_INFO_FILE), 'utf-8');
   const rawActivity : RawActivity = JSON.parse(content);
   const notebooks = await notebookFileNames(authorSlug, activitySlug);
   const notebooksVariants = notebooks.map((filename) => {
@@ -40,6 +65,7 @@ export async function readActivity(authorSlug: string, activitySlug: string)
       version: variant.version,
     })),
     languagesInfo: rawActivity.variants,
+    extraPythonFiles: await readPythonFiles(rawActivity.extraPythonFiles || [], authorDir),
   };
 }
 
