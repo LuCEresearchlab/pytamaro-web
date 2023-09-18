@@ -9,6 +9,7 @@ import useSessionStorageState from 'use-session-storage-state';
 import logAnalyticsEvent, { AnalyticsEventName } from '../analyticsEvent';
 import { ExecutionResponse, importedToolboxNames } from '../codeExecution';
 import { ActivityVariant, PythonFile, activityVariantId } from '../schemas/activitySchema';
+import { EventName, storeDbEvent } from '../storeDbEvent';
 import {
   CodeCellExecutionState,
   CodeCellState, Metadata, ToolboxFunction,
