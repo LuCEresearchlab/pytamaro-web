@@ -11,6 +11,7 @@ import { PlayArrow } from '@mui/icons-material';
 import NavigationBar from '../../../components/NavigationBar';
 import MarketingImage from '../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
 import Valleys from '../../../public/hoc/castle/BellinzonaAndValleysMap1862.jpg';
+import HourOfCodeFooter from '../../../components/HourOfCodeFooter';
 
 export default function HocCastlePage() {
   return (
@@ -23,7 +24,7 @@ export default function HocCastlePage() {
         <NavigationBar />
         <Container maxWidth="md">
           <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
-            Hour of Code with PyTamaro
+            Hour of Code ® with PyTamaro
           </Typography>
           <Typography sx={{ mt: 2 }} variant="h3" align="center" color="textPrimary" gutterBottom>
             Program Your Own Castle
@@ -96,7 +97,7 @@ export default function HocCastlePage() {
           </Typography>
 
           <Typography marginY={3} align="center">
-            <NextLink href="/curricula/luce-hoc/hoc23" passHref>
+            <NextLink href="/curricula/luce-hoc/castle" passHref>
               <Button
                 startIcon={<PlayArrow />}
                 variant="contained"
@@ -119,6 +120,7 @@ export default function HocCastlePage() {
             So you have a lot to live up to!
           </Typography>
 
+          <HourOfCodeFooter />
         </Container>
       </Box>
     </div>

@@ -10,8 +10,14 @@ import Image from 'next/image';
 import NextLink from 'next/link';
 import NavigationBar from '../../../components/NavigationBar';
 import FortezzaBellinzonaHistory from '../../../public/hoc/castle/FortezzaBellinzonaHistory.png';
+import HourOfCodeFooter from '../../../components/HourOfCodeFooter';
+import MarketingImage from '../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay.jpg';
+import ActivitiesCompetenciesMatrix from '../../../components/ActivitiesCompetenciesMatrix';
+import { getCurriculum } from '../../../src/fs-content/curricula';
+import { Curriculum } from '../../../src/schemas/curriculumSchema';
 
-export default function FinishHocCastlePage() {
+export default function FinishHocCastlePage({ curriculum }:
+{ curriculum : Curriculum }) {
   return (
     <div>
       <Head>
@@ -22,7 +28,7 @@ export default function FinishHocCastlePage() {
         <NavigationBar />
         <Container maxWidth="md">
           <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
-            Hour of Code with PyTamaro
+            Hour of Code ® with PyTamaro
           </Typography>
           <Typography sx={{ mt: 2 }} variant="h3" align="center" color="textPrimary" gutterBottom>
             Program Your Own Castle
@@ -36,7 +42,19 @@ export default function FinishHocCastlePage() {
             who are ready to make their first steps in a text-based programming language.
           </Typography>
 
-          <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
+          <Image
+            src={MarketingImage}
+            alt="Photo of Castle"
+            width="1261"
+            height="831"
+            sizes="100vw"
+            style={{
+              width: '100%',
+              height: 'auto',
+            }}
+          />
+
+          <Typography marginTop={5} variant="h4" align="center" color="textSecondary" paragraph>
             This Hour of Code was Developed by Students!
           </Typography>
           <Typography marginY={3}>
@@ -52,7 +70,7 @@ export default function FinishHocCastlePage() {
             ,
             in the Italian-speaking part of Switzerland.
             Funded by a didactics innovation grant,
-            they spent a month of their 2023 summer break
+            they spent a month in summer 2023
             visiting the real Fortezza Bellinzona,
             building the largest toy castles we could find,
             researching existing Hour Of Code activities,
@@ -79,7 +97,7 @@ export default function FinishHocCastlePage() {
             where instructions and code are interleaved in interactive exercises.
           </Typography>
 
-          <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
+          <Typography marginTop={5} variant="h4" align="center" color="textSecondary" paragraph>
             Programming
           </Typography>
           <Typography marginY={3}>
@@ -100,7 +118,7 @@ export default function FinishHocCastlePage() {
             {' '}
             function communicates exclusively through its arguments and return value.
             It does not read or write any state outside of the function,
-            and it does communicate with the outside world
+            and it does not communicate with the world outside the computer
             (it does not receive input or produce output).
             Pure functions can be understood in isolation,
             without understanding anything about the rest of the program.
@@ -110,7 +128,7 @@ export default function FinishHocCastlePage() {
             {' '}
             <strong>problem decomposition</strong>
             :
-            we can decompose problem into independent subproblems,
+            we can decompose a problem into independent subproblems,
             decompose those subproblems into smaller independent subproblems,
             until they are small enough so we can solve them directly.
             Because of their independence,
@@ -120,6 +138,10 @@ export default function FinishHocCastlePage() {
             Pure functions are a great way to solve independent subproblems.
             They are also ideal for composing the solutions of multiple independent subproblems
             into a single solution.
+            Besides this educational advantage,
+            pure functions also make programs more secure,
+            and they simplify distributed computation
+            in modern data centers and supercomputers.
           </Typography>
           <Typography marginY={3}>
             The Python library used for the graphics in this activity, PyTamaro,
@@ -138,13 +160,34 @@ export default function FinishHocCastlePage() {
             {' '}
             instead of numbers.
           </Typography>
+          <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
+            Learning Objectives in Programming
+          </Typography>
+          <Typography marginY={3}>
+            Here are the activities and the learning objectives of the
+            &apos;
+            { curriculum.title }
+            &apos; curriculum:
+          </Typography>
+          <ActivitiesCompetenciesMatrix curriculum={curriculum} />
+          <Typography marginY={3}>
+            More information is available on the curriculum&apos;s
+            {' '}
+            <Link href="/curricula/luce-hoc/castle/info" component={NextLink}>
+              information page
+            </Link>
+            .
+          </Typography>
+          <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
+            Educational Programming Activities Used in Swiss High Schools
+          </Typography>
           <Typography marginY={3}>
             If you would like to learn more about
             Python programming using the graphical PyTamaro approach,
             have a look at the many activities and curricula on this web site.
             They are freely available online.
-            Many of them are in use for teaching programming in Swiss high schools,
-            and some were developed by high school teachers themselves.
+            Many of them are in use for teaching programming in Swiss high schools.
+            Some were developed by high school teachers themselves.
             We recommend you start with the Welcome Curriculum.
           </Typography>
           <Typography marginY={3} align="center">
@@ -164,7 +207,7 @@ export default function FinishHocCastlePage() {
             Hearing what worked, and what did not work, can help us a great deal!
           </Typography>
 
-          <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
+          <Typography marginTop={5} variant="h4" align="center" color="textSecondary" paragraph>
             History
           </Typography>
           <Typography marginY={3}>
@@ -203,8 +246,20 @@ export default function FinishHocCastlePage() {
             consisting of three separate castles and their fortifications!
           </Typography>
 
+          <HourOfCodeFooter />
         </Container>
       </Box>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  const authorSlug = 'luce-hoc';
+  const curriculumSlug = 'hoc23'; // replace with 'castle'
+  const curriculum = await getCurriculum(authorSlug, curriculumSlug);
+  return {
+    props: {
+      curriculum,
+    },
+  };
 }
