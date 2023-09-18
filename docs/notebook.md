@@ -8,7 +8,7 @@ You can use an ellipsis (`...`) as a placeholder, e.g. `return ...`.
 ⚠ The platform automatically checks the syntax of all Python cells before building the application.
 You can run the same check and see eventual errors using:
 ```sh
-npx ts-node tools/checkNotebookSourceCode.mts
+npm run check-python-sources
 ```
 
 Additionally, avoid long lines of code (e.g., use a limit of 80 columns as a rule of thumb).

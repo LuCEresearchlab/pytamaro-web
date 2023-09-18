@@ -15,11 +15,13 @@ import { mkdir, rm, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { BareboneToolboxFunction, CODE_EXECUTION_CELLS_TO_FILES_VERSION, cellsToFiles } from '../src/codeExecution';
 import sql from '../src/db/dbConnection';
+import { EXTRA_PYTHON_FILES_TABLE, TOOLBOX_FUNCTIONS_TABLE } from '../src/db/events/codeExecutionEvent';
+import { PythonFile } from '../src/schemas/activitySchema';
 import { EventName } from '../src/storeDbEvent';
 
 const EXPERIMENT_KEY = 'luce-members';  // or, e.g., 'pytamaro-summ%er-academy-2023'
-const BEGIN_DATE = '2023-07-14';
-const END_DATE = '2023-08-18';
+const BEGIN_DATE = '2023-07-14 00:00:00';
+const END_DATE = '2023-08-31 23:59:59';
 const OUTPUT_DIR = 'out';
 const EVENT_INFO_FILENAME = 'event.json';
 
@@ -34,7 +36,6 @@ async function main() {
                              AND event_type = ${EventName.CodeExecution}
                              AND created_at BETWEEN ${BEGIN_DATE} AND ${END_DATE}
                              AND cells_to_files_version = ${CODE_EXECUTION_CELLS_TO_FILES_VERSION};`;
-
     // Create a folder for each event and write the files used for the execution.
     // The files are derived from the sources of the code cells and the toolbox functions. 
     await Promise.all(events.map(async (event) => {
@@ -42,10 +43,13 @@ async function main() {
                                      INNER JOIN sources ON code_execution_sources.source_id = sources.id
                                      WHERE event_id = ${event.id}
                                      ORDER BY cell_seq_number ASC;`;
-        const toolboxFunctions = await sql`SELECT name, source FROM code_execution_toolbox_functions
-                                           INNER JOIN sources ON code_execution_toolbox_functions.source_id = sources.id
+        const toolboxFunctions = await sql`SELECT name, source FROM ${sql(TOOLBOX_FUNCTIONS_TABLE)}
+                                           INNER JOIN sources ON ${sql(TOOLBOX_FUNCTIONS_TABLE)}.source_id = sources.id
                                            WHERE event_id = ${event.id};` as BareboneToolboxFunction[];
-        const files = await cellsToFiles(sourcesObj.map((sourcesObj) => sourcesObj.source), event.requested_cell_seq_number, toolboxFunctions);
+        const extraPythonFiles = await sql`SELECT name, source AS content FROM ${sql(EXTRA_PYTHON_FILES_TABLE)}
+                                            INNER JOIN sources ON ${sql(EXTRA_PYTHON_FILES_TABLE)}.source_id = sources.id
+                                            WHERE event_id = ${event.id};` as PythonFile[];
+        const files = await cellsToFiles(sourcesObj.map((sourcesObj) => sourcesObj.source), event.requested_cell_seq_number, toolboxFunctions, extraPythonFiles);
         const eventFolder = join(OUTPUT_DIR, `${event.id}`);
         await mkdir(eventFolder);
         await Promise.all(files.map(async (file) => {

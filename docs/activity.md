@@ -35,3 +35,16 @@ Additionally, the object describing an activity contains the following fields:
 - `assets`: an array of strings naming the resources used in the Jupyter notebooks.
 - `uses`: an (optional) array of assignments that use the activity. Each assignment is an object containing its `course` name, the `instructurs` of the course, the `assignment` name, its `url`, and the `institution` of the course. If a `course` has the optional attribute `hidden` set to `true`, then the use is not shown in activity info page.
 - `derivedFrom`: an (optional) array of activity variant IDs from which this activity has been derived (e.g., by translating it). IDs are fully-qualified identifiers of activity variants, i.e. in the form `<author-slug>/<activity-slug>/<language>/<version>`. This information is used for attribution.
+
+When an activity requires some extra Python files to be included for the execution (e.g., a small library, or a dataset):
+- Store the files somewhere inside a folder named `python-files` inside your author's folder
+- Refer to such files in the `info.json` for an activity under the key `extraPythonFiles`. It requires an array of objects specifying the source path of the file (relative to the `python-files` base folder) and the destination path (potentially just a filename) that the user will need to import from.
+    The `warming-stripes` activity by `luce` contains an example of how to achieve this:
+    ```json
+      "extraPythonFiles": [
+        {
+          "sourcePath": "warming_stripes/southern_switzerland_data.py",
+          "destinationPath": "data.py"
+        }
+      ]
+    ``` 

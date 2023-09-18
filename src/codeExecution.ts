@@ -1,8 +1,11 @@
 import Topo from '@hapi/topo';
-import { uniq } from 'lodash';
+import lodash from 'lodash';
 import { ToolboxFunction } from './localStorage/schema';
 import { PythonName, imported_names } from './python-analyzer/python_analyzer';
+import { PythonFile } from './schemas/activitySchema';
 import { countLines, emptyLines, joinLines } from './sourceUtils';
+
+const { uniq } = lodash;
 
 export interface ExecutionResponse {
   type: 'success' | 'error' | 'network-error',
@@ -14,11 +17,11 @@ export interface ExecutionResponse {
  * Update this version at every change to the process below
  * that turns cells into files for execution.
  */
-export const CODE_EXECUTION_CELLS_TO_FILES_VERSION = 4;
+export const CODE_EXECUTION_CELLS_TO_FILES_VERSION = 5;
 
-const DRIVER_FILE = 'driver';
-const PREVIOUS_CELLS_FILE = 'previous_cells';
-const CURRENT_CELL_FILE = 'cell';
+export const DRIVER_FILE = 'driver';
+export const PREVIOUS_CELLS_FILE = 'previous_cells';
+export const CURRENT_CELL_FILE = 'cell';
 export const TOOLBOX_FILE = 'toolbox';
 
 export interface BareboneToolboxFunction {
@@ -84,6 +87,9 @@ export async function toolboxFiles(functions: BareboneToolboxFunction[]) {
     name: `${toolboxSingleModuleName(fn)}.py`,
     content: fn.source,
   }));
+  if (singleFiles.length === 0) {
+    return [];
+  }
   const toolboxMainFile = {
     name: `${TOOLBOX_FILE}.py`,
     content: await toolboxDriverSource(functions),
@@ -98,6 +104,7 @@ export async function cellsToFiles(
   sources: string[],
   idx: number,
   toolboxFunctions: BareboneToolboxFunction[],
+  extraPythonFiles: PythonFile[],
 ) {
   // Get the concatenated source of all the previous cells.
   const previousCellsSource = joinLines(sources.slice(0, idx));
@@ -121,6 +128,7 @@ export async function cellsToFiles(
       content: currentCellSource,
     },
     ...await toolboxFiles(toolboxFunctions),
+    ...extraPythonFiles,
   ];
   // code-runner does not allow empty files, we work around this by including a no-op stmt
   return files.map((file) => ({ ...file, content: file.content || 'pass' }));
