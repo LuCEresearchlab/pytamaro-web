@@ -46,3 +46,7 @@ pre:has(code) {
     background-color: white;
     padding: 8px;
 }
+
+.monaco-editor .iPadShowKeyboard {
+    display: none;
+} 
