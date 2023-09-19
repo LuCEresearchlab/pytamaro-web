@@ -10,7 +10,7 @@ import NextLink from 'next/link';
 import { PlayArrow } from '@mui/icons-material';
 import NavigationBar from '../../../components/NavigationBar';
 import MarketingImage from '../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
-import Valleys from '../../../public/hoc/castle/BellinzonaAndValleysMap1862.jpg';
+import Valleys from '../../../public/hoc/castle/BellinzonaAndValleysMap1862-sepia.gif';
 import HourOfCodeFooter from '../../../components/HourOfCodeFooter';
 
 export default function HocCastlePage() {

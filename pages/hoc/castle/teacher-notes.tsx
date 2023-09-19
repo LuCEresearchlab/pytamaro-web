@@ -1,7 +1,11 @@
 import {
+  Avatar,
   Box,
   Button,
+  Card,
+  CardHeader,
   Container,
+  Grid,
   Link,
   Typography,
 } from '@mui/material';
@@ -15,6 +19,52 @@ import MarketingImage from '../../../public/hoc/castle/MarketingImage-NoText-NoL
 import ActivitiesCompetenciesMatrix from '../../../components/ActivitiesCompetenciesMatrix';
 import { getCurriculum } from '../../../src/fs-content/curricula';
 import { Curriculum } from '../../../src/schemas/curriculumSchema';
+
+function ContributorCard({
+  firstName, lastName, contribution, imageName,
+} : {
+  firstName: string,
+  lastName: string,
+  contribution: string,
+  imageName: string,
+}) {
+  return (
+    <Grid
+      item
+      xs={12}
+      sm={3}
+    >
+      <Card>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            margin: '1rem 0',
+          }}
+        >
+          <Avatar
+            src={`../../people/${imageName}`}
+            sx={{ width: 80, height: 80 }}
+          />
+        </Box>
+        <CardHeader
+          title={(
+            <>
+              {firstName}
+              <br />
+              {lastName}
+            </>
+          )}
+          subheader={contribution}
+          titleTypographyProps={{ align: 'center' }}
+          subheaderTypographyProps={{
+            align: 'center',
+          }}
+        />
+      </Card>
+    </Grid>
+  );
+}
 
 export default function FinishHocCastlePage({ curriculum }:
 { curriculum : Curriculum }) {
@@ -61,6 +111,13 @@ export default function FinishHocCastlePage({ curriculum }:
             Yes! This Hour of Code was developed by informatics students
             at a small public university in Switzerland.
           </Typography>
+          <Grid container spacing={5} alignItems="flex-end">
+            <ContributorCard firstName="Agnese" lastName="Zamboni" contribution="Content Lead" imageName="AgneseZamboni.jpg" />
+            <ContributorCard firstName="Davide" lastName="Frova" contribution="Developer" imageName="DavideFrova.jpg" />
+            <ContributorCard firstName="Giorgia" lastName="Lillo" contribution="Developer" imageName="GiorgiaLillo.jpg" />
+            <ContributorCard firstName="Jamila" lastName="Oubenali" contribution="Developer" imageName="NoPhoto.jpg" />
+          </Grid>
+
           <Typography marginY={3}>
             The content was developed by a small team
             of undergraduate students at the Faculty of Informatics at USI,
@@ -72,11 +129,15 @@ export default function FinishHocCastlePage({ curriculum }:
             Funded by a didactics innovation grant,
             they spent a month in summer 2023
             visiting the real Fortezza Bellinzona,
-            building the largest toy castles we could find,
+            building the largest toy castles out there,
             researching existing Hour Of Code activities,
             and then developing this activity in Python
             on top of the PyTamaro Web platform.
           </Typography>
+          <Grid container spacing={5} alignItems="flex-end" justifyContent="center">
+            <ContributorCard firstName="Luca" lastName="Chiodini" contribution="Platform Lead" imageName="LucaChiodini.jpg" />
+            <ContributorCard firstName="Matthias" lastName="Hauswirth" contribution="Organizer" imageName="MatthiasHauswirth.jpg" />
+          </Grid>
           <Typography marginY={3}>
             The PyTamaro Web platform
             and the compositional PyTamaro graphics library for Python
@@ -255,7 +316,7 @@ export default function FinishHocCastlePage({ curriculum }:
 
 export async function getStaticProps() {
   const authorSlug = 'luce-hoc';
-  const curriculumSlug = 'hoc23'; // replace with 'castle'
+  const curriculumSlug = 'hoc23-2'; // replace with 'castle'
   const curriculum = await getCurriculum(authorSlug, curriculumSlug);
   return {
     props: {
