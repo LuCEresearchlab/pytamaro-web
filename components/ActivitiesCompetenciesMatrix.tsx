@@ -5,7 +5,8 @@ import {
   TableBody,
   TableCell, TableContainer, TableHead, TableRow, styled,
 } from '@mui/material';
-import { allActivities, competencyColor } from '../src/curriculumCompetencies';
+import { allActivities } from '../src/curricula';
+import { competencyColor } from '../src/curriculumCompetencies';
 import { activityVariantId, getVariantTitle } from '../src/schemas/activitySchema';
 import { Curriculum } from '../src/schemas/curriculumSchema';
 import theme from '../src/theme';

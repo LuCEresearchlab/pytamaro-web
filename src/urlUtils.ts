@@ -1,4 +1,5 @@
 import { ActivityVariant, activityVariantId } from './schemas/activitySchema';
+import { Curriculum, curriculumId } from './schemas/curriculumSchema';
 
 function contentTypeByAuthorPathname(contentType: string, authorSlug: string) {
   return `/${contentType}/${authorSlug}`;
@@ -42,6 +43,13 @@ export function activityAssetPathname(authorSlug: string, activitySlug: string, 
 }
 
 export const CURRICULUM_QUERY_PARAM = 'curriculum';
+
+export function activityVariantWithCurriculum(
+  variant: ActivityVariant,
+  curriculum: Curriculum,
+) {
+  return `${activityVariantPathname(variant)}?${new URLSearchParams({ [CURRICULUM_QUERY_PARAM]: curriculumId(curriculum.authorSlug, curriculum.slug) }).toString()}`;
+}
 
 /* Curricula */
 

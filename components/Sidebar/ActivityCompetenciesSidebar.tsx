@@ -1,6 +1,7 @@
 import { Avatar, Box, Stack } from '@mui/material';
 import { useState } from 'react';
-import { allActivities, competencyColor } from '../../src/curriculumCompetencies';
+import { allActivities } from '../../src/curricula';
+import { competencyColor } from '../../src/curriculumCompetencies';
 import { ActivityVariant, activityVariantId } from '../../src/schemas/activitySchema';
 import { Curriculum, CurriculumCompetency } from '../../src/schemas/curriculumSchema';
 import theme from '../../src/theme';

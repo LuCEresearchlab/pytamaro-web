@@ -8,8 +8,8 @@ import { Curriculum, CurriculumActivity, CurriculumCompetency } from '../src/sch
 import theme from '../src/theme';
 import CompetencyCard from './CompetencyCard';
 import GenericMuiIcon from './GenericMuiIcon';
-import { SIDEBAR_CHIPS_FONT_SIZE, SIDEBAR_CHIPS_WIDTH } from './Sidebar/Sidebar';
-import SidebarItemPopover from './Sidebar/SidebarItemPopover';
+import { SIDEBAR_CHIPS_FONT_SIZE, SIDEBAR_CHIPS_WIDTH } from './sidebar/Sidebar';
+import SidebarItemPopover from './sidebar/SidebarItemPopover';
 
 export function myCompetencyChipId(competency: CurriculumCompetency) {
   return `my-competency-${competency.id}`;

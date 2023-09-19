@@ -11,15 +11,15 @@ import GoToCurriculaBanner from '../../../../../../components/GoToCurriculaBanne
 import InfoButton from '../../../../../../components/InfoButton';
 import MarkdownCellComponent from '../../../../../../components/MarkdownCellComponent';
 import NavigationBar from '../../../../../../components/NavigationBar';
-import ActivityCompetenciesSidebar from '../../../../../../components/Sidebar/ActivityCompetenciesSidebar';
-import ActivityImage from '../../../../../../components/Sidebar/ActivityImage';
-import CentralContent from '../../../../../../components/Sidebar/CentralContent';
-import CurriculumCompetenciesSidebar from '../../../../../../components/Sidebar/CurriculumCompetenciesSidebar';
-import CurriculumUnitSidebar from '../../../../../../components/Sidebar/CurriculumUnitSidebar';
-import Sidebar from '../../../../../../components/Sidebar/Sidebar';
-import TableOfContents from '../../../../../../components/Sidebar/TableOfContents';
-import ToolboxListSidebar from '../../../../../../components/Sidebar/ToolboxListSidebar';
 import VariantSelector from '../../../../../../components/VariantsSelector';
+import ActivityCompetenciesSidebar from '../../../../../../components/sidebar/ActivityCompetenciesSidebar';
+import ActivityImage from '../../../../../../components/sidebar/ActivityImage';
+import CentralContent from '../../../../../../components/sidebar/CentralContent';
+import CurriculumCompetenciesSidebar from '../../../../../../components/sidebar/CurriculumCompetenciesSidebar';
+import CurriculumUnitSidebar from '../../../../../../components/sidebar/CurriculumUnitSidebar';
+import Sidebar from '../../../../../../components/sidebar/Sidebar';
+import TableOfContents from '../../../../../../components/sidebar/TableOfContents';
+import ToolboxListSidebar from '../../../../../../components/sidebar/ToolboxListSidebar';
 import { findIncludingCurricula } from '../../../../../../src/curricula';
 import { findVersions, readActivity } from '../../../../../../src/fs-content/activities';
 import { getAuthorProfile, listAuthorsWithContent, listCurriculaAllAuthors } from '../../../../../../src/fs-content/authors';
@@ -113,6 +113,7 @@ export default function NotebookPage({
                 initialCodeCells={initialCodeCells}
                 author={author}
                 activity={activity}
+                curriculum={curriculum}
               />
             )}
           </CentralContent>

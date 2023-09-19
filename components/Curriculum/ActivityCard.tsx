@@ -10,9 +10,12 @@ import {
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { activityVariantId, getVariantTitle } from '../../src/schemas/activitySchema';
-import { Curriculum, CurriculumActivity, curriculumId } from '../../src/schemas/curriculumSchema';
+import { Curriculum, CurriculumActivity } from '../../src/schemas/curriculumSchema';
 import theme from '../../src/theme';
-import { CURRICULUM_QUERY_PARAM, activityAssetPathname, activityVariantPathname } from '../../src/urlUtils';
+import {
+  activityAssetPathname,
+  activityVariantWithCurriculum,
+} from '../../src/urlUtils';
 import ActivityStatusBadge, { ActivityStatus } from '../ActivityStatusBadge';
 import CompetencyAvatar from '../CompetencyAvatar';
 
@@ -34,8 +37,6 @@ export default function ActivityCard({
   const router = useRouter();
   const { activity, variant } = curriculumActivity;
   const title = getVariantTitle(activity, variant);
-
-  const url = `${activityVariantPathname(variant)}?${new URLSearchParams({ [CURRICULUM_QUERY_PARAM]: curriculumId(curriculum.authorSlug, curriculum.slug) }).toString()}`;
 
   const avatarFontSize = theme.typography.pxToRem(16);
 
@@ -62,7 +63,7 @@ export default function ActivityCard({
           }}
         >
           <CardActionArea
-            onClick={() => router.push(url, url)}
+            onClick={() => router.push(activityVariantWithCurriculum(variant, curriculum))}
             disabled={!isUnlocked}
           >
             <CardMedia
