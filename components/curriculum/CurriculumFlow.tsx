@@ -2,6 +2,7 @@ import {
   Box,
 } from '@mui/material';
 import produce from 'immer';
+import { NextRouter, useRouter } from 'next/router';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import ReactFlow, {
   Edge,
@@ -120,6 +121,7 @@ function getFlowElements(
   curriculum: Curriculum,
   metadata: Metadata,
   setMetadata: Dispatch<SetStateAction<Metadata>>,
+  router: NextRouter,
   windowWidth: number,
 ) {
   const size = (perc: number, minValue: number, maxValue: number) => Math.max(
@@ -247,10 +249,14 @@ function getFlowElements(
     }));
   };
 
+  const handleCurriculumEnd = () => {
+    router.push(curriculum.finishURL);
+  };
+
   // The curriculum graph contains:
   // - a start node
   addSingleNode('start', 'startend', {
-    type: 'start', text: 'Start', unlocked: true, onClick: handleCurriculumStart, started: alreadyStarted,
+    type: 'start', text: 'Start', unlocked: true, onStartClick: handleCurriculumStart, started: alreadyStarted,
   }, !alreadyStarted);
   // - a sequence of units
   curriculum.units.forEach((unit, unitIdx) => {
@@ -282,7 +288,9 @@ function getFlowElements(
     });
   });
   // - an end node
-  addSingleNode('end', 'startend', { type: 'end', text: 'End', unlocked: previousStepIsCompleted });
+  addSingleNode('end', 'startend', {
+    type: 'end', text: curriculum.finishLabel, unlocked: previousStepIsCompleted, onEndClick: handleCurriculumEnd,
+  }, previousStepIsCompleted);
 
   return {
     nodes,
@@ -328,9 +336,10 @@ export default function CurriculumFlow(
   },
 ) {
   const windowWidth = useWidth();
+  const router = useRouter();
   const {
     nodes, edges, width, height,
-  } = getFlowElements(curriculum, metadata, setMetadata, windowWidth);
+  } = getFlowElements(curriculum, metadata, setMetadata, router, windowWidth);
 
   return (
     <Box

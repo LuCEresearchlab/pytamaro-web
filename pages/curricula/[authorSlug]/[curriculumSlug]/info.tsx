@@ -1,14 +1,13 @@
 import {
-  Box,
-  Card,
-  Container, FormControlLabel, Stack, Switch, Typography,
+  Box, Container,
+  FormControlLabel, Switch,
+  Typography,
 } from '@mui/material';
-import { sortBy } from 'lodash';
 import Head from 'next/head';
 import { useState } from 'react';
-import ActivitiesCompetenciesMatrix, { competencyAnchor } from '../../../../components/ActivitiesCompetenciesMatrix';
+import ActivitiesCompetenciesMatrix from '../../../../components/ActivitiesCompetenciesMatrix';
 import AttributionInfo from '../../../../components/AttributionInfo';
-import CompetencyCard from '../../../../components/CompetencyCard';
+import CompetenciesList from '../../../../components/CompetenciesList';
 import CurriculumCard from '../../../../components/CurriculumCard';
 import NavigationBar from '../../../../components/NavigationBar';
 import PageTitle from '../../../../components/PageTitle';
@@ -63,20 +62,7 @@ export default function CurriculumInfoPage({ curriculum, author }:
                 <ActivitiesCompetenciesMatrix curriculum={curriculum} />
               </Box>
               )}
-              <Stack
-                direction="column"
-                spacing={2}
-              >
-                {sortBy(curriculum.competencies, (competency) => (competency.category === 'programming' ? 0 : 1)).map((competency) => (
-                  <Card key={competency.id} id={competencyAnchor(competency)} className="anchor" sx={{ overflow: 'visible' }}>
-                    <CompetencyCard
-                      curriculum={curriculum}
-                      competency={competency}
-                      fullWidth
-                    />
-                  </Card>
-                ))}
-              </Stack>
+              <CompetenciesList curriculum={curriculum} />
             </>
           )}
         </Container>

@@ -20,3 +20,6 @@ The object describing a curriculum contains the following fields:
   - Each step contains multiple alternative `activities`; learners are required to complete at least one of them to complete the step. A step can be optional by setting `isOptional` to `true`.
     - Each activity has an `id` with the fully-qualified name of the activity (`<author-slug>/<activity-slug>/<language>/<version>`), `prerequisites` listing competencies that learners are expected to have gained, and `learningObjectives` listing competencies that learners are expected to gain.
 - `derivedFrom`: an (optional) array of curriculum IDs from which this curriculum has been derived (e.g., by borrowing significant parts). IDs are fully-qualified identifiers of curricula, i.e. in the form `<author-slug>/<curriculum-slug>`. This information is used for attribution.
+- `hourOfCode`: an (optional) boolean to indicate whether this curriculum is meant to be run as an Hour Of Code.
+- `finishURL`: an (optional) URL, absolute or relative, to replace the default URL users are redirected to when they finish the curriculum.
+- `finishLabel`: an (optional) label for the finish button, to replace the deafult label "Finish".

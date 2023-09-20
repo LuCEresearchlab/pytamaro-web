@@ -7,6 +7,7 @@ import { Curriculum } from '../src/schemas/curriculumSchema';
 import AttributionInfo from './AttributionInfo';
 import CodeDownloadButton from './CodeDownloadButton';
 import CompleteActivityButton from './CompleteActivityButton';
+import FinishHourOfCodeButton from './FinishHourOfCodeButton';
 
 export default function ActivityFooter({
   activityVariant, initialCodeCells, author, activity, curriculum,
@@ -33,6 +34,9 @@ export default function ActivityFooter({
           key={activityVariantId(activityVariant)}
         />
       </Stack>
+      { curriculum?.hourOfCode && (
+        <FinishHourOfCodeButton />
+      )}
       <Container maxWidth="md" sx={{ textAlign: 'center' }}>
         <Divider sx={{ mb: 3 }} />
         <AttributionInfo type="activity" author={author} derivedFrom={activity.derivedFrom} />

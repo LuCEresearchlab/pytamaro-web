@@ -7,6 +7,9 @@
   visibility: 'visible' | 'hidden',
   activitiesPreviewImage?: activityId[],
   orderingKey?: string,
+  hourOfCode?: boolean,
+  finishURL?: string,
+  finishLabel?: string,
   competencies: [
     {
       id: competencyId, // string

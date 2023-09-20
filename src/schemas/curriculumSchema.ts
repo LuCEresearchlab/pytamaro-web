@@ -68,6 +68,9 @@ export interface RawCurriculum extends BaseCurriculum {
   derivedFrom?: string[],
   activitiesPreviewImage?: string[],
   orderingKey?: string,
+  hourOfCode?: boolean,
+  finishLabel?: string,
+  finishURL?: string,
 }
 
 export interface Curriculum extends BaseCurriculum {
@@ -79,6 +82,9 @@ export interface Curriculum extends BaseCurriculum {
   derivedFrom: string[],
   activitiesPreviewImage: string[],
   orderingKey: string,
+  hourOfCode: boolean,
+  finishLabel: string,
+  finishURL: string,
 }
 
 export function curriculumId(authorSlug: string, slug: string) {

@@ -10,6 +10,7 @@ import {
   RawCurriculumCompetency,
   RawCurriculumUnit,
 } from '../schemas/curriculumSchema';
+import { curriculumFinishPathname } from '../urlUtils';
 import { readActivity } from './activities';
 import { DATA_DIR } from './notebooks';
 
@@ -55,6 +56,9 @@ async function readCurriculum(authorSlug: string, curriculumSlug: string) : Prom
     derivedFrom: content.derivedFrom || [],
     activitiesPreviewImage: content.activitiesPreviewImage || [],
     orderingKey: content.orderingKey || curriculumSlug,
+    hourOfCode: content.hourOfCode || false,
+    finishLabel: content.finishLabel || 'Finish',
+    finishURL: content.finishURL || curriculumFinishPathname(authorSlug, curriculumSlug),
     description: await serialize(content.description),
     competencies: await processCompetencies(content.competencies),
     units: await processUnits(content.units),

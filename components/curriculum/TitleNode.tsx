@@ -1,4 +1,4 @@
-import { PlayCircle } from '@mui/icons-material';
+import { AssignmentTurnedIn, PlayCircle } from '@mui/icons-material';
 import {
   Box, Button, Tooltip, Typography,
 } from '@mui/material';
@@ -12,14 +12,16 @@ type NodeData = {
   height: number,
   unlocked: boolean,
   started?: boolean,
-  onClick?: () => void,
+  onStartClick?: () => void,
+  onEndClick?: () => void,
 };
 
 export default function TitleNode({ data }: NodeProps<NodeData>) {
   const {
-    type, text, width, height, unlocked, started, onClick,
+    type, text, width, height, unlocked, started, onStartClick, onEndClick,
   } = data;
   const showStartingButton = type === 'start' && !started;
+  const showFinishButton = type === 'end' && unlocked;
   return (
     <Box sx={{ opacity: unlocked ? 1 : 0.38 }}>
       <Handle type="target" position={Position.Top} isConnectable={false} />
@@ -38,9 +40,16 @@ export default function TitleNode({ data }: NodeProps<NodeData>) {
         id={slug(text)}
       >
         {/* eslint-disable-next-line no-nested-ternary */}
-        {showStartingButton ? (
-          <Tooltip title="Click to Start" placement="top" arrow>
-            <Button variant="contained" color="success" onClick={onClick} startIcon={<PlayCircle />}>Start</Button>
+        {showStartingButton || showFinishButton ? (
+          <Tooltip title={`Click to ${showStartingButton ? 'Start' : 'Finish'}`} placement="top" arrow>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={showStartingButton ? onStartClick : onEndClick}
+              startIcon={showStartingButton ? <PlayCircle /> : <AssignmentTurnedIn />}
+            >
+              {text}
+            </Button>
           </Tooltip>
         ) : (
           type === 'unit'
