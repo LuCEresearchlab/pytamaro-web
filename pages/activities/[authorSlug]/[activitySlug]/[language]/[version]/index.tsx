@@ -28,6 +28,7 @@ import getNotebookContent from '../../../../../../src/notebook';
 import {
   Activity,
   ActivityVariant, MarkdownCell, NotebookCell,
+  activityVariantId,
   getVariantTitle,
 } from '../../../../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../../../../src/schemas/authorSchema';
@@ -58,7 +59,7 @@ export default function NotebookPage({
   const pageTitle = `${title} - PyTamaro`;
 
   return (
-    <div>
+    <div key={activityVariantId(activityVariant)}>
       <Head>
         <title>{pageTitle}</title>
       </Head>
