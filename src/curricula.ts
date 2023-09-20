@@ -13,7 +13,7 @@ export default function visibleCurricula(curricula: Curriculum[]) : Curriculum[]
 }
 
 export function findIncludingCurricula(curricula: Curriculum[], activityVariant: ActivityVariant) {
-  return visibleCurricula(curricula).filter(
+  return curricula.filter(
     (curriculum) => allActivities(curriculum).some(
       (activity) => isEqual(activity.variant, activityVariant),
     ),
