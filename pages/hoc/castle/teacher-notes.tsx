@@ -112,14 +112,19 @@ export default function FinishHocCastlePage({ curriculum }:
             at a small public university in Switzerland.
           </Typography>
           <Grid container spacing={5} alignItems="flex-end">
-            <ContributorCard firstName="Agnese" lastName="Zamboni" contribution="Content Lead" imageName="AgneseZamboni.jpg" />
+            <ContributorCard firstName="Agnese" lastName="Zamboni" contribution="Lead Developer" imageName="AgneseZamboni.jpg" />
             <ContributorCard firstName="Davide" lastName="Frova" contribution="Developer" imageName="DavideFrova.jpg" />
             <ContributorCard firstName="Giorgia" lastName="Lillo" contribution="Developer" imageName="GiorgiaLillo.jpg" />
-            <ContributorCard firstName="Jamila" lastName="Oubenali" contribution="Developer" imageName="NoPhoto.jpg" />
+            <ContributorCard firstName="Jamila" lastName="Oubenali" contribution="Developer" imageName="JamilaOubenali.jpg" />
           </Grid>
 
           <Typography marginY={3}>
-            The content was developed by a small team
+            The content
+            (activities and sequencing, instructions, starter and solution code,
+            and all pre-made graphics,
+            which were programmed, not drawn,
+            by composing geometric primitives with Python/PyTamaro code)
+            was developed by a small team
             of undergraduate students at the Faculty of Informatics at USI,
             the
             {' '}
@@ -135,8 +140,8 @@ export default function FinishHocCastlePage({ curriculum }:
             on top of the PyTamaro Web platform.
           </Typography>
           <Grid container spacing={5} alignItems="flex-end" justifyContent="center">
-            <ContributorCard firstName="Luca" lastName="Chiodini" contribution="Platform Lead" imageName="LucaChiodini.jpg" />
-            <ContributorCard firstName="Matthias" lastName="Hauswirth" contribution="Organizer" imageName="MatthiasHauswirth.jpg" />
+            <ContributorCard firstName="Luca" lastName="Chiodini" contribution="Platform" imageName="LucaChiodini.jpg" />
+            <ContributorCard firstName="Matthias" lastName="Hauswirth" contribution="Organization" imageName="MatthiasHauswirth.jpg" />
           </Grid>
           <Typography marginY={3}>
             The PyTamaro Web platform
@@ -147,12 +152,12 @@ export default function FinishHocCastlePage({ curriculum }:
             <a href="https://luce.si.usi.ch/">Lugano Computing Education research lab</a>
             {' '}
             at USI.
-            Luca had been teaching highschool teachers,
+            Luca had been teaching Swiss high school teachers
             who were going to teach Python programming in their future classes.
             He realized the benefits of a simple, compositional graphics library,
-            and he implemented PyTamaro.
+            so he implemented PyTamaro.
             To support teachers in their future teaching,
-            he then developed the PyTamaro Web platform.
+            he developed the PyTamaro Web platform.
             This allows students to program Python using PyTamaro
             directly in the browser, in a notebook-like environment,
             where instructions and code are interleaved in interactive exercises.
