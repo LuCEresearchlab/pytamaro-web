@@ -245,7 +245,7 @@ export default function FinishHocCastlePage({ curriculum }:
             .
           </Typography>
           <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
-            Educational Programming Activities Used in Swiss High Schools
+            More Educational Programming Activities Used in Swiss High Schools
           </Typography>
           <Typography marginY={3}>
             If you would like to learn more about
@@ -321,7 +321,7 @@ export default function FinishHocCastlePage({ curriculum }:
 
 export async function getStaticProps() {
   const authorSlug = 'luce-hoc';
-  const curriculumSlug = 'hoc23-2'; // replace with 'castle'
+  const curriculumSlug = 'castle';
   const curriculum = await getCurriculum(authorSlug, curriculumSlug);
   return {
     props: {
