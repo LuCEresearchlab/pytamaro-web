@@ -6,6 +6,7 @@ import { activityAssetPathname } from '../src/urlUtils';
 import ActivityLink from './ActivityLink';
 import { COLORIZE_CLASSNAME } from './CodeEditor';
 import DoNowBox from './DoNowBox';
+import TaskBox from './TaskBox';
 import PyTamaroAPI from './PyTamaroAPI';
 import ResponsiveReactPlayer from './ResponsiveReactPlayer';
 
@@ -95,6 +96,9 @@ export default function MarkdownCellComponent({ cell, activityVariant } :
       DoNowBox({
         id, requireAnswer, children, activityVariant,
       })
+    ),
+    Task: ({ children }: { children: ReactNode }) => (
+      TaskBox({ children })
     ),
   };
   return (
