@@ -19,6 +19,7 @@ export default function TaskBox({
         fontWeight: 'normal',
         backgroundColor: 'rgba(255, 255, 255, 0.5)',
         paddingY: 0,
+        marginY: 2,
       }}
     >
       {children}
