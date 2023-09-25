@@ -38,6 +38,52 @@ export default function FinishHocCastlePage() {
             and they will ultimately leave it to the Swiss in 1503.
           </Typography>
 
+          <Typography marginY={3}>
+            Unfortunately for the Swiss, on May 20, 1515,
+            {' '}
+            <strong>your castle will be hit by a tsunami wave</strong>
+            {' '}
+            that will destroy a big chunk of the walls!
+            Sounds unbelievable? Well, read on!
+          </Typography>
+          <Typography marginY={3}>
+            On September 30, 1513, in the so-called
+            {' '}
+            <a href="https://hls-dhs-dss.ch/de/articles/028662/2004-11-04/">Buzza di Biasca</a>
+            ,
+            a rock slide of about 500 million tons
+            created a 60 meter high dam blocking the river
+            in a valley above Bellinzona.
+            Over time, this dam formed a lake
+            that was 5 km long, 1.2 km wide, and 10 to 12 meters deep,
+            and contained about 200 million cubic meters of water.
+            On May 20, 1515, the dam broke,
+            leading to a wave of water about 10 meters high
+            coming down the valley.
+            It hit the Bellinzona fortification walls with a speed of 40-60 km/h.
+            While a large part of the fortification survived,
+            this tsunami wave was massive enough flush away big chunks.
+          </Typography>
+          <Typography marginY={3}>
+            This cataclysmic event made the news around Europe.
+            Around that time, the famous
+            {' '}
+            <strong>Leonardo da Vinci</strong>
+            {' '}
+            drew
+            {' '}
+            <a href="https://insubricahistorica.ch/blog/2021/09/22/la-buzza-di-biasca-del-1515/">a sketch</a>
+            {' '}
+            that quite probably depicts the destruction of the Bellinzona fortification.
+          </Typography>
+          <Typography marginY={3}>
+            Isn&apos;t it amazing that&mdash;over 500 years later&mdash;
+            we know the exact dates of these events,
+            and we can tell the volumes of rock slides
+            and the heights and speeds of this &ldquo;Alpine tsunami wave&rdquo;?
+            History can be fascinating!
+          </Typography>
+
           <Image
             src={MarketingImage}
             alt="Photo of Castle"
@@ -116,30 +162,6 @@ export default function FinishHocCastlePage() {
             you could visit this medieval fortress in person.
             It is a UNESCO World Heritage Site
             and it consists of three separate castles!
-          </Typography>
-          <Typography marginY={3} align="center">
-            The fortification used to stretch across the entire valley,
-            until it was hit by a sequence of natural disasters.
-            On September 30, 1513, in the so-called Buzza di Biasca,
-            a rock slide of about 500 million tons
-            created a 60 meter high dam blocking the river
-            in a valley above Bellinzona.
-            Over time, this dam formed a lake
-            that was 5 km long, 1.2 km wide, and 10 to 12 meters deep,
-            and contained about 200 million cubic meters of water.
-            On May 20, 1515, the dam broke,
-            leading to a wave of water about 10 meters high
-            coming down the valley.
-            It hit the Bellinzona fortification walls with a speed of 40-60 km/h.
-            While a large part of the fortification survived,
-            this tsunami wave was massive enough flush away big chunks.
-          </Typography>
-          <Typography marginY={3} align="center">
-            Isn&apos;t it amazing that&mdash;over 500 years later&mdash;
-            we know the exact dates of these events,
-            and we can tell the volumes of rock slides
-            and the heights and speeds of this &ldquo;Alpine tsunami wave&rdquo;?
-            History can be fascinating!
           </Typography>
 
           <HourOfCodeFooter />
