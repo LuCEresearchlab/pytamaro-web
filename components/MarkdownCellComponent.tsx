@@ -32,6 +32,12 @@ function imgSourceTransformer(
 }
 
 function imgComponent(props: any, cell: NotebookCell, authorSlug: string, activitySlug: string) {
+  const imgStyle = {
+    ...props.style,
+    // For mobile devices
+    maxWidth: '100%',
+  };
+
   return (
     <Box
       display="flex"
@@ -45,6 +51,7 @@ function imgComponent(props: any, cell: NotebookCell, authorSlug: string, activi
           {...props}
           alt={props.alt}
           src={imgSourceTransformer(props.src, cell, authorSlug, activitySlug)}
+          style={imgStyle}
         />
       </picture>
     </Box>
