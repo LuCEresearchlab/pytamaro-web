@@ -12,13 +12,13 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import NavigationBar from '../../../components/NavigationBar';
-import FortezzaBellinzonaHistory from '../../../public/hoc/castle/FortezzaBellinzonaHistory.png';
-import HourOfCodeFooter from '../../../components/HourOfCodeFooter';
-import MarketingImage from '../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay.jpg';
-import ActivitiesCompetenciesMatrix from '../../../components/ActivitiesCompetenciesMatrix';
-import { getCurriculum } from '../../../src/fs-content/curricula';
-import { Curriculum } from '../../../src/schemas/curriculumSchema';
+import NavigationBar from '../../../../components/NavigationBar';
+import FortezzaBellinzonaHistory from '../../../../public/hoc/castle/FortezzaBellinzonaHistory.png';
+import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
+import MarketingImage from '../../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay.jpg';
+import ActivitiesCompetenciesMatrix from '../../../../components/ActivitiesCompetenciesMatrix';
+import { getCurriculum } from '../../../../src/fs-content/curricula';
+import { Curriculum } from '../../../../src/schemas/curriculumSchema';
 
 function ContributorCard({
   firstName, lastName, contribution, imageName,
