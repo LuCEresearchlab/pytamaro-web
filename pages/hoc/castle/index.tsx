@@ -31,7 +31,6 @@ type LangRes = {
   locale: {
     flag: string,
     name: string,
-    select: string,
   },
   intro: {
     hoc: string,
@@ -50,7 +49,6 @@ type LangRes = {
       month: string,
     },
   },
-  start: string,
 };
 
 const RESOURCES: LangRes[] = [
@@ -59,7 +57,6 @@ const RESOURCES: LangRes[] = [
     locale: {
       flag: '🇺🇸',
       name: 'English',
-      select: 'Select',
     },
     intro: {
       hoc: 'Hour of Code',
@@ -78,14 +75,12 @@ const RESOURCES: LangRes[] = [
         year: 'Invalid year',
       },
     },
-    start: 'Start now',
   },
   {
     code: 'it',
     locale: {
       flag: '🇮🇹',
       name: 'Italiano',
-      select: 'Seleziona',
     },
     intro: {
       hoc: 'Ora del Codice',
@@ -104,7 +99,6 @@ const RESOURCES: LangRes[] = [
         year: 'Anno non valido',
       },
     },
-    start: 'Inizia ora',
   },
 ];
 
