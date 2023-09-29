@@ -132,12 +132,6 @@ enum Steps {
   BEGIN_HOC,
 }
 
-function localizedLongMonth(monthIdx: number, lang: string) {
-  const date = new Date();
-  date.setMonth(monthIdx);
-  return date.toLocaleString(lang, { month: 'long' });
-}
-
 export default function HocCastlePage() {
   const [step, setStep] = useState(Steps.LANGUAGE);
 
@@ -300,7 +294,7 @@ export default function HocCastlePage() {
                   >
                     {Array.from(Array(12).keys()).map((month) => (
                       <option key={`month_${month}`} value={month + 1}>
-                        {localizedLongMonth(month, res.code)}
+                        {new Date(yearOfBirth, month).toLocaleString(res.code, { month: 'long' })}
                       </option>
                     ))}
                   </TextField>
