@@ -1,3 +1,4 @@
+import { PlayArrow } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -7,11 +8,10 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import { PlayArrow } from '@mui/icons-material';
-import NavigationBar from '../../../../components/NavigationBar';
-import MarketingImage from '../../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
-import Valleys from '../../../../public/hoc/castle/BellinzonaAndValleysMap1862-sepia.gif';
 import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
+import NavigationBar from '../../../../components/NavigationBar';
+import Valleys from '../../../../public/hoc/castle/BellinzonaAndValleysMap1862-sepia.gif';
+import MarketingImage from '../../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
 
 export default function HocCastlePage() {
   return (
@@ -32,7 +32,7 @@ export default function HocCastlePage() {
           <Typography marginY={3} variant="h6" color="textSecondary">
             Benvenuto nell&apos;anno 1430. Sei il capo architetto del Duca
             di Milano. Il Duca ha bisogno di difendere le sue terre dagli
-            Svizzeri, che vogliono attaccare dal Nord montuoso.
+            Svizzeri, che vogliono attaccare dal montuoso nord.
           </Typography>
 
           <Image
@@ -54,23 +54,23 @@ export default function HocCastlePage() {
             <strong>costruire una fortificazione</strong>
             {' '}
             che si estenda per l&apos;intera valle.
-            Sceglie la città di Bellinzona come il luogo perfetto,
+            Ha scelto la città di Bellinzona come il luogo perfetto,
             in modo da poter controllare gli accessi ai vari passi
             di montagna da un unico punto.
           </Typography>
 
           <Typography marginY={3}>
-            Il Duca é un governatore moderno: a lui piace utilizzare le ultime
+            Il Duca è un governatore moderno: gli piace utilizzare le ultime
             tecnologie.
             Ha sentito parlare di una nuova tecnologia chiamata
             {' '}
             <strong>programmazione</strong>
             .
-            Vuole che tu scriva un programma Python per disegnare la
+            Vuole che tu scriva un programma Python per progettare la
             fortificazione.
             Al Duca piacciono i castelli composti da diversi pezzi indipendenti.
-            Puoi realizzare questo in Python invocando funzioni pure che
-            producono e compongono pezzi.
+            Puoi realizzare ciò in Python chiamando funzioni pure per
+            produrre e comporre i pezzi.
           </Typography>
 
           <Image
@@ -96,8 +96,8 @@ export default function HocCastlePage() {
           <Typography marginY={3}>
             <strong>Se fallisci</strong>
             ,
-            dovremmo riscrivere la storia.
-            E sarebbe meglio evitare di farlo!
+            dovremo riscrivere la storia.
+            E preferiremmo non farlo!
           </Typography>
 
           <Typography marginY={3} align="center">
@@ -120,8 +120,8 @@ export default function HocCastlePage() {
             {' '}
             <a href="https://fortezzabellinzona.ch/en/">Fortezza Bellinzona</a>
             {' '}
-            é un sito patrimonio mondiale dell&apos;UNESCO.
-            Pertanto, le aspettative a cui dovrai rispondere sono alte!
+            è un sito patrimonio mondiale dell&apos;UNESCO.
+            Alte aspettative a cui essere all&apos;altezza!
           </Typography>
           <HourOfCodeFooter />
         </Container>
