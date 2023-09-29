@@ -1,4 +1,3 @@
-import { PlayArrow } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -17,7 +16,6 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import DataSharingPreferenceDialog from '../../../components/DataSharingPreferenceDialog';
 import HourOfCodeFooter from '../../../components/HourOfCodeFooter';
 import NavigationBar from '../../../components/NavigationBar';
 import MarketingImage from '../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
@@ -28,13 +26,34 @@ const HOC_TP_URL = 'https://code.org/api/hour/begin_dance.png';
 const MIN_AGE_YEARS = 13;
 const MIN_AGE_MONTHS_DATA_COLLECTION = MIN_AGE_YEARS * 12;
 
-function localizedLongMonth(monthIdx: number, lang: string) {
-  const date = new Date();
-  date.setMonth(monthIdx);
-  return date.toLocaleString(lang, { month: 'long' });
-}
+type LangRes = {
+  code: string,
+  locale: {
+    flag: string,
+    name: string,
+    select: string,
+  },
+  intro: {
+    hoc: string,
+    goal: string,
+  },
+  action: {
+    confirm: string,
+    cancel: string,
+  },
+  age: {
+    title: string,
+    year: string,
+    month: string,
+    error: {
+      year: string,
+      month: string,
+    },
+  },
+  start: string,
+};
 
-const RESOURCES = [
+const RESOURCES: LangRes[] = [
   {
     code: 'en',
     locale: {
@@ -92,8 +111,13 @@ const RESOURCES = [
 enum Steps {
   LANGUAGE,
   AGE,
-  DATA_SHARING,
   BEGIN_HOC,
+}
+
+function localizedLongMonth(monthIdx: number, lang: string) {
+  const date = new Date();
+  date.setMonth(monthIdx);
+  return date.toLocaleString(lang, { month: 'long' });
 }
 
 export default function HocCastlePage() {
@@ -121,14 +145,19 @@ export default function HocCastlePage() {
     setMobError(newValue < 1 || newValue > 12);
   };
 
+  const handleLangSelection = (lang: LangRes) => {
+    setRes(lang);
+    setStep(Steps.AGE);
+  };
+
   const handleAgeDialogClose = () => {
     if (yobError || mobError) {
       setStep(Steps.LANGUAGE);
-    } else if (dataSharingAllowed) {
-      setStep(Steps.DATA_SHARING);
     } else {
       // Explicitly disable for users that are not old enough
-      setDataSharingPreference('no');
+      if (!dataSharingAllowed) {
+        setDataSharingPreference('no');
+      }
       setStep(Steps.BEGIN_HOC);
     }
   };
@@ -183,14 +212,14 @@ export default function HocCastlePage() {
             justifyContent="center"
             spacing={2}
           >
-            { RESOURCES.map((lang) => (
+            {RESOURCES.map((lang) => (
               <Grid
                 key={`lang_selector_${lang.code}`}
                 xs={6}
                 item
               >
-                <Card elevation={lang.code === res.code ? 12 : 0}>
-                  <CardActionArea onClick={() => setRes(lang)}>
+                <Card elevation={1}>
+                  <CardActionArea onClick={() => handleLangSelection(lang)}>
                     <CardContent>
                       <Typography
                         sx={{ fontSize: '2rem' }}
@@ -213,22 +242,6 @@ export default function HocCastlePage() {
                 </Card>
               </Grid>
             ))}
-          </Grid>
-
-          <Grid
-            container
-            justifyContent="center"
-            marginTop={6}
-          >
-            <Grid item xs="auto">
-              <Button
-                variant="contained"
-                onClick={() => setStep(Steps.AGE)}
-                startIcon={<PlayArrow />}
-              >
-                {res.start}
-              </Button>
-            </Grid>
           </Grid>
 
           {/* Age dialog */}
@@ -289,14 +302,6 @@ export default function HocCastlePage() {
               </Button>
             </DialogActions>
           </Dialog>
-
-          {/* Data collection dialog */}
-          <DataSharingPreferenceDialog
-            open={step === Steps.DATA_SHARING}
-            setOpen={(value) => setStep(value
-              ? Steps.DATA_SHARING
-              : Steps.BEGIN_HOC)}
-          />
 
           <Image
             src={HOC_TP_URL}
