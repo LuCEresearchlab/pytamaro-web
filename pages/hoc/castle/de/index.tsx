@@ -99,7 +99,7 @@ export default function HocCastlePage() {
           </Typography>
 
           <Typography marginY={3} align="center">
-            <NextLink href="/curricula/luce-hoc/castle" passHref>
+            <NextLink href="/curricula/luce-hoc/burg" passHref>
               <Button
                 startIcon={<PlayArrow />}
                 variant="contained"
