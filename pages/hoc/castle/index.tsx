@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { PlayArrow } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -16,15 +16,23 @@ import {
 } from '@mui/material';
 import Head from 'next/head';
 import Image from 'next/image';
-import { PlayArrow } from '@mui/icons-material';
-import NavigationBar from '../../../components/NavigationBar';
-import HourOfCodeFooter from '../../../components/HourOfCodeFooter';
-import MarketingImage from '../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
+import { useEffect, useState } from 'react';
 import DataSharingPreferenceDialog from '../../../components/DataSharingPreferenceDialog';
+import HourOfCodeFooter from '../../../components/HourOfCodeFooter';
+import NavigationBar from '../../../components/NavigationBar';
+import MarketingImage from '../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
 import useLocalProfile from '../../../src/localStorage/useLocalProfile';
 
 const HOC_TP_URL = 'https://code.org/api/hour/begin_dance.png';
-const MIN_AGE_RESEARCH_DATA_COLLECTION = 156; // 13 years old in months
+
+const MIN_AGE_YEARS = 13;
+const MIN_AGE_MONTHS_DATA_COLLECTION = MIN_AGE_YEARS * 12;
+
+function localizedLongMonth(monthIdx: number, lang: string) {
+  const date = new Date();
+  date.setMonth(monthIdx);
+  return date.toLocaleString(lang, { month: 'long' });
+}
 
 const RESOURCES = [
   {
@@ -44,8 +52,8 @@ const RESOURCES = [
     },
     age: {
       title: 'When were you born?',
-      year: 'Year of birth',
-      month: 'Month of birth',
+      year: 'Year',
+      month: 'Month',
       error: {
         month: 'Invalid month',
         year: 'Invalid year',
@@ -70,8 +78,8 @@ const RESOURCES = [
     },
     age: {
       title: 'Quando sei nato?',
-      year: 'Anno di nascita',
-      month: 'Mese di nascita',
+      year: 'Anno',
+      month: 'Mese',
       error: {
         month: 'Mese non valido',
         year: 'Anno non valido',
@@ -131,7 +139,7 @@ export default function HocCastlePage() {
     const age = (now.getFullYear() * 12 + (now.getMonth() + 1))
       - (yearOfBirth * 12 + monthOfBirth);
     setDataSharingAllowed(
-      !(yobError || mobError) && age >= MIN_AGE_RESEARCH_DATA_COLLECTION,
+      !(yobError || mobError) && age >= MIN_AGE_MONTHS_DATA_COLLECTION,
     );
   }, [yearOfBirth, monthOfBirth, yobError, mobError]);
 
@@ -157,7 +165,7 @@ export default function HocCastlePage() {
 
       <Box>
         <NavigationBar />
-        <Container maxWidth="md">
+        <Container maxWidth="sm">
 
           <Image
             src={MarketingImage}
@@ -165,7 +173,7 @@ export default function HocCastlePage() {
             style={{
               display: 'block',
               margin: 'auto',
-              width: '70%',
+              width: '100%',
               height: 'auto',
             }}
           />
@@ -178,14 +186,14 @@ export default function HocCastlePage() {
             { RESOURCES.map((lang) => (
               <Grid
                 key={`lang_selector_${lang.code}`}
-                xs={4}
+                xs={6}
                 item
               >
-                <Card elevation={lang.code === res.code ? 3 : 0}>
+                <Card elevation={lang.code === res.code ? 12 : 0}>
                   <CardActionArea onClick={() => setRes(lang)}>
                     <CardContent>
                       <Typography
-                        sx={{ fontSize: 14 }}
+                        sx={{ fontSize: '2rem' }}
                         color="text.secondary"
                         gutterBottom
                       >
@@ -210,7 +218,7 @@ export default function HocCastlePage() {
           <Grid
             container
             justifyContent="center"
-            marginY={2}
+            marginTop={6}
           >
             <Grid item xs="auto">
               <Button
@@ -236,7 +244,7 @@ export default function HocCastlePage() {
                 spacing={2}
                 marginY={2}
               >
-                <Grid item xs={3}>
+                <Grid item xs={5}>
                   <TextField
                     label={res.age.year}
                     value={yearOfBirth}
@@ -246,15 +254,25 @@ export default function HocCastlePage() {
                     type="number"
                   />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={5}>
                   <TextField
+                    select
                     label={res.age.month}
                     value={monthOfBirth}
                     onChange={onMonthOfBirthChange}
                     error={mobError}
                     helperText={mobError ? res.age.error.month : undefined}
                     type="number"
-                  />
+                    SelectProps={{
+                      native: true,
+                    }}
+                  >
+                    {Array.from(Array(12).keys()).map((month) => (
+                      <option key={`month_${month}`} value={month + 1}>
+                        {localizedLongMonth(month, res.code)}
+                      </option>
+                    ))}
+                  </TextField>
                 </Grid>
               </Grid>
             </DialogContent>
