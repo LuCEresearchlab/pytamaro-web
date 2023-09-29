@@ -43,7 +43,7 @@ function ContributorCard({
           }}
         >
           <Avatar
-            src={`../../people/${imageName}`}
+            src={`../../../people/${imageName}`}
             sx={{ width: 80, height: 80 }}
           />
         </Box>

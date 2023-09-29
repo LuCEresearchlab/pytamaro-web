@@ -58,9 +58,9 @@ export default function FinishHocCastlePage() {
             200 milioni di metri cubi d&apos;acqua.
             Il 20 Maggio 1515, la diga si ruppe, facendo cadere verso valle
             un&apos;onda d&apos;acqua alta 10 metri.
-            L&apos;onda colpí la fortificazione di Bellinzona ad una velocità
+            L&apos;onda colpì la fortificazione di Bellinzona ad una velocità
             dai 40 ai 60 km/h.
-            Anche se buona parte della fortificazione é soppravissuta,
+            Anche se buona parte della fortificazione é sopravvissuta,
             quest&apos;onda fu grande abbastanza da spazzarne via grossi pezzi.
           </Typography>
           <Typography marginY={3}>
@@ -69,7 +69,7 @@ export default function FinishHocCastlePage() {
             {' '}
             <strong>Leonardo da Vinci</strong>
             {' '}
-            disegnó
+            disegnò
             {' '}
             <a href="https://insubricahistorica.ch/blog/2021/09/22/la-buzza-di-biasca-del-1515/">uno schizzo</a>
             {' '}
@@ -98,7 +98,7 @@ export default function FinishHocCastlePage() {
 
           <Typography marginY={3} align="center">
             Se vuoi tenere il tuo castello, naviga indietro all&apos;ultima
-            attivià e copia e incolla la grafica o scaricala come immagine.
+            attività e copia e incolla la grafica o scaricala come immagine.
             Puoi anche scaricare il codice Python che hai scritto ed eseguirlo
             nuovamente sul tuo computer piú tardi.
           </Typography>
