@@ -51,6 +51,18 @@ const RESOURCES: LangRes[] = [
       notes: 'Appunti per insegnanti',
     },
   },
+  {
+    code: 'de',
+    locale: {
+      flag: '🇩🇪',
+      name: 'Deutsch',
+    },
+    intro: {
+      hoc: 'Stunde des Codes',
+      goal: 'Programmiere Deine Burg',
+      notes: 'Informationen für Lehrpersonen',
+    },
+  },
 ];
 
 export default function HocCastlePage() {
@@ -62,7 +74,7 @@ export default function HocCastlePage() {
 
       <Box>
         <NavigationBar />
-        <Container maxWidth="sm">
+        <Container maxWidth="md">
 
           <Image
             src={MarketingImage}
@@ -83,11 +95,11 @@ export default function HocCastlePage() {
             {RESOURCES.map((lang) => (
               <Grid
                 key={`lang_selector_${lang.code}`}
-                xs={6}
+                xs={4}
                 item
               >
                 <Card elevation={1}>
-                  <CardActionArea href={`/hoc/castle/${lang.code}`}>
+                  <CardActionArea href={`/hoc/castle/${lang.code}/teacher-notes`}>
                     <CardContent>
                       <Typography
                         sx={{ fontSize: '2rem' }}
@@ -102,7 +114,7 @@ export default function HocCastlePage() {
                       <Typography variant="body1">
                         {lang.intro.notes}
                       </Typography>
-                      <Typography variant="body2">
+                      <Typography variant="caption">
                         {lang.intro.hoc}
                       </Typography>
                       <Typography variant="body2">

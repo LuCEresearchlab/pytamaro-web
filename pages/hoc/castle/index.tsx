@@ -100,6 +100,30 @@ const RESOURCES: LangRes[] = [
       },
     },
   },
+  {
+    code: 'de',
+    locale: {
+      flag: '🇩🇪',
+      name: 'Deutsch',
+    },
+    intro: {
+      hoc: 'Stunde des Codes',
+      goal: 'Programmiere Deine Burg',
+    },
+    action: {
+      confirm: 'Ok',
+      cancel: 'Abbrechen',
+    },
+    age: {
+      title: 'Wann bist du geboren?',
+      year: 'Jahr',
+      month: 'Monat',
+      error: {
+        month: 'Ungültiger Monat',
+        year: 'Ungültiges Jahr',
+      },
+    },
+  },
 ];
 
 enum Steps {
@@ -188,7 +212,7 @@ export default function HocCastlePage() {
 
       <Box>
         <NavigationBar />
-        <Container maxWidth="sm">
+        <Container maxWidth="md">
 
           <Image
             src={MarketingImage}
@@ -209,7 +233,7 @@ export default function HocCastlePage() {
             {RESOURCES.map((lang) => (
               <Grid
                 key={`lang_selector_${lang.code}`}
-                xs={6}
+                xs={4}
                 item
               >
                 <Card elevation={1}>
@@ -225,7 +249,7 @@ export default function HocCastlePage() {
                       <Typography variant="h5" component="div">
                         {lang.locale.name}
                       </Typography>
-                      <Typography variant="body2">
+                      <Typography variant="caption">
                         {lang.intro.hoc}
                       </Typography>
                       <Typography variant="body2">
