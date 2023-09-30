@@ -8,9 +8,9 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import NavigationBar from '../../../components/NavigationBar';
-import MarketingImage from '../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay.jpg';
-import HourOfCodeFooter from '../../../components/HourOfCodeFooter';
+import NavigationBar from '../../../../components/NavigationBar';
+import MarketingImage from '../../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay.jpg';
+import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
 
 export default function FinishHocCastlePage() {
   return (

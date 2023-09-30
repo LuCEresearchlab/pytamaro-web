@@ -26,6 +26,16 @@ const nextConfig = {
 
     return config;
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'code.org',
+        port: '',
+        pathname: '/api/hour/**',
+      },
+    ],
+  },
   experimental: {
     outputFileTracingIncludes: {
       '**': ['./**/*.wasm'],
