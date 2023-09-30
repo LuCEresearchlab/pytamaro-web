@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
+  MenuItem,
   TextField,
   Typography,
 } from '@mui/material';
@@ -138,8 +139,8 @@ export default function HocCastlePage() {
   const [res, setRes] = useState(RESOURCES[0]);
 
   const today = new Date();
-  const [yearOfBirth, setYearOfBirth] = useState(today.getFullYear());
-  const [monthOfBirth, setMonthOfBirth] = useState(today.getMonth() + 1);
+  const [yearOfBirth, setYearOfBirth] = useState('');
+  const [monthOfBirth, setMonthOfBirth] = useState('');
   const [yobError, setYobError] = useState(false);
   const [mobError, setMobError] = useState(false);
 
@@ -147,13 +148,13 @@ export default function HocCastlePage() {
   const { setDataSharingPreference } = useLocalProfile();
 
   const onYearOfBirthChange = (e: { target: { value: string } }) => {
+    setYearOfBirth(e.target.value);
     const newValue = parseInt(e.target.value, 10);
-    setYearOfBirth(newValue);
     setYobError(newValue < 1900 || newValue > today.getFullYear());
   };
   const onMonthOfBirthChange = (e: { target: { value: string } }) => {
+    setMonthOfBirth(e.target.value);
     const newValue = parseInt(e.target.value, 10);
-    setMonthOfBirth(newValue);
     setMobError(newValue < 1 || newValue > 12);
   };
 
@@ -163,7 +164,7 @@ export default function HocCastlePage() {
   };
 
   const handleAgeDialogClose = () => {
-    if (yobError || mobError) {
+    if (!yearOfBirth || !monthOfBirth || yobError || mobError) {
       setStep(Steps.LANGUAGE);
     } else {
       // Explicitly disable for users that are not old enough
@@ -176,9 +177,14 @@ export default function HocCastlePage() {
 
   // Effects
   useEffect(() => {
+    if (!yearOfBirth || !monthOfBirth) {
+      return;
+    }
     const now = new Date();
+    const yearInt = parseInt(yearOfBirth, 10);
+    const monthInt = parseInt(monthOfBirth, 10);
     const age = (now.getFullYear() * 12 + (now.getMonth() + 1))
-      - (yearOfBirth * 12 + monthOfBirth);
+      - (yearInt * 12 + monthInt);
     setDataSharingAllowed(
       !(yobError || mobError) && age >= MIN_AGE_MONTHS_DATA_COLLECTION,
     );
@@ -287,15 +293,16 @@ export default function HocCastlePage() {
                     onChange={onMonthOfBirthChange}
                     error={mobError}
                     helperText={mobError ? res.age.error.month : undefined}
-                    type="number"
-                    SelectProps={{
-                      native: true,
-                    }}
+                    fullWidth
                   >
                     {Array.from(Array(12).keys()).map((month) => (
-                      <option key={`month_${month}`} value={month + 1}>
-                        {new Date(yearOfBirth, month).toLocaleString(res.code, { month: 'long' })}
-                      </option>
+                      <MenuItem
+                        key={`month_${month}`}
+                        value={(month + 1).toString()}
+                      >
+                        {new Date(today.getFullYear(), month)
+                          .toLocaleString(res.code, { month: 'long' })}
+                      </MenuItem>
                     ))}
                   </TextField>
                 </Grid>
