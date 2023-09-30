@@ -337,7 +337,7 @@ export default function FinishHocCastlePage({ curriculum }:
 
 export async function getStaticProps() {
   const authorSlug = 'luce-hoc';
-  const curriculumSlug = 'castle';
+  const curriculumSlug = 'burg';
   const curriculum = await getCurriculum(authorSlug, curriculumSlug);
   return {
     props: {

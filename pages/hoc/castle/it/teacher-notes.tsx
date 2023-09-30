@@ -246,7 +246,7 @@ export default function FinishHocCastlePage({ curriculum }:
           <Typography marginY={3}>
             Ulteriori dettagli sono disponibili nella
             {' '}
-            <Link href="/curricula/luce-hoc/castle/info" component={NextLink}>
+            <Link href="/curricula/luce-hoc/castello/info" component={NextLink}>
               pagina delle informazioni
             </Link>
             .
@@ -330,7 +330,7 @@ export default function FinishHocCastlePage({ curriculum }:
 
 export async function getStaticProps() {
   const authorSlug = 'luce-hoc';
-  const curriculumSlug = 'castle';
+  const curriculumSlug = 'castello';
   const curriculum = await getCurriculum(authorSlug, curriculumSlug);
   return {
     props: {
