@@ -166,7 +166,7 @@ export default function FinishHocCastlePage({ curriculum }:
           </Typography>
 
           <Typography marginTop={5} variant="h4" align="center" color="textSecondary" paragraph>
-            Programming
+            Content: Programming
           </Typography>
           <Typography marginY={3}>
             This activity introduces students to one of the fundamental concepts in programming:
@@ -276,7 +276,7 @@ export default function FinishHocCastlePage({ curriculum }:
           </Typography>
 
           <Typography marginTop={5} variant="h4" align="center" color="textSecondary" paragraph>
-            History
+            Content: History
           </Typography>
           <Typography marginY={3}>
             This Hour of Code was inspired by the medieval castles

@@ -165,7 +165,7 @@ export default function FinishHocCastlePage({ curriculum }:
           </Typography>
 
           <Typography marginTop={5} variant="h4" align="center" color="textSecondary" paragraph>
-            Programmazione
+            Contenuto: Programmazione
           </Typography>
           <Typography marginY={3}>
             Quest&apos;attività introduce agli studenti uno dei concetti fondamentali della
@@ -285,7 +285,7 @@ export default function FinishHocCastlePage({ curriculum }:
           </Typography>
 
           <Typography marginTop={5} variant="h4" align="center" color="textSecondary" paragraph>
-            Storia
+            Contenuto: Storia
           </Typography>
           <Typography marginY={3}>
             Quest&apos;Ora del Codice è ispirata dai castelli medievali che
