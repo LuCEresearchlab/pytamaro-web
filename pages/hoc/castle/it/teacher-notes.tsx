@@ -106,7 +106,6 @@ export default function FinishHocCastlePage({ curriculum }:
           />
 
           <Typography marginTop={5} variant="h4" align="center" color="textSecondary" paragraph>
-            This Hour of Code was Developed by Students!
             Quest&apos;Ora del Codice è stata sviluppata da studenti!
           </Typography>
           <Typography marginY={3}>
@@ -141,6 +140,8 @@ export default function FinishHocCastlePage({ curriculum }:
           </Typography>
           <Grid container spacing={5} alignItems="flex-end" justifyContent="center">
             <ContributorCard firstName="Luca" lastName="Chiodini" contribution="Platform" imageName="LucaChiodini.jpg" />
+            <ContributorCard firstName="Igor" lastName="Moreno" contribution="PL Advice" imageName="IgorMoreno.jpg" />
+            <ContributorCard firstName="Joey" lastName="Bevilacqua" contribution="Engineering" imageName="JoeyBevilacqua.jpg" />
             <ContributorCard firstName="Matthias" lastName="Hauswirth" contribution="Organization" imageName="MatthiasHauswirth.jpg" />
           </Grid>
           <Typography marginY={3}>

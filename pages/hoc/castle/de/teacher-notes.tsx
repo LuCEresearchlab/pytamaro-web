@@ -113,10 +113,10 @@ export default function FinishHocCastlePage({ curriculum }:
             an einer kleinen öffentlichen Universität in der Schweiz entwickelt.
           </Typography>
           <Grid container spacing={5} alignItems="flex-end">
-            <ContributorCard firstName="Agnese" lastName="Zamboni" contribution="Chefentwicklerin" imageName="AgneseZamboni.jpg" />
-            <ContributorCard firstName="Davide" lastName="Frova" contribution="Entwickler" imageName="DavideFrova.jpg" />
-            <ContributorCard firstName="Giorgia" lastName="Lillo" contribution="Entwicklerin" imageName="GiorgiaLillo.jpg" />
-            <ContributorCard firstName="Jamila" lastName="Oubenali" contribution="Entwicklerin" imageName="JamilaOubenali.jpg" />
+            <ContributorCard firstName="Agnese" lastName="Zamboni" contribution="Lead Developer" imageName="AgneseZamboni.jpg" />
+            <ContributorCard firstName="Davide" lastName="Frova" contribution="Developer" imageName="DavideFrova.jpg" />
+            <ContributorCard firstName="Giorgia" lastName="Lillo" contribution="Developer" imageName="GiorgiaLillo.jpg" />
+            <ContributorCard firstName="Jamila" lastName="Oubenali" contribution="Developer" imageName="JamilaOubenali.jpg" />
           </Grid>
 
           <Typography marginY={3}>
@@ -140,8 +140,10 @@ export default function FinishHocCastlePage({ curriculum }:
             auf der PyTamaro Web-Plattform.
           </Typography>
           <Grid container spacing={5} alignItems="flex-end" justifyContent="center">
-            <ContributorCard firstName="Luca" lastName="Chiodini" contribution="Plattform" imageName="LucaChiodini.jpg" />
-            <ContributorCard firstName="Matthias" lastName="Hauswirth" contribution="Organisation" imageName="MatthiasHauswirth.jpg" />
+            <ContributorCard firstName="Luca" lastName="Chiodini" contribution="Platform" imageName="LucaChiodini.jpg" />
+            <ContributorCard firstName="Igor" lastName="Moreno" contribution="PL Advice" imageName="IgorMoreno.jpg" />
+            <ContributorCard firstName="Joey" lastName="Bevilacqua" contribution="Engineering" imageName="JoeyBevilacqua.jpg" />
+            <ContributorCard firstName="Matthias" lastName="Hauswirth" contribution="Organization" imageName="MatthiasHauswirth.jpg" />
           </Grid>
           <Typography marginY={3}>
             Die PyTamaro Web-Plattform
