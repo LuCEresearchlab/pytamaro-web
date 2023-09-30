@@ -1,0 +1,73 @@
+import {
+  Box,
+  Button,
+  Container,
+  Typography,
+} from '@mui/material';
+import FeedbackIcon from '@mui/icons-material/Feedback';
+import Head from 'next/head';
+import NextLink from 'next/link';
+import HourOfCodeFooter from '../../../components/HourOfCodeFooter';
+import NavigationBar from '../../../components/NavigationBar';
+
+export default function ReleaseNotesPage() {
+  return (
+    <div>
+      <Head>
+        <title>Hour of Code: Program Your Own Castle: Release Notes</title>
+      </Head>
+
+      <Box>
+        <NavigationBar />
+        <Container maxWidth="md">
+          <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
+            Hour of Code ® with PyTamaro
+          </Typography>
+          <Typography sx={{ mt: 2 }} variant="h4" align="center" color="textPrimary" gutterBottom>
+            Program Your Own Castle
+          </Typography>
+          <Typography marginY={3} align="center">
+            Created by students at USI, the Università della Svizzera italiana
+          </Typography>
+
+          <Typography marginY={3} align="center">
+            <NextLink href="/hoc/castle" passHref>
+              <Button variant="contained">Landing Page</Button>
+            </NextLink>
+            {' '}
+            <NextLink href="/hoc/castle/teacher-notes" passHref>
+              <Button variant="contained">Teacher Notes Page</Button>
+            </NextLink>
+          </Typography>
+
+          <Typography variant="h2" color="textPrimary">
+            Release Notes
+          </Typography>
+          <Typography marginY={3} variant="h6" color="textSecondary">
+            Our tutorial should be completely functional in English and Italian.
+          </Typography>
+
+          <Typography marginTop={5} variant="h4" color="textSecondary">
+            Release 2023-09-30
+          </Typography>
+          <Typography marginY={3}>
+            Completed English and Italian versions.
+            German version only partially translated.
+          </Typography>
+
+          <Typography marginY={3} variant="h6" color="textSecondary">
+            If you find any problems or bugs,
+            we would greatly appreciate if you could report them to us
+            (e.g., by using the
+            {' '}
+            <FeedbackIcon />
+            {' '}
+            button at the top right of the page).
+          </Typography>
+
+          <HourOfCodeFooter />
+        </Container>
+      </Box>
+    </div>
+  );
+}
