@@ -4,39 +4,20 @@ import {
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import { myDataPathname } from '../src/urlUtils';
 
-export default function DataSharingPreferenceDialog(props: {
-  open: boolean,
-  setOpen: (value: boolean) => void,
-}) {
-  const { open, setOpen } = props;
+export default function DataSharingPreferenceDialog() {
   const { requestDataSharingPreference, setDataSharingPreference } = useLocalProfile();
-
-  const handleClose = () => {
-    if (setOpen !== undefined) {
-      setOpen(false);
-    }
-  };
 
   const handleOK = () => {
     setDataSharingPreference('yes');
-    handleClose();
   };
 
   const handleLearnMore = () => {
     window.open(`${myDataPathname()}#privacy-settings`, '_blank');
   };
 
-  const shouldDisplay = open !== undefined
-    ? open
-    : requestDataSharingPreference;
-
-  return (shouldDisplay
+  return (requestDataSharingPreference
     ? (
-      <Dialog
-        open={shouldDisplay}
-        onClose={handleClose}
-        maxWidth="md"
-      >
+      <Dialog open={requestDataSharingPreference} maxWidth="md">
         <DialogTitle>Help us do research!</DialogTitle>
         <DialogContent>
           <DialogContentText gutterBottom>
