@@ -19,10 +19,10 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import HourOfCodeFooter from '../../../components/HourOfCodeFooter';
 import NavigationBar from '../../../components/NavigationBar';
-import MarketingImage from '../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
 import PyTamaroLogoImage from '../../../public/PyTamaro-horizontal.png';
-import HourOfCodeLogoImage from '../../../public/hoc/HourOfCode_logo_RGB.png';
 import USIInfLogoImage from '../../../public/USI_logo-statico_info-eng.png';
+import HourOfCodeLogoImage from '../../../public/hoc/HourOfCode_logo_RGB.png';
+import MarketingImage from '../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
 import useLocalProfile from '../../../src/localStorage/useLocalProfile';
 
 const HOC_TP_URL = 'https://code.org/api/hour/begin_dance.png';
@@ -221,7 +221,7 @@ export default function HocCastlePage() {
             container
             justifyContent="center"
             spacing={2}
-            sx={{ mt: '3rem', mb: '2rem' }}
+            sx={{ mt: '2rem', mb: '2rem' }}
           >
             <Grid
               xs={4}
@@ -229,7 +229,7 @@ export default function HocCastlePage() {
             >
               <Image
                 src={PyTamaroLogoImage}
-                alt="Photo of Castle"
+                alt="PyTamaro Logo"
                 style={{
                   display: 'block',
                   margin: 'auto',
@@ -244,7 +244,7 @@ export default function HocCastlePage() {
             >
               <Image
                 src={HourOfCodeLogoImage}
-                alt="Photo of Castle"
+                alt="Hour Of Code Logo"
                 style={{
                   display: 'block',
                   margin: 'auto',
@@ -259,7 +259,7 @@ export default function HocCastlePage() {
             >
               <Image
                 src={USIInfLogoImage}
-                alt="Photo of Castle"
+                alt="USI Logo"
                 style={{
                   display: 'block',
                   margin: 'auto',
@@ -270,16 +270,18 @@ export default function HocCastlePage() {
             </Grid>
           </Grid>
 
-          <Image
-            src={MarketingImage}
-            alt="Photo of Castle"
-            style={{
-              display: 'block',
-              margin: 'auto',
-              width: '100%',
-              height: 'auto',
-            }}
-          />
+          <Container maxWidth="sm">
+            <Image
+              src={MarketingImage}
+              alt="Photo of Castle"
+              style={{
+                display: 'block',
+                margin: 'auto',
+                width: '100%',
+                height: 'auto',
+              }}
+            />
+          </Container>
 
           <Grid
             container
@@ -289,7 +291,8 @@ export default function HocCastlePage() {
             {RESOURCES.map((lang) => (
               <Grid
                 key={`lang_selector_${lang.code}`}
-                xs={4}
+                xs={6}
+                md={4}
                 item
               >
                 <Card elevation={1}>
