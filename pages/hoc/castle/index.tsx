@@ -20,6 +20,9 @@ import { useEffect, useState } from 'react';
 import HourOfCodeFooter from '../../../components/HourOfCodeFooter';
 import NavigationBar from '../../../components/NavigationBar';
 import MarketingImage from '../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
+import PyTamaroLogoImage from '../../../public/PyTamaro-horizontal.png';
+import HourOfCodeLogoImage from '../../../public/hoc/HourOfCode_logo_RGB.png';
+import USIInfLogoImage from '../../../public/USI_logo-statico_info-eng.png';
 import useLocalProfile from '../../../src/localStorage/useLocalProfile';
 
 const HOC_TP_URL = 'https://code.org/api/hour/begin_dance.png';
@@ -213,6 +216,59 @@ export default function HocCastlePage() {
       <Box>
         <NavigationBar />
         <Container maxWidth="md">
+
+          <Grid
+            container
+            justifyContent="center"
+            spacing={2}
+            sx={{ mt: '3rem', mb: '2rem' }}
+          >
+            <Grid
+              xs={4}
+              item
+            >
+              <Image
+                src={PyTamaroLogoImage}
+                alt="Photo of Castle"
+                style={{
+                  display: 'block',
+                  margin: 'auto',
+                  width: '90%',
+                  height: 'auto',
+                }}
+              />
+            </Grid>
+            <Grid
+              xs={4}
+              item
+            >
+              <Image
+                src={HourOfCodeLogoImage}
+                alt="Photo of Castle"
+                style={{
+                  display: 'block',
+                  margin: 'auto',
+                  width: '30%',
+                  height: 'auto',
+                }}
+              />
+            </Grid>
+            <Grid
+              xs={4}
+              item
+            >
+              <Image
+                src={USIInfLogoImage}
+                alt="Photo of Castle"
+                style={{
+                  display: 'block',
+                  margin: 'auto',
+                  width: '70%',
+                  height: 'auto',
+                }}
+              />
+            </Grid>
+          </Grid>
 
           <Image
             src={MarketingImage}
