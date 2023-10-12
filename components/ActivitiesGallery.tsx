@@ -15,7 +15,7 @@ import {
 import Grid from '@mui/material/Unstable_Grid2';
 import Link from 'next/link';
 import router from 'next/router';
-import { Activity, canonicalVariantForLanguage } from '../src/schemas/activitySchema';
+import { Activity, activityVariantId, canonicalVariantForLanguage } from '../src/schemas/activitySchema';
 import { activityAssetPathname, activityPathname, activityVariantPathname } from '../src/urlUtils';
 
 export const ANY_LANGUAGE = 'any';
@@ -69,7 +69,7 @@ export default function ActivitiesGallery({
             sm={6}
             md={compactView ? 3 : 4}
             lg={compactView ? 2 : 3}
-            key={activity.slug}
+            key={activityVariantId(defaultVariant)}
           >
             <Paper elevation={8}>
               <Card>
