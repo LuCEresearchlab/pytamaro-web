@@ -9,7 +9,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
 import NavigationBar from '../../../../components/NavigationBar';
-import MarketingImage from '../../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay.jpg';
+import DarkCastleImage from '../../../../public/hoc/castle/DarkCastle.jpg';
 import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
 
 export default function FinishHocCastlePage() {
@@ -85,7 +85,7 @@ export default function FinishHocCastlePage() {
           </Typography>
 
           <Image
-            src={MarketingImage}
+            src={DarkCastleImage}
             alt="Bild der Burg"
             width="1261"
             height="831"

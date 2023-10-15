@@ -9,7 +9,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
 import NavigationBar from '../../../../components/NavigationBar';
-import MarketingImage from '../../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay.jpg';
+import DarkCastleImage from '../../../../public/hoc/castle/DarkCastle.jpg';
 import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
 
 export default function FinishHocCastlePage() {
@@ -77,15 +77,15 @@ export default function FinishHocCastlePage() {
             that quite probably depicts the destruction of the Bellinzona fortification.
           </Typography>
           <Typography marginY={3}>
-            Isn&apos;t it amazing that&mdash;over 500 years later&mdash;
-            we know the exact dates of these events,
+            Isn&apos;t it amazing that&mdash;over 500 years later&mdash;we
+            know the exact dates of these events,
             and we can tell the volumes of rock slides
             and the heights and speeds of this &ldquo;Alpine tsunami wave&rdquo;?
             History can be fascinating!
           </Typography>
 
           <Image
-            src={MarketingImage}
+            src={DarkCastleImage}
             alt="Photo of Castle"
             width="1261"
             height="831"
