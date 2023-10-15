@@ -23,6 +23,7 @@ import FortezzaBellinzonaHistory from '../../../../public/hoc/castle/FortezzaBel
 import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
 import MarketingImage from '../../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay.jpg';
 import PureFunctionImage from '../../../../public/hoc/castle/PureFunction.png';
+import ProblemSolutionImage from '../../../../public/hoc/castle/ProblemSolution.png';
 import CastleListImage from '../../../../public/hoc/castle/CastleList.png';
 import BattlementImage from '../../../../public/hoc/castle/Battlement.jpg';
 import CurtainWallImage from '../../../../public/hoc/castle/CurtainWall.jpg';
@@ -245,7 +246,7 @@ export default function FinishHocCastlePage({ curriculum }:
     <a href="https://progmiscon.org/selfCheck?pl=Python">perform a self-check</a>
     {' '}
     on
-    {' '} 
+    {' '}
     <a href="https://progmiscon.org/">Progmiscon.org</a>
     , a research-based inventory of programming language misconceptions.
     This prepares you to recognize misconceptions like
@@ -477,6 +478,19 @@ export default function FinishHocCastlePage({ curriculum }:
             Because of their independence,
             we do not have to worry about other subproblems while focusing on one.
           </Typography>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Image
+              src={ProblemSolutionImage}
+              alt="Diagram of Problem Decomposition and Solution Composition"
+              width="1280"
+              height="831"
+              sizes="100vw"
+              style={{
+                width: '50%',
+                height: 'auto',
+              }}
+            />
+          </div>
           <Typography marginY={3}>
             Pure functions are a great way to solve independent subproblems.
             They are also ideal for composing the solutions of multiple independent subproblems
@@ -499,7 +513,7 @@ export default function FinishHocCastlePage({ curriculum }:
             as functions in mathematics.
             It&apos;s just that our PyTamaro functions
             {' '}
-            <strong>play with attractive graphics</strong>
+            <strong>play with graphics</strong>
             {' '}
             instead of numbers.
           </Typography>

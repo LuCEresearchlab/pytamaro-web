@@ -48,6 +48,13 @@ export default function ReleaseNotesPage() {
           </Typography>
 
           <Typography marginTop={5} variant="h4" color="textSecondary">
+            Release 2023-10-15
+          </Typography>
+          <Typography marginY={3}>
+            Significantly expanded Teacher Notes (English version).
+          </Typography>
+
+          <Typography marginTop={5} variant="h4" color="textSecondary">
             Release 2023-09-30
           </Typography>
           <Typography marginY={3}>
