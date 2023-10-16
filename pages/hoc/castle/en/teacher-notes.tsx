@@ -699,15 +699,19 @@ export default function FinishHocCastlePage({ curriculum }:
             J. E. Kaufmann &amp; H. W. Kaufmann; Robert M. Jurga (Illustrator).
             {' '}
             <a href="https://www.dacapopress.com/titles/j-e-kaufmann/the-medieval-fortress/9780306813580/">The Medieval Fortress: Castles, Forts, And Walled Cities Of The Middle Ages</a>
+            . Da Capo Press, 2004. ISBN 978-0-306-81358-0.
+          </Typography>
+          <Typography marginY={3}>
+            David Macaulay.
             {' '}
-            Da Capo Press, 2004. ISBN 9780306813580.
+            <a href="https://www.harpercollins.com/products/castle-david-macaulay">Castle</a>
+            . Clarion Books, 2013. ISBN 978-0-544-10226-2.
           </Typography>
           <Typography marginY={3}>
             Horst Wolfgang Böhme, Reinhard Friedrich, Barbara Schock-Werner (Hrsg.)
             {' '}
             <a href="https://books.ub.uni-heidelberg.de/arthistoricum/catalog/book/535">Wörterbuch der Burgen, Schlösser und Festungen</a>
-            {' '}
-            Heidelberg: arthistoricum.net-ART-Books, 2020.
+            . Heidelberg: arthistoricum.net-ART-Books, 2020.
           </Typography>
 
           <HourOfCodeFooter />
