@@ -11,6 +11,7 @@ type NodeData = {
   width: number,
   height: number,
   unlocked: boolean,
+  id: string,
   started?: boolean,
   onStartClick?: () => void,
   onEndClick?: () => void,
@@ -18,12 +19,12 @@ type NodeData = {
 
 export default function TitleNode({ data }: NodeProps<NodeData>) {
   const {
-    type, text, width, height, unlocked, started, onStartClick, onEndClick,
+    type, text, width, height, unlocked, started, onStartClick, onEndClick, id,
   } = data;
   const showStartingButton = type === 'start' && !started;
   const showFinishButton = type === 'end' && unlocked;
   return (
-    <Box sx={{ opacity: unlocked ? 1 : 0.38 }}>
+    <Box id={id} sx={{ opacity: unlocked ? 1 : 0.38 }}>
       <Handle type="target" position={Position.Top} isConnectable={false} />
       <Box
         sx={{

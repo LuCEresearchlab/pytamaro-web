@@ -1,5 +1,5 @@
-import { ActivityVariant } from '../schemas/activitySchema';
-import { CodeCellState } from './schema';
+import { CodeCellState } from './localStorage/schema';
+import { ActivityVariant } from './schemas/activitySchema';
 import useTemporaryActivity from './useTemporaryActivity';
 
 export default function useReadOnlyTemporaryActivity(

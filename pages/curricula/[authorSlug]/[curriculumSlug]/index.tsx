@@ -5,10 +5,12 @@ import {
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
+import { delay } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import { MDXRemote } from 'next-mdx-remote';
 import Head from 'next/head';
-import { useRef, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useEffect, useRef, useState } from 'react';
 import AttributionInfo from '../../../../components/AttributionInfo';
 import InfoButton from '../../../../components/InfoButton';
 import NavigationBar from '../../../../components/NavigationBar';
@@ -30,6 +32,7 @@ export default function CurriculumPage({ curriculum, author }:
   const {
     metadata, setMetadata, findCurriculum, removeCurriculum,
   } = useLocalProfile();
+  const router = useRouter();
   const curriculumFlowRef = useRef<HTMLDivElement>(null);
   const [nodesInitialized, setNodesInitialized] = useState(false);
 
@@ -43,6 +46,15 @@ export default function CurriculumPage({ curriculum, author }:
         removeCurriculum(curriculum);
       });
   };
+
+  useEffect(() => {
+    const toId = router.query.to;
+    if (nodesInitialized && toId && typeof toId === 'string') {
+      delay(() => {
+        document.getElementById(toId)?.scrollIntoView({ behavior: 'smooth' });
+      }, 250);
+    }
+  }, [nodesInitialized, router.query.to]);
 
   return (
     <>

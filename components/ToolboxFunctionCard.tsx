@@ -7,10 +7,10 @@ import {
 import Link from 'next/link';
 import { useState } from 'react';
 import { ToolboxFunction } from '../src/localStorage/schema';
-import useReadOnlyTemporaryActivity from '../src/localStorage/useReadOnlyTemporaryActivity';
 import { toolboxActivityVariant } from '../src/specialActivities';
 import theme from '../src/theme';
 import { activityVariantPathname, toolboxFunctionPathname } from '../src/urlUtils';
+import useReadOnlyTemporaryActivity from '../src/useReadOnlyTemporaryActivity';
 import CodeEditor from './CodeEditor';
 import SolitaryCodeCell, { initialStateSingleCell } from './SolitaryCodeCell';
 

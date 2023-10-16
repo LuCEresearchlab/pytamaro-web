@@ -6,16 +6,16 @@ import {
   Dispatch, SetStateAction, useEffect,
 } from 'react';
 import useSessionStorageState from 'use-session-storage-state';
-import logAnalyticsEvent, { AnalyticsEventName } from '../analyticsEvent';
-import { ExecutionResponse, importedToolboxNames } from '../codeExecution';
-import { ActivityVariant, PythonFile, activityVariantId } from '../schemas/activitySchema';
-import { EventName, storeDbEvent } from '../storeDbEvent';
+import logAnalyticsEvent, { AnalyticsEventName } from './analyticsEvent';
+import { ExecutionResponse, importedToolboxNames } from './codeExecution';
 import {
   CodeCellExecutionState,
   CodeCellState, Metadata, ToolboxFunction,
   getDefaultActivityVariantMetadata,
-} from './schema';
-import useLocalToolbox from './useLocalToolbox';
+} from './localStorage/schema';
+import useLocalToolbox from './localStorage/useLocalToolbox';
+import { ActivityVariant, PythonFile, activityVariantId } from './schemas/activitySchema';
+import { EventName, storeDbEvent } from './storeDbEvent';
 
 export function initialCodeExecutionState(): CodeCellExecutionState {
   return {
@@ -108,15 +108,15 @@ export function useActivity(
   const completed = !!variantMetadata?.completed;
   const cellsModified = !!variantMetadata?.cellsModified;
 
-  const toggleCompleted = () => {
+  const markAsCompleted = () => {
     setMetadata(
       produce((draft) => {
         const draftVariantMetadata = draft.activities.find((a) => a.id === variantId);
         if (draftVariantMetadata) {
-          draftVariantMetadata.completed = !draftVariantMetadata.completed;
+          draftVariantMetadata.completed = true;
         } else {
           const newVariantMetadata = getDefaultActivityVariantMetadata(variantId);
-          newVariantMetadata.completed = !newVariantMetadata.completed;
+          newVariantMetadata.completed = true;
           draft.activities.push(newVariantMetadata);
         }
       }),
@@ -177,6 +177,10 @@ export function useActivity(
             draft[idx].executionResponse = response;
             draft[idx].outputSynced = true;
             draft[idx].outputAreaVisible = response.content.length > 0;
+            // Mark the activity as completed when the last cell has been executed successfully.
+            if (response.type === 'success' && idx === codeCells.length - 1) {
+              markAsCompleted();
+            }
           }
         }
       }),
@@ -267,7 +271,6 @@ export function useActivity(
     cellsModified,
     networkError,
     sourcesUpTo,
-    toggleCompleted,
     setNetworkError,
     handleSourceChanged,
     handleExecute,

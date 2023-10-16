@@ -5,11 +5,12 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { activityVariantId, getVariantTitle } from '../../src/schemas/activitySchema';
+import { getVariantTitle } from '../../src/schemas/activitySchema';
 import { Curriculum, CurriculumActivity } from '../../src/schemas/curriculumSchema';
 import theme from '../../src/theme';
 import {
@@ -24,6 +25,7 @@ export default function ActivityCard({
   curriculum,
   status,
   isUnlocked,
+  id,
   width = undefined,
   height = undefined,
 }: {
@@ -31,6 +33,7 @@ export default function ActivityCard({
   curriculum: Curriculum,
   status: ActivityStatus,
   isUnlocked: boolean,
+  id: string,
   width?: number | undefined,
   height?: number | undefined,
 }) {
@@ -46,7 +49,7 @@ export default function ActivityCard({
 
   return (
     <Box
-      id={activityVariantId(variant)}
+      id={id}
       sx={{
         width: width || '100%',
         height: height || '100%',
@@ -62,76 +65,80 @@ export default function ActivityCard({
             width: '100%', height: '100%', paddingBottom: 0,
           }}
         >
-          <CardActionArea
-            onClick={() => router.push(activityVariantWithCurriculum(variant, curriculum))}
-            disabled={!isUnlocked}
-          >
-            <CardMedia
-              component="img"
-              height={height ? 0.82 * height : '82%'}
-              color="red"
-              image={activityAssetPathname(
-                variant.authorSlug,
-                variant.activitySlug,
-                activity.previewImage.filename,
-              )}
-              alt={title}
-              sx={{ padding: 1, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
-            />
-            <CardContent sx={{
-              paddingY: { xs: 0, sm: 1 },
-              height: height ? 0.18 * height : '18%',
-              display: 'flex',
-              alignItems: 'baseline',
-              paddingRight: 0.5,
-            }}
-            >
-              <Typography
-                variant="h5"
-                component="div"
-                sx={{
-                  fontSize: {
-                    xs: '1rem', sm: '1.2rem', textOverflow: 'ellipsis',
-                  },
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  flexShrink: 0,
-                  flexGrow: 1,
-                  flexBasis: 0,
-                  minWidth: 0,
-                }}
+          <Tooltip title={isUnlocked ? 'Open Activity' : 'Unlock by completing earlier activities'} arrow followCursor placement="top">
+            <span>
+              <CardActionArea
+                onClick={() => router.push(activityVariantWithCurriculum(variant, curriculum))}
+                disabled={!isUnlocked}
               >
-                {title}
-              </Typography>
-              <AvatarGroup
-                max={maxCompetenciesShown}
-                sx={{
-                  marginLeft: 'auto',
-                  flexShrink: 1,
-                  flexGrow: 0,
-                  '& .MuiAvatarGroup-avatar': {
-                    width: 24,
-                    height: 24,
-                    fontSize: avatarFontSize,
-                  },
+                <CardMedia
+                  component="img"
+                  height={height ? 0.82 * height : '82%'}
+                  color="red"
+                  image={activityAssetPathname(
+                    variant.authorSlug,
+                    variant.activitySlug,
+                    activity.previewImage.filename,
+                  )}
+                  alt={title}
+                  sx={{ padding: 1, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
+                />
+                <CardContent sx={{
+                  paddingY: { xs: 0, sm: 1 },
+                  height: height ? 0.18 * height : '18%',
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  paddingRight: 0.5,
                 }}
-                onMouseOver={() => setMaxCompetenciesShown(EXPANDED_MAX_COMPETENCIES_SHOWN)}
-                onMouseLeave={() => setMaxCompetenciesShown(COMPACT_MAX_COMPETENCIES_SHOWN)}
-              >
-                {curriculumActivity.learningObjectives.map((objective) => {
-                  const competency = curriculum.competencies.find((c) => c.id === objective);
-                  return competency ? (
-                    <CompetencyAvatar
-                      key={competency.id}
-                      competency={competency}
-                      fontSize={avatarFontSize}
-                    />
-                  ) : null;
-                })}
-              </AvatarGroup>
-            </CardContent>
-          </CardActionArea>
+                >
+                  <Typography
+                    variant="h5"
+                    component="div"
+                    sx={{
+                      fontSize: {
+                        xs: '1rem', sm: '1.2rem', textOverflow: 'ellipsis',
+                      },
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      flexShrink: 0,
+                      flexGrow: 1,
+                      flexBasis: 0,
+                      minWidth: 0,
+                    }}
+                  >
+                    {title}
+                  </Typography>
+                  <AvatarGroup
+                    max={maxCompetenciesShown}
+                    sx={{
+                      marginLeft: 'auto',
+                      flexShrink: 1,
+                      flexGrow: 0,
+                      '& .MuiAvatarGroup-avatar': {
+                        width: 24,
+                        height: 24,
+                        fontSize: avatarFontSize,
+                      },
+                    }}
+                    onMouseOver={() => setMaxCompetenciesShown(EXPANDED_MAX_COMPETENCIES_SHOWN)}
+                    onMouseLeave={() => setMaxCompetenciesShown(COMPACT_MAX_COMPETENCIES_SHOWN)}
+                  >
+                    {curriculumActivity.learningObjectives.map((objective) => {
+                      const competency = curriculum.competencies.find((c) => c.id === objective);
+                      return competency ? (
+                        <CompetencyAvatar
+                          key={competency.id}
+                          competency={competency}
+                          fontSize={avatarFontSize}
+                        />
+                      ) : null;
+                    })}
+                  </AvatarGroup>
+                </CardContent>
+              </CardActionArea>
+            </span>
+          </Tooltip>
         </Card>
       </ActivityStatusBadge>
     </Box>

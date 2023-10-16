@@ -1,11 +1,9 @@
 import { Dispatch, SetStateAction, useState } from 'react';
-import { ExecutionResponse } from '../codeExecution';
-import { ActivityVariant } from '../schemas/activitySchema';
-import {
-  CodeCellState, ToolboxFunction,
-} from './schema';
+import { ExecutionResponse } from './codeExecution';
+import { CodeCellState, ToolboxFunction } from './localStorage/schema';
+import useLocalProfile from './localStorage/useLocalProfile';
+import { ActivityVariant } from './schemas/activitySchema';
 import { useActivity } from './useActivity';
-import useLocalProfile from './useLocalProfile';
 
 export default function useTemporaryActivity(
   initialCodeCells: CodeCellState[],

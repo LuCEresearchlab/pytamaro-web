@@ -22,6 +22,7 @@ import TitleNode from './TitleNode';
 import { ActivityNodeData, color } from './utils';
 
 import 'reactflow/dist/style.css';
+import { anchorName } from '../../src/curricula';
 import { Metadata } from '../../src/localStorage/schema';
 import scrollToAnchor from '../../src/scrollToAnchor';
 import useWidth from '../../src/useWidth';
@@ -181,6 +182,7 @@ function getFlowElements(
       data: {
         ...dim,
         ...data,
+        id,
       },
       position: {
         x: xPos,
@@ -215,7 +217,8 @@ function getFlowElements(
   };
 
   const addActivitiesNodes = (
-    idPrefix: string,
+    unitIdx: number,
+    stepIdx: number,
     activitiesData: ActivityNodeData[],
   ) => {
     const n = activitiesData.length;
@@ -232,7 +235,7 @@ function getFlowElements(
     const spacingWidth = (n - 1) * gap;
     const left = width / 2 - rowWidth / 2 - spacingWidth / 2;
     const ids = activitiesData.map((data, idx) => {
-      const id = `${idPrefix}-${idx}`;
+      const id = anchorName(unitIdx, stepIdx, idx);
       addNode(id, 'activity', data, true, left + idx * (dim.width + gap));
       addIncomingEdges(id);
       return id;
@@ -261,7 +264,7 @@ function getFlowElements(
   // - a sequence of units
   curriculum.units.forEach((unit, unitIdx) => {
     // Each unit has a title
-    addSingleNode(`${unitIdx}`, 'title', { type: 'unit', text: unit.title, unlocked: previousStepIsCompleted });
+    addSingleNode(anchorName(unitIdx), 'title', { type: 'unit', text: unit.title, unlocked: previousStepIsCompleted });
     // and contains a sequence of steps
     unit.steps.forEach((step, stepIdx) => {
       const activitiesInfo = addActivitiesStatuses(
@@ -272,17 +275,18 @@ function getFlowElements(
         nodeTypeDimensions.activity,
       );
       const currentStepIsCompleted = activitiesInfo.some((a) => a.isUnlocked && a.status === 'completed');
+      const stepId = anchorName(unitIdx, stepIdx);
       // A step may be optional (shown as a single collapsed node)
       if (step.isOptional) {
-        addSingleNode(`optional-${unitIdx}-${stepIdx}`, 'optional', { activityInfo: activitiesInfo, unlocked: previousStepIsCompleted }, true);
+        addSingleNode(stepId, 'optional', { activityInfo: activitiesInfo, unlocked: previousStepIsCompleted }, true);
       } else {
         // or it consists of a set of alternative activities...
         // (which may be preceded by a "join" node when coming from a set of >1 alternatives)
         if (nodesToBeConnected.length > 1) {
-          addSingleNode(`join-${unitIdx}-${stepIdx}`, 'join', { unlocked: previousStepIsCompleted }, true);
+          addSingleNode(stepId, 'join', { unlocked: previousStepIsCompleted }, true);
         }
         // ...shown in a single row
-        addActivitiesNodes(`${unitIdx}-${stepIdx}`, activitiesInfo);
+        addActivitiesNodes(unitIdx, stepIdx, activitiesInfo);
         previousStepIsCompleted = currentStepIsCompleted;
       }
     });

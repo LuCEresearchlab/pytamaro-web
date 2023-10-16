@@ -6,6 +6,11 @@ import { CODE_EXECUTION_CELLS_TO_FILES_VERSION, ExecutionResponse, cellsToFiles 
 import { ToolboxFunction } from '../../src/localStorage/schema';
 import { PythonFile } from '../../src/schemas/activitySchema';
 
+const dummySuccessfulResponse = {
+  type: 'success',
+  content: '(Demo output - Only shown in development mode)\nHello, world!',
+};
+
 const redisClient = createClient({
   socket: {
     host: process.env.REDIS_HOST,
@@ -116,6 +121,9 @@ export default async function handler(
     response = JSON.parse(cacheResult);
   } else {
     response = await doExecution(sources, idx, toolboxFunctions, extraPythonFiles);
+    if (response.type === 'network-error' && process.env.NODE_ENV === 'development') {
+      response = dummySuccessfulResponse;
+    }
     if (response.type !== 'network-error') {
       saveToCache(key, JSON.stringify(response));
     }

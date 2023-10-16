@@ -165,6 +165,7 @@ export default function Home({ welcomeCurriculum, activities } :
                     {curriculumActivity && (
                       <Box padding={2} maxWidth="20rem" marginX="auto">
                         <ActivityCard
+                          id="demo-activity-card"
                           curriculumActivity={curriculumActivity}
                           curriculum={welcomeCurriculum}
                           status="initial"

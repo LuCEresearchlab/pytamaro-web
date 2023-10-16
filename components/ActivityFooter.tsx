@@ -1,13 +1,13 @@
 import { Container, Divider, Stack } from '@mui/material';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
-import { Activity, ActivityVariant, activityVariantId } from '../src/schemas/activitySchema';
+import { Activity, ActivityVariant } from '../src/schemas/activitySchema';
 import { AuthorProfile } from '../src/schemas/authorSchema';
 import { Curriculum } from '../src/schemas/curriculumSchema';
 import AttributionInfo from './AttributionInfo';
 import CodeDownloadButton from './CodeDownloadButton';
-import CompleteActivityButton from './CompleteActivityButton';
 import FinishHourOfCodeButton from './FinishHourOfCodeButton';
+import NavigateToActivity from './NavigateToActivityButton';
 
 export default function ActivityFooter({
   activityVariant, initialCodeCells, author, activity, curriculum,
@@ -20,19 +20,27 @@ export default function ActivityFooter({
 }) {
   const {
     codeCells, completed,
-    toggleCompleted,
   } = useLocalActivity(initialCodeCells, activityVariant);
   return (
     <>
       <Stack mt={12} mb={6} direction="row" justifyContent="center" spacing={4}>
+        {curriculum && (
+          <NavigateToActivity
+            activityVariant={activityVariant}
+            curriculum={curriculum}
+            direction="previous"
+            completed={completed}
+          />
+        )}
         <CodeDownloadButton codeCells={codeCells} extraPythonFiles={activity.extraPythonFiles} />
-        <CompleteActivityButton
-          completed={completed}
-          toggleCompleted={toggleCompleted}
-          activityVariant={activityVariant}
-          curriculum={curriculum}
-          key={activityVariantId(activityVariant)}
-        />
+        {curriculum && (
+          <NavigateToActivity
+            activityVariant={activityVariant}
+            curriculum={curriculum}
+            direction="next"
+            completed={completed}
+          />
+        )}
       </Stack>
       { curriculum?.hourOfCode && (
         <FinishHourOfCodeButton />

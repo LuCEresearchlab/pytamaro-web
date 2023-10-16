@@ -15,6 +15,7 @@ type NodeData = {
   width: number,
   height: number,
   unlocked: boolean,
+  id: string,
 };
 
 const style = {
@@ -37,10 +38,10 @@ export default function OptionalActivitiesNode({ data }: NodeProps<NodeData>) {
   const text = 'optional activities';
 
   const {
-    activityInfo, width, height, unlocked,
+    activityInfo, width, height, unlocked, id,
   } = data;
   return (
-    <Box sx={{ cursor: unlocked ? 'auto' : 'not-allowed' }}>
+    <Box id={id} sx={{ cursor: unlocked ? 'auto' : 'not-allowed' }}>
       <Handle type="target" position={Position.Top} isConnectable={false} />
       <Button
         onClick={handleOpen}
@@ -81,6 +82,7 @@ export default function OptionalActivitiesNode({ data }: NodeProps<NodeData>) {
             }) => (
               <ActivityCard
                 key={activityVariantId(curriculumActivity.variant)}
+                id={`optional-${id}`}
                 curriculumActivity={curriculumActivity}
                 curriculum={curriculum}
                 status={status}

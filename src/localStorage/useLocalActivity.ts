@@ -1,10 +1,10 @@
 import useLocalStorageState from 'use-local-storage-state';
 import { ActivityVariant, PythonFile, activityVariantId } from '../schemas/activitySchema';
+import { useActivity } from '../useActivity';
 import {
   CodeCellState,
   getActivityVariantCodeCellsKey,
 } from './schema';
-import { useActivity } from './useActivity';
 import useLocalProfile from './useLocalProfile';
 
 export default function useLocalActivity(

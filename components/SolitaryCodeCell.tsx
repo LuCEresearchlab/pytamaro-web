@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { useActivity } from '../src/localStorage/useActivity';
 import { ActivityVariant } from '../src/schemas/activitySchema';
+import { useActivity } from '../src/useActivity';
 import CodeCell from './CodeCell';
 
 export function initialStateSingleCell(source: string) {
