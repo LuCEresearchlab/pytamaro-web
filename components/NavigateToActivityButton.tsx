@@ -1,14 +1,15 @@
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Tooltip } from '@mui/material';
-import { isEqual } from 'lodash';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import {
   NavigationDirection,
   anchorName,
   anchorNameNextOrPreviousStep,
-  findStepIdx, findUnit, findUnitIdx, nextOrPreviousObviousActivity,
+  findInCurriculum,
+  findStepIdx, findUnit,
+  nextOrPreviousObviousActivity,
 } from '../src/curricula';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import { Curriculum, CurriculumUnit } from '../src/schemas/curriculumSchema';
@@ -42,11 +43,7 @@ export default function NavigateToActivity({
     if (targetActivity) {
       url = activityVariantWithCurriculum(targetActivity, curriculum);
     } else {
-      const unitIdx = findUnitIdx(curriculum, activityVariant);
-      const stepIdx = findStepIdx(curriculum.units[unitIdx], activityVariant);
-      const activityIdx = curriculum.units[unitIdx].steps[stepIdx].activities.findIndex(
-        (a) => isEqual(a.variant, activityVariant),
-      );
+      const { unitIdx, stepIdx, activityIdx } = findInCurriculum(curriculum, activityVariant);
       const anchor = anchorName(unitIdx, stepIdx, activityIdx);
       const anchorTo = anchorNameNextOrPreviousStep(curriculum, unitIdx, stepIdx, direction);
       url = curriculumWithAnchor(curriculum.authorSlug, curriculum.slug, anchor, anchorTo);

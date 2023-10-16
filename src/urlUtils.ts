@@ -65,9 +65,13 @@ export function curriculumWithAnchor(
   authorSlug: string,
   curriculumSlug: string,
   anchor: string,
-  anchorTo: string,
+  anchorTo?: string,
 ) {
-  return `${curriculumPathname(authorSlug, curriculumSlug)}?to=${anchorTo}#${anchor}`;
+  const query = new URLSearchParams();
+  if (anchorTo) {
+    query.set('to', anchorTo);
+  }
+  return `${curriculumPathname(authorSlug, curriculumSlug)}?${query.toString()}#${anchor}`;
 }
 
 export function curriculumInfoPathname(authorSlug: string, curriculumSlug: string) {

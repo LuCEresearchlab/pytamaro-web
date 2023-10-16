@@ -94,3 +94,12 @@ export function anchorNameNextOrPreviousStep(
   // Default to the first activity of the step
   return anchorName(targetUnitIdx, targetStepIdx, 0);
 }
+
+export function findInCurriculum(curriculum: Curriculum, activityVariant: ActivityVariant) {
+  const unitIdx = findUnitIdx(curriculum, activityVariant);
+  const stepIdx = findStepIdx(curriculum.units[unitIdx], activityVariant);
+  const activityIdx = curriculum.units[unitIdx].steps[stepIdx].activities.findIndex(
+    (a) => isEqual(a.variant, activityVariant),
+  );
+  return { unitIdx, stepIdx, activityIdx };
+}

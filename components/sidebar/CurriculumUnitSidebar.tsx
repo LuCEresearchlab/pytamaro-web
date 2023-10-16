@@ -2,6 +2,7 @@ import { Route } from '@mui/icons-material';
 import {
   Box, Link, Stack, Typography,
 } from '@mui/material';
+import { anchorName, findInCurriculum } from '../../src/curricula';
 import { ActivityVariant, activityVariantId } from '../../src/schemas/activitySchema';
 import { Curriculum } from '../../src/schemas/curriculumSchema';
 import { curriculumWithAnchor } from '../../src/urlUtils';
@@ -16,6 +17,8 @@ export default function CurriculumUnitSidebar({ curriculum, activityVariant } :
     );
   });
   const gap = '.7ch';
+  const { unitIdx, stepIdx, activityIdx } = findInCurriculum(curriculum, activityVariant);
+  const anchor = anchorName(unitIdx, stepIdx, activityIdx);
   return unit ? (
     <Box>
       <SidebarTitle>
@@ -25,7 +28,7 @@ export default function CurriculumUnitSidebar({ curriculum, activityVariant } :
         <Link
           variant="body2"
           underline="none"
-          href={curriculumWithAnchor(curriculum.authorSlug, curriculum.slug, activityVariant)}
+          href={curriculumWithAnchor(curriculum.authorSlug, curriculum.slug, anchor)}
           display="flex"
         >
           <Route fontSize="small" />
