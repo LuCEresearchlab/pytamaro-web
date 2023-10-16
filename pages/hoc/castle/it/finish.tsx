@@ -10,7 +10,7 @@ import Image from 'next/image';
 import NextLink from 'next/link';
 import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
 import NavigationBar from '../../../../components/NavigationBar';
-import MarketingImage from '../../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay.jpg';
+import DarkCastleImage from '../../../../public/hoc/castle/DarkCastle.jpg';
 
 export default function FinishHocCastlePage() {
   return (
@@ -77,15 +77,15 @@ export default function FinishHocCastlePage() {
             di Bellinzona.
           </Typography>
           <Typography marginY={3}>
-            Non è forse sorprendente come &mdash;oltre 500 anni dopo&mdash;
-            sappiamo le date esatte di questi eventi, e possiamo dire con
+            Non è forse sorprendente come&mdash;oltre 500 anni dopo&mdash;sappiamo
+            le date esatte di questi eventi, e possiamo dire con
             precisione il volume delle frane e l&apos;altezza e la velocità
             di questo &ldquo;tsunami Alpino&rdquo;?
             La storia può essere affascinante!
           </Typography>
 
           <Image
-            src={MarketingImage}
+            src={DarkCastleImage}
             alt="Foto del Castello"
             width="1261"
             height="831"
