@@ -15,6 +15,11 @@ export function imported_names(python_source: string): any;
 * @returns {any}
 */
 export function defined_functions(python_source: string): any;
+/**
+* @param {string} python_source
+* @returns {any}
+*/
+export function called_names(python_source: string): any;
 
 export interface PythonName {
     module: string;

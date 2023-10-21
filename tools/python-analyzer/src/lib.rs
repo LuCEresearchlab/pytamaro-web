@@ -1,7 +1,7 @@
 use wasm_bindgen::prelude::*;
 extern crate console_error_panic_hook;
 use rustpython_parser::{Mode, parse as parser_parse};
-use rustpython_parser::ast::{Visitor, Stmt, StmtImportFrom, StmtFunctionDef, Expr};
+use rustpython_parser::ast::{Visitor, Stmt, StmtImportFrom, StmtFunctionDef, Expr, ExprCall};
 use serde::{Deserialize, Serialize};
 pub fn start() {
     console_error_panic_hook::set_once();
@@ -76,6 +76,17 @@ impl Visitor for FunctionDefinitionsCollector {
     }
 }
 
+struct CalledNamesCollector {
+    names: Vec<String>,
+}
+impl Visitor for CalledNamesCollector {
+    fn visit_expr_call(&mut self, node: ExprCall) {
+        if let Expr::Name(name) = *node.func {
+            self.names.push(name.id.to_string());
+        }
+    }
+}
+
 pub fn parse_to_stmts(python_source: &str) -> Result<Vec<Stmt>, String> {
     match parser_parse(python_source, Mode::Module, "cell") {
         Ok(m) => {
@@ -126,6 +137,24 @@ pub fn defined_functions(python_source: &str) -> Result<JsValue, JsValue> {
                 collector.visit_stmt(stmt);
             }
             return Ok(serde_wasm_bindgen::to_value(&collector.functions)?)
+        },
+        Err(e) => {
+            return Err(JsValue::from_str(e.to_string().as_str()));
+        }
+    }
+}
+
+#[wasm_bindgen]
+pub fn called_names(python_source: &str) -> Result<JsValue, JsValue> {
+    match parse_to_stmts(python_source) {
+        Ok(stmts) => {
+            let mut collector = CalledNamesCollector {
+                names: Vec::new(),
+            };
+            for stmt in stmts {
+                collector.visit_stmt(stmt);
+            }
+            return Ok(serde_wasm_bindgen::to_value(&collector.names)?)
         },
         Err(e) => {
             return Err(JsValue::from_str(e.to_string().as_str()));

@@ -9,10 +9,13 @@ import {
   Card, CardActions, CardContent, Collapse, Paper,
   Stack,
   Tooltip,
+  debounce,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useEffect, useMemo, useState } from 'react';
 import { ExecutionResponse } from '../src/codeExecution';
 import { CodeCellExecutionState, CodeCellState } from '../src/localStorage/schema';
+import { called_names } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import CodeEditor from './CodeEditor';
 import DocumentationStripe from './DocumentationStripe';
@@ -52,6 +55,23 @@ function NoOutputTip({ activityVariant } : { activityVariant: ActivityVariant })
   );
 }
 
+function InputTip() {
+  return (
+    <Alert
+      severity="warning"
+    >
+      Using the
+      {' '}
+      <code>input</code>
+      {' '}
+      function is currently not supported on this platform.
+      <br />
+      {/* eslint-disable-next-line max-len */}
+      General remark: mixing user interface aspects (input and output) with computations is not a good idea.
+    </Alert>
+  );
+}
+
 export function isExecutionError(response: ExecutionResponse | undefined) {
   return response?.type === 'error';
 }
@@ -75,6 +95,25 @@ export default function CodeCell({
   const executing = codeCellExecutionState.executionInProgress;
   const executionFinished = codeCellExecutionState.outputSynced;
   const noOutput = executionFinished && executionResponse?.content.length === 0;
+  const [inputFunctionCalled, setInputFunctionCalled] = useState(false);
+
+  const debouncedFindCalledNames = useMemo(() => {
+    const findCalledNames = async (currentCellSource: string) => {
+      try {
+        const names : string[] = await called_names(currentCellSource);
+        setInputFunctionCalled(names.includes('input'));
+      } catch (e) {
+        setInputFunctionCalled(false);
+      }
+    };
+
+    return debounce(findCalledNames, 200);
+  }, []);
+
+  useEffect(() => {
+    debouncedFindCalledNames(codeCellState.source);
+  }, [codeCellState.source, debouncedFindCalledNames]);
+
   return (
     <Paper elevation={readOnly ? 0 : 4}>
       {!readOnly
@@ -104,6 +143,7 @@ export default function CodeCell({
         {noOutput && (
           <NoOutputTip activityVariant={activityVariant} />
         )}
+        {inputFunctionCalled && <InputTip /> }
         <Collapse in={codeCellExecutionState.outputAreaVisible} timeout="auto" unmountOnExit>
           <CardContent>
             <StaleOutputBadge
