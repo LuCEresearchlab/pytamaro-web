@@ -4,6 +4,7 @@ import {
 import SyncProblemIcon from '@mui/icons-material/SyncProblem';
 import {
   Alert,
+  AlertTitle,
   Badge,
   BadgeProps,
   Card, CardActions, CardContent, Collapse, Paper,
@@ -60,14 +61,15 @@ function InputTip() {
     <Alert
       severity="warning"
     >
-      Using the
-      {' '}
-      <code>input</code>
-      {' '}
-      function is currently not supported on this platform.
-      <br />
+      <AlertTitle>
+        Using the
+        {' '}
+        <code>input</code>
+        {' '}
+        function is currently not supported on this platform.
+      </AlertTitle>
       {/* eslint-disable-next-line max-len */}
-      General remark: mixing user interface aspects (input and output) with computations is not a good idea.
+      This might be improved in the future. However, consider this general remark: mixing user interface aspects (input and output) with computations is not a good idea.
     </Alert>
   );
 }
