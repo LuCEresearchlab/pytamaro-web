@@ -1,10 +1,12 @@
 import {
   Code, Folder,
+  GitHub,
+  Groups,
   Hiking,
-  Lightbulb,
   People,
   Route,
   School,
+  TipsAndUpdates
 } from '@mui/icons-material';
 import InstallDesktop from '@mui/icons-material/InstallDesktop';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -17,6 +19,7 @@ import {
   CardContent,
   CardHeader,
   Container,
+  Link,
   Paper,
   Stack,
   Typography,
@@ -130,7 +133,7 @@ export default function Home({ welcomeCurriculum, activities } :
           {' '}
           <Typography variant="h2" fontWeight="bold" component="span" color={theme.pytamaro.redColor}>Graphics</Typography>
           <br />
-          Create
+          Compose
           {' '}
           <Typography variant="h2" fontWeight="bold" component="span" color="primary">Programs</Typography>
         </Typography>
@@ -139,29 +142,36 @@ export default function Home({ welcomeCurriculum, activities } :
         <Stack spacing={4}>
           <Paper elevation={4}>
             <Card>
-              <CardActionArea href={curriculumPathname('luce', 'welcome')}>
-                <Grid container>
-                  <Grid xs={12} md={7}>
-                    <CardHeader
-                      avatar={<Code color="primary" />}
-                      title="New to Programming?"
-                      titleTypographyProps={{ variant: 'h5', color: 'primary', fontWeight: 'bold' }}
-                      sx={{ pb: 0 }}
-                    />
-                    <CardContent>
-                      <Typography fontSize="1.1rem" paragraph gutterBottom>
-                        Eager to discover the art of programming?
-                        Embark on a journey to learn fundamental programming concepts
-                        in an engaging way.
-                      </Typography>
-                      <Typography fontSize="1.1rem" paragraph>
-                        With PyTamaro, you will create graphics from the very beginning.
-                        We took care of all the complexity,
-                        so that you can learn best!
-                      </Typography>
-                    </CardContent>
-                  </Grid>
-                  <Grid xs={12} md={5} justifyContent="center">
+              <Grid container>
+                <Grid xs={12} md={7}>
+                  <CardHeader
+                    avatar={<Code color="primary" />}
+                    title="New to Programming?"
+                    titleTypographyProps={{ variant: 'h5', color: 'primary', fontWeight: 'bold' }}
+                    sx={{ pb: 0 }}
+                  />
+                  <CardContent>
+                    <Typography fontSize="1.1rem" paragraph gutterBottom>
+                      Eager to discover the art of programming?
+                      Embark on a journey to learn fundamental programming concepts
+                      in an engaging way.
+                    </Typography>
+                    <Typography fontSize="1.1rem" paragraph>
+                      We carefully designed PyTamaro to keep complexity under control.
+                    </Typography>
+                    <Typography fontSize="1.1rem" paragraph>
+                      You can read more on why the library is designed this way
+                      in this
+                      {' '}
+                      <Link href="https://www.chiodini.org/publications/splashe23-pytamaro.pdf">research paper</Link>
+                      . It describes pitfalls that need to be considered
+                      when teaching programming using graphics,
+                      and what PyTamaro does to eschew them.
+                    </Typography>
+                  </CardContent>
+                </Grid>
+                <Grid xs={12} md={5} justifyContent="center">
+                  <CardActionArea href={curriculumPathname('luce', 'welcome')}>
                     {curriculumActivity && (
                       <Box padding={2} maxWidth="20rem" marginX="auto">
                         <ActivityCard
@@ -173,9 +183,9 @@ export default function Home({ welcomeCurriculum, activities } :
                         />
                       </Box>
                     )}
-                  </Grid>
+                  </CardActionArea>
                 </Grid>
-              </CardActionArea>
+              </Grid>
             </Card>
           </Paper>
           <Paper elevation={4}>
@@ -184,17 +194,19 @@ export default function Home({ welcomeCurriculum, activities } :
                 <Grid container>
                   <Grid xs={12} md={7}>
                     <CardHeader
-                      avatar={<Lightbulb color="primary" />}
+                      avatar={<TipsAndUpdates color="primary" />}
                       title="Looking for Inspiration?"
                       titleTypographyProps={{ variant: 'h5', color: 'primary', fontWeight: 'bold' }}
                       sx={{ pb: 0 }}
                     />
                     <CardContent>
                       <Typography fontSize="1.1rem" paragraph gutterBottom>
-                        Already familiar with PyTamaro?
+                        Are you already familiar with PyTamaro and looking for inspiration?
+                        Are new to the library and just want to see some examples?
                       </Typography>
                       <Typography fontSize="1.1rem" paragraph>
-                        Check out our constantly growing collection of activities!
+                        Check out our constantly growing collection of activities.
+                        There are more than 100 activities to choose from!
                       </Typography>
                     </CardContent>
                   </Grid>
@@ -226,18 +238,19 @@ export default function Home({ welcomeCurriculum, activities } :
               <Grid container>
                 <Grid xs={12} md={7}>
                   <CardHeader
-                    avatar={<People color="primary" />}
+                    avatar={<Route color="primary" />}
                     title="Teacher-Designed Curricula"
                     titleTypographyProps={{ variant: 'h5', color: 'primary', fontWeight: 'bold' }}
                     sx={{ pb: 0 }}
                   />
                   <CardContent>
                     <Typography fontSize="1.1rem" paragraph gutterBottom>
-                      Various teachers contribute to this web platform
-                      with activities and curricula.
+                      A number of teachers are contributing to this web platform
+                      with their activities and curricula.
                     </Typography>
                     <Typography fontSize="1.1rem" paragraph gutterBottom>
-                      Check them out, there might be something just right for you!
+                      Going through a curriculum gives you the best learning experience,
+                      as it guides you through a coherent sequence of activities.
                     </Typography>
                   </CardContent>
                 </Grid>
@@ -267,7 +280,7 @@ export default function Home({ welcomeCurriculum, activities } :
                       but you can also install it as any other Python library in your enviroment.
                     </Typography>
                     <Typography fontSize="1.1rem" paragraph gutterBottom>
-                      We also provide an official API documentation.
+                      We also provide a complete API documentation.
                     </Typography>
                   </CardContent>
                 </Grid>
@@ -319,6 +332,39 @@ export default function Home({ welcomeCurriculum, activities } :
                   </Grid>
                 </Grid>
               </CardActionArea>
+            </Card>
+          </Paper>
+          <Paper elevation={4}>
+            <Card>
+              <Grid container>
+                <Grid xs={12} md={7}>
+                  <CardHeader
+                    avatar={<People color="primary" />}
+                    title="A Network of Contributors"
+                    titleTypographyProps={{ variant: 'h5', color: 'primary', fontWeight: 'bold' }}
+                    sx={{ pb: 0 }}
+                  />
+                  <CardContent>
+                    <Typography fontSize="1.1rem" paragraph gutterBottom>
+                      The PyTamaro library is an open-source project. Its development
+                      happens on GitHub. GitHub is also the right place to go if you want
+                      to report a bug.
+                    </Typography>
+                    <Typography fontSize="1.1rem" paragraph gutterBottom>
+                      The content of this website has been developed by
+                      multiple authors. Each contributor is listed on our &quot;About&quot; page.
+                    </Typography>
+                  </CardContent>
+                </Grid>
+                <Grid xs={12} md={5}>
+                  <Box padding={2} height="100%" alignItems="center" justifyContent="center" display="flex">
+                    <Stack spacing={2}>
+                      <HomePagePrimaryButton icon={<GitHub />} text="PyTamaro on GitHub" href="https://github.com/LuCEresearchlab/pytamaro" />
+                      <HomePagePrimaryButton icon={<Groups />} text="About this platform" href="/about" />
+                    </Stack>
+                  </Box>
+                </Grid>
+              </Grid>
             </Card>
           </Paper>
           <Paper elevation={4}>
