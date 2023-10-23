@@ -6,7 +6,7 @@ import {
   People,
   Route,
   School,
-  TipsAndUpdates
+  TipsAndUpdates,
 } from '@mui/icons-material';
 import InstallDesktop from '@mui/icons-material/InstallDesktop';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
