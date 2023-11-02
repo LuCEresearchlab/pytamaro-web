@@ -12,6 +12,7 @@ import NavigationBar from '../../../../components/NavigationBar';
 import MarketingImage from '../../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
 import Valleys from '../../../../public/hoc/castle/BellinzonaAndValleysMap1862-sepia.gif';
 import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
+import { HOC_TP_URL } from '..';
 
 export default function HocCastlePage() {
   return (
@@ -121,6 +122,13 @@ export default function HocCastlePage() {
             ist ein UNESCO-Weltkulturerbe.
             Du trittst also in grosse Fußstapfen!
           </Typography>
+
+          <Image
+            src={HOC_TP_URL}
+            width="1"
+            height="1"
+            alt="HoC participation tracking pixel"
+          />
           <HourOfCodeFooter />
         </Container>
       </Box>
