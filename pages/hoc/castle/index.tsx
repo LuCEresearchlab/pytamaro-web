@@ -25,8 +25,6 @@ import HourOfCodeLogoImage from '../../../public/hoc/HourOfCode_logo_RGB.png';
 import MarketingImage from '../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
 import useLocalProfile from '../../../src/localStorage/useLocalProfile';
 
-export const HOC_TP_URL = 'https://code.org/api/hour/begin_usi_castle.png';
-
 const MIN_AGE_YEARS = 13;
 const MIN_AGE_MONTHS_DATA_COLLECTION = MIN_AGE_YEARS * 12;
 

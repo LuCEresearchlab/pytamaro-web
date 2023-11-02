@@ -1,3 +1,4 @@
+import { PlayArrow } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -7,12 +8,11 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import { PlayArrow } from '@mui/icons-material';
-import NavigationBar from '../../../../components/NavigationBar';
-import MarketingImage from '../../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
-import Valleys from '../../../../public/hoc/castle/BellinzonaAndValleysMap1862-sepia.gif';
+import HOCTrackingPixel from '../../../../components/HOCTrackingPixel';
 import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
-import { HOC_TP_URL } from '..';
+import NavigationBar from '../../../../components/NavigationBar';
+import Valleys from '../../../../public/hoc/castle/BellinzonaAndValleysMap1862-sepia.gif';
+import MarketingImage from '../../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
 
 export default function HocCastlePage() {
   return (
@@ -122,13 +122,7 @@ export default function HocCastlePage() {
             ist ein UNESCO-Weltkulturerbe.
             Du trittst also in grosse Fußstapfen!
           </Typography>
-
-          <Image
-            src={HOC_TP_URL}
-            width="1"
-            height="1"
-            alt="HoC participation tracking pixel"
-          />
+          <HOCTrackingPixel />
           <HourOfCodeFooter />
         </Container>
       </Box>
