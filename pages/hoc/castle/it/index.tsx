@@ -8,6 +8,7 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
+import HOCTrackingPixel from '../../../../components/HOCTrackingPixel';
 import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
 import NavigationBar from '../../../../components/NavigationBar';
 import Valleys from '../../../../public/hoc/castle/BellinzonaAndValleysMap1862-sepia.gif';
@@ -123,6 +124,7 @@ export default function HocCastlePage() {
             è un sito patrimonio mondiale dell&apos;UNESCO.
             Alte aspettative a cui essere all&apos;altezza!
           </Typography>
+          <HOCTrackingPixel />
           <HourOfCodeFooter />
         </Container>
       </Box>

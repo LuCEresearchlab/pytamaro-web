@@ -1,3 +1,4 @@
+import { PlayArrow } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -7,11 +8,11 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import { PlayArrow } from '@mui/icons-material';
-import NavigationBar from '../../../../components/NavigationBar';
-import MarketingImage from '../../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
-import Valleys from '../../../../public/hoc/castle/BellinzonaAndValleysMap1862-sepia.gif';
+import HOCTrackingPixel from '../../../../components/HOCTrackingPixel';
 import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
+import NavigationBar from '../../../../components/NavigationBar';
+import Valleys from '../../../../public/hoc/castle/BellinzonaAndValleysMap1862-sepia.gif';
+import MarketingImage from '../../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
 
 export default function HocCastlePage() {
   return (
@@ -120,6 +121,7 @@ export default function HocCastlePage() {
             is a UNESCO World Heritage Site.
             So you have a lot to live up to!
           </Typography>
+          <HOCTrackingPixel />
           <HourOfCodeFooter />
         </Container>
       </Box>
