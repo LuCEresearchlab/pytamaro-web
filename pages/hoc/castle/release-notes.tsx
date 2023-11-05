@@ -44,7 +44,16 @@ export default function ReleaseNotesPage() {
             Release Notes
           </Typography>
           <Typography marginY={3} variant="h6" color="textSecondary">
-            Our tutorial should be completely functional in English and Italian.
+            Our tutorial should be fully functional in English, Italian, and German.
+            We are working on a French translation.
+          </Typography>
+
+          <Typography marginTop={5} variant="h4" color="textSecondary">
+            Release 2023-11-05
+          </Typography>
+          <Typography marginY={3}>
+            Completed German translation.
+            Improvements based on user observation session.
           </Typography>
 
           <Typography marginTop={5} variant="h4" color="textSecondary">
