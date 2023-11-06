@@ -9,18 +9,21 @@ import {
   Link,
   Typography,
 } from '@mui/material';
-import Carousel from 'react-material-ui-carousel';
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
+import Carousel from 'react-material-ui-carousel';
+import HourOfCodeCastle from '../../../../components/HourOfCodeCastle';
+import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
 import NavigationBar from '../../../../components/NavigationBar';
 import DarkCastleImage from '../../../../public/hoc/castle/DarkCastle.jpg';
-import CertificateImage from '../../../../public/hoc/hour_of_code_certificate.jpg';
 import FortezzaBellinzonaImage from '../../../../public/hoc/fortezza-bellinzona-castello3.png';
-import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
+import CertificateImage from '../../../../public/hoc/hour_of_code_certificate.jpg';
+import { readActivity } from '../../../../src/fs-content/activities';
+import { Activity } from '../../../../src/schemas/activitySchema';
 import { activityAssetPathname } from '../../../../src/urlUtils';
 
-export default function FinishHocCastlePage() {
+export default function FinishHocCastlePage({ finalActivity } : { finalActivity: Activity }) {
   return (
     <div>
       <Head>
@@ -60,6 +63,7 @@ export default function FinishHocCastlePage() {
           <Grid
             container
             spacing={2}
+            sx={{ marginY: 3 }}
           >
             <Grid
               item
@@ -107,7 +111,7 @@ export default function FinishHocCastlePage() {
                 {' '}
                 that quite probably depicts the destruction of the Bellinzona fortification.
               </Typography>
-              <Typography marginY={3}>
+              <Typography>
                 Isn&apos;t it amazing that&mdash;over 500 years later&mdash;we
                 know the exact dates of these events,
                 and we can tell the volumes of rock slides
@@ -153,15 +157,19 @@ export default function FinishHocCastlePage() {
                       <Button
                         variant="contained"
                         size="large"
+                        color="success"
                       >
-                        Complete Your Hour of Code and Get Your Certificate
+                        Complete
+                        <br />
+                        Your Hour of Code
+                        <br />
+                        and Get Your Certificate
                       </Button>
                     </NextLink>
                   </Typography>
                 </CardContent>
               </Card>
             </Grid>
-
           </Grid>
 
           <Grid
@@ -184,15 +192,17 @@ export default function FinishHocCastlePage() {
                     You just composed your own castle.
                     Would you like to keep it?
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" paragraph>
-                    If you want to keep your castle,
-                    navigate back to the last activity
-                    and copy and paste the graphic or download it as an image.
-                    You can even download the Python code you wrote,
-                    so you can run it on your own computer later.
+                  <HourOfCodeCastle
+                    language="en"
+                    extraPythonFiles={finalActivity.extraPythonFiles}
+                  />
+                  <Typography variant="body2" color="text.secondary" paragraph sx={{ mt: 2 }}>
+                    You can copy paste it or save it as a big image from the preview above.
+                    Or you can download the Python code you wrote
+                    to run it on your own computer later.
                   </Typography>
                   <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Your code is stored in your web browser,
+                    In any case, your code is stored in your web browser,
                     so as long as you have access to your browser,
                     and nobody deletes your browser&apos;s local storage,
                     you can return to this web site and modify your castle.
@@ -354,7 +364,7 @@ export default function FinishHocCastlePage() {
 
           <Typography marginY={3}>
             To finish your Hour of Code,
-            please use the blue button above.
+            please use the green button above.
             It takes you to the Hour of Code web site,
             where you can claim your official certficiate.
             You can come back here by navigating back with your browser.
@@ -366,4 +376,12 @@ export default function FinishHocCastlePage() {
       </Box>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  return {
+    props: {
+      finalActivity: await readActivity('luce-hoc', 'build-your-castle'),
+    },
+  };
 }

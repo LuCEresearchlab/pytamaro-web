@@ -28,7 +28,8 @@ export default function useLocalActivity(
     activityVariant,
     extraPythonFiles,
   );
-  const localCodeCellsWrongLength = codeCells.length !== initialCodeCells.length;
+  const localCodeCellsWrongLength = codeCells.length !== initialCodeCells.length
+    || activity.codeExecutionStates.length !== codeCells.length;
   return {
     ...activity,
     localCodeCellsWrongLength,
