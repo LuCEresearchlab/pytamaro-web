@@ -49,7 +49,7 @@ export default function ReleaseNotesPage() {
           </Typography>
 
           <Typography marginTop={5} variant="h4" color="textSecondary">
-            Release 2023-11-05
+            Release 2023-11-06
           </Typography>
           <Typography marginY={3}>
             Completed German translation.
