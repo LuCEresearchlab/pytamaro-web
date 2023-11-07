@@ -3,7 +3,7 @@ import produce from 'immer';
 import { uniqBy } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import {
-  Dispatch, SetStateAction, useEffect,
+  Dispatch, SetStateAction, useCallback, useEffect,
 } from 'react';
 import useSessionStorageState from 'use-session-storage-state';
 import logAnalyticsEvent, { AnalyticsEventName } from './analyticsEvent';
@@ -108,7 +108,7 @@ export function useActivity(
   const completed = !!variantMetadata?.completed;
   const cellsModified = !!variantMetadata?.cellsModified;
 
-  const markAsCompleted = () => {
+  const markAsCompleted = useCallback(() => {
     setMetadata(
       produce((draft) => {
         const draftVariantMetadata = draft.activities.find((a) => a.id === variantId);
@@ -121,7 +121,13 @@ export function useActivity(
         }
       }),
     );
-  };
+  }, [variantId, setMetadata]);
+
+  useEffect(() => {
+    if (codeCells.length === 0 && !completed) {
+      markAsCompleted();
+    }
+  }, [codeCells, completed, markAsCompleted]);
 
   /* Check if code cells have been modified (compared to their initial state) */
   useEffect(() => {

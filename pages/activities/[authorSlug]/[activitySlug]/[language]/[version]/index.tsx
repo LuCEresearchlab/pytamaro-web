@@ -108,7 +108,8 @@ export default function NotebookPage({
                   />
                 )))}
             </Container>
-            {!isSpecialActivity(activityVariant) && (
+            <Container maxWidth="md">
+              {!isSpecialActivity(activityVariant) && (
               <ActivityFooter
                 activityVariant={activityVariant}
                 initialCodeCells={initialCodeCells}
@@ -116,7 +117,8 @@ export default function NotebookPage({
                 activity={activity}
                 curriculum={curriculum}
               />
-            )}
+              )}
+            </Container>
           </CentralContent>
           <Sidebar side="right">
             <ActivityImage activity={activity} variant={activityVariant} title={title} />

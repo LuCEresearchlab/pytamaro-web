@@ -23,7 +23,7 @@ export default function ActivityFooter({
   } = useLocalActivity(initialCodeCells, activityVariant);
   return (
     <>
-      <Stack mt={12} mb={6} direction="row" justifyContent="center" spacing={4}>
+      <Stack mt={12} mb={6} direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" spacing={4} alignItems="center">
         {curriculum && (
           <NavigateToActivity
             activityVariant={activityVariant}
@@ -32,7 +32,9 @@ export default function ActivityFooter({
             completed={completed}
           />
         )}
-        <CodeDownloadButton codeCells={codeCells} extraPythonFiles={activity.extraPythonFiles} />
+        {codeCells.length > 0 && (
+          <CodeDownloadButton codeCells={codeCells} extraPythonFiles={activity.extraPythonFiles} />
+        )}
         {curriculum && (
           <NavigateToActivity
             activityVariant={activityVariant}
@@ -45,8 +47,8 @@ export default function ActivityFooter({
       { curriculum?.hourOfCode && (
         <FinishHourOfCodeButton />
       )}
+      <Divider sx={{ mb: 3 }} />
       <Container maxWidth="md" sx={{ textAlign: 'center' }}>
-        <Divider sx={{ mb: 3 }} />
         <AttributionInfo type="activity" author={author} derivedFrom={activity.derivedFrom} />
       </Container>
     </>

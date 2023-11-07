@@ -87,8 +87,8 @@ export default function CurriculumPage({ curriculum, author }:
                 setNodesInitialized={setNodesInitialized}
               />
             </div>
+            <Divider sx={{ mb: 3 }} />
             <Container maxWidth="md" sx={{ textAlign: 'center' }}>
-              <Divider sx={{ mb: 3 }} />
               <AttributionInfo type="curriculum" author={author} derivedFrom={curriculum.derivedFrom} />
             </Container>
           </Stack>
