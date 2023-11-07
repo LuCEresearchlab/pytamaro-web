@@ -117,7 +117,7 @@ function ImgElement({ dataURI } : { dataURI: string }) {
             onClick={() => setFullScreenOpen(true)}
             variant="contained"
             size="small"
-            sx={{ position: 'absolute', right: theme.spacing(2) }}
+            sx={{ position: 'absolute', right: 0, top: 0 }}
           >
             <Fullscreen />
           </Button>
@@ -144,6 +144,7 @@ export default function OutputArea(
       variant="outlined"
       sx={{
         backgroundColor: BACKGROUND_COLOR,
+        position: 'relative',
         overflowX: 'auto',
         width: '100%',
         px: 2,
