@@ -13,6 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
+import { orderBy } from 'lodash';
 import Link from 'next/link';
 import router from 'next/router';
 import { Activity, activityVariantId, canonicalVariantForLanguage } from '../src/schemas/activitySchema';
@@ -34,22 +35,18 @@ export default function ActivitiesGallery({
   languageFilter?: string,
   compactView?: boolean
 }) {
-  activities.sort((a1, a2) => {
-    if (a1.visibility !== a2.visibility) {
-      // different visibility, featured before visible before draft before hidden
-      return VISIBILITY_PRIORITY[a1.visibility] - VISIBILITY_PRIORITY[a2.visibility];
-    }
-    if (a1.variants.length !== a2.variants.length) {
-      // same visibility, more variants first
-      return Math.sign(a2.variants.length - a1.variants.length);
-    }
-    // same visibility, same number of variants, sort by slug
-    return a1.slug < a2.slug ? -1 : 1;
-  });
+  // Order by visibility (lowest priority first),
+  // then number of variants (highest first),
+  // then slug (alphabetic order).
+  const sortedActivities = orderBy(
+    activities,
+    [(a) => VISIBILITY_PRIORITY[a.visibility], (a) => a.variants.length, (a) => a.slug],
+    ['asc', 'desc', 'asc'],
+  );
 
   return (
     <Grid container spacing={2}>
-      {activities.map((activity) => {
+      {sortedActivities.map((activity) => {
         // get language-filtered variant (if cannot, get first)
         const langInfo = activity.languagesInfo.find(
           (i) => languageFilter === ANY_LANGUAGE
