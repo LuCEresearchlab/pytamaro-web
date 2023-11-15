@@ -6,6 +6,7 @@ import Head from 'next/head';
 import NavigationBar from '../components/NavigationBar';
 import { listAuthorsProfiles } from '../src/fs-content/authors';
 import { AuthorProfile } from '../src/schemas/authorSchema';
+import { translationProps } from '../src/serverSideTranslationProps';
 import { authorPathname } from '../src/urlUtils';
 
 const collaborators = [
@@ -183,6 +184,7 @@ export async function getStaticProps() {
   return {
     props: {
       authorsProfiles: await listAuthorsProfiles(),
+      ...await translationProps(),
     },
   };
 }

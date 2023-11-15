@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { ActivityVariant } from '../schemas/activitySchema';
 
-export const CURRENT_VERSION = '4';
+export const CURRENT_VERSION = '5';
 
 export interface Metadata {
   dataModelVersion: string;
@@ -10,7 +10,8 @@ export interface Metadata {
   allowSharingAnonData: 'yes' | 'no' | 'unknown'
   activities: ActivityVariantMetadata[],
   toolbox: ToolboxFunction[],
-  curricula: CurriculumMetadata[]
+  curricula: CurriculumMetadata[],
+  platformLocale: string | null, // null means not explicitly chosen
 }
 
 export interface ToolboxFunction {
@@ -87,5 +88,6 @@ export function getDefaultMetadata() : Metadata {
     experimentKey: '',
     toolbox: [],
     curricula: [],
+    platformLocale: null,
   };
 }

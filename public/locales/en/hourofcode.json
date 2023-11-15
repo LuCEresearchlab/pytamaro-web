@@ -1,0 +1,168 @@
+{
+    "locale": {
+        "flag": "🇺🇸",
+        "name": "English"
+    },
+    "intro": {
+        "hoc": "Hour of Code",
+        "goal": "Program Your Own Castle"
+    },
+    "action": {
+        "confirm": "Confirm",
+        "cancel": "Cancel"
+    },
+    "age": {
+        "title": "When were you born?",
+        "year": "Year",
+        "month": "Month",
+        "error": {
+            "month": "Invalid month",
+            "year": "Invalid year"
+        }
+    },
+    "hourOfCodeWithPyTamaro": "Hour of Code ® with PyTamaro",
+    "finish": {
+        "title": "Hour of Code: Program Your Own Castle: Finished!",
+        "missionAccomplished": "Mission (Almost) Accomplished!",
+        "castleHelp": "Your castle should help the Milanese to hold on to Bellinzona until the end of the century.",
+        "despiteThat": "Despite your great construction, the French eventually will take over the city and its fortification, and they will ultimately leave it to the Swiss in 1503.",
+        "leonardo": "Leonardo da Vinci: \"Tsunami Hit Your Castle\"",
+        "tsunamiWave": "Unfortunately for the Swiss, on May 20, 1515, <strong>your castle will be hit by a tsunami wave</strong> that will destroy a big chunk of the walls! Sounds unbelievable? Well, read on!",
+        "buzzaBiasca": "On September 30, 1513, in the so-called <a>Buzza di Biasca</a>, a rock slide of about 500 million tons created a 60 meter high dam blocking the river in a valley above Bellinzona. Over time, this dam formed a lake that was 5 km long, 1.2 km wide, and 10 to 12 meters deep, and contained about 200 million cubic meters of water. On May 20, 1515, the dam broke, leading to a wave of water about 10 meters high coming down the valley. It hit the Bellinzona fortification walls with a speed of 40-60 km/h. While a large part of the fortification survived, this tsunami wave was massive enough flush away big chunks.",
+        "sketch": "This cataclysmic event made the news around Europe. Around that time, the famous <strong>Leonardo da Vinci</strong> drew <a>a sketch</a> that quite probably depicts the destruction of the Bellinzona fortification.",
+        "amazing": "Isn't it amazing that — over 500 years later — we know the exact dates of these events, and we can tell the volumes of rock slides and the heights and speeds of this \"Alpine tsunami wave\"? History can be fascinating!",
+        "claimYourCertificate": "Claim Your Certificate!",
+        "claimYourCertificateDesc": "To complete your Hour of Code, please claim your certificate!",
+        "completeButton": "Complete <br /> Your Hour of Code <br /> and Get Your Certificate",
+        "keepCastle": "Keep <br/> Your Castle",
+        "keepCastleDesc1": "You just composed your own castle. Would you like to keep it?",
+        "keepCastleDesc2": "You can copy paste it or save it as a big image from the preview above. Or you can download the Python code you wrote to run it on your own computer later.",
+        "keepCastleDesc3": "In any case, your code is stored in your web browser, so as long as you have access to your browser, and nobody deletes your browser's local storage, you can return to this web site and modify your castle.",
+        "learnPython": "Learn <br/> Python Programming",
+        "learnPythonDesc1": "You just completed one hour of code. We have much more!",
+        "learnPythonDesc2": "This web site includes many graphics programming activities. Some of them are used in informatics courses in Swiss high schools. All of them are free and accessible without creating an account!",
+        "learnPythonDesc3": "If you want to learn Python from the ground up, we recommend you start with our <a>Welcome Curriculum</a>.",
+        "learnPythonDesc4": "If you want to explore the over 100 graphics programming activities, check out the <a>Activity Gallery</a>.",
+        "visitFortezza": "Visit <br/> Fortezza Bellinzona",
+        "visitFortezzaDesc1": "Learn more on the official <a>Fortezza Bellinzona web site</a>",
+        "visitFortezzaDesc2": "If you have a chance to visit Bellinzona, in the Swiss canton of Ticino, just south of the Alps, visit this medieval fortress in person. It is a UNESCO World Heritage Site and it consists of three separate castles!",
+        "finish": "To finish your Hour of Code, please use the green button above. It takes you to the Hour of Code web site, where you can claim your official certficiate. You can come back here by navigating back with your browser. Or you can bookmark this page."
+    },
+    "start": {
+        "title": "Hour of Code: Program Your Own Castle",
+        "programYourOwnCastle": "Program Your Own Castle",
+        "welcome": "Welcome to the year 1430. You are the chief architect of the Duke of Milan. The Duke needs to protect his lands from the Swiss, who like to attack from the mountainous north.",
+        "build": "The Duke asks you to <strong>build a fortification</strong> that spans across the entire valley. He chose the city of Bellinzona as the perfect location, so he can control access to several mountain passes at a single point.",
+        "technology": "The Duke is a modern ruler: he likes to use the latest technology. He has heard about a new technology called <strong>programming</strong>. He wants you to write a Python program to design the fortification. The Duke likes castles composed from independent pieces. In Python you can do that by calling pure functions to produce and compose pieces.",
+        "succeed": "<strong>If you succeed</strong>, the Milanese will be able to hold on to Bellinzona until the end of the century, when the French take over the city with its three castles and ramparts and ultimately leave it to the Swiss in 1503.",
+        "fail": "<strong>If you fail</strong>, we will have to rewrite history. And we'd rather not do that!",
+        "startBuilding": "Start Building!",
+        "goodLuck": "Good Luck!",
+        "unesco": "By the way: The real <a>Fortezza Bellinzona</a> is a UNESCO World Heritage Site. So you have a lot to live up to!",
+        "fortezzaURL": "https://fortezzabellinzona.ch/en/"
+    },
+    "notes": {
+        "title": "Hour of Code: Program Your Own Castle: Teacher Notes",
+        "teacherNotes": "Teacher Notes",
+        "intro": "You intend to let your class program their own castle? This self-guided one-hour tutorial combines programming and history. It is targeted at students aged 13 and older, who are ready to make their first steps in a text-based programming language.",
+        "guidance": "Guidance",
+        "guidanceDesc": "These teacher notes provide information on the pedagogy and content (programming and history) of this Hour of Code tutorial. If you would like to go beyond this one-hour tutorial, check out our many free resources on this PyTamaro web site. Many of the resources are used in computer science courses in Swiss high schools.",
+        "students": "This Hour of Code was Developed by Students!",
+        "studentsDesc": "Yes! This Hour of Code was developed by informatics students at a small public university in Switzerland.",
+        "usi": "The content (activities and sequencing, instructions, starter and solution code, and all pre-made graphics, which were programmed, not drawn, by composing geometric primitives with Python/PyTamaro code) was developed by a small team of undergraduate students at the Faculty of Informatics at USI, the <a>Università della Svizzera italiana</a>, in the Italian-speaking part of Switzerland. Funded by a didactics innovation grant, they spent a month in summer 2023 visiting the real Fortezza Bellinzona, building the largest toy castles out there, researching existing Hour Of Code activities, and then developing this activity in Python on top of the PyTamaro Web platform.",
+        "luce": "The PyTamaro Web platform and the compositional PyTamaro graphics library for Python were primarily developed by Luca Chiodini, a PhD student in the <a>Lugano Computing Education research lab</a> at USI. Luca had been teaching Swiss high school teachers who were going to teach Python programming in their future classes. He realized the benefits of a simple, compositional graphics library, so he implemented PyTamaro. To support teachers in their future teaching, he developed the PyTamaro Web platform. This allows students to program Python using PyTamaro directly in the browser, in a notebook-like environment, where instructions and code are interleaved in interactive exercises.",
+        "pedagogy": "Pedagogy",
+        "pedagogyIntro": "Here are a few pedagogical tips to help you make the most of an Hour of Code:",
+        "pairProgramming": {
+            "title": "Pair Programming",
+            "desc": "This Hour of Code can work particularly well in a pair-programming setting, where two students work together at one computer. In pair programming, the two students in a pair usually take on different roles: the driver is at the keyboard writing code, and the navigator is reviewing each line of code as it is typed in. You may ask students to switch roles between each activity (but note that the first few activities do not require much writing)."
+        },
+        "platforms": {
+            "title": "Platforms",
+            "desc": "We tested this tutorial on the Firefox, Chrome, Safari, and Edge browsers and on macOS, Windows, iOS, iPadOS, and Android. While it can be used on mobile phones, we recommend devices with larger screens and keyboards."
+        },
+        "competencies": {
+            "title": "Competencies",
+            "desc": "Each activity is associated with one or more programming competencies. Whenever a student completes an activity, the competencies they just practiced are added as blue 'badges' to the left sidebar. Encourage your students to click on the badges to read their descriptions. This introduces them to the terminology of programming concepts. You can find a matrix aligning activities and competencies below."
+        },
+        "misconceptions": {
+            "title": "Misconceptions",
+            "desc": "Your students may have various misconceptions about Python. To prepare yourself to recognize and address those misconceptions, <selfCheck>perform a self-check</selfCheck> on <progmiscon>Progmiscon.org</progmiscon>, a research-based inventory of programming language misconceptions. This prepares you to recognize misconceptions like <assignCompares>AssignCompares</assignCompares> or <outsideInFunctionNesting>OutsideInFunctionNesting</outsideInFunctionNesting>."
+        },
+        "tasks": {
+            "title": "Tasks",
+            "desc": "Each activity involves one or more small programming tasks. Tasks are indicated with 🎯, usually above the corresponding code cell, and inside the code with comments."
+        },
+        "placeholders": {
+            "title": "Placeholders",
+            "desc": "In the code, we use <code>...</code> as a placeholder for students to fill in. Students are supposed to replace the placeholder with the required code. If they do not replace a placeholder, this will lead to an error when they run the code."
+        },
+        "errors": {
+            "title": "Errors",
+            "desc": "A major part of learning to program is learning to understand and fix errors. If an error happens when running the code, the error is shown below the corresponding code cell. Common kinds of errors are NameError, SyntaxError, TypeError, and ImportError. Note that the error message includes the line number (and a copy of the line) where the error happened. This information is essential for finding and fixing the mistake."
+        },
+        "stuck": {
+            "title": "Stuck? Code Messed Up?",
+            "desc": "If a student is stuck in an activity, for example because they receive errors that they cannot figure out how to fix, they can reset a code cell (three-vertical-dot button at its bottom right) to its original contents."
+        },
+        "typeError": {
+            "title": "TypeError",
+            "desc": "A common TypeError is if students forget to replace a ... (also known as an ellipsis) with their own code. Often that error happens when show_graphic tries to show the value it receives as an argument, but that value is a ... instead of a valid Graphic. This leads to the following error: TypeError: Invalid type for parameter graphic: expected Graphic, got ellipsis"
+        },
+        "nameError": {
+            "title": "NameError",
+            "desc": "If students misspell a name (e.g., they write agical_battlement instead of magical_battlement), they may receive a NameError. Sometimes students introduce NameErrors because they select text to copy and paste, but their selection does not include the entire word. In our experience, NameErrors are easier to fix for many students."
+        },
+        "syntaxError": {
+            "title": "SyntaxError",
+            "desc": "If students modify the structure of the code so it violates the Python grammar, they get a SyntaxError. Common reasons are unmatched parentheses, such as ((...) or ([...), or missing commans, such as wall(purple no_borders)."
+        },
+        "importError": {
+            "title": "ImportError",
+            "desc": "If students modify one of the import statements and they end up importing a name that does not exist, they will get an ImportError."
+        },
+        "beyond": "Beyond this Hour of Code",
+        "beyondDesc": "This Hour of Code can be a great introduction for a sequence of lessons in Python programming. If you intend to continue with Python in your classroom, you may want to use the PyTamaro graphics library that underlies this Hour of Code. If you do, then consider printing out some <cards>TamaroCards</cards> to use in unplugged activities.",
+        "contentProgramming": "Content: Programming",
+        "compositionCastle": "Composition of a Castle",
+        "compositionCastleDesc": "Learners compose castles from prefabricated pieces. We provide a function to create each piece (roof, battlement, wall, and drawbridge). We also provide two functions to compose lists of pieces, by placing them above each other (above_list) or beside each other (beside_list). The castle is composed of several pieces, such as walls, battlements, and towers. Each piece is a Graphic. The castle is composed by calling functions that produce pieces and then compose them. For example, the castle is composed by calling the function castle, which calls the functions wall, battlement, and tower.",
+        "function": "This activity introduces students to one of the fundamental concepts in programming: the idea of a <strong>function</strong>. Functions are a way to organize code into reusable, independent, pieces. A function takes some values, and produces a result. Values are explicitly passed to a function as arguments. The result is returned by the function as a return value.",
+        "noInput": "No Input, No Outside State",
+        "arguments": "Arguments",
+        "altPure": "Diagram of a pure function",
+        "returnValue": "Return Value",
+        "noOutput": "No Output, No Outside State",
+        "pureFunction": "A <strong>pure</strong> function communicates exclusively through its arguments and return value. It does not read or write any state outside of the function, and it does not communicate with the world outside the computer (it does not receive input or produce output). Pure functions can be understood in isolation, without understanding anything about the rest of the program.",
+        "problemDecomposition": "This provides a beautiful approach to <strong>problem decomposition</strong> we can decompose a problem into independent subproblems, decompose those subproblems into smaller independent subproblems, until they are small enough so we can solve them directly. Because of their independence, we do not have to worry about other subproblems while focusing on one.",
+        "altProblemDecomposition": "Diagram of Problem Decomposition and Solution Composition",
+        "independentSubproblems": "Pure functions are a great way to solve independent subproblems. They are also ideal for composing the solutions of multiple independent subproblems into a single solution. Besides this educational advantage, pure functions also make programs more secure, and they simplify distributed computation in modern data centers and supercomputers.",
+        "pytamaroPure": "The Python library used for the graphics in this activity, PyTamaro, consists of a small set of such pure functions. Some of those functions produce a graphic (a castle piece) based on some information (like its color) passed as arguments. Other functions compose multiple pieces (passed as arguments) into a larger castle.",
+        "playWithGraphics": "The pure functions in this activity can be seen in the same way as functions in mathematics. It's just that our PyTamaro functions <strong>play with graphics</strong> instead of numbers.",
+        "truthPieces": "The Truth Behind Our Prefabricated Pieces",
+        "truthPiecesDesc": "This tutorial provides functions to create four different kinds of prefabricated pieces: walls, roofs, battlements, and drawbridges. Did you realize that these prefabricated pieces are themselves composed of smaller parts? They are entirely composed of rectangles, triangles, ellipses, and circular sectors. Someone (the Bachelor students designing this Hour of Code) programmed those four prefabricated piece functions, so that they compose primitive graphics into the prefabricated pieces used in this tutorial. If you would like, you can create completely different pieces yourself! Check out the Welcome Curriculum on this web site to learn more.",
+        "learningObjectives": "Learning Objectives in Programming",
+        "matrixIntro": "Here are the activities and the learning objectives of the '{{curriculumTitle}}' curriculum:",
+        "matrixMore": "More information is available on the curriculum's <a>information page</a>.",
+        "moreActivities": "More Educational Programming Activities Used in Swiss High Schools",
+        "moreActivitiesDesc": "If you would like to learn more about Python programming using the graphical PyTamaro approach, have a look at the many activities and curricula on this web site. They are freely available online. Many of them are in use for teaching programming in Swiss high schools. Some were developed by high school teachers themselves. We recommend you start with the Welcome Curriculum.",
+        "welcomeCurriculum": "Welcome Curriculum",
+        "activityGallery": "Activity Gallery",
+        "hearFromYou": "Should you end up using the activities in your classroom, we would be very happy to hear from you. We are developing and maintaining this web site as part of our research on how to effectively teach programming. Hearing what worked, and what did not work, can help us a great deal!",
+        "contentHistory": "Content: History",
+        "medievalCastles": "This Hour of Code was inspired by the medieval castles that form the Fortezza Bellinzona. While the story of the oldest castle, Castelgrande, goes back to the Roman Empire, most of the fortification was built in the Late Middle Ages, in the fourteenth and fifteenth centuries.",
+        "timelineAlt": "Historical Timelne of Fortezza Bellinzona",
+        "learnMoreFortezza": "You can learn more on the official <a>Fortezza Bellinzona web site</a>. Or if you have a chance to visit the mediterranean Swiss canton of Ticino, just south of the Alps, and north of the Italian cities of Como and Milan, you could visit this medieval fortress in the Swiss city of Bellinzona in person. It is a UNESCO World Heritage Site that is unique in Europe, consisting of three separate castles and their fortifications!",
+        "glossaryCastle": "Glossary of Castle Architecture",
+        "glossaryCastleDesc": "Here are the terms relevant for our tutorial with photos we took at the three castles of the <a>Fortezza Bellinzona</a>.",
+        "battlement": "Battlement",
+        "battlementDesc": "The top part of a wall, between chest-height and head-height, holding a sequence of merlons and crenels (gaps).",
+        "curtainWall": "Curtain Wall",
+        "curtainWallDesc": "The defensive wall between two fortified towers, often topped with a battlement.",
+        "drawbridge": "Drawbridge",
+        "drawbridgeDesc": "A movable bridge usually at the entrance of a castle. The Montebello castle in Bellinzona is protected with a sequence of two drawdriges.",
+        "merlon": "Merlon",
+        "merlonDesc": "Solid upright part of a battlement between two crenels (gaps). There are many different shapes of merlons.",
+        "photoOf": "Photo of {{term}}",
+        "literatureCastles": "Literature on Castles"
+    }
+}

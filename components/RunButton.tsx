@@ -1,19 +1,21 @@
 import { Done, ErrorOutline, PlayCircleFilled } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Stack, Tooltip } from '@mui/material';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 
 export default function RunButton({
   onExecutionRequested, executing, executionFinished, executionError,
 } :
 { onExecutionRequested: () => Promise<any>, executing: boolean, executionFinished: boolean,
   executionError: boolean }) {
-  let buttonMessage = 'Run';
+  const { t } = useLocalTranslation(['activity']);
+  let buttonMessage = t('runCode');
   let buttonTooltip = ''; // Empty tooltips are not displayed
   if (executing) {
-    buttonMessage = 'Running';
+    buttonMessage = t('runningCode');
   } else if (executionFinished) {
-    buttonMessage = 'Done';
-    buttonTooltip = 'Already executed: change the code to run again';
+    buttonMessage = t('doneRunningCode');
+    buttonTooltip = t('alreadyExecuted');
   }
   const showPlayIcon = !executing && !executionFinished;
   return (
@@ -36,8 +38,8 @@ export default function RunButton({
       </Tooltip>
       {executionFinished
       && (executionError
-        ? <Tooltip title="Execution completed with errors" placement="right"><ErrorOutline color="error" /></Tooltip>
-        : <Tooltip title="Execution completed successfully" placement="right"><Done color="success" /></Tooltip>)}
+        ? <Tooltip title={t('executionCompletedWithErrors')} placement="right"><ErrorOutline color="error" /></Tooltip>
+        : <Tooltip title={t('executionCompletedSuccessfully')} placement="right"><Done color="success" /></Tooltip>)}
     </Stack>
   );
 }

@@ -1,3 +1,5 @@
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import {
   Box,
   Card,
@@ -14,19 +16,18 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import NextLink from 'next/link';
-import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
-import AccountTreeIcon from '@mui/icons-material/AccountTree';
-import Image from 'next/image';
+import anime from 'animejs';
 import Head from 'next/head';
+import Image from 'next/image';
+import NextLink from 'next/link';
 import Theory from 'public/artturi-jalli-gYrYa37fAKI-unsplash.jpg';
 import { useEffect } from 'react';
-import anime from 'animejs';
-import HeroImage from '../../public/SA.jpg';
-import PanoramaUSI from '../../public/PanoramaUSI.jpg';
-import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
-import PyTamaroLogo from '../../public/PyTamaroLogo.png';
 import NavigationBar from '../../components/NavigationBar';
+import PanoramaUSI from '../../public/PanoramaUSI.jpg';
+import PyTamaroLogo from '../../public/PyTamaroLogo.png';
+import HeroImage from '../../public/SA.jpg';
+import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
+import { translationProps } from '../../src/serverSideTranslationProps';
 
 export default function SummerAcademy() {
   useEffect(() => {
@@ -375,4 +376,12 @@ export default function SummerAcademy() {
       </Box>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  return {
+    props: {
+      ...await translationProps(),
+    },
+  };
 }

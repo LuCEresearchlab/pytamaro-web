@@ -1,0 +1,17 @@
+{
+    "select-platform-language": "Select a language for the platform:",
+    "home": "Home",
+    "activities": "Activities",
+    "curricula": "Curricula",
+    "my-progress": "My Progress",
+    "about": "About",
+    "atMyFingertips": "At My Fingertips",
+    "rapidPlayground": "Rapid Playground",
+    "documentation": "Documentation",
+    "runCode": "Run",
+    "runningCode": "Running",
+    "doneRunningCode": "Done",
+    "alreadyExecuted": "Already executed: change the code to run again",
+    "executionCompletedWithErrors": "Execution completed with errors",
+    "executionCompletedSuccessfully": "Execution completed successfully"
+}

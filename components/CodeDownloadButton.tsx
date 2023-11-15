@@ -1,5 +1,6 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import { Button } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import downloadSourceCode from '../src/codeDownload';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
@@ -17,6 +18,7 @@ export default function DownloadCodeButton({ codeCells, extraPythonFiles = [] }:
 { codeCells: CodeCellState[],
   extraPythonFiles?: PythonFile[] }) {
   const { getFunction } = useLocalToolbox();
+  const { t } = useTranslation('activityfooter');
   return (
     <Button
       variant="contained"
@@ -24,7 +26,7 @@ export default function DownloadCodeButton({ codeCells, extraPythonFiles = [] }:
       startIcon={<DownloadIcon />}
       onClick={() => downloadSourceCode(formatCells(codeCells), extraPythonFiles, getFunction)}
     >
-      Download Python Source
+      {t('downloadPythonSource')}
     </Button>
   );
 }

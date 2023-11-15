@@ -5,6 +5,7 @@ import {
 } from '@mui/material';
 import Head from 'next/head';
 import NavigationBar from '../components/NavigationBar';
+import { translationProps } from '../src/serverSideTranslationProps';
 
 const PYTAMARO_VERSION = '0.5.1';
 
@@ -111,4 +112,12 @@ export default function Install() {
       </Box>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  return {
+    props: {
+      ...await translationProps(),
+    },
+  };
 }

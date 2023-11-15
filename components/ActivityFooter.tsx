@@ -1,4 +1,6 @@
-import { Container, Divider, Stack } from '@mui/material';
+import {
+  Container, Divider, Stack,
+} from '@mui/material';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import { Activity, ActivityVariant } from '../src/schemas/activitySchema';
@@ -21,6 +23,7 @@ export default function ActivityFooter({
   const {
     codeCells, completed,
   } = useLocalActivity(initialCodeCells, activityVariant);
+
   return (
     <>
       <Stack mt={12} mb={6} direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" spacing={4} alignItems="center">

@@ -24,109 +24,11 @@ import USIInfLogoImage from '../../../public/USI_logo-statico_info-eng.png';
 import HourOfCodeLogoImage from '../../../public/hoc/HourOfCode_logo_RGB.png';
 import MarketingImage from '../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
 import useLocalProfile from '../../../src/localStorage/useLocalProfile';
+import useLocalTranslation from '../../../src/localStorage/useLocalTranslation';
+import { translationProps } from '../../../src/serverSideTranslationProps';
 
 const MIN_AGE_YEARS = 13;
 const MIN_AGE_MONTHS_DATA_COLLECTION = MIN_AGE_YEARS * 12;
-
-type LangRes = {
-  code: string,
-  locale: {
-    flag: string,
-    name: string,
-  },
-  intro: {
-    hoc: string,
-    goal: string,
-  },
-  action: {
-    confirm: string,
-    cancel: string,
-  },
-  age: {
-    title: string,
-    year: string,
-    month: string,
-    error: {
-      year: string,
-      month: string,
-    },
-  },
-};
-
-const RESOURCES: LangRes[] = [
-  {
-    code: 'en',
-    locale: {
-      flag: '🇺🇸',
-      name: 'English',
-    },
-    intro: {
-      hoc: 'Hour of Code',
-      goal: 'Program Your Own Castle',
-    },
-    action: {
-      confirm: 'Confirm',
-      cancel: 'Cancel',
-    },
-    age: {
-      title: 'When were you born?',
-      year: 'Year',
-      month: 'Month',
-      error: {
-        month: 'Invalid month',
-        year: 'Invalid year',
-      },
-    },
-  },
-  {
-    code: 'it',
-    locale: {
-      flag: '🇮🇹',
-      name: 'Italiano',
-    },
-    intro: {
-      hoc: 'Ora del Codice',
-      goal: 'Programma il tuo Castello',
-    },
-    action: {
-      confirm: 'Conferma',
-      cancel: 'Annulla',
-    },
-    age: {
-      title: 'Quando sei nato?',
-      year: 'Anno',
-      month: 'Mese',
-      error: {
-        month: 'Mese non valido',
-        year: 'Anno non valido',
-      },
-    },
-  },
-  {
-    code: 'de',
-    locale: {
-      flag: '🇩🇪',
-      name: 'Deutsch',
-    },
-    intro: {
-      hoc: 'Stunde des Codes',
-      goal: 'Programmiere Deine Burg',
-    },
-    action: {
-      confirm: 'Ok',
-      cancel: 'Abbrechen',
-    },
-    age: {
-      title: 'Wann bist du geboren?',
-      year: 'Jahr',
-      month: 'Monat',
-      error: {
-        month: 'Ungültiger Monat',
-        year: 'Ungültiges Jahr',
-      },
-    },
-  },
-];
 
 enum Steps {
   LANGUAGE,
@@ -137,8 +39,6 @@ enum Steps {
 export default function HocCastlePage() {
   const [step, setStep] = useState(Steps.LANGUAGE);
 
-  const [res, setRes] = useState(RESOURCES[0]);
-
   const today = new Date();
   const [yearOfBirth, setYearOfBirth] = useState('');
   const [monthOfBirth, setMonthOfBirth] = useState('');
@@ -147,6 +47,11 @@ export default function HocCastlePage() {
 
   const [dataSharingAllowed, setDataSharingAllowed] = useState(false);
   const { setDataSharingPreference } = useLocalProfile();
+
+  const [chosenLanguage, setChosenLanguage] = useState('en');
+
+  const { i18n } = useLocalTranslation(['hourofcode']);
+  const t = i18n.getFixedT(chosenLanguage, 'hourofcode');
 
   const onYearOfBirthChange = (e: { target: { value: string } }) => {
     setYearOfBirth(e.target.value);
@@ -159,8 +64,8 @@ export default function HocCastlePage() {
     setMobError(newValue < 1 || newValue > 12);
   };
 
-  const handleLangSelection = (lang: LangRes) => {
-    setRes(lang);
+  const handleLangSelection = (lang: string) => {
+    setChosenLanguage(lang);
     setStep(Steps.AGE);
   };
 
@@ -201,14 +106,14 @@ export default function HocCastlePage() {
       // is not old enough, as we explicitly disable data
       // sharing in the handleAgeDialogClose function if
       // that's the case.
-      window.open(`/hoc/castle/${res.code}`, '_self');
+      window.open(`/hoc/castle/${chosenLanguage}`, '_self');
     }
-  }, [step, res.code]);
+  }, [step, chosenLanguage]);
 
   return (
     <div>
       <Head>
-        <title>{res.intro.hoc}</title>
+        <title>{t('intro.hoc')}</title>
       </Head>
 
       <Box>
@@ -286,43 +191,46 @@ export default function HocCastlePage() {
             justifyContent="center"
             spacing={2}
           >
-            {RESOURCES.map((lang) => (
-              <Grid
-                key={`lang_selector_${lang.code}`}
-                xs={6}
-                md={4}
-                item
-              >
-                <Card elevation={1}>
-                  <CardActionArea onClick={() => handleLangSelection(lang)}>
-                    <CardContent>
-                      <Typography
-                        sx={{ fontSize: '2rem' }}
-                        color="text.secondary"
-                        gutterBottom
-                      >
-                        {lang.locale.flag}
-                      </Typography>
-                      <Typography variant="h5" component="div">
-                        {lang.locale.name}
-                      </Typography>
-                      <Typography variant="caption">
-                        {lang.intro.hoc}
-                      </Typography>
-                      <Typography variant="body2">
-                        {lang.intro.goal}
-                      </Typography>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
-              </Grid>
-            ))}
+            {['en', 'it', 'de'].map((lang) => {
+              const langT = i18n.getFixedT(lang, 'hourofcode');
+              return (
+                <Grid
+                  key={`lang_selector_${lang}`}
+                  xs={6}
+                  md={4}
+                  item
+                >
+                  <Card elevation={1}>
+                    <CardActionArea onClick={() => handleLangSelection(lang)}>
+                      <CardContent>
+                        <Typography
+                          sx={{ fontSize: '2rem' }}
+                          color="text.secondary"
+                          gutterBottom
+                        >
+                          {langT('locale.flag')}
+                        </Typography>
+                        <Typography variant="h5" component="div">
+                          {langT('locale.name')}
+                        </Typography>
+                        <Typography variant="caption">
+                          {langT('intro.hoc')}
+                        </Typography>
+                        <Typography variant="body2">
+                          {langT('intro.goal')}
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+              );
+            })}
           </Grid>
 
           {/* Age dialog */}
           <Dialog open={step === Steps.AGE}>
             <DialogTitle>
-              {res.age.title}
+              {t('age.title')}
             </DialogTitle>
 
             <DialogContent>
@@ -334,22 +242,22 @@ export default function HocCastlePage() {
               >
                 <Grid item xs={5}>
                   <TextField
-                    label={res.age.year}
+                    label={t('age.year')}
                     value={yearOfBirth}
                     onChange={onYearOfBirthChange}
                     error={yobError}
-                    helperText={yobError ? res.age.error.year : undefined}
+                    helperText={yobError ? t('age.error.year') : undefined}
                     type="number"
                   />
                 </Grid>
                 <Grid item xs={5}>
                   <TextField
                     select
-                    label={res.age.month}
+                    label={t('age.month')}
                     value={monthOfBirth}
                     onChange={onMonthOfBirthChange}
                     error={mobError}
-                    helperText={mobError ? res.age.error.month : undefined}
+                    helperText={mobError ? t('age.error.month') : undefined}
                     fullWidth
                   >
                     {Array.from(Array(12).keys()).map((month) => (
@@ -358,7 +266,7 @@ export default function HocCastlePage() {
                         value={(month + 1).toString()}
                       >
                         {new Date(today.getFullYear(), month)
-                          .toLocaleString(res.code, { month: 'long' })}
+                          .toLocaleString(chosenLanguage, { month: 'long' })}
                       </MenuItem>
                     ))}
                   </TextField>
@@ -368,13 +276,13 @@ export default function HocCastlePage() {
 
             <DialogActions>
               <Button onClick={() => setStep(Steps.LANGUAGE)}>
-                {res.action.cancel}
+                {t('action.cancel')}
               </Button>
               <Button
                 disabled={yobError || mobError}
                 onClick={handleAgeDialogClose}
               >
-                {res.action.confirm}
+                {t('action.confirm')}
               </Button>
             </DialogActions>
           </Dialog>
@@ -383,4 +291,12 @@ export default function HocCastlePage() {
       </Box>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  return {
+    props: {
+      ...await translationProps(['hourofcode']),
+    },
+  };
 }

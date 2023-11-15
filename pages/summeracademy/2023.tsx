@@ -1,3 +1,8 @@
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import LandscapeIcon from '@mui/icons-material/Landscape';
+import LanguageIcon from '@mui/icons-material/Language';
+import SchoolIcon from '@mui/icons-material/School';
+import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import {
   Avatar,
   Box,
@@ -15,23 +20,14 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import NextLink from 'next/link';
-import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
-import AccountTreeIcon from '@mui/icons-material/AccountTree';
-import LanguageIcon from '@mui/icons-material/Language';
-import SchoolIcon from '@mui/icons-material/School';
-import LandscapeIcon from '@mui/icons-material/Landscape';
-import Image from 'next/image';
+import anime from 'animejs';
 import Head from 'next/head';
-import Carousel from 'react-material-ui-carousel';
+import Image from 'next/image';
+import NextLink from 'next/link';
 import Theory from 'public/artturi-jalli-gYrYa37fAKI-unsplash.jpg';
 import { useEffect } from 'react';
-import anime from 'animejs';
-import HeroImage from '../../public/SA-2023.jpg';
-import SA23_TableImage from '../../public/SA-2023-Table.jpg';
-import SA23_TableImage2 from '../../public/SA-2023-Table2.jpg';
-import SA23_ColorImage from '../../public/SA-2023-Colors.jpg';
-import SA23_FoppaImage from '../../public/SA-2023-Foppa.jpg';
+import Carousel from 'react-material-ui-carousel';
+import NavigationBar from '../../components/NavigationBar';
 import PanoramaAlpeFoppa from '../../public/PanoramaAlpeFoppa.jpg';
 import PanoramaBottaChurch from '../../public/PanoramaBottaChurch.jpg';
 import PanoramaCampusEst from '../../public/PanoramaCampusEst.jpg';
@@ -44,9 +40,14 @@ import PanoramaSanSalvatore from '../../public/PanoramaSanSalvatore.jpg';
 import PanoramaTamaroLemaDry from '../../public/PanoramaTamaroLemaDry.jpg';
 import PanoramaTamaroLemaLugano from '../../public/PanoramaTamaroLemaLugano.jpg';
 import PanoramaUSI from '../../public/PanoramaUSI.jpg';
-import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
 import PyTamaroLogo from '../../public/PyTamaroLogo.png';
-import NavigationBar from '../../components/NavigationBar';
+import SA23_ColorImage from '../../public/SA-2023-Colors.jpg';
+import SA23_FoppaImage from '../../public/SA-2023-Foppa.jpg';
+import SA23_TableImage from '../../public/SA-2023-Table.jpg';
+import SA23_TableImage2 from '../../public/SA-2023-Table2.jpg';
+import HeroImage from '../../public/SA-2023.jpg';
+import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
+import { translationProps } from '../../src/serverSideTranslationProps';
 
 function SILogo({ height } : { height: number }) {
   return (
@@ -1061,4 +1062,12 @@ export default function SummerAcademy() {
       </Box>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  return {
+    props: {
+      ...await translationProps(),
+    },
+  };
 }

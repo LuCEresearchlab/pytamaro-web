@@ -1,0 +1,521 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
+/* eslint-disable jsx-a11y/control-has-associated-label */
+/* eslint-disable jsx-a11y/anchor-has-content */
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardMedia,
+  Container,
+  Grid,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Typography,
+} from '@mui/material';
+import { Trans } from 'next-i18next';
+import Head from 'next/head';
+import Image from 'next/image';
+import NextLink from 'next/link';
+import { useRouter } from 'next/router';
+import ActivitiesCompetenciesMatrix from '../../../../components/ActivitiesCompetenciesMatrix';
+import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
+import NavigationBar from '../../../../components/NavigationBar';
+import BattlementImage from '../../../../public/hoc/castle/Battlement.jpg';
+import CastleListImage from '../../../../public/hoc/castle/CastleList.png';
+import CurtainWallImage from '../../../../public/hoc/castle/CurtainWall.jpg';
+import DrawbridgeImage from '../../../../public/hoc/castle/Drawbridge.jpg';
+import FortezzaBellinzonaHistory from '../../../../public/hoc/castle/FortezzaBellinzonaHistory.png';
+import MarketingImage from '../../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay.jpg';
+import MerlonImage from '../../../../public/hoc/castle/Merlon.jpg';
+import ProblemSolutionImage from '../../../../public/hoc/castle/ProblemSolution.png';
+import PureFunctionImage from '../../../../public/hoc/castle/PureFunction.png';
+import { getCurriculum } from '../../../../src/fs-content/curricula';
+import useLocalTranslation from '../../../../src/localStorage/useLocalTranslation';
+import { Curriculum } from '../../../../src/schemas/curriculumSchema';
+import { locales, translationProps } from '../../../../src/serverSideTranslationProps';
+
+function ContributorCard({
+  firstName, lastName, contribution, imageName,
+} : {
+  firstName: string,
+  lastName: string,
+  contribution: string,
+  imageName: string,
+}) {
+  return (
+    <Grid
+      item
+      xs={12}
+      sm={3}
+    >
+      <Card>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            margin: '1rem 0',
+          }}
+        >
+          <Avatar
+            src={`../../../people/${imageName}`}
+            sx={{ width: 80, height: 80 }}
+          />
+        </Box>
+        <CardHeader
+          title={(
+            <>
+              {firstName}
+              <br />
+              {lastName}
+            </>
+          )}
+          subheader={contribution}
+          titleTypographyProps={{ align: 'center' }}
+          subheaderTypographyProps={{
+            align: 'center',
+          }}
+        />
+      </Card>
+    </Grid>
+  );
+}
+
+export default function FinishHocCastlePage({ curriculum }:
+{ curriculum : Curriculum }) {
+  const router = useRouter();
+  const language = router.query.language as string;
+  const { i18n } = useLocalTranslation(['hourofcode']);
+  const t = i18n.getFixedT(language, 'hourofcode');
+  return (
+    <div>
+      <Head>
+        <title>{t('notes.title')}</title>
+      </Head>
+
+      <Box>
+        <NavigationBar />
+        <Container maxWidth="md">
+          <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
+            {t('hourOfCodeWithPyTamaro')}
+          </Typography>
+          <Typography sx={{ mt: 2 }} variant="h3" align="center" color="textPrimary" gutterBottom>
+            {t('start.programYourOwnCastle')}
+            <br />
+            {t('notes.teacherNotes')}
+          </Typography>
+          <Typography marginY={3} variant="h6" align="center" color="textSecondary">
+            {t('notes.intro')}
+          </Typography>
+
+          <Image
+            src={MarketingImage}
+            alt="Photo of Castle"
+            width="1261"
+            height="831"
+            sizes="100vw"
+            style={{
+              width: '100%',
+              height: 'auto',
+            }}
+          />
+
+          <Typography marginTop={5} variant="h4" align="center" color="textSecondary" paragraph>
+            {t('notes.guidance')}
+          </Typography>
+          <Typography marginY={3}>
+            {t('notes.guidanceDesc')}
+          </Typography>
+
+          <Typography marginTop={5} variant="h4" align="center" color="textSecondary" paragraph>
+            {t('notes.students')}
+          </Typography>
+          <Typography marginY={3}>
+            {t('notes.studentsDesc')}
+          </Typography>
+          <Grid container spacing={5} alignItems="flex-end">
+            <ContributorCard firstName="Agnese" lastName="Zamboni" contribution="Lead Developer" imageName="AgneseZamboni.jpg" />
+            <ContributorCard firstName="Davide" lastName="Frova" contribution="Developer" imageName="DavideFrova.jpg" />
+            <ContributorCard firstName="Giorgia" lastName="Lillo" contribution="Developer" imageName="GiorgiaLillo.jpg" />
+            <ContributorCard firstName="Jamila" lastName="Oubenali" contribution="Developer" imageName="JamilaOubenali.jpg" />
+          </Grid>
+
+          <Typography marginY={3}>
+            <Trans t={t} i18nKey="notes.usi" components={{ a: <a href="https://www.usi.ch" /> }} />
+          </Typography>
+          <Grid container spacing={5} alignItems="flex-end" justifyContent="center">
+            <ContributorCard firstName="Luca" lastName="Chiodini" contribution="Platform" imageName="LucaChiodini.jpg" />
+            <ContributorCard firstName="Igor" lastName="Moreno" contribution="PL Advice" imageName="IgorMoreno.jpg" />
+            <ContributorCard firstName="Joey" lastName="Bevilacqua" contribution="Engineering" imageName="JoeyBevilacqua.jpg" />
+            <ContributorCard firstName="Matthias" lastName="Hauswirth" contribution="Organization" imageName="MatthiasHauswirth.jpg" />
+          </Grid>
+          <Typography marginY={3}>
+            <Trans t={t} i18nKey="notes.luce" components={{ a: <a href="https://luce.si.usi.ch" /> }} />
+          </Typography>
+
+          <Typography marginTop={5} variant="h4" align="center" color="textSecondary" paragraph>
+            {t('notes.pedagogy')}
+          </Typography>
+          <Typography marginY={3}>
+            {t('notes.pedagogyIntro')}
+          </Typography>
+          <List sx={{ width: '100%' }}>
+            {
+              [
+                {
+                  title: t('notes.pairProgramming.title'),
+                  description: t('notes.pairProgramming.desc'),
+                },
+                {
+                  title: t('notes.platforms.title'),
+                  description: t('notes.platforms.desc'),
+                },
+                {
+                  title: t('notes.competencies.title'),
+                  description: t('notes.competencies.desc'),
+                },
+                {
+                  title: t('notes.misconceptions.title'),
+                  description: <Trans
+                    t={t}
+                    i18nKey="notes.misconceptions.desc"
+                    components={{
+                      selfCheck: <a href="https://progmiscon.org/selfCheck?pl=Python" />,
+                      progmiscon: <a href="https://progmiscon.org" />,
+                      assignCompares: <a href="https://progmiscon.org/misconceptions/Python/AssignCompares" />,
+                      outsideInFunctionNesting: <a href="https://progmiscon.org/misconceptions/Python/OutsideInFunctionNesting" />,
+                    }}
+                  />,
+                },
+                {
+                  title: t('notes.tasks.title'),
+                  description: t('notes.tasks.desc'),
+                },
+                {
+                  title: t('notes.placeholders.title'),
+                  description: <Trans
+                    t={t}
+                    i18nKey="notes.placeholders.desc"
+                    components={{
+                      code: <code />,
+                    }}
+                  />,
+                },
+                {
+                  title: t('notes.errors.title'),
+                  description: t('notes.errors.desc'),
+                },
+                {
+                  title: t('notes.stuck.title'),
+                  description: t('notes.stuck.desc'),
+                },
+                {
+                  title: t('notes.typeError.title'),
+                  description: t('notes.typeError.desc'),
+                },
+                {
+                  title: t('notes.nameError.title'),
+                  description: t('notes.nameError.desc'),
+                },
+                {
+                  title: t('notes.syntaxError.title'),
+                  description: t('notes.syntaxError.desc'),
+                },
+                {
+                  title: t('notes.importError.title'),
+                  description: t('notes.importError.desc'),
+                },
+              ].map(({ title, description }) => (
+                <ListItem key={title}>
+                  <ListItemAvatar>
+                    <Avatar sx={{ backgroundColor: '#00000000' }}>💡</Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary={title} secondary={description} />
+                </ListItem>
+              ))
+            }
+          </List>
+
+          <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
+            {t('notes.beyond')}
+          </Typography>
+          <Typography marginY={3}>
+            <Trans t={t} i18nKey="notes.beyondDesc" components={{ cards: <a href="/tamarocards" /> }} />
+          </Typography>
+
+          <Typography marginTop={5} variant="h4" align="center" color="textSecondary" paragraph>
+            {t('notes.contentProgramming')}
+          </Typography>
+          <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
+            {t('notes.compositionCastle')}
+          </Typography>
+          <Typography marginY={3}>
+            {t('notes.compositionCastleDesc')}
+          </Typography>
+
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Image
+              src={CastleListImage}
+              alt="Photo of Castle"
+              width="1261"
+              height="831"
+              sizes="100vw"
+              style={{
+                width: '60%',
+                height: 'auto',
+              }}
+            />
+          </div>
+
+          <Typography marginY={3}>
+            <Trans t={t} i18nKey="notes.function" components={{ strong: <strong /> }} />
+          </Typography>
+          <Grid
+            container
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+            spacing={2}
+          >
+            <Grid item xs={12}>
+              <div style={{ color: '#E50201', display: 'flex', justifyContent: 'center' }}>
+                {t('notes.noInput')}
+              </div>
+            </Grid>
+            <Grid item xs={4}>
+              <div style={{ display: 'flex', justifyContent: 'right' }}>
+                {t('notes.arguments')}
+              </div>
+            </Grid>
+            <Grid item xs={4}>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <Image
+                  src={PureFunctionImage}
+                  alt={t('notes.altPure')}
+                  width="800"
+                  height="588"
+                  sizes="100vw"
+                  style={{
+                    width: '50%',
+                    height: 'auto',
+                  }}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={4}>
+              <div style={{ display: 'flex', justifyContent: 'left' }}>
+                {t('notes.returnValue')}
+              </div>
+            </Grid>
+            <Grid item xs={12}>
+              <div style={{ color: '#E50201', display: 'flex', justifyContent: 'center' }}>
+                {t('notes.noOutput')}
+              </div>
+            </Grid>
+          </Grid>
+          <Typography marginY={3}>
+            <Trans t={t} i18nKey="notes.pureFunction" components={{ strong: <strong /> }} />
+          </Typography>
+          <Typography marginY={3}>
+            <Trans t={t} i18nKey="notes.problemDecomposition" components={{ strong: <strong /> }} />
+          </Typography>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Image
+              src={ProblemSolutionImage}
+              alt={t('notes.altProblemDecomposition')}
+              width="1280"
+              height="831"
+              sizes="100vw"
+              style={{
+                width: '50%',
+                height: 'auto',
+              }}
+            />
+          </div>
+          <Typography marginY={3}>
+            {t('notes.independentSubproblems')}
+          </Typography>
+          <Typography marginY={3}>
+            {t('notes.pytamaroPure')}
+          </Typography>
+          <Typography marginY={3}>
+            <Trans t={t} i18nKey="notes.playWithGraphics" components={{ strong: <strong /> }} />
+          </Typography>
+          <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
+            {t('notes.truthPieces')}
+          </Typography>
+          <Typography marginY={3}>
+            {t('notes.truthPiecesDesc')}
+          </Typography>
+          <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
+            {t('notes.learningObjectives')}
+          </Typography>
+          <Typography marginY={3}>
+            {t('notes.matrixIntro', { curriculumTitle: curriculum.title })}
+          </Typography>
+          <ActivitiesCompetenciesMatrix curriculum={curriculum} />
+          <Typography marginY={3}>
+            <Trans t={t} i18nKey="notes.matrixMore" components={{ a: <a href="/curricula/luce-hoc/castle/info" /> }} />
+          </Typography>
+          <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
+            {t('notes.moreActivities')}
+          </Typography>
+          <Typography marginY={3}>
+            {t('notes.moreActivitiesDesc')}
+          </Typography>
+          <Typography marginY={3} align="center">
+            <NextLink href="/curricula/luce/welcome" passHref>
+              <Button variant="contained">{t('notes.welcomeCurriculum')}</Button>
+            </NextLink>
+            {' '}
+            <NextLink href="/activities/luce" passHref>
+              <Button variant="contained">{t('notes.activityGallery')}</Button>
+            </NextLink>
+          </Typography>
+          <Typography marginY={3}>
+            {t('notes.hearFromYou')}
+          </Typography>
+
+          <Typography marginTop={5} variant="h4" align="center" color="textSecondary" paragraph>
+            {t('notes.contentHistory')}
+          </Typography>
+          <Typography marginY={3}>
+            {t('notes.medievalCastles')}
+          </Typography>
+
+          <Image
+            src={FortezzaBellinzonaHistory}
+            alt={t('notes.timelineAlt')}
+            width="3070"
+            height="2125"
+            sizes="100vw"
+            style={{
+              width: '100%',
+              height: 'auto',
+            }}
+          />
+
+          <Typography marginY={3}>
+            <Trans t={t} i18nKey="notes.learnMoreFortezza" components={{ a: <a href={t('start.fortezzaURL')} /> }} />
+          </Typography>
+          <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
+            {t('notes.glossaryCastle')}
+          </Typography>
+          <Typography marginY={3}>
+            <Trans t={t} i18nKey="notes.glossaryCastleDesc" components={{ a: <a href={t('start.fortezzaURL')} /> }} />
+          </Typography>
+          <Grid
+            container
+            spacing={2}
+          >
+            {
+              [
+                {
+                  term: t('notes.battlement'),
+                  image: BattlementImage,
+                  definition: t('notes.battlementDesc'),
+                },
+                {
+                  term: t('notes.curtainWall'),
+                  image: CurtainWallImage,
+                  definition: t('notes.curtainWallDesc'),
+                },
+                {
+                  term: t('notes.drawbridge'),
+                  image: DrawbridgeImage,
+                  definition: t('notes.drawbridgeDesc'),
+                },
+                {
+                  term: t('notes.merlon'),
+                  image: MerlonImage,
+                  definition: t('notes.merlonDesc'),
+                },
+              ].map(({ term, image, definition }) => (
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  key={term}
+                >
+                  <Card variant="outlined" sx={{ height: '100%' }}>
+                    <CardMedia>
+                      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                        <Image
+                          src={image}
+                          alt={t('notes.photoOf', { term })}
+                          sizes="100vw"
+                          style={{
+                            width: '100%',
+                            height: 'auto',
+                          }}
+                        />
+                      </div>
+                    </CardMedia>
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {term}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                      >
+                        {definition}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))
+            }
+          </Grid>
+
+          <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
+            {t('notes.literatureCastles')}
+          </Typography>
+          <Typography marginY={3}>
+            J. E. Kaufmann &amp; H. W. Kaufmann; Robert M. Jurga (Illustrator).
+            {' '}
+            <a href="https://www.dacapopress.com/titles/j-e-kaufmann/the-medieval-fortress/9780306813580/">The Medieval Fortress: Castles, Forts, And Walled Cities Of The Middle Ages</a>
+            . Da Capo Press, 2004. ISBN 978-0-306-81358-0.
+          </Typography>
+          <Typography marginY={3}>
+            David Macaulay.
+            {' '}
+            <a href="https://www.harpercollins.com/products/castle-david-macaulay">Castle</a>
+            . Clarion Books, 2013. ISBN 978-0-544-10226-2.
+          </Typography>
+          <Typography marginY={3}>
+            Horst Wolfgang Böhme, Reinhard Friedrich, Barbara Schock-Werner (Hrsg.)
+            {' '}
+            <a href="https://books.ub.uni-heidelberg.de/arthistoricum/catalog/book/535">Wörterbuch der Burgen, Schlösser und Festungen</a>
+            . Heidelberg: arthistoricum.net-ART-Books, 2020.
+          </Typography>
+
+          <HourOfCodeFooter />
+        </Container>
+      </Box>
+    </div>
+  );
+}
+
+export async function getStaticProps() {
+  const authorSlug = 'luce-hoc';
+  const curriculumSlug = 'castle';
+  const curriculum = await getCurriculum(authorSlug, curriculumSlug);
+  return {
+    props: {
+      curriculum,
+      ...await translationProps(['hourofcode']),
+    },
+  };
+}
+
+export async function getStaticPaths() {
+  return {
+    paths: locales.map((locale) => ({ params: { language: locale } })),
+    fallback: false,
+  };
+}

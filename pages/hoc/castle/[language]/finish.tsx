@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
+/* eslint-disable jsx-a11y/anchor-has-content */
 import {
   Box,
   Button,
@@ -6,12 +8,13 @@ import {
   CardMedia,
   Container,
   Grid,
-  Link,
   Typography,
 } from '@mui/material';
+import { Trans } from 'next-i18next';
 import Head from 'next/head';
 import Image from 'next/image';
-import NextLink from 'next/link';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import Carousel from 'react-material-ui-carousel';
 import HourOfCodeCastle from '../../../../components/HourOfCodeCastle';
 import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
@@ -20,28 +23,33 @@ import DarkCastleImage from '../../../../public/hoc/castle/DarkCastle.jpg';
 import FortezzaBellinzonaImage from '../../../../public/hoc/fortezza-bellinzona-castello3.png';
 import CertificateImage from '../../../../public/hoc/hour_of_code_certificate.jpg';
 import { readActivity } from '../../../../src/fs-content/activities';
+import useLocalTranslation from '../../../../src/localStorage/useLocalTranslation';
 import { Activity } from '../../../../src/schemas/activitySchema';
-import { activityAssetPathname } from '../../../../src/urlUtils';
+import { locales, translationProps } from '../../../../src/serverSideTranslationProps';
+import { activitiesByAuthorPathname, activityAssetPathname, curriculumPathname } from '../../../../src/urlUtils';
 
 export default function FinishHocCastlePage({ finalActivity } : { finalActivity: Activity }) {
+  const router = useRouter();
+  const language = router.query.language as string;
+  const { i18n } = useLocalTranslation(['hourofcode']);
+  const t = i18n.getFixedT(language, 'hourofcode');
   return (
     <div>
       <Head>
-        <title>Hour of Code: Program Your Own Castle: Finished!</title>
+        <title>{t('finish.title')}</title>
       </Head>
 
       <Box>
         <NavigationBar />
         <Container maxWidth="md">
           <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
-            Hour of Code ® with PyTamaro
+            {t('hourOfCodeWithPyTamaro')}
           </Typography>
           <Typography sx={{ mt: 2 }} variant="h3" align="center" color="textPrimary" gutterBottom>
-            Mission (Almost) Accomplished!
+            {t('finish.missionAccomplished')}
           </Typography>
           <Typography marginY={3} variant="h6" color="textSecondary">
-            Your castle should help the Milanese to hold on to Bellinzona
-            until the end of the century.
+            {t('finish.castleHelp')}
           </Typography>
           <Image
             src={DarkCastleImage}
@@ -55,11 +63,8 @@ export default function FinishHocCastlePage({ finalActivity } : { finalActivity:
             }}
           />
           <Typography marginY={3}>
-            Despite your great construction,
-            the French eventually will take over the city and its fortification,
-            and they will ultimately leave it to the Swiss in 1503.
+            {t('finish.despiteThat')}
           </Typography>
-
           <Grid
             container
             spacing={2}
@@ -71,52 +76,19 @@ export default function FinishHocCastlePage({ finalActivity } : { finalActivity:
               sm={8}
             >
               <Typography marginTop={0} variant="h5" color="textSecondary" paragraph>
-                Leonardo da Vinci: &ldquo;Tsunami Hit Your Castle!&rdquo;
+                {t('finish.leonardo')}
               </Typography>
               <Typography marginY={3}>
-                Unfortunately for the Swiss, on May 20, 1515,
-                {' '}
-                <strong>your castle will be hit by a tsunami wave</strong>
-                {' '}
-                that will destroy a big chunk of the walls!
-                Sounds unbelievable? Well, read on!
+                <Trans t={t} i18nKey="finish.tsunamiWave" components={{ strong: <strong /> }} />
               </Typography>
               <Typography marginY={3}>
-                On September 30, 1513, in the so-called
-                {' '}
-                <a href="https://hls-dhs-dss.ch/de/articles/028662/2004-11-04/">Buzza di Biasca</a>
-                ,
-                a rock slide of about 500 million tons
-                created a 60 meter high dam blocking the river
-                in a valley above Bellinzona.
-                Over time, this dam formed a lake
-                that was 5 km long, 1.2 km wide, and 10 to 12 meters deep,
-                and contained about 200 million cubic meters of water.
-                On May 20, 1515, the dam broke,
-                leading to a wave of water about 10 meters high
-                coming down the valley.
-                It hit the Bellinzona fortification walls with a speed of 40-60 km/h.
-                While a large part of the fortification survived,
-                this tsunami wave was massive enough flush away big chunks.
+                <Trans t={t} i18nKey="finish.buzzaBiasca" components={{ a: <a href="https://hls-dhs-dss.ch/de/articles/028662/2004-11-04/" /> }} />
               </Typography>
               <Typography marginY={3}>
-                This cataclysmic event made the news around Europe.
-                Around that time, the famous
-                {' '}
-                <strong>Leonardo da Vinci</strong>
-                {' '}
-                drew
-                {' '}
-                <a href="https://insubricahistorica.ch/blog/2021/09/22/la-buzza-di-biasca-del-1515/">a sketch</a>
-                {' '}
-                that quite probably depicts the destruction of the Bellinzona fortification.
+                <Trans t={t} i18nKey="finish.sketch" components={{ strong: <strong />, a: <a href="https://insubricahistorica.ch/blog/2021/09/22/la-buzza-di-biasca-del-1515/" /> }} />
               </Typography>
               <Typography>
-                Isn&apos;t it amazing that&mdash;over 500 years later&mdash;we
-                know the exact dates of these events,
-                and we can tell the volumes of rock slides
-                and the heights and speeds of this &ldquo;Alpine tsunami wave&rdquo;?
-                History can be fascinating!
+                {t('finish.amazing')}
               </Typography>
             </Grid>
 
@@ -128,14 +100,13 @@ export default function FinishHocCastlePage({ finalActivity } : { finalActivity:
               <Card>
                 <CardContent>
                   <Typography gutterBottom variant="h5">
-                    Claim Your Certificate!
+                    {t('finish.claimYourCertificate')}
                   </Typography>
                   <Typography
                     variant="body2"
                     color="text.secondary"
                   >
-                    To complete your Hour of Code,
-                    please claim your certificate!
+                    {t('finish.claimYourCertificateDesc')}
                   </Typography>
                 </CardContent>
                 <CardMedia>
@@ -153,19 +124,15 @@ export default function FinishHocCastlePage({ finalActivity } : { finalActivity:
                 </CardMedia>
                 <CardContent>
                   <Typography marginY={0} align="center">
-                    <NextLink href="https://code.org/api/hour/finish" passHref>
+                    <Link href="https://code.org/api/hour/finish" passHref>
                       <Button
                         variant="contained"
                         size="large"
                         color="success"
                       >
-                        Complete
-                        <br />
-                        Your Hour of Code
-                        <br />
-                        and Get Your Certificate
+                        <Trans t={t} i18nKey="finish.completeButton" components={{ br: <br /> }} />
                       </Button>
-                    </NextLink>
+                    </Link>
                   </Typography>
                 </CardContent>
               </Card>
@@ -184,28 +151,21 @@ export default function FinishHocCastlePage({ finalActivity } : { finalActivity:
               <Card>
                 <CardContent>
                   <Typography variant="h5" color="text.secondary" paragraph>
-                    Keep
-                    <br />
-                    Your Castle
+                    <Trans t={t} i18nKey="finish.keepCastle" components={{ br: <br /> }} />
                   </Typography>
+
                   <Typography variant="body2" color="text.secondary" paragraph>
-                    You just composed your own castle.
-                    Would you like to keep it?
+                    {t('finish.keepCastleDesc1')}
                   </Typography>
                   <HourOfCodeCastle
                     language="en"
                     extraPythonFiles={finalActivity.extraPythonFiles}
                   />
                   <Typography variant="body2" color="text.secondary" paragraph sx={{ mt: 2 }}>
-                    You can copy paste it or save it as a big image from the preview above.
-                    Or you can download the Python code you wrote
-                    to run it on your own computer later.
+                    {t('finish.keepCastleDesc2')}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" gutterBottom>
-                    In any case, your code is stored in your web browser,
-                    so as long as you have access to your browser,
-                    and nobody deletes your browser&apos;s local storage,
-                    you can return to this web site and modify your castle.
+                    {t('finish.keepCastleDesc3')}
                   </Typography>
                 </CardContent>
               </Card>
@@ -219,13 +179,10 @@ export default function FinishHocCastlePage({ finalActivity } : { finalActivity:
               <Card>
                 <CardContent>
                   <Typography variant="h5" color="text.secondary" paragraph>
-                    Learn
-                    <br />
-                    Python Programming
+                    <Trans t={t} i18nKey="finish.learnPython" components={{ br: <br /> }} />
                   </Typography>
                   <Typography variant="body2" color="text.secondary" paragraph>
-                    You just completed one hour of code.
-                    We have much more!
+                    {t('finish.learnPythonDesc1')}
                   </Typography>
 
                   <Carousel
@@ -288,27 +245,14 @@ export default function FinishHocCastlePage({ finalActivity } : { finalActivity:
                   </Carousel>
 
                   <Typography variant="body2" color="text.secondary" paragraph>
-                    This web site includes many graphics programming activities.
-                    Some of them are used in informatics courses in Swiss high schools.
-                    All of them are free and accessible without creating an account!
+                    {t('finish.learnPythonDesc2')}
                   </Typography>
+
                   <Typography variant="body2" color="text.secondary" paragraph>
-                    If you want to learn Python from the ground up,
-                    we recommend you start with our
-                    {' '}
-                    <Link href="/curricula/luce/welcome" component={NextLink}>
-                      Welcome Curriculum
-                    </Link>
-                    .
+                    <Trans t={t} i18nKey="finish.learnPythonDesc3" components={{ a: <a href={curriculumPathname('luce', 'welcome')} /> }} />
                   </Typography>
                   <Typography variant="body2" color="text.secondary" gutterBottom>
-                    If you want to explore the over 100 graphics programming activities,
-                    check out the
-                    {' '}
-                    <Link href="/activities/luce/" component={NextLink}>
-                      Activity Gallery
-                    </Link>
-                    .
+                    <Trans t={t} i18nKey="finish.learnPythonDesc4" components={{ a: <a href={activitiesByAuthorPathname('luce')} /> }} />
                   </Typography>
                 </CardContent>
               </Card>
@@ -322,15 +266,10 @@ export default function FinishHocCastlePage({ finalActivity } : { finalActivity:
               <Card>
                 <CardContent>
                   <Typography variant="h5" color="textSecondary" paragraph>
-                    Visit
-                    <br />
-                    Fortezza Bellinzona
+                    <Trans t={t} i18nKey="finish.visitFortezza" components={{ br: <br /> }} />
                   </Typography>
                   <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Learn more on the official
-                    {' '}
-                    <a href="https://fortezzabellinzona.ch/en/">Fortezza Bellinzona web site</a>
-                    .
+                    <Trans t={t} i18nKey="finish.visitFortezzaDesc1" components={{ a: <a href="https://fortezzabellinzona.ch/en/" /> }} />
                   </Typography>
                   <div style={{
                     display: 'flex',
@@ -350,12 +289,7 @@ export default function FinishHocCastlePage({ finalActivity } : { finalActivity:
                     />
                   </div>
                   <Typography variant="body2" color="text.secondary" gutterBottom>
-                    If you have a chance to visit Bellinzona,
-                    in the Swiss canton of Ticino,
-                    just south of the Alps,
-                    visit this medieval fortress in person.
-                    It is a UNESCO World Heritage Site
-                    and it consists of three separate castles!
+                    {t('finish.visitFortezzaDesc2')}
                   </Typography>
                 </CardContent>
               </Card>
@@ -363,12 +297,7 @@ export default function FinishHocCastlePage({ finalActivity } : { finalActivity:
           </Grid>
 
           <Typography marginY={3}>
-            To finish your Hour of Code,
-            please use the green button above.
-            It takes you to the Hour of Code web site,
-            where you can claim your official certficiate.
-            You can come back here by navigating back with your browser.
-            Or you can bookmark this page.
+            {t('finish.finish')}
           </Typography>
 
           <HourOfCodeFooter />
@@ -382,6 +311,14 @@ export async function getStaticProps() {
   return {
     props: {
       finalActivity: await readActivity('luce-hoc', 'build-your-castle'),
+      ...await translationProps(['hourofcode']),
     },
+  };
+}
+
+export async function getStaticPaths() {
+  return {
+    paths: locales.map((locale) => ({ params: { language: locale } })),
+    fallback: false,
   };
 }

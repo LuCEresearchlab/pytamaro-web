@@ -20,6 +20,7 @@ import getLanguageDisplayName, { format } from '../../../../src/internationaliza
 import { Activity } from '../../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../../src/schemas/authorSchema';
 import { Curriculum } from '../../../../src/schemas/curriculumSchema';
+import { translationProps } from '../../../../src/serverSideTranslationProps';
 import {
   activityAssetPathname, activityPathname,
   activityVariantPathnameFromParts,
@@ -178,6 +179,7 @@ export async function getStaticProps(
       author: await getAuthorProfile(authorSlug),
       activity: await readActivity(authorSlug, activitySlug),
       includingCurricula,
+      ...await translationProps(),
     },
   };
 }

@@ -19,6 +19,7 @@ import { listActivitiesAllAuthors, listAuthorsProfiles } from '../../../src/fs-c
 import getLanguageDisplayName, { format } from '../../../src/internationalization';
 import { Activity } from '../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../src/schemas/authorSchema';
+import { translationProps } from '../../../src/serverSideTranslationProps';
 import theme from '../../../src/theme';
 import { activitiesByAuthorPathname } from '../../../src/urlUtils';
 
@@ -188,6 +189,7 @@ export async function getStaticProps(
       defaultAuthorSlug: authorSlug,
       authorsProfiles: await listAuthorsProfiles(),
       activities: await listActivitiesAllAuthors(),
+      ...await translationProps(),
     },
   };
 }

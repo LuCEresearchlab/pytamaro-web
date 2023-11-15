@@ -33,6 +33,7 @@ import {
 } from '../../../../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../../../../src/schemas/authorSchema';
 import { Curriculum, curriculumToId } from '../../../../../../src/schemas/curriculumSchema';
+import { translationProps } from '../../../../../../src/serverSideTranslationProps';
 import { isSpecialActivity } from '../../../../../../src/specialActivities';
 import { activityVariantPathnameFromParts } from '../../../../../../src/urlUtils';
 import useCurriculumFromQuery from '../../../../../../src/useCurriculumFromQuery';
@@ -145,7 +146,7 @@ export async function getStaticProps(
     activitySlug: string,
     language: string,
     version: string,
-  } },
+  }, defaultLocale: string, locales: string[] },
 ) {
   const {
     authorSlug, activitySlug, language, version,
@@ -160,6 +161,7 @@ export async function getStaticProps(
       activityVariant,
       cells: await getNotebookContent(authorSlug, activitySlug, language, version, userType),
       curricula: findIncludingCurricula(await listCurriculaAllAuthors(), activityVariant),
+      ...await translationProps(['activity', 'activityfooter', 'curriculum']),
     },
   };
 }

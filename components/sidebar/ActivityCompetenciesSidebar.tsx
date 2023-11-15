@@ -2,6 +2,7 @@ import { Avatar, Box, Stack } from '@mui/material';
 import { useState } from 'react';
 import { allActivities } from '../../src/curricula';
 import { competencyColor } from '../../src/curriculumCompetencies';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { ActivityVariant, activityVariantId } from '../../src/schemas/activitySchema';
 import { Curriculum, CurriculumCompetency } from '../../src/schemas/curriculumSchema';
 import theme from '../../src/theme';
@@ -69,6 +70,7 @@ function CompetencyAvatar({ curriculum, competency } :
 
 export default function ActivityCompetenciesSidebar({ curriculum, activityVariant } :
 { curriculum: Curriculum, activityVariant: ActivityVariant }) {
+  const { t } = useLocalTranslation(['curriculum']);
   const activities = allActivities(curriculum);
   const curriculumActivity = activities.find((a) => a.id === activityVariantId(activityVariant));
 
@@ -83,7 +85,7 @@ export default function ActivityCompetenciesSidebar({ curriculum, activityVarian
   return competencies.length > 0 ? (
     <Box>
       <SidebarTitle>
-        Competencies
+        {t('competencies')}
       </SidebarTitle>
       <Stack
         direction="row"

@@ -19,6 +19,7 @@ import NavigationBar from '../components/NavigationBar';
 import PageTitle from '../components/PageTitle';
 import getEntireLocalStorage, { clearEntireLocalStorage, replaceEntireLocalStorage } from '../src/localStorage/entireLocalStorage';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
+import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
 
 export default function MyData() {
@@ -184,4 +185,12 @@ export default function MyData() {
       </Box>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  return {
+    props: {
+      ...await translationProps(),
+    },
+  };
 }
