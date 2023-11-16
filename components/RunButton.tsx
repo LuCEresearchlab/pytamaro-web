@@ -8,7 +8,7 @@ export default function RunButton({
 } :
 { onExecutionRequested: () => Promise<any>, executing: boolean, executionFinished: boolean,
   executionError: boolean }) {
-  const { t } = useLocalTranslation(['activity']);
+  const { t } = useLocalTranslation(['common']);
   let buttonMessage = t('runCode');
   let buttonTooltip = ''; // Empty tooltips are not displayed
   if (executing) {

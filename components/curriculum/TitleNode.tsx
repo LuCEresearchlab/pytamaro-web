@@ -57,7 +57,7 @@ export default function TitleNode({ data }: NodeProps<NodeData>) {
         ) : (
           type === 'unit'
             ? <Typography variant="h5" textAlign="center" noWrap>{text}</Typography>
-            : <Typography variant="h6" textTransform="uppercase" letterSpacing=".08rem" textAlign="center" noWrap>{text}</Typography>
+            : <Typography variant="h6" textTransform="uppercase" letterSpacing=".08rem" textAlign="center" noWrap>{t(text.toLowerCase())}</Typography>
         )}
       </Box>
       <Handle type="source" position={Position.Bottom} isConnectable={false} />

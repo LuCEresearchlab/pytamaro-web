@@ -53,7 +53,7 @@ export default function NavigateToActivity({
     router.push(url);
   };
 
-  const messageKey = isNext ? t('next') : t('previous') + (targetActivity ? 'Activity' : '');
+  const messageKey = (isNext ? 'next' : 'previous') + (targetActivity ? 'Activity' : '');
   const message = t(messageKey);
 
   const enabled = (isNext && completed) || !isNext;

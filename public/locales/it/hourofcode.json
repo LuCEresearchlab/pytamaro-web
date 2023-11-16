@@ -59,7 +59,8 @@
         "startBuilding": "Inizia a costruire!",
         "goodLuck": "Buona Fortuna!",
         "unesco": "A proposito: la vera <a>Fortezza Bellinzona</a> è un sito patrimonio dell'umanità dell'UNESCO. Alte aspettative a cui essere all'altezza!",
-        "fortezzaURL": "https://fortezzabellinzona.ch/" 
+        "fortezzaURL": "https://fortezzabellinzona.ch/", 
+        "castleCurriculumPathname": "/curricula/luce-hoc/castello"
     },
     "notes": {
         "title": "Ora del Codice: Programma il tuo castello: Note per l'insegnante", 

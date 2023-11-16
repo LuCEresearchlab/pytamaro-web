@@ -13,9 +13,11 @@ import {
   debounce,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { Trans } from 'next-i18next';
 import { useEffect, useMemo, useState } from 'react';
 import { ExecutionResponse } from '../src/codeExecution';
 import { CodeCellExecutionState, CodeCellState } from '../src/localStorage/schema';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { called_names } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import CodeEditor from './CodeEditor';
@@ -33,6 +35,7 @@ const StaleOutputBadge = styled(Badge)<BadgeProps>(() => ({
 }));
 
 function NoOutputTip({ activityVariant } : { activityVariant: ActivityVariant }) {
+  const { t } = useLocalTranslation();
   const showGraphicNames: Record<string, string> = {
     en: 'show_graphic',
     it: 'visualizza_grafica',
@@ -47,11 +50,7 @@ function NoOutputTip({ activityVariant } : { activityVariant: ActivityVariant })
         success: <TipsAndUpdates fontSize="inherit" />,
       }}
     >
-      Successfully executed, but no output produced. Did you intend to show a graphic?
-      Use
-      {' '}
-      <code>{apiName}</code>
-      .
+      <Trans t={t} i18nKey="noOutputTip" values={{ apiName }} components={{ code: <code /> }} />
     </Alert>
   );
 }
@@ -92,6 +91,7 @@ export default function CodeCell({
   extraActions?: React.ReactNode
   readOnly?: boolean
 }) {
+  const { t } = useLocalTranslation(['common']);
   const { executionResponse } = codeCellExecutionState;
   const executionError = isExecutionError(executionResponse);
   const executing = codeCellExecutionState.executionInProgress;
@@ -149,7 +149,7 @@ export default function CodeCell({
         <Collapse in={codeCellExecutionState.outputAreaVisible} timeout="auto" unmountOnExit>
           <CardContent>
             <StaleOutputBadge
-              badgeContent={<Tooltip title="Stale output: re-run the code to refresh it"><SyncProblemIcon /></Tooltip>}
+              badgeContent={<Tooltip title={t('staleOutput')}><SyncProblemIcon /></Tooltip>}
               color="error"
               invisible={codeCellExecutionState.outputSynced}
             >

@@ -59,7 +59,8 @@
         "startBuilding": "Beginne zu bauen!",
         "goodLuck": "Viel Glück!",
         "unesco": "Übrigens: Die echte <a>Festung Bellinzona</a> ist ein UNESCO-Weltkulturerbe. Du trittst also in grosse Fußstapfen!",
-        "fortezzaURL": "https://fortezzabellinzona.ch/de/" 
+        "fortezzaURL": "https://fortezzabellinzona.ch/de/", 
+        "castleCurriculumPathname": "/curricula/luce-hoc/castello"
     },
     "notes": {
         "title": "Stunde des Codes: Programmiere Deine Burg: Informationen für Lehrpersonen",

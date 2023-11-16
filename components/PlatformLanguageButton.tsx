@@ -66,7 +66,7 @@ export default function PlatformLanguageButton() {
         }}
       >
         <Stack sx={{ p: 2 }} spacing={2}>
-          <Typography>{t('select-platform-language')}</Typography>
+          <Typography>{t('selectPlatformLanguage')}</Typography>
           <FormControl>
             <Select
               id="locale-select"

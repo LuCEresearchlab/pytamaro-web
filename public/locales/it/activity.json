@@ -1,8 +1,0 @@
-{
-    "runCode": "Esegui",
-    "runningCode": "In Esecuzione",
-    "doneRunningCode": "Fatto",
-    "alreadyExecuted": "Già eseguito: modifica il codice per eseguire di nuovo",
-    "executionCompletedWithErrors": "Esecuzione completata con errori",
-    "executionCompletedSuccessfully": "Esecuzione completata con successo"
-}

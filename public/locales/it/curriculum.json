@@ -6,7 +6,10 @@
     "inThisCurriculum": "In questo curriculum",
     "openActivity": "Apri attività",
     "unlockBy": "Sblocca completando le attività precedenti",
+    "activityInProgress": "Attività in corso",
+    "activityCompleted": "Attività completata",
     "myCompetencies": "Le mie competenze",
     "competencies": "Competenze",
-    "myCurriculum": "Il mio curriculum"
+    "myCurriculum": "Il mio curriculum",
+    "contents": "Contenuto"
 }

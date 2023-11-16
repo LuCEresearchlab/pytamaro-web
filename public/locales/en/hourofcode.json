@@ -59,7 +59,8 @@
         "startBuilding": "Start Building!",
         "goodLuck": "Good Luck!",
         "unesco": "By the way: The real <a>Fortezza Bellinzona</a> is a UNESCO World Heritage Site. So you have a lot to live up to!",
-        "fortezzaURL": "https://fortezzabellinzona.ch/en/"
+        "fortezzaURL": "https://fortezzabellinzona.ch/en/",
+        "castleCurriculumPathname": "/curricula/luce-hoc/castle"
     },
     "notes": {
         "title": "Hour of Code: Program Your Own Castle: Teacher Notes",
