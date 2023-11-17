@@ -311,7 +311,7 @@ export async function getStaticProps() {
   return {
     props: {
       finalActivity: await readActivity('luce-hoc', 'build-your-castle'),
-      ...await translationProps(['hourofcode']),
+      ...await translationProps(['hourofcode', 'activityfooter']),
     },
   };
 }
