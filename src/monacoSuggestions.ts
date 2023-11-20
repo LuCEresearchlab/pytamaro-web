@@ -62,6 +62,7 @@ const PYTAMARO_MODULES : Record<string, string> = {
   'pytamaro': 'en',
   'pytamaro.it': 'it',
   'pytamaro.de': 'de',
+  'pytamaro.fr': 'fr',
 };
 
 const KNOWN_MODULES = [
