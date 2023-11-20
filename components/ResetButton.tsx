@@ -4,7 +4,7 @@ import { IconButton, Tooltip } from '@mui/material';
 export default function ResetButton({ enabled, onReset, tooltip }:
 { enabled: boolean, onReset: () => void, tooltip: string }) {
   return (
-    <Tooltip title={tooltip}>
+    <Tooltip arrow title={tooltip}>
       <span>
         <IconButton
           sx={{ ml: 1 }}

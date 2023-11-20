@@ -44,7 +44,7 @@ export default function TitleNode({ data }: NodeProps<NodeData>) {
       >
         {/* eslint-disable-next-line no-nested-ternary */}
         {showStartingButton || showFinishButton ? (
-          <Tooltip title={t(`clickTo${showStartingButton ? 'Start' : 'Finish'}`)} placement="top" arrow>
+          <Tooltip arrow title={t(`clickTo${showStartingButton ? 'Start' : 'Finish'}`)} placement="top">
             <Button
               variant="contained"
               color="success"

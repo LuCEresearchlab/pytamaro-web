@@ -1,21 +1,21 @@
+import FeedbackIcon from '@mui/icons-material/Feedback';
+import {
+  IconButton, Stack, Tooltip,
+} from '@mui/material';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { useState } from 'react';
-import {
-  IconButton, Stack, Tooltip,
-} from '@mui/material';
-import FeedbackIcon from '@mui/icons-material/Feedback';
+import TextField from '@mui/material/TextField';
 import * as Sentry from '@sentry/nextjs';
 import { useRouter } from 'next/router';
-import CustomSnackbar from './CustomSnackbar';
-import { EventName, alwaysStoreDbEvent } from '../src/storeDbEvent';
-import NetworkErrorSnackbar from './NetworkErrorSnackbar';
+import { useState } from 'react';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
+import { EventName, alwaysStoreDbEvent } from '../src/storeDbEvent';
+import CustomSnackbar from './CustomSnackbar';
+import NetworkErrorSnackbar from './NetworkErrorSnackbar';
 
 export default function FeedbackDialog() {
   const [open, setOpen] = useState(false);
@@ -69,7 +69,7 @@ export default function FeedbackDialog() {
 
   return (
     <div>
-      <Tooltip title="Send Feedback">
+      <Tooltip arrow title="Send Feedback">
         <IconButton color="neutral" aria-label="feedback" sx={{ ml: 1 }} onClick={handleClickOpen}>
           <FeedbackIcon />
         </IconButton>

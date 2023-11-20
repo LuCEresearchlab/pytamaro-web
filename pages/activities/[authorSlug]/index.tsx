@@ -92,7 +92,7 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
   return (
     <Stack spacing={2}>
       <NavigationBar>
-        <Tooltip title="Compact View">
+        <Tooltip arrow title="Compact View">
           <ToggleButton
             color="neutral"
             value="compact"

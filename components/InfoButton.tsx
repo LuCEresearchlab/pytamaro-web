@@ -10,7 +10,7 @@ export default function InfoButton({ authorSlug, slug, type }:
     router.push(type === 'activity' ? activityPathname(authorSlug, slug) : curriculumInfoPathname(authorSlug, slug));
   };
   return (
-    <Tooltip title={`Information about this ${type}`} arrow>
+    <Tooltip arrow title={`Information about this ${type}`}>
       <span>
         <IconButton
           sx={{ ml: 1 }}

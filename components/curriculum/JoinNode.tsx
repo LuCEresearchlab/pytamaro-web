@@ -16,7 +16,7 @@ export default function JoinNode({ data }: NodeProps<NodeData>) {
     width, height, unlocked,
   } = data;
   return (
-    <Tooltip title={unlocked ? '' : 'Complete at least one activity above to proceed below'} arrow placement="right">
+    <Tooltip arrow title={unlocked ? '' : 'Complete at least one activity above to proceed below'} placement="right">
       <div style={{ cursor: 'default' }}>
         <Handle type="target" position={Position.Top} isConnectable={false} />
         <Box sx={{ width, height }}>

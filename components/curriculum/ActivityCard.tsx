@@ -72,7 +72,7 @@ export default function ActivityCard({
             width: '100%', height: '100%', paddingBottom: 0,
           }}
         >
-          <Tooltip title={isUnlocked ? t('openActivity') : t(`unlockBy${firstStep ? 'Starting' : 'Completing'}`)} arrow followCursor placement="top">
+          <Tooltip arrow title={isUnlocked ? t('openActivity') : t(`unlockBy${firstStep ? 'Starting' : 'Completing'}`)} followCursor placement="top">
             <span>
               <CardActionArea
                 onClick={() => router.push(activityVariantWithCurriculum(variant, curriculum))}

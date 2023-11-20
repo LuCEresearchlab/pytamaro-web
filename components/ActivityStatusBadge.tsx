@@ -68,7 +68,7 @@ export default function ActivityStatusBadge({
           fontSize: theme.typography[small ? 'h4' : 'h3'].fontSize,
         },
       }}
-      badgeContent={<Tooltip title={tooltipTitle} arrow><Icon component={badgeIcon} fontSize="inherit" sx={{ filter: 'drop-shadow(0 0 .05em)' }} /></Tooltip>}
+      badgeContent={<Tooltip arrow title={tooltipTitle}><Icon component={badgeIcon} fontSize="inherit" sx={{ filter: 'drop-shadow(0 0 .05em)' }} /></Tooltip>}
     >
       {children}
     </StatusBadge>

@@ -149,7 +149,7 @@ export default function CodeCell({
         <Collapse in={codeCellExecutionState.outputAreaVisible} timeout="auto" unmountOnExit>
           <CardContent>
             <StaleOutputBadge
-              badgeContent={<Tooltip title={t('staleOutput')}><SyncProblemIcon /></Tooltip>}
+              badgeContent={<Tooltip arrow title={t('staleOutput')}><SyncProblemIcon /></Tooltip>}
               color="error"
               invisible={codeCellExecutionState.outputSynced}
             >

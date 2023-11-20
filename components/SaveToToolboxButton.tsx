@@ -43,7 +43,7 @@ export default function SaveToToolboxButton({ sources, originalActivity } :
   }
   return (
     <>
-      <Tooltip title="Save a function to toolbox">
+      <Tooltip arrow title="Save a function to toolbox">
         <IconButton
           onClick={() => setOpen(true)}
           className="save-to-toolbox-dialog-button"

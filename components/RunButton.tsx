@@ -20,7 +20,7 @@ export default function RunButton({
   const showPlayIcon = !executing && !executionFinished;
   return (
     <Stack direction="row" spacing={2} alignItems="center">
-      <Tooltip title={buttonTooltip} placement="top">
+      <Tooltip arrow title={buttonTooltip} placement="top">
         <span>
           <LoadingButton
             onClick={onExecutionRequested}
@@ -38,8 +38,8 @@ export default function RunButton({
       </Tooltip>
       {executionFinished
       && (executionError
-        ? <Tooltip title={t('executionCompletedWithErrors')} placement="right"><ErrorOutline color="error" /></Tooltip>
-        : <Tooltip title={t('executionCompletedSuccessfully')} placement="right"><Done color="success" /></Tooltip>)}
+        ? <Tooltip arrow title={t('executionCompletedWithErrors')} placement="right"><ErrorOutline color="error" /></Tooltip>
+        : <Tooltip arrow title={t('executionCompletedSuccessfully')} placement="right"><Done color="success" /></Tooltip>)}
     </Stack>
   );
 }
