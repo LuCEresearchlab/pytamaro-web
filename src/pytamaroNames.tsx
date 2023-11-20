@@ -26,6 +26,9 @@ for module in modules:
     elif ".de." in module:
         shortlang = "de"
         language = "German"
+    elif ".fr." in module:
+        shortlang = "fr"
+        language = "French"
     else:
         shortlang = "en"
         language = "English"
@@ -41,7 +44,7 @@ for module in modules:
         if page == "graphic":
             page = "index"
 
-        if page != "pytamaro" and page != "it" and page != "de":
+        if page != "pytamaro" and (page not in ["it", "de", "fr"]):
             url = f"{language}/{page}"
             API[f"{shortlang}.{name}"] = { "fqname": fqname, "url": url, "type": types[typeidx] }
 
@@ -328,6 +331,216 @@ const names : Record<string, NameInfo> = {
   'de.text': {
     fqname: 'pytamaro.de.primitives.text',
     url: 'German/primitives',
+    type: 'function',
+  },
+  'fr.Couleur': {
+    fqname: 'pytamaro.fr.color.Couleur',
+    url: 'French/colors',
+    type: 'class',
+  },
+  'fr.couleur_hsl': {
+    fqname: 'pytamaro.fr.color.couleur_hsl',
+    url: 'French/colors',
+    type: 'function',
+  },
+  'fr.couleur_hsv': {
+    fqname: 'pytamaro.fr.color.couleur_hsv',
+    url: 'French/colors',
+    type: 'function',
+  },
+  'fr.couleur_rgb': {
+    fqname: 'pytamaro.fr.color.couleur_rgb',
+    url: 'French/colors',
+    type: 'function',
+  },
+  'fr.blanc': {
+    fqname: 'pytamaro.fr.color_names.blanc',
+    url: 'French/colors',
+    type: 'value',
+  },
+  'fr.bleu': {
+    fqname: 'pytamaro.fr.color_names.bleu',
+    url: 'French/colors',
+    type: 'value',
+  },
+  'fr.cyan': {
+    fqname: 'pytamaro.fr.color_names.cyan',
+    url: 'French/colors',
+    type: 'value',
+  },
+  'fr.jaune': {
+    fqname: 'pytamaro.fr.color_names.jaune',
+    url: 'French/colors',
+    type: 'value',
+  },
+  'fr.magenta': {
+    fqname: 'pytamaro.fr.color_names.magenta',
+    url: 'French/colors',
+    type: 'value',
+  },
+  'fr.noir': {
+    fqname: 'pytamaro.fr.color_names.noir',
+    url: 'French/colors',
+    type: 'value',
+  },
+  'fr.rouge': {
+    fqname: 'pytamaro.fr.color_names.rouge',
+    url: 'French/colors',
+    type: 'value',
+  },
+  'fr.transparent': {
+    fqname: 'pytamaro.fr.color_names.transparent',
+    url: 'French/colors',
+    type: 'value',
+  },
+  'fr.vert': {
+    fqname: 'pytamaro.fr.color_names.vert',
+    url: 'French/colors',
+    type: 'value',
+  },
+  'fr.Graphique': {
+    fqname: 'pytamaro.fr.graphic.Graphique',
+    url: 'French/index',
+    type: 'class',
+  },
+  'fr.montre_animation': {
+    fqname: 'pytamaro.fr.io.montre_animation',
+    url: 'French/io',
+    type: 'function',
+  },
+  'fr.montre_graphique': {
+    fqname: 'pytamaro.fr.io.montre_graphique',
+    url: 'French/io',
+    type: 'function',
+  },
+  'fr.sauvegarde_animation': {
+    fqname: 'pytamaro.fr.io.sauvegarde_animation',
+    url: 'French/io',
+    type: 'function',
+  },
+  'fr.sauvegarde_graphique': {
+    fqname: 'pytamaro.fr.io.sauvegarde_graphique',
+    url: 'French/io',
+    type: 'function',
+  },
+  'fr.ancre': {
+    fqname: 'pytamaro.fr.operations.ancre',
+    url: 'French/operations',
+    type: 'function',
+  },
+  'fr.au_dessus': {
+    fqname: 'pytamaro.fr.operations.au_dessus',
+    url: 'French/operations',
+    type: 'function',
+  },
+  'fr.compose': {
+    fqname: 'pytamaro.fr.operations.compose',
+    url: 'French/operations',
+    type: 'function',
+  },
+  'fr.cote_a_cote': {
+    fqname: 'pytamaro.fr.operations.cote_a_cote',
+    url: 'French/operations',
+    type: 'function',
+  },
+  'fr.hauteur_graphique': {
+    fqname: 'pytamaro.fr.operations.hauteur_graphique',
+    url: 'French/operations',
+    type: 'function',
+  },
+  'fr.largeur_graphique': {
+    fqname: 'pytamaro.fr.operations.largeur_graphique',
+    url: 'French/operations',
+    type: 'function',
+  },
+  'fr.pivote': {
+    fqname: 'pytamaro.fr.operations.pivote',
+    url: 'French/operations',
+    type: 'function',
+  },
+  'fr.superpose': {
+    fqname: 'pytamaro.fr.operations.superpose',
+    url: 'French/operations',
+    type: 'function',
+  },
+  'fr.Point': {
+    fqname: 'pytamaro.fr.point.Point',
+    url: 'French/points',
+    type: 'class',
+  },
+  'fr.bas_centre': {
+    fqname: 'pytamaro.fr.point_names.bas_centre',
+    url: 'French/points',
+    type: 'value',
+  },
+  'fr.bas_droite': {
+    fqname: 'pytamaro.fr.point_names.bas_droite',
+    url: 'French/points',
+    type: 'value',
+  },
+  'fr.bas_gauche': {
+    fqname: 'pytamaro.fr.point_names.bas_gauche',
+    url: 'French/points',
+    type: 'value',
+  },
+  'fr.centre': {
+    fqname: 'pytamaro.fr.point_names.centre',
+    url: 'French/points',
+    type: 'value',
+  },
+  'fr.centre_droite': {
+    fqname: 'pytamaro.fr.point_names.centre_droite',
+    url: 'French/points',
+    type: 'value',
+  },
+  'fr.centre_gauche': {
+    fqname: 'pytamaro.fr.point_names.centre_gauche',
+    url: 'French/points',
+    type: 'value',
+  },
+  'fr.haut_centre': {
+    fqname: 'pytamaro.fr.point_names.haut_centre',
+    url: 'French/points',
+    type: 'value',
+  },
+  'fr.haut_droite': {
+    fqname: 'pytamaro.fr.point_names.haut_droite',
+    url: 'French/points',
+    type: 'value',
+  },
+  'fr.haut_gauche': {
+    fqname: 'pytamaro.fr.point_names.haut_gauche',
+    url: 'French/points',
+    type: 'value',
+  },
+  'fr.ellipse': {
+    fqname: 'pytamaro.fr.primitives.ellipse',
+    url: 'French/primitives',
+    type: 'function',
+  },
+  'fr.graphique_vide': {
+    fqname: 'pytamaro.fr.primitives.graphique_vide',
+    url: 'French/primitives',
+    type: 'function',
+  },
+  'fr.rectangle': {
+    fqname: 'pytamaro.fr.primitives.rectangle',
+    url: 'French/primitives',
+    type: 'function',
+  },
+  'fr.secteur_circulaire': {
+    fqname: 'pytamaro.fr.primitives.secteur_circulaire',
+    url: 'French/primitives',
+    type: 'function',
+  },
+  'fr.texte': {
+    fqname: 'pytamaro.fr.primitives.texte',
+    url: 'French/primitives',
+    type: 'function',
+  },
+  'fr.triangle': {
+    fqname: 'pytamaro.fr.primitives.triangle',
+    url: 'French/primitives',
     type: 'function',
   },
   'en.Graphic': {

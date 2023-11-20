@@ -6,7 +6,7 @@ import {
 import Head from 'next/head';
 import NavigationBar from '../components/NavigationBar';
 
-const PYTAMARO_VERSION = '0.5.1';
+const PYTAMARO_VERSION = '0.6.0';
 
 function SectionHeading({ children } : { children: React.ReactNode }) {
   return (
@@ -105,6 +105,26 @@ export default function Install() {
                 <code>friendly</code> version <a href="https://github.com/friendly-traceback/friendly"><code>fe5d3a2</code></a>
                 {' '}(configured to show user-friendly tracebacks)
               </li>
+            </ul>
+            For the text in your graphics, you can use these fonts:
+            <ul>
+              {['Fira Sans',
+                'Fira Code',
+                'Roboto',
+                'Roboto Serif',
+                'Roboto Mono',
+                'IBM Plex Sans',
+                'IBM Plex Serif',
+                'IBM Plex Mono',
+                'PT Sans',
+                'PT Serif',
+                'PT Mono',
+                'Ubuntu',
+                'Ubuntu Mono',
+                'Inter',
+                'Cormorant Garamond',
+                'Libre Bodon',
+                'Jost'].map((font) => <li key={font}><a href={`https://fonts.google.com/specimen/${font}`}>{font}</a></li>)}
             </ul>
           </QuestionBody>
         </Container>
