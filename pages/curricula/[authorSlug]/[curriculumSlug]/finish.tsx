@@ -11,6 +11,7 @@ import PageTitle from '../../../../components/PageTitle';
 import { listAuthorsWithContent } from '../../../../src/fs-content/authors';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
 import { Curriculum } from '../../../../src/schemas/curriculumSchema';
+import { translationProps } from '../../../../src/serverSideTranslationProps';
 import { curriculumFinishPathname } from '../../../../src/urlUtils';
 
 export default function CurriculumInfoPage({ curriculum }:
@@ -58,6 +59,7 @@ export async function getStaticProps(
   return {
     props: {
       curriculum,
+      ...await translationProps(),
     },
   };
 }

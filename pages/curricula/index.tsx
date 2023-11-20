@@ -13,6 +13,7 @@ import visibleCurricula from '../../src/curricula';
 import { visibleActivities } from '../../src/fs-content/activities';
 import { listAuthorsProfiles, listAuthorsWithContent } from '../../src/fs-content/authors';
 import { Author, AuthorProfile } from '../../src/schemas/authorSchema';
+import { translationProps } from '../../src/serverSideTranslationProps';
 import { curriculaByAuthorPathname } from '../../src/urlUtils';
 
 export default function CurriculaPage({ authors, authorsProfiles }:
@@ -72,6 +73,7 @@ export async function getStaticProps() {
     props: {
       authorsProfiles: await listAuthorsProfiles(),
       authors: authorsWithVisibleContent,
+      ...await translationProps(),
     },
   };
 }

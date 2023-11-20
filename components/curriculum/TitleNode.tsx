@@ -4,6 +4,7 @@ import {
 } from '@mui/material';
 import { slug } from 'github-slugger';
 import { Handle, NodeProps, Position } from 'reactflow';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 
 type NodeData = {
   type: 'unit' | 'start' | 'end',
@@ -23,6 +24,7 @@ export default function TitleNode({ data }: NodeProps<NodeData>) {
   } = data;
   const showStartingButton = type === 'start' && !started;
   const showFinishButton = type === 'end' && unlocked;
+  const { t } = useLocalTranslation(['curriculum']);
   return (
     <Box id={id} sx={{ opacity: unlocked ? 1 : 0.38 }}>
       <Handle type="target" position={Position.Top} isConnectable={false} />
@@ -42,20 +44,20 @@ export default function TitleNode({ data }: NodeProps<NodeData>) {
       >
         {/* eslint-disable-next-line no-nested-ternary */}
         {showStartingButton || showFinishButton ? (
-          <Tooltip title={`Click to ${showStartingButton ? 'Start' : 'Finish'}`} placement="top" arrow>
+          <Tooltip title={t(`clickTo${showStartingButton ? 'Start' : 'Finish'}`)} placement="top" arrow>
             <Button
               variant="contained"
               color="success"
               onClick={showStartingButton ? onStartClick : onEndClick}
               startIcon={showStartingButton ? <PlayCircle /> : <AssignmentTurnedIn />}
             >
-              {text}
+              {t(text.toLowerCase())}
             </Button>
           </Tooltip>
         ) : (
           type === 'unit'
             ? <Typography variant="h5" textAlign="center" noWrap>{text}</Typography>
-            : <Typography variant="h6" textTransform="uppercase" letterSpacing=".08rem" textAlign="center" noWrap>{text}</Typography>
+            : <Typography variant="h6" textTransform="uppercase" letterSpacing=".08rem" textAlign="center" noWrap>{t(text.toLowerCase())}</Typography>
         )}
       </Box>
       <Handle type="source" position={Position.Bottom} isConnectable={false} />

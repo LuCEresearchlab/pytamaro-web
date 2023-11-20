@@ -12,6 +12,7 @@ import Image from 'next/image';
 import HourOfCodeFooter from '../../../components/HourOfCodeFooter';
 import NavigationBar from '../../../components/NavigationBar';
 import MarketingImage from '../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
+import { translationProps } from '../../../src/serverSideTranslationProps';
 
 type LangRes = {
   code: string,
@@ -131,4 +132,12 @@ export default function HocCastlePage() {
       </Box>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  return {
+    props: {
+      ...await translationProps(),
+    },
+  };
 }

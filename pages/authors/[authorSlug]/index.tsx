@@ -18,6 +18,7 @@ import {
 import { Activity } from '../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../src/schemas/authorSchema';
 import { Curriculum } from '../../../src/schemas/curriculumSchema';
+import { translationProps } from '../../../src/serverSideTranslationProps';
 import { activitiesByAuthorPathname, authorPathname, curriculaByAuthorPathname } from '../../../src/urlUtils';
 
 export default function AuthorPage({ authorProfile, curricula, activities }:
@@ -76,6 +77,7 @@ export async function getStaticProps(
       authorProfile: await getAuthorProfile(authorSlug),
       curricula: visibleCurricula(content.curricula),
       activities: visibleActivities(content.activities),
+      ...await translationProps(),
     },
   };
 }

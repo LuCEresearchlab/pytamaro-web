@@ -2,9 +2,10 @@ import {
   Box,
   Container, Link, Typography,
 } from '@mui/material';
-import NextLink from 'next/link';
 import Head from 'next/head';
+import NextLink from 'next/link';
 import NavigationBar from '../components/NavigationBar';
+import { translationProps } from '../src/serverSideTranslationProps';
 
 export default function PrivacyPolicy() {
   const margin = 3;
@@ -365,4 +366,12 @@ export default function PrivacyPolicy() {
       </Box>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  return {
+    props: {
+      ...await translationProps(),
+    },
+  };
 }

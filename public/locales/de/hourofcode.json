@@ -1,0 +1,169 @@
+{
+    "locale": {
+        "flag": "🇩🇪",
+        "name": "Deutsch"
+    },
+    "intro": {
+        "hoc": "Stunde des Codes",
+        "goal": "Programmiere Deine Burg"
+    },
+    "action": {
+        "confirm": "Ok",
+        "cancel": "Abbrechen"
+    },
+    "age": {
+        "title": "Wann bist Du geboren?",
+        "year": "Jahr",
+        "month": "Monat",
+        "error": {
+            "month": "Ungültiger Monat",
+            "year": "Ungültiges Jahr"
+        }
+    },
+    "hourOfCodeWithPyTamaro": "Stunde des Codes mit PyTamaro",
+    "finish": {
+        "title": "Stunde des Codes: Programmiere Deine Burg: Ziel Erreicht!",
+        "missionAccomplished": "Mission (Fast) Beendet!",
+        "castleHelp": "Deine Burg sollte den Mailändern helfen, die Stadt Bellinzona bis zum Ende des Jahrhunderts in Besitz zu halten.",
+        "despiteThat": "Trotz Deiner grossartigen Konstruktion werden die Franzosen die Stadt und ihre Befestigung schliesslich übernehmen, und sie werden sie dann um 1503 den Schweizern überlassen.",
+        "leonardo": "Leonardo da Vinci: \"Tsunami zerstört Deine Burg\"",
+        "tsunamiWave": "Unglücklicherweise für die Schweizer wird am 20. Mai 1515 <strong>Deine Burg von einer Tsunami-Welle getroffen werden</strong> die einen grossen Teil der Mauern zerstören wird! Klingt unglaublich? Nun, lies weiter!",
+        "buzzaBiasca": "Am 30. September 1513, im sogenannten <a>Buzza di Biasca</a>, rutschten etwa 500 Millionen Tonnen Fels in ein Tal oberhalb von Bellinzona und bildeten einen 60 Meter hohen Damm, der den Fluss blockierte. Im Laufe der Zeit bildete dieser Damm einen See, der 5 km lang, 1,2 km breit und 10 bis 12 Meter tief war und etwa 200 Millionen Kubikmeter Wasser enthielt. Am 20. Mai 1515 brach der Damm, was zu einer Welle von Wasser führte, die etwa 10 Meter hoch das Tal hinunterkam. Sie traf die Befestigungsmauern von Bellinzona mit einer Geschwindigkeit von 40-60 km/h. Während ein grosser Teil der Befestigung überlebte, war diese Tsunami-Welle massiv genug, um grosse Teile weg zu spülen.",
+        "sketch": "Dieses kataklysmische Ereignis machte in ganz Europa Schlagzeilen. Um diese Zeit zeichnete der berühmte <strong>Leonardo da Vinci</strong> <a>eine Skizze</a>, die wahrscheinlich die Zerstörung der Bellinzona-Befestigung darstellt.",
+        "amazing": "Ist es nicht beeindruckend, dass wir über 500 Jahre später die genauen Daten dieser Ereignisse kennen, und wir die Volumina von Felsrutschen und die Höhen und Geschwindigkeiten dieser &ldquo;Alpen-Tsunami-Welle&rdquo; berechnen können? Geschichte kann faszinierend sein!",
+        "claimYourCertificate": "Fordere Dein Zertifikat an!",
+        "claimYourCertificateDesc": "Um Deine Stunde des Codes abzuschliessen, fordere bitte Dein Zertifikat an!",
+        "completeButton": "Schliesse Deine Stunde des Codes ab und erhalte Dein Zertifikat",
+        "keepCastle": "Behalte <br/> Deine Burg",
+        "keepCastleDesc1": "Du hast gerade eine Burg komponiert. Möchtest Du sie behalten?",
+        "keepCastleDesc2": "Du kannst sie kopieren oder als grosses Bild aus der Vorschau oben speichern. Oder Du kannst den Python-Code herunterladen, den Du geschrieben hast, um ihn später auf Deinem eigenen Computer auszuführen.",
+        "keepCastleDesc3": "In jedem Fall wird Dein Code in Deinem Webbrowser gespeichert. Solange Du Zugriff auf Deinen Browser hast, und niemand den lokalen Speicher Deines Browsers löscht, kannst Du zu dieser Website zurückkehren und Deine Burg modifizieren.",
+        "learnPython": "Lerne Python <br/> Programmierung",
+        "learnPythonDesc1": "Du hast eine Stunde des Codes abgeschlossen. Wir haben viel mehr!",
+        "learnPythonDesc2": "Diese Website enthält viele weitere Aktivitäten. Einige davon werden im Fach Informatik an Schweizer Gymnasien verwendet. Alle sind kostenlos und ohne Anmeldung zugänglich!",
+        "learnPythonDesc3": "Falls Du die Python-Programmierung von Grund auf lernen möchtest, empfehlen wir Dir, mit unserem <a>Willkommens-Curriculum</a> (bisher nur auf Englisch vorhanden) zu beginnen.",
+        "learnPythonDesc4": "Falls Du die über 100 Grafikprogrammierungsaktivitäten erkunden möchtest, schau Dir die <a>Aktivitäts-Galerie</a> an.",
+        "visitFortezza": "Besuche die <br/> Fortezza Bellinzona",
+        "visitFortezzaDesc1": "Erfahre mehr auf der offiziellen <a>Webseite der Festung Bellinzona</a>.",
+        "visitFortezzaDesc2": "Falls Du die Gelegenheit hast, Bellinzona zu besuchen, im Schweizer Kanton Tessin, südlich der Alpen, kannst Du diese mittelalterliche Festung persönlich besuchen. Sie ist ein UNESCO-Weltkulturerbe und besteht aus drei separaten Burgen!",
+        "finish": "Um Deine Stunde des Codes abzuschliessen, benutze bitte den grünen Button oben. Er bringt Dich zur Hour of Code Webseite, wo Du Dein offizielles Zertifikat anfordern kannst. Du kannst hierher zurückkehren, indem Du mit Deinem Browser zurück navigierst. Oder Du kannst diese Seite als Lesezeichen speichern."
+    },
+    "start": {
+        "title": "Stunde des Codes: Programmiere Deine Burg",
+        "programYourOwnCastle": "Programmiere Deine Burg",
+        "welcome": "Willkommen im Jahr 1430. Du bist der Chefarchitekt des Herzogs von Mailand. Der Herzog muss seine Ländereien vor den Schweizern schützen, die gerne aus dem bergigen Norden angreifen.",
+        "build": "Der Herzog bittet Dich, <strong>eine Befestigung zu bauen</strong> die sich über das gesamte Tal erstreckt. Er wählte die Stadt Bellinzona als perfekten Ort aus, um mehrere Bergpässe an einer einzigen Stelle kontrollieren zu können.",
+        "technology": "Der Herzog ist ein moderner Herrscher: Er nutzt gerne die neueste Technologie. Er hat von einer neuen Technologie namens <strong>Programmierung</strong> gehört. Er möchte, dass Du ein Python-Programm schreibst, um die Befestigung zu entwerfen. Der Herzog mag Burgen, die aus unabhängigen Teilen bestehen. In Python kannst Du das indem Du reine Funktionen aufrufst, um Teile zu erzeugen und zu komponieren.",
+        "succeed": "<strong>Falls Du Erfolg hast</strong>, können die Mailänder Bellinzona bis zum Ende des Jahrhunderts halten, wenn die Franzosen die Stadt mit ihren drei Burgen und Befestigungen übernehmen und sie schliesslich 1503 den Schweizern überlassen.",
+        "fail": "<strong>Falls Du scheiterst</strong>, müssen wir die Geschichte neu schreiben. Und das möchten wir lieber nicht tun!",
+        "startBuilding": "Beginne zu bauen!",
+        "goodLuck": "Viel Glück!",
+        "unesco": "Übrigens: Die echte <a>Festung Bellinzona</a> ist ein UNESCO-Weltkulturerbe. Du trittst also in grosse Fussstapfen!",
+        "fortezzaURL": "https://fortezzabellinzona.ch/de/", 
+        "castleCurriculumPathname": "/curricula/luce-hoc/burg"
+    },
+    "notes": {
+        "title": "Stunde des Codes: Programmiere Deine Burg: Informationen für Lehrpersonen",
+        "teacherNotes": "Informationen für Lehrpersonen",
+        "intro": "Sie wollen Ihre Klasse ihre eigene Burg programmieren lassen? Dieses einstündige Tutorial kombiniert Programmierung und Geschichte. Es richtet sich an Schülerinnen und Schüler ab 13 Jahren, die bereit sind, ihre ersten Schritte in einer textbasierten Programmiersprache zu machen.",
+        "guidance": "Leitfaden",
+        "guidanceDesc": "Dieser Leitfaden enthält Informationen über die Didaktik und den Inhalt (Programmierung und Geschichte) dieses Stunde des Codes-Tutorials. Wenn Sie über dieses einstündige Tutorial hinausgehen möchten, sehen Sie sich unsere vielen kostenlosen Ressourcen auf dieser PyTamaro-Website an. Viele der Ressourcen werden im Fach Informatik an verschiedenen Schweizer Gymnasien verwendet.",
+        "students": "Diese Stunde des Codes wurde von Studentinnen und Studenten entwickelt!",
+        "studentsDesc": "Ja! Diese Stunde des Codes wurde von Informatikstudierenden an einer kleinen öffentlichen Universität in der Schweiz entwickelt.",
+        "usi": "Der Inhalt (Aktivitäten und Sequenzierung, Anweisungen, Starter- und Lösungscode, sowie alle vorgefertigten Grafiken, die mit Python/PyTamaro-Code programmiert und nicht gezeichnet wurden) wurde von einem kleinen Team von Bachelorstudierenden der Fakultät für Informatik an der USI, der <a>Università della Svizzera italiana</a>, im italienischsprachigen Teil der Schweiz entwickelt. Finanziert durch ein Didaktik-Innovationsstipendium, verbrachten sie einen Monat im Sommer 2023 mit dem Besuch der echten Fortezza Bellinzona, dem Bau der grössten Spielzeugburgen, der Recherche bestehender Hour Of Code-Aktivitäten und der Entwicklung dieser Aktivität in Python auf der PyTamaro Web-Plattform.",
+        "luce": "Die PyTamaro Web-Plattform und die kompositionale PyTamaro-Grafikbibliothek für Python wurden hauptsächlich von Luca Chiodini entwickelt, einem Doktoranden im <a>Lugano Computing Education Research Lab</a> an der USI. Luca unterrichtete Schweizer Gymnasiallehrer, die in Zukunft Python-Programmierung in ihren Klassen unterrichten sollten. Er erkannte die Vorteile einer einfachen, kompositionellen Grafikbibliothek und implementierte PyTamaro. Um Lehrerinnen und Lehrer bei ihrem zukünftigen Unterricht zu unterstützen, entwickelte er die PyTamaro Web-Plattform. Diese ermöglicht es den Schülerinnen und Schülern, Python mit PyTamaro direkt im Browser zu programmieren, in einer Notebook-ähnlichen Umgebung, in der Anweisungen und Code in interaktiven Übungen verflochten sind.",
+        "pedagogy": "Didaktik",
+        "pedagogyIntro": "Hier sind einige didaktische Tipps, die Ihnen helfen, das Beste aus einer Stunde des Codes zu machen:",
+        "pairProgramming": {
+            "title": "Pair Programming",
+            "desc": "Diese Stunde des Codes kann besonders gut mit Pair Programming durchgeführt werden, indem zwei Lernende gemeinsam an einem Computer arbeiten. Bei der Paarprogrammierung übernehmen die beiden Lernenden eines Paares normalerweise unterschiedliche Rollen: Der Fahrer sitzt an der Tastatur und schreibt den Code, und der Navigator prüft jede eingegebene Codezeile. Sie können die Lernenden bitten, die Rollen zwischen den einzelnen Aktivitäten zu wechseln (beachten Sie aber, dass die ersten paar Aktivitäten nicht viel Schreibarbeit erfordern)."
+        },
+        "platform": {
+            "title": "Plattformen",
+            "desc": "Wir haben dieses Tutorial mit den Browsern Firefox, Chrome, Safari und Edge und auf macOS, Windows, iOS, iPadOS und Android getestet. Es kann zwar auch auf Mobiltelefonen verwendet werden, wir empfehlen aber Geräte mit grösseren Bildschirmen und Tastaturen."
+        },
+        "competencies": {
+            "title": "Kompetenzen",
+            "desc": "Jede Aktivität ist mit einer oder mehreren Programmierkompetenzen verbunden. Jedes Mal, wenn eine Schülerin oder ein Schüler eine Aktivität abschliesst, werden die gerade geübten Kompetenzen als blaue \"Abzeichen\" in der linken Seitenleiste angezeigt. Ermuntern Sie Ihre Schülerinnen und Schüler, auf die Abzeichen zu klicken, um deren Beschreibungen zu lesen. Auf diese Weise werden sie mit der Terminologie der Programmierkonzepte vertraut gemacht. Unten finden Sie eine Matrix, die Aktivitäten und Kompetenzen aufeinander abstimmt."
+        },
+        "misconceptions": {
+            "title": "Fehlvorstellungen",
+            "desc": "Ihre Schülerinnen und Schüler haben möglicherweise bereits verschiedene Fehlvorstellungen von Python. Als Lehrperson können Sie sich darauf vorbereiten, diese Fehlvorstellungen zu erkennen und zu beseitigen, indem Sie sich selbst auf <progmiscon>Progmiscon.org</progmiscon>, einem aus der Informatikdidaktik-Forschung stammenden Katalog von Programmiersprachen-Fehlvorstellungen, <selfCheck>mit einem Self-Check testen</selfCheck>. Dadurch werden Sie Fehlvorstellungen wie <assignCompares>AssignCompares</assignCompares> (Zuweisung als Vergleich interpretieren) oder <outsideInFunctionNesting>OutsideInFunctionNesting</outsideInFunctionNesting> (von aussen nach innen ausführen von verschachtelten Funktionsaufrufen) besser erkennen."
+        },
+        "tasks": {
+            "title": "Aufgaben",
+            "desc": "Jede Aktivität besteht aus einer oder mehreren kleinen Programmieraufgaben. Die Aufgaben sind mit 🎯 gekennzeichnet, in der Regel oberhalb der entsprechenden Codezelle, und innerhalb des Codes mit Kommentaren."
+        },
+        "placeholders": {
+            "title": "Platzhalter",
+            "desc": "Im Code verwenden wir <code>...</code> als Platzhalter für den von Lernenden zu schreibenden Code. Falls Lernende den Platzhalter nicht ersetzen, führt das zu einem Fehler, wenn sie den Code ausführen."
+        },
+        "errors": {
+            "title": "Fehler",
+            "desc": "Ein wichtiger Teil des Programmierenlernens ist das Verstehen und Beheben von Fehlern. Wenn bei der Ausführung des Codes ein Fehler auftritt, wird der Fehler unter der entsprechenden Codezelle angezeigt. Übliche Fehlerarten sind NameError, SyntaxError, TypeError und ImportError. Beachten Sie, dass die Fehlermeldung die Zeilennummer (und eine Kopie der Zeile) enthält wo der Fehler aufgetreten ist. Diese Informationen sind wichtig, um den Fehler zu finden und zu beheben."
+        },
+        "stuck": {
+            "title": "Stecken geblieben? Code durcheinander?",
+            "desc": "Wenn Lernende bei einer Aufgabe nicht weiterkommen, zum Beispiel weil sie Fehler erhalten, die sie nicht beheben können, können sie eine Codezelle auf ihren ursprünglichen Inhalt zurücksetzen (mit der Schaltfläche mit den drei senkrechten Punkten unten rechts in der Codezelle)."
+        },
+        "typeError": {
+            "title": "TypeError",
+            "desc": "Ein häufiger TypeError (Typ-Fehler) ist, wenn Schüler vergessen, ein ... (auf Englisch ellipsis genannt) durch eigenen Code zu ersetzen. Dieser Fehler tritt häufig auf, wenn zeige_grafik versucht, den Wert anzuzeigen, den es als Argument erhält, aber dieser Wert ein ... anstelle einer gültigen Grafik ist. Dies führt zu dem folgenden Fehler: TypeError: Invalid type for parameter graphic: expected Graphic, got ellipsis"
+        },
+        "nameError": {
+            "title": "NameError",
+            "desc": "Wenn Lernende einen Namen falsch schreiben (z. B. agische_brustwehr statt magische_brustwehr), erhalten sie möglicherweise einen NameError (Namensfehler). Manchmal verursachen Lernende einen NameError, weil sie Text zum Kopieren und Einfügen auswählen, aber ihre Auswahl nicht das gesamte Wort umfasst. Unserer Erfahrung nach sind NameError für viele Lernende einfacher zu beheben."
+        },
+        "syntaxError": {
+            "title": "SyntaxError",
+            "desc": "Wenn Lernende die Struktur des Codes so verändern, dass sie die Python-Grammatik verletzt, erhalten sie einen SyntaxError. Häufige Gründe sind nicht zusammenpassende Klammern, wie ((...) oder ([...), oder fehlende Kommas, wie mauer(lila ohne_raender)."
+        },
+        "importError": {
+            "title": "ImportError",
+            "desc": "Wenn Lernende eine der Import-Anweisungen ändern und einen Namen importieren, der nicht existiert, erhalten sie einen ImportError."
+        },
+        "beyond": "Über diese Stunde des Codes Hinaus",
+        "beyondDesc": "Diese Stunde des Codes kann sich gut als Einstieg in eine Unterrichtssequenz zur Programmierung mit Python eignen. Wenn Sie beabsichtigen, Python in Ihrem Unterricht weiter zu verwenden, möchten Sie vielleicht die PyTamaro-Grafikbibliothek nutzen, die dieser Stunde des Codes zugrunde liegt. Wenn Sie das tun, können Sie gerne die <cards>TamaroCards</cards> auszudrucken, um diese in unplugged Aktivitäten zu verwenden.",
+        "contentProgramming": "Inhalt: Programmierung",
+        "compositionCastle": "Komposition einer Burg",
+        "compositionCastleDesc": "Lernende bauen Burgen aus vorgefertigten Teilen zusammen. Wir stellen Funktionen zur Verfügung, um jedes Teil (Dach, Brustwehr, Mauer und Zugbrücke) zu erstellen. Wir stellen auch zwei Funktionen zur Verfügung, um Listen von Teilen zu erstellen, indem man sie übereinander (ueber_liste) oder nebeneinander (neben_liste) platziert.",
+        "function": "Diese Aktivität führt die Schülerinnen und Schüler in eines der grundlegenden Konzepte in der Programmierung ein: die Idee einer <strong>Funktion</strong>. Funktionen sind eine Möglichkeit, Code in wiederverwendbare, unabhängige Teile zu organisieren. Eine Funktion nimmt einige Werte entgegen und liefert ein Ergebnis. Werte werden der Funktion explizit als Argumente übergeben. Das Ergebnis wird von der Funktion als Rückgabewert zurückgegeben.",
+        "noInput": "Keine Eingabe, Kein Zustand ausserhalb der Funktion",
+        "arguments": "Argumente",
+        "altPure": "Diagramm einer reinen Funktion", 
+        "returnValue": "Rückgabewert",
+        "noOutput": "Keine Ausgabe, Kein Zustand ausserhalb der Funktion",
+        "pureFunction": "Eine <strong>reine</strong> Funktion kommuniziert ausschliesslich über ihre Argumente und Rückgabewerte. Sie liest oder schreibt keinen Zustand ausserhalb der Funktion und kommuniziert nicht mit der Welt ausserhalb des Computers (sie empfängt keine Eingabe und erzeugt keine Ausgabe). Reine Funktionen können isoliert verstanden werden, ohne etwas über den Rest des Programms zu wissen.",
+        "problemDecomposition": "Dies bietet einen schönen Ansatz für die <strong>Problemlösung</strong>: Wir können ein Problem in unabhängige Teilprobleme zerlegen, diese Teilprobleme in kleinere unabhängige Teilprobleme zerlegen, bis sie klein genug sind, um sie direkt zu lösen. Aufgrund ihrer Unabhängigkeit müssen wir uns keine Gedanken über andere Teilprobleme machen, während wir uns auf eines konzentrieren.",
+        "altProblemDecomposition": "Diagramm der Problemlösung und Lösungskomposition",
+        "independentSubproblems": "Reine Funktionen sind eine grossartige Möglichkeit, unabhängige Teilprobleme zu lösen. Sie eignen sich auch hervorragend dazu, die Lösungen mehrerer unabhängiger Teilprobleme zu einer einzigen Lösung zusammenzufügen. Neben diesem pädagogischen Vorteil machen reine Funktionen Programme auch sicherer und vereinfachen verteilte Berechnungen in modernen Rechenzentren und Supercomputern.",
+        "pytamaroPure": "Die Python-Bibliothek, die in dieser Aktivität für die Grafik verwendet wird, PyTamaro, besteht aus einer kleinen Anzahl solcher reinen Funktionen. Einige dieser Funktionen erzeugen eine Grafik (ein Burgteil) basierend auf einigen Informationen (wie z.B. ihrer Farbe), die als Argumente übergeben werden. Andere Funktionen komponieren mehrere Teile (als Argumente übergeben) zu einer grösseren Burg.",
+        "playWithGraphics": "Die reinen Funktionen in dieser Aktivität können genauso gesehen werden wie Funktionen in der Mathematik. Es ist nur so, dass unsere PyTamaro-Funktionen <strong>mit attraktiven Grafiken spielen</strong> anstatt mit Zahlen.",
+        "truthPieces": "Die Wahrheit hinter unseren vorgefertigten Teilen",
+        "truthPiecesDesc": "Dieses Tutorial bietet Funktionen zum Erstellen von vier verschiedenen Arten von vorgefertigten Teilen: Mauern, Dächer, Brustwehren und Zugbrücken. Wussten Sie schon, dass diese vorgefertigten Teile selbst aus kleineren Teilen zusammengesetzt sind? Sie bestehen vollständig aus Rechtecken, Dreiecken, Ellipsen und Kreissektoren. Jemand (die Bachelor-Studierenden, die diese Stunde des Codes entworfen haben) hat diese vier Funktionen für vorgefertigte Teile programmiert, so dass sie primitive Grafiken kreieren und zu den vorgefertigten Teilen zusammensetzen, die in diesem Tutorial verwendet werden. Wenn Sie möchten, können Sie selbst ganz andere Teile erstellen! Schauen Sie sich das Welcome-Curriculum auf dieser Website an, um mehr zu erfahren.",
+        "learningObjectives": "Lernziele in der Programmierung",
+        "matrixIntro": "Die folgende Tabelle zeigt die Aktivitäten und die Lernziele des '{{curriculumTitle}}' Curriculums:",
+        "matrixMore": "Mehr Informationen finden Sie auf der <a>Informationsseite des Curriculums</a>.",
+        "moreActivities": "Weitere in Schweizer Gymnasien eingesetzte Programmieraktivitäten",
+        "moreActivitiesDesc": "Falls Sie mehr über die Python-Programmierung mit dem grafischen PyTamaro-Ansatz erfahren möchten, besuchen Sie unsere zahlreichen Aktivitäten und Curricula auf dieser Website. Sie sind frei zugänglich. Viele von ihnen werden im Programmierunterricht in Schweizer Gymnasien verwendet. Einige wurden von Gymnasiallehrpersonen selbst entwickelt. Wir empfehlen Ihnen, mit dem Welcome Curriculum (momentan nur auf Englisch verfügbar) zu beginnen.",
+        "welcomeCurriculum": "Welcome Curriculum",
+        "activityGallery": "Aktivitäts-Galerie",
+        "hearFromYou": "Sollten Sie die Aktivitäten in Ihrem Unterricht einsetzen, würden wir uns sehr freuen, von Ihnen zu hören. Wir entwickeln und pflegen diese Website im Rahmen unserer Forschung über den effektiven Programmierunterricht. Zu erfahren, was funktioniert hat und was nicht, kann uns sehr helfen!",
+        "contentHistory": "Inhalt: Geschichte",
+        "medievalCastles": "Diese Stunde des Codes wurde von den mittelalterlichen Burgen der Fortezza Bellinzona inspiriert. Während die Geschichte der ältesten Burg, Castelgrande, bis ins Römische Reich zurückreicht, wurde der grösste Teil der Befestigung im Spätmittelalter, im 14. und 15. Jahrhundert, erbaut.",
+        "timelineAlt": "Historische Zeitleiste der Fortezza Bellinzona",
+        "learnMoreFortezza": "Sie können mehr auf der offiziellen <a>Fortezza Bellinzona Webseite</a> erfahren. Oder wenn Sie die Chance haben, den mediterranen Schweizer Kanton Tessin, südlich der Alpen und nördlich der italienischen Städte Como und Mailand, zu besuchen, können Sie diese mittelalterliche Festung in der Schweizer Stadt Bellinzona persönlich besuchen. Sie ist ein in Europa einzigartiges UNESCO-Weltkulturerbe, bestehend aus drei separaten Burgen und ihren Befestigungen!",
+        "glossaryCastle": "Glossar der Burgarchitektur",
+        "glossaryCastleDesc": "Hier sind die für unser Tutorial relevanten Begriffe, illustriert mit unseren Fotos aus der <a>Fortezza Bellinzona</a>.",
+        "battlement": "Brustwehr",
+        "battlementDesc": "Der obere Teil einer Mauer, der zwischen Brusthöhe und Kopfhöhe liegt und eine Reihe von Zinnen und Lücken aufweist.",
+        "curtainWall": "Schildmauer",
+        "curtainWallDesc": "Die Verteidigungsmauer zwischen zwei Wehrtürmen, die oft mit einer Brustwehr versehen ist.",
+        "drawbridge": "Zugbrücke",
+        "drawbridgeDesc": "Eine bewegliche Brücke, die normalerweise am Eingang einer Burg steht. Die Burg Montebello in Bellinzona ist mit einer Folge von zwei Zugbrücken geschützt.",
+        "merlon": "Zinne",
+        "merlonDesc": "Fester, aufrechter Teil einer Brustwehr zwischen zwei Lücken. Es gibt viele verschiedene Formen von Zinnen.",
+        "photoOf": "Foto von {{term}}",
+        "literatureCastles": "Literatur über Burgen"
+    }
+}

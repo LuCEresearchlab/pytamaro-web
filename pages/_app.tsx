@@ -1,24 +1,25 @@
-import Head from 'next/head';
-import { AppProps } from 'next/app';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider, EmotionCache } from '@emotion/react';
-import { ConfirmProvider } from 'material-ui-confirm';
-import PlausibleProvider from 'next-plausible';
 import Box from '@mui/material/Box';
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import theme from '../src/theme';
-import createEmotionCache from '../src/createEmotionCache';
-import '../style/styles.css';
-import '../style/rtd.css';
+import { ConfirmProvider } from 'material-ui-confirm';
+import { appWithTranslation } from 'next-i18next';
+import PlausibleProvider from 'next-plausible';
+import { AppProps } from 'next/app';
+import Head from 'next/head';
 import PageFooter from '../components/PageFooter';
+import createEmotionCache from '../src/createEmotionCache';
+import theme from '../src/theme';
+import '../style/rtd.css';
+import '../style/styles.css';
 
 // Fonts
+import '@fontsource/fira-code/400.css';
 import '@fontsource/fira-sans/300.css';
 import '@fontsource/fira-sans/400.css';
 import '@fontsource/fira-sans/500.css';
 import '@fontsource/fira-sans/700.css';
-import '@fontsource/fira-code/400.css';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -29,7 +30,7 @@ interface MyAppProps extends AppProps {
 }
 
 // eslint-disable-next-line react/require-default-props
-export default function MyApp(props: MyAppProps) {
+function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   const queryClient = new QueryClient();
   return (
@@ -64,3 +65,5 @@ export default function MyApp(props: MyAppProps) {
     </CacheProvider>
   );
 }
+
+export default appWithTranslation(MyApp);

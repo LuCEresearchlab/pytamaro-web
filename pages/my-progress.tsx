@@ -27,6 +27,7 @@ import useLocalProfile from '../src/localStorage/useLocalProfile';
 import { findStartedCurricula, findUserActivities } from '../src/progress';
 import { Activity } from '../src/schemas/activitySchema';
 import { Curriculum } from '../src/schemas/curriculumSchema';
+import { translationProps } from '../src/serverSideTranslationProps';
 import { toolboxDemoActivityVariant } from '../src/specialActivities';
 import th from '../src/theme';
 import {
@@ -183,6 +184,7 @@ export async function getStaticProps() {
     props: {
       activities,
       curricula,
+      ...await translationProps(),
     },
   };
 }

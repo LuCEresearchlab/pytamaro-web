@@ -37,6 +37,7 @@ import { listVisibleActivities } from '../src/fs-content/activities';
 import { getCurriculum } from '../src/fs-content/curricula';
 import { Activity } from '../src/schemas/activitySchema';
 import { Curriculum } from '../src/schemas/curriculumSchema';
+import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
 import {
   activitiesByAuthorPathname, curriculaPathname, curriculumPathname, pytamaroDocsUrl,
@@ -416,6 +417,7 @@ export async function getStaticProps() {
     props: {
       welcomeCurriculum: await getCurriculum('luce', 'welcome'),
       activities: await listVisibleActivities('luce'),
+      ...await translationProps(['curriculum']),
     },
   };
 }

@@ -2,17 +2,19 @@ import { HourglassEmpty } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
 import { useRouter } from 'next/router';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 
 export default function FinishHourOfCodeButton() {
+  const { t } = useLocalTranslation(['activityfooter']);
   const targetUrl = 'https://code.org/api/hour/finish';
   const confirm = useConfirm();
   const router = useRouter();
   const handleClick = () => {
     confirm({
-      title: 'Are you sure?',
-      description: 'You are about to end here your Hour of Code!',
-      confirmationText: 'Yes, I am finished',
-      cancellationText: 'No, go back',
+      title: t('hourOfCode.title'),
+      description: t('hourOfCode.description'),
+      confirmationText: t('hourOfCode.confirmationText'),
+      cancellationText: t('hourOfCode.cancellationText'),
     }).then(
       () => router.push(targetUrl),
     );
@@ -25,8 +27,7 @@ export default function FinishHourOfCodeButton() {
         startIcon={<HourglassEmpty />}
         onClick={handleClick}
       >
-        {/* eslint-disable-next-line react/no-unescaped-entities */}
-        I'm finished with my Hour of Code
+        {t('hourOfCode.finish')}
       </Button>
     </Box>
   );

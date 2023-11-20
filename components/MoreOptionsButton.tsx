@@ -1,17 +1,25 @@
 import {
-  RestartAlt, ContentCopy, VisibilityOff, Visibility, MoreVert,
+  ContentCopy,
+  MoreVert,
+  RestartAlt,
+  Visibility,
+  VisibilityOff,
 } from '@mui/icons-material';
 import {
-  IconButton, Menu, MenuItem, ListItemIcon,
+  IconButton,
+  ListItemIcon,
+  Menu, MenuItem,
 } from '@mui/material';
 import { useState } from 'react';
-import { CodeCellState, CodeCellExecutionState } from '../src/localStorage/schema';
+import { CodeCellExecutionState, CodeCellState } from '../src/localStorage/schema';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 
 export default function MoreOptionsButton({
   codeCellState, codeCellExecutionState, onShowHideOutput, onReset,
 } :
 { codeCellState: CodeCellState, codeCellExecutionState: CodeCellExecutionState,
   onShowHideOutput: () => void, onReset: () => void }) {
+  const { t } = useLocalTranslation(['common']);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -66,22 +74,20 @@ export default function MoreOptionsButton({
           <ListItemIcon>
             <RestartAlt fontSize="small" />
           </ListItemIcon>
-          Reset Cell
+          {t('resetCell')}
         </MenuItem>
         <MenuItem onClick={handleCopy}>
           <ListItemIcon>
             <ContentCopy fontSize="small" />
           </ListItemIcon>
-          Copy Code
+          {t('copyCode')}
         </MenuItem>
         { codeCellExecutionState.executionResponse && (
         <MenuItem onClick={handleShowHideOutputArea}>
           <ListItemIcon>
             { codeCellExecutionState.outputAreaVisible ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
           </ListItemIcon>
-          { codeCellExecutionState.outputAreaVisible ? 'Hide' : 'Show' }
-          {' '}
-          Output
+          { t(`${codeCellExecutionState.outputAreaVisible ? 'hide' : 'show'}Output`) }
         </MenuItem>
         )}
       </Menu>

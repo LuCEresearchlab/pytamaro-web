@@ -25,6 +25,7 @@ import getActivitiesWithAPIs, { ActivityVariantWithNames } from '../src/activiti
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import { playgroundActivityVariant, playgroundInitialSource } from '../src/playground';
 import { PythonName, imported_names } from '../src/python-analyzer/python_analyzer';
+import { translationProps } from '../src/serverSideTranslationProps';
 
 function uniqueNames(names : PythonName[]) : Set<string> {
   return new Set(names.map(({ module, name }) => `${module}.${name}`));
@@ -149,6 +150,7 @@ export async function getStaticProps() {
   return {
     props: {
       activitiesWithNames: await getActivitiesWithAPIs(playgroundActivityVariant.authorSlug),
+      ...await translationProps(),
     },
   };
 }

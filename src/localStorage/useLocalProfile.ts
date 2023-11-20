@@ -6,6 +6,7 @@ import { Curriculum, curriculumToId } from '../schemas/curriculumSchema';
 import migrateToV2, { MetadataV1 } from './migrations/v2';
 import migrateToV3, { MetadataV2 } from './migrations/v3';
 import migrateToV4, { MetadataV3 } from './migrations/v4';
+import migrateToV5, { MetadataV4 } from './migrations/v5';
 import {
   ActivityVariantMetadata, METADATA_KEY, Metadata, getDefaultMetadata,
 } from './schema';
@@ -19,6 +20,9 @@ function migrations(metadata: { dataModelVersion: string }) : Metadata {
   }
   if (metadata.dataModelVersion === '3') {
     return migrations(migrateToV4(metadata as MetadataV3));
+  }
+  if (metadata.dataModelVersion === '4') {
+    return migrations(migrateToV5(metadata as MetadataV4));
   }
   return metadata as Metadata;
 }
@@ -81,6 +85,12 @@ export default function useLocalProfile() {
     }
   };
 
+  const setPlatformLocale = (locale: string) => {
+    setMetadata((currentMetadata) => produce(currentMetadata, (draft) => {
+      draft.platformLocale = locale;
+    }));
+  };
+
   return {
     metadata,
     dataSharingAllowed,
@@ -91,5 +101,6 @@ export default function useLocalProfile() {
     setActivityMetadata,
     findCurriculum,
     removeCurriculum,
+    setPlatformLocale,
   };
 }

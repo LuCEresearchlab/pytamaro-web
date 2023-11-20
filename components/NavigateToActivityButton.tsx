@@ -1,6 +1,7 @@
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Tooltip } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import {
@@ -30,6 +31,7 @@ export default function NavigateToActivity({
 }:
 { activityVariant: ActivityVariant, curriculum: Curriculum,
   direction: NavigationDirection, completed: boolean }) {
+  const { t } = useTranslation('activityfooter');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -51,12 +53,13 @@ export default function NavigateToActivity({
     router.push(url);
   };
 
-  const message = (isNext ? 'Next' : 'Previous') + (targetActivity ? ' Activity' : '');
+  const messageKey = (isNext ? 'next' : 'previous') + (targetActivity ? 'Activity' : '');
+  const message = t(messageKey);
 
   const enabled = (isNext && completed) || !isNext;
 
   return (
-    <Tooltip arrow title={enabled ? undefined : 'Available only after completing the current activity'}>
+    <Tooltip arrow title={enabled ? undefined : t('availableAfterCompleting')}>
       <span>
         <LoadingButton
           loading={loading}

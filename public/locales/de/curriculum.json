@@ -1,0 +1,14 @@
+{
+    "start": "Start",
+    "end": "Ende",
+    "clickToStart": "Klicke zum Starten",
+    "clickToFinish": "Klicke zum Beenden",
+    "inThisCurriculum": "In diesem Curriculum",
+    "openActivity": "Aktivität öffnen",
+    "unlockBy": "Freischalten durch Abschluss früherer Aktivitäten",
+    "activityInProgress": "Aktivität in Bearbeitung",
+    "activityCompleted": "Aktivität abgeschlossen",
+    "myCompetencies": "Meine Kompetenzen",
+    "competencies": "Kompetenzen",
+    "myCurriculum": "Mein Curriculum"
+}

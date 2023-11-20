@@ -1,14 +1,15 @@
+import FeedbackIcon from '@mui/icons-material/Feedback';
 import {
   Box,
   Button,
   Container,
   Typography,
 } from '@mui/material';
-import FeedbackIcon from '@mui/icons-material/Feedback';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import HourOfCodeFooter from '../../../components/HourOfCodeFooter';
 import NavigationBar from '../../../components/NavigationBar';
+import { translationProps } from '../../../src/serverSideTranslationProps';
 
 export default function ReleaseNotesPage() {
   return (
@@ -86,4 +87,12 @@ export default function ReleaseNotesPage() {
       </Box>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  return {
+    props: {
+      ...await translationProps(),
+    },
+  };
 }

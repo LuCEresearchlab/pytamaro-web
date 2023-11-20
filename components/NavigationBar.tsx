@@ -3,28 +3,30 @@ import {
   AppBar, Box, Button, Divider, IconButton, Menu, MenuItem, Stack, Toolbar,
 } from '@mui/material';
 import { useState } from 'react';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { activitiesByAuthorPathname, curriculaPathname, myProgressPathname } from '../src/urlUtils';
 import FeedbackDialog from './FeedbackDialog';
+import PlatformLanguageButton from './PlatformLanguageButton';
 
 const navItems = [
   {
-    name: 'Home',
+    name: 'home',
     url: '/',
   },
   {
-    name: 'Activities',
+    name: 'activities',
     url: activitiesByAuthorPathname('luce'),
   },
   {
-    name: 'Curricula',
+    name: 'curricula',
     url: curriculaPathname(),
   },
   {
-    name: 'My Progress',
+    name: 'my-progress',
     url: myProgressPathname(),
   },
   {
-    name: 'About',
+    name: 'about',
     url: '/about',
   },
 ];
@@ -40,6 +42,8 @@ export default function NavigationBar(props: { children?: React.ReactNode }) {
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
+
+  const { t } = useLocalTranslation();
 
   return (
     <AppBar position="sticky">
@@ -89,12 +93,13 @@ export default function NavigationBar(props: { children?: React.ReactNode }) {
         >
           {navItems.map((item) => (
             <Button key={item.url} href={item.url} sx={{ color: '#fff' }}>
-              {item.name}
+              {t(item.name)}
             </Button>
           ))}
         </Stack>
         {children}
         <FeedbackDialog />
+        <PlatformLanguageButton />
       </Toolbar>
     </AppBar>
   );

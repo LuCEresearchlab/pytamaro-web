@@ -1,0 +1,15 @@
+{
+    "previous": "Previous",
+    "previousActivity": "Previous Activity",
+    "next": "Next",
+    "nextActivity": "Next Activity",
+    "downloadPythonSource": "Download Python Source",
+    "availableAfterCompleting": "Available only after completing the current activity",
+    "hourOfCode": {
+        "finish": "I'm finished with my Hour Of Code",
+        "title": "Are you sure?",
+        "description": "You are about to end here your Hour of Code!",
+        "confirmationText": "Yes, I am finished",
+        "cancellationText": "No, go back"
+    }
+}

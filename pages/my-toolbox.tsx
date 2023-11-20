@@ -6,6 +6,7 @@ import Head from 'next/head';
 import NavigationBar from '../components/NavigationBar';
 import PageTitle from '../components/PageTitle';
 import ToolboxFunctionsList from '../components/ToolboxFunctionsList';
+import { translationProps } from '../src/serverSideTranslationProps';
 
 export default function MyToolbox() {
   return (
@@ -22,4 +23,12 @@ export default function MyToolbox() {
       </Box>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  return {
+    props: {
+      ...await translationProps(),
+    },
+  };
 }

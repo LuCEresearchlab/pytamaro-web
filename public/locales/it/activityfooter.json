@@ -1,0 +1,15 @@
+{
+    "previous": "Precedente",
+    "previousActivity": "Attività precedente",
+    "next": "Successivo",
+    "nextActivity": "Attività successiva",
+    "downloadPythonSource": "Scarica Codice Python",
+    "availableAfterCompleting": "Disponibile solo dopo aver completato l'attività corrente",
+    "hourOfCode": {
+        "finish": "Ho finito la mia Ora del Codice",
+        "title": "Sei sicuro/a?",
+        "description": "Stai per terminare la tua Ora del Codice!",
+        "confirmationText": "Sì, ho finito",
+        "cancellationText": "No, torna indietro"
+    }
+}

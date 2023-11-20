@@ -1,10 +1,12 @@
 import { Code } from '@mui/icons-material';
 import { Popover, Typography } from '@mui/material';
 import { useState } from 'react';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import RapidPlayground from '../RapidPlayground';
 import { emptySingleCell } from '../SolitaryCodeCell';
 
 export default function SidebarPlayground() {
+  const { t } = useLocalTranslation(['common']);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const initialCodeCells = emptySingleCell();
   const [codeCells, setCodeCells] = useState(initialCodeCells);
@@ -32,7 +34,7 @@ export default function SidebarPlayground() {
         color="primary"
       >
         <Code fontSize="small" sx={{ mr: '.7ch' }} />
-        Rapid Playground
+        {t('rapidPlayground')}
       </Typography>
       <Popover
         id="popover"

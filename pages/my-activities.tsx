@@ -12,6 +12,7 @@ import { listActivitiesAllAuthors } from '../src/fs-content/authors';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import { findUserActivities } from '../src/progress';
 import { Activity } from '../src/schemas/activitySchema';
+import { translationProps } from '../src/serverSideTranslationProps';
 import { activitiesByAuthorPathname } from '../src/urlUtils';
 
 export default function MyActivities({ activities } :
@@ -46,6 +47,7 @@ export async function getStaticProps() {
   return {
     props: {
       activities: await listActivitiesAllAuthors(),
+      ...await translationProps(),
     },
   };
 }

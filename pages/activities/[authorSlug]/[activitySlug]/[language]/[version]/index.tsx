@@ -24,6 +24,7 @@ import { findIncludingCurricula } from '../../../../../../src/curricula';
 import { findVersions, readActivity } from '../../../../../../src/fs-content/activities';
 import { getAuthorProfile, listAuthorsWithContent, listCurriculaAllAuthors } from '../../../../../../src/fs-content/authors';
 import { CodeCellState } from '../../../../../../src/localStorage/schema';
+import useLocalTranslation from '../../../../../../src/localStorage/useLocalTranslation';
 import getNotebookContent from '../../../../../../src/notebook';
 import {
   Activity,
@@ -33,6 +34,7 @@ import {
 } from '../../../../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../../../../src/schemas/authorSchema';
 import { Curriculum, curriculumToId } from '../../../../../../src/schemas/curriculumSchema';
+import { translationProps } from '../../../../../../src/serverSideTranslationProps';
 import { isSpecialActivity } from '../../../../../../src/specialActivities';
 import { activityVariantPathnameFromParts } from '../../../../../../src/urlUtils';
 import useCurriculumFromQuery from '../../../../../../src/useCurriculumFromQuery';
@@ -57,6 +59,8 @@ export default function NotebookPage({
   const curriculum = curricula.find((c) => curriculumToId(c) === curriculumId);
   const title = getVariantTitle(activity, activityVariant);
   const pageTitle = `${title} - PyTamaro`;
+
+  const { t } = useLocalTranslation(['common']);
 
   return (
     <div key={activityVariantId(activityVariant)}>
@@ -125,7 +129,7 @@ export default function NotebookPage({
             {curriculum && (
               <CurriculumUnitSidebar curriculum={curriculum} activityVariant={activityVariant} />
             )}
-            <TableOfContents initialized elementRef={cellsRef} selector="h2[id], h3[id]" title="Contents" />
+            <TableOfContents initialized elementRef={cellsRef} selector="h2[id], h3[id]" title={t('contents')} />
             {curriculum && (
               <ActivityCompetenciesSidebar
                 curriculum={curriculum}
@@ -145,7 +149,7 @@ export async function getStaticProps(
     activitySlug: string,
     language: string,
     version: string,
-  } },
+  }, defaultLocale: string, locales: string[] },
 ) {
   const {
     authorSlug, activitySlug, language, version,
@@ -160,6 +164,7 @@ export async function getStaticProps(
       activityVariant,
       cells: await getNotebookContent(authorSlug, activitySlug, language, version, userType),
       curricula: findIncludingCurricula(await listCurriculaAllAuthors(), activityVariant),
+      ...await translationProps(['activityfooter', 'curriculum']),
     },
   };
 }

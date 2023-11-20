@@ -30,6 +30,7 @@ import TamaroCardSheetsConstants from '../../public/tamarocards/v1/sheets/PyTama
 import TamaroCardSheetsFunctionsCommon from '../../public/tamarocards/v1/sheets/PyTamaro-Cards-Functions-Common.png';
 import TamaroCardSheetsFunctions from '../../public/tamarocards/v1/sheets/PyTamaro-Cards-Functions.png';
 import TamaroCardSheetsNames from '../../public/tamarocards/v1/sheets/PyTamaro-Cards-Names.png';
+import { translationProps } from '../../src/serverSideTranslationProps';
 
 export default function TamaroCardsPage() {
   const api = [
@@ -330,4 +331,12 @@ export default function TamaroCardsPage() {
       </Box>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  return {
+    props: {
+      ...await translationProps(),
+    },
+  };
 }

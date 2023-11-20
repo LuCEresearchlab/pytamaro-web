@@ -12,6 +12,7 @@ import { listCurriculaAllAuthors } from '../src/fs-content/authors';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import { findStartedCurricula } from '../src/progress';
 import { Curriculum } from '../src/schemas/curriculumSchema';
+import { translationProps } from '../src/serverSideTranslationProps';
 import { curriculaPathname } from '../src/urlUtils';
 
 export default function MyCurricula({ curricula } :
@@ -46,6 +47,7 @@ export async function getStaticProps() {
   return {
     props: {
       curricula: await listCurriculaAllAuthors(),
+      ...await translationProps(),
     },
   };
 }

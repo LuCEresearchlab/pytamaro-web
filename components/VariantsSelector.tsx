@@ -1,24 +1,21 @@
-import styled from '@emotion/styled';
-import { Stack } from '@mui/material';
+import { List } from '@mui/icons-material';
+import {
+  IconButton, Popover, Stack, Typography,
+} from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { uniq } from 'lodash';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { Activity, ActivityVariant } from '../src/schemas/activitySchema';
 import { activityVariantPathnameFromParts } from '../src/urlUtils';
-
-const VariantSelect = styled(Select)({
-  color: 'white',
-  '& fieldset': {
-    border: 'none',
-  },
-});
 
 export default function VariantSelector({ activity, activityVariant }:
 { activity: Activity, activityVariant: ActivityVariant }) {
   const router = useRouter();
+  const { t } = useLocalTranslation();
   const [selectedVersion, setSelectedVersion] = useState(activityVariant.version);
   const [selectedLanguage, setSelectedLanguage] = useState(activityVariant.language);
   const routeToNewVariant = (newLanguage: string, newVersion: string) => {
@@ -31,52 +28,97 @@ export default function VariantSelector({ activity, activityVariant }:
       ),
     );
   };
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const open = Boolean(anchorEl);
+  const id = open ? 'activity-variants-popover' : undefined;
+
+  // Do not show the button if there is only one variant (one language and one version).
+  if (activity.variants.length === 1) {
+    return null;
+  }
+
   return (
-    <Stack
-      direction="row"
-      alignItems="center"
-    >
-      {(activityVariant.version !== selectedVersion || activityVariant.language !== selectedLanguage) && <CircularProgress color="neutral" size="2rem" />}
-      <VariantSelect
-        value={selectedLanguage}
-        label="Language"
-        size="small"
-        onChange={(selected) => {
-          const newLanguage = selected.target.value as string;
-          setSelectedLanguage(newLanguage);
-          const versionForNewLanguage = activity.languagesInfo.find(
-            (i) => i.language === newLanguage,
-          )?.latestVersion;
-          if (versionForNewLanguage === undefined) {
-            throw new Error(`Latest version for activity ${activity.slug} in language ${newLanguage} not found`);
-          }
-          setSelectedVersion(versionForNewLanguage);
-          routeToNewVariant(newLanguage, versionForNewLanguage);
+    <div>
+      <IconButton
+        sx={{ ml: 1 }}
+        color="neutral"
+        onClick={handleButtonClick}
+        aria-describedby={id}
+      >
+        <List />
+      </IconButton>
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
         }}
       >
-        {uniq(activity.variants.map((v) => v.language)).map((lang) => (
-          <MenuItem
-            key={lang}
-            value={lang}
+        <Stack sx={{ p: 2 }} spacing={2}>
+          <Typography>{t('selectActivityVariant')}</Typography>
+          <Stack
+            direction="row"
+            justifyContent="space-around"
+            spacing={2}
           >
-            {lang.toUpperCase()}
-          </MenuItem>
-        ))}
-      </VariantSelect>
-      <VariantSelect
-        size="small"
-        value={selectedVersion}
-        label="Version"
-        onChange={(selected) => {
-          const newVersion = selected.target.value as string;
-          setSelectedVersion(newVersion);
-          routeToNewVariant(selectedLanguage, newVersion);
-        }}
-        disabled={activityVariant.language !== selectedLanguage}
-      >
-        {activity.variants.filter((v) => v.language === selectedLanguage)
-          .map((v) => <MenuItem key={v.version} value={v.version}>{v.version}</MenuItem>)}
-      </VariantSelect>
-    </Stack>
+            {(activityVariant.version !== selectedVersion || activityVariant.language !== selectedLanguage) && <CircularProgress color="neutral" size="2rem" />}
+            <Select
+              value={selectedLanguage}
+              label="Language"
+              size="small"
+              onChange={(selected) => {
+                const newLanguage = selected.target.value as string;
+                setSelectedLanguage(newLanguage);
+                const versionForNewLanguage = activity.languagesInfo.find(
+                  (i) => i.language === newLanguage,
+                )?.latestVersion;
+                if (versionForNewLanguage === undefined) {
+                  throw new Error(`Latest version for activity ${activity.slug} in language ${newLanguage} not found`);
+                }
+                setSelectedVersion(versionForNewLanguage);
+                routeToNewVariant(newLanguage, versionForNewLanguage);
+              }}
+            >
+              {uniq(activity.variants.map((v) => v.language)).map((lang) => (
+                <MenuItem
+                  key={lang}
+                  value={lang}
+                >
+                  {lang.toUpperCase()}
+                </MenuItem>
+              ))}
+            </Select>
+            <Select
+              size="small"
+              value={selectedVersion}
+              label="Version"
+              onChange={(selected) => {
+                const newVersion = selected.target.value as string;
+                setSelectedVersion(newVersion);
+                routeToNewVariant(selectedLanguage, newVersion);
+              }}
+              disabled={activityVariant.language !== selectedLanguage}
+            >
+              {activity.variants.filter((v) => v.language === selectedLanguage)
+                .map((v) => <MenuItem key={v.version} value={v.version}>{v.version}</MenuItem>)}
+            </Select>
+          </Stack>
+        </Stack>
+
+      </Popover>
+    </div>
   );
 }

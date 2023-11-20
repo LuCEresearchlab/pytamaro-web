@@ -4,6 +4,7 @@ import {
 } from '@mui/material';
 import Head from 'next/head';
 import NavigationBar from '../components/NavigationBar';
+import { translationProps } from '../src/serverSideTranslationProps';
 
 export default function TermsOfService() {
   return (
@@ -22,4 +23,12 @@ export default function TermsOfService() {
       </Box>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  return {
+    props: {
+      ...await translationProps(),
+    },
+  };
 }

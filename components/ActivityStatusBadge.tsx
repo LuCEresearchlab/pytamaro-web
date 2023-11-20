@@ -6,6 +6,7 @@ import {
   Badge, BadgeProps, Icon, Tooltip,
 } from '@mui/material';
 import { ActivityVariantMetadata } from '../src/localStorage/schema';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { ActivityVariant, activityVariantId } from '../src/schemas/activitySchema';
 import theme from '../src/theme';
 
@@ -37,23 +38,24 @@ export default function ActivityStatusBadge({
 } :
 { children: JSX.Element, status: ActivityStatus, locked ?: boolean,
   small ?: boolean, noInProgress ?: boolean }) {
+  const { t } = useLocalTranslation(['curriculum']);
   if (!locked && (status === 'initial' || (noInProgress && status === 'in-progress'))) {
     return children;
   }
 
   // Assume locked (overrides activity status)
-  let tooltipTitle = 'Complete previous activities to unlock';
+  let tooltipTitle = t('unlockBy');
   let badgeIcon = Lock;
   let badgeColor = theme.palette.grey[600];
 
   // If not, check activity status
   if (!locked) {
     if (status === 'in-progress') {
-      tooltipTitle = 'Activity In Progress';
+      tooltipTitle = t('activityInProgress');
       badgeIcon = Timeline;
       badgeColor = theme.palette.primary.main;
     } else if (status === 'completed') {
-      tooltipTitle = 'Activity Completed';
+      tooltipTitle = t('activityCompleted');
       badgeIcon = EmojiEvents;
       badgeColor = 'gold';
     }

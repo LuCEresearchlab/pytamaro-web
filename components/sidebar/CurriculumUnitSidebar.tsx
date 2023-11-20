@@ -3,6 +3,7 @@ import {
   Box, Link, Stack, Typography,
 } from '@mui/material';
 import { anchorName, findInCurriculum } from '../../src/curricula';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { ActivityVariant, activityVariantId } from '../../src/schemas/activitySchema';
 import { Curriculum } from '../../src/schemas/curriculumSchema';
 import { curriculumWithAnchor } from '../../src/urlUtils';
@@ -10,6 +11,7 @@ import SidebarTitle from './SidebarTitle';
 
 export default function CurriculumUnitSidebar({ curriculum, activityVariant } :
 { curriculum: Curriculum, activityVariant: ActivityVariant }) {
+  const { t } = useLocalTranslation(['curriculum']);
   const unit = curriculum.units.find((u) => {
     const activities = u.steps.flatMap((step) => step.activities);
     return activities.find(
@@ -22,7 +24,7 @@ export default function CurriculumUnitSidebar({ curriculum, activityVariant } :
   return unit ? (
     <Box>
       <SidebarTitle>
-        My Curriculum
+        {t('myCurriculum')}
       </SidebarTitle>
       <Stack spacing={1}>
         <Link
