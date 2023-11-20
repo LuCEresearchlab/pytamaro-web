@@ -501,10 +501,15 @@ export default function FinishHocCastlePage({ curriculum }:
   );
 }
 
-export async function getStaticProps() {
+export async function getStaticProps({ params } : { params: { language: string } }) {
   const authorSlug = 'luce-hoc';
-  const curriculumSlug = 'castle';
-  const curriculum = await getCurriculum(authorSlug, curriculumSlug);
+  const language = params.language as 'en' | 'it' | 'de';
+  const curriculumByLanguage = {
+    en: 'castle',
+    it: 'castello',
+    de: 'burg',
+  };
+  const curriculum = await getCurriculum(authorSlug, curriculumByLanguage[language]);
   return {
     props: {
       curriculum,
