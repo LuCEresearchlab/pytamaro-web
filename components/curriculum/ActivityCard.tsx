@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import { findStepIdx, findUnitIdx } from '../../src/curricula';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { getVariantTitle } from '../../src/schemas/activitySchema';
 import { Curriculum, CurriculumActivity } from '../../src/schemas/curriculumSchema';
@@ -49,6 +50,10 @@ export default function ActivityCard({
   const EXPANDED_MAX_COMPETENCIES_SHOWN = 20;
   const [maxCompetenciesShown, setMaxCompetenciesShown] = useState(COMPACT_MAX_COMPETENCIES_SHOWN);
 
+  const unitIdx = findUnitIdx(curriculum, curriculumActivity.variant);
+  const stepIdx = findStepIdx(curriculum.units[unitIdx], curriculumActivity.variant);
+  const firstStep = unitIdx === 0 && stepIdx === 0;
+
   return (
     <Box
       id={id}
@@ -67,7 +72,7 @@ export default function ActivityCard({
             width: '100%', height: '100%', paddingBottom: 0,
           }}
         >
-          <Tooltip title={isUnlocked ? t('openActivity') : t('unlockBy')} arrow followCursor placement="top">
+          <Tooltip title={isUnlocked ? t('openActivity') : t(`unlockBy${firstStep ? 'Starting' : 'Completing'}`)} arrow followCursor placement="top">
             <span>
               <CardActionArea
                 onClick={() => router.push(activityVariantWithCurriculum(variant, curriculum))}
