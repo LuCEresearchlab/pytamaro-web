@@ -1,8 +1,10 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import {
   Avatar, Box, Container, Divider, Link, List, ListItem, ListItemAvatar, ListItemText, Typography,
 } from '@mui/material';
 import { MDXRemote } from 'next-mdx-remote';
 import Head from 'next/head';
+import GenericMuiIcon from '../components/GenericMuiIcon';
 import NavigationBar from '../components/NavigationBar';
 import { listAuthorsProfiles } from '../src/fs-content/authors';
 import { AuthorProfile } from '../src/schemas/authorSchema';
@@ -40,6 +42,27 @@ export function Body2Typography({ children = null } : { children?: React.ReactNo
   );
 }
 
+const changelogEntries = [
+  {
+    date: '2023-11-17',
+    icon: 'FontDownload',
+    title: 'More fonts available',
+    desc: <span>You can now pick a font for the text in your graphics from a broader set! <Link href="/install">Read here the full list</Link> of available fonts.</span>,
+  },
+  {
+    date: '2023-11-20',
+    icon: 'Code',
+    title: 'New version of PyTamaro',
+    desc: 'PyTamaro 0.6.0 includes a full French translation and better string representation for graphics.',
+  },
+  {
+    date: '2023-11-20',
+    icon: 'Translate',
+    title: 'We speak multiple languages',
+    desc: 'You can now use this web platform in English, Italian, or German. You can change the preferred language using the button in the top right corner.',
+  },
+];
+
 export default function AboutPage({ authorsProfiles } : { authorsProfiles: AuthorProfile[] }) {
   return (
     <div>
@@ -49,13 +72,36 @@ export default function AboutPage({ authorsProfiles } : { authorsProfiles: Autho
       <Box>
         <NavigationBar />
         <Container maxWidth="md">
-          <Typography sx={{ mt: 2 }} variant="h3" align="center" color="textPrimary" gutterBottom>
+          <Typography sx={{ mt: 3, mb: 5 }} variant="h3" align="center" color="textPrimary">
             About PyTamaro Web
           </Typography>
-          <Typography variant="h5" align="center" color="textSecondary" paragraph>
-            The backstory
+          <Typography variant="h4" color="textPrimary" paragraph>
+            ✨ What is new on the platform?
           </Typography>
-          <Typography variant="h4" gutterBottom>Who?</Typography>
+          <Typography variant="body1" paragraph>
+            We constantly improve our platform. These are the highlights of our updates:
+          </Typography>
+          <List sx={{ bgcolor: 'background.paper', mb: 6 }}>
+            {changelogEntries.toReversed().map((entry, idx) => (
+              <>
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <GenericMuiIcon iconName={entry.icon} fontSize="1.5rem" />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={`${entry.title} (${new Date(entry.date).toLocaleDateString('en-US', {
+                      year: 'numeric', month: 'short', day: 'numeric',
+                    })})`}
+                    secondary={entry.desc}
+                  />
+                </ListItem>
+                {idx !== changelogEntries.length - 1 && <Divider variant="inset" component="li" />}
+              </>
+            ))}
+          </List>
+          <Typography variant="h4" gutterBottom>🧑‍🤝‍🧑 Who?</Typography>
           <Typography variant="body1" paragraph>
             This web platform for PyTamaro has been developed at
             the
@@ -154,25 +200,13 @@ export default function AboutPage({ authorsProfiles } : { authorsProfiles: Autho
               </ListItem>
             ))}
           </List>
-          <Typography variant="h4" sx={{ mt: 3 }} gutterBottom>Why?</Typography>
+          <Typography variant="h4" sx={{ mt: 4 }} gutterBottom>🧑‍💻 Why?</Typography>
           <Typography variant="body1" paragraph>
             Graphics can be an excellent domain to learn programming.
             We developed PyTamaro exactly with this goal in mind,
             and we have been using it in several courses: students loved it!
             This web platform provides a way to use PyTamaro in a browser
             and several activities that can inspire you.
-          </Typography>
-          <Typography variant="h4" gutterBottom>How?</Typography>
-          <Typography variant="body1" paragraph>
-            PyTamaro Web is a
-            {' '}
-            <a href="https://reactjs.org/">React</a>
-            {' '}
-            web application
-            built on top of
-            {' '}
-            <a href="https://nextjs.org/">Next.js</a>
-            .
           </Typography>
         </Container>
       </Box>
