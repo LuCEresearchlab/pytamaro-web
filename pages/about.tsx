@@ -82,7 +82,7 @@ export default function AboutPage({ authorsProfiles } : { authorsProfiles: Autho
             We constantly improve our platform. These are the highlights of our updates:
           </Typography>
           <List sx={{ bgcolor: 'background.paper', mb: 6 }}>
-            {changelogEntries.toReversed().map((entry, idx) => (
+            {changelogEntries.reverse().map((entry, idx) => (
               <>
                 <ListItem>
                   <ListItemAvatar>
