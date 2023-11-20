@@ -38,6 +38,7 @@ import { getCurriculum } from '../../../../src/fs-content/curricula';
 import useLocalTranslation from '../../../../src/localStorage/useLocalTranslation';
 import { Curriculum } from '../../../../src/schemas/curriculumSchema';
 import { locales, translationProps } from '../../../../src/serverSideTranslationProps';
+import { curriculumInfoPathname } from '../../../../src/urlUtils';
 
 function ContributorCard({
   firstName, lastName, contribution, imageName,
@@ -359,7 +360,7 @@ export default function FinishHocCastlePage({ curriculum }:
           </Typography>
           <ActivitiesCompetenciesMatrix curriculum={curriculum} />
           <Typography marginY={3}>
-            <Trans t={t} i18nKey="notes.matrixMore" components={{ a: <a href="/curricula/luce-hoc/castle/info" /> }} />
+            <Trans t={t} i18nKey="notes.matrixMore" components={{ a: <a href={curriculumInfoPathname(curriculum.authorSlug, curriculum.slug)} /> }} />
           </Typography>
           <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
             {t('notes.moreActivities')}
