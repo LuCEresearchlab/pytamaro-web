@@ -79,7 +79,7 @@ export default function NavigationBar(props: { children?: React.ReactNode }) {
           >
             {navItems.map((item) => (
               <MenuItem key={item.url} component="a" href={item.url}>
-                {item.name}
+                {t(item.name)}
               </MenuItem>
             ))}
           </Menu>
