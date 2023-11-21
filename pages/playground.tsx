@@ -150,7 +150,7 @@ export async function getStaticProps() {
   return {
     props: {
       activitiesWithNames: await getActivitiesWithAPIs(playgroundActivityVariant.authorSlug),
-      ...await translationProps(),
+      ...await translationProps(['activityfooter']),
     },
   };
 }
