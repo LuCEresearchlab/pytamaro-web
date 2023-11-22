@@ -1,12 +1,12 @@
 import { isEqual } from 'lodash';
 import { ActivityVariant } from './schemas/activitySchema';
 
-export const toolboxActivityVariant = {
+export const toolboxActivityVariant = (functionName : string) => ({
   authorSlug: 'luce',
-  activitySlug: 'toolbox',
+  activitySlug: `$toolbox-${functionName}`,
   language: 'en',
   version: '1',
-};
+});
 
 export const rapidPlaygroundActivityVariant = {
   authorSlug: 'luce',
@@ -22,8 +22,16 @@ export const toolboxDemoActivityVariant = {
   version: 'v1',
 };
 
+export function isToolboxActivity(variant: ActivityVariant) {
+  const reference = toolboxActivityVariant('');
+  return variant.authorSlug === reference.authorSlug
+    && variant.activitySlug.startsWith(reference.activitySlug)
+    && variant.language === reference.language
+    && variant.version === reference.version;
+}
+
 export function isSpecialActivity(variant: ActivityVariant) {
-  return isEqual(variant, toolboxActivityVariant)
+  return isToolboxActivity(variant)
   || isEqual(variant, rapidPlaygroundActivityVariant)
   || isEqual(variant, toolboxDemoActivityVariant);
 }

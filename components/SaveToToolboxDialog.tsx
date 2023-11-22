@@ -176,13 +176,15 @@ export default function SaveToToolboxDialog({
     findNewFunctions();
   }, [implementation]);
 
+  const activityVariant = toolboxActivityVariant(selectedFunction);
+
   const initialCodeCells = initialStateSingleCell(initialUsage || '');
   const [codeCells, setCodeCells] = useState<CodeCellState[]>(initialCodeCells);
   const activity = useTemporaryActivity(
     initialCodeCells,
     codeCells,
     setCodeCells,
-    toolboxActivityVariant,
+    activityVariant,
     preExecute,
     postExecuteSingleCell,
   );
@@ -329,7 +331,7 @@ export default function SaveToToolboxDialog({
                 </Typography>
                 <SolitaryCodeCell
                   activity={activity}
-                  activityVariant={toolboxActivityVariant}
+                  activityVariant={activityVariant}
                   requireNewExecution={invalidUsageExecution}
                   postSourceChange={() => {
                     setUsageEdited(true);

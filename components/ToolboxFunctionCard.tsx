@@ -31,7 +31,8 @@ export default function ToolboxFunctionCard(
   const [showSource, setShowSource] = useState(false);
   const toggleShowSource = () => setShowSource(!showSource);
   const usageCodeCells = initialStateSingleCell(fn.usage);
-  const activity = useReadOnlyTemporaryActivity(usageCodeCells, toolboxActivityVariant);
+  const activityVariant = toolboxActivityVariant(fn.name);
+  const activity = useReadOnlyTemporaryActivity(usageCodeCells, activityVariant);
   const originalActivityPathname = activityVariantPathname(fn.originalActivity);
   return (
     <CardContent sx={{ pb: 1, minWidth: '80ch' }}>
@@ -117,7 +118,7 @@ export default function ToolboxFunctionCard(
       </Typography>
       <SolitaryCodeCell
         activity={activity}
-        activityVariant={toolboxActivityVariant}
+        activityVariant={activityVariant}
         readOnly
       />
     </CardContent>
