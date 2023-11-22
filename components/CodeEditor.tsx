@@ -132,6 +132,15 @@ export default function CodeEditor({
     return () => {};
   }, [monacoInstance, toolboxFunctions]);
 
+  // Effect to trigger remeasurement of fonts after they have been loaded.
+  useEffect(() => {
+    document.fonts.ready.then(() => {
+      if (monacoInstance) {
+        monacoInstance.editor.remeasureFonts();
+      }
+    });
+  }, [monacoInstance]);
+
   return (
     <Editor
       language={LANGUAGE}
