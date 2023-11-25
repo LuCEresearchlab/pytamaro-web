@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import Head from 'next/head';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import HourOfCodeFooter from '../../../components/HourOfCodeFooter';
 import NavigationBar from '../../../components/NavigationBar';
@@ -37,6 +38,10 @@ enum Steps {
 }
 
 export default function HocCastlePage() {
+  const router = useRouter();
+  // No need for age screening if 'usi' is in the query
+  const skipAgeScreening = router.query.usi !== undefined;
+
   const [step, setStep] = useState(Steps.LANGUAGE);
 
   const today = new Date();
@@ -66,7 +71,7 @@ export default function HocCastlePage() {
 
   const handleLangSelection = (lang: string) => {
     setChosenLanguage(lang);
-    setStep(Steps.AGE);
+    setStep(skipAgeScreening ? Steps.BEGIN_HOC : Steps.AGE);
   };
 
   const handleAgeDialogClose = () => {
