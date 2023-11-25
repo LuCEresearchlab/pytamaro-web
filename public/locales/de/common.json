@@ -26,5 +26,13 @@
     "resetAreYouSure": "Bist Du sicher?",
     "resetActivityWarning": "Du bist dabei, die gesamte Aktivität zurückzusetzen, einschließlich des gesamten von Dir geschriebenen Codes. Diese Aktion kann nicht rückgängig gemacht werden! ⚠️",
     "resetActivityConfirm": "OK, ich will meinen Code löschen", 
-    "resetActivityCancel": "Abbrechen"
+    "resetActivityCancel": "Abbrechen",
+    "dataSharing": {
+        "title": "Hilf uns bei der Forschung!",
+        "researchProject": "PyTamaro Web ist ein Forschungsprojekt der <a>Luce</a>, der Forschungsgruppe für Informatikdidaktik an der USI in Lugano 🇨🇭.",
+        "collecting": "Wir möchten die verschiedenen Programme sammeln, die Lernende im Laufe der Zeit schreiben, und wie sie mit dieser Plattform interagieren.",
+        "anonymously": "Wir tun dies <strong>anonym: Es werden keine persönlichen Daten jeglicher Art gesammelt</strong>.",
+        "OK": "OK",
+        "reviewOptions": "Optionen überprüfen"
+    }
 }

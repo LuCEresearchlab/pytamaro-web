@@ -1,11 +1,17 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
+/* eslint-disable jsx-a11y/anchor-has-content */
 import {
-  Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link,
+  Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
 } from '@mui/material';
+import { Trans } from 'next-i18next';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { myDataPathname } from '../src/urlUtils';
 
 export default function DataSharingPreferenceDialog() {
   const { requestDataSharingPreference, setDataSharingPreference } = useLocalProfile();
+
+  const { t } = useLocalTranslation();
 
   const handleOK = () => {
     setDataSharingPreference('yes');
@@ -18,27 +24,21 @@ export default function DataSharingPreferenceDialog() {
   return (requestDataSharingPreference
     ? (
       <Dialog open={requestDataSharingPreference} maxWidth="md">
-        <DialogTitle>Help us do research!</DialogTitle>
+        <DialogTitle>{t('dataSharing.title')}</DialogTitle>
         <DialogContent>
           <DialogContentText gutterBottom>
-            PyTamaro Web is a research project run by
-            {' '}
-            <Link href="https://luce.si.usi.ch/">Luce</Link>
-            , the computing education research group at USI in Lugano🇨🇭.
+            <Trans t={t} i18nKey="dataSharing.researchProject" components={{ a: <a href="https://luce.si.usi.ch/" /> }} />
           </DialogContentText>
           <DialogContentText gutterBottom>
-            We would like to collect the kind of programs learners write.
+            {t('dataSharing.collecting')}
           </DialogContentText>
           <DialogContentText>
-            We do it
-            {' '}
-            <b>anonymously: no personal data of any kind is collected</b>
-            .
+            <Trans t={t} i18nKey="dataSharing.anonymously" components={{ strong: <strong /> }} />
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleLearnMore}>Review options</Button>
-          <Button onClick={handleOK} variant="contained">OK</Button>
+          <Button onClick={handleLearnMore}>{t('dataSharing.reviewOptions')}</Button>
+          <Button onClick={handleOK} variant="contained">{t('dataSharing.OK')}</Button>
         </DialogActions>
       </Dialog>
     )
