@@ -62,8 +62,10 @@ export default function CodeEditor({
       executionAllowed,
     ));
 
-    const updateHeight = () => {
-      editor.layout({ width: editor.getLayoutInfo().width, height: editor.getContentHeight() });
+    const updateHeight = (event: EditorNamespace.IContentSizeChangedEvent) => {
+      if (event.contentHeightChanged) {
+        editor.layout({ width: editor.getLayoutInfo().width, height: event.contentHeight });
+      }
     };
     editor.onDidContentSizeChange(updateHeight);
 
@@ -78,7 +80,6 @@ export default function CodeEditor({
 
     // After the editor has been loaded and its height has been updated,
     // (re-)scroll the anchor element into view.
-    updateHeight();
     scrollToAnchor();
   };
 
