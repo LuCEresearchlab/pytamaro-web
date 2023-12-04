@@ -124,7 +124,7 @@ export default function Install() {
                 'Ubuntu Mono',
                 'Inter',
                 'Cormorant Garamond',
-                'Libre Bodon',
+                'Libre Bodoni',
                 'Jost'].map((font) => <li key={font}><a href={`https://fonts.google.com/specimen/${font}`}>{font}</a></li>)}
             </ul>
           </QuestionBody>
