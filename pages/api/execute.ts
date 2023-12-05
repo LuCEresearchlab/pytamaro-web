@@ -76,11 +76,10 @@ async function doExecution(
           },
       },
     )).data;
-    if (glotResponse.error.length > 0) {
-      resData = { type: 'error', content: glotResponse.stdout + glotResponse.stderr };
-    } else {
-      resData = { type: 'success', content: glotResponse.stdout };
-    }
+    resData = {
+      type: glotResponse.error.length > 0 ? 'error' : 'success',
+      content: glotResponse.stdout + glotResponse.stderr,
+    };
   } catch (e) {
     // Log the error on the server
     // eslint-disable-next-line no-console
