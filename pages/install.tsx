@@ -8,7 +8,7 @@ import NavigationBar from '../components/NavigationBar';
 import { translationProps } from '../src/serverSideTranslationProps';
 import { activityVariantPathnameFromParts } from '../src/urlUtils';
 
-const PYTAMARO_VERSION = '0.6.0';
+const PYTAMARO_VERSION = '0.6.1';
 
 function SectionHeading({ children } : { children: React.ReactNode }) {
   return (
@@ -95,6 +95,7 @@ export default function Install() {
               {['Fira Sans',
                 'Fira Code',
                 'Roboto',
+                'Roboto Condensed',
                 'Roboto Serif',
                 'Roboto Mono',
                 'IBM Plex Sans',
