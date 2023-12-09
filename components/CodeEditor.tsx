@@ -62,9 +62,16 @@ export default function CodeEditor({
       executionAllowed,
     ));
 
+    let firstHeightUpdate = true;
     const updateHeight = (event: EditorNamespace.IContentSizeChangedEvent) => {
       if (event.contentHeightChanged) {
         editor.layout({ width: editor.getLayoutInfo().width, height: event.contentHeight });
+        if (firstHeightUpdate) {
+          // After the editor has been loaded and its height has been updated for the first time,
+          // (re-)scroll the anchor element into view.
+          firstHeightUpdate = false;
+          scrollToAnchor();
+        }
       }
     };
     editor.onDidContentSizeChange(updateHeight);
@@ -77,10 +84,6 @@ export default function CodeEditor({
       // eslint-disable-next-line no-param-reassign
       monaco.pytamaroColorized = true;
     }
-
-    // After the editor has been loaded and its height has been updated,
-    // (re-)scroll the anchor element into view.
-    scrollToAnchor();
   };
 
   // Effect to update the condition that determines whether the code execution is allowed or not.
