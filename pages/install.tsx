@@ -1,11 +1,12 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 import {
   Box,
-  Container, Typography,
+  Container, Link, Typography,
 } from '@mui/material';
 import Head from 'next/head';
 import NavigationBar from '../components/NavigationBar';
 import { translationProps } from '../src/serverSideTranslationProps';
+import { activityVariantPathnameFromParts } from '../src/urlUtils';
 
 const PYTAMARO_VERSION = '0.6.0';
 
@@ -76,24 +77,6 @@ export default function Install() {
           <SectionHeading>Frequently Asked Questions</SectionHeading>
 
           <QuestionHeading>
-            I was using PyTamaro and now some functions do not work anymore as they used to!
-          </QuestionHeading>
-          <QuestionBody>
-            In February 2023, we released a new version of PyTamaro
-            that includes some breaking changes to the API
-            to improve the consistency of the library and its error messages.
-            <br />
-            We advise to upgrade to the latest version of PyTamaro
-            (
-            <code>pip install --upgrade pytamaro</code>
-            ).
-            <br />
-            The documentation for the older version of PyTamaro (years 2022 and before) <a href="https://pytamaro.readthedocs.io/en/version_2022/">is still available</a>.
-            <br />
-            For a detailed list of the changes, see <a href="https://github.com/LuCEresearchlab/pytamaro/blob/main/CHANGELOG.md#040---2023-02-27">this changelog</a>.
-          </QuestionBody>
-
-          <QuestionHeading>
             Which environment is used to execute my Python code?
           </QuestionHeading>
           <QuestionBody>
@@ -127,7 +110,27 @@ export default function Install() {
                 'Libre Bodoni',
                 'Jost'].map((font) => <li key={font}><a href={`https://fonts.google.com/specimen/${font}`}>{font}</a></li>)}
             </ul>
+            <Link href={activityVariantPathnameFromParts('luce', 'available-fonts', 'en', 'v2')}>This activity</Link> features examples in Python that make use of the available fonts.
           </QuestionBody>
+
+          <QuestionHeading>
+            I was using PyTamaro and now some functions do not work anymore as they used to!
+          </QuestionHeading>
+          <QuestionBody>
+            In February 2023, we released a new version of PyTamaro
+            that includes some breaking changes to the API
+            to improve the consistency of the library and its error messages.
+            <br />
+            We advise to upgrade to the latest version of PyTamaro
+            (
+            <code>pip install --upgrade pytamaro</code>
+            ).
+            <br />
+            The documentation for the older version of PyTamaro (years 2022 and before) <a href="https://pytamaro.readthedocs.io/en/version_2022/">is still available</a>.
+            <br />
+            For a detailed list of the changes, see <a href="https://github.com/LuCEresearchlab/pytamaro/blob/main/CHANGELOG.md#040---2023-02-27">this changelog</a>.
+          </QuestionBody>
+
         </Container>
       </Box>
     </div>
