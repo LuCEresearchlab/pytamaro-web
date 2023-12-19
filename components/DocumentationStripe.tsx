@@ -26,6 +26,7 @@ export default function DocumentationStripe({ source, activityVariant } :
     'pytamaro': 'en',
     'pytamaro.it': 'it',
     'pytamaro.de': 'de',
+    'pytamaro.fr': 'fr',
   };
   const key = (module: string, name: string) => `${moduleToLanguage[module]}.${name}`;
   const knownNames = names?.filter(({ module }) => module in moduleToLanguage)
