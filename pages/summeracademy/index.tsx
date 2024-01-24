@@ -20,13 +20,13 @@ import anime from 'animejs';
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import Theory from 'public/artturi-jalli-gYrYa37fAKI-unsplash.jpg';
 import { useEffect } from 'react';
 import NavigationBar from '../../components/NavigationBar';
 import PanoramaUSI from '../../public/PanoramaUSI.jpg';
 import PyTamaroLogo from '../../public/PyTamaroLogo.png';
 import HeroImage from '../../public/SA.jpg';
 import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
+import Theory from '../../public/artturi-jalli-gYrYa37fAKI-unsplash.jpg';
 import { translationProps } from '../../src/serverSideTranslationProps';
 
 export default function SummerAcademy() {

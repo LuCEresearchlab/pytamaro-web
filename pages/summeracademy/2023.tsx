@@ -24,7 +24,6 @@ import anime from 'animejs';
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import Theory from 'public/artturi-jalli-gYrYa37fAKI-unsplash.jpg';
 import { useEffect } from 'react';
 import Carousel from 'react-material-ui-carousel';
 import NavigationBar from '../../components/NavigationBar';
@@ -47,6 +46,7 @@ import SA23_TableImage from '../../public/SA-2023-Table.jpg';
 import SA23_TableImage2 from '../../public/SA-2023-Table2.jpg';
 import HeroImage from '../../public/SA-2023.jpg';
 import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
+import Theory from '../../public/artturi-jalli-gYrYa37fAKI-unsplash.jpg';
 import { translationProps } from '../../src/serverSideTranslationProps';
 
 function SILogo({ height } : { height: number }) {
