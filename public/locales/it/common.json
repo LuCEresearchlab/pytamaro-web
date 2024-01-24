@@ -19,6 +19,8 @@
     "copyCode": "Copia Codice",
     "hideOutput": "Nascondi Output",
     "showOutput": "Mostra Output",
+    "normalWidth": "Larghezza Normale",
+    "wideWidth": "Larghezza Ampia",
     "staleOutput": "Output obsoleto: esegui di nuovo il codice per aggiornarlo",
     "noOutputTip": "Eseguito con successo, ma nessun output prodotto. Avevi intenzione di mostrare una grafica? Usa <code>{{apiName}}</code>.",
     "resetActivity": "Reset Attività",

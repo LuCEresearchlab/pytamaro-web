@@ -1,6 +1,8 @@
 import {
+  CloseFullscreen,
   ContentCopy,
   MoreVert,
+  OpenInFull,
   RestartAlt,
   Visibility,
   VisibilityOff,
@@ -15,10 +17,12 @@ import { CodeCellExecutionState, CodeCellState } from '../src/localStorage/schem
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 
 export default function MoreOptionsButton({
-  codeCellState, codeCellExecutionState, onShowHideOutput, onReset,
+  codeCellState, codeCellExecutionState, fullWidthCell,
+  onShowHideOutput, onReset, onFullWidthToggle,
 } :
 { codeCellState: CodeCellState, codeCellExecutionState: CodeCellExecutionState,
-  onShowHideOutput: () => void, onReset: () => void }) {
+  fullWidthCell: boolean,
+  onShowHideOutput: () => void, onReset: () => void, onFullWidthToggle: () => void, }) {
   const { t } = useLocalTranslation(['common']);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -35,6 +39,10 @@ export default function MoreOptionsButton({
   const handleShowHideOutputArea = () => {
     handleClose();
     onShowHideOutput();
+  };
+  const handleFullWidthToggle = () => {
+    handleClose();
+    onFullWidthToggle();
   };
   const handleReset = () => {
     handleClose();
@@ -71,20 +79,26 @@ export default function MoreOptionsButton({
         }}
       >
         <MenuItem onClick={handleReset}>
-          <ListItemIcon>
+          <ListItemIcon sx={{ verticalAlign: 'middle' }}>
             <RestartAlt fontSize="small" />
           </ListItemIcon>
           {t('resetCell')}
         </MenuItem>
         <MenuItem onClick={handleCopy}>
-          <ListItemIcon>
+          <ListItemIcon sx={{ verticalAlign: 'middle' }}>
             <ContentCopy fontSize="small" />
           </ListItemIcon>
           {t('copyCode')}
         </MenuItem>
+        <MenuItem onClick={handleFullWidthToggle} sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
+          <ListItemIcon sx={{ verticalAlign: 'middle' }}>
+            { fullWidthCell ? <CloseFullscreen fontSize="small" /> : <OpenInFull fontSize="small" />}
+          </ListItemIcon>
+          { t(`${fullWidthCell ? 'normal' : 'wide'}Width`) }
+        </MenuItem>
         { codeCellExecutionState.executionResponse && (
         <MenuItem onClick={handleShowHideOutputArea}>
-          <ListItemIcon>
+          <ListItemIcon sx={{ verticalAlign: 'middle' }}>
             { codeCellExecutionState.outputAreaVisible ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
           </ListItemIcon>
           { t(`${codeCellExecutionState.outputAreaVisible ? 'hide' : 'show'}Output`) }

@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import ActivitiesStripe from '../components/ActivitiesStripe';
 import DownloadCodeButton from '../components/CodeDownloadButton';
 import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDialog';
+import MoreOptionsButton from '../components/MoreOptionsButton';
 import NavigationBar from '../components/NavigationBar';
 import NetworkErrorSnackbar from '../components/NetworkErrorSnackbar';
 import ResetButton from '../components/ResetButton';
@@ -45,7 +46,7 @@ export default function Playground({ activitiesWithNames } :
   );
   const {
     codeCells, codeExecutionStates, cellsModified, networkError, sourcesUpTo,
-    setNetworkError, handleResetAllCellsNoConfirm,
+    setNetworkError, handleResetAllCellsNoConfirm, handleToggleOutputArea, handleResetSingleCell,
   } = localActivity;
   const { outputSynced } = codeExecutionStates[0];
 
@@ -62,6 +63,8 @@ export default function Playground({ activitiesWithNames } :
         handleResetAllCellsNoConfirm();
       });
   };
+
+  const [fullWidthCell, setFullWidthCell] = useState(false);
 
   useEffect(() => {
     const recommendActivities = () => {
@@ -109,18 +112,30 @@ export default function Playground({ activitiesWithNames } :
             <ToolboxListSidebar />
           </Sidebar>
           <CentralContent>
-            <Container maxWidth="md">
-              <Typography variant="h2" align="center" marginY={3}>Playground</Typography>
+            <Typography variant="h2" align="center" marginY={3}>Playground</Typography>
+            <Container maxWidth={fullWidthCell ? false : 'md'}>
               <SolitaryCodeCell
                 activity={localActivity}
                 activityVariant={playgroundActivityVariant}
                 extraActions={(
-                  <SaveToToolboxButton
-                    sources={sourcesUpTo(0)}
-                    originalActivity={playgroundActivityVariant}
-                  />
-            )}
+                  <>
+                    <SaveToToolboxButton
+                      sources={sourcesUpTo(0)}
+                      originalActivity={playgroundActivityVariant}
+                    />
+                    <MoreOptionsButton
+                      codeCellState={codeCells[0]}
+                      codeCellExecutionState={codeExecutionStates[0]}
+                      onShowHideOutput={() => handleToggleOutputArea(0)}
+                      onReset={() => handleResetSingleCell(0)}
+                      fullWidthCell={fullWidthCell}
+                      onFullWidthToggle={() => setFullWidthCell(!fullWidthCell)}
+                    />
+                  </>
+                )}
               />
+            </Container>
+            <Container maxWidth="md">
               <Box sx={{ display: 'flex', my: 4 }} justifyContent="center">
                 <DownloadCodeButton codeCells={codeCells} />
               </Box>

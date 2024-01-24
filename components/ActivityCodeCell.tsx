@@ -37,12 +37,14 @@ function InconsistencyMessage() {
 
 export default function ActivityCodeCell({
   activityVariant, initialCodeCells, cellIdx,
-  extraPythonFiles,
+  extraPythonFiles, fullWidthCell, onFullWidthToggle,
 } : {
   activityVariant: ActivityVariant,
   initialCodeCells: CodeCellState[],
   cellIdx: number,
   extraPythonFiles: PythonFile[],
+  fullWidthCell: boolean,
+  onFullWidthToggle: () => void,
 }) {
   const {
     codeCells, codeExecutionStates,
@@ -74,6 +76,8 @@ export default function ActivityCodeCell({
               codeCellExecutionState={codeExecutionStates[cellIdx]}
               onShowHideOutput={() => handleToggleOutputArea(cellIdx)}
               onReset={() => handleResetSingleCell(cellIdx)}
+              fullWidthCell={fullWidthCell}
+              onFullWidthToggle={onFullWidthToggle}
             />
           </>
     )}
