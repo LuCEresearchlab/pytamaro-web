@@ -20,7 +20,7 @@
     "hideOutput": "Hide Output",
     "showOutput": "Show Output",
     "normalWidth": "Normal Width",
-    "wideWidth": "Wide Width",
+    "wideWidth": "Full Width",
     "staleOutput": "Stale output: re-run the code to refresh it",
     "noOutputTip": "Successfully executed, but no output produced. Did you intend to show a graphic? Use <code>{{apiName}}</code>.",
     "contents": "Contents",
