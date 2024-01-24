@@ -44,7 +44,7 @@ export default function ActivityStatusBadge({
   }
 
   // Assume locked (overrides activity status)
-  let tooltipTitle = t('unlockBy');
+  let tooltipTitle = '';
   let badgeIcon = Lock;
   let badgeColor = theme.palette.grey[600];
 

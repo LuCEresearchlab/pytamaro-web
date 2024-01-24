@@ -71,6 +71,7 @@ export interface RawCurriculum extends BaseCurriculum {
   hourOfCode?: boolean,
   finishLabel?: string,
   finishURL?: string,
+  allActivitiesUnlocked?: boolean,
 }
 
 export interface Curriculum extends BaseCurriculum {
@@ -85,6 +86,7 @@ export interface Curriculum extends BaseCurriculum {
   hourOfCode: boolean,
   finishLabel: string,
   finishURL: string,
+  allActivitiesUnlocked: boolean,
 }
 
 export function curriculumId(authorSlug: string, slug: string) {

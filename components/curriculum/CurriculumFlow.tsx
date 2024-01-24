@@ -87,11 +87,12 @@ function addActivitiesStatuses(
   activities: CurriculumActivity[],
   metadata: Metadata,
   previousStepIsCompleted: boolean,
+  allUnlocked: boolean,
   { width, height }: { width: number, height: number },
 ) {
   return activities.map((activity) => {
     const status = activityVariantStatus(metadata.activities, activity.variant);
-    const isUnlocked = previousStepIsCompleted;
+    const isUnlocked = previousStepIsCompleted || allUnlocked;
     return {
       id: activity.id,
       curriculumActivity: activity,
@@ -163,6 +164,7 @@ function getFlowElements(
   let nodesToBeConnected : string[] = [];
   const existingCurriculum = metadata.curricula.find((c) => c.id === curriculumToId(curriculum));
   const alreadyStarted = existingCurriculum !== undefined;
+  const allUnlocked = alreadyStarted && curriculum.allActivitiesUnlocked;
   let previousStepIsCompleted = alreadyStarted;
   const nodes : Node[] = [];
   const edges : Edge[] = [];
@@ -264,7 +266,7 @@ function getFlowElements(
   // - a sequence of units
   curriculum.units.forEach((unit, unitIdx) => {
     // Each unit has a title
-    addSingleNode(anchorName(unitIdx), 'title', { type: 'unit', text: unit.title, unlocked: previousStepIsCompleted });
+    addSingleNode(anchorName(unitIdx), 'title', { type: 'unit', text: unit.title, unlocked: allUnlocked || previousStepIsCompleted });
     // and contains a sequence of steps
     unit.steps.forEach((step, stepIdx) => {
       const activitiesInfo = addActivitiesStatuses(
@@ -272,18 +274,19 @@ function getFlowElements(
         step.activities,
         metadata,
         previousStepIsCompleted,
+        allUnlocked,
         nodeTypeDimensions.activity,
       );
       const currentStepIsCompleted = activitiesInfo.some((a) => a.isUnlocked && a.status === 'completed');
       const stepId = anchorName(unitIdx, stepIdx);
       // A step may be optional (shown as a single collapsed node)
       if (step.isOptional) {
-        addSingleNode(stepId, 'optional', { activityInfo: activitiesInfo, unlocked: previousStepIsCompleted }, true);
+        addSingleNode(stepId, 'optional', { activityInfo: activitiesInfo, unlocked: allUnlocked || previousStepIsCompleted }, true);
       } else {
         // or it consists of a set of alternative activities...
         // (which may be preceded by a "join" node when coming from a set of >1 alternatives)
         if (nodesToBeConnected.length > 1) {
-          addSingleNode(stepId, 'join', { unlocked: previousStepIsCompleted }, true);
+          addSingleNode(stepId, 'join', { unlocked: allUnlocked || previousStepIsCompleted }, true);
         }
         // ...shown in a single row
         addActivitiesNodes(unitIdx, stepIdx, activitiesInfo);
@@ -293,8 +296,8 @@ function getFlowElements(
   });
   // - an end node
   addSingleNode('end', 'startend', {
-    type: 'end', text: curriculum.finishLabel, unlocked: previousStepIsCompleted, onEndClick: handleCurriculumEnd,
-  }, previousStepIsCompleted);
+    type: 'end', text: curriculum.finishLabel, unlocked: allUnlocked || previousStepIsCompleted, onEndClick: handleCurriculumEnd,
+  }, allUnlocked || previousStepIsCompleted);
 
   return {
     nodes,

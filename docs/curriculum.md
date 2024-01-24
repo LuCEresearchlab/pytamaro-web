@@ -23,3 +23,4 @@ The object describing a curriculum contains the following fields:
 - `hourOfCode`: an (optional) boolean to indicate whether this curriculum is meant to be run as an Hour Of Code.
 - `finishURL`: an (optional) URL, absolute or relative, to replace the default URL users are redirected to when they finish the curriculum.
 - `finishLabel`: an (optional) label for the finish button, to replace the deafult label "Finish".
+- `allActivitiesUnlocked`: (optional, defaults to `false`) when set to `true`, all the activities in this curriculum are available immediately after starting it. 

@@ -59,6 +59,7 @@ async function readCurriculum(authorSlug: string, curriculumSlug: string) : Prom
     hourOfCode: content.hourOfCode || false,
     finishLabel: content.finishLabel || 'Finish',
     finishURL: content.finishURL || curriculumFinishPathname(authorSlug, curriculumSlug),
+    allActivitiesUnlocked: content.allActivitiesUnlocked || false,
     description: await serialize(content.description),
     competencies: await processCompetencies(content.competencies),
     units: await processUnits(content.units),

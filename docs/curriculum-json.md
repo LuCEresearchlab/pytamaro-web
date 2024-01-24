@@ -10,6 +10,7 @@
   hourOfCode?: boolean,
   finishURL?: string,
   finishLabel?: string,
+  allActivitiesUnlocked?: boolean,
   competencies: [
     {
       id: competencyId, // string
