@@ -30,10 +30,18 @@ export default function DoNowBox({
   const setBlurred = useCallback((blurred: boolean) => {
     const className = 'blurred';
     let nextDoNowEncountered = false;
-    // Magic CSS selector to select all siblings after the current element
-    // (so that all the elements after the Do Now box are blurred,
-    // possibly until the next Do Now box included).
-    document.querySelectorAll(`#${id} ~ *`).forEach((element) => {
+    // We need to find (to blur) all the elements after the current Do Now box
+    // in the same Markdown cell, as well as all the elements within the
+    // subsequent Markdown/Code cells.
+    const nextElementsCurrentCell = document.querySelectorAll(`#${id} ~ *`);
+    const allNextElements = Array.from(nextElementsCurrentCell);
+    let nextElementsHolder = document.getElementById(id)?.parentElement?.nextElementSibling;
+    while (nextElementsHolder) {
+      allNextElements.push(...Array.from(nextElementsHolder.querySelectorAll('*')));
+      nextElementsHolder = nextElementsHolder.nextElementSibling;
+    }
+    // Blur all the elements, possibly until another subsequent Do Now box is found.
+    allNextElements.forEach((element) => {
       if (!nextDoNowEncountered) {
         if (blurred) {
           element.classList.add(className);
@@ -46,6 +54,7 @@ export default function DoNowBox({
       }
     });
   }, [id]);
+
   useEffect(() => {
     const performedBlur = true;
     if (!alreadyDidIt) {
