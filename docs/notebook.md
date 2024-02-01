@@ -45,6 +45,10 @@ Special components that can be used:
 
 - `<API>above</API>` to render a name (e.g., `above`) from the PyTamaro library with the appropriate style
   and automatic link to the documentation.
+
+  The language of the API (e.g., `rettangolo` for PyTamaro in Italian) is automatically chosen based on the language of the activity.
+  Optionally, it is possible to specify a `lang` attribute (e.g., `<API lang="en">rectangle</API>` in a German activity) to force a language for the API independently from the language of the activity. 
+
 - `<Activity id="luce/sliced-pitaya/en/v1" fragment="ring-of-seeds">Sliced Pitaya activity</Activity>` to render a link to another activity.
   You can optionally specify a fragment to link to a specific section of the activity. The `id` should refer to a fully qualified activity variant identifier,
   i.e. it should include the author's slug, the activity's slug, the language, and the version.

@@ -6,9 +6,9 @@ import { activityAssetPathname } from '../src/urlUtils';
 import ActivityLink from './ActivityLink';
 import { COLORIZE_CLASSNAME } from './CodeEditor';
 import DoNowBox from './DoNowBox';
-import TaskBox from './TaskBox';
 import PyTamaroAPI from './PyTamaroAPI';
 import ResponsiveReactPlayer from './ResponsiveReactPlayer';
+import TaskBox from './TaskBox';
 
 function imgSourceTransformer(
   src: string,
@@ -61,9 +61,10 @@ function imgComponent(props: any, cell: NotebookCell, authorSlug: string, activi
 function PyTamaroAPIComponent(
   name: string,
   activityVariant: ActivityVariant,
+  lang?: string,
 ) {
   return (
-    <PyTamaroAPI name={name} activityVariant={activityVariant} />
+    <PyTamaroAPI name={name} activityVariant={activityVariant} language={lang} />
   );
 }
 
@@ -94,8 +95,8 @@ export default function MarkdownCellComponent({ cell, activityVariant } :
     code: codeComponent,
     ReactPlayer: ResponsiveReactPlayer,
     Stack,
-    API: ({ children: name }: { children: string }) => (
-      PyTamaroAPIComponent(name, activityVariant)
+    API: ({ lang, children: name }: { lang?: string, children: string }) => (
+      PyTamaroAPIComponent(name, activityVariant, lang)
     ),
     Activity: ActivityLink,
     DoNow: ({ id, requireAnswer = false, children } :
