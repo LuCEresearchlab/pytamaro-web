@@ -49,7 +49,7 @@ module.exports = nextConfig
 
 module.exports = withSentryConfig(
   module.exports,
-  { silent: true },
+  { silent: true, errorHandler: (err) => { console.warn(err); } },
   { hideSourceMaps: true },
 );
 
