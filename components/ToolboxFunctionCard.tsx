@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Card,
   CardContent, FormControlLabel, FormGroup, Switch,
   Table, TableBody, TableCell, TableHead, TableRow, Typography,
 } from '@mui/material';
@@ -57,43 +58,45 @@ export default function ToolboxFunctionCard(
       <Typography color="text.secondary">
         {fn.description}
       </Typography>
-      <Table aria-label="Function Parameters" size="small" sx={{ my: 2 }}>
-        <TableHead>
-          <TableRow>
-            <TableCell>Parameter/Return</TableCell>
-            <TableCell>Type</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {fn.args.map((arg) => (
+      <Card sx={{ px: 2, my: 2 }}>
+        <Table aria-label="Function Parameters" size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ pl: 0 }}>Parameter/Return</TableCell>
+              <TableCell>Type</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {fn.args.map((arg) => (
+              <TableRow
+                key={arg.name}
+              >
+                <TableCell component="th" scope="row" sx={{ pl: 0 }}>
+                  <Typography component="span" fontFamily={theme.pytamaro.monospaceFontFamily}>{arg.name}</Typography>
+                </TableCell>
+                <TableCell>
+                  <TypeCell type={arg.typeUnparsed} />
+                </TableCell>
+              </TableRow>
+            ))}
             <TableRow
-              key={arg.name}
+              key="return"
+              sx={{
+                borderTopStyle: 'double',
+                borderTopColor: theme.palette.grey[300],
+                '&:last-child td, &:last-child th': { border: 0 },
+              }}
             >
-              <TableCell component="th" scope="row">
-                <Typography component="span" fontFamily={theme.pytamaro.monospaceFontFamily}>{arg.name}</Typography>
+              <TableCell component="th" scope="row" sx={{ pl: 0 }}>
+                <Typography component="span">Return Value</Typography>
               </TableCell>
               <TableCell>
-                <TypeCell type={arg.typeUnparsed} />
+                <TypeCell type={fn.returnTypeUnparsed} />
               </TableCell>
             </TableRow>
-          ))}
-          <TableRow
-            key="return"
-            sx={{
-              borderTopStyle: 'double',
-              borderTopColor: theme.palette.grey[300],
-              '&:last-child td, &:last-child th': { border: 0 },
-            }}
-          >
-            <TableCell component="th" scope="row">
-              <Typography component="span">Return Value</Typography>
-            </TableCell>
-            <TableCell>
-              <TypeCell type={fn.returnTypeUnparsed} />
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+          </TableBody>
+        </Table>
+      </Card>
       {!summary && (
         <Box sx={{ my: 2 }}>
           <Typography color="text.secondary" fontWeight="bold" component="span">
@@ -113,7 +116,7 @@ export default function ToolboxFunctionCard(
           )}
         </Box>
       )}
-      <Typography color="text.secondary" fontWeight="bold">
+      <Typography color="text.secondary" fontWeight="bold" gutterBottom>
         Usage
       </Typography>
       <SolitaryCodeCell
