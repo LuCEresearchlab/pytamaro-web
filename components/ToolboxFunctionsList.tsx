@@ -12,12 +12,17 @@ import { toolboxFunctionAnchor } from '../src/urlUtils';
 import EditToolboxFunctionButton from './EditToolboxFunctionButton';
 import ToolboxFunctionCard from './ToolboxFunctionCard';
 
-export default function ToolboxFunctionsList() {
+export default function ToolboxFunctionsList({ filterNameDesc }: { filterNameDesc: string }) {
   const { metadata } = useLocalProfile();
   const { list, deleteFunction } = useLocalToolbox();
   const confirm = useConfirm();
 
   const functions = list();
+
+  const filteredFunctions = functions.filter((fn) => {
+    const search = filterNameDesc.toLowerCase();
+    return fn.name.toLowerCase().includes(search) || fn.description.toLowerCase().includes(search);
+  });
 
   const askDeleteFunction = (fn: ToolboxFunction) => {
     confirm({
@@ -49,30 +54,37 @@ export default function ToolboxFunctionsList() {
   };
 
   return (
+    // eslint-disable-next-line no-nested-ternary
     functions.length === 0 ? (
       <Typography variant="body1" marginY={3}>
         The toolbox is still empty.
       </Typography>
     ) : (
-      <Stack
-        direction="column"
-        spacing={3}
-      >
-        {functions.map((fn) => (
-          <Card key={fn.name} id={toolboxFunctionAnchor(fn.name)} className="anchor" sx={{ overflow: 'visible' }}>
-            <ToolboxFunctionCard fn={fn} />
-            <CardActions sx={{ justifyContent: 'center' }}>
-              <EditToolboxFunctionButton toolboxFunction={fn} />
-              <Button
-                onClick={() => askDeleteFunction(fn)}
-                color="error"
-                variant="contained"
-              >
-                Delete Function
-              </Button>
-            </CardActions>
-          </Card>
-        ))}
-      </Stack>
+      filteredFunctions.length === 0 ? (
+        <Typography variant="body1" marginY={3}>
+          No function matches the search criteria.
+        </Typography>
+      ) : (
+        <Stack
+          direction="column"
+          spacing={3}
+        >
+          {filteredFunctions.map((fn) => (
+            <Card key={fn.name} id={toolboxFunctionAnchor(fn.name)} className="anchor" sx={{ overflow: 'visible' }}>
+              <ToolboxFunctionCard fn={fn} />
+              <CardActions sx={{ justifyContent: 'center' }}>
+                <EditToolboxFunctionButton toolboxFunction={fn} />
+                <Button
+                  onClick={() => askDeleteFunction(fn)}
+                  color="error"
+                  variant="contained"
+                >
+                  Delete Function
+                </Button>
+              </CardActions>
+            </Card>
+          ))}
+        </Stack>
+      )
     ));
 }

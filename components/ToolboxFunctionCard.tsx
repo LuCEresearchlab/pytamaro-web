@@ -30,7 +30,9 @@ export default function ToolboxFunctionCard(
   },
 ) {
   const [showSource, setShowSource] = useState(false);
+  const [showUsage, setShowUsage] = useState(summary);
   const toggleShowSource = () => setShowSource(!showSource);
+  const toggleShowUsage = () => setShowUsage(!showUsage);
   const usageCodeCells = initialStateSingleCell(fn.usage);
   const activityVariant = toolboxActivityVariant(fn.name);
   const activity = useReadOnlyTemporaryActivity(usageCodeCells, activityVariant);
@@ -116,14 +118,24 @@ export default function ToolboxFunctionCard(
           )}
         </Box>
       )}
-      <Typography color="text.secondary" fontWeight="bold" gutterBottom>
+      <Typography color="text.secondary" fontWeight="bold" component="span" gutterBottom>
         Usage
       </Typography>
+      {!summary && (
+      <FormGroup sx={{ display: 'inline', marginLeft: 2 }}>
+        <FormControlLabel
+          control={<Switch checked={showUsage} onChange={toggleShowUsage} />}
+          label={<Typography color="text.secondary">{showUsage ? 'Hide' : 'Show'}</Typography>}
+        />
+      </FormGroup>
+      )}
+      {showUsage && (
       <SolitaryCodeCell
         activity={activity}
         activityVariant={activityVariant}
         readOnly
       />
+      )}
     </CardContent>
   );
 }
