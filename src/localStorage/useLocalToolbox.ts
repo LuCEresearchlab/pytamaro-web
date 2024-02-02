@@ -42,7 +42,8 @@ export default function useLocalToolbox() {
     );
   };
 
-  const list = () => metadata.toolbox;
+  // List by default in reverse insertion order
+  const list = () => metadata.toolbox.slice().reverse();
 
   return {
     add,
