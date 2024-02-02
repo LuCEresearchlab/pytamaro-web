@@ -1,4 +1,4 @@
-import { Chip, Stack } from '@mui/material';
+import { Chip, Stack, TablePagination } from '@mui/material';
 import { useState } from 'react';
 import { ToolboxFunction } from '../../src/localStorage/schema';
 import useLocalToolbox from '../../src/localStorage/useLocalToolbox';
@@ -50,16 +50,36 @@ function SidebarToolboxFunction({ fn }: { fn: ToolboxFunction }) {
 
 export default function ToolboxListSidebar() {
   const { list } = useLocalToolbox();
+  const [page, setPage] = useState(0);
+  const fnsPerPage = 20;
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
   const toolboxFunctions = list();
   return toolboxFunctions.length > 0 ? (
     <SidebarItem title="My Toolbox">
       <Stack
         spacing={1}
       >
-        {toolboxFunctions.map((fn) => (
+        {toolboxFunctions.slice(fnsPerPage * page, fnsPerPage * (page + 1)).map((fn) => (
           <SidebarToolboxFunction key={fn.name} fn={fn} />
         ))}
       </Stack>
+      {toolboxFunctions.length > fnsPerPage ? (
+        <TablePagination
+          component="div"
+          count={toolboxFunctions.length}
+          page={page}
+          rowsPerPageOptions={[]}
+          onPageChange={handleChangePage}
+          rowsPerPage={fnsPerPage}
+          sx={{
+            '& .MuiTablePagination-spacer': {
+              display: 'none',
+            },
+          }}
+        />
+      ) : null}
     </SidebarItem>
   ) : null;
 }
