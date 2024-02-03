@@ -10,7 +10,7 @@ import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import theme from '../src/theme';
 import { toolboxFunctionAnchor } from '../src/urlUtils';
 import EditToolboxFunctionButton from './EditToolboxFunctionButton';
-import ToolboxFunctionCard from './ToolboxFunctionCard';
+import ToolboxFunctionCardContent from './ToolboxFunctionCardContent';
 
 export default function ToolboxFunctionsList({ filterNameDesc }: { filterNameDesc: string }) {
   const { metadata } = useLocalProfile();
@@ -71,7 +71,7 @@ export default function ToolboxFunctionsList({ filterNameDesc }: { filterNameDes
         >
           {filteredFunctions.map((fn) => (
             <Card key={fn.name} id={toolboxFunctionAnchor(fn.name)} className="anchor" sx={{ overflow: 'visible' }}>
-              <ToolboxFunctionCard fn={fn} />
+              <ToolboxFunctionCardContent fn={fn} />
               <CardActions sx={{ justifyContent: 'center' }}>
                 <EditToolboxFunctionButton toolboxFunction={fn} />
                 <Button

@@ -1,7 +1,8 @@
 import { Code } from '@mui/icons-material';
-import { Popover, Typography } from '@mui/material';
+import { ClickAwayListener, Paper, Typography } from '@mui/material';
 import { useState } from 'react';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
+import Popup from '../Popup';
 import RapidPlayground from '../RapidPlayground';
 import { emptySingleCell } from '../SolitaryCodeCell';
 
@@ -22,45 +23,36 @@ export default function SidebarPlayground() {
   const open = Boolean(anchorEl);
 
   return (
-    <>
-      <Typography
-        width="fit-content"
-        variant="body2"
-        aria-owns={open ? 'popover' : undefined}
-        aria-haspopup="true"
-        onClick={handleClick}
-        sx={{ cursor: 'pointer' }}
-        display="flex"
-        color="primary"
-      >
-        <Code fontSize="small" sx={{ mr: '.7ch' }} />
-        {t('rapidPlayground')}
-      </Typography>
-      <Popover
-        id="popover"
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'center',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'center',
-          horizontal: 'left',
-        }}
-        PaperProps={{
-          sx: {
-            minWidth: '80ch',
-          },
-        }}
-      >
-        <RapidPlayground
-          initialCodeCells={initialCodeCells}
-          codeCells={codeCells}
-          setCodeCells={setCodeCells}
-        />
-      </Popover>
-    </>
+    <ClickAwayListener onClickAway={handleClose}>
+      <div>
+        <Typography
+          width="fit-content"
+          variant="body2"
+          aria-owns={open ? 'popover' : undefined}
+          aria-haspopup="true"
+          onClick={handleClick}
+          sx={{ cursor: 'pointer' }}
+          display="flex"
+          color="primary"
+        >
+          <Code fontSize="small" sx={{ mr: '.7ch' }} />
+          {t('rapidPlayground')}
+        </Typography>
+        <Popup
+          id="popover"
+          open={open}
+          anchorEl={anchorEl}
+          placement="right"
+        >
+          <Paper sx={{ minWidth: '80ch' }}>
+            <RapidPlayground
+              initialCodeCells={initialCodeCells}
+              codeCells={codeCells}
+              setCodeCells={setCodeCells}
+            />
+          </Paper>
+        </Popup>
+      </div>
+    </ClickAwayListener>
   );
 }

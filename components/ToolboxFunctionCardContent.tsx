@@ -21,7 +21,7 @@ function TypeCell({ type } : { type: string }) {
     : <Typography component="span" fontFamily={theme.pytamaro.monospaceFontFamily}>{type}</Typography>;
 }
 
-export default function ToolboxFunctionCard(
+export default function ToolboxFunctionCardContent(
   {
     fn, summary = false,
   } :
@@ -122,19 +122,19 @@ export default function ToolboxFunctionCard(
         Usage
       </Typography>
       {!summary && (
-      <FormGroup sx={{ display: 'inline', marginLeft: 2 }}>
-        <FormControlLabel
-          control={<Switch checked={showUsage} onChange={toggleShowUsage} />}
-          label={<Typography color="text.secondary">{showUsage ? 'Hide' : 'Show'}</Typography>}
-        />
-      </FormGroup>
+        <FormGroup sx={{ display: 'inline', marginLeft: 2 }}>
+          <FormControlLabel
+            control={<Switch checked={showUsage} onChange={toggleShowUsage} />}
+            label={<Typography color="text.secondary">{showUsage ? 'Hide' : 'Show'}</Typography>}
+          />
+        </FormGroup>
       )}
       {showUsage && (
-      <SolitaryCodeCell
-        activity={activity}
-        activityVariant={activityVariant}
-        readOnly
-      />
+        <SolitaryCodeCell
+          activity={activity}
+          activityVariant={activityVariant}
+          readOnly
+        />
       )}
     </CardContent>
   );

@@ -19,7 +19,7 @@ function LongDescriptionTypography({ children = null }: { children?: React.React
   );
 }
 
-export default function CompetencyCard({
+export default function CompetencyCardContent({
   curriculum, competency, fullWidth = false, noActivities = false,
 }: {
   curriculum: Curriculum, competency: CurriculumCompetency,

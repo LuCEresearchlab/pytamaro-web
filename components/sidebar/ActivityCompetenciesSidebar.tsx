@@ -1,4 +1,6 @@
-import { Avatar, Box, Stack } from '@mui/material';
+import {
+  Avatar, Box, Card, ClickAwayListener, Stack,
+} from '@mui/material';
 import { useState } from 'react';
 import { allActivities } from '../../src/curricula';
 import { competencyColor } from '../../src/curriculumCompetencies';
@@ -6,10 +8,10 @@ import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { ActivityVariant, activityVariantId } from '../../src/schemas/activitySchema';
 import { Curriculum, CurriculumCompetency } from '../../src/schemas/curriculumSchema';
 import theme from '../../src/theme';
-import CompetencyCard from '../CompetencyCard';
+import CompetencyCardContent from '../CompetencyCardContent';
 import GenericMuiIcon from '../GenericMuiIcon';
+import Popup from '../Popup';
 import { myCompetencyChipId } from '../UserCompetenciesStack';
-import SidebarItemPopover from './SidebarItemPopover';
 import SidebarTitle from './SidebarTitle';
 
 const AVATAR_SIZE = 24;
@@ -36,35 +38,38 @@ function CompetencyAvatar({ curriculum, competency } :
   const open = Boolean(anchorEl);
   const popoverId = `activity-competency-popover-${competency.id}`;
   return (
-    <>
-      <Avatar
-        sx={{
-          bgcolor: theme.palette[competencyColor(competency)].main,
-          width: AVATAR_SIZE,
-          height: AVATAR_SIZE,
-          cursor: 'pointer',
-        }}
-        aria-owns={open ? popoverId : undefined}
-        aria-haspopup="true"
-        onClick={handleClick}
-        onMouseEnter={() => highlightCorrespondingMyCompetency(true)}
-        onMouseLeave={() => highlightCorrespondingMyCompetency(false)}
-      >
-        <GenericMuiIcon
-          iconName={competency.icon}
-          fontSize="large"
-        />
-      </Avatar>
-      <SidebarItemPopover
-        id={popoverId}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        fromRight
-      >
-        <CompetencyCard curriculum={curriculum} competency={competency} noActivities />
-      </SidebarItemPopover>
-    </>
+    <ClickAwayListener onClickAway={handleClose}>
+      <div>
+        <Avatar
+          sx={{
+            bgcolor: theme.palette[competencyColor(competency)].main,
+            width: AVATAR_SIZE,
+            height: AVATAR_SIZE,
+            cursor: 'pointer',
+          }}
+          aria-owns={open ? popoverId : undefined}
+          aria-haspopup="true"
+          onClick={handleClick}
+          onMouseEnter={() => highlightCorrespondingMyCompetency(true)}
+          onMouseLeave={() => highlightCorrespondingMyCompetency(false)}
+        >
+          <GenericMuiIcon
+            iconName={competency.icon}
+            fontSize="large"
+          />
+        </Avatar>
+        <Popup
+          id={popoverId}
+          open={open}
+          anchorEl={anchorEl}
+          placement="left"
+        >
+          <Card>
+            <CompetencyCardContent curriculum={curriculum} competency={competency} noActivities />
+          </Card>
+        </Popup>
+      </div>
+    </ClickAwayListener>
   );
 }
 
