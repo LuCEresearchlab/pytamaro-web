@@ -2,10 +2,12 @@ import {
   Button, Card, CardActions, Stack, Typography,
 } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
+import { useEffect } from 'react';
 import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
 import { ToolboxFunction } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
+import scrollToAnchor from '../src/scrollToAnchor';
 import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import theme from '../src/theme';
 import { toolboxFunctionAnchor } from '../src/urlUtils';
@@ -18,6 +20,10 @@ export default function ToolboxFunctionsList({ filterNameDesc }: { filterNameDes
   const confirm = useConfirm();
 
   const functions = list();
+
+  useEffect(() => {
+    scrollToAnchor();
+  }, [functions]);
 
   const filteredFunctions = functions.filter((fn) => {
     const search = filterNameDesc.toLowerCase();
