@@ -1,12 +1,15 @@
 import MenuIcon from '@mui/icons-material/Menu';
 import {
-  AppBar, Box, Button, Divider, IconButton, Menu, MenuItem, Stack, Toolbar,
+  AppBar, Box, Button, Divider, Drawer, IconButton,
+  MenuItem, Stack, Toolbar,
 } from '@mui/material';
 import { useState } from 'react';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { activitiesByAuthorPathname, curriculaPathname, myProgressPathname } from '../src/urlUtils';
 import FeedbackDialog from './FeedbackDialog';
 import PlatformLanguageButton from './PlatformLanguageButton';
+import SidebarItem from './sidebar/SidebarItem';
+import ToolboxListSidebar from './sidebar/ToolboxListSidebar';
 
 const navItems = [
   {
@@ -48,7 +51,7 @@ export default function NavigationBar(props: { children?: React.ReactNode }) {
   return (
     <AppBar position="sticky">
       <Toolbar>
-        <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+        <Box sx={{ flexGrow: 1, display: { xs: 'flex', lg: 'none' } }}>
           <IconButton
             size="large"
             aria-label="Menu"
@@ -59,37 +62,35 @@ export default function NavigationBar(props: { children?: React.ReactNode }) {
           >
             <MenuIcon />
           </IconButton>
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorElNav}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
+          <Drawer
+            anchor="left"
             open={Boolean(anchorElNav)}
             onClose={handleCloseNavMenu}
             sx={{
-              display: { xs: 'block', md: 'none' },
+              display: { xs: 'block', lg: 'none' },
             }}
           >
-            {navItems.map((item) => (
-              <MenuItem key={item.url} component="a" href={item.url}>
-                {t(item.name)}
-              </MenuItem>
-            ))}
-          </Menu>
+            <Box m={1}>
+              <SidebarItem title="Menu">
+                <Stack direction="column">
+                  {navItems.map((item) => (
+                    <MenuItem key={item.url} component="a" href={item.url}>
+                      {t(item.name)}
+                    </MenuItem>
+                  ))}
+                </Stack>
+              </SidebarItem>
+              <Divider sx={{ m: 1 }} />
+              <ToolboxListSidebar skipPopup />
+            </Box>
+          </Drawer>
         </Box>
         <Stack
           direction="row"
           spacing={1}
           sx={{ flexGrow: 1 }}
           divider={<Divider light orientation="vertical" flexItem />}
-          display={{ xs: 'none', md: 'flex' }}
+          display={{ xs: 'none', lg: 'flex' }}
         >
           {navItems.map((item) => (
             <Button key={item.url} href={item.url} sx={{ color: '#fff' }}>

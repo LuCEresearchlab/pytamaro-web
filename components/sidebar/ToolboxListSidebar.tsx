@@ -6,16 +6,21 @@ import { useState } from 'react';
 import { ToolboxFunction } from '../../src/localStorage/schema';
 import useLocalToolbox from '../../src/localStorage/useLocalToolbox';
 import theme from '../../src/theme';
+import { toolboxFunctionPathname } from '../../src/urlUtils';
 import Popup from '../Popup';
 import ToolboxFunctionCardContent from '../ToolboxFunctionCardContent';
 import { SIDEBAR_CHIPS_FONT_SIZE, SIDEBAR_CHIPS_WIDTH } from './Sidebar';
 import SidebarItem from './SidebarItem';
 
-function SidebarToolboxFunction({ fn }: { fn: ToolboxFunction }) {
+function SidebarToolboxFunction({ fn, skipPopup }: { fn: ToolboxFunction, skipPopup: boolean }) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+    if (skipPopup) {
+      window.open(toolboxFunctionPathname(fn.name));
+    } else {
+      setAnchorEl(event.currentTarget);
+    }
   };
 
   const handleClose = () => {
@@ -54,7 +59,7 @@ function SidebarToolboxFunction({ fn }: { fn: ToolboxFunction }) {
   );
 }
 
-export default function ToolboxListSidebar() {
+export default function ToolboxListSidebar({ skipPopup = false } : { skipPopup?: boolean }) {
   const { list } = useLocalToolbox();
   const [page, setPage] = useState(0);
   const fnsPerPage = 20;
@@ -68,7 +73,7 @@ export default function ToolboxListSidebar() {
         spacing={1}
       >
         {toolboxFunctions.slice(fnsPerPage * page, fnsPerPage * (page + 1)).map((fn) => (
-          <SidebarToolboxFunction key={fn.name} fn={fn} />
+          <SidebarToolboxFunction key={fn.name} fn={fn} skipPopup={skipPopup} />
         ))}
       </Stack>
       {toolboxFunctions.length > fnsPerPage ? (
