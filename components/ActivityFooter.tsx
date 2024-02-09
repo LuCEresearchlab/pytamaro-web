@@ -26,7 +26,7 @@ export default function ActivityFooter({
 
   return (
     <>
-      <Stack mt={12} mb={6} direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" spacing={4} alignItems="center">
+      <Stack mt={12} mb={6} direction={{ xs: 'column', sm: 'row' }} justifyContent="space-around" spacing={4} alignItems="center">
         {curriculum && (
           <NavigateToActivity
             activityVariant={activityVariant}
