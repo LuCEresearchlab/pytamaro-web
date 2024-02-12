@@ -31,3 +31,6 @@
 [submodule "luce-hoc"]
 	path = data/luce-hoc
 	url = git@github.com:LuCEresearchlab/pytamaro-web-luce-hoc.git
+[submodule "ehinger"]
+	path = data/ehinger
+	url = git@github.com:LuCEresearchlab/pytamaro-web-ehinger.git
