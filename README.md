@@ -87,6 +87,8 @@ See this document for [the structure of a content repository](docs/content-repo.
 </details>
 
 ## I am a maintainer of the platform. How do I add a new author?
+<details>
+<summary>Expand</summary>
 
 Activites and curricula are responsiblity of a certain author and are maintained in external repositories.
 See the [Luce repository](https://github.com/LuCEresearchlab/pytamaro-web-luce/) for an example.
@@ -95,9 +97,10 @@ Such repositories are imported to this repository as git submodules.
 When a new author is added, one of the maintainers needs to create their repository and add it to this one as a submodule.
 A script that performs all the necessary steps is available by running:
 ```sh
-npx ts-node tools/newAuthor.mts <author-slug>
+node --loader ts-node/esm tools/newAuthor.mts <author-slug>
 ```
 where `<author-slug>` is the name of the author's repository (e.g., `luce` for the Luce repository).
+</details>
 
 ## I am a developer of the platform. Which coding guidelines should I follow?
 <details>
