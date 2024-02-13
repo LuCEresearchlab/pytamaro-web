@@ -22,5 +22,5 @@ The object describing a curriculum contains the following fields:
 - `derivedFrom`: an (optional) array of curriculum IDs from which this curriculum has been derived (e.g., by borrowing significant parts). IDs are fully-qualified identifiers of curricula, i.e. in the form `<author-slug>/<curriculum-slug>`. This information is used for attribution.
 - `hourOfCode`: an (optional) boolean to indicate whether this curriculum is meant to be run as an Hour Of Code.
 - `finishURL`: an (optional) URL, absolute or relative, to replace the default URL users are redirected to when they finish the curriculum.
-- `finishLabel`: an (optional) label for the finish button, to replace the deafult label "Finish".
+- `finishLabel`: an (optional) label for the finish button, to replace the default label "Finish" (or, better, its localized version).
 - `allActivitiesUnlocked`: (optional, defaults to `false`) when set to `true`, all the activities in this curriculum are available immediately after starting it. 
