@@ -18,7 +18,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { ExecutionResponse } from '../src/codeExecution';
 import { CodeCellExecutionState, CodeCellState } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import { called_names } from '../src/python-analyzer/python_analyzer';
+import { PythonName, called_names, imported_names } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import CodeEditor from './CodeEditor';
 import DocumentationStripe from './DocumentationStripe';
@@ -34,16 +34,18 @@ const StaleOutputBadge = styled(Badge)<BadgeProps>(() => ({
   width: '100%',
 }));
 
-function NoOutputTip({ activityVariant } : { activityVariant: ActivityVariant }) {
+function NoOutputTip({ importedNames } : { importedNames: PythonName[] }) {
   const { t } = useLocalTranslation();
   const showGraphicNames: Record<string, string> = {
-    en: 'show_graphic',
-    it: 'visualizza_grafica',
-    de: 'zeige_grafik',
+    pytamaro: 'show_graphic',
+    'pytamaro.it': 'visualizza_grafica',
+    'pytamaro.de': 'zeige_grafik',
+    'pytamaro.fr': 'montre_graphique',
   };
-  const apiName = activityVariant.language in showGraphicNames
-    ? showGraphicNames[activityVariant.language]
-    : showGraphicNames.en;
+  // Pick the language based on the first import from one of the pytamaro modules.
+  // Default to English ("pytamaro") if we do not find a suitable module.
+  const moduleName = importedNames.find(({ module }) => module in showGraphicNames)?.module || 'pytamaro';
+  const apiName = showGraphicNames[moduleName];
   return (
     <Alert
       iconMapping={{
@@ -79,7 +81,7 @@ export function isExecutionError(response: ExecutionResponse | undefined) {
 
 export default function CodeCell({
   codeCellState, codeCellExecutionState, onSourceChanged, onExecutionRequested,
-  firstLineNumber, activityVariant,
+  firstLineNumber, activityVariant, cumulativeSource,
   extraActions = null, readOnly = false,
 } :
 { codeCellState : CodeCellState,
@@ -88,6 +90,7 @@ export default function CodeCell({
   onExecutionRequested: () => Promise<any>,
   firstLineNumber : number,
   activityVariant: ActivityVariant,
+  cumulativeSource: string,
   extraActions?: React.ReactNode
   readOnly?: boolean
 }) {
@@ -143,7 +146,7 @@ export default function CodeCell({
           </Stack>
         </CardActions>
         {noOutput && (
-          <NoOutputTip activityVariant={activityVariant} />
+          <NoOutputTip importedNames={imported_names(cumulativeSource)} />
         )}
         {inputFunctionCalled && <InputTip /> }
         <Collapse in={codeCellExecutionState.outputAreaVisible} timeout="auto" unmountOnExit>

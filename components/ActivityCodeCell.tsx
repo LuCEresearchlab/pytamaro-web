@@ -5,7 +5,7 @@ import { sum } from 'lodash';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import { ActivityVariant, PythonFile } from '../src/schemas/activitySchema';
-import { countLines } from '../src/sourceUtils';
+import { countLines, joinLines } from '../src/sourceUtils';
 import CodeCell from './CodeCell';
 import MoreOptionsButton from './MoreOptionsButton';
 import NetworkErrorSnackbar from './NetworkErrorSnackbar';
@@ -65,6 +65,7 @@ export default function ActivityCodeCell({
         onExecutionRequested={() => handleExecute(cellIdx)}
         firstLineNumber={1 + precedingLines}
         activityVariant={activityVariant}
+        cumulativeSource={joinLines(sourcesUpTo(cellIdx))}
         extraActions={(
           <>
             <SaveToToolboxButton

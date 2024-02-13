@@ -50,6 +50,7 @@ export default function SolitaryCodeCell({
       activityVariant={activityVariant}
       readOnly={readOnly}
       extraActions={extraActions}
+      cumulativeSource={codeCells[0].source}
     />
   );
 }
