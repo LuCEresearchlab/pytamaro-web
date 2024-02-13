@@ -40,6 +40,8 @@ export default function CodeEditor({
   const { list } = useLocalToolbox();
   const monacoRef = useRef<any>(null);
   const editorRef = useRef<any>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const monacoInstance = monacoRef.current;
   const editorInstance = editorRef.current;
   const [
@@ -65,6 +67,9 @@ export default function CodeEditor({
     let firstHeightUpdate = true;
     const updateHeight = (event: EditorNamespace.IContentSizeChangedEvent) => {
       if (event.contentHeightChanged) {
+        if (containerRef.current !== null) {
+          containerRef.current.style.height = `${event.contentHeight}px`;
+        }
         editor.layout({ width: editor.getLayoutInfo().width, height: event.contentHeight });
         if (firstHeightUpdate) {
           // After the editor has been loaded and its height has been updated for the first time,
@@ -146,29 +151,31 @@ export default function CodeEditor({
   }, [monacoInstance]);
 
   return (
-    <Editor
-      language={LANGUAGE}
-      theme="luce"
-      value={source}
-      onChange={(value) => value !== undefined && onChange(value)}
-      options={{
-        fontFamily: theme.pytamaro.monospaceFontFamily,
-        fontSize: 1.1 * theme.typography.fontSize,
-        lineNumbers: (n) => (n + firstLineNumber - 1).toString(10),
-        lineNumbersMinChars: 2,
-        minimap: { enabled: false },
-        renderLineHighlight: 'none',
-        overviewRulerLanes: 0,
-        scrollBeyondLastLine: false,
-        fixedOverflowWidgets: true,
-        scrollbar: {
-          vertical: 'hidden',
-          handleMouseWheel: false,
-          useShadows: false,
-        },
-        readOnly,
-      }}
-      onMount={handleEditorMount}
-    />
+    <div ref={containerRef}>
+      <Editor
+        language={LANGUAGE}
+        theme="luce"
+        value={source}
+        onChange={(value) => value !== undefined && onChange(value)}
+        options={{
+          fontFamily: theme.pytamaro.monospaceFontFamily,
+          fontSize: 1.1 * theme.typography.fontSize,
+          lineNumbers: (n) => (n + firstLineNumber - 1).toString(10),
+          lineNumbersMinChars: 2,
+          minimap: { enabled: false },
+          renderLineHighlight: 'none',
+          overviewRulerLanes: 0,
+          scrollBeyondLastLine: false,
+          fixedOverflowWidgets: true,
+          scrollbar: {
+            vertical: 'hidden',
+            handleMouseWheel: false,
+            useShadows: false,
+          },
+          readOnly,
+        }}
+        onMount={handleEditorMount}
+      />
+    </div>
   );
 }
