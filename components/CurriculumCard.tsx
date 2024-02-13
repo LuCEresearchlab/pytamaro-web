@@ -83,23 +83,24 @@ export default function CurriculumCard({ curriculum, userActivities = undefined 
               </Box>
             </CardContent>
           </Grid>
-          <Grid xs={3} display="flex" alignItems="center">
-            <Grid container>
-              {previewActivities.slice(0, 4).map((activity) => (
-                <Grid
-                  md={6}
-                  key={activity.id}
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  <ActivityCardMedia
-                    activity={activity.activity}
-                    variant={activity.variant}
-                  />
-                </Grid>
-              ))}
-            </Grid>
+          <Grid xs={3} display="flex" alignItems="center" justifyContent="center">
+            {/* <div> needed so that the inner Grid does not inherit from the outer one */}
+            <div>
+              <Grid container justifyContent="center">
+                {previewActivities.slice(0, 4).map((activity) => (
+                  <Grid
+                    xs={12}
+                    md={6}
+                    key={activity.id}
+                  >
+                    <ActivityCardMedia
+                      activity={activity.activity}
+                      variant={activity.variant}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </div>
           </Grid>
         </Grid>
       </CardActionArea>
