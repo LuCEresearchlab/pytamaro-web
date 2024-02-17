@@ -71,7 +71,7 @@ export default function MyData() {
             which influence what data gets sent to our server.
           </Typography>
           <Typography variant="h4" align="center" marginY={3}>Export and Import</Typography>
-          <Typography variant="body1" marginTop={3}>
+          <Typography variant="body1" marginY={3}>
             The data (e.g., source code) you enter in PyTamaro Web is stored in your browser,
             inside its local storage.
             You may want to export the data into a file
