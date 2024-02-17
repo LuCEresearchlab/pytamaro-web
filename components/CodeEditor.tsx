@@ -80,6 +80,13 @@ export default function CodeEditor({
       }
     };
     editor.onDidContentSizeChange(updateHeight);
+    // Manually trigger the first height update.
+    updateHeight({
+      contentHeight: editor.getContentHeight(),
+      contentHeightChanged: true,
+      contentWidth: editor.getContentWidth(),
+      contentWidthChanged: true,
+    });
 
     if (monaco.pytamaroColorized === undefined) {
       // Colorize code
