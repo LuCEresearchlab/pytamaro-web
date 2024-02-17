@@ -61,6 +61,24 @@ const changelogEntries = [
     title: 'We speak multiple languages',
     desc: 'You can now use this web platform in English, Italian, or German. You can change the preferred language using the button in the top right corner.',
   },
+  {
+    date: '2024-01-24',
+    icon: 'OpenInFull',
+    title: 'Full-screen mode for code editor',
+    desc: 'The code editor has a new option inside the menu to toggle the full-screen mode, giving you more width for your code',
+  },
+  {
+    date: '2024-02-03',
+    icon: 'Handyman',
+    title: 'Toolbox improvements',
+    desc: 'The experience of using the toolbox has been improved with pagination to prevent the sidebar from growing too much and a new search filter in the dedicated page.',
+  },
+  {
+    date: '2024-02-17',
+    icon: 'Error',
+    title: 'Better integration with Python error messages',
+    desc: 'Python error messages are now shown directly inside the code editor. We upgraded to the latest Python 3.12, showing the error message in bold and collapsing by default the stack frames from system libraries.',
+  },
 ];
 
 export default function AboutPage({ authorsProfiles } : { authorsProfiles: AuthorProfile[] }) {
@@ -82,7 +100,7 @@ export default function AboutPage({ authorsProfiles } : { authorsProfiles: Autho
             We constantly improve our platform. These are the highlights of our updates:
           </Typography>
           <List sx={{ bgcolor: 'background.paper', mb: 6 }}>
-            {changelogEntries.reverse().map((entry, idx) => (
+            {changelogEntries.slice().reverse().map((entry, idx) => (
               <>
                 <ListItem>
                   <ListItemAvatar>

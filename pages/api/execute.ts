@@ -6,9 +6,10 @@ import { CODE_EXECUTION_CELLS_TO_FILES_VERSION, ExecutionResponse, cellsToFiles 
 import { ToolboxFunction } from '../../src/localStorage/schema';
 import { PythonFile } from '../../src/schemas/activitySchema';
 
-const dummySuccessfulResponse = {
+const dummySuccessfulResponse : ExecutionResponse = {
   type: 'success',
-  content: '(Demo output - Only shown in development mode)\nHello, world!',
+  stdout: 'Hello, world!',
+  stderr: '(Demo output - Only shown in development mode)',
 };
 
 const redisClient = createClient({
@@ -54,7 +55,7 @@ async function doExecution(
   idx: number,
   toolboxFunctions: ToolboxFunction[],
   extraPythonFiles: PythonFile[],
-) {
+) : Promise<ExecutionResponse> {
   const files = await cellsToFiles(sources, idx, toolboxFunctions, extraPythonFiles);
   const data = {
     image: process.env.GLOT_IMAGE_TAG,
@@ -63,7 +64,6 @@ async function doExecution(
       files,
     },
   };
-  let resData;
   try {
     const glotResponse = (await axios.post(
       `${process.env.GLOT_RUNNER_URL}/run`,
@@ -76,17 +76,17 @@ async function doExecution(
           },
       },
     )).data;
-    resData = {
+    return {
       type: glotResponse.error.length > 0 ? 'error' : 'success',
-      content: glotResponse.stdout + glotResponse.stderr,
+      stdout: glotResponse.stdout,
+      stderr: glotResponse.stderr,
     };
   } catch (e) {
     // Log the error on the server
     // eslint-disable-next-line no-console
     console.error(e);
-    resData = { type: 'network-error', content: '' };
+    return { type: 'network-error', stdout: '', stderr: '' };
   }
-  return resData;
 }
 
 async function computeKey(text: string) {

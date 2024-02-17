@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { type ExecutionResponse } from '../codeExecution';
 import { ActivityVariant } from '../schemas/activitySchema';
 
 export const CURRENT_VERSION = '5';
@@ -53,7 +54,7 @@ export interface CodeCellState {
 
 export interface CodeCellExecutionState {
   executionInProgress: boolean;
-  executionResponse: any;
+  executionResponse: ExecutionResponse | undefined;
   outputAreaVisible: boolean;
   outputSynced: boolean;
 }

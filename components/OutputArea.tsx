@@ -2,16 +2,21 @@
 /* eslint-disable react/no-array-index-key */
 import { Fullscreen } from '@mui/icons-material';
 import {
-  Box, Button, Card, Dialog,
+  Box, Button, Card,
+  Collapse,
+  Dialog,
+  ToggleButton,
 } from '@mui/material';
-import AnsiUp from 'ansi_up';
 import { isEmpty, negate } from 'lodash';
 import {
+  CSSProperties,
   useEffect,
   useRef,
   useState,
 } from 'react';
 import { ExecutionResponse } from '../src/codeExecution';
+import { processTraceback } from '../src/pythonTraceback';
+import { joinLines, splitLines } from '../src/sourceUtils';
 import theme from '../src/theme';
 
 function dataURIPrefix(mime: string) {
@@ -128,9 +133,40 @@ function ImgElement({ dataURI } : { dataURI: string }) {
   );
 }
 
-function PreElement({ htmlContent } : { htmlContent : string }) {
-  // eslint-disable-next-line react/no-danger
-  return <pre style={OUTPUT_ELEMENT_STYLE} dangerouslySetInnerHTML={{ __html: htmlContent }} />;
+function SinglePreElement({ style = {}, lines } : { style?: CSSProperties, lines: string[] }) {
+  return (
+    <pre style={{ ...OUTPUT_ELEMENT_STYLE, ...style }}>{joinLines(lines)}</pre>
+  );
+}
+
+function CodeElement({ content } : { content : string }) {
+  const [showAllStackFrames, setShowAllStackFrames] = useState(false);
+
+  const {
+    errorLines, userTracebackLines, libraryTracebackLines, collapsed,
+  } = processTraceback(content);
+
+  return (
+    <div>
+      <SinglePreElement lines={userTracebackLines} />
+      {collapsed && (
+        <div>
+          <ToggleButton
+            value="check"
+            selected={showAllStackFrames}
+            onChange={() => setShowAllStackFrames(!showAllStackFrames)}
+            sx={{ paddingY: 0.5, marginLeft: '2ch' }}
+          >
+            {`${showAllStackFrames ? 'Hide' : 'Show All '} Stack Frames`}
+          </ToggleButton>
+          <Collapse in={showAllStackFrames} timeout="auto" unmountOnExit>
+            <SinglePreElement lines={libraryTracebackLines} />
+          </Collapse>
+        </div>
+      )}
+      <SinglePreElement style={{ fontWeight: 'bold' }} lines={errorLines} />
+    </div>
+  );
 }
 
 export default function OutputArea(
@@ -138,7 +174,7 @@ export default function OutputArea(
   { executionError: boolean, executionResponse: ExecutionResponse },
 ) {
   const pytamaroDataUriRegex = /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
-  const htmlContent = new AnsiUp().ansi_to_html(executionResponse.content);
+  const { stdout, stderr } = executionResponse;
   return (
     <Card
       variant="outlined"
@@ -152,11 +188,12 @@ export default function OutputArea(
       }}
     >
       <div className="output-area">
-        {htmlContent.split(pytamaroDataUriRegex).filter(negate(isEmpty)).map((chunk, idx) => (
+        {stdout.split(pytamaroDataUriRegex).filter(negate(isEmpty)).map((chunk, idx) => (
           chunk.startsWith(dataURIPrefix('image/png')) || chunk.startsWith(dataURIPrefix('image/gif'))
             ? <ImgElement key={idx} dataURI={chunk} />
-            : <PreElement key={idx} htmlContent={chunk} />
+            : <SinglePreElement key={idx} lines={splitLines(chunk)} />
         ))}
+        {stderr ? <CodeElement content={stderr} /> : null}
       </div>
     </Card>
   );

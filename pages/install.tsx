@@ -6,9 +6,10 @@ import {
 import Head from 'next/head';
 import NavigationBar from '../components/NavigationBar';
 import { translationProps } from '../src/serverSideTranslationProps';
+import theme from '../src/theme';
 import { activityVariantPathnameFromParts } from '../src/urlUtils';
 
-const PYTAMARO_VERSION = '0.6.1';
+const PYTAMARO_VERSION = '0.6.2';
 
 function SectionHeading({ children } : { children: React.ReactNode }) {
   return (
@@ -51,7 +52,7 @@ export default function Install() {
           <QuestionBody>
             If you have installed on your computer a Python interpreter
             with the <code>pip</code> package manager, you can easily install PyTamaro:
-            <pre style={{ textAlign: 'center', color: 'red' }}>pip install pytamaro</pre>
+            <pre style={{ textAlign: 'center', fontWeight: 'bold', color: theme.palette.primary.dark }}>pip install pytamaro</pre>
           </QuestionBody>
 
           <QuestionHeading>
@@ -80,16 +81,7 @@ export default function Install() {
             Which environment is used to execute my Python code?
           </QuestionHeading>
           <QuestionBody>
-            We execute your code in an enviroment with <a href="https://docs.python.org/3/whatsnew/3.11.html">Python 3.11</a> and the following libraries:
-            <ul>
-              <li>
-                <code>pytamaro</code> version <a href={`https://pypi.org/project/pytamaro/${PYTAMARO_VERSION}/`}><code>{PYTAMARO_VERSION}</code></a>
-              </li>
-              <li>
-                <code>friendly</code> version <a href="https://github.com/friendly-traceback/friendly"><code>fe5d3a2</code></a>
-                {' '}(configured to show user-friendly tracebacks)
-              </li>
-            </ul>
+            We execute your code in an enviroment with <a href="https://docs.python.org/3/whatsnew/3.12.html">Python 3.12</a> and <code>pytamaro</code> version <a href={`https://pypi.org/project/pytamaro/${PYTAMARO_VERSION}/`}><code>{PYTAMARO_VERSION}</code></a>.
             For the text in your graphics, you can use these fonts:
             <ul>
               {['Fira Sans',

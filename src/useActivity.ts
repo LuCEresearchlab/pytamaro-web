@@ -69,7 +69,7 @@ async function executeOnServer(
     });
     return response.data;
   } catch {
-    return { type: 'network-error', content: '' };
+    return { type: 'network-error', stdout: '', stderr: '' };
   }
 }
 
@@ -97,7 +97,7 @@ export function useActivity(
     .map(initialCodeExecutionState);
 
   const [codeExecutionStates, setCodeExecutionStates] = useSessionStorageState(
-    `pytamaro-web-execution-${variantId}`,
+    `pytamaro-web-executionv2-${variantId}`,
     { defaultValue: initialCodeExecutionStates() },
   );
   const [networkError, setNetworkError] = useSessionStorageState(
@@ -182,7 +182,7 @@ export function useActivity(
           } else {
             draft[idx].executionResponse = response;
             draft[idx].outputSynced = true;
-            draft[idx].outputAreaVisible = response.content.length > 0;
+            draft[idx].outputAreaVisible = (response.stderr + response.stdout).length > 0;
             // Mark the activity as completed when the last cell has been executed successfully.
             if (response.type === 'success' && idx === codeCells.length - 1) {
               markAsCompleted();

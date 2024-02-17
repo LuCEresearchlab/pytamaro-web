@@ -99,7 +99,9 @@ export default function CodeCell({
   const executionError = isExecutionError(executionResponse);
   const executing = codeCellExecutionState.executionInProgress;
   const executionFinished = codeCellExecutionState.outputSynced;
-  const noOutput = executionFinished && executionResponse?.content.length === 0;
+  const noOutput = executionFinished
+    && executionResponse?.stdout.length === 0
+    && executionResponse?.stderr.length === 0;
   const [inputFunctionCalled, setInputFunctionCalled] = useState(false);
 
   const debouncedFindCalledNames = useMemo(() => {
@@ -130,8 +132,10 @@ export default function CodeCell({
             onChange={onSourceChanged}
             onExecutionRequested={onExecutionRequested}
             executionAllowed={!executing && !executionFinished}
+            executionFinished={executionFinished}
             firstLineNumber={firstLineNumber}
             readOnly={readOnly}
+            executionResponse={executionResponse}
           />
         </CardContent>
         <CardActions disableSpacing sx={{ paddingLeft: 2, display: 'flex' }}>

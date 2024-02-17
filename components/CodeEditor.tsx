@@ -1,8 +1,12 @@
 import Editor, { loader } from '@monaco-editor/react';
-import type { editor as EditorNamespace } from 'monaco-editor';
-import { useEffect, useRef, useState } from 'react';
+import { type editor as EditorNamespace } from 'monaco-editor';
+import {
+  useCallback, useEffect, useRef, useState,
+} from 'react';
+import { ExecutionResponse } from '../src/codeExecution';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import { moduleImportCompletionProvider, pytamaroImportCompletionProvider, toolboxImportCompletionProvider } from '../src/monacoSuggestions';
+import { addMarkers } from '../src/pythonTraceback';
 import scrollToAnchor from '../src/scrollToAnchor';
 import theme from '../src/theme';
 
@@ -31,16 +35,18 @@ const RUN_CODE_CONDITION_KEY = 'executionAllowedCondition';
 export const COLORIZE_CLASSNAME = 'monaco-colorize';
 
 export default function CodeEditor({
-  source, onChange = () => {}, onExecutionRequested = undefined,
-  executionAllowed = false, firstLineNumber = 1, readOnly = false,
+  source, executionResponse = undefined, onChange = () => {}, onExecutionRequested = undefined,
+  executionAllowed = false, executionFinished = false, firstLineNumber = 1, readOnly = false,
 } :
-{ source: string, onChange?: (source: string) => void, onExecutionRequested? : () => void,
-  executionAllowed?: boolean, firstLineNumber?: number,
+{ source: string, executionResponse?: ExecutionResponse,
+  onChange?: (source: string) => void, onExecutionRequested? : () => void,
+  executionAllowed?: boolean, executionFinished?: boolean, firstLineNumber?: number,
   readOnly?: boolean }) {
   const { list } = useLocalToolbox();
   const monacoRef = useRef<any>(null);
   const editorRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [markerShown, setMarkerShown] = useState(false);
 
   const monacoInstance = monacoRef.current;
   const editorInstance = editorRef.current;
@@ -97,6 +103,14 @@ export default function CodeEditor({
       monaco.pytamaroColorized = true;
     }
   };
+
+  const clearMarkers = useCallback(() => {
+    if (monacoInstance && editorInstance) {
+      monacoInstance.editor.setModelMarkers(editorInstance.getModel(), 'owner', []);
+      editorInstance.trigger('', 'closeMarkersNavigation', {});
+      setMarkerShown(false);
+    }
+  }, [monacoInstance, editorInstance]);
 
   // Effect to update the condition that determines whether the code execution is allowed or not.
   useEffect(() => {
@@ -157,13 +171,46 @@ export default function CodeEditor({
     });
   }, [monacoInstance]);
 
+  // Effect to react to changes in the execution response.
+  useEffect(
+    () => {
+      if (monacoInstance && editorInstance) {
+        if (executionResponse?.type === 'error' && executionFinished) {
+          const markersAdded = addMarkers(
+            monacoInstance,
+            editorInstance,
+            executionResponse,
+            firstLineNumber,
+          );
+          if (markersAdded) {
+            setMarkerShown(true);
+          }
+        } else {
+          clearMarkers();
+        }
+      }
+    },
+    [executionResponse, editorInstance, monacoInstance, clearMarkers, executionFinished,
+      firstLineNumber],
+  );
+
+  const handleSourceChanged = (newSource: string | undefined) => {
+    if (newSource !== undefined) {
+      onChange(newSource);
+      if (markerShown) {
+        clearMarkers();
+      }
+    }
+  };
+
   return (
     <div ref={containerRef}>
       <Editor
         language={LANGUAGE}
         theme="luce"
         value={source}
-        onChange={(value) => value !== undefined && onChange(value)}
+        onMount={handleEditorMount}
+        onChange={handleSourceChanged}
         options={{
           fontFamily: theme.pytamaro.monospaceFontFamily,
           fontSize: 1.1 * theme.typography.fontSize,
@@ -181,7 +228,6 @@ export default function CodeEditor({
           },
           readOnly,
         }}
-        onMount={handleEditorMount}
       />
     </div>
   );

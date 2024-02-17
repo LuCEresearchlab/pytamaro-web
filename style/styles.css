@@ -51,3 +51,11 @@ pre:has(code) {
 .monaco-editor .iPadShowKeyboard {
     display: none;
 } 
+
+.peekview-title > .filename {
+    display: none;
+}
+
+.peekview-widget .message > div {
+    font-weight: bold;
+}
