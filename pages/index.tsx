@@ -218,7 +218,7 @@ export default function Home({ welcomeCurriculum, activities } :
                           interval={2000}
                           indicators={false}
                         >
-                          {featuredActivities.map((activity) => (
+                          {featuredActivities.filter((activity) => activity.slug !== 'swiss-flag').map((activity) => (
                             <CompactActivityVariantCard
                               key={activity.slug}
                               activity={activity}
