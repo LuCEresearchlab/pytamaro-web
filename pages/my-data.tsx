@@ -46,6 +46,7 @@ export default function MyData() {
     confirm({ description: 'You are about to delete ALL the data. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete everything' })
       .then(() => {
         clearEntireLocalStorage();
+        sessionStorage.clear();
         setLocalStorageChanged(localStorageChanged + 1);
       });
   };
