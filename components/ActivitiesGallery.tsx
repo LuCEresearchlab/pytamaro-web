@@ -125,7 +125,7 @@ export default function ActivitiesGallery({
                         {info.language}
                       </Button>
                     ))}
-                    <Box sx={{ marginLeft: 'auto' }}>
+                    <Box style={{ marginLeft: 'auto' }}>
                       <IconButton
                         size="small"
                         href={activityPathname(activity.authorSlug, activity.slug)}
