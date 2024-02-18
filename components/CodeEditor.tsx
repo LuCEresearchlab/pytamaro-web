@@ -46,7 +46,6 @@ export default function CodeEditor({
   const monacoRef = useRef<any>(null);
   const editorRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [markerShown, setMarkerShown] = useState(false);
 
   const monacoInstance = monacoRef.current;
   const editorInstance = editorRef.current;
@@ -106,9 +105,12 @@ export default function CodeEditor({
 
   const clearMarkers = useCallback(() => {
     if (monacoInstance && editorInstance) {
-      monacoInstance.editor.setModelMarkers(editorInstance.getModel(), 'owner', []);
-      editorInstance.trigger('', 'closeMarkersNavigation', {});
-      setMarkerShown(false);
+      // Only clear markers and close the open ones if there are any
+      // (otherwise this inappropriately focuses the editor).
+      if (monacoInstance.editor.getModelMarkers().length > 0) {
+        monacoInstance.editor.setModelMarkers(editorInstance.getModel(), 'owner', []);
+        editorInstance.trigger('', 'closeMarkersNavigation', {});
+      }
     }
   }, [monacoInstance, editorInstance]);
 
@@ -175,18 +177,9 @@ export default function CodeEditor({
   useEffect(
     () => {
       if (monacoInstance && editorInstance) {
+        clearMarkers();
         if (executionResponse?.type === 'error' && executionFinished) {
-          const markersAdded = addMarkers(
-            monacoInstance,
-            editorInstance,
-            executionResponse,
-            firstLineNumber,
-          );
-          if (markersAdded) {
-            setMarkerShown(true);
-          }
-        } else {
-          clearMarkers();
+          addMarkers(monacoInstance, editorInstance, executionResponse, firstLineNumber);
         }
       }
     },
@@ -197,9 +190,7 @@ export default function CodeEditor({
   const handleSourceChanged = (newSource: string | undefined) => {
     if (newSource !== undefined) {
       onChange(newSource);
-      if (markerShown) {
-        clearMarkers();
-      }
+      clearMarkers();
     }
   };
 
