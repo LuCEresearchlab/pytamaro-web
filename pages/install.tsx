@@ -9,7 +9,7 @@ import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
 import { activityVariantPathnameFromParts } from '../src/urlUtils';
 
-const PYTAMARO_VERSION = '0.6.2';
+const PYTAMARO_VERSION = '0.6.3';
 
 function SectionHeading({ children } : { children: React.ReactNode }) {
   return (
