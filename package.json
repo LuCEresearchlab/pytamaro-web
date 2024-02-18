@@ -81,7 +81,7 @@
     "eslint-plugin-jsx-a11y": "^6.6.1",
     "eslint-plugin-react": "^7.31.10",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "monaco-editor": "^0.45.0",
+    "monaco-editor": "^0.46.0",
     "prettier": "^2.7.1",
     "simple-git": "^3.14.1",
     "ts-node": "^10.9.1",
