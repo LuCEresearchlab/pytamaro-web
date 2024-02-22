@@ -33,7 +33,7 @@ export default function DocumentationStripe({ source, activityVariant } :
     .filter(({ module, name }) => key(module, name) in PyTamaroNames);
   return (
     <Box>
-      <Stack direction="row" spacing={1} alignItems="baseline" sx={{ overflowX: 'auto' }} marginLeft={1}>
+      <Stack direction="row" rowGap={0.33} columnGap={1} alignItems="baseline" useFlexGap flexWrap="wrap" marginLeft={1}>
         {(knownNames?.length || 0) > 0 && (
           <Typography variant="body2">
             Docs:

@@ -66,7 +66,6 @@ export default function PyTamaroAPI({
     <span style={{
       display: 'inline-flex',
       alignItems: 'baseline',
-      flexWrap: 'wrap',
     }}
     >
       <img
