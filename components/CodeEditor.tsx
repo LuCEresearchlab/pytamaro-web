@@ -1,4 +1,5 @@
 import Editor, { loader } from '@monaco-editor/react';
+import { debounce } from 'lodash';
 import { type editor as EditorNamespace } from 'monaco-editor';
 import {
   useCallback, useEffect, useRef, useState,
@@ -187,12 +188,12 @@ export default function CodeEditor({
       firstLineNumber],
   );
 
-  const handleSourceChanged = (newSource: string | undefined) => {
+  const debouncedHandleSourceChanged = debounce((newSource: string | undefined) => {
     if (newSource !== undefined) {
       onChange(newSource);
       clearMarkers();
     }
-  };
+  }, 200);
 
   return (
     <div ref={containerRef}>
@@ -201,7 +202,7 @@ export default function CodeEditor({
         theme="luce"
         value={source}
         onMount={handleEditorMount}
-        onChange={handleSourceChanged}
+        onChange={debouncedHandleSourceChanged}
         options={{
           fontFamily: theme.pytamaro.monospaceFontFamily,
           fontSize: 1.1 * theme.typography.fontSize,
