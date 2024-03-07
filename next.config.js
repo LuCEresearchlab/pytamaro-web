@@ -10,6 +10,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   output: 'standalone',
+  staticPageGenerationTimeout: 300,
   env: {
     PLATFORM_VERSION: require('child_process').execSync('git rev-parse --short HEAD').toString().trim(),
     BUILD_TIMESTAMP: Date.now().toString(),
