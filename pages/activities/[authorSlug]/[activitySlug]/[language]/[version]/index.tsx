@@ -1,8 +1,9 @@
 import { Box, Typography } from '@mui/material';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
+import GithubSlugger from 'github-slugger';
 import Head from 'next/head';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ActivityCodeCell from '../../../../../../components/ActivityCodeCell';
 import ActivityFooter from '../../../../../../components/ActivityFooter';
 import ActivityResetButton from '../../../../../../components/ActivityResetButton';
@@ -64,6 +65,15 @@ export default function NotebookPage({
 
   const { t } = useLocalTranslation(['common']);
 
+  const slugger = new GithubSlugger();
+
+  // We need to keep track of this to render the table of content only after the
+  // component has mounted.
+  const [componentMounted, setComponentMounted] = useState(false);
+  useEffect(() => {
+    setComponentMounted(true);
+  }, []);
+
   return (
     <div key={activityVariantId(activityVariant)}>
       <Head>
@@ -102,6 +112,7 @@ export default function NotebookPage({
                 ? (
                   <Container maxWidth="md" key={cell.id}>
                     <MarkdownCellComponent
+                      slugger={slugger}
                       cell={cell as MarkdownCell}
                       activityVariant={activityVariant}
                     />
@@ -137,7 +148,7 @@ export default function NotebookPage({
             {curriculum && (
               <CurriculumUnitSidebar curriculum={curriculum} activityVariant={activityVariant} />
             )}
-            <TableOfContents initialized elementRef={cellsRef} selector="h2[id], h3[id]" title={t('contents')} />
+            <TableOfContents initialized={componentMounted} elementRef={cellsRef} selector="h2[id], h3[id]" title={t('contents')} />
             {curriculum && (
               <ActivityCompetenciesSidebar
                 curriculum={curriculum}

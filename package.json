@@ -52,7 +52,6 @@
     "react-player": "^2.12.0",
     "reactflow": "^11.7.0",
     "redis": "^4.5.1",
-    "rehype-slug": "^5.1.0",
     "remark-gfm": "^3.0.1",
     "sharp": "^0.32.6",
     "use-local-storage-state": "^18.3.3",
