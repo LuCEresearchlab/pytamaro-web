@@ -63,3 +63,30 @@ pre:has(code) {
 .peekview-actions li:has(.codicon-marker-navigation-next, .codicon-marker-navigation-previous) {
     display: none;
 }
+
+/* Nicer tables, partially inspired by https://github.com/micromark/micromark-extension-gfm-table#css */
+
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    max-width: 100%;
+    overflow: auto;
+  }
+  
+tr {
+  border-top: 1px solid hsla(210, 18%, 87%, 1);
+}
+
+tr:nth-child(2n) {
+  background-color: #d2f2ff;
+}
+
+td,
+th {
+  padding: 6px 13px;
+  border: 1px solid #d0d7de;
+}
+
+th {
+  background-color: #b0e8ff;
+}
