@@ -103,7 +103,7 @@ export default function NotebookPage({
             )}
           </Sidebar>
           <CentralContent>
-            <Box ref={cellsRef}>
+            <Box ref={cellsRef} className="activity-content">
               <Container maxWidth="md">
                 <Typography variant="h3" marginY={3}>{title}</Typography>
                 {!curriculum && <GoToCurriculaBanner curricula={curricula} />}
