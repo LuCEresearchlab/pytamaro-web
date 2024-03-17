@@ -5,7 +5,10 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import { activitiesByAuthorPathname, curriculaPathname, myProgressPathname } from '../src/urlUtils';
+import {
+  activitiesByAuthorPathname, curriculaPathname, myProgressPathname,
+  playgroundPathname, pytamaroDocsUrl,
+} from '../src/urlUtils';
 import FeedbackDialog from './FeedbackDialog';
 import PlatformLanguageButton from './PlatformLanguageButton';
 import SidebarItem from './sidebar/SidebarItem';
@@ -31,6 +34,18 @@ const navItems = [
   {
     name: 'about',
     url: '/about',
+  },
+];
+
+const smallScreensNavItems = [
+  ...navItems,
+  {
+    name: 'documentation',
+    url: pytamaroDocsUrl(),
+  },
+  {
+    name: 'playground',
+    url: playgroundPathname(),
   },
 ];
 
@@ -73,7 +88,7 @@ export default function NavigationBar(props: { children?: React.ReactNode }) {
             <Box m={1}>
               <SidebarItem title="Menu">
                 <Stack direction="column">
-                  {navItems.map((item) => (
+                  {smallScreensNavItems.map((item) => (
                     <MenuItem key={item.url} component="a" href={item.url}>
                       {t(item.name)}
                     </MenuItem>
