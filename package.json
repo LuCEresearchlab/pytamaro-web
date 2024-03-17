@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "npm run check-python-sources && npm run create-assets",
+    "prebuild": "npm run validate-notebooks && npm run create-assets",
+    "validate-notebooks": "npm run check-donow && npm run check-python-sources",
+    "check-donow": "cross-env NODE_OPTIONS=--experimental-wasm-modules node --no-warnings --loader ts-node/esm tools/checkNotebookDoNow.mts",
     "check-python-sources": "cross-env NODE_OPTIONS=--experimental-wasm-modules node --no-warnings --loader ts-node/esm tools/checkNotebookSourceCode.mts",
     "create-assets": "cross-env NODE_OPTIONS=--experimental-wasm-modules node --no-warnings --loader ts-node/esm tools/createNotebookAssets.mts",
     "build": "next build",

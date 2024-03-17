@@ -55,7 +55,7 @@ Special components that can be used:
   The content of the tag will be rendered as the link's text.
 - `<DoNow id="describe-rectangle">How would you describe the figure so that your friend can draw it?</DoNow>` to render a "Do Now" box with the specified content. A "Do Now" box blurs the rest of the activity until the user has clicked on a "I did it" button.
 This forces learners to think before proceeding.
-The `id` just needs to be unique within an activity, so that we can keep track of which "Do Now" boxes the user has already completed and avoid blurring the content again on subsequent visits.
+The `id` must be unique within an activity, so that we can keep track of which "Do Now" boxes the user has already completed and avoid blurring the content again on subsequent visits.
   
   Optionally, you can add a `requireAnswer` attribute (e.g., `<DoNow id="..." requireAnswer>...</DoNow>`) to force the user to type an answer before being able to unblur the rest of the activity.
 - `<ReactPlayer url='...' />` (see [more on usage](https://github.com/cookpete/react-player)).

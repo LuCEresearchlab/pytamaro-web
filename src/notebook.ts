@@ -17,6 +17,10 @@ export function isCodeCell(cell: JupyterCell) {
   return cell.cell_type === 'code';
 }
 
+export function isMarkdownCell(cell: JupyterCell) {
+  return cell.cell_type === 'markdown';
+}
+
 export function cellsVisibleToUser(
   cells: JupyterCell[],
   user: User,
@@ -56,7 +60,7 @@ export default async function getNotebookContent(
       ...cell,
       source,
       id: idx.toString(),
-      mdxSource: cell.cell_type === 'markdown' ? await serialize(source, {
+      mdxSource: isMarkdownCell(cell) ? await serialize(source, {
         mdxOptions: {
           remarkPlugins: [remarkGfm],
         },
