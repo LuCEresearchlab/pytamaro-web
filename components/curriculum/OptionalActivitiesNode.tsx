@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { Handle, NodeProps, Position } from 'reactflow';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { activityVariantId } from '../../src/schemas/activitySchema';
 import ActivityCard from './ActivityCard';
 import { ActivityNodeData } from './utils';
@@ -32,10 +33,11 @@ const style = {
 };
 
 export default function OptionalActivitiesNode({ data }: NodeProps<NodeData>) {
+  const { t } = useLocalTranslation(['curriculum']);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const text = 'optional activities';
+  const text = t('optionalActivities');
 
   const {
     activityInfo, width, height, unlocked, id,
