@@ -7,6 +7,7 @@ import {
   Activity,
   PythonFileInfo,
   RawActivity,
+  platformConfigWithDefaults,
 } from '../schemas/activitySchema';
 import { ACTIVITIES_DIR, DATA_DIR, notebookFileNames } from './notebooks';
 
@@ -66,6 +67,7 @@ export async function readActivity(authorSlug: string, activitySlug: string)
     })),
     languagesInfo: rawActivity.variants,
     extraPythonFiles: await readPythonFiles(rawActivity.extraPythonFiles || [], authorDir),
+    platformConfig: platformConfigWithDefaults(rawActivity.platformConfig),
   };
 }
 

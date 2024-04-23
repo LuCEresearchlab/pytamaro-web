@@ -12,7 +12,7 @@ import GoToCurriculaBanner from '../../../../../../components/GoToCurriculaBanne
 import InfoButton from '../../../../../../components/InfoButton';
 import MarkdownCellComponent from '../../../../../../components/MarkdownCellComponent';
 import NavigationBar from '../../../../../../components/NavigationBar';
-import VariantSelector from '../../../../../../components/VariantsSelector';
+import VariantSelector from '../../../../../../components/VariantSelector';
 import ActivityCompetenciesSidebar from '../../../../../../components/sidebar/ActivityCompetenciesSidebar';
 import ActivityImage from '../../../../../../components/sidebar/ActivityImage';
 import CentralContent from '../../../../../../components/sidebar/CentralContent';
@@ -126,6 +126,7 @@ export default function NotebookPage({
                       cellIdx={originalIdxToCodeCellIdx.get(idx) as number}
                       extraPythonFiles={activity.extraPythonFiles}
                       fullWidthCell={fullWidthCell}
+                      platformConfig={activity.platformConfig}
                       onFullWidthToggle={() => setFullWidthCell(!fullWidthCell)}
                     />
                   </Container>

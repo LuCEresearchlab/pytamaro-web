@@ -19,7 +19,7 @@ import { ExecutionResponse } from '../src/codeExecution';
 import { CodeCellExecutionState, CodeCellState } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { PythonName, called_names, imported_names } from '../src/python-analyzer/python_analyzer';
-import { ActivityVariant } from '../src/schemas/activitySchema';
+import { ActivityVariant, PlatformConfiguration } from '../src/schemas/activitySchema';
 import CodeEditor from './CodeEditor';
 import DocumentationStripe from './DocumentationStripe';
 import OutputArea from './OutputArea';
@@ -81,7 +81,7 @@ export function isExecutionError(response: ExecutionResponse | undefined) {
 
 export default function CodeCell({
   codeCellState, codeCellExecutionState, onSourceChanged, onExecutionRequested,
-  firstLineNumber, activityVariant, cumulativeSource,
+  firstLineNumber, activityVariant, cumulativeSource, platformConfig,
   extraActions = null, readOnly = false,
 } :
 { codeCellState : CodeCellState,
@@ -91,6 +91,7 @@ export default function CodeCell({
   firstLineNumber : number,
   activityVariant: ActivityVariant,
   cumulativeSource: string,
+  platformConfig: PlatformConfiguration,
   extraActions?: React.ReactNode
   readOnly?: boolean
 }) {
@@ -149,7 +150,7 @@ export default function CodeCell({
             {extraActions}
           </Stack>
         </CardActions>
-        {noOutput && (
+        {noOutput && platformConfig.showNoOutputTip && (
           <NoOutputTip importedNames={imported_names(cumulativeSource)} />
         )}
         {inputFunctionCalled && <InputTip /> }

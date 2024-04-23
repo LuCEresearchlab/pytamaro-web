@@ -4,7 +4,7 @@ import {
 import { sum } from 'lodash';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
-import { ActivityVariant, PythonFile } from '../src/schemas/activitySchema';
+import { ActivityVariant, PlatformConfiguration, PythonFile } from '../src/schemas/activitySchema';
 import { countLines, joinLines } from '../src/sourceUtils';
 import CodeCell from './CodeCell';
 import MoreOptionsButton from './MoreOptionsButton';
@@ -37,13 +37,14 @@ function InconsistencyMessage() {
 
 export default function ActivityCodeCell({
   activityVariant, initialCodeCells, cellIdx,
-  extraPythonFiles, fullWidthCell, onFullWidthToggle,
+  extraPythonFiles, fullWidthCell, platformConfig, onFullWidthToggle,
 } : {
   activityVariant: ActivityVariant,
   initialCodeCells: CodeCellState[],
   cellIdx: number,
   extraPythonFiles: PythonFile[],
   fullWidthCell: boolean,
+  platformConfig: PlatformConfiguration,
   onFullWidthToggle: () => void,
 }) {
   const {
@@ -66,6 +67,7 @@ export default function ActivityCodeCell({
         firstLineNumber={1 + precedingLines}
         activityVariant={activityVariant}
         cumulativeSource={joinLines(sourcesUpTo(cellIdx))}
+        platformConfig={platformConfig}
         extraActions={(
           <>
             <SaveToToolboxButton
