@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/data/bernhard" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/data/ceschi" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/data/dalpian" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/data/ehinger" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/data/gall" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/data/lardelli" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/data/lerbermatt" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/data/lichtsteiner" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/data/luce" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/data/luce-hoc" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/data/other-contributors" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/data/sulmoni" vcs="Git" />
+  </component>
+</project>
