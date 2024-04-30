@@ -53,6 +53,7 @@ export interface ActivityVariant {
   activitySlug: string,
   language: string,
   version: string,
+  time: number,
 }
 
 export interface ActivityLanguageInfo {
@@ -60,6 +61,7 @@ export interface ActivityLanguageInfo {
   description: string,
   language: string,
   latestVersion: string,
+  time: number,
 }
 
 export interface ActivityUse {
@@ -100,15 +102,15 @@ export interface JupyterCell {
 
 export function activityVariantId(activityVariant: ActivityVariant) {
   const {
-    authorSlug, activitySlug, language, version,
+    authorSlug, activitySlug, language, version, time,
   } = activityVariant;
-  return `${authorSlug}/${activitySlug}/${language}/${version}`;
+  return `${authorSlug}/${activitySlug}/${language}/${version}/${time}`;
 }
 
 export function activityVariantFromId(id: string): ActivityVariant {
-  const [authorSlug, activitySlug, language, version] = id.split('/');
+  const [authorSlug, activitySlug, language, version, time] = id.split('/');
   return {
-    authorSlug, activitySlug, language, version,
+    authorSlug, activitySlug, language, version, time: parseInt(time, 10),
   };
 }
 
@@ -124,9 +126,20 @@ export function canonicalVariantForLanguage(activity: Activity, language: string
   && v.version === languageInfo?.latestVersion) as ActivityVariant;
 }
 
+export function variantForTime(activity: Activity, time: number)
+  : ActivityVariant {
+  return activity.variants.find((v) => v.time === time) as ActivityVariant;
+}
+
 export function languageInfoForVariant(activity: Activity, variant: ActivityVariant) {
   return activity.languagesInfo.find(
     (i) => i.language === variant.language,
+  ) as ActivityLanguageInfo;
+}
+
+export function timeInfoForVariant(activity: Activity, variant: ActivityVariant) {
+  return activity.languagesInfo.find(
+    (i) => i.language === variant.language && i.time === variant.time,
   ) as ActivityLanguageInfo;
 }
 

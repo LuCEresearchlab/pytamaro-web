@@ -169,13 +169,14 @@ export async function getStaticProps(
     activitySlug: string,
     language: string,
     version: string,
+    time: number,
   }, defaultLocale: string, locales: string[] },
 ) {
   const {
-    authorSlug, activitySlug, language, version,
+    authorSlug, activitySlug, language, version, time,
   } = context.params;
   const activityVariant = {
-    authorSlug, activitySlug, language, version,
+    authorSlug, activitySlug, language, version, time,
   };
   return {
     props: {

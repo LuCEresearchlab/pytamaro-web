@@ -16,7 +16,12 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { orderBy } from 'lodash';
 import Link from 'next/link';
 import router from 'next/router';
-import { Activity, activityVariantId, canonicalVariantForLanguage } from '../src/schemas/activitySchema';
+import {
+  Activity,
+  activityVariantId,
+  canonicalVariantForLanguage,
+  variantForTime,
+} from '../src/schemas/activitySchema';
 import { activityAssetPathname, activityPathname, activityVariantPathname } from '../src/urlUtils';
 
 export const ANY_LANGUAGE = 'any';
@@ -123,6 +128,18 @@ export default function ActivitiesGallery({
                         disabled={isDraft}
                       >
                         {info.language}
+                      </Button>
+                    ))}
+                    {activity.variants.map((info) => (
+                      <Button
+                        onClick={() => router.push(activityVariantPathname(
+                          variantForTime(activity, info.time),
+                        ))}
+                        size="small"
+                        variant="outlined"
+                        key={info.time}
+                      >
+                        {info.time}
                       </Button>
                     ))}
                     <Box style={{ marginLeft: 'auto' }}>
