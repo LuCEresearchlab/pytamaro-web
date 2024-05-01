@@ -130,7 +130,7 @@ export default function ActivitiesGallery({
                         {info.language}
                       </Button>
                     ))}
-                    {activity.variants.map((info) => (
+                    {activity.languagesInfo.map((info) => (
                       <Button
                         onClick={() => router.push(activityVariantPathname(
                           variantForTime(activity, info.time),
