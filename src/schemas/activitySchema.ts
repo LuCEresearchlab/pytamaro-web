@@ -126,9 +126,8 @@ export function canonicalVariantForLanguage(activity: Activity, language: string
   && v.version === languageInfo?.latestVersion) as ActivityVariant;
 }
 
-export function variantForTime(activity: Activity, time: number)
-  : ActivityVariant {
-  return activity.variants.find((v) => v.time === time) as ActivityVariant;
+export function variantForTime(activity: Activity) {
+  return (time: number) => activity.variants.find((v) => v.time === time) as ActivityVariant;
 }
 
 export function languageInfoForVariant(activity: Activity, variant: ActivityVariant) {

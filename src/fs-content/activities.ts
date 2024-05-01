@@ -64,7 +64,8 @@ export async function readActivity(authorSlug: string, activitySlug: string)
       activitySlug,
       language: variant.language,
       version: variant.version,
-      time: 0,
+      time: rawActivity.variants.find((info) => info.time
+      && info.language === variant.language)?.time || 0,
     })),
     languagesInfo: rawActivity.variants,
     extraPythonFiles: await readPythonFiles(rawActivity.extraPythonFiles || [], authorDir),
