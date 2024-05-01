@@ -20,7 +20,6 @@ import {
   Activity,
   activityVariantId,
   canonicalVariantForLanguage,
-  variantForTime,
 } from '../src/schemas/activitySchema';
 import { activityAssetPathname, activityPathname, activityVariantPathname } from '../src/urlUtils';
 
@@ -130,18 +129,13 @@ export default function ActivitiesGallery({
                         {info.language}
                       </Button>
                     ))}
-                    {activity.languagesInfo.map((info) => (
-                      <Button
-                        onClick={() => router.push(activityVariantPathname(
-                          variantForTime(activity, info.time),
-                        ))}
-                        size="small"
-                        variant="outlined"
-                        key={info.time}
-                      >
-                        {info.time}
-                      </Button>
-                    ))}
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      key={activity.variants[0].time}
+                    >
+                      {activity.variants[0].time}
+                    </Button>
                     <Box style={{ marginLeft: 'auto' }}>
                       <IconButton
                         size="small"
