@@ -40,18 +40,27 @@ async function readActivityFromFS(authorSlug: string, activitySlug: string)
   const content = await readFile(path.join(authorDir, ACTIVITIES_DIR, activitySlug, ACTIVITY_INFO_FILE), 'utf-8');
   const rawActivity : RawActivity = JSON.parse(content);
   const notebooks = await notebookFileNames(authorSlug, activitySlug);
-  const notebooksVariants = notebooks.map((filename) => {
-    const components = filename.split('-');
+  const notebooksVariants = notebooks.flatMap((filename) => {
+    const separator = '-';
+    const components = filename.split(separator);
     const language = components.at(-2);
     const version = components.at(-1);
-    if (!language || !version) {
-      throw new Error(`Invalid notebook filename ${filename} (cannot detect language or version)`);
+    const activity = components.slice(0, -2).join(separator);
+    if (activity !== activitySlug || !language || !version) {
+      // Show a warning but do not throw (this allows us to have extra notebooks in the directory)
+      // eslint-disable-next-line no-console
+      console.warn(`Ignoring notebook with filename: ${filename}`);
+      return [];
     }
     return {
       language,
       version,
     };
   });
+  // An activity must have at least one notebook, however.
+  if (notebooksVariants.length === 0) {
+    throw new Error(`No notebooks found for activity ${authorSlug}/${activitySlug}`);
+  }
   return {
     authorSlug,
     slug: activitySlug,
