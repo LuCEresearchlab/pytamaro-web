@@ -49,7 +49,7 @@ async function readActivityFromFS(authorSlug: string, activitySlug: string)
     if (activity !== activitySlug || !language || !version) {
       // Show a warning but do not throw (this allows us to have extra notebooks in the directory)
       // eslint-disable-next-line no-console
-      console.warn(`Ignoring notebook with filename: ${filename}`);
+      console.warn(`Ignoring notebook with filename ${filename} in activity ${authorSlug}/${activitySlug}`);
       return [];
     }
     return {
