@@ -9,6 +9,7 @@ import {
   RawActivity,
   platformConfigWithDefaults,
 } from '../schemas/activitySchema';
+import DataCache from './cache';
 import { ACTIVITIES_DIR, DATA_DIR, notebookFileNames } from './notebooks';
 
 const ACTIVITY_INFO_FILE = 'info.json';
@@ -33,7 +34,7 @@ async function readPythonFiles(files: PythonFileInfo[], authorDir: string) {
   })));
 }
 
-export async function readActivity(authorSlug: string, activitySlug: string)
+async function readActivityFromFS(authorSlug: string, activitySlug: string)
   : Promise<Activity> {
   const authorDir = path.join(DATA_DIR, authorSlug);
   const content = await readFile(path.join(authorDir, ACTIVITIES_DIR, activitySlug, ACTIVITY_INFO_FILE), 'utf-8');
@@ -69,6 +70,12 @@ export async function readActivity(authorSlug: string, activitySlug: string)
     extraPythonFiles: await readPythonFiles(rawActivity.extraPythonFiles || [], authorDir),
     platformConfig: platformConfigWithDefaults(rawActivity.platformConfig),
   };
+}
+
+const activitiesCache = new DataCache<Activity>();
+
+export async function readActivity(authorSlug: string, activitySlug: string) : Promise<Activity> {
+  return activitiesCache.get(`${authorSlug}/${activitySlug}`, () => readActivityFromFS(authorSlug, activitySlug));
 }
 
 export async function findVersions(authorSlug: string, activitySlug: string, language: string)
