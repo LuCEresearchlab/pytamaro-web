@@ -40,7 +40,7 @@
     },
     "activityCreatedByLicensedUnder": "Diese Aktivität wurde von <authorLink>{{authorName}}</authorLink> erstellt und ist lizenziert unter <licenseLink>{{license}}</licenseLink>.",
     "curriculumCreatedByLicensedUnder": "Dieses Curriculum wurde von <authorLink>{{authorName}}</authorLink> erstellt und ist lizenziert unter <licenseLink>{{license}}</licenseLink>.",
-    "activityDerivedFrom": "Es leitet sich ab von",
+    "activityDerivedFrom": "Sie leitet sich ab von",
     "curriculumDerivedFrom": "Es leitet sich ab von",
     "activityThis": "<a>dieser Aktivität</a>",
     "curriculumThis": "<a>diesem Curriculum</a>",
