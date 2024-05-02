@@ -46,7 +46,7 @@ export default function CompetencyCardContent({
       <Typography fontWeight="bold" marginY={1}>
         {competency.description}
       </Typography>
-      {!noActivities && (
+      {!noActivities && allActivities.length > 0 && (
         <>
           <Typography marginTop={2}>
             {t('practicedInOutOf', { done: completedActivities.length, total: allActivities.length, count: allActivities.length })}
