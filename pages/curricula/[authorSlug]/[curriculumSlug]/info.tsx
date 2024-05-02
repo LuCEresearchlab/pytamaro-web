@@ -13,6 +13,7 @@ import NavigationBar from '../../../../components/NavigationBar';
 import PageTitle from '../../../../components/PageTitle';
 import { getAuthorProfile, listAuthorsWithContent } from '../../../../src/fs-content/authors';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
+import useLocalTranslation from '../../../../src/localStorage/useLocalTranslation';
 import { AuthorProfile } from '../../../../src/schemas/authorSchema';
 import { Curriculum } from '../../../../src/schemas/curriculumSchema';
 import { translationProps } from '../../../../src/serverSideTranslationProps';
@@ -20,6 +21,7 @@ import { curriculumInfoPathname } from '../../../../src/urlUtils';
 
 export default function CurriculumInfoPage({ curriculum, author }:
 { curriculum : Curriculum, author: AuthorProfile }) {
+  const { t } = useLocalTranslation(['curriculum']);
   const { title } = curriculum;
   const pageTitle = `${title} - PyTamaro`;
 
@@ -39,21 +41,19 @@ export default function CurriculumInfoPage({ curriculum, author }:
         <NavigationBar />
         <Container>
           <PageTitle>
-            Curriculum Information -
-            {' '}
-            {title}
+            {`${t('curriculumInformation')} - ${title}`}
           </PageTitle>
           <CurriculumCard curriculum={curriculum} />
-          <Typography variant="h4" marginY={3}>Author & License</Typography>
+          <Typography variant="h4" marginY={3}>{t('authorLicense')}</Typography>
           <AttributionInfo type="curriculum" author={author} derivedFrom={curriculum.derivedFrom} />
           {curriculum.competencies.length > 0 && (
             <>
               <Box display="flex" alignItems="baseline" marginY={3}>
-                <Typography variant="h4">Competencies</Typography>
+                <Typography variant="h4">{t('competencies')}</Typography>
                 <Box marginLeft="auto">
                   <FormControlLabel
                     control={<Switch color="primary" checked={showMatrix} onChange={handleShowMatrixChange} />}
-                    label={<Typography color="text.secondary">Show Activities/Competencies Matrix</Typography>}
+                    label={<Typography color="text.secondary">{t('showMatrix')}</Typography>}
                     labelPlacement="start"
                   />
                 </Box>
@@ -87,7 +87,7 @@ export async function getStaticProps(
     props: {
       author,
       curriculum,
-      ...await translationProps(),
+      ...await translationProps(['curriculum']),
     },
   };
 }

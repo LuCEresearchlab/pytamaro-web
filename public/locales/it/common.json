@@ -36,5 +36,11 @@
         "anonymously": "Lo facciamo <strong>in modo anonimo: nessun dato personale di alcun tipo viene raccolto</strong>.",
         "OK": "OK",
         "reviewOptions": "Rivedi opzioni"
-    }
+    },
+    "activityCreatedByLicensedUnder": "Questa attività è stata creata da <authorLink>{{authorName}}</authorLink> ed è pubblicata sotto licenza <licenseLink>{{license}}</licenseLink>.",
+    "curriculumCreatedByLicensedUnder": "Questo curriculum è stato creato da <authorLink>{{authorName}}</authorLink> ed è pubblicato sotto licenza <licenseLink>{{license}}</licenseLink>.",
+    "activityDerivedFrom": "È derivata da",
+    "curriculumDerivedFrom": "È derivato da",
+    "activityThis": "<a>questa attività</a>",
+    "curriculumThis": "<a>questo curriculum</a>"
 }

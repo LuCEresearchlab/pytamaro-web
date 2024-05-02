@@ -4,8 +4,8 @@ import {
 } from '@mui/material';
 import { MDXRemote } from 'next-mdx-remote';
 import { allActivitiesForCompetency, competencyColor, completedActivitiesForCompetency } from '../src/curriculumCompetencies';
-import { format } from '../src/internationalization';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { activityVariantId } from '../src/schemas/activitySchema';
 import { Curriculum, CurriculumCompetency } from '../src/schemas/curriculumSchema';
 import GenericMuiIcon from './GenericMuiIcon';
@@ -28,6 +28,7 @@ export default function CompetencyCardContent({
   const { metadata } = useLocalProfile();
   const allActivities = allActivitiesForCompetency(curriculum, competency);
   const completedActivities = completedActivitiesForCompetency(allActivities, metadata.activities);
+  const { t } = useLocalTranslation(['curriculum']);
   const color = competencyColor(competency);
   return (
     <CardContent sx={{ minWidth: '80ch', maxWidth: fullWidth ? 'none' : '100ch' }}>
@@ -48,7 +49,7 @@ export default function CompetencyCardContent({
       {!noActivities && (
         <>
           <Typography marginTop={2}>
-            {`Practiced in ${completedActivities.length} out of ${format(allActivities.length, 'activity', 'activities')}:`}
+            {t('practicedInOutOf', { done: completedActivities.length, total: allActivities.length, count: allActivities.length })}
           </Typography>
           <Box sx={{ overflow: 'auto' }}>
             <Box sx={{ display: 'flex', width: 'fit-content' }} p={1}>

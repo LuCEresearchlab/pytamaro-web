@@ -12,5 +12,10 @@
     "myCompetencies": "Meine Kompetenzen",
     "competencies": "Kompetenzen",
     "myCurriculum": "Mein Curriculum",
-    "optionalActivities": "Optionale Aktivitäten"
+    "optionalActivities": "Optionale Aktivitäten",
+    "curriculumInformation": "Curriculum Information",
+    "authorLicense": "Autor & Lizenz",
+    "showMatrix": "Aktivitäten/Kompetenzen Matrix anzeigen",
+    "practicedInOutOf_one": "Praktiziert in {{done}} von {{total}} Aktivität:",
+    "practicedInOutOf_other": "Praktiziert in {{done}} von {{total}} Aktivitäten:"
 }
