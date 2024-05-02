@@ -5,6 +5,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { ActivityVariant, activityVariantId } from '../src/schemas/activitySchema';
 import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import theme from '../src/theme';
@@ -80,6 +81,8 @@ export default function DoNowBox({
     }
   };
 
+  const { t } = useLocalTranslation();
+
   return (
     <Alert
       severity="warning"
@@ -88,7 +91,7 @@ export default function DoNowBox({
       icon={<AccessAlarm />}
       sx={{ fontSize: theme.typography.body1.fontSize, marginY: 2 }}
     >
-      <AlertTitle sx={{ fontSize: '1rem' }}>Do Now!</AlertTitle>
+      <AlertTitle sx={{ fontSize: '1rem' }}>{t('doNow')}</AlertTitle>
       {children}
       <Box sx={{ mt: 1 }}>
         {requireAnswer && (
@@ -105,7 +108,7 @@ export default function DoNowBox({
         )}
         <Collapse in={!alreadyDidIt}>
           <Button variant="outlined" color="warning" onClick={handleDidIt} disabled={requireAnswer && !answer}>
-            {requireAnswer ? 'Save and Continue' : 'I did it!'}
+            {requireAnswer ? t('saveAndContinue') : t('didIt')}
           </Button>
         </Collapse>
       </Box>

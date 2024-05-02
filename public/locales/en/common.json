@@ -43,5 +43,8 @@
     "activityDerivedFrom": "It is derived from",
     "curriculumDerivedFrom": "It is derived from",
     "activityThis": "<a>this activity</a>",
-    "curriculumThis": "<a>this curriculum</a>"
+    "curriculumThis": "<a>this curriculum</a>",
+    "doNow": "Do Now!",
+    "saveAndContinue": "Save and Continue",
+    "didIt": "I did it!"
 }
