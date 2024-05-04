@@ -23,6 +23,8 @@ import { translationProps } from '../../../src/serverSideTranslationProps';
 import theme from '../../../src/theme';
 import { activitiesByAuthorPathname } from '../../../src/urlUtils';
 
+export type DifficultyLevel = 'All' | 'easy' | 'medium' | 'hard';
+
 export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsProfiles }:
 { defaultAuthorSlug: string,
   activities: Activity[],
@@ -33,6 +35,20 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
   const [filteredActivities, setFilteredActivities] = useState(activities);
   const [filteredAuthors, setFilteredAuthors] = useState<string[]>([defaultAuthorSlug]);
   const [compactView, setCompactView] = useState(false);
+  const [difficultyFilter, setDifficultyFilter] = useState<DifficultyLevel>('All');
+
+  function getDifficultyTime(difficulty: DifficultyLevel): { min: number; max: number } {
+    switch (difficulty) {
+      case 'easy':
+        return { min: 0, max: 10 };
+      case 'medium':
+        return { min: 11, max: 25 };
+      case 'hard':
+        return { min: 26, max: Infinity };
+      default:
+        return { min: 0, max: Infinity };
+    }
+  }
 
   // get all languages in set of activities
   const languages = new Set(
@@ -61,9 +77,12 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
             && (info.description.toLowerCase().includes(search.toLowerCase())
             || info.title.toLowerCase().includes(search.toLowerCase())),
           ))
-        )),
+        ))
+        .filter((activity) => !difficultyFilter || (difficultyFilter === 'All' ? true
+          : activity.time >= getDifficultyTime(difficultyFilter).min
+          && activity.time <= getDifficultyTime(difficultyFilter).max)),
     );
-  }, [search, languageFilter, activities, filteredAuthors]);
+  }, [search, languageFilter, difficultyFilter, activities, filteredAuthors]);
 
   const handleAuthorsFilterChange = (event: SelectChangeEvent<typeof filteredAuthors>) => {
     const {
@@ -106,7 +125,7 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
         </Tooltip>
       </NavigationBar>
       <Grid container spacing={2}>
-        <Grid xs={12} lg={8}>
+        <Grid xs={6} lg={7}>
           <TextField
             fullWidth
             label="Search by title and description"
@@ -162,6 +181,21 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
                   {getLanguageDisplayName(language)}
                 </MenuItem>
               ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid xs={6} lg={1}>
+          <FormControl fullWidth>
+            <InputLabel>Difficulty</InputLabel>
+            <Select
+              value={difficultyFilter}
+              label="Difficulty"
+              onChange={(e) => setDifficultyFilter(e.target.value as DifficultyLevel)}
+            >
+              <MenuItem key={0} value="All"><em>All</em></MenuItem>
+              <MenuItem value="easy">Easy</MenuItem>
+              <MenuItem value="medium">Medium</MenuItem>
+              <MenuItem value="hard">Hard</MenuItem>
             </Select>
           </FormControl>
         </Grid>

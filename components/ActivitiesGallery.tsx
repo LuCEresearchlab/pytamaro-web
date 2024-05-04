@@ -1,4 +1,6 @@
 import { HourglassBottom, Verified } from '@mui/icons-material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHourglass } from '@fortawesome/free-solid-svg-icons';
 import InfoIcon from '@mui/icons-material/Info';
 import {
   Box,
@@ -129,13 +131,34 @@ export default function ActivitiesGallery({
                         {info.language}
                       </Button>
                     ))}
-                    <Button
+                    {/* <Button
                       size="small"
                       variant="outlined"
-                      key={activity.variants[0].time}
+                      key={activity.time}
                     >
-                      {activity.variants[0].time}
-                    </Button>
+                      {activity.time}
+                    </Button> */}
+                    <Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                      {activity.time <= 10 && (
+                        <IconButton>
+                          <FontAwesomeIcon icon={faHourglass} style={{ padding: '2px', color: 'green' }} />
+                        </IconButton>
+                      )}
+                      {activity.time > 10 && activity.time <= 25 && (
+                        <IconButton>
+                          <FontAwesomeIcon icon={faHourglass} style={{ padding: '2px', color: 'orange' }} />
+                          <FontAwesomeIcon icon={faHourglass} style={{ padding: '2px', color: 'orange' }} />
+                        </IconButton>
+
+                      )}
+                      {activity.time > 25 && (
+                        <IconButton>
+                          <FontAwesomeIcon icon={faHourglass} style={{ padding: '2px', color: 'red' }} />
+                          <FontAwesomeIcon icon={faHourglass} style={{ padding: '2px', color: 'red' }} />
+                          <FontAwesomeIcon icon={faHourglass} style={{ padding: '2px', color: 'red' }} />
+                        </IconButton>
+                      )}
+                    </Box>
                     <Box style={{ marginLeft: 'auto' }}>
                       <IconButton
                         size="small"

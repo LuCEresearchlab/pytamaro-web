@@ -15,6 +15,7 @@ export interface Activity {
   derivedFrom: string[],
   extraPythonFiles: PythonFile[],
   platformConfig: PlatformConfiguration,
+  time: number,
 }
 
 export interface RawActivity {
@@ -26,6 +27,7 @@ export interface RawActivity {
   derivedFrom?: string[],
   extraPythonFiles?: PythonFileInfo[],
   platformConfig?: Partial<PlatformConfiguration>,
+  time?: number,
 }
 
 export interface PlatformConfiguration {
@@ -53,7 +55,6 @@ export interface ActivityVariant {
   activitySlug: string,
   language: string,
   version: string,
-  time: number,
 }
 
 export interface ActivityLanguageInfo {
@@ -61,7 +62,6 @@ export interface ActivityLanguageInfo {
   description: string,
   language: string,
   latestVersion: string,
-  time: number,
 }
 
 export interface ActivityUse {
@@ -102,15 +102,15 @@ export interface JupyterCell {
 
 export function activityVariantId(activityVariant: ActivityVariant) {
   const {
-    authorSlug, activitySlug, language, version, time,
+    authorSlug, activitySlug, language, version,
   } = activityVariant;
-  return `${authorSlug}/${activitySlug}/${language}/${version}/${time}`;
+  return `${authorSlug}/${activitySlug}/${language}/${version}`;
 }
 
 export function activityVariantFromId(id: string): ActivityVariant {
-  const [authorSlug, activitySlug, language, version, time] = id.split('/');
+  const [authorSlug, activitySlug, language, version] = id.split('/');
   return {
-    authorSlug, activitySlug, language, version, time: parseInt(time, 10),
+    authorSlug, activitySlug, language, version,
   };
 }
 
@@ -126,9 +126,9 @@ export function canonicalVariantForLanguage(activity: Activity, language: string
   && v.version === languageInfo?.latestVersion) as ActivityVariant;
 }
 
-export function variantForTime(activity: Activity) {
-  return (time: number) => activity.variants.find((v) => v.time === time) as ActivityVariant;
-}
+// export function variantForTime(activity: Activity) {
+//   return (time: number) => activity.variants.find((v) => v.time === time) as ActivityVariant;
+// }
 
 export function languageInfoForVariant(activity: Activity, variant: ActivityVariant) {
   return activity.languagesInfo.find(
@@ -136,11 +136,11 @@ export function languageInfoForVariant(activity: Activity, variant: ActivityVari
   ) as ActivityLanguageInfo;
 }
 
-export function timeInfoForVariant(activity: Activity, variant: ActivityVariant) {
-  return activity.languagesInfo.find(
-    (i) => i.language === variant.language && i.time === variant.time,
-  ) as ActivityLanguageInfo;
-}
+// export function timeInfoForVariant(activity: Activity, variant: ActivityVariant) {
+//   return activity.languagesInfo.find(
+//     (i) => i.language === variant.language && i.time === variant.time,
+//   ) as ActivityLanguageInfo;
+// }
 
 export function platformConfigWithDefaults(config: Partial<PlatformConfiguration> = {})
   : PlatformConfiguration {
