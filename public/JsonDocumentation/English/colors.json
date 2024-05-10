@@ -1,1 +1,207 @@
-{"name": "Colors", "description": {"content": "Color type, functions to produce colors, and constants for important colors."}, "types": [{"name": "Color", "description": {"content": "Represents a color.\nA color also has a degree of opacity,\nfrom completely transparent (like the color transparent)\nto completely opaque (like the color red)."}}], "functions": [{"name": "hsl_color", "description": {"content": "Returns a color with the provided hue (H), saturation (S), lightness (L) and a\ncertain degree of opacity (alpha, A).", "images": [{"uri": "https://upload.wikimedia.org/wikipedia/commons/3/35/HSL_color_solid_cylinder.png", "caption": "HSL cylinder: SharkD via Wikimedia Commons"}]}, "parameters": [{"name": "hue", "description": {"content": "hue of the color [0-360]"}, "type": "float"}, {"name": "saturation", "description": {"content": "saturation of the color [0-1]"}, "type": "float"}, {"name": "lightness", "description": {"content": "the amount of white or black applied [0-1].\nFully saturated colors have a lightness value of 1/2."}, "type": "float"}, {"name": "opacity", "description": {"content": "opacity (alpha) of the color, where 0 means fully\ntransparent and 1 fully opaque. By default, all colors are fully opaque."}, "type": "float", "default_value": "1.0"}], "return_type": "Color", "return_description": "a color with the provided HSLA components"}, {"name": "hsv_color", "description": {"content": "Returns a color with the provided hue (H), saturation (S), value (V) and a\ncertain degree of opacity (alpha, A).", "images": [{"uri": "https://upload.wikimedia.org/wikipedia/commons/4/4e/HSV_color_solid_cylinder.png", "caption": "HSV cylinder (SharkD via Wikimedia Commons)"}]}, "parameters": [{"name": "hue", "description": {"content": "hue of the color [0-360]"}, "type": "float"}, {"name": "saturation", "description": {"content": "saturation of the color [0-1]"}, "type": "float"}, {"name": "value", "description": {"content": "the amount of light that is applied [0-1]"}, "type": "float"}, {"name": "opacity", "description": {"content": "opacity (alpha) of the color, where 0 means fully\ntransparent and 1 fully opaque. By default, all colors are fully opaque."}, "type": "float", "default_value": "1.0"}], "return_type": "Color", "return_description": "a color with the provided HSVA components."}, {"name": "rgb_color", "description": {"content": "Returns a color with the provided components for red (R), green (G) and blue (B) and a\ncertain degree of opacity (alpha, A).", "images": [{"uri": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/RGBCube_a.svg/524px-RGBCube_a.svg.png", "caption": "RGB cube (SharkD via Wikimedia Commons)"}]}, "parameters": [{"name": "red", "description": {"content": "red component [0-255]"}, "type": "int"}, {"name": "green", "description": {"content": "green component [0-255]"}, "type": "int"}, {"name": "blue", "description": {"content": "blue component [0-255]"}, "type": "int"}, {"name": "opacity", "description": {"content": "opacity (alpha) of the color, where 0 means fully\ntransparent and 1 fully opaque. By default, all colors are fully opaque."}, "type": "float", "default_value": "1.0"}], "return_type": "Color", "return_description": "a color with the provided RGBA components"}]}
+{
+  "name": "Colors",
+  "description": {
+    "content": "Color type, functions to produce colors, and constants for important colors."
+  },
+  "types": [
+    {
+      "name": "Color",
+      "description": {
+        "content": "Represents a color.\nA color also has a degree of opacity,\nfrom completely transparent (like the color transparent)\nto completely opaque (like the color red)."
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "hsl_color",
+      "description": {
+        "content": "Returns a color with the provided hue (H), saturation (S), lightness (L) and a\ncertain degree of opacity (alpha, A).",
+        "images": [
+          {
+            "uri": "https://upload.wikimedia.org/wikipedia/commons/3/35/HSL_color_solid_cylinder.png",
+            "caption": "HSL cylinder: SharkD via Wikimedia Commons"
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "hue",
+          "description": {
+            "content": "hue of the color [0-360]"
+          },
+          "type": "float"
+        },
+        {
+          "name": "saturation",
+          "description": {
+            "content": "saturation of the color [0-1]"
+          },
+          "type": "float"
+        },
+        {
+          "name": "lightness",
+          "description": {
+            "content": "the amount of white or black applied [0-1].\nFully saturated colors have a lightness value of 1/2."
+          },
+          "type": "float"
+        },
+        {
+          "name": "opacity",
+          "description": {
+            "content": "opacity (alpha) of the color, where 0 means fully\ntransparent and 1 fully opaque. By default, all colors are fully opaque."
+          },
+          "type": "float",
+          "default_value": "1.0"
+        }
+      ],
+      "return_type": "Color",
+      "return_description": "a color with the provided HSLA components"
+    },
+    {
+      "name": "hsv_color",
+      "description": {
+        "content": "Returns a color with the provided hue (H), saturation (S), value (V) and a\ncertain degree of opacity (alpha, A).",
+        "images": [
+          {
+            "uri": "https://upload.wikimedia.org/wikipedia/commons/4/4e/HSV_color_solid_cylinder.png",
+            "caption": "HSV cylinder (SharkD via Wikimedia Commons)"
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "hue",
+          "description": {
+            "content": "hue of the color [0-360]"
+          },
+          "type": "float"
+        },
+        {
+          "name": "saturation",
+          "description": {
+            "content": "saturation of the color [0-1]"
+          },
+          "type": "float"
+        },
+        {
+          "name": "value",
+          "description": {
+            "content": "the amount of light that is applied [0-1]"
+          },
+          "type": "float"
+        },
+        {
+          "name": "opacity",
+          "description": {
+            "content": "opacity (alpha) of the color, where 0 means fully\ntransparent and 1 fully opaque. By default, all colors are fully opaque."
+          },
+          "type": "float",
+          "default_value": "1.0"
+        }
+      ],
+      "return_type": "Color",
+      "return_description": "a color with the provided HSVA components."
+    },
+    {
+      "name": "rgb_color",
+      "description": {
+        "content": "Returns a color with the provided components for red (R), green (G) and blue (B) and a\ncertain degree of opacity (alpha, A).",
+        "images": [
+          {
+            "uri": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/RGBCube_a.svg/524px-RGBCube_a.svg.png",
+            "caption": "RGB cube (SharkD via Wikimedia Commons)"
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "red",
+          "description": {
+            "content": "red component [0-255]"
+          },
+          "type": "int"
+        },
+        {
+          "name": "green",
+          "description": {
+            "content": "green component [0-255]"
+          },
+          "type": "int"
+        },
+        {
+          "name": "blue",
+          "description": {
+            "content": "blue component [0-255]"
+          },
+          "type": "int"
+        },
+        {
+          "name": "opacity",
+          "description": {
+            "content": "opacity (alpha) of the color, where 0 means fully\ntransparent and 1 fully opaque. By default, all colors are fully opaque."
+          },
+          "type": "float",
+          "default_value": "1.0"
+        }
+      ],
+      "return_type": "Color",
+      "return_description": "a color with the provided RGBA components"
+    }
+  ],
+  "variables": [
+    {
+      "name": "black",
+      "description": {
+        "content": "Black color"
+      }
+    },
+    {
+      "name": "blue",
+      "description": {
+        "content": "Blue color"
+      }
+    },
+    {
+      "name": "cyan",
+      "description": {
+        "content": "Cyan color"
+      }
+    },
+    {
+      "name": "green",
+      "description": {
+        "content": "Green color"
+      }
+    },
+    {
+      "name": "magenta",
+      "description": {
+        "content": "Magenta color"
+      }
+    },
+    {
+      "name": "red",
+      "description": {
+        "content": "Red color"
+      }
+    },
+    {
+      "name": "transparent",
+      "description": {
+        "content": "Fully-transparent color"
+      }
+    },
+    {
+      "name": "white",
+      "description": {
+        "content": "White color"
+      }
+    },
+    {
+      "name": "yellow",
+      "description": {
+        "content": "Yellow color"
+      }
+    }
+  ]
+}

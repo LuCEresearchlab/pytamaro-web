@@ -32,8 +32,6 @@ export default function PyTamaroAPI({
     const {metadata} = useLocalProfile();
 
     const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
-        let test = new JsonConverter(name).print();
-        console.log("handlePopoverOpen: " + test);
         setAnchorEl(event.currentTarget);
         // When the popover is open for at least 2 seconds, track the event.
         setTimeoutId(setTimeout(() => {
@@ -65,19 +63,6 @@ export default function PyTamaroAPI({
                 return node?.outerHTML || '';
             }),
     });
-
-    // const {English, French, German, Italian} = () => {
-    // const English = async () => {
-    //     console.log("HERE");
-    //     let text = (await readdir('../public//JsonDocumentation/English').then((files) => {
-    //         console.log("\nCurrent directory filenames:");
-    //         files.forEach((file: any) => {
-    //             console.log(file);
-    //         })
-    //         return files;
-    //     }))
-    //     return text.toString()
-    // }
 
     return (
         <span style={{
