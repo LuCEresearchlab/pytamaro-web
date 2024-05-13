@@ -25,7 +25,7 @@ import 'reactflow/dist/style.css';
 import { anchorName } from '../../src/curricula';
 import { Metadata } from '../../src/localStorage/schema';
 import scrollToAnchor from '../../src/scrollToAnchor';
-import useWidth from '../../src/useWidth';
+import useWindowSize from '../../src/useWindowSize';
 import { activityVariantStatus } from '../ActivityStatusBadge';
 
 const nodeOptions = {
@@ -342,7 +342,7 @@ export default function CurriculumFlow(
     setNodesInitialized: (initialized: boolean) => void
   },
 ) {
-  const windowWidth = useWidth();
+  const { width: windowWidth } = useWindowSize();
   const router = useRouter();
   const {
     nodes, edges, width, height,

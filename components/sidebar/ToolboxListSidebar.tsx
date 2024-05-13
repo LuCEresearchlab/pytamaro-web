@@ -7,6 +7,7 @@ import { ToolboxFunction } from '../../src/localStorage/schema';
 import useLocalToolbox from '../../src/localStorage/useLocalToolbox';
 import theme from '../../src/theme';
 import { toolboxFunctionPathname } from '../../src/urlUtils';
+import useWindowSize from '../../src/useWindowSize';
 import Popup from '../Popup';
 import ToolboxFunctionCardContent from '../ToolboxFunctionCardContent';
 import { SIDEBAR_CHIPS_FONT_SIZE, SIDEBAR_CHIPS_WIDTH } from './Sidebar';
@@ -61,8 +62,9 @@ function SidebarToolboxFunction({ fn, skipPopup }: { fn: ToolboxFunction, skipPo
 
 export default function ToolboxListSidebar({ skipPopup = false } : { skipPopup?: boolean }) {
   const { list } = useLocalToolbox();
+  const { height } = useWindowSize();
   const [page, setPage] = useState(0);
-  const fnsPerPage = 20;
+  const fnsPerPage = height <= 1080 ? 10 : 20;
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
