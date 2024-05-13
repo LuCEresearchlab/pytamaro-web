@@ -98,7 +98,7 @@ export default function DoNowBox({
         <TextField
           sx={{ mb: alreadyDidIt ? 0 : 2 }}
           size="small"
-          label="Your answer"
+          label={t('yourAnswer')}
           variant="outlined"
           fullWidth
           value={answer}
