@@ -25,6 +25,7 @@
     "wideWidth": "Larghezza Intera",
     "staleOutput": "Output obsoleto: esegui di nuovo il codice per aggiornarlo",
     "noOutputTip": "Eseguito con successo, ma nessun output prodotto. Avevi intenzione di mostrare una grafica? Usa <code>{{apiName}}</code>.",
+    "ellipsisTip": "Nel codice qui sopra, sostituisci ogni <code>...</code> con la tua implementazione.",
     "resetActivity": "Reset Attività",
     "resetAreYouSure": "Sei sicuro/a?",
     "resetActivityWarning": "Stai per resettare l'intera attività, incluso tutto il codice che hai scritto. Questa azione non può essere annullata! ⚠️",

@@ -38,11 +38,12 @@ export const COLORIZE_CLASSNAME = 'monaco-colorize';
 export default function CodeEditor({
   source, executionResponse = undefined, onChange = () => {}, onExecutionRequested = undefined,
   executionAllowed = false, executionFinished = false, firstLineNumber = 1, readOnly = false,
+  collapsedErrorMarkers = false,
 } :
 { source: string, executionResponse?: ExecutionResponse,
   onChange?: (source: string) => void, onExecutionRequested? : () => void,
   executionAllowed?: boolean, executionFinished?: boolean, firstLineNumber?: number,
-  readOnly?: boolean }) {
+  readOnly?: boolean, collapsedErrorMarkers?: boolean }) {
   const { list } = useLocalToolbox();
   const monacoRef = useRef<any>(null);
   const editorRef = useRef<any>(null);
@@ -180,12 +181,18 @@ export default function CodeEditor({
       if (monacoInstance && editorInstance) {
         clearMarkers();
         if (executionResponse?.type === 'error' && executionFinished) {
-          addMarkers(monacoInstance, editorInstance, executionResponse, firstLineNumber);
+          addMarkers(
+            monacoInstance,
+            editorInstance,
+            executionResponse,
+            firstLineNumber,
+            collapsedErrorMarkers,
+          );
         }
       }
     },
     [executionResponse, editorInstance, monacoInstance, clearMarkers, executionFinished,
-      firstLineNumber],
+      firstLineNumber, collapsedErrorMarkers],
   );
 
   const debouncedHandleSourceChanged = debounce((newSource: string | undefined) => {

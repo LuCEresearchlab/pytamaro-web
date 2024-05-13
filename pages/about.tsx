@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable react/jsx-one-expression-per-line */
 import {
   Avatar, Box, Container, Divider, Link, List, ListItem, ListItemAvatar, ListItemText, Typography,
@@ -78,6 +79,12 @@ const changelogEntries = [
     icon: 'Error',
     title: 'Better integration with Python error messages',
     desc: 'Python error messages are now shown directly inside the code editor. We upgraded to the latest Python 3.12, showing the error message in bold and collapsing by default the stack frames from system libraries.',
+  },
+  {
+    date: '2024-05-13',
+    icon: 'Assignment',
+    title: 'Learner-friendly message for code with ellipsis',
+    desc: <span>The platform shows a learner-friendly message as a tip when the code still has <code>...</code>, indicating parts that still have to be implemented.</span>,
   },
 ];
 
