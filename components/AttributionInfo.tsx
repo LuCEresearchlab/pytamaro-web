@@ -8,9 +8,9 @@ import { activityVariantPathname, authorPathname, curriculumPathname } from '../
 
 export default function AttributionInfo({ type, author, derivedFrom } :
 { type: 'activity' | 'curriculum', author: AuthorProfile, derivedFrom: string[] }) {
-  const formatter = new Intl.ListFormat('en', { style: 'long', type: 'conjunction' });
+  const { i18n, t } = useLocalTranslation();
+  const formatter = new Intl.ListFormat(i18n.language, { style: 'long', type: 'conjunction' });
   const parts = formatter.formatToParts(derivedFrom);
-  const { t } = useLocalTranslation();
   return (
     <>
       <Typography>
