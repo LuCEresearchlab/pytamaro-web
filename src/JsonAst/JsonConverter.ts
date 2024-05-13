@@ -2,8 +2,6 @@ import {Module, Function, Type, Variable} from "./Json_structure.ts";
 
 import {readdir, readFile} from 'fs/promises';
 import path from "path";
-import {func} from "prop-types";
-import {result} from "lodash";
 
 const BASE_PATH: string = path.join(process.cwd(), "public/JsonDocumentation");
 
@@ -34,26 +32,21 @@ export class JsonConverter {
 
     public find(name: string, language?: string): Module | Function | Type | Variable | undefined {
         if (language) {
-            switch (language) {
+            switch (language.toLowerCase()) {
                 case 'en':
                     return this.findInArray(this.English, name)
-                    break;
                 case 'fr':
                     return this.findInArray(this.French, name)
-                    break;
                 case 'ge':
                     return this.findInArray(this.German, name)
-                    break;
                 case 'it':
                     return this.findInArray(this.Italian, name)
-                    break;
                 default:
                     console.error("INCORRECT LANGUAGE")
-                    break;
+                    return undefined
             }
         } else {
-            let result = undefined
-            result = this.findInArray(this.English, name)
+            let result = this.findInArray(this.English, name)
             if (result == undefined){
                 result = this.findInArray(this.French, name)
             }
@@ -68,20 +61,20 @@ export class JsonConverter {
     }
 
     private findInArray(array:Module[], name: string): Module | Function | Type | Variable | undefined {
+        name = name.toLowerCase()
         for (let module of array){
-                if (module.name == name) {
+                if (module.name.toLowerCase() == name) {
                     return  module
                 } else {
-                    let temp = undefined
-                    temp = module.functions?.find(fun => fun.name == name)
-                    if (temp == undefined) {
-                        temp = module.types?.find(type => type.name == name)
+                    let result = module.functions?.find(fun => fun.name.toLowerCase() == name)
+                    if (result == undefined) {
+                        result = module.types?.find(type => type.name.toLowerCase() == name)
                     }
-                    if (temp == undefined) {
-                        temp = module.variables?.find(variable => variable.name == name)
+                    if (result == undefined) {
+                        result = module.variables?.find(variable => variable.name.toLowerCase() == name)
                     }
-                    if (temp != undefined){
-                        return temp
+                    if (result != undefined){
+                        return result
                     }
                 }
             }

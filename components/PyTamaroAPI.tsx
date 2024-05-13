@@ -12,6 +12,7 @@ import names from '../src/pytamaroNames';
 import {ActivityVariant} from '../src/schemas/activitySchema';
 import {EventName, storeDbEvent} from '../src/storeDbEvent';
 import {JsonConverter} from "../src/JsonAst/JsonConverter.ts";
+import ToolboxFunctionCardContent from "./ToolboxFunctionCardContent.tsx";
 
 export default function PyTamaroAPI({
                                         name, language = undefined, activityVariant, smallerFont = false,
@@ -49,18 +50,30 @@ export default function PyTamaroAPI({
 
     const open = Boolean(anchorEl);
 
+    // const {isLoading, error, data} = useQuery({
+    //     queryKey: [`docs-${nameWithLang}`],
+    //     queryFn: () => axios.get(`https://readthedocs.org/api/v3/embed/?${new URLSearchParams({
+    //         url: `https://pytamaro.readthedocs.io/en/stable/${nameInfo.url}.html`,
+    //     })}`)
+    //         .then((response) => {
+    //             // We climb up the DOM tree one level to find the element that contains both
+    //             // <dt> and <dd> (term and description).
+    //             const tmpElement = document.createElement('div');
+    //             tmpElement.innerHTML = response.data.content;
+    //             const node = tmpElement.querySelector(`[id="${nameInfo.fqname}"]`)?.parentElement;
+    //             return node?.outerHTML || '';
+    //         }),
+    // });
+
     const {isLoading, error, data} = useQuery({
         queryKey: [`docs-${nameWithLang}`],
-        queryFn: () => axios.get(`https://readthedocs.org/api/v3/embed/?${new URLSearchParams({
-            url: `https://pytamaro.readthedocs.io/en/stable/${nameInfo.url}.html`,
-        })}`)
+        queryFn: () => axios.get(`/api/json_doc?name=${name}&language=${language || activityVariant.language}`
+        )
             .then((response) => {
                 // We climb up the DOM tree one level to find the element that contains both
                 // <dt> and <dd> (term and description).
-                const tmpElement = document.createElement('div');
-                tmpElement.innerHTML = response.data.content;
-                const node = tmpElement.querySelector(`[id="${nameInfo.fqname}"]`)?.parentElement;
-                return node?.outerHTML || '';
+                console.log("RESPONSE API: ", response)
+                return response.data
             }),
     });
 
@@ -116,8 +129,12 @@ export default function PyTamaroAPI({
       >
         {isLoading ? <Typography component="span">Loading the documentation...</Typography> : null}
           {error ? <Typography component="span">Failed to load the documentation.</Typography> : null}
-          {data ? <Container disableGutters maxWidth="md" className="rst-content" sx={{p: 1}}
-                             dangerouslySetInnerHTML={{__html: data}}/> : null}
+          {/*{data ?<Container disableGutters maxWidth="md" className="rst-content"*/}
+          {/*                                                   sx={{p: 1}}*/}
+          {/*                                                   dangerouslySetInnerHTML={{__html: data}}/> : null}*/}
+          {/*    TODO: add <ToolboxFunctionCardContent fn={fn} /> in the popover*/}
+          {/*{data ? <div> <p>{JSON.stringify(data)}</p> <ToolboxFunctionCardContent fn={data} /> </div>: null}*/}
+          {data ? <ToolboxFunctionCardContent fn={data} /> : null}
       </Popover>
     </span>
     );

@@ -23,7 +23,8 @@ export default async function handler(
         if(result == undefined){
             res.status(500).send("No matching result")
         } else {
-            res.status(200).send(result)
+            res.status(200).json(result)
+            res.end()
         }
     }
     else{
