@@ -5,6 +5,7 @@ import {
 import { useState } from 'react';
 import { ToolboxFunction } from '../../src/localStorage/schema';
 import useLocalToolbox from '../../src/localStorage/useLocalToolbox';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import theme from '../../src/theme';
 import { toolboxFunctionPathname } from '../../src/urlUtils';
 import useWindowSize from '../../src/useWindowSize';
@@ -63,6 +64,7 @@ function SidebarToolboxFunction({ fn, skipPopup }: { fn: ToolboxFunction, skipPo
 export default function ToolboxListSidebar({ skipPopup = false } : { skipPopup?: boolean }) {
   const { list } = useLocalToolbox();
   const { height } = useWindowSize();
+  const { t } = useLocalTranslation();
   const [page, setPage] = useState(0);
   const fnsPerPage = height <= 1080 ? 10 : 20;
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -70,7 +72,7 @@ export default function ToolboxListSidebar({ skipPopup = false } : { skipPopup?:
   };
   const toolboxFunctions = list();
   return toolboxFunctions.length > 0 ? (
-    <SidebarItem title="My Toolbox">
+    <SidebarItem title={t('myToolbox')}>
       <Stack
         spacing={1}
       >
