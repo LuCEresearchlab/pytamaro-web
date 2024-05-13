@@ -170,8 +170,8 @@ function CodeElement({ content } : { content : string }) {
 }
 
 export default function OutputArea(
-  { executionError, executionResponse, dimmed }:
-  { executionError: boolean, executionResponse: ExecutionResponse, dimmed: boolean },
+  { executionError, executionResponse, dimmed = false }:
+  { executionError: boolean, executionResponse: ExecutionResponse, dimmed?: boolean },
 ) {
   const pytamaroDataUriRegex = /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
   const { stdout, stderr } = executionResponse;
