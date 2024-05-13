@@ -105,7 +105,8 @@ export default function ActivitiesGallery({
                           )}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {langInfo.description}
+                        {/* Add a zero-width space to avoid skipping the description when empty */}
+                        {langInfo.description || '\ufeff' }
                       </Typography>
                     </CardContent>
                   )}
