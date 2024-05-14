@@ -126,21 +126,11 @@ export function canonicalVariantForLanguage(activity: Activity, language: string
   && v.version === languageInfo?.latestVersion) as ActivityVariant;
 }
 
-// export function variantForTime(activity: Activity) {
-//   return (time: number) => activity.variants.find((v) => v.time === time) as ActivityVariant;
-// }
-
 export function languageInfoForVariant(activity: Activity, variant: ActivityVariant) {
   return activity.languagesInfo.find(
     (i) => i.language === variant.language,
   ) as ActivityLanguageInfo;
 }
-
-// export function timeInfoForVariant(activity: Activity, variant: ActivityVariant) {
-//   return activity.languagesInfo.find(
-//     (i) => i.language === variant.language && i.time === variant.time,
-//   ) as ActivityLanguageInfo;
-// }
 
 export function platformConfigWithDefaults(config: Partial<PlatformConfiguration> = {})
   : PlatformConfiguration {

@@ -1,7 +1,8 @@
 import { HourglassBottom, Verified } from '@mui/icons-material';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHourglass } from '@fortawesome/free-solid-svg-icons';
 import InfoIcon from '@mui/icons-material/Info';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
+import HourglassFullIcon from '@mui/icons-material/HourglassFull';
 import {
   Box,
   Button,
@@ -13,6 +14,7 @@ import {
   IconButton,
   Paper,
   Typography,
+  Icon,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { orderBy } from 'lodash';
@@ -92,27 +94,42 @@ export default function ActivitiesGallery({
                     sx={{ padding: 1, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
                   />
                   { !compactView && (
-                    <CardContent>
-                      <Typography gutterBottom variant="h5" component="div">
-                        {langInfo.title}
-                        {activity.visibility === 'featured'
-                          && (
-                          <Verified
-                            sx={{ marginLeft: 1, color: 'primary.main' }}
-                          />
+                    <CardContent sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                      <Box sx={{ flexGrow: 1 }}>
+                        <Typography gutterBottom variant="h5" component="div">
+                          {langInfo.title}
+                          {activity.visibility === 'featured' && (
+                            <Verified sx={{ marginLeft: 1, color: 'primary.main' }} />
                           )}
-                        {isDraft
-                          && (
-                          <Chip
-                            icon={<HourglassBottom />}
-                            label="Coming soon"
-                            sx={{ marginLeft: 2, textTransform: 'uppercase', fontWeight: 'bold' }}
-                          />
+                          {isDraft && (
+                            <Chip
+                              icon={<HourglassBottom />}
+                              label="Coming soon"
+                              sx={{ marginLeft: 2, textTransform: 'uppercase', fontWeight: 'bold' }}
+                            />
                           )}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {langInfo.description}
-                      </Typography>
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {langInfo.description}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                        {activity.time <= 10 && (
+                          <Icon>
+                            <HourglassEmptyIcon style={{ color: 'green' }} />
+                          </Icon>
+                        )}
+                        {activity.time > 10 && activity.time <= 25 && (
+                          <Icon>
+                            <HourglassBottomIcon style={{ color: 'orange' }} />
+                          </Icon>
+                        )}
+                        {activity.time > 25 && (
+                          <Icon>
+                            <HourglassFullIcon style={{ color: 'red' }} />
+                          </Icon>
+                        )}
+                      </Box>
                     </CardContent>
                   )}
                 </CardActionArea>
@@ -131,34 +148,24 @@ export default function ActivitiesGallery({
                         {info.language}
                       </Button>
                     ))}
-                    {/* <Button
-                      size="small"
-                      variant="outlined"
-                      key={activity.time}
+                    {/* <Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
                     >
-                      {activity.time}
-                    </Button> */}
-                    <Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                       {activity.time <= 10 && (
-                        <IconButton>
-                          <FontAwesomeIcon icon={faHourglass} style={{ padding: '2px', color: 'green' }} />
-                        </IconButton>
+                        <Icon>
+                          <HourglassEmptyIcon style={{ color: 'green' }} />
+                        </Icon>
                       )}
                       {activity.time > 10 && activity.time <= 25 && (
-                        <IconButton>
-                          <FontAwesomeIcon icon={faHourglass} style={{ padding: '2px', color: 'orange' }} />
-                          <FontAwesomeIcon icon={faHourglass} style={{ padding: '2px', color: 'orange' }} />
-                        </IconButton>
-
+                        <Icon>
+                          <HourglassBottomIcon style={{ color: 'orange' }} />
+                        </Icon>
                       )}
                       {activity.time > 25 && (
-                        <IconButton>
-                          <FontAwesomeIcon icon={faHourglass} style={{ padding: '2px', color: 'red' }} />
-                          <FontAwesomeIcon icon={faHourglass} style={{ padding: '2px', color: 'red' }} />
-                          <FontAwesomeIcon icon={faHourglass} style={{ padding: '2px', color: 'red' }} />
-                        </IconButton>
+                        <Icon>
+                          <HourglassFullIcon style={{ color: 'red' }} />
+                        </Icon>
                       )}
-                    </Box>
+                    </Box> */}
                     <Box style={{ marginLeft: 'auto' }}>
                       <IconButton
                         size="small"
