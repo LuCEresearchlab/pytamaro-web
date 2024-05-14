@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import {
   Code, Folder,
   GitHub,
@@ -19,6 +20,7 @@ import {
   CardContent,
   CardHeader,
   Container,
+  Divider,
   Link,
   Paper,
   Stack,
@@ -104,7 +106,7 @@ export default function Home({ welcomeCurriculum, activities } :
       <Box
         display="flex"
         justifyContent="center"
-        marginY={{ xs: '5vh', md: '10vh' }}
+        paddingY={{ xs: '5vh', md: '8vh' }}
       >
         <Box sx={{ width: { xs: '45vw', md: '35vw', xl: '25vw' } }}>
           <svg viewBox="0 0 600 108" display="block" overflow="visible">
@@ -126,20 +128,38 @@ export default function Home({ welcomeCurriculum, activities } :
           </svg>
         </Box>
       </Box>
-      <Box
-        marginY={{ xs: '5vh', md: '15vh' }}
+      <Container
+        sx={{ marginY: { xs: '5vh', md: '12vh' } }}
+        maxWidth="md"
       >
         <Typography variant="h2" fontWeight="bold" textAlign="center">
-          Decompose
+          Learn programming in a
           {' '}
-          <Typography variant="h2" fontWeight="bold" component="span" color={theme.pytamaro.redColor}>Graphics</Typography>
-          <br />
-          Compose
+          <Typography variant="h2" fontWeight="bold" component="span" color={theme.pytamaro.redColor}>rigorous</Typography>
           {' '}
-          <Typography variant="h2" fontWeight="bold" component="span" color="primary">Programs</Typography>
+          and
+          {' '}
+          <Typography variant="h2" fontWeight="bold" component="span" color="primary">engaging</Typography>
+          {' '}
+          way
         </Typography>
-      </Box>
-      <Container maxWidth="lg" sx={{ marginTop: 20, marginBottom: 9 }}>
+        <Stack
+          spacing={2}
+          direction={{ xs: 'column', md: 'row' }}
+          justifyContent="space-around"
+          alignItems="center"
+          sx={{ mt: 10 }}
+          divider={<Divider orientation="vertical" flexItem />}
+        >
+          <Button variant="contained" size="large" sx={{ minWidth: '32ch', minHeight: theme.spacing(6) }} startIcon={<TerminalIcon />} href="/playground">Open the playground</Button>
+          <Button variant="contained" size="large" sx={{ minWidth: '32ch', minHeight: theme.spacing(6) }} startIcon={<Route />} href={curriculumPathname('luce', 'welcome')}>Start a guided curriculum</Button>
+        </Stack>
+        <Typography textAlign="center" sx={{ mt: 2 }} fontWeight="bold">
+          Entirely free. No registration needed.
+        </Typography>
+      </Container>
+
+      <Container maxWidth="lg" sx={{ marginY: 12 }}>
         <Stack spacing={4}>
           <Paper elevation={4}>
             <Card>
@@ -154,20 +174,25 @@ export default function Home({ welcomeCurriculum, activities } :
                   <CardContent>
                     <Typography fontSize="1.1rem" paragraph gutterBottom>
                       Eager to discover the art of programming?
-                      Embark on a journey to learn fundamental programming concepts
-                      in an engaging way.
+                      Embark on a journey to learn fundamental programming concepts.
                     </Typography>
                     <Typography fontSize="1.1rem" paragraph>
-                      We carefully designed PyTamaro to keep complexity under control.
+                      Our approach fosters
+                      {' '}
+                      <strong>problem decomposition</strong>
+                      {' '}
+                      skills:
+                      you will decompose graphics
+                      (like the PyTamaro logo or the Swiss flag)
+                      and compose programs.
                     </Typography>
                     <Typography fontSize="1.1rem" paragraph>
-                      You can read more on why the library is designed this way
-                      in this
+                      Are you a teacher? This
                       {' '}
                       <Link href="https://www.chiodini.org/publications/splashe23-pytamaro.pdf">research paper</Link>
-                      . It describes pitfalls that need to be considered
-                      when teaching programming using graphics,
-                      and what PyTamaro does to eschew them.
+                      {' '}
+                      describes the philosophy behind PyTamaro's design
+                      and how it avoids some pitfalls found in other approaches.
                     </Typography>
                   </CardContent>
                 </Grid>
@@ -196,7 +221,7 @@ export default function Home({ welcomeCurriculum, activities } :
                   <Grid xs={12} md={7}>
                     <CardHeader
                       avatar={<TipsAndUpdates color="primary" />}
-                      title="Looking for Inspiration?"
+                      title="Interesting Activities"
                       titleTypographyProps={{ variant: 'h5', color: 'primary', fontWeight: 'bold' }}
                       sx={{ pb: 0 }}
                     />
@@ -206,7 +231,10 @@ export default function Home({ welcomeCurriculum, activities } :
                         Are new to the library and just want to see some examples?
                       </Typography>
                       <Typography fontSize="1.1rem" paragraph>
-                        Check out our constantly growing collection of activities.
+                        Check out our constantly growing
+                        {' '}
+                        <strong>collection of activities</strong>
+                        .
                         There are more than 100 activities to choose from!
                       </Typography>
                     </CardContent>
