@@ -25,7 +25,7 @@
     "wideWidth": "Volle Breite",
     "staleOutput": "Veraltete Ausgabe: Führe den Code erneut aus, um die Ausgabe zu aktualisieren",
     "noOutputTip": "Erfolgreich ausgeführt, aber keine Ausgabe erzeugt. Wolltest Du eine Grafik anzeigen? Verwende <code>{{apiName}}</code>.", 
-    "ellipsisTip": "Ersetze in dem obigen Code jedes <code>...</code> durch Deine Implementierung.",
+    "ellipsisTip": "Ersetze jedes <code>...</code> durch Dein Code.",
     "contents": "Inhalt",
     "resetActivity": "Aktivität zurücksetzen",
     "resetAreYouSure": "Bist Du sicher?",

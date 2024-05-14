@@ -25,7 +25,7 @@
     "wideWidth": "Full Width",
     "staleOutput": "Stale output: re-run the code to refresh it",
     "noOutputTip": "Successfully executed, but no output produced. Did you intend to show a graphic? Use <code>{{apiName}}</code>.",
-    "ellipsisTip": "In the code above, replace every <code>...</code> with your implementation.",
+    "ellipsisTip": "Replace every <code>...</code> with your code.",
     "contents": "Contents",
     "resetActivity": "Reset Activity",
     "resetAreYouSure": "Are you sure?",
