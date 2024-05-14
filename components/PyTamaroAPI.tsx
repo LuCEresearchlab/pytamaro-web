@@ -134,7 +134,7 @@ export default function PyTamaroAPI({
           {/*                                                   dangerouslySetInnerHTML={{__html: data}}/> : null}*/}
           {/*    TODO: add <ToolboxFunctionCardContent fn={fn} /> in the popover*/}
           {/*{data ? <div> <p>{JSON.stringify(data)}</p> <ToolboxFunctionCardContent fn={data} /> </div>: null}*/}
-          {data ? <ToolboxFunctionCardContent fn={data} /> : null}
+          {data ? <ToolboxFunctionCardContent fn={data} from_pyTamaro={true}/> : null}
       </Popover>
     </span>
     );

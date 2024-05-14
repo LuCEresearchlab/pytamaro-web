@@ -15,6 +15,10 @@ import useReadOnlyTemporaryActivity from '../src/useReadOnlyTemporaryActivity';
 import CodeEditor from './CodeEditor';
 import SolitaryCodeCell, {initialStateSingleCell} from './SolitaryCodeCell';
 import {Type, Function, Variable} from '../src/JsonAst/Json_structure';
+import ToolboxFunctionsList from "./ToolboxFunctionsList.tsx";
+import {from} from "rxjs";
+import {unified} from "unified";
+import {result} from "lodash";
 
 function TypeCell({type}: { type: string }) {
     return type === ''
@@ -24,21 +28,23 @@ function TypeCell({type}: { type: string }) {
 
 export default function ToolboxFunctionCardContent(
     {
-        fn, summary = false,
+        fn, summary = false, from_pyTamaro = false
     }:
         {
             fn: ToolboxFunction | Type | Function | Variable,
-            summary?: boolean
+            summary?: boolean,
+            from_pyTamaro?: boolean
         },
 ) {
     const [showSource, setShowSource] = useState(false);
     const [showUsage, setShowUsage] = useState(summary);
     const toggleShowSource = () => setShowSource(!showSource);
     const toggleShowUsage = () => setShowUsage(!showUsage);
-        const usageCodeCells =("usage" in fn) ? initialStateSingleCell(fn.usage) : undefined;
-    const activityVariant = toolboxActivityVariant(fn.name);
-    const activity =(usageCodeCells && activityVariant) ? useReadOnlyTemporaryActivity(usageCodeCells, activityVariant) : undefined;
-    const originalActivityPathname =  ("originalActivity" in fn) ? activityVariantPathname(fn.originalActivity) : undefined;
+    const usageCodeCells = "usage" in fn ? initialStateSingleCell(fn.usage) : undefined;
+    const activityVariant = !from_pyTamaro ? toolboxActivityVariant(fn.name) : undefined;
+    const activity = usageCodeCells && activityVariant ? useReadOnlyTemporaryActivity(usageCodeCells, activityVariant) : undefined;
+    const originalActivityPathname = "originalActivity" in fn ? activityVariantPathname(fn.originalActivity) : undefined;
+
     return (
         <CardContent sx={{pb: 1, minWidth: '80ch'}}>
             <Box display="flex">
@@ -48,20 +54,10 @@ export default function ToolboxFunctionCardContent(
                 <Typography component="span" fontFamily={theme.pytamaro.monospaceFontFamily}>
                     {fn.name}
                 </Typography>
-                <Button
-                    component={Link}
-                    href={summary ? toolboxFunctionPathname(fn.name) : (originalActivityPathname? originalActivityPathname: '')}
-                    target="_blank"
-                    variant="outlined"
-                    size="small"
-                    sx={{ml: 'auto'}}
-                >
-                    {summary ? 'View Details' : 'View Original Activity'}
-                </Button> {/*TODO: hide this if it isn't a 'toolbox function' */}
+                {!from_pyTamaro ? generateLinkButton(fn, summary) : null}
+                {/*TODO: hide this if it isn't a 'toolbox function' */}
             </Box>
-            <Typography color="text.secondary">
-                {(fn.description) ? typeof fn.description : ''}
-            </Typography>
+            {generateDescription(fn)}
             {/*<Card sx={{px: 2, my: 2}}>*/}
             {/*    <Table aria-label="Function Parameters" size="small">*/}
             {/*        <TableHead>*/}
@@ -141,4 +137,38 @@ export default function ToolboxFunctionCardContent(
             {/*)}*/}
         </CardContent>
     );
+}
+
+function generateLinkButton(fn: ToolboxFunction, summary: boolean): JSX.Element {
+    return <Button
+        component={Link}
+        href={summary ? toolboxFunctionPathname(fn.name) : activityVariantPathname(fn.originalActivity)}
+        target="_blank"
+        variant="outlined"
+        size="small"
+        sx={{ml: 'auto'}}
+    >
+        {summary ? 'View Details' : 'View Original Activity'}
+    </Button>
+}
+
+function generateDescription(fn: ToolboxFunction | Type | Function | Variable) {
+    if (typeof fn.description == "string") {
+        return <Typography color="text.secondary">
+            {fn.description}
+        </Typography>
+    } else {
+        return <Typography color="text.secondary"> {fn.description ? fn.description?.content : ""}
+            {fn.description?.images?.map((img, index) =>
+                <figure>
+                    <img
+                        src={img.uri}
+                        alt={img.caption}
+                        width="128"
+                        height="128"
+                    />
+                    <figcaption>Fig {index + 1} - {img.caption}</figcaption>
+                </figure>)}
+        </Typography>
+    }
 }
