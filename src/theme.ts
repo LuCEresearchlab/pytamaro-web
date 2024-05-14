@@ -1,5 +1,5 @@
-import { createTheme } from '@mui/material/styles';
 import { red } from '@mui/material/colors';
+import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 
 declare module '@mui/material/styles' {
   interface Theme {
@@ -43,7 +43,7 @@ declare module '@mui/material/IconButton' {
 }
 
 // Create a theme instance.
-const theme = createTheme({
+const theme = responsiveFontSizes(createTheme({
   palette: {
     primary: {
       main: '#008BCB',
@@ -65,6 +65,6 @@ const theme = createTheme({
   typography: {
     fontFamily: "'Fira Sans', sans-serif",
   },
-});
+}), { factor: 1.5 });
 
 export default theme;
