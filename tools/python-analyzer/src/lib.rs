@@ -1,7 +1,7 @@
 use wasm_bindgen::prelude::*;
 extern crate console_error_panic_hook;
 use rustpython_parser::{Mode, parse as parser_parse};
-use rustpython_parser::ast::{Visitor, Stmt, StmtImportFrom, StmtFunctionDef, Expr, ExprCall};
+use rustpython_parser::ast::{Visitor, Stmt, StmtImportFrom, StmtFunctionDef, Expr, ExprCall, ExprConstant};
 use serde::{Deserialize, Serialize};
 pub fn start() {
     console_error_panic_hook::set_once();
@@ -87,6 +87,17 @@ impl Visitor for CalledNamesCollector {
     }
 }
 
+struct EllipsisFinder {
+    found: bool,
+}
+impl Visitor for EllipsisFinder {
+    fn visit_expr_constant(&mut self, node: ExprConstant) {
+        if node.value.is_ellipsis() {
+            self.found = true;
+        }
+    }
+}
+
 pub fn parse_to_stmts(python_source: &str) -> Result<Vec<Stmt>, String> {
     match parser_parse(python_source, Mode::Module, "cell") {
         Ok(m) => {
@@ -98,66 +109,65 @@ pub fn parse_to_stmts(python_source: &str) -> Result<Vec<Stmt>, String> {
     }
 }
 
-#[wasm_bindgen]
-pub fn parse(python_source: &str) -> Result<JsValue, JsValue> {
+fn parse_and_process_stmts<F, T>(python_source: &str, process: F) -> Result<JsValue, JsValue>
+where F: Fn(Vec<Stmt>) -> T, T: Serialize {
     match parse_to_stmts(python_source) {
-        Ok(_stmts) => {
-            return Ok(serde_wasm_bindgen::to_value(&true)?)
+        Ok(stmts) => {
+            return Ok(serde_wasm_bindgen::to_value(&process(stmts))?);
         },
         Err(e) => {
-            return Err(JsValue::from_str(e.to_string().as_str()));
+            return Err(JsValue::from_str(e.as_str()));
         }
     }
+}
+
+#[wasm_bindgen]
+pub fn parse(python_source: &str) -> Result<JsValue, JsValue> {
+    parse_and_process_stmts(python_source, |_| true)
 }
  
 #[wasm_bindgen]
 pub fn imported_names(python_source: &str) -> Result<JsValue, JsValue> {
-    match parse_to_stmts(python_source) {
-        Ok(stmts) => {
-            let mut collector = ImportedNamesCollector { names: Vec::new() };
-            for stmt in stmts {
-                collector.visit_stmt(stmt);
-            }
-            return Ok(serde_wasm_bindgen::to_value(&collector.names)?)
-        },
-        Err(e) => {
-            return Err(JsValue::from_str(e.to_string().as_str()));
+    parse_and_process_stmts(python_source, |stmts| {
+        let mut collector = ImportedNamesCollector { names: Vec::new() };
+        for stmt in stmts {
+            collector.visit_stmt(stmt);
         }
-    }
+        collector.names
+    })
 }
 
 #[wasm_bindgen]
 pub fn defined_functions(python_source: &str) -> Result<JsValue, JsValue> {
-    match parse_to_stmts(python_source) {
-        Ok(stmts) => {
-            let mut collector = FunctionDefinitionsCollector {
-                functions: Vec::new(),
-            };
-            for stmt in stmts {
-                collector.visit_stmt(stmt);
-            }
-            return Ok(serde_wasm_bindgen::to_value(&collector.functions)?)
-        },
-        Err(e) => {
-            return Err(JsValue::from_str(e.to_string().as_str()));
+    parse_and_process_stmts(python_source, |stmts| {
+        let mut collector = FunctionDefinitionsCollector { functions: Vec::new() };
+        for stmt in stmts {
+            collector.visit_stmt(stmt);
         }
-    }
+        collector.functions
+    })
 }
 
 #[wasm_bindgen]
 pub fn called_names(python_source: &str) -> Result<JsValue, JsValue> {
-    match parse_to_stmts(python_source) {
-        Ok(stmts) => {
-            let mut collector = CalledNamesCollector {
-                names: Vec::new(),
-            };
-            for stmt in stmts {
-                collector.visit_stmt(stmt);
-            }
-            return Ok(serde_wasm_bindgen::to_value(&collector.names)?)
-        },
-        Err(e) => {
-            return Err(JsValue::from_str(e.to_string().as_str()));
+    parse_and_process_stmts(python_source, |stmts| {
+        let mut collector = CalledNamesCollector { names: Vec::new() };
+        for stmt in stmts {
+            collector.visit_stmt(stmt);
         }
-    }
+        collector.names
+    })
+}
+
+#[wasm_bindgen]
+pub fn find_ellipsis(python_source: &str) -> Result<JsValue, JsValue> {
+    parse_and_process_stmts(python_source, |stmts| {
+        let mut finder = EllipsisFinder {
+            found: false,
+        };
+        for stmt in stmts {
+            finder.visit_stmt(stmt);
+        }
+        finder.found
+    })
 }

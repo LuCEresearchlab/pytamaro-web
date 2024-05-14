@@ -1,10 +1,5 @@
-import {
-  TipsAndUpdates,
-} from '@mui/icons-material';
 import SyncProblemIcon from '@mui/icons-material/SyncProblem';
 import {
-  Alert,
-  AlertTitle,
   Badge,
   BadgeProps,
   Card, CardActions, CardContent, Collapse, Paper,
@@ -13,13 +8,13 @@ import {
   debounce,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Trans } from 'next-i18next';
 import { useEffect, useMemo, useState } from 'react';
 import { ExecutionResponse } from '../src/codeExecution';
 import { CodeCellExecutionState, CodeCellState } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import { PythonName, called_names, imported_names } from '../src/python-analyzer/python_analyzer';
+import { called_names, find_ellipsis, imported_names } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant, PlatformConfiguration } from '../src/schemas/activitySchema';
+import { EllipsisTip, InputTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
 import DocumentationStripe from './DocumentationStripe';
 import OutputArea from './OutputArea';
@@ -33,47 +28,6 @@ const StaleOutputBadge = styled(Badge)<BadgeProps>(() => ({
   },
   width: '100%',
 }));
-
-function NoOutputTip({ importedNames } : { importedNames: PythonName[] }) {
-  const { t } = useLocalTranslation();
-  const showGraphicNames: Record<string, string> = {
-    pytamaro: 'show_graphic',
-    'pytamaro.it': 'visualizza_grafica',
-    'pytamaro.de': 'zeige_grafik',
-    'pytamaro.fr': 'montre_graphique',
-  };
-  // Pick the language based on the first import from one of the pytamaro modules.
-  // Default to English ("pytamaro") if we do not find a suitable module.
-  const moduleName = importedNames.find(({ module }) => module in showGraphicNames)?.module || 'pytamaro';
-  const apiName = showGraphicNames[moduleName];
-  return (
-    <Alert
-      iconMapping={{
-        success: <TipsAndUpdates fontSize="inherit" />,
-      }}
-    >
-      <Trans t={t} i18nKey="noOutputTip" values={{ apiName }} components={{ code: <code /> }} />
-    </Alert>
-  );
-}
-
-function InputTip() {
-  return (
-    <Alert
-      severity="warning"
-    >
-      <AlertTitle>
-        Using the
-        {' '}
-        <code>input</code>
-        {' '}
-        function is currently not supported on this platform.
-      </AlertTitle>
-      {/* eslint-disable-next-line max-len */}
-      This might be improved in the future. However, consider this general remark: mixing user interface aspects (input and output) with computations is not a good idea.
-    </Alert>
-  );
-}
 
 export function isExecutionError(response: ExecutionResponse | undefined) {
   return response?.type === 'error';
@@ -104,6 +58,8 @@ export default function CodeCell({
     && executionResponse?.stdout.length === 0
     && executionResponse?.stderr.length === 0;
   const [inputFunctionCalled, setInputFunctionCalled] = useState(false);
+  const [ellipsis, setEllipsis] = useState(false);
+  const tipShown = noOutput || inputFunctionCalled || ellipsis;
 
   const debouncedFindCalledNames = useMemo(() => {
     const findCalledNames = async (currentCellSource: string) => {
@@ -118,9 +74,21 @@ export default function CodeCell({
     return debounce(findCalledNames, 200);
   }, []);
 
+  const debouncedFindEllipsis = useMemo(() => {
+    const findEllipsis = async (currentCellSource: string) => {
+      try {
+        setEllipsis(await find_ellipsis(currentCellSource));
+      } catch (e) {
+        setEllipsis(false);
+      }
+    };
+    return debounce(findEllipsis, 200);
+  }, []);
+
   useEffect(() => {
     debouncedFindCalledNames(codeCellState.source);
-  }, [codeCellState.source, debouncedFindCalledNames]);
+    debouncedFindEllipsis(codeCellState.source);
+  }, [codeCellState.source, debouncedFindCalledNames, debouncedFindEllipsis]);
 
   return (
     <Paper elevation={readOnly ? 0 : 4}>
@@ -137,6 +105,7 @@ export default function CodeCell({
             firstLineNumber={firstLineNumber}
             readOnly={readOnly}
             executionResponse={executionResponse}
+            collapsedErrorMarkers={tipShown}
           />
         </CardContent>
         <CardActions disableSpacing sx={{ paddingLeft: 2, display: 'flex' }}>
@@ -153,7 +122,9 @@ export default function CodeCell({
         {noOutput && platformConfig.showNoOutputTip && (
           <NoOutputTip importedNames={imported_names(cumulativeSource)} />
         )}
-        {inputFunctionCalled && <InputTip /> }
+        {inputFunctionCalled && <InputTip />}
+        {ellipsis && <EllipsisTip />}
+        {!tipShown && (
         <Collapse in={codeCellExecutionState.outputAreaVisible} timeout="auto" unmountOnExit>
           <CardContent>
             <StaleOutputBadge
@@ -162,14 +133,16 @@ export default function CodeCell({
               invisible={codeCellExecutionState.outputSynced}
             >
               {executionResponse && (
-                <OutputArea
-                  executionError={executionError}
-                  executionResponse={executionResponse}
-                />
+              <OutputArea
+                executionError={executionError}
+                executionResponse={executionResponse}
+                dimmed={!codeCellExecutionState.outputSynced}
+              />
               )}
             </StaleOutputBadge>
           </CardContent>
         </Collapse>
+        )}
       </Card>
     </Paper>
   );
