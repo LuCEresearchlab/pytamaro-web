@@ -1,4 +1,4 @@
-import {Module, Function, Type, Variable} from "./Json_structure.ts";
+import {Module, Function, Type, Variable, json_obj_type} from "./Json_structure.ts";
 
 import {readdir, readFile} from 'fs/promises';
 import path from "path";
@@ -30,7 +30,10 @@ export class JsonConverter {
         return result;
     }
 
-    public find(name: string, language?: string): Module | Function | Type | Variable | undefined {
+    public find(name: string, language?: string): {
+        "obj_type": json_obj_type,
+        "obj": Module | Function | Type | Variable
+    } | undefined {
         if (language) {
             switch (language.toLowerCase()) {
                 case 'en':
@@ -47,37 +50,46 @@ export class JsonConverter {
             }
         } else {
             let result = this.findInArray(this.English, name)
-            if (result == undefined){
+            if (result == undefined) {
                 result = this.findInArray(this.French, name)
             }
-            if (result == undefined){
+            if (result == undefined) {
                 result = this.findInArray(this.German, name)
             }
-            if (result == undefined){
+            if (result == undefined) {
                 result = this.findInArray(this.Italian, name)
             }
             return result
         }
     }
 
-    private findInArray(array:Module[], name: string): Module | Function | Type | Variable | undefined {
+    private findInArray(array: Module[], name: string): {
+        "obj_type": json_obj_type,
+        "obj": Module | Function | Type | Variable
+    } | undefined {
         name = name.toLowerCase()
-        for (let module of array){
-                if (module.name.toLowerCase() == name) {
-                    return  module
-                } else {
-                    let result = module.functions?.find(fun => fun.name.toLowerCase() == name)
-                    if (result == undefined) {
-                        result = module.types?.find(type => type.name.toLowerCase() == name)
-                    }
-                    if (result == undefined) {
-                        result = module.variables?.find(variable => variable.name.toLowerCase() == name)
-                    }
-                    if (result != undefined){
-                        return result
+        for (let module of array) {
+            if (module.name.toLowerCase() == name) {
+                return {"obj_type": "Module", "obj": module}
+            } else {
+                let result = module.functions?.find(fun => fun.name.toLowerCase() == name)
+                let obj_type: "Function" | "Type" | "Variable" = "Function"
+                if (result == undefined) {
+                    result = module.types?.find(type => type.name.toLowerCase() == name)
+                    obj_type = "Type"
+                }
+                if (result == undefined) {
+                    result = module.variables?.find(variable => variable.name.toLowerCase() == name)
+                    obj_type = "Variable"
+                }
+                if (result != undefined) {
+                    return {
+                        "obj_type": obj_type,
+                        "obj": result
                     }
                 }
             }
+        }
         return undefined
     }
 

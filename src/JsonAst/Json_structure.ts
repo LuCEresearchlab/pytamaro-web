@@ -1,6 +1,6 @@
 export interface EnhancedStr {
     content: string;
-    images?: [string, string][];
+    images?: Image[];
 }
 
 export interface Type {
@@ -30,3 +30,10 @@ export interface Module {
     functions?: Function[];
     variables?: Variable[];
 }
+
+export interface Image{
+    uri: string;
+    caption? : string;
+}
+
+export type json_obj_type = "Module" | "Function" | "Type" | "Variable"

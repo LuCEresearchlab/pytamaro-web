@@ -72,7 +72,6 @@ export default function PyTamaroAPI({
             .then((response) => {
                 // We climb up the DOM tree one level to find the element that contains both
                 // <dt> and <dd> (term and description).
-                console.log("RESPONSE API: ", response)
                 return response.data
             }),
     });
@@ -133,8 +132,8 @@ export default function PyTamaroAPI({
           {/*                                                   sx={{p: 1}}*/}
           {/*                                                   dangerouslySetInnerHTML={{__html: data}}/> : null}*/}
           {/*    TODO: add <ToolboxFunctionCardContent fn={fn} /> in the popover*/}
-          {/*{data ? <div> <p>{JSON.stringify(data)}</p> <ToolboxFunctionCardContent fn={data} /> </div>: null}*/}
-          {data ? <ToolboxFunctionCardContent fn={data} from_pyTamaro={true}/> : null}
+          {/*{data ? <div> <p>{JSON.stringify(data)}</p> </div>: null}*/}
+          {data ? <ToolboxFunctionCardContent fn={data.obj} from_pyTamaro={true} obj_type={data.obj_type}/> : null}
       </Popover>
     </span>
     );
