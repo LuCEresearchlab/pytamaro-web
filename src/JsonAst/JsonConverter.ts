@@ -1,4 +1,4 @@
-import {Module, Function, Type, Variable, json_obj_type} from "./Json_structure.ts";
+import {Function, json_obj_type, Module, Type, Variable} from "./Json_structure.ts";
 
 import {readdir, readFile} from 'fs/promises';
 import path from "path";
@@ -70,17 +70,17 @@ export class JsonConverter {
         name = name.toLowerCase()
         for (let module of array) {
             if (module.name.toLowerCase() == name) {
-                return {"obj_type": "Module", "obj": module}
+                return {"obj_type": json_obj_type.module, "obj": module}
             } else {
                 let result = module.functions?.find(fun => fun.name.toLowerCase() == name)
-                let obj_type: "Function" | "Type" | "Variable" = "Function"
+                let obj_type: json_obj_type = json_obj_type.function
                 if (result == undefined) {
                     result = module.types?.find(type => type.name.toLowerCase() == name)
-                    obj_type = "Type"
+                    obj_type = json_obj_type.type
                 }
                 if (result == undefined) {
                     result = module.variables?.find(variable => variable.name.toLowerCase() == name)
-                    obj_type = "Variable"
+                    obj_type = json_obj_type.variable
                 }
                 if (result != undefined) {
                     return {

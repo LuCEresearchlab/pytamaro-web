@@ -2,23 +2,27 @@ import {
     Box,
     Button,
     Card,
-    CardContent, FormControlLabel, FormGroup, Switch,
-    Table, TableBody, TableCell, TableHead, TableRow, Typography,
+    CardContent,
+    FormControlLabel,
+    FormGroup,
+    Switch,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    Typography,
 } from '@mui/material';
 import Link from 'next/link';
 import {useState} from 'react';
-import {ToolboxFunction} from '../src/localStorage/schema';
+import {PythonFunctionArgument, ToolboxFunction} from '../src/localStorage/schema';
 import {toolboxActivityVariant} from '../src/specialActivities';
 import theme from '../src/theme';
 import {activityVariantPathname, toolboxFunctionPathname} from '../src/urlUtils';
 import useReadOnlyTemporaryActivity from '../src/useReadOnlyTemporaryActivity';
 import CodeEditor from './CodeEditor';
 import SolitaryCodeCell, {initialStateSingleCell} from './SolitaryCodeCell';
-import {Type, Function, Variable, json_obj_type} from '../src/JsonAst/Json_structure';
-import ToolboxFunctionsList from "./ToolboxFunctionsList.tsx";
-import {from} from "rxjs";
-import {unified} from "unified";
-import {result} from "lodash";
+import {Function, json_obj_type, Type, Variable} from '../src/JsonAst/Json_structure';
 
 function TypeCell({type}: { type: string }) {
     return type === ''
@@ -51,7 +55,7 @@ export default function ToolboxFunctionCardContent(
                 {/* NOTE: ('as ToolboxFunction' is an assertion since if the function doesn't come from_PyTamaro is from the toolbox) */}
             </Box>
             {description(fn)}
-            {!from_pyTamaro ? toolboxFunctionParameterTable(fn as ToolboxFunction) : obj_type == 'Function' && JSON.stringify((fn as Function).parameters) }
+            {obj_type == json_obj_type.function && parametersTable(fn, from_pyTamaro)}
             {!from_pyTamaro && ImplementationAndUsage(fn as ToolboxFunction, summary)}
             {/* NOTE: ('as ToolboxFunction' is an assertion since if the function doesn't come from_PyTamaro is from the toolbox) */}
         </CardContent>
@@ -77,9 +81,13 @@ function description(fn: ToolboxFunction | Type | Function | Variable) {
             {fn.description}
         </Typography>
     } else {
-        return <Typography color="text.secondary"> {fn.description ? fn.description?.content : ""}
+        return <div>
+            <Typography color="text.secondary">
+                {fn.description ? fn.description?.content : ""}
+
+            </Typography>
             {fn.description?.images?.map((img, index) =>
-                <figure key={index}>
+                <figure key={"Fig"+index}>
                     <img
                         src={img.uri}
                         alt={img.caption}
@@ -87,8 +95,9 @@ function description(fn: ToolboxFunction | Type | Function | Variable) {
                         height="128"
                     />
                     <figcaption>Fig {index + 1} - {img.caption}</figcaption>
-                </figure>)}
-        </Typography>
+                </figure>)
+            }
+        </div>
     }
 }
 
@@ -140,29 +149,19 @@ function ImplementationAndUsage(fn: ToolboxFunction, summary: boolean) {
         )}</div>
 }
 
-function toolboxFunctionParameterTable(fn: ToolboxFunction) {
+function parametersTable(fn: ToolboxFunction | Function, from_pyTamaro: boolean) {
     return <Card sx={{px: 2, my: 2}}>
         <Table aria-label="Function Parameters" size="small">
             <TableHead>
                 <TableRow>
                     <TableCell sx={{pl: 0}}>Parameter/Return</TableCell>
                     <TableCell>Type</TableCell>
+                    {from_pyTamaro && <TableCell>Description</TableCell>}
+                    {from_pyTamaro && <TableCell>Default value</TableCell>}
                 </TableRow>
             </TableHead>
             <TableBody>
-                {fn.args.map((arg) => (
-                    <TableRow
-                        key={arg.name}
-                    >
-                        <TableCell component="th" scope="row" sx={{pl: 0}}>
-                            <Typography component="span"
-                                        fontFamily={theme.pytamaro.monospaceFontFamily}>{arg.name}</Typography>
-                        </TableCell>
-                        <TableCell>
-                            <TypeCell type={arg.typeUnparsed}/>
-                        </TableCell>
-                    </TableRow>
-                ))}
+                {parameterTableRow(from_pyTamaro ? (fn as Function).parameters : (fn as ToolboxFunction).args, from_pyTamaro)}
                 <TableRow
                     key="return"
                     sx={{
@@ -175,11 +174,58 @@ function toolboxFunctionParameterTable(fn: ToolboxFunction) {
                         <Typography component="span">Return Value</Typography>
                     </TableCell>
                     <TableCell>
-                        <TypeCell type={fn.returnTypeUnparsed}/>
+                        <TypeCell
+                            type={from_pyTamaro ? ((fn as Function).return_type ?? "") : (fn as ToolboxFunction).returnTypeUnparsed}/>
                     </TableCell>
+                    {from_pyTamaro && (fn as Function).return_description ? <TableCell>
+                        <Typography component="span"
+                                    fontFamily={theme.pytamaro.monospaceFontFamily}>{(fn as Function).return_description}</Typography>
+                    </TableCell> : null}
                 </TableRow>
             </TableBody>
         </Table>
     </Card>
+}
+
+function parameterTableRow(args: PythonFunctionArgument[] | Variable[] | undefined, from_pyTamaro: boolean) {
+    if (args) {
+        if (from_pyTamaro) {
+            return (args as Variable[]).map((arg) => (
+                <TableRow
+                    key={arg.name}
+                >
+                    <TableCell component="th" scope="row" sx={{pl: 0}}>
+                        <Typography component="span"
+                                    fontFamily={theme.pytamaro.monospaceFontFamily}>{arg.name}</Typography>
+                    </TableCell>
+                    <TableCell>
+                        <TypeCell type={arg.type ? arg.type : ""}/>
+                    </TableCell>
+                    <TableCell component="th" scope="row" sx={{pl: 0}}>
+                        <Typography component="span"
+                                    fontFamily={theme.pytamaro.monospaceFontFamily}>{arg.description ? arg.description.content : ""}</Typography>
+                    </TableCell>
+                    <TableCell component="th" scope="row" sx={{pl: 0}}>
+                        <Typography component="span"
+                                    fontFamily={theme.pytamaro.monospaceFontFamily}>{arg.default_value ? arg.default_value : ""}</Typography>
+                    </TableCell>
+                </TableRow>
+            ))
+        } else {
+            return (args as PythonFunctionArgument[]).map((arg) => (
+                <TableRow
+                    key={arg.name}
+                >
+                    <TableCell component="th" scope="row" sx={{pl: 0}}>
+                        <Typography component="span"
+                                    fontFamily={theme.pytamaro.monospaceFontFamily}>{arg.name}</Typography>
+                    </TableCell>
+                    <TableCell>
+                        <TypeCell type={arg.typeUnparsed}/>
+                    </TableCell>
+                </TableRow>
+            ))
+        }
+    }
 }
 

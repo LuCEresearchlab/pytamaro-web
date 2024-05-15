@@ -8,13 +8,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-    // console.log("REQUEST: ", req)
-    // console.log("REQUEST BODY: ", req.body)
-
-    // const result =  jsonConverter.find('Color', 'en');
-    // const result =  jsonConverter.find('Color');
-    // res.status(200).send(result)
-
     const name = req.query.name?.toString()
     const language = req.query.language?.toString()
     console.log("NAME: ",name, " LANGUAGE: ", language)

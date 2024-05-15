@@ -11,7 +11,7 @@ export interface Type {
 export interface Variable {
     name: string;
     description?: EnhancedStr;
-    of_type?: string;
+    type?: string;
     default_value?: string;
 }
 
@@ -36,4 +36,8 @@ export interface Image{
     caption? : string;
 }
 
-export type json_obj_type = "Module" | "Function" | "Type" | "Variable"
+export enum json_obj_type {
+    module = "Module",
+    function = "Function",
+    type = "Type",
+    variable = "Variable"}
