@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { ActivityVariant } from '../src/schemas/activitySchema';
+import { ActivityVariant, platformConfigWithDefaults } from '../src/schemas/activitySchema';
 import { useActivity } from '../src/useActivity';
 import CodeCell from './CodeCell';
 
@@ -49,6 +49,7 @@ export default function SolitaryCodeCell({
       firstLineNumber={1}
       activityVariant={activityVariant}
       readOnly={readOnly}
+      platformConfig={platformConfigWithDefaults()}
       extraActions={extraActions}
       cumulativeSource={codeCells[0].source}
     />

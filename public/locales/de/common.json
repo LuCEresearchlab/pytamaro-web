@@ -10,6 +10,7 @@
     "playground": "Playground",
     "rapidPlayground": "Rapid Playground",
     "documentation": "Dokumentation",
+    "myToolbox": "Mein Toolbox",
     "runCode": "Ausführen",
     "runningCode": "Wird ausgeführt",
     "doneRunningCode": "Fertig",
@@ -24,6 +25,7 @@
     "wideWidth": "Volle Breite",
     "staleOutput": "Veraltete Ausgabe: Führe den Code erneut aus, um die Ausgabe zu aktualisieren",
     "noOutputTip": "Erfolgreich ausgeführt, aber keine Ausgabe erzeugt. Wolltest Du eine Grafik anzeigen? Verwende <code>{{apiName}}</code>.", 
+    "ellipsisTip": "Ersetze jedes <code>...</code> durch Dein Code.",
     "contents": "Inhalt",
     "resetActivity": "Aktivität zurücksetzen",
     "resetAreYouSure": "Bist Du sicher?",
@@ -37,5 +39,15 @@
         "anonymously": "Wir tun dies <strong>anonym: Es werden keine persönlichen Daten jeglicher Art gesammelt</strong>.",
         "OK": "OK",
         "reviewOptions": "Optionen überprüfen"
-    }
+    },
+    "activityCreatedByLicensedUnder": "Diese Aktivität wurde von <authorLink>{{authorName}}</authorLink> erstellt und ist lizenziert unter <licenseLink>{{license}}</licenseLink>.",
+    "curriculumCreatedByLicensedUnder": "Dieses Curriculum wurde von <authorLink>{{authorName}}</authorLink> erstellt und ist lizenziert unter <licenseLink>{{license}}</licenseLink>.",
+    "activityDerivedFrom": "Sie leitet sich ab von",
+    "curriculumDerivedFrom": "Es leitet sich ab von",
+    "activityThis": "<a>dieser Aktivität</a>",
+    "curriculumThis": "<a>diesem Curriculum</a>",
+    "doNow": "Jetzt machen!",
+    "saveAndContinue": "Speichern und weiter",
+    "didIt": "Ich hab's getan!",
+    "yourAnswer": "Deine Antwort"
 }

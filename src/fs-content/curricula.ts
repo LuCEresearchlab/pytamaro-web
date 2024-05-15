@@ -5,6 +5,7 @@ import { activityVariantFromId } from '../schemas/activitySchema';
 import {
   Curriculum,
   CurriculumCompetency,
+  curriculumId,
   CurriculumUnit,
   RawCurriculum,
   RawCurriculumCompetency,
@@ -12,6 +13,7 @@ import {
 } from '../schemas/curriculumSchema';
 import { curriculumFinishPathname } from '../urlUtils';
 import { readActivity } from './activities';
+import DataCache from './cache';
 import { DATA_DIR } from './notebooks';
 
 export const CURRICULA_DIR = 'curricula';
@@ -44,7 +46,8 @@ async function processUnits(units: RawCurriculumUnit[]) : Promise<CurriculumUnit
   })));
 }
 
-async function readCurriculum(authorSlug: string, curriculumSlug: string) : Promise<Curriculum> {
+async function readCurriculumFromFS(authorSlug: string, curriculumSlug: string)
+  : Promise<Curriculum> {
   const content : RawCurriculum = JSON.parse(
     await readFile(path.join(DATA_DIR, authorSlug, CURRICULA_DIR, `${curriculumSlug}.json`), 'utf-8'),
   );
@@ -64,6 +67,18 @@ async function readCurriculum(authorSlug: string, curriculumSlug: string) : Prom
     competencies: await processCompetencies(content.competencies),
     units: await processUnits(content.units),
   };
+}
+
+const curriculaCache = new DataCache<Curriculum>();
+
+export async function readCurriculum(
+  authorSlug: string,
+  curriculumSlug: string,
+) : Promise<Curriculum> {
+  return curriculaCache.get(
+    curriculumId(authorSlug, curriculumSlug),
+    () => readCurriculumFromFS(authorSlug, curriculumSlug),
+  );
 }
 
 export async function listCurricula(authorSlug: string) : Promise<Curriculum[]> {

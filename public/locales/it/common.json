@@ -10,6 +10,7 @@
     "playground": "Playground",
     "rapidPlayground": "Playground Rapido",
     "documentation": "Documentazione",
+    "myToolbox": "La mia Toolbox",
     "runCode": "Esegui",
     "runningCode": "In Esecuzione",
     "doneRunningCode": "Fatto",
@@ -24,6 +25,7 @@
     "wideWidth": "Larghezza Intera",
     "staleOutput": "Output obsoleto: esegui di nuovo il codice per aggiornarlo",
     "noOutputTip": "Eseguito con successo, ma nessun output prodotto. Avevi intenzione di mostrare una grafica? Usa <code>{{apiName}}</code>.",
+    "ellipsisTip": "Sostituisci ogni <code>...</code> con il tuo codice.",
     "resetActivity": "Reset Attività",
     "resetAreYouSure": "Sei sicuro/a?",
     "resetActivityWarning": "Stai per resettare l'intera attività, incluso tutto il codice che hai scritto. Questa azione non può essere annullata! ⚠️",
@@ -36,5 +38,15 @@
         "anonymously": "Lo facciamo <strong>in modo anonimo: nessun dato personale di alcun tipo viene raccolto</strong>.",
         "OK": "OK",
         "reviewOptions": "Rivedi opzioni"
-    }
+    },
+    "activityCreatedByLicensedUnder": "Questa attività è stata creata da <authorLink>{{authorName}}</authorLink> ed è pubblicata sotto licenza <licenseLink>{{license}}</licenseLink>.",
+    "curriculumCreatedByLicensedUnder": "Questo curriculum è stato creato da <authorLink>{{authorName}}</authorLink> ed è pubblicato sotto licenza <licenseLink>{{license}}</licenseLink>.",
+    "activityDerivedFrom": "È derivata da",
+    "curriculumDerivedFrom": "È derivato da",
+    "activityThis": "<a>questa attività</a>",
+    "curriculumThis": "<a>questo curriculum</a>",
+    "doNow": "Da fare adesso!",
+    "saveAndContinue": "Salva e continua",
+    "didIt": "L'ho fatto!",
+    "yourAnswer": "La tua risposta"
 }

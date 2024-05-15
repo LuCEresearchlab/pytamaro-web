@@ -14,6 +14,7 @@ export interface Activity {
   authorSlug: string,
   derivedFrom: string[],
   extraPythonFiles: PythonFile[],
+  platformConfig: PlatformConfiguration,
 }
 
 export interface RawActivity {
@@ -24,6 +25,12 @@ export interface RawActivity {
   assets?: string[],
   derivedFrom?: string[],
   extraPythonFiles?: PythonFileInfo[],
+  platformConfig?: Partial<PlatformConfiguration>,
+}
+
+export interface PlatformConfiguration {
+  showNoOutputTip: boolean,
+  showVariantSelector: boolean,
 }
 
 export interface PythonFile {
@@ -121,4 +128,12 @@ export function languageInfoForVariant(activity: Activity, variant: ActivityVari
   return activity.languagesInfo.find(
     (i) => i.language === variant.language,
   ) as ActivityLanguageInfo;
+}
+
+export function platformConfigWithDefaults(config: Partial<PlatformConfiguration> = {})
+  : PlatformConfiguration {
+  return {
+    showNoOutputTip: config.showNoOutputTip ?? true,
+    showVariantSelector: config.showVariantSelector ?? true,
+  };
 }

@@ -42,8 +42,9 @@ export default function VariantSelector({ activity, activityVariant }:
   const open = Boolean(anchorEl);
   const id = open ? 'activity-variants-popover' : undefined;
 
-  // Do not show the button if there is only one variant (one language and one version).
-  if (activity.variants.length === 1) {
+  // Do not show the button if there is only one variant (one language and one version)
+  // or the activity has been configured not to show the variant selector
+  if (activity.variants.length === 1 || activity.platformConfig.showVariantSelector === false) {
     return null;
   }
 

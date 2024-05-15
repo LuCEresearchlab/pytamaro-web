@@ -20,6 +20,7 @@ import CentralContent from '../../../../components/sidebar/CentralContent';
 import CurriculumCompetenciesSidebar from '../../../../components/sidebar/CurriculumCompetenciesSidebar';
 import Sidebar from '../../../../components/sidebar/Sidebar';
 import TableOfContents from '../../../../components/sidebar/TableOfContents';
+import ToolboxListSidebar from '../../../../components/sidebar/ToolboxListSidebar';
 import { getAuthorProfile, listAuthorsWithContent } from '../../../../src/fs-content/authors';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
 import useLocalProfile from '../../../../src/localStorage/useLocalProfile';
@@ -71,6 +72,7 @@ export default function CurriculumPage({ curriculum, author }:
       </NavigationBar>
       <Grid container>
         <Sidebar side="left">
+          <ToolboxListSidebar />
           <CurriculumCompetenciesSidebar curriculum={curriculum} />
         </Sidebar>
         <CentralContent>

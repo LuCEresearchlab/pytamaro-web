@@ -35,6 +35,12 @@ Additionally, the object describing an activity contains the following fields:
 - `assets`: an array of strings naming the resources used in the Jupyter notebooks.
 - `uses`: an (optional) array of assignments that use the activity. Each assignment is an object containing its `course` name, the `instructurs` of the course, the `assignment` name, its `url`, and the `institution` of the course. If a `course` has the optional attribute `hidden` set to `true`, then the use is not shown in activity info page.
 - `derivedFrom`: an (optional) array of activity variant IDs from which this activity has been derived (e.g., by translating it). IDs are fully-qualified identifiers of activity variants, i.e. in the form `<author-slug>/<activity-slug>/<language>/<version>`. This information is used for attribution.
+- `platformConfig`: an (optional) object containing configuration options for the platform for this specific activity. These are the supported options:
+  - `showNoOutputTip`: a boolean that determines whether the "No output" tip should be shown when the cell output is empty (default: `true`);
+  - `showVariantSelector`: a boolean that determines whether the variant selector (other languages / versions) should be shown (default: `true` -- note that `false` only hides the selector and does not delete other variants from the platform).
+
+
+The only key currently supported is `hideActivityInfo`, which is a boolean that determines whether the activity info page should be hidden. This is useful for activities that are part of a course and should not be accessed directly by students.
 
 When an activity requires some extra Python files to be included for the execution (e.g., a small library, or a dataset):
 - Store the files somewhere inside a folder named `python-files` inside your author's folder

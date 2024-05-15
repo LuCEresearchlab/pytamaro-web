@@ -7,7 +7,9 @@ import {
   Activity,
   PythonFileInfo,
   RawActivity,
+  platformConfigWithDefaults,
 } from '../schemas/activitySchema';
+import DataCache from './cache';
 import { ACTIVITIES_DIR, DATA_DIR, notebookFileNames } from './notebooks';
 
 const ACTIVITY_INFO_FILE = 'info.json';
@@ -32,24 +34,33 @@ async function readPythonFiles(files: PythonFileInfo[], authorDir: string) {
   })));
 }
 
-export async function readActivity(authorSlug: string, activitySlug: string)
+async function readActivityFromFS(authorSlug: string, activitySlug: string)
   : Promise<Activity> {
   const authorDir = path.join(DATA_DIR, authorSlug);
   const content = await readFile(path.join(authorDir, ACTIVITIES_DIR, activitySlug, ACTIVITY_INFO_FILE), 'utf-8');
   const rawActivity : RawActivity = JSON.parse(content);
   const notebooks = await notebookFileNames(authorSlug, activitySlug);
-  const notebooksVariants = notebooks.map((filename) => {
-    const components = filename.split('-');
+  const notebooksVariants = notebooks.flatMap((filename) => {
+    const separator = '-';
+    const components = filename.split(separator);
     const language = components.at(-2);
     const version = components.at(-1);
-    if (!language || !version) {
-      throw new Error(`Invalid notebook filename ${filename} (cannot detect language or version)`);
+    const activity = components.slice(0, -2).join(separator);
+    if (activity !== activitySlug || !language || !version) {
+      // Show a warning but do not throw (this allows us to have extra notebooks in the directory)
+      // eslint-disable-next-line no-console
+      console.warn(`Ignoring notebook with filename ${filename} in activity ${authorSlug}/${activitySlug}`);
+      return [];
     }
     return {
       language,
       version,
     };
   });
+  // An activity must have at least one notebook, however.
+  if (notebooksVariants.length === 0) {
+    throw new Error(`No notebooks found for activity ${authorSlug}/${activitySlug}`);
+  }
   return {
     authorSlug,
     slug: activitySlug,
@@ -66,7 +77,14 @@ export async function readActivity(authorSlug: string, activitySlug: string)
     })),
     languagesInfo: rawActivity.variants,
     extraPythonFiles: await readPythonFiles(rawActivity.extraPythonFiles || [], authorDir),
+    platformConfig: platformConfigWithDefaults(rawActivity.platformConfig),
   };
+}
+
+const activitiesCache = new DataCache<Activity>();
+
+export async function readActivity(authorSlug: string, activitySlug: string) : Promise<Activity> {
+  return activitiesCache.get(`${authorSlug}/${activitySlug}`, () => readActivityFromFS(authorSlug, activitySlug));
 }
 
 export async function findVersions(authorSlug: string, activitySlug: string, language: string)
