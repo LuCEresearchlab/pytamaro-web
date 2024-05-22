@@ -58,6 +58,8 @@ export default function AuthorPage({ authorProfile, curricula, activities }:
               {authorProfile.name}
             </Link>
           </Typography>
+        </Container>
+        <Container maxWidth="xl">
           <ActivitiesGallery activities={activities} />
         </Container>
       </Box>

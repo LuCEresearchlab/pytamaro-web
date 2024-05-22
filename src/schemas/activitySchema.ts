@@ -15,6 +15,7 @@ export interface Activity {
   derivedFrom: string[],
   extraPythonFiles: PythonFile[],
   platformConfig: PlatformConfiguration,
+  concepts: string[],
 }
 
 export interface RawActivity {
@@ -26,6 +27,7 @@ export interface RawActivity {
   derivedFrom?: string[],
   extraPythonFiles?: PythonFileInfo[],
   platformConfig?: Partial<PlatformConfiguration>,
+  concepts?: string[],
 }
 
 export interface PlatformConfiguration {
@@ -57,7 +59,6 @@ export interface ActivityVariant {
 
 export interface ActivityLanguageInfo {
   title: string,
-  description: string,
   language: string,
   latestVersion: string,
 }

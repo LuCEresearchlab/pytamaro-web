@@ -6,6 +6,9 @@ export default class DataCache<T> {
   }
 
   async get(key: string, producer: () => Promise<T>): Promise<T> {
+    if (process.env.NODE_ENV === 'development') {
+      return producer();
+    }
     if (!this.elements.has(key)) {
       this.elements.set(key, await producer());
     }

@@ -78,6 +78,7 @@ async function readActivityFromFS(authorSlug: string, activitySlug: string)
     languagesInfo: rawActivity.variants,
     extraPythonFiles: await readPythonFiles(rawActivity.extraPythonFiles || [], authorDir),
     platformConfig: platformConfigWithDefaults(rawActivity.platformConfig),
+    concepts: rawActivity.concepts || [],
   };
 }
 

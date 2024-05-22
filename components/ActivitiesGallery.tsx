@@ -2,22 +2,21 @@ import { HourglassBottom, Verified } from '@mui/icons-material';
 import InfoIcon from '@mui/icons-material/Info';
 import {
   Box,
-  Button,
   Card, CardActionArea,
   CardActions,
   CardContent,
   CardMedia,
   Chip,
   IconButton,
-  Paper,
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import { orderBy } from 'lodash';
+import { countBy, orderBy } from 'lodash';
 import Link from 'next/link';
 import router from 'next/router';
 import { Activity, activityVariantId, canonicalVariantForLanguage } from '../src/schemas/activitySchema';
 import { activityAssetPathname, activityPathname, activityVariantPathname } from '../src/urlUtils';
+import ActivityConcepts from './ActivityConcepts';
 
 export const ANY_LANGUAGE = 'any';
 
@@ -44,6 +43,8 @@ export default function ActivitiesGallery({
     ['asc', 'desc', 'asc'],
   );
 
+  const conceptsFrequency = countBy(sortedActivities.flatMap((a) => a.concepts));
+
   return (
     <Grid container spacing={2}>
       {sortedActivities.map((activity) => {
@@ -68,34 +69,33 @@ export default function ActivitiesGallery({
             lg={compactView ? 2 : 3}
             key={activityVariantId(defaultVariant)}
           >
-            <Paper elevation={8}>
-              <Card>
-                <CardActionArea
-                  onClick={() => router.push(activityVariantPathname(defaultVariant))}
-                  disabled={isDraft}
-                >
-                  <CardMedia
-                    component="img"
-                    height="300"
-                    image={activityAssetPathname(
-                      activity.authorSlug,
-                      activity.slug,
-                      activity.previewImage.filename,
-                    )}
-                    alt={langInfo.title}
-                    sx={{ padding: 1, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
-                  />
-                  { !compactView && (
-                    <CardContent>
-                      <Typography gutterBottom variant="h5" component="div">
-                        {langInfo.title}
-                        {activity.visibility === 'featured'
+            <Card elevation={8} sx={{ height: '100%' }}>
+              <CardActionArea
+                onClick={() => router.push(activityVariantPathname(defaultVariant))}
+                disabled={isDraft}
+              >
+                <CardMedia
+                  component="img"
+                  height="300"
+                  image={activityAssetPathname(
+                    activity.authorSlug,
+                    activity.slug,
+                    activity.previewImage.filename,
+                  )}
+                  alt={langInfo.title}
+                  sx={{ padding: 1, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
+                />
+                { !compactView && (
+                <CardContent sx={{ pb: 0 }}>
+                  <Typography gutterBottom variant="h5" component="span" sx={{ display: 'flex' }}>
+                    {langInfo.title}
+                    {activity.visibility === 'featured'
                           && (
                           <Verified
                             sx={{ marginLeft: 1, color: 'primary.main' }}
                           />
                           )}
-                        {isDraft
+                    {isDraft
                           && (
                           <Chip
                             icon={<HourglassBottom />}
@@ -103,42 +103,27 @@ export default function ActivitiesGallery({
                             sx={{ marginLeft: 2, textTransform: 'uppercase', fontWeight: 'bold' }}
                           />
                           )}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {/* Add a zero-width space to avoid skipping the description when empty */}
-                        {langInfo.description || '\ufeff' }
-                      </Typography>
-                    </CardContent>
-                  )}
-                </CardActionArea>
-                { !compactView && (
-                  <CardActions>
-                    {activity.languagesInfo.map((info) => (
-                      <Button
-                        onClick={() => router.push(activityVariantPathname(
-                          canonicalVariantForLanguage(activity, info.language),
-                        ))}
-                        size="small"
-                        variant="outlined"
-                        key={info.language}
-                        disabled={isDraft}
-                      >
-                        {info.language}
-                      </Button>
-                    ))}
-                    <Box style={{ marginLeft: 'auto' }}>
-                      <IconButton
-                        size="small"
-                        href={activityPathname(activity.authorSlug, activity.slug)}
-                        component={Link}
-                      >
-                        <InfoIcon />
-                      </IconButton>
-                    </Box>
-                  </CardActions>
+                  </Typography>
+                </CardContent>
                 )}
-              </Card>
-            </Paper>
+              </CardActionArea>
+              <CardActions>
+                <ActivityConcepts
+                  concepts={activity.concepts}
+                  conceptsFrequency={conceptsFrequency}
+                  small
+                />
+                <Box style={{ marginLeft: 'auto' }} component="span">
+                  <IconButton
+                    size="small"
+                    href={activityPathname(activity.authorSlug, activity.slug)}
+                    component={Link}
+                  >
+                    <InfoIcon />
+                  </IconButton>
+                </Box>
+              </CardActions>
+            </Card>
           </Grid>
         );
       })}
