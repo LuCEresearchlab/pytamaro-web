@@ -11,7 +11,7 @@ import ActivitiesGallery from '../../../components/ActivitiesGallery';
 import CurriculaList from '../../../components/CurriculaList';
 import NavigationBar from '../../../components/NavigationBar';
 import visibleCurricula from '../../../src/curricula';
-import { basicActivities, visibleActivities } from '../../../src/fs-content/activities';
+import { visibleActivities } from '../../../src/fs-content/activities';
 import {
   getAuthorContent, getAuthorProfile, listAuthorsProfiles,
 } from '../../../src/fs-content/authors';
@@ -78,7 +78,7 @@ export async function getStaticProps(
     props: {
       authorProfile: await getAuthorProfile(authorSlug),
       curricula: visibleCurricula(content.curricula),
-      activities: basicActivities(visibleActivities(content.activities)),
+      activities: visibleActivities(content.activities),
       ...await translationProps(),
     },
   };

@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import ActivitiesGallery from '../../../components/ActivitiesGallery';
 import NavigationBar from '../../../components/NavigationBar';
 import SelectAll from '../../../components/SelectAll';
-import { basicActivities, visibleActivities } from '../../../src/fs-content/activities';
+import { visibleActivities } from '../../../src/fs-content/activities';
 import { listActivitiesAllAuthors, listAuthorsProfiles } from '../../../src/fs-content/authors';
 import capitalizedLocalizedLanguageDisplayName, { format } from '../../../src/internationalization';
 import { knownConcepts } from '../../../src/schemas/activityConcepts';
@@ -132,7 +132,7 @@ export async function getStaticProps(
     props: {
       defaultAuthorSlug: authorSlug,
       authorsProfiles: await listAuthorsProfiles(),
-      activities: basicActivities(visibleActivities(await listActivitiesAllAuthors())),
+      activities: visibleActivities(await listActivitiesAllAuthors()),
       ...await translationProps(),
     },
   };

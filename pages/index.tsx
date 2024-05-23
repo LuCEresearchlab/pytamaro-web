@@ -35,9 +35,9 @@ import Carousel from 'react-material-ui-carousel';
 import CompactActivityVariantCard from '../components/ActivityCardMedia';
 import ActivityCard from '../components/curriculum/ActivityCard';
 import { allActivities } from '../src/curricula';
-import { listVisibleActivities } from '../src/fs-content/activities';
+import { basicActivities, listVisibleActivities } from '../src/fs-content/activities';
 import { getCurriculum } from '../src/fs-content/curricula';
-import { Activity } from '../src/schemas/activitySchema';
+import { BasicActivity } from '../src/schemas/activitySchema';
 import { Curriculum } from '../src/schemas/curriculumSchema';
 import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
@@ -61,7 +61,7 @@ function HomePagePrimaryButton(props: { icon: JSX.Element, text: string, href: s
 }
 
 export default function Home({ welcomeCurriculum, activities } :
-{ welcomeCurriculum: Curriculum, activities: Activity[] }) {
+{ welcomeCurriculum: Curriculum, activities: BasicActivity[] }) {
   const featuredActivities = shuffle(activities.filter((activity) => activity.visibility === 'featured'));
 
   const curriculumActivity = allActivities(welcomeCurriculum).find(({ activity }) => activity.slug === 'swiss-flag');
@@ -444,7 +444,7 @@ export async function getStaticProps() {
   return {
     props: {
       welcomeCurriculum: await getCurriculum('luce', 'welcome'),
-      activities: await listVisibleActivities('luce'),
+      activities: basicActivities(await listVisibleActivities('luce')),
       ...await translationProps(['curriculum']),
     },
   };

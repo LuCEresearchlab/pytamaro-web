@@ -4,7 +4,7 @@ import {
 import Head from 'next/head';
 import ActivitiesGallery from '../../components/ActivitiesGallery';
 import NavigationBar from '../../components/NavigationBar';
-import { basicActivities, visibleActivities } from '../../src/fs-content/activities';
+import { visibleActivities } from '../../src/fs-content/activities';
 import { listActivitiesAllAuthors } from '../../src/fs-content/authors';
 import { Concept, knownConcepts } from '../../src/schemas/activityConcepts';
 import { BasicActivity } from '../../src/schemas/activitySchema';
@@ -49,7 +49,7 @@ export async function getStaticProps(
   return {
     props: {
       concept: knownConcepts[id],
-      activities: basicActivities(visibleActivities(await listActivitiesAllAuthors()))
+      activities: visibleActivities(await listActivitiesAllAuthors())
         .filter((activity) => activity.concepts.includes(id)),
       ...await translationProps(),
     },
