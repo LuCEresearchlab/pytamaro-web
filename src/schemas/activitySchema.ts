@@ -15,6 +15,7 @@ export interface BasicActivity {
 
 export type Activity = BasicActivity & {
   uses: ActivityUse[],
+  assets: string[],
   derivedFrom: string[],
   extraPythonFiles: PythonFile[],
   platformConfig: PlatformConfiguration,
@@ -25,6 +26,7 @@ export interface RawActivity {
   previewImage: PreviewImage,
   visibility: VisibilityState
   uses?: ActivityUse[],
+  assets?: string[],
   derivedFrom?: string[],
   extraPythonFiles?: PythonFileInfo[],
   platformConfig?: Partial<PlatformConfiguration>,

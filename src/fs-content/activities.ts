@@ -5,6 +5,7 @@ import {
 } from '../codeExecution';
 import {
   Activity,
+  BasicActivity,
   PythonFileInfo,
   RawActivity,
   platformConfigWithDefaults,
@@ -119,4 +120,16 @@ export async function listVisibleActivities(authorSlug: string) : Promise<Activi
 
 export function visibleActivities(activities: Activity[]) : Activity[] {
   return activities.filter((activity) => activity.visibility !== 'hidden');
+}
+
+export function basicActivities(activities: Activity[]) : BasicActivity[] {
+  return activities.map((activity) => ({
+    slug: activity.slug,
+    previewImage: activity.previewImage,
+    visibility: activity.visibility,
+    variants: activity.variants,
+    languagesInfo: activity.languagesInfo,
+    authorSlug: activity.authorSlug,
+    concepts: activity.concepts,
+  }));
 }

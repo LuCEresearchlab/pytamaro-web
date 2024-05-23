@@ -15,7 +15,7 @@ import { countBy, orderBy, sortBy } from 'lodash';
 import Link from 'next/link';
 import router from 'next/router';
 import {
-  BasicActivity, activityVariantId, canonicalVariantForLanguage
+  BasicActivity, activityVariantId, canonicalVariantForLanguage,
 } from '../src/schemas/activitySchema';
 import { activityAssetPathname, activityPathname, activityVariantPathname } from '../src/urlUtils';
 import ActivityConcepts from './ActivityConcepts';
