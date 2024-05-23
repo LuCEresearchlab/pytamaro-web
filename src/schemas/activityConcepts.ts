@@ -49,10 +49,15 @@ export const knownConcepts : Dictionary<Concept> = {
     category: 'programming',
     description: 'Using conditional computation (if/else statement or expression)',
   },
-  repetition: {
-    title: 'Repetition',
+  loop: {
+    title: 'Loop',
     category: 'programming',
-    description: 'Using repetitive computation (typically for/while loops)',
+    description: 'Using loops (for/while) to repeat computation',
+  },
+  comprehension: {
+    title: 'Comprehension',
+    category: 'programming',
+    description: 'Using comprehensions to repeat computation',
   },
   recursion: {
     title: 'Recursion',
