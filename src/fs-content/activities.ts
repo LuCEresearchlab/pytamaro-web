@@ -75,7 +75,9 @@ async function readActivityFromFS(authorSlug: string, activitySlug: string)
       language: variant.language,
       version: variant.version,
     })),
-    languagesInfo: rawActivity.variants,
+    languagesInfo: rawActivity.variants.map(
+      ({ title, language, latestVersion }) => ({ title, language, latestVersion }),
+    ),
     extraPythonFiles: await readPythonFiles(rawActivity.extraPythonFiles || [], authorDir),
     platformConfig: platformConfigWithDefaults(rawActivity.platformConfig),
     concepts: rawActivity.concepts || [],
