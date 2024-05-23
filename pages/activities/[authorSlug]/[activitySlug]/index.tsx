@@ -10,6 +10,7 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
+import ActivityConcepts from '../../../../components/ActivityConcepts';
 import ActivityAuthorInfo from '../../../../components/AttributionInfo';
 import CurriculaList from '../../../../components/CurriculaList';
 import NavigationBar from '../../../../components/NavigationBar';
@@ -66,8 +67,14 @@ export default function ActivityInfoPage({ activity, author, includingCurricula 
           </div>
           <Typography variant="h4" marginY={3}>Author & License</Typography>
           <ActivityAuthorInfo type="activity" author={author} derivedFrom={activity.derivedFrom} />
+          { activity.concepts.length > 0 && (
+            <>
+              <Typography variant="h4" marginY={3}>Concepts</Typography>
+              <ActivityConcepts concepts={activity.concepts} />
+            </>
+          )}
           <Typography variant="h4" marginY={3}>Languages</Typography>
-          <Typography variant="body1" marginY={3}>
+          <Typography variant="body1" marginTop={3}>
             This activity is
             { activity.visibility === 'draft' ? ' under development ' : '  available ' }
             in the following languages:

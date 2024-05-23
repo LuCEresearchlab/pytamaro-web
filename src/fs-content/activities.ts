@@ -5,6 +5,7 @@ import {
 } from '../codeExecution';
 import {
   Activity,
+  BasicActivity,
   PythonFileInfo,
   RawActivity,
   platformConfigWithDefaults,
@@ -75,9 +76,12 @@ async function readActivityFromFS(authorSlug: string, activitySlug: string)
       language: variant.language,
       version: variant.version,
     })),
-    languagesInfo: rawActivity.variants,
+    languagesInfo: rawActivity.variants.map(
+      ({ title, language, latestVersion }) => ({ title, language, latestVersion }),
+    ),
     extraPythonFiles: await readPythonFiles(rawActivity.extraPythonFiles || [], authorDir),
     platformConfig: platformConfigWithDefaults(rawActivity.platformConfig),
+    concepts: rawActivity.concepts || [],
   };
 }
 
@@ -114,6 +118,18 @@ export async function listVisibleActivities(authorSlug: string) : Promise<Activi
   return activities.filter((activity) => activity.visibility === 'featured' || activity.visibility === 'visible');
 }
 
-export function visibleActivities(activities: Activity[]) : Activity[] {
+export function visibleActivities(activities: BasicActivity[]) : BasicActivity[] {
   return activities.filter((activity) => activity.visibility !== 'hidden');
+}
+
+export function basicActivities(activities: Activity[]) : BasicActivity[] {
+  return activities.map((activity) => ({
+    slug: activity.slug,
+    previewImage: activity.previewImage,
+    visibility: activity.visibility,
+    variants: activity.variants,
+    languagesInfo: activity.languagesInfo,
+    authorSlug: activity.authorSlug,
+    concepts: activity.concepts,
+  }));
 }

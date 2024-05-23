@@ -3,19 +3,23 @@ import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 export type VisibilityState = 'featured' | 'visible' | 'draft' | 'hidden';
 export type PreviewImage = { filename: string, backgroundColor: string };
 
-export interface Activity {
+export interface BasicActivity {
   slug: string,
   previewImage: PreviewImage,
   visibility: VisibilityState,
   variants: ActivityVariant[],
   languagesInfo: ActivityLanguageInfo[],
+  authorSlug: string,
+  concepts: string[],
+}
+
+export type Activity = BasicActivity & {
   uses: ActivityUse[],
   assets: string[],
-  authorSlug: string,
   derivedFrom: string[],
   extraPythonFiles: PythonFile[],
   platformConfig: PlatformConfiguration,
-}
+};
 
 export interface RawActivity {
   variants: ActivityLanguageInfo[],
@@ -26,6 +30,7 @@ export interface RawActivity {
   derivedFrom?: string[],
   extraPythonFiles?: PythonFileInfo[],
   platformConfig?: Partial<PlatformConfiguration>,
+  concepts?: string[],
 }
 
 export interface PlatformConfiguration {
@@ -57,7 +62,6 @@ export interface ActivityVariant {
 
 export interface ActivityLanguageInfo {
   title: string,
-  description: string,
   language: string,
   latestVersion: string,
 }
@@ -117,7 +121,7 @@ export function getVariantTitle(activity: Activity, variant: ActivityVariant) {
   return maybeInfo?.title || activity.slug;
 }
 
-export function canonicalVariantForLanguage(activity: Activity, language: string)
+export function canonicalVariantForLanguage(activity: BasicActivity, language: string)
   : ActivityVariant {
   const languageInfo = activity.languagesInfo.find((i) => i.language === language);
   return activity.variants.find((v) => v.language === language

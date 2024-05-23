@@ -1,10 +1,11 @@
 /* eslint-disable max-len */
 /* eslint-disable react/jsx-one-expression-per-line */
 import {
-  Avatar, Box, Container, Divider, Link, List, ListItem, ListItemAvatar, ListItemText, Typography,
+  Avatar, Box, Container, Divider, Link, List, ListItem, ListItemAvatar, ListItemText, TablePagination, Typography,
 } from '@mui/material';
 import { MDXRemote } from 'next-mdx-remote';
 import Head from 'next/head';
+import { useState } from 'react';
 import GenericMuiIcon from '../components/GenericMuiIcon';
 import NavigationBar from '../components/NavigationBar';
 import { listAuthorsProfiles } from '../src/fs-content/authors';
@@ -86,9 +87,17 @@ const changelogEntries = [
     title: 'Learner-friendly message for code with ellipsis',
     desc: <span>The platform shows a learner-friendly message as a tip when the code still has <code>...</code>, indicating parts that still have to be implemented.</span>,
   },
+  {
+    date: '2024-05-23',
+    icon: 'Category',
+    title: 'Searching activities by concepts',
+    desc: 'The platform now supports tagging activities with concepts. You can search for activities that teach a specific concept, or filter out activities that teach a concept you want to exclude.',
+  },
 ];
 
 export default function AboutPage({ authorsProfiles } : { authorsProfiles: AuthorProfile[] }) {
+  const [changelogPage, setChangelogPage] = useState(0);
+  const entriesPerPage = 5;
   return (
     <div>
       <Head>
@@ -106,8 +115,8 @@ export default function AboutPage({ authorsProfiles } : { authorsProfiles: Autho
           <Typography variant="body1" paragraph>
             We constantly improve our platform. These are the highlights of our updates:
           </Typography>
-          <List sx={{ bgcolor: 'background.paper', mb: 6 }}>
-            {changelogEntries.slice().reverse().map((entry, idx) => (
+          <List sx={{ bgcolor: 'background.paper' }}>
+            {changelogEntries.slice().reverse().slice(entriesPerPage * changelogPage, entriesPerPage * (changelogPage + 1)).map((entry, idx, shownEntries) => (
               <>
                 <ListItem>
                   <ListItemAvatar>
@@ -122,10 +131,26 @@ export default function AboutPage({ authorsProfiles } : { authorsProfiles: Autho
                     secondary={entry.desc}
                   />
                 </ListItem>
-                {idx !== changelogEntries.length - 1 && <Divider variant="inset" component="li" />}
+                {(idx !== shownEntries.length - 1) && <Divider variant="inset" component="li" />}
               </>
             ))}
           </List>
+          <TablePagination
+            component="div"
+            count={changelogEntries.length}
+            page={changelogPage}
+            rowsPerPageOptions={[]}
+            onPageChange={(_ev, newPage) => setChangelogPage(newPage)}
+            rowsPerPage={entriesPerPage}
+            sx={{
+              marginBottom: 6,
+              '& .MuiTablePagination-spacer': {
+                display: 'none',
+              },
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          />
           <Typography variant="h4" gutterBottom>🧑‍🤝‍🧑 Who?</Typography>
           <Typography variant="body1" paragraph>
             This web platform for PyTamaro has been developed at
