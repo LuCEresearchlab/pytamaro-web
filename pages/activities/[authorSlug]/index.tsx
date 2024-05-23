@@ -1,6 +1,6 @@
 import ViewCompactIcon from '@mui/icons-material/ViewCompact';
 import {
-  Stack, TextField,
+  Stack,
   ToggleButton, Tooltip, Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -11,7 +11,7 @@ import NavigationBar from '../../../components/NavigationBar';
 import SelectAll from '../../../components/SelectAll';
 import { visibleActivities } from '../../../src/fs-content/activities';
 import { listActivitiesAllAuthors, listAuthorsProfiles } from '../../../src/fs-content/authors';
-import { format } from '../../../src/internationalization';
+import capitalizedLocalizedLanguageDisplayName, { format } from '../../../src/internationalization';
 import { knownConcepts } from '../../../src/schemas/activityConcepts';
 import { Activity } from '../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../src/schemas/authorSchema';
@@ -36,9 +36,21 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
     url: conceptPathname(concepts),
   }));
 
-  const [search, setSearch] = useState('');
+  // Find languages used in any activity
+  const languages = new Set(
+    activities.flatMap(
+      (activity) => activity.variants.map((variant) => variant.language),
+    ),
+  );
+
+  const languageOptions = Array.from(languages).map((language) => ({
+    id: language,
+    label: capitalizedLocalizedLanguageDisplayName(language),
+  }));
+
   const [filteredActivities, setFilteredActivities] = useState(activities);
   const [allowedAuthors, setAllowedAuthors] = useState<string[]>([defaultAuthorSlug]);
+  const [allowedLanguages, setAllowedLanguages] = useState<string[]>(Array.from(languages));
   const [allowedConcepts, setAllowedConcepts] = useState<string[]>(Object.keys(knownConcepts));
   const [compactView, setCompactView] = useState(false);
 
@@ -47,17 +59,12 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
       activities
         .filter((activity) => allowedAuthors.includes(activity.authorSlug))
         .filter((activity) => (
-          activity.concepts.every((concepts) => allowedConcepts.includes(concepts))
-        ))
+          activity.variants.some((variant) => allowedLanguages.includes(variant.language))))
         .filter((activity) => (
-          // search by slug and by title of any language
-          (activity.slug.toLowerCase().includes(search.toLowerCase())
-          || activity.languagesInfo.some(
-            (info) => info.title.toLowerCase().includes(search.toLowerCase()),
-          ))
+          activity.concepts.every((concepts) => allowedConcepts.includes(concepts))
         )),
     );
-  }, [search, activities, allowedConcepts, allowedAuthors]);
+  }, [activities, allowedLanguages, allowedConcepts, allowedAuthors]);
 
   return (
     <Stack spacing={2}>
@@ -76,15 +83,7 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
         </Tooltip>
       </NavigationBar>
       <Grid container spacing={2}>
-        <Grid xs={12} lg={4}>
-          <TextField
-            fullWidth
-            label="Search by title"
-            variant="outlined"
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </Grid>
-        <Grid xs={12} lg={4}>
+        <Grid xs={12} lg={6}>
           <SelectAll
             title="Allowed Concepts"
             placeholder="Concept"
@@ -93,7 +92,7 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
             onSelectionChange={setAllowedConcepts}
           />
         </Grid>
-        <Grid xs={12} lg={4}>
+        <Grid xs={12} lg={3}>
           <SelectAll
             title="Authors"
             placeholder="Author"
@@ -102,10 +101,19 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
             onSelectionChange={setAllowedAuthors}
           />
         </Grid>
+        <Grid xs={12} lg={3}>
+          <SelectAll
+            title="Languages"
+            placeholder="Language"
+            options={languageOptions}
+            onSelectionChange={setAllowedLanguages}
+          />
+        </Grid>
       </Grid>
       <ActivitiesGallery
         activities={filteredActivities}
         compactView={compactView}
+        preferredLanguage={allowedLanguages.length === 1 ? allowedLanguages[0] : undefined}
       />
       <Typography color="textSecondary" textAlign="center" paddingTop={2}>
         {`${format(filteredActivities.length, 'activity matches', 'activities match')} the search criteria`}

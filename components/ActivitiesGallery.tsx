@@ -11,14 +11,12 @@ import {
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import { countBy, orderBy } from 'lodash';
+import { countBy, orderBy, sortBy } from 'lodash';
 import Link from 'next/link';
 import router from 'next/router';
 import { Activity, activityVariantId, canonicalVariantForLanguage } from '../src/schemas/activitySchema';
 import { activityAssetPathname, activityPathname, activityVariantPathname } from '../src/urlUtils';
 import ActivityConcepts from './ActivityConcepts';
-
-export const ANY_LANGUAGE = 'any';
 
 const VISIBILITY_PRIORITY = {
   featured: 0,
@@ -28,10 +26,10 @@ const VISIBILITY_PRIORITY = {
 };
 
 export default function ActivitiesGallery({
-  activities, languageFilter = ANY_LANGUAGE, compactView = false,
+  activities, preferredLanguage = undefined, compactView = false,
 } :
 { activities : Activity[],
-  languageFilter?: string,
+  preferredLanguage?: string,
   compactView?: boolean
 }) {
   // Order by visibility (lowest priority first),
@@ -48,17 +46,20 @@ export default function ActivitiesGallery({
   return (
     <Grid container spacing={2}>
       {sortedActivities.map((activity) => {
-        // get language-filtered variant (if cannot, get first)
-        const langInfo = activity.languagesInfo.find(
-          (i) => languageFilter === ANY_LANGUAGE
-           || i.language.toLowerCase() === languageFilter.toLowerCase(),
-        ) || activity.languagesInfo[0];
-        const defaultVariant = canonicalVariantForLanguage(
-          activity,
-          langInfo.language,
+        // Get available canonical variants for this activity,
+        // trying to match the preferred language first.
+        const canonicalVariants = sortBy(
+          activity.languagesInfo,
+          (i) => (i.language === preferredLanguage ? 0 : 1),
+        ).map((i) => canonicalVariantForLanguage(activity, i.language));
+        // Use the first one that was found. Produce an error if none is available.
+        const seletectedVariant = canonicalVariants.find((v) => v !== undefined);
+        const selectedLangInfo = activity.languagesInfo.find(
+          (i) => i.language === seletectedVariant?.language
+           && i.latestVersion === seletectedVariant?.version,
         );
-        if (defaultVariant === undefined) {
-          throw new Error(`Latest version for activity ${activity.slug} in language ${languageFilter} not found`);
+        if (seletectedVariant === undefined || selectedLangInfo === undefined) {
+          throw new Error(`Cannot find a valid language/version for activity ${activity.slug}`);
         }
         const isDraft = activity.visibility === 'draft';
         return (
@@ -67,11 +68,11 @@ export default function ActivitiesGallery({
             sm={6}
             md={compactView ? 3 : 4}
             lg={compactView ? 2 : 3}
-            key={activityVariantId(defaultVariant)}
+            key={activityVariantId(seletectedVariant)}
           >
             <Card elevation={8} sx={{ height: '100%' }}>
               <CardActionArea
-                onClick={() => router.push(activityVariantPathname(defaultVariant))}
+                onClick={() => router.push(activityVariantPathname(seletectedVariant))}
                 disabled={isDraft}
               >
                 <CardMedia
@@ -82,13 +83,13 @@ export default function ActivitiesGallery({
                     activity.slug,
                     activity.previewImage.filename,
                   )}
-                  alt={langInfo.title}
+                  alt={selectedLangInfo.title}
                   sx={{ padding: 1, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
                 />
                 { !compactView && (
                 <CardContent sx={{ pb: 0 }}>
                   <Typography gutterBottom variant="h5" component="span" sx={{ display: 'flex' }}>
-                    {langInfo.title}
+                    {selectedLangInfo.title}
                     {activity.visibility === 'featured'
                           && (
                           <Verified

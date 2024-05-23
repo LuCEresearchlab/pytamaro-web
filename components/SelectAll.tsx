@@ -8,14 +8,14 @@ import { useState } from 'react';
 type Option = {
   id: string;
   label: string;
-  url: string;
+  url?: string;
   all?: boolean;
 };
 
 export default function SelectAll({
-  title, placeholder, options, initialSelection, onSelectionChange,
+  title, placeholder, options, initialSelection = options, onSelectionChange,
 } :
-{ title: string, placeholder: string, options: Option[], initialSelection: Option[],
+{ title: string, placeholder: string, options: Option[], initialSelection?: Option[],
   onSelectionChange: (selectedIds: string[]) => void }) {
   const [selectedOptions, setSelectedOptions] = useState(initialSelection);
   const router = useRouter();
@@ -38,7 +38,7 @@ export default function SelectAll({
           <Chip
             key={key}
             label={option.label}
-            onClick={(e) => { e.stopPropagation(); router.push(option.url); }}
+            onClick={(e) => { if (option.url) { e.stopPropagation(); router.push(option.url); } }}
             size="medium"
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...customConceptProps}
