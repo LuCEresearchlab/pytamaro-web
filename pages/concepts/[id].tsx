@@ -4,15 +4,15 @@ import {
 import Head from 'next/head';
 import ActivitiesGallery from '../../components/ActivitiesGallery';
 import NavigationBar from '../../components/NavigationBar';
-import { visibleActivities } from '../../src/fs-content/activities';
+import { basicActivities, visibleActivities } from '../../src/fs-content/activities';
 import { listActivitiesAllAuthors } from '../../src/fs-content/authors';
 import { Concept, knownConcepts } from '../../src/schemas/activityConcepts';
-import { Activity } from '../../src/schemas/activitySchema';
+import { BasicActivity } from '../../src/schemas/activitySchema';
 import { translationProps } from '../../src/serverSideTranslationProps';
 import { conceptPathname } from '../../src/urlUtils';
 
 export default function ConceptPage({ concept, activities }:
-{ concept: Concept, activities: Activity[] }) {
+{ concept: Concept, activities: BasicActivity[] }) {
   const pageTitle = `${concept.title} - PyTamaro`;
 
   return (
@@ -49,7 +49,7 @@ export async function getStaticProps(
   return {
     props: {
       concept: knownConcepts[id],
-      activities: visibleActivities(await listActivitiesAllAuthors())
+      activities: basicActivities(visibleActivities(await listActivitiesAllAuthors()))
         .filter((activity) => activity.concepts.includes(id)),
       ...await translationProps(),
     },

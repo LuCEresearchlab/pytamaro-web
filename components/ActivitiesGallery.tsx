@@ -14,7 +14,9 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { countBy, orderBy, sortBy } from 'lodash';
 import Link from 'next/link';
 import router from 'next/router';
-import { Activity, activityVariantId, canonicalVariantForLanguage } from '../src/schemas/activitySchema';
+import {
+  BasicActivity, activityVariantId, canonicalVariantForLanguage
+} from '../src/schemas/activitySchema';
 import { activityAssetPathname, activityPathname, activityVariantPathname } from '../src/urlUtils';
 import ActivityConcepts from './ActivityConcepts';
 
@@ -28,7 +30,7 @@ const VISIBILITY_PRIORITY = {
 export default function ActivitiesGallery({
   activities, preferredLanguage = undefined, compactView = false,
 } :
-{ activities : Activity[],
+{ activities : BasicActivity[],
   preferredLanguage?: string,
   compactView?: boolean
 }) {

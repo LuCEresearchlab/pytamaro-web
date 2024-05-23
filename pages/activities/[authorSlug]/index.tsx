@@ -9,18 +9,18 @@ import { useEffect, useState } from 'react';
 import ActivitiesGallery from '../../../components/ActivitiesGallery';
 import NavigationBar from '../../../components/NavigationBar';
 import SelectAll from '../../../components/SelectAll';
-import { visibleActivities } from '../../../src/fs-content/activities';
+import { basicActivities, visibleActivities } from '../../../src/fs-content/activities';
 import { listActivitiesAllAuthors, listAuthorsProfiles } from '../../../src/fs-content/authors';
 import capitalizedLocalizedLanguageDisplayName, { format } from '../../../src/internationalization';
 import { knownConcepts } from '../../../src/schemas/activityConcepts';
-import { Activity } from '../../../src/schemas/activitySchema';
+import { BasicActivity } from '../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../src/schemas/authorSchema';
 import { translationProps } from '../../../src/serverSideTranslationProps';
 import { activitiesByAuthorPathname, authorPathname, conceptPathname } from '../../../src/urlUtils';
 
 export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsProfiles }:
 { defaultAuthorSlug: string,
-  activities: Activity[],
+  activities: BasicActivity[],
   authorsProfiles: AuthorProfile[] }) {
   const authorOptions = authorsProfiles.map((author) => ({
     id: author.slug,
@@ -132,7 +132,7 @@ export async function getStaticProps(
     props: {
       defaultAuthorSlug: authorSlug,
       authorsProfiles: await listAuthorsProfiles(),
-      activities: visibleActivities(await listActivitiesAllAuthors()),
+      activities: basicActivities(visibleActivities(await listActivitiesAllAuthors())),
       ...await translationProps(),
     },
   };
