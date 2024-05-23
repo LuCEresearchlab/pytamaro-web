@@ -89,4 +89,9 @@ export const knownConcepts : Dictionary<Concept> = {
     category: 'programming',
     description: 'Using higher order functions',
   },
+  toolbox: {
+    title: 'Toolbox',
+    category: 'programming',
+    description: 'Reusing code with the toolbox module',
+  },
 };
