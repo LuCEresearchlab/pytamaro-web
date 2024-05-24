@@ -207,7 +207,7 @@ export default function CodeEditor({
       <Editor
         language={LANGUAGE}
         theme="luce"
-        value={source}
+        defaultValue={source}
         onMount={handleEditorMount}
         onChange={debouncedHandleSourceChanged}
         options={{
