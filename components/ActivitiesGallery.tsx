@@ -110,6 +110,7 @@ export default function ActivitiesGallery({
                 </CardContent>
                 )}
               </CardActionArea>
+              {!compactView && (
               <CardActions>
                 <ActivityConcepts
                   concepts={activity.concepts}
@@ -126,6 +127,7 @@ export default function ActivitiesGallery({
                   </IconButton>
                 </Box>
               </CardActions>
+              )}
             </Card>
           </Grid>
         );
