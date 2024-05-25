@@ -13,10 +13,10 @@ type Option = {
 };
 
 export default function SelectAll({
-  title, placeholder, options, initialSelection = options, onSelectionChange,
+  title, placeholder, options, maxTagsShown, initialSelection = options, onSelectionChange,
 } :
-{ title: string, placeholder: string, options: Option[], initialSelection?: Option[],
-  onSelectionChange: (selectedIds: string[]) => void }) {
+{ title: string, placeholder: string, options: Option[], maxTagsShown: number,
+  initialSelection?: Option[], onSelectionChange: (selectedIds: string[]) => void }) {
   const [selectedOptions, setSelectedOptions] = useState(initialSelection);
   const router = useRouter();
 
@@ -31,7 +31,7 @@ export default function SelectAll({
           label: 'Select All', id: '__ALL__', url: '', all: true,
         }, ...filtered];
       }}
-      limitTags={5}
+      limitTags={maxTagsShown}
       renderTags={(value, getConceptProps) => value.map((option, index) => {
         const { key, ...customConceptProps } = getConceptProps({ index });
         return (

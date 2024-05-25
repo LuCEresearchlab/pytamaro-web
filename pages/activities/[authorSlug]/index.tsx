@@ -90,6 +90,7 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
             options={conceptsOptions}
             initialSelection={conceptsOptions}
             onSelectionChange={setAllowedConcepts}
+            maxTagsShown={5}
           />
         </Grid>
         <Grid xs={12} lg={3}>
@@ -99,6 +100,7 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
             options={authorOptions}
             initialSelection={authorOptions.filter((author) => author.id === defaultAuthorSlug)}
             onSelectionChange={setAllowedAuthors}
+            maxTagsShown={2}
           />
         </Grid>
         <Grid xs={12} lg={3}>
@@ -107,6 +109,7 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
             placeholder="Language"
             options={languageOptions}
             onSelectionChange={setAllowedLanguages}
+            maxTagsShown={2}
           />
         </Grid>
       </Grid>
