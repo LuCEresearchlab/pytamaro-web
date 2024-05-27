@@ -91,7 +91,11 @@ function addActivitiesStatuses(
   { width, height }: { width: number, height: number },
 ) {
   return activities.map((activity) => {
-    const status = activityVariantStatus(metadata.activities, activity.variant);
+    const status = activityVariantStatus(
+      metadata.activities,
+      activity.variant,
+      activity.fallbackIds,
+    );
     const isUnlocked = previousStepIsCompleted || allUnlocked;
     return {
       id: activity.id,

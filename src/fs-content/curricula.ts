@@ -12,7 +12,7 @@ import {
   RawCurriculumUnit,
 } from '../schemas/curriculumSchema';
 import { curriculumFinishPathname } from '../urlUtils';
-import { readActivity } from './activities';
+import { basicActivity, readActivity } from './activities';
 import DataCache from './cache';
 import { DATA_DIR } from './notebooks';
 
@@ -38,7 +38,7 @@ async function processUnits(units: RawCurriculumUnit[]) : Promise<CurriculumUnit
           return {
             ...rawCurriculumActivity,
             variant,
-            activity: await readActivity(variant.authorSlug, variant.activitySlug),
+            activity: basicActivity(await readActivity(variant.authorSlug, variant.activitySlug)),
           };
         },
       )),

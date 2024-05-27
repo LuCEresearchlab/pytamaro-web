@@ -122,8 +122,8 @@ export function visibleActivities(activities: BasicActivity[]) : BasicActivity[]
   return activities.filter((activity) => activity.visibility !== 'hidden');
 }
 
-export function basicActivities(activities: Activity[]) : BasicActivity[] {
-  return activities.map((activity) => ({
+export function basicActivity(activity: Activity) : BasicActivity {
+  return {
     slug: activity.slug,
     previewImage: activity.previewImage,
     visibility: activity.visibility,
@@ -131,5 +131,9 @@ export function basicActivities(activities: Activity[]) : BasicActivity[] {
     languagesInfo: activity.languagesInfo,
     authorSlug: activity.authorSlug,
     concepts: activity.concepts,
-  }));
+  };
+}
+
+export function basicActivities(activities: Activity[]) : BasicActivity[] {
+  return activities.map(basicActivity);
 }

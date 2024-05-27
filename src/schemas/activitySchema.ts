@@ -116,7 +116,7 @@ export function activityVariantFromId(id: string): ActivityVariant {
   };
 }
 
-export function getVariantTitle(activity: Activity, variant: ActivityVariant) {
+export function getVariantTitle(activity: BasicActivity, variant: ActivityVariant) {
   const maybeInfo = activity.languagesInfo.find((i) => i.language === variant.language);
   return maybeInfo?.title || activity.slug;
 }
@@ -128,7 +128,7 @@ export function canonicalVariantForLanguage(activity: BasicActivity, language: s
   && v.version === languageInfo?.latestVersion) as ActivityVariant;
 }
 
-export function languageInfoForVariant(activity: Activity, variant: ActivityVariant) {
+export function languageInfoForVariant(activity: BasicActivity, variant: ActivityVariant) {
   return activity.languagesInfo.find(
     (i) => i.language === variant.language,
   ) as ActivityLanguageInfo;
