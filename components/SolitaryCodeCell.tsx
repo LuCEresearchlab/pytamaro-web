@@ -12,12 +12,13 @@ export function emptySingleCell() {
 }
 
 export default function SolitaryCodeCell({
-  activity, activityVariant, readOnly = false, requireNewExecution = false,
+  activity, activityVariant, resetCounter = 0, readOnly = false, requireNewExecution = false,
   postSourceChange = () => {}, onExecutionRequest = () => {},
   extraActions = null,
 } :
 { activity: ReturnType<typeof useActivity>,
   activityVariant: ActivityVariant,
+  resetCounter?: number,
   readOnly?: boolean,
   requireNewExecution?: boolean,
   postSourceChange?: (newSource: string) => void,
@@ -25,7 +26,7 @@ export default function SolitaryCodeCell({
   extraActions?: React.ReactNode
 }) {
   const {
-    codeCells, codeExecutionStates,
+    initialCodeCells, codeCells, codeExecutionStates,
     handleSourceChanged, handleExecute,
   } = activity;
   useEffect(() => {
@@ -36,7 +37,8 @@ export default function SolitaryCodeCell({
   });
   return (
     <CodeCell
-      codeCellState={codeCells[0]}
+      initialSource={initialCodeCells[0].source}
+      currentSource={codeCells[0].source}
       codeCellExecutionState={codeExecutionStates[0]}
       onSourceChanged={(newSource) => {
         handleSourceChanged(newSource, 0);
@@ -52,6 +54,7 @@ export default function SolitaryCodeCell({
       platformConfig={platformConfigWithDefaults()}
       extraActions={extraActions}
       cumulativeSource={codeCells[0].source}
+      resetCounter={resetCounter}
     />
   );
 }

@@ -10,7 +10,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { useEffect, useMemo, useState } from 'react';
 import { ExecutionResponse } from '../src/codeExecution';
-import { CodeCellExecutionState, CodeCellState } from '../src/localStorage/schema';
+import { CodeCellExecutionState } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { called_names, find_ellipsis, imported_names } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant, PlatformConfiguration } from '../src/schemas/activitySchema';
@@ -34,11 +34,12 @@ export function isExecutionError(response: ExecutionResponse | undefined) {
 }
 
 export default function CodeCell({
-  codeCellState, codeCellExecutionState, onSourceChanged, onExecutionRequested,
-  firstLineNumber, activityVariant, cumulativeSource, platformConfig,
+  initialSource, currentSource, codeCellExecutionState, onSourceChanged, onExecutionRequested,
+  firstLineNumber, activityVariant, cumulativeSource, platformConfig, resetCounter,
   extraActions = null, readOnly = false,
 } :
-{ codeCellState : CodeCellState,
+{ initialSource: string,
+  currentSource: string,
   codeCellExecutionState: CodeCellExecutionState,
   onSourceChanged: (newSource: string) => void,
   onExecutionRequested: () => Promise<any>,
@@ -46,6 +47,7 @@ export default function CodeCell({
   activityVariant: ActivityVariant,
   cumulativeSource: string,
   platformConfig: PlatformConfiguration,
+  resetCounter: number,
   extraActions?: React.ReactNode
   readOnly?: boolean
 }) {
@@ -71,7 +73,7 @@ export default function CodeCell({
       }
     };
 
-    return debounce(findCalledNames, 200);
+    return debounce(findCalledNames, 100);
   }, []);
 
   const debouncedFindEllipsis = useMemo(() => {
@@ -82,22 +84,22 @@ export default function CodeCell({
         setEllipsis(false);
       }
     };
-    return debounce(findEllipsis, 200);
+    return debounce(findEllipsis, 100);
   }, []);
 
   useEffect(() => {
-    debouncedFindCalledNames(codeCellState.source);
-    debouncedFindEllipsis(codeCellState.source);
-  }, [codeCellState.source, debouncedFindCalledNames, debouncedFindEllipsis]);
+    debouncedFindCalledNames(currentSource);
+    debouncedFindEllipsis(currentSource);
+  }, [currentSource, debouncedFindCalledNames, debouncedFindEllipsis]);
 
   return (
     <Paper elevation={readOnly ? 0 : 4}>
       {!readOnly
-        && <DocumentationStripe source={codeCellState.source} activityVariant={activityVariant} />}
+        && <DocumentationStripe source={currentSource} activityVariant={activityVariant} />}
       <Card>
         <CardContent>
           <CodeEditor
-            source={codeCellState.source}
+            initialSource={initialSource}
             onChange={onSourceChanged}
             onExecutionRequested={onExecutionRequested}
             executionAllowed={!executing && !executionFinished}
@@ -106,6 +108,7 @@ export default function CodeCell({
             readOnly={readOnly}
             executionResponse={executionResponse}
             collapsedErrorMarkers={tipShown}
+            resetCounter={resetCounter}
           />
         </CardContent>
         <CardActions disableSpacing sx={{ paddingLeft: 2, display: 'flex' }}>

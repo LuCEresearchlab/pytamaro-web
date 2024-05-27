@@ -7,9 +7,10 @@ import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { ActivityVariant, activityVariantId } from '../src/schemas/activitySchema';
 import ResetButton from './ResetButton';
 
-export default function ActivityResetButton({ activityVariant, initialCodeCells } : {
+export default function ActivityResetButton({ activityVariant, initialCodeCells, newReset } : {
   activityVariant: ActivityVariant,
   initialCodeCells: CodeCellState[],
+  newReset: () => void,
 }) {
   const {
     cellsModified,
@@ -29,6 +30,7 @@ export default function ActivityResetButton({ activityVariant, initialCodeCells 
     })
       .then(() => {
         handleResetAllCellsNoConfirm();
+        newReset();
         setActivityMetadata(activityVariant, defaultMetadata);
       });
   };

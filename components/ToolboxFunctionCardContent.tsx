@@ -112,7 +112,7 @@ export default function ToolboxFunctionCardContent(
           </FormGroup>
           {showSource && (
           <CodeEditor
-            source={fn.source}
+            initialSource={fn.source}
             readOnly
           />
           )}

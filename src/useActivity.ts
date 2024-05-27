@@ -254,7 +254,7 @@ export function useActivity(
     setCodeExecutionStates(initialCodeExecutionStates());
   };
 
-  const handleResetSingleCell = (idx: number) => {
+  const handleResetSingleCell = (idx: number, postReset: () => void) => {
     confirm({ description: 'You are about to reset the code in this cell. Other cells will be left unchanged. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete my code' })
       .then(() => {
         setCodeCells(
@@ -267,10 +267,12 @@ export function useActivity(
             draft[idx] = initialCodeExecutionState();
           }),
         );
+        postReset();
       });
   };
 
   return {
+    initialCodeCells,
     codeCells,
     codeExecutionStates,
     completed,
