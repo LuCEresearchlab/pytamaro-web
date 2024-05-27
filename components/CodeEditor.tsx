@@ -36,12 +36,12 @@ const RUN_CODE_CONDITION_KEY = 'executionAllowedCondition';
 export const COLORIZE_CLASSNAME = 'monaco-colorize';
 
 export default function CodeEditor({
-  initialSource, executionResponse = undefined, onChange = () => {},
+  initialSource, currentSource, executionResponse = undefined, onChange = () => {},
   onExecutionRequested = undefined,
   executionAllowed = false, executionFinished = false, firstLineNumber = 1, readOnly = false,
   collapsedErrorMarkers = false, resetCounter = 0,
 } :
-{ initialSource: string, executionResponse?: ExecutionResponse,
+{ initialSource: string, currentSource: string, executionResponse?: ExecutionResponse,
   onChange?: (source: string) => void, onExecutionRequested? : () => void,
   executionAllowed?: boolean, executionFinished?: boolean, firstLineNumber?: number,
   readOnly?: boolean, collapsedErrorMarkers?: boolean, resetCounter?: number }) {
@@ -216,7 +216,7 @@ export default function CodeEditor({
       <Editor
         language={LANGUAGE}
         theme="luce"
-        defaultValue={initialSource}
+        defaultValue={currentSource}
         onMount={handleEditorMount}
         onChange={debouncedHandleSourceChanged}
         options={{

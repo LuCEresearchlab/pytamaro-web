@@ -100,6 +100,7 @@ export default function CodeCell({
         <CardContent>
           <CodeEditor
             initialSource={initialSource}
+            currentSource={currentSource}
             onChange={onSourceChanged}
             onExecutionRequested={onExecutionRequested}
             executionAllowed={!executing && !executionFinished}

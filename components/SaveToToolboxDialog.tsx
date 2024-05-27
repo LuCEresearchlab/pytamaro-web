@@ -267,7 +267,8 @@ export default function SaveToToolboxDialog({
         </Alert>
         )}
         <CodeEditor
-          initialSource={implementation}
+          initialSource={externalImplementation}
+          currentSource={implementation}
           onChange={handleImplementationChange}
         />
         <Box marginTop={4} />

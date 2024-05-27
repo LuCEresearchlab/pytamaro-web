@@ -113,6 +113,7 @@ export default function ToolboxFunctionCardContent(
           {showSource && (
           <CodeEditor
             initialSource={fn.source}
+            currentSource={fn.source}
             readOnly
           />
           )}
