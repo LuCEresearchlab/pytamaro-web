@@ -61,7 +61,8 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
         .filter((activity) => (
           activity.variants.some((variant) => allowedLanguages.includes(variant.language))))
         .filter((activity) => (
-          activity.concepts.every((concepts) => allowedConcepts.includes(concepts))
+          activity.concepts.some((concepts) => allowedConcepts.includes(concepts))
+          || (activity.concepts.length === 0 && allowedConcepts.length === 0)
         )),
     );
   }, [activities, allowedLanguages, allowedConcepts, allowedAuthors]);
@@ -85,7 +86,7 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
       <Grid container spacing={2}>
         <Grid xs={12} lg={6}>
           <SelectAll
-            title="Allowed Concepts"
+            title="Concepts"
             placeholder="Concept"
             options={conceptsOptions}
             initialSelection={conceptsOptions}
