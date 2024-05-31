@@ -185,8 +185,8 @@ export default function SummerAcademy() {
               <Typography variant="h4" align="center" marginY={3}>Five-Day Summer Academy at the Software Institute at USI in Lugano</Typography>
             </Container>
             <CardHeader
-              title="Coming Summer 2024"
-              subheader="Dates and daily schedule to be determined"
+              title="Monday, July 22 to Friday, July 26"
+              subheader="Daily Schedule: 9:00 to 17:00"
               titleTypographyProps={{ align: 'center' }}
               subheaderTypographyProps={{
                 align: 'center',
@@ -194,7 +194,7 @@ export default function SummerAcademy() {
             />
             <CardContent>
               <Typography variant="h5" align="center" marginY={3} sx={{ color: '#d2071b' }}>
-                Registrations will open Spring 2024.
+                Registration opening soon!
                 Spaces will be limited to around 20 participants.
               </Typography>
               <Typography align="center" marginY={3}>
