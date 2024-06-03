@@ -1,12 +1,12 @@
 import { Monaco } from '@monaco-editor/react';
 import { type editor as EditorNamespace } from 'monaco-editor';
-import { ExecutionResponse } from './codeExecution';
+import { CompletedExecutionResponse } from './codeExecution';
 import { splitLines } from './sourceUtils';
 
 export function addMarkers(
   monaco: Monaco,
   editor: EditorNamespace.IStandaloneCodeEditor,
-  executionResponse: ExecutionResponse,
+  executionResponse: CompletedExecutionResponse,
   firstLineNumber: number,
   collapsedErrorMarkers: boolean,
 ) : boolean {

@@ -9,8 +9,8 @@ import { ActivityVariant, PlatformConfiguration, PythonFile } from '../src/schem
 import { countLines, joinLines } from '../src/sourceUtils';
 import useReset from '../src/useReset';
 import CodeCell from './CodeCell';
+import FailedExecutionSnackbar from './FailedExecutionSnackbar';
 import MoreOptionsButton from './MoreOptionsButton';
-import NetworkErrorSnackbar from './NetworkErrorSnackbar';
 import SaveToToolboxButton from './SaveToToolboxButton';
 
 function InconsistencyMessage() {
@@ -52,7 +52,7 @@ export default function ActivityCodeCell({
 }) {
   const {
     codeCells, codeExecutionStates,
-    networkError, setNetworkError,
+    executionFailed,
     handleSourceChanged, handleExecute, sourcesUpTo,
     handleToggleOutputArea, handleResetSingleCell,
     localCodeCellsWrongLength,
@@ -69,7 +69,7 @@ export default function ActivityCodeCell({
   const currentCodeCell = codeCells[cellIdx];
   return localCodeCellsWrongLength ? <InconsistencyMessage /> : (
     <Box marginY={2}>
-      <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
+      {executionFailed && <FailedExecutionSnackbar res={executionFailed} /> }
       <CodeCell
         initialSource={initialCodeCells[cellIdx].source}
         currentSource={currentCodeCell.source}
