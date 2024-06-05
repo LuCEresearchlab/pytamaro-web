@@ -4,10 +4,14 @@ import { uniqBy } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import {
   Dispatch, SetStateAction, useCallback, useEffect,
+  useState,
 } from 'react';
 import useSessionStorageState from 'use-session-storage-state';
 import logAnalyticsEvent, { AnalyticsEventName } from './analyticsEvent';
-import { ExecutionResponse, importedToolboxNames } from './codeExecution';
+import {
+  ExecutionResponse, FailedExecution, importedToolboxNames, isExecutionCompleted,
+  isExecutionFailed,
+} from './codeExecution';
 import {
   CodeCellExecutionState,
   CodeCellState, Metadata, ToolboxFunction,
@@ -69,7 +73,7 @@ async function executeOnServer(
     });
     return response.data;
   } catch {
-    return { type: 'network-error', stdout: '', stderr: '' };
+    return { type: 'network-error' };
   }
 }
 
@@ -100,10 +104,7 @@ export function useActivity(
     `pytamaro-web-executionv2-${variantId}`,
     { defaultValue: initialCodeExecutionStates() },
   );
-  const [networkError, setNetworkError] = useSessionStorageState(
-    `pytamaro-web-networkerror-${variantId}`,
-    { defaultValue: false },
-  );
+  const [executionFailed, setExecutionFailed] = useState<FailedExecution | undefined>(undefined);
 
   const completed = !!variantMetadata?.completed;
   const cellsModified = !!variantMetadata?.cellsModified;
@@ -177,12 +178,13 @@ export function useActivity(
       (currentCodeExecutionStates) => produce(currentCodeExecutionStates, (draft) => {
         draft[idx].executionInProgress = false;
         if (response !== undefined) {
-          if (response.type === 'network-error') {
-            setNetworkError(true);
+          if (isExecutionFailed(response)) {
+            setExecutionFailed(response);
           } else {
             draft[idx].executionResponse = response;
             draft[idx].outputSynced = true;
-            draft[idx].outputAreaVisible = (response.stderr + response.stdout).length > 0;
+            draft[idx].outputAreaVisible = isExecutionCompleted(response)
+              && (response.stdout + response.stderr).length > 0;
             // Mark the activity as completed when the last cell has been executed successfully.
             if (response.type === 'success' && idx === codeCells.length - 1) {
               markAsCompleted();
@@ -202,7 +204,7 @@ export function useActivity(
     const response = await executeOnServer(sources, idx, toolboxFunctions, extraPythonFiles);
     executionFinished(idx, response);
     postExecuteSingleCell(idx, response);
-    return response !== undefined;
+    return response;
   };
 
   const handleExecute = async (idx: number) => {
@@ -229,14 +231,15 @@ export function useActivity(
       activityVariant,
       extraPythonFiles,
     });
-    setNetworkError(false);
+    setExecutionFailed(undefined);
     // (Re-)Execute all cells from the first one to the current one, included.
-    const successes = [];
+    const responses = [];
     for (let i = 0; i <= idx; i += 1) {
-      successes.push(handleExecuteSingleCell(sources, toolboxFunctions, i));
+      responses.push(handleExecuteSingleCell(sources, toolboxFunctions, i));
     }
-    if ((await Promise.all(successes)).includes(false)) {
-      setNetworkError(true);
+    const failedResponses = (await Promise.all(responses)).filter(isExecutionFailed);
+    if (failedResponses.length > 0) {
+      setExecutionFailed(failedResponses[0]);
     }
   };
 
@@ -277,9 +280,8 @@ export function useActivity(
     codeExecutionStates,
     completed,
     cellsModified,
-    networkError,
+    executionFailed,
     sourcesUpTo,
-    setNetworkError,
     handleSourceChanged,
     handleExecute,
     handleToggleOutputArea,

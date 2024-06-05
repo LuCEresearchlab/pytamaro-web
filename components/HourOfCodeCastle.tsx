@@ -1,4 +1,5 @@
 import { Stack } from '@mui/material';
+import { isExecutionCompleted } from '../src/codeExecution';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import { PythonFile } from '../src/schemas/activitySchema';
 import DownloadCodeButton from './CodeDownloadButton';
@@ -19,7 +20,7 @@ export default function HourOfCodeCastle({ language, extraPythonFiles } :
   const executionResponse = codeExecutionStates[0]?.executionResponse;
   return (
     <Stack direction="column" spacing={2}>
-      {executionResponse
+      {executionResponse && isExecutionCompleted(executionResponse)
        && <OutputArea executionError={false} executionResponse={executionResponse} />}
       <DownloadCodeButton codeCells={codeCells} extraPythonFiles={extraPythonFiles} />
     </Stack>

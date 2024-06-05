@@ -13,9 +13,9 @@ import { useEffect, useState } from 'react';
 import ActivitiesStripe from '../components/ActivitiesStripe';
 import DownloadCodeButton from '../components/CodeDownloadButton';
 import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDialog';
+import FailedExecutionSnackbar from '../components/FailedExecutionSnackbar';
 import MoreOptionsButton from '../components/MoreOptionsButton';
 import NavigationBar from '../components/NavigationBar';
-import NetworkErrorSnackbar from '../components/NetworkErrorSnackbar';
 import ResetButton from '../components/ResetButton';
 import SaveToToolboxButton from '../components/SaveToToolboxButton';
 import SolitaryCodeCell, { initialStateSingleCell } from '../components/SolitaryCodeCell';
@@ -46,8 +46,8 @@ export default function Playground({ activitiesWithNames } :
     playgroundActivityVariant,
   );
   const {
-    codeCells, codeExecutionStates, cellsModified, networkError, sourcesUpTo,
-    setNetworkError, handleResetAllCellsNoConfirm, handleToggleOutputArea, handleResetSingleCell,
+    codeCells, codeExecutionStates, cellsModified, executionFailed, sourcesUpTo,
+    handleResetAllCellsNoConfirm, handleToggleOutputArea, handleResetSingleCell,
   } = localActivity;
   const { outputSynced } = codeExecutionStates[0];
 
@@ -109,7 +109,7 @@ export default function Playground({ activitiesWithNames } :
         <NavigationBar>
           <ResetButton enabled={cellsModified} onReset={handleReset} tooltip="Reset Playground" />
         </NavigationBar>
-        <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
+        {executionFailed && <FailedExecutionSnackbar res={executionFailed} />}
         <DataSharingPreferenceDialog />
         <Grid container>
           <Sidebar side="left">

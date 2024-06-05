@@ -81,11 +81,19 @@ async function doExecution(
       stdout: glotResponse.stdout,
       stderr: glotResponse.stderr,
     };
-  } catch (e) {
-    // Log the error on the server
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      const errorData = err.response?.data;
+      if (errorData) {
+        if (errorData.error === 'limits.execution_time') return { type: 'time-limit-exceeded' };
+        if (errorData.error === 'limits.read.size') return { type: 'output-limit-exceeded' };
+      }
+    }
+    // No better information available, just return a generic network error
+    // (and log it on the server)
     // eslint-disable-next-line no-console
-    console.error(e);
-    return { type: 'network-error', stdout: '', stderr: '' };
+    console.error(err);
+    return { type: 'network-error' };
   }
 }
 

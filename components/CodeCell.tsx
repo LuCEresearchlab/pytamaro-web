@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useEffect, useMemo, useState } from 'react';
-import { ExecutionResponse } from '../src/codeExecution';
+import { ExecutionResponse, isExecutionCompleted } from '../src/codeExecution';
 import { CodeCellExecutionState } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { called_names, find_ellipsis, imported_names } from '../src/python-analyzer/python_analyzer';
@@ -57,8 +57,8 @@ export default function CodeCell({
   const executing = codeCellExecutionState.executionInProgress;
   const executionFinished = codeCellExecutionState.outputSynced;
   const noOutput = executionFinished
-    && executionResponse?.stdout.length === 0
-    && executionResponse?.stderr.length === 0;
+    && executionResponse && isExecutionCompleted(executionResponse)
+    && (executionResponse.stdout + executionResponse.stderr).length === 0;
   const [inputFunctionCalled, setInputFunctionCalled] = useState(false);
   const [ellipsis, setEllipsis] = useState(false);
   const tipShown = noOutput || inputFunctionCalled || ellipsis;
@@ -136,7 +136,7 @@ export default function CodeCell({
               color="error"
               invisible={codeCellExecutionState.outputSynced}
             >
-              {executionResponse && (
+              {executionResponse && isExecutionCompleted(executionResponse) && (
               <OutputArea
                 executionError={executionError}
                 executionResponse={executionResponse}
