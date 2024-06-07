@@ -13,7 +13,6 @@ import {
 import Grid from '@mui/material/Unstable_Grid2';
 import { countBy, orderBy, sortBy } from 'lodash';
 import Link from 'next/link';
-import router from 'next/router';
 import {
   BasicActivity, activityVariantId, canonicalVariantForLanguage,
 } from '../src/schemas/activitySchema';
@@ -74,7 +73,7 @@ export default function ActivitiesGallery({
           >
             <Card elevation={8} sx={{ height: '100%' }}>
               <CardActionArea
-                onClick={() => router.push(activityVariantPathname(seletectedVariant))}
+                href={activityVariantPathname(seletectedVariant)}
                 disabled={isDraft}
               >
                 <CardMedia

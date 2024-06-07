@@ -8,7 +8,6 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { findStepIdx, findUnitIdx } from '../../src/curricula';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
@@ -39,7 +38,6 @@ export default function ActivityCard({
   width?: number | undefined,
   height?: number | undefined,
 }) {
-  const router = useRouter();
   const { t } = useLocalTranslation(['curriculum']);
   const { activity, variant } = curriculumActivity;
   const title = getVariantTitle(activity, variant);
@@ -75,7 +73,7 @@ export default function ActivityCard({
           <Tooltip arrow title={isUnlocked ? t('openActivity') : t(`unlockBy${firstStep ? 'Starting' : 'Completing'}`)} followCursor placement="top">
             <span>
               <CardActionArea
-                onClick={() => router.push(activityVariantWithCurriculum(variant, curriculum))}
+                href={activityVariantWithCurriculum(variant, curriculum)}
                 disabled={!isUnlocked}
               >
                 <CardMedia

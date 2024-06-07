@@ -6,7 +6,6 @@ import {
 import Grid from '@mui/material/Unstable_Grid2';
 import { concat, shuffle } from 'lodash';
 import { MDXRemote } from 'next-mdx-remote';
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { allActivities } from '../src/curricula';
 import { findUserCompetencies } from '../src/curriculumCompetencies';
@@ -49,17 +48,13 @@ export default function CurriculumCard({ curriculum, userActivities = undefined 
     setPreviewActivities(concat(fixedActivities, otherActivities));
   }, [curriculum]);
   const userCompetencies = findUserCompetencies(curriculum, userActivities || []);
-
-  const router = useRouter();
   const clickable = curriculum.visibility === 'featured' || curriculum.visibility === 'visible';
-  const handleClick = () => {
-    if (clickable) {
-      router.push(curriculumPathname(curriculum.authorSlug, curriculum.slug));
-    }
-  };
   return (
     <Card>
-      <CardActionArea onClick={handleClick}>
+      <CardActionArea
+        disabled={!clickable}
+        href={curriculumPathname(curriculum.authorSlug, curriculum.slug)}
+      >
         <Grid container>
           <Grid xs={9}>
             <CardContent>
