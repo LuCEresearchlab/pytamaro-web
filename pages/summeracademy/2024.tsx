@@ -193,9 +193,11 @@ export default function SummerAcademy() {
               }}
             />
             <CardContent>
+              <Typography variant="h5" align="center" marginY={3} sx={{ color: '#d2071b', fontWeight: 'bold' }}>
+                <a href="https://usi.qualtrics.com/jfe/form/SV_1YORVllskWREhlY">Register Here!</a>
+              </Typography>
               <Typography variant="h5" align="center" marginY={3} sx={{ color: '#d2071b' }}>
-                Registration opening soon!
-                Spaces will be limited to around 20 participants.
+                Spaces are limited to around 20 participants.
               </Typography>
               <Typography align="center" marginY={3}>
                 If you are curious, you may want to check out what we did in
@@ -271,7 +273,7 @@ export default function SummerAcademy() {
                 </Box>
                 <CardHeader
                   title="Multilingual"
-                  subheader="Deutsch ∙ Italiano ∙ English"
+                  subheader="Deutsch ∙ Italiano ∙ Français ∙ English"
                   titleTypographyProps={{ align: 'center' }}
                   subheaderTypographyProps={{
                     align: 'center',
@@ -282,7 +284,7 @@ export default function SummerAcademy() {
                     component="p"
                     variant="subtitle1"
                   >
-                    The PyTamaro library currently supports German, Italian, and English.
+                    The PyTamaro library supports German, Italian, French, and English.
                     In this summer academy we will speak them all.
                     Join us, and learn to program in your native language!
                   </Typography>
@@ -320,7 +322,7 @@ export default function SummerAcademy() {
                   >
                     Programming is a collaborative activity.
                     To participate in this summer academy,
-                    you need to come as a team:
+                    you can participate as a team:
                     each teacher brings along 1-3 students.
                     Or we team you up.
                   </Typography>
