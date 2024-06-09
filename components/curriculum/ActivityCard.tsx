@@ -21,6 +21,93 @@ import {
 import ActivityStatusBadge, { ActivityStatus } from '../ActivityStatusBadge';
 import CompetencyAvatar from '../CompetencyAvatar';
 
+export function ActivityCardActionAreaContent({
+  curriculumActivity, curriculum,
+  height = undefined,
+} : {
+  curriculumActivity: CurriculumActivity,
+  curriculum: Curriculum,
+  height?: number | undefined,
+}) {
+  const COMPACT_MAX_COMPETENCIES_SHOWN = 4;
+  const EXPANDED_MAX_COMPETENCIES_SHOWN = 20;
+  const [maxCompetenciesShown, setMaxCompetenciesShown] = useState(COMPACT_MAX_COMPETENCIES_SHOWN);
+  const { activity, variant } = curriculumActivity;
+  const title = getVariantTitle(activity, variant);
+
+  const avatarFontSize = theme.typography.pxToRem(16);
+
+  return (
+    <>
+      <CardMedia
+        component="img"
+        height={height ? 0.82 * height : '82%'}
+        color="red"
+        image={activityAssetPathname(
+          variant.authorSlug,
+          variant.activitySlug,
+          activity.previewImage.filename,
+        )}
+        alt={title}
+        sx={{ padding: 1, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
+      />
+      <CardContent sx={{
+        paddingY: { xs: 0, sm: 1 },
+        height: height ? 0.18 * height : '18%',
+        display: 'flex',
+        alignItems: 'baseline',
+        paddingRight: 0.5,
+      }}
+      >
+        <Typography
+          variant="h5"
+          component="div"
+          sx={{
+            fontSize: {
+              xs: '1rem', sm: '1.2rem', textOverflow: 'ellipsis',
+            },
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            flexShrink: 0,
+            flexGrow: 1,
+            flexBasis: 0,
+            minWidth: 0,
+          }}
+        >
+          {title}
+        </Typography>
+        <AvatarGroup
+          max={maxCompetenciesShown}
+          sx={{
+            marginLeft: 'auto',
+            flexShrink: 1,
+            flexGrow: 0,
+            '& .MuiAvatarGroup-avatar': {
+              width: 24,
+              height: 24,
+              fontSize: avatarFontSize,
+            },
+          }}
+          onMouseOver={() => setMaxCompetenciesShown(EXPANDED_MAX_COMPETENCIES_SHOWN)}
+          onMouseLeave={() => setMaxCompetenciesShown(COMPACT_MAX_COMPETENCIES_SHOWN)}
+        >
+          {curriculumActivity.learningObjectives.map((objective) => {
+            const competency = curriculum.competencies.find((c) => c.id === objective);
+            return competency ? (
+              <CompetencyAvatar
+                key={competency.id}
+                competency={competency}
+                fontSize={avatarFontSize}
+              />
+            ) : null;
+          })}
+        </AvatarGroup>
+      </CardContent>
+    </>
+  );
+}
+
 export default function ActivityCard({
   curriculumActivity,
   curriculum,
@@ -39,14 +126,7 @@ export default function ActivityCard({
   height?: number | undefined,
 }) {
   const { t } = useLocalTranslation(['curriculum']);
-  const { activity, variant } = curriculumActivity;
-  const title = getVariantTitle(activity, variant);
-
-  const avatarFontSize = theme.typography.pxToRem(16);
-
-  const COMPACT_MAX_COMPETENCIES_SHOWN = 4;
-  const EXPANDED_MAX_COMPETENCIES_SHOWN = 20;
-  const [maxCompetenciesShown, setMaxCompetenciesShown] = useState(COMPACT_MAX_COMPETENCIES_SHOWN);
+  const { variant } = curriculumActivity;
 
   const unitIdx = findUnitIdx(curriculum, curriculumActivity.variant);
   const stepIdx = findStepIdx(curriculum.units[unitIdx], curriculumActivity.variant);
@@ -76,71 +156,11 @@ export default function ActivityCard({
                 href={activityVariantWithCurriculum(variant, curriculum)}
                 disabled={!isUnlocked}
               >
-                <CardMedia
-                  component="img"
-                  height={height ? 0.82 * height : '82%'}
-                  color="red"
-                  image={activityAssetPathname(
-                    variant.authorSlug,
-                    variant.activitySlug,
-                    activity.previewImage.filename,
-                  )}
-                  alt={title}
-                  sx={{ padding: 1, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
+                <ActivityCardActionAreaContent
+                  curriculumActivity={curriculumActivity}
+                  curriculum={curriculum}
+                  height={height}
                 />
-                <CardContent sx={{
-                  paddingY: { xs: 0, sm: 1 },
-                  height: height ? 0.18 * height : '18%',
-                  display: 'flex',
-                  alignItems: 'baseline',
-                  paddingRight: 0.5,
-                }}
-                >
-                  <Typography
-                    variant="h5"
-                    component="div"
-                    sx={{
-                      fontSize: {
-                        xs: '1rem', sm: '1.2rem', textOverflow: 'ellipsis',
-                      },
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      flexShrink: 0,
-                      flexGrow: 1,
-                      flexBasis: 0,
-                      minWidth: 0,
-                    }}
-                  >
-                    {title}
-                  </Typography>
-                  <AvatarGroup
-                    max={maxCompetenciesShown}
-                    sx={{
-                      marginLeft: 'auto',
-                      flexShrink: 1,
-                      flexGrow: 0,
-                      '& .MuiAvatarGroup-avatar': {
-                        width: 24,
-                        height: 24,
-                        fontSize: avatarFontSize,
-                      },
-                    }}
-                    onMouseOver={() => setMaxCompetenciesShown(EXPANDED_MAX_COMPETENCIES_SHOWN)}
-                    onMouseLeave={() => setMaxCompetenciesShown(COMPACT_MAX_COMPETENCIES_SHOWN)}
-                  >
-                    {curriculumActivity.learningObjectives.map((objective) => {
-                      const competency = curriculum.competencies.find((c) => c.id === objective);
-                      return competency ? (
-                        <CompetencyAvatar
-                          key={competency.id}
-                          competency={competency}
-                          fontSize={avatarFontSize}
-                        />
-                      ) : null;
-                    })}
-                  </AvatarGroup>
-                </CardContent>
               </CardActionArea>
             </span>
           </Tooltip>
