@@ -32,7 +32,7 @@ function TypeCell({type}: { type: string }) {
 
 export default function ToolboxFunctionCardContent(
     {
-        fn, summary = false, from_pyTamaro = false, obj_type = "Function"
+        fn, summary = false, from_pyTamaro = false, obj_type = json_obj_type.function
     }:
         Readonly<{
             fn: ToolboxFunction | Type | Function | Variable,
@@ -49,7 +49,7 @@ export default function ToolboxFunctionCardContent(
                     {obj_type} {/*Function /!* TODO: change this based on the type of the received object (by default the received object is a "toolbox function" *!/*/}
                 </Typography>
                 <Typography component="span" fontFamily={theme.pytamaro.monospaceFontFamily}>
-                    {fn.name}
+                    {(from_pyTamaro && obj_type == json_obj_type.function) ? functionSignature((fn as Function)) : fn.name}
                 </Typography>
                 {!from_pyTamaro && LinkButton(fn as ToolboxFunction, summary)}
                 {/* NOTE: ('as ToolboxFunction' is an assertion since if the function doesn't come from_PyTamaro is from the toolbox) */}
@@ -87,7 +87,7 @@ function description(fn: ToolboxFunction | Type | Function | Variable) {
 
             </Typography>
             {fn.description?.images?.map((img, index) =>
-                <figure key={"Fig"+index}>
+                <figure key={"Fig" + index}>
                     <img
                         src={img.uri}
                         alt={img.caption}
@@ -178,8 +178,7 @@ function parametersTable(fn: ToolboxFunction | Function, from_pyTamaro: boolean)
                             type={from_pyTamaro ? ((fn as Function).return_type ?? "") : (fn as ToolboxFunction).returnTypeUnparsed}/>
                     </TableCell>
                     {from_pyTamaro && (fn as Function).return_description ? <TableCell>
-                        <Typography component="span"
-                                    fontFamily={theme.pytamaro.monospaceFontFamily}>{(fn as Function).return_description}</Typography>
+                        <Typography component="span">{(fn as Function).return_description}</Typography>
                     </TableCell> : null}
                 </TableRow>
             </TableBody>
@@ -202,8 +201,7 @@ function parameterTableRow(args: PythonFunctionArgument[] | Variable[] | undefin
                         <TypeCell type={arg.type ? arg.type : ""}/>
                     </TableCell>
                     <TableCell component="th" scope="row" sx={{pl: 0}}>
-                        <Typography component="span"
-                                    fontFamily={theme.pytamaro.monospaceFontFamily}>{arg.description ? arg.description.content : ""}</Typography>
+                        <Typography component="span">{arg.description ? arg.description.content : ""}</Typography>
                     </TableCell>
                     <TableCell component="th" scope="row" sx={{pl: 0}}>
                         <Typography component="span"
@@ -229,3 +227,17 @@ function parameterTableRow(args: PythonFunctionArgument[] | Variable[] | undefin
     }
 }
 
+function functionSignature(fn: Function): string {
+    let signature = fn.name + " ("
+    if (fn.parameters) {
+        for (let arg of fn.parameters) {
+            signature += arg.name + ":" + arg.type + ", "
+        }
+        signature = signature.substring(0, signature.length - 2)
+    }
+    signature += ")"
+    if (fn.return_type) {
+        signature+= "->" + fn.return_type;
+    }
+    return signature
+}

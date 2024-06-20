@@ -5,6 +5,13 @@ import path from "path";
 
 const BASE_PATH: string = path.join(process.cwd(), "public/JsonDocumentation");
 
+export enum language_string {
+    English = "en",
+    French = "fr",
+    German = "de",
+    Italian = "it",
+}
+
 export class JsonConverter {
 
     English: Module[] = []
@@ -30,19 +37,19 @@ export class JsonConverter {
         return result;
     }
 
-    public find(name: string, language?: string): {
+    public find(name: string, language?: language_string): {
         "obj_type": json_obj_type,
         "obj": Module | Function | Type | Variable
     } | undefined {
         if (language) {
-            switch (language.toLowerCase()) {
-                case 'en':
+            switch (language) {
+                case language_string.English:
                     return this.findInArray(this.English, name)
-                case 'fr':
+                case language_string.French:
                     return this.findInArray(this.French, name)
-                case 'ge':
+                case language_string.German:
                     return this.findInArray(this.German, name)
-                case 'it':
+                case language_string.Italian:
                     return this.findInArray(this.Italian, name)
                 default:
                     console.error("INCORRECT LANGUAGE")
@@ -93,5 +100,45 @@ export class JsonConverter {
         return undefined
     }
 
+    public languageDividedByType(language: language_string): {
+        modules: Module[],
+        functions: Function[],
+        types: Type[],
+        variables: Variable[]
+    } {
+        switch (language) {
+            case language_string.English:
+                return this.divideArrayByType(this.English)
+            case language_string.French:
+                return this.divideArrayByType(this.French)
+            case language_string.German:
+                return this.divideArrayByType(this.German)
+            case language_string.Italian:
+                return this.divideArrayByType(this.Italian)
+            default:
+                console.error("INCORRECT LANGUAGE")
+                return undefined
+        }
+    }
 
+    private divideArrayByType(array: Module[]): {
+        modules: Module[],
+        functions: Function[],
+        types: Type[],
+        variables: Variable[]
+    } {
+        let result = {
+            modules: ([] as Module[]),
+            functions: ([] as Function[]),
+            types: ([] as Type[]),
+            variables: ([] as Variable[])
+        }
+        for (let module of array) {
+            result.modules.push(module)
+            module.functions?.forEach((funct) => result.functions.push(funct))
+            module.types?.forEach((type) => result.types.push(type))
+            module.variables?.forEach((variable) => result.functions.push(variable))
+        }
+        return result
+    }
 }

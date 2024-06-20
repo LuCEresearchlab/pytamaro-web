@@ -40,4 +40,5 @@ export enum json_obj_type {
     module = "Module",
     function = "Function",
     type = "Type",
-    variable = "Variable"}
+    variable = "Variable"
+}
