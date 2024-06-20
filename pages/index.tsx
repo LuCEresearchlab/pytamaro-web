@@ -33,11 +33,11 @@ import Image from 'next/image';
 import { useEffect } from 'react';
 import Carousel from 'react-material-ui-carousel';
 import CompactActivityVariantCard from '../components/ActivityCardMedia';
-import ActivityCard from '../components/curriculum/ActivityCard';
+import { ActivityCardActionAreaContent } from '../components/curriculum/ActivityCard';
 import { allActivities } from '../src/curricula';
-import { listVisibleActivities } from '../src/fs-content/activities';
+import { basicActivities, listVisibleActivities } from '../src/fs-content/activities';
 import { getCurriculum } from '../src/fs-content/curricula';
-import { Activity } from '../src/schemas/activitySchema';
+import { BasicActivity } from '../src/schemas/activitySchema';
 import { Curriculum } from '../src/schemas/curriculumSchema';
 import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
@@ -61,7 +61,7 @@ function HomePagePrimaryButton(props: { icon: JSX.Element, text: string, href: s
 }
 
 export default function Home({ welcomeCurriculum, activities } :
-{ welcomeCurriculum: Curriculum, activities: Activity[] }) {
+{ welcomeCurriculum: Curriculum, activities: BasicActivity[] }) {
   const featuredActivities = shuffle(activities.filter((activity) => activity.visibility === 'featured'));
 
   const curriculumActivity = allActivities(welcomeCurriculum).find(({ activity }) => activity.slug === 'swiss-flag');
@@ -163,55 +163,53 @@ export default function Home({ welcomeCurriculum, activities } :
         <Stack spacing={4}>
           <Paper elevation={4}>
             <Card>
-              <Grid container>
-                <Grid xs={12} md={7}>
-                  <CardHeader
-                    avatar={<Code color="primary" />}
-                    title="New to Programming?"
-                    titleTypographyProps={{ variant: 'h5', color: 'primary', fontWeight: 'bold' }}
-                    sx={{ pb: 0 }}
-                  />
-                  <CardContent>
-                    <Typography fontSize="1.1rem" paragraph gutterBottom>
-                      Eager to discover the art of programming?
-                      Embark on a journey to learn fundamental programming concepts.
-                    </Typography>
-                    <Typography fontSize="1.1rem" paragraph>
-                      Our approach fosters
-                      {' '}
-                      <strong>problem decomposition</strong>
-                      {' '}
-                      skills:
-                      you will decompose graphics
-                      (like the PyTamaro logo or the Swiss flag)
-                      and compose programs.
-                    </Typography>
-                    <Typography fontSize="1.1rem" paragraph>
-                      Are you a teacher? This
-                      {' '}
-                      <Link href="https://www.chiodini.org/publications/splashe23-pytamaro.pdf">research paper</Link>
-                      {' '}
-                      describes the philosophy behind PyTamaro's design
-                      and how it avoids some pitfalls found in other approaches.
-                    </Typography>
-                  </CardContent>
-                </Grid>
-                <Grid xs={12} md={5} justifyContent="center">
-                  <CardActionArea href={curriculumPathname('luce', 'welcome')}>
+              <CardActionArea href={curriculumPathname('luce', 'welcome')}>
+                <Grid container>
+                  <Grid xs={12} md={7}>
+                    <CardHeader
+                      avatar={<Code color="primary" />}
+                      title="Want to Learn Programming?"
+                      titleTypographyProps={{ variant: 'h5', color: 'primary', fontWeight: 'bold' }}
+                      sx={{ pb: 0 }}
+                    />
+                    <CardContent>
+                      <Typography fontSize="1.1rem" paragraph gutterBottom>
+                        Are you eager to discover the art of programming?
+                        Embark on a journey to learn
+                        {' '}
+                        <strong>fundamental programming concepts</strong>
+                        .
+                      </Typography>
+                      <Typography fontSize="1.1rem" paragraph>
+                        Our approach fosters
+                        {' '}
+                        <strong>abstraction</strong>
+                        {' '}
+                        and
+                        {' '}
+                        <strong>problem decomposition</strong>
+                        {' '}
+                        skills:
+                        you will decompose graphics
+                        (like the Swiss flag)
+                        and compose them as programs.
+                      </Typography>
+                    </CardContent>
+                  </Grid>
+                  <Grid xs={12} md={5} justifyContent="center">
                     {curriculumActivity && (
-                      <Box padding={2} maxWidth="20rem" marginX="auto">
-                        <ActivityCard
-                          id="demo-activity-card"
+                    <Box padding={2} maxWidth="24rem" marginX="auto">
+                      <Card sx={{ height: '16rem' }} elevation={2}>
+                        <ActivityCardActionAreaContent
                           curriculumActivity={curriculumActivity}
                           curriculum={welcomeCurriculum}
-                          status="initial"
-                          isUnlocked
                         />
-                      </Box>
+                      </Card>
+                    </Box>
                     )}
-                  </CardActionArea>
+                  </Grid>
                 </Grid>
-              </Grid>
+              </CardActionArea>
             </Card>
           </Paper>
           <Paper elevation={4}>
@@ -221,7 +219,7 @@ export default function Home({ welcomeCurriculum, activities } :
                   <Grid xs={12} md={7}>
                     <CardHeader
                       avatar={<TipsAndUpdates color="primary" />}
-                      title="Interesting Activities"
+                      title="Looking for Interesting Activities?"
                       titleTypographyProps={{ variant: 'h5', color: 'primary', fontWeight: 'bold' }}
                       sx={{ pb: 0 }}
                     />
@@ -262,6 +260,13 @@ export default function Home({ welcomeCurriculum, activities } :
               </CardActionArea>
             </Card>
           </Paper>
+          <Typography fontSize="1.1rem" textAlign="center">
+            Wondering how and why PyTamaro differs from other approaches? We have a
+            {' '}
+            <Link href="https://www.chiodini.org/publications/splashe23-pytamaro.pdf">research paper</Link>
+            {' '}
+            for you.
+          </Typography>
           <Paper elevation={4}>
             <Card>
               <Grid container>
@@ -444,7 +449,7 @@ export async function getStaticProps() {
   return {
     props: {
       welcomeCurriculum: await getCurriculum('luce', 'welcome'),
-      activities: await listVisibleActivities('luce'),
+      activities: basicActivities(await listVisibleActivities('luce')),
       ...await translationProps(['curriculum']),
     },
   };

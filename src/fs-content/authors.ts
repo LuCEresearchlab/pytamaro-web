@@ -2,7 +2,7 @@ import { existsSync } from 'fs';
 import { readFile, readdir, stat } from 'fs/promises';
 import { serialize } from 'next-mdx-remote/serialize';
 import path from 'path';
-import { Activity } from '../schemas/activitySchema';
+import { BasicActivity } from '../schemas/activitySchema';
 import { Author, AuthorProfile } from '../schemas/authorSchema';
 import { Curriculum } from '../schemas/curriculumSchema';
 import { listActivities } from './activities';
@@ -45,7 +45,7 @@ export async function listAuthorsWithContent() {
   return Promise.all(profiles.map(({ slug }) => getAuthorContent(slug)));
 }
 
-export async function listActivitiesAllAuthors() : Promise<Activity[]> {
+export async function listActivitiesAllAuthors() : Promise<BasicActivity[]> {
   return (await listAuthorsWithContent()).map((author) => author.activities).flat();
 }
 

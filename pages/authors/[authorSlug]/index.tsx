@@ -15,14 +15,14 @@ import { visibleActivities } from '../../../src/fs-content/activities';
 import {
   getAuthorContent, getAuthorProfile, listAuthorsProfiles,
 } from '../../../src/fs-content/authors';
-import { Activity } from '../../../src/schemas/activitySchema';
+import { BasicActivity } from '../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../src/schemas/authorSchema';
 import { Curriculum } from '../../../src/schemas/curriculumSchema';
 import { translationProps } from '../../../src/serverSideTranslationProps';
 import { activitiesByAuthorPathname, authorPathname, curriculaByAuthorPathname } from '../../../src/urlUtils';
 
 export default function AuthorPage({ authorProfile, curricula, activities }:
-{ authorProfile: AuthorProfile, curricula: Curriculum[], activities: Activity[] }) {
+{ authorProfile: AuthorProfile, curricula: Curriculum[], activities: BasicActivity[] }) {
   const pageTitle = `${authorProfile.name} - PyTamaro`;
 
   return (
@@ -58,6 +58,8 @@ export default function AuthorPage({ authorProfile, curricula, activities }:
               {authorProfile.name}
             </Link>
           </Typography>
+        </Container>
+        <Container maxWidth="xl">
           <ActivitiesGallery activities={activities} />
         </Container>
       </Box>

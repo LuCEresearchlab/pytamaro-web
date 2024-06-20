@@ -46,10 +46,13 @@ When you want to integrate your changes into the main repository and see them li
     git checkout live && git merge main && git push && git checkout main
     ```
 
-This will trigger a workflow on the LuCE server that tries to build the plaftfrom with the new content.
-In case of success, the reference to the submodule in this platform repository will be updated to the new commit.
-Finally, the redeployment of the entire platform will be automatically triggered.
-The entire process should take less than 10 minutes.
+This will trigger a workflow on the LuCE server that tries to build the platform with the new content.
+You can execute the same build process on your computer by running `npm run build`.
+
+In case of success, the reference to the submodule in this platform repository will be updated to the new commit
+(which will automatically trigger the redeployment of the entire platform with your updated content).
+In case of failure, an issue will be created in your repository with the log of the build failure ([example](https://github.com/LuCEresearchlab/pytamaro-web-luce/issues/94)).
+The entire process should take about 10 minutes.
 </details>
 
 ## How do I set up a development environment to run the platform locally?

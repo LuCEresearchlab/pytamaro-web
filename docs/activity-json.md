@@ -6,7 +6,6 @@
     {
       title: string,
       language: string,
-      description: string,
       latestVersion: string,
     },
     ...
@@ -29,5 +28,6 @@
     ...
   ],
   derivedFrom: activityId[], // string (<author-slug>/<activity-slug>/<language>/<version>)
+  tags: string[],
 }
 ```

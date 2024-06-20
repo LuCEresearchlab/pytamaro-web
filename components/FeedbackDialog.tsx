@@ -15,7 +15,6 @@ import { useState } from 'react';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import { EventName, alwaysStoreDbEvent } from '../src/storeDbEvent';
 import CustomSnackbar from './CustomSnackbar';
-import NetworkErrorSnackbar from './NetworkErrorSnackbar';
 
 export default function FeedbackDialog() {
   const [open, setOpen] = useState(false);
@@ -119,7 +118,7 @@ export default function FeedbackDialog() {
         </DialogActions>
       </Dialog>
       <CustomSnackbar visible={feedbackReceivedVisibile} setVisible={setFeedbackReceivedVisible} severity="success" message="Feedback received!" />
-      <NetworkErrorSnackbar visible={feedbackErrorVisible} setVisible={setFeedbackErrorVisible} />
+      <CustomSnackbar visible={feedbackErrorVisible} setVisible={setFeedbackErrorVisible} severity="error" message="Could not send feedback!" />
     </div>
   );
 }

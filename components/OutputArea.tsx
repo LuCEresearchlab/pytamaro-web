@@ -14,7 +14,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { ExecutionResponse } from '../src/codeExecution';
+import { CompletedExecutionResponse } from '../src/codeExecution';
 import { processTraceback } from '../src/pythonTraceback';
 import { joinLines, splitLines } from '../src/sourceUtils';
 import theme from '../src/theme';
@@ -171,7 +171,7 @@ function CodeElement({ content } : { content : string }) {
 
 export default function OutputArea(
   { executionError, executionResponse, dimmed = false }:
-  { executionError: boolean, executionResponse: ExecutionResponse, dimmed?: boolean },
+  { executionError: boolean, executionResponse: CompletedExecutionResponse, dimmed?: boolean },
 ) {
   const pytamaroDataUriRegex = /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
   const { stdout, stderr } = executionResponse;

@@ -17,7 +17,7 @@ export function completedActivitiesForCompetency(
   userActivities: ActivityVariantMetadata[],
 ) {
   return activities.filter(
-    (activity) => activityVariantStatus(userActivities, activity.variant) === 'completed',
+    (activity) => activityVariantStatus(userActivities, activity.variant, activity.fallbackIds) === 'completed',
   );
 }
 

@@ -1,93 +1,71 @@
 import ViewCompactIcon from '@mui/icons-material/ViewCompact';
 import {
-  Box, Chip,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  OutlinedInput,
-  Select,
-  SelectChangeEvent,
-  Stack, TextField,
+  Stack,
   ToggleButton, Tooltip, Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import { useRouter } from 'next/router';
+import { countBy, orderBy } from 'lodash';
 import { useEffect, useState } from 'react';
-import ActivitiesGallery, { ANY_LANGUAGE } from '../../../components/ActivitiesGallery';
+import ActivitiesGallery from '../../../components/ActivitiesGallery';
 import NavigationBar from '../../../components/NavigationBar';
+import SelectAll from '../../../components/SelectAll';
+import { visibleActivities } from '../../../src/fs-content/activities';
 import { listActivitiesAllAuthors, listAuthorsProfiles } from '../../../src/fs-content/authors';
-import getLanguageDisplayName, { format } from '../../../src/internationalization';
-import { Activity } from '../../../src/schemas/activitySchema';
+import capitalizedLocalizedLanguageDisplayName, { format } from '../../../src/internationalization';
+import { knownConcepts } from '../../../src/schemas/activityConcepts';
+import { BasicActivity } from '../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../src/schemas/authorSchema';
 import { translationProps } from '../../../src/serverSideTranslationProps';
-import theme from '../../../src/theme';
-import { activitiesByAuthorPathname } from '../../../src/urlUtils';
+import { activitiesByAuthorPathname, authorPathname, conceptPathname } from '../../../src/urlUtils';
 
 export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsProfiles }:
 { defaultAuthorSlug: string,
-  activities: Activity[],
+  activities: BasicActivity[],
   authorsProfiles: AuthorProfile[] }) {
-  const router = useRouter();
-  const [search, setSearch] = useState('');
-  const [languageFilter, setLanguageFilter] = useState(ANY_LANGUAGE);
-  const [filteredActivities, setFilteredActivities] = useState(activities);
-  const [filteredAuthors, setFilteredAuthors] = useState<string[]>([defaultAuthorSlug]);
-  const [compactView, setCompactView] = useState(false);
+  const authorOptions = authorsProfiles.map((author) => ({
+    id: author.slug,
+    label: author.name,
+    url: authorPathname(author.slug),
+  }));
 
-  // get all languages in set of activities
+  // Show concepts sorted by frequency of use (most used first)
+  const conceptsFrequency = countBy(activities.flatMap((a) => a.concepts));
+  const conceptsOptions = orderBy(Object.keys(knownConcepts), (t) => conceptsFrequency[t], ['desc']).map((concepts) => ({
+    id: concepts,
+    label: knownConcepts[concepts].title,
+    url: conceptPathname(concepts),
+  }));
+
+  // Find languages used in any activity
   const languages = new Set(
     activities.flatMap(
-      (activity) => activity.variants.map(
-        (avariant) => avariant.language,
-      ),
+      (activity) => activity.variants.map((variant) => variant.language),
     ),
   );
+
+  const languageOptions = Array.from(languages).map((language) => ({
+    id: language,
+    label: capitalizedLocalizedLanguageDisplayName(language),
+  }));
+
+  const [filteredActivities, setFilteredActivities] = useState(activities);
+  const [allowedAuthors, setAllowedAuthors] = useState<string[]>([defaultAuthorSlug]);
+  const [allowedLanguages, setAllowedLanguages] = useState<string[]>(Array.from(languages));
+  const [allowedConcepts, setAllowedConcepts] = useState<string[]>(Object.keys(knownConcepts));
+  const [compactView, setCompactView] = useState(false);
 
   useEffect(() => {
     setFilteredActivities(
       activities
-        .filter((activity) => filteredAuthors.includes(activity.authorSlug))
-        .filter((activity) => activity.visibility !== 'hidden')
-        .filter((activity) => activity.variants.some(
-          (avariant) => languageFilter === ANY_LANGUAGE
-            || avariant.language.toLowerCase() === languageFilter.toLowerCase(),
-        ))
+        .filter((activity) => allowedAuthors.includes(activity.authorSlug))
         .filter((activity) => (
-          // search by slug and by title and description of language-filtered variant
-          (activity.slug.toLowerCase().includes(search.toLowerCase())
-          || activity.languagesInfo.some(
-            (info) => (languageFilter === ANY_LANGUAGE
-            || info.language.toLowerCase() === languageFilter.toLowerCase())
-            && (info.description.toLowerCase().includes(search.toLowerCase())
-            || info.title.toLowerCase().includes(search.toLowerCase())),
-          ))
+          activity.variants.some((variant) => allowedLanguages.includes(variant.language))))
+        .filter((activity) => (
+          activity.concepts.some((concepts) => allowedConcepts.includes(concepts))
+          || (activity.concepts.length === 0 && allowedConcepts.length === 0)
         )),
     );
-  }, [search, languageFilter, activities, filteredAuthors]);
-
-  const handleAuthorsFilterChange = (event: SelectChangeEvent<typeof filteredAuthors>) => {
-    const {
-      target: { value },
-    } = event;
-    const authors = typeof value === 'string' ? value.split(',') : value; // don't ask: on autofill we get a stringified value
-    setFilteredAuthors(authors);
-    if (authors.length === 1) {
-      router.push(activitiesByAuthorPathname(authors[0]), undefined, { shallow: true });
-    }
-  };
-
-  const ITEM_HEIGHT = 48;
-  const ITEM_PADDING_TOP = 8;
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
-    },
-  };
-
-  const authorName = (slug: string) => authorsProfiles.find((author) => author.slug === slug)?.name;
+  }, [activities, allowedLanguages, allowedConcepts, allowedAuthors]);
 
   return (
     <Stack spacing={2}>
@@ -106,70 +84,40 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
         </Tooltip>
       </NavigationBar>
       <Grid container spacing={2}>
-        <Grid xs={12} lg={8}>
-          <TextField
-            fullWidth
-            label="Search by title and description"
-            variant="outlined"
-            onChange={(e) => setSearch(e.target.value)}
+        <Grid xs={12} lg={6}>
+          <SelectAll
+            title="Concepts"
+            placeholder="Concept"
+            options={conceptsOptions}
+            initialSelection={conceptsOptions}
+            onSelectionChange={setAllowedConcepts}
+            maxTagsShown={5}
           />
         </Grid>
-        <Grid xs={6} lg={2}>
-          <FormControl fullWidth>
-            <InputLabel id="authors-select-label">Authors</InputLabel>
-            <Select
-              labelId="authors-select-label"
-              id="authors-select"
-              multiple
-              value={filteredAuthors}
-              onChange={handleAuthorsFilterChange}
-              input={<OutlinedInput id="select-multiple-authors" label="Authors" />}
-              renderValue={(selected) => (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map((value) => (
-                    <Chip key={value} label={authorName(value)} size="small" />
-                  ))}
-                </Box>
-              )}
-              MenuProps={MenuProps}
-            >
-              {authorsProfiles.map((author) => (
-                <MenuItem
-                  key={author.slug}
-                  value={author.slug}
-                  style={{
-                    fontWeight: filteredAuthors.indexOf(author.slug) === -1
-                      ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium,
-                  }}
-                >
-                  {author.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+        <Grid xs={12} lg={3}>
+          <SelectAll
+            title="Authors"
+            placeholder="Author"
+            options={authorOptions}
+            initialSelection={authorOptions.filter((author) => author.id === defaultAuthorSlug)}
+            onSelectionChange={setAllowedAuthors}
+            maxTagsShown={2}
+          />
         </Grid>
-        <Grid xs={6} lg={2}>
-          <FormControl fullWidth>
-            <InputLabel>Language</InputLabel>
-            <Select
-              value={languageFilter}
-              label="Language"
-              onChange={(e) => setLanguageFilter(e.target.value)}
-            >
-              <MenuItem key={ANY_LANGUAGE} value={ANY_LANGUAGE}><em>All Languages</em></MenuItem>
-              {Array.from(languages).map((language) => (
-                <MenuItem key={language} value={language}>
-                  {getLanguageDisplayName(language)}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+        <Grid xs={12} lg={3}>
+          <SelectAll
+            title="Languages"
+            placeholder="Language"
+            options={languageOptions}
+            onSelectionChange={setAllowedLanguages}
+            maxTagsShown={2}
+          />
         </Grid>
       </Grid>
       <ActivitiesGallery
         activities={filteredActivities}
         compactView={compactView}
-        languageFilter={languageFilter}
+        preferredLanguage={allowedLanguages.length === 1 ? allowedLanguages[0] : undefined}
       />
       <Typography color="textSecondary" textAlign="center" paddingTop={2}>
         {`${format(filteredActivities.length, 'activity matches', 'activities match')} the search criteria`}
@@ -188,7 +136,7 @@ export async function getStaticProps(
     props: {
       defaultAuthorSlug: authorSlug,
       authorsProfiles: await listAuthorsProfiles(),
-      activities: await listActivitiesAllAuthors(),
+      activities: visibleActivities(await listActivitiesAllAuthors()),
       ...await translationProps(),
     },
   };

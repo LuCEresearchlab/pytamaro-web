@@ -8,7 +8,8 @@ import { useRouter } from 'next/router';
 import getLanguageDisplayName from '../src/internationalization';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import {
-  Activity, ActivityVariant,
+  ActivityVariant,
+  BasicActivity,
   languageInfoForVariant,
 } from '../src/schemas/activitySchema';
 import { activityVariantPathname } from '../src/urlUtils';
@@ -31,7 +32,7 @@ export default function VariantCard({
   activityWithVariant, noVariantInfo = false, noInProgress = false, clickingDisabled = false, width = '100%',
 } :
 { activityWithVariant : {
-  activity: Activity,
+  activity: BasicActivity,
   variant: ActivityVariant,
 },
 noVariantInfo?: boolean,

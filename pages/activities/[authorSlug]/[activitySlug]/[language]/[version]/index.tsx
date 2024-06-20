@@ -39,6 +39,7 @@ import { translationProps } from '../../../../../../src/serverSideTranslationPro
 import { isSpecialActivity } from '../../../../../../src/specialActivities';
 import { activityVariantPathnameFromParts } from '../../../../../../src/urlUtils';
 import useCurriculumFromQuery from '../../../../../../src/useCurriculumFromQuery';
+import useReset from '../../../../../../src/useReset';
 
 const userType = 'student';
 
@@ -65,6 +66,8 @@ export default function NotebookPage({
 
   const { t } = useLocalTranslation(['common']);
 
+  const { resetCounter, newReset } = useReset();
+
   const slugger = new GithubSlugger();
 
   // We need to keep track of this to render the table of content only after the
@@ -89,6 +92,7 @@ export default function NotebookPage({
           <ActivityResetButton
             initialCodeCells={initialCodeCells}
             activityVariant={activityVariant}
+            newReset={newReset}
           />
           {!isSpecialActivity(activityVariant) && (
           <InfoButton type="activity" authorSlug={activity.authorSlug} slug={activity.slug} />
@@ -128,6 +132,7 @@ export default function NotebookPage({
                       fullWidthCell={fullWidthCell}
                       platformConfig={activity.platformConfig}
                       onFullWidthToggle={() => setFullWidthCell(!fullWidthCell)}
+                      activityResetCounter={resetCounter}
                     />
                   </Container>
                 )))}

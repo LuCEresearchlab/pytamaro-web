@@ -131,3 +131,9 @@ export function toolboxFunctionAnchor(functionName: string) {
 export function toolboxFunctionPathname(functionName: string) {
   return `${myToolboxPathname()}#${toolboxFunctionAnchor(functionName)}`;
 }
+
+/* Concepts */
+
+export function conceptPathname(concept: string) {
+  return `/concepts/${concept}`;
+}

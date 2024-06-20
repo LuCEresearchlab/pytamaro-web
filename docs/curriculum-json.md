@@ -31,7 +31,8 @@
             {
               id: activityId // string (<author-slug>/<activity-slug>/<language>/<version>),
               prerequisites: competencyId[],
-              learningObjectives: competencyId[]
+              learningObjectives: competencyId[],
+              fallbackIds?: activityId[],
             },
             ...
           ],

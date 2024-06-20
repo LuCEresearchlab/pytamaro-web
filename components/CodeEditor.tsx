@@ -36,14 +36,15 @@ const RUN_CODE_CONDITION_KEY = 'executionAllowedCondition';
 export const COLORIZE_CLASSNAME = 'monaco-colorize';
 
 export default function CodeEditor({
-  source, executionResponse = undefined, onChange = () => {}, onExecutionRequested = undefined,
+  initialSource, currentSource, executionResponse = undefined, onChange = () => {},
+  onExecutionRequested = undefined,
   executionAllowed = false, executionFinished = false, firstLineNumber = 1, readOnly = false,
-  collapsedErrorMarkers = false,
+  collapsedErrorMarkers = false, resetCounter = 0,
 } :
-{ source: string, executionResponse?: ExecutionResponse,
+{ initialSource: string, currentSource: string, executionResponse?: ExecutionResponse,
   onChange?: (source: string) => void, onExecutionRequested? : () => void,
   executionAllowed?: boolean, executionFinished?: boolean, firstLineNumber?: number,
-  readOnly?: boolean, collapsedErrorMarkers?: boolean }) {
+  readOnly?: boolean, collapsedErrorMarkers?: boolean, resetCounter?: number }) {
   const { list } = useLocalToolbox();
   const monacoRef = useRef<any>(null);
   const editorRef = useRef<any>(null);
@@ -195,19 +196,27 @@ export default function CodeEditor({
       firstLineNumber, collapsedErrorMarkers],
   );
 
+  // Effect to reset the editor when resetCounter changes.
+  useEffect(() => {
+    if (editorInstance && resetCounter > 0) {
+      editorInstance.setValue(initialSource);
+      clearMarkers();
+    }
+  }, [editorInstance, initialSource, clearMarkers, resetCounter]);
+
   const debouncedHandleSourceChanged = debounce((newSource: string | undefined) => {
     if (newSource !== undefined) {
       onChange(newSource);
       clearMarkers();
     }
-  }, 200);
+  }, 100);
 
   return (
     <div ref={containerRef}>
       <Editor
         language={LANGUAGE}
         theme="luce"
-        value={source}
+        defaultValue={currentSource}
         onMount={handleEditorMount}
         onChange={debouncedHandleSourceChanged}
         options={{

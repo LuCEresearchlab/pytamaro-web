@@ -13,9 +13,9 @@ import { useEffect, useState } from 'react';
 import ActivitiesStripe from '../components/ActivitiesStripe';
 import DownloadCodeButton from '../components/CodeDownloadButton';
 import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDialog';
+import FailedExecutionSnackbar from '../components/FailedExecutionSnackbar';
 import MoreOptionsButton from '../components/MoreOptionsButton';
 import NavigationBar from '../components/NavigationBar';
-import NetworkErrorSnackbar from '../components/NetworkErrorSnackbar';
 import ResetButton from '../components/ResetButton';
 import SaveToToolboxButton from '../components/SaveToToolboxButton';
 import SolitaryCodeCell, { initialStateSingleCell } from '../components/SolitaryCodeCell';
@@ -27,6 +27,7 @@ import useLocalActivity from '../src/localStorage/useLocalActivity';
 import { playgroundActivityVariant, playgroundInitialSource } from '../src/playground';
 import { PythonName, imported_names } from '../src/python-analyzer/python_analyzer';
 import { translationProps } from '../src/serverSideTranslationProps';
+import useReset from '../src/useReset';
 
 function uniqueNames(names : PythonName[]) : Set<string> {
   return new Set(names.map(({ module, name }) => `${module}.${name}`));
@@ -45,8 +46,8 @@ export default function Playground({ activitiesWithNames } :
     playgroundActivityVariant,
   );
   const {
-    codeCells, codeExecutionStates, cellsModified, networkError, sourcesUpTo,
-    setNetworkError, handleResetAllCellsNoConfirm, handleToggleOutputArea, handleResetSingleCell,
+    codeCells, codeExecutionStates, cellsModified, executionFailed, sourcesUpTo,
+    handleResetAllCellsNoConfirm, handleToggleOutputArea, handleResetSingleCell,
   } = localActivity;
   const { outputSynced } = codeExecutionStates[0];
 
@@ -57,10 +58,13 @@ export default function Playground({ activitiesWithNames } :
 
   const confirm = useConfirm();
 
+  const { resetCounter, newReset } = useReset();
+
   const handleReset = () => {
     confirm({ description: 'You are about to reset the playground to its initial state: this will delete all the code you have written. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete my code' })
       .then(() => {
         handleResetAllCellsNoConfirm();
+        newReset();
       });
   };
 
@@ -105,7 +109,7 @@ export default function Playground({ activitiesWithNames } :
         <NavigationBar>
           <ResetButton enabled={cellsModified} onReset={handleReset} tooltip="Reset Playground" />
         </NavigationBar>
-        <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
+        {executionFailed && <FailedExecutionSnackbar res={executionFailed} />}
         <DataSharingPreferenceDialog />
         <Grid container>
           <Sidebar side="left">
@@ -115,6 +119,7 @@ export default function Playground({ activitiesWithNames } :
             <Typography variant="h2" align="center" marginY={3}>Playground</Typography>
             <Container maxWidth={fullWidthCell ? false : 'md'}>
               <SolitaryCodeCell
+                resetCounter={resetCounter}
                 activity={localActivity}
                 activityVariant={playgroundActivityVariant}
                 extraActions={(
@@ -127,7 +132,7 @@ export default function Playground({ activitiesWithNames } :
                       codeCellState={codeCells[0]}
                       codeCellExecutionState={codeExecutionStates[0]}
                       onShowHideOutput={() => handleToggleOutputArea(0)}
-                      onReset={() => handleResetSingleCell(0)}
+                      onReset={() => handleResetSingleCell(0, newReset)}
                       fullWidthCell={fullWidthCell}
                       onFullWidthToggle={() => setFullWidthCell(!fullWidthCell)}
                     />

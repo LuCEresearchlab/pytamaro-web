@@ -1,15 +1,16 @@
 import { MDXRemoteSerializeResult } from 'next-mdx-remote';
-import { Activity, ActivityVariant } from './activitySchema';
+import { ActivityVariant, BasicActivity } from './activitySchema';
 
 export interface RawCurriculumActivity {
   id: string,
+  fallbackIds?: string[],
   prerequisites: string[],
   learningObjectives: string[],
 }
 
 export interface CurriculumActivity extends RawCurriculumActivity {
   variant: ActivityVariant,
-  activity: Activity,
+  activity: BasicActivity,
 }
 
 interface BaseCurriculumStep {

@@ -123,8 +123,9 @@ function ImplementationAndUsage(fn: ToolboxFunction, summary: boolean) {
             </FormGroup>
             {showSource && (
                 <CodeEditor
-                    source={fn.source}
-                    readOnly
+                  initialSource={fn.source}
+                  currentSource={fn.source}
+                  readOnly
                 />
             )}
         </Box>

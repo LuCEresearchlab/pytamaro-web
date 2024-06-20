@@ -2,13 +2,15 @@ import {
   Alert, AlertTitle, Box, Typography,
 } from '@mui/material';
 import { sum } from 'lodash';
+import { useEffect } from 'react';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import { ActivityVariant, PlatformConfiguration, PythonFile } from '../src/schemas/activitySchema';
 import { countLines, joinLines } from '../src/sourceUtils';
+import useReset from '../src/useReset';
 import CodeCell from './CodeCell';
+import FailedExecutionSnackbar from './FailedExecutionSnackbar';
 import MoreOptionsButton from './MoreOptionsButton';
-import NetworkErrorSnackbar from './NetworkErrorSnackbar';
 import SaveToToolboxButton from './SaveToToolboxButton';
 
 function InconsistencyMessage() {
@@ -37,7 +39,7 @@ function InconsistencyMessage() {
 
 export default function ActivityCodeCell({
   activityVariant, initialCodeCells, cellIdx,
-  extraPythonFiles, fullWidthCell, platformConfig, onFullWidthToggle,
+  extraPythonFiles, fullWidthCell, platformConfig, onFullWidthToggle, activityResetCounter,
 } : {
   activityVariant: ActivityVariant,
   initialCodeCells: CodeCellState[],
@@ -46,21 +48,31 @@ export default function ActivityCodeCell({
   fullWidthCell: boolean,
   platformConfig: PlatformConfiguration,
   onFullWidthToggle: () => void,
+  activityResetCounter: number,
 }) {
   const {
     codeCells, codeExecutionStates,
-    networkError, setNetworkError,
+    executionFailed,
     handleSourceChanged, handleExecute, sourcesUpTo,
     handleToggleOutputArea, handleResetSingleCell,
     localCodeCellsWrongLength,
   } = useLocalActivity(initialCodeCells, activityVariant, extraPythonFiles);
+
+  const { resetCounter, newReset } = useReset();
+  useEffect(() => {
+    if (activityResetCounter > 0) {
+      newReset();
+    }
+  }, [newReset, activityResetCounter]);
+
   const precedingLines = sum(codeCells.slice(0, cellIdx).map((cell) => countLines(cell.source)));
   const currentCodeCell = codeCells[cellIdx];
   return localCodeCellsWrongLength ? <InconsistencyMessage /> : (
     <Box marginY={2}>
-      <NetworkErrorSnackbar visible={networkError} setVisible={setNetworkError} />
+      {executionFailed && <FailedExecutionSnackbar res={executionFailed} /> }
       <CodeCell
-        codeCellState={currentCodeCell}
+        initialSource={initialCodeCells[cellIdx].source}
+        currentSource={currentCodeCell.source}
         codeCellExecutionState={codeExecutionStates[cellIdx]}
         onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
         onExecutionRequested={() => handleExecute(cellIdx)}
@@ -68,6 +80,7 @@ export default function ActivityCodeCell({
         activityVariant={activityVariant}
         cumulativeSource={joinLines(sourcesUpTo(cellIdx))}
         platformConfig={platformConfig}
+        resetCounter={resetCounter}
         extraActions={(
           <>
             <SaveToToolboxButton
@@ -78,7 +91,7 @@ export default function ActivityCodeCell({
               codeCellState={currentCodeCell}
               codeCellExecutionState={codeExecutionStates[cellIdx]}
               onShowHideOutput={() => handleToggleOutputArea(cellIdx)}
-              onReset={() => handleResetSingleCell(cellIdx)}
+              onReset={() => handleResetSingleCell(cellIdx, newReset)}
               fullWidthCell={fullWidthCell}
               onFullWidthToggle={onFullWidthToggle}
             />

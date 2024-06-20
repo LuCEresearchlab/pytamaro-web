@@ -134,6 +134,7 @@ export default function SaveToToolboxDialog({
   const [functions, setFunctions] = useState<PythonFunction[]>([]);
   const [selectedFunction, setSelectedFunction] = useState<string>(initialName || '');
   const [description, setDescription] = useState(initialDescription || '');
+  const [usage, setUsage] = useState(initialUsage || '');
   const [usageExecutedSuccessfully, setUsageExecutedSuccessfully] = useState(false);
   const [usageEdited, setUsageEdited] = useState(false);
   const [invalidUsageExecution, setInvalidUsageExecution] = useState(false);
@@ -178,7 +179,7 @@ export default function SaveToToolboxDialog({
 
   const activityVariant = toolboxActivityVariant(selectedFunction);
 
-  const initialCodeCells = initialStateSingleCell(initialUsage || '');
+  const initialCodeCells = initialStateSingleCell(usage);
   const [codeCells, setCodeCells] = useState<CodeCellState[]>(initialCodeCells);
   const activity = useTemporaryActivity(
     initialCodeCells,
@@ -194,6 +195,7 @@ export default function SaveToToolboxDialog({
     if (newSelectedFn && newSelectedFn !== selectedFunction && !usageEdited) {
       const newUsage = joinLines([`from ${TOOLBOX_FILE} import ${newSelectedFn}`, 'from pytamaro import _', '', '...']);
       activity.handleSourceChanged(newUsage, 0);
+      setUsage(newUsage);
       setUsageExecutedSuccessfully(false);
     }
   };
@@ -266,7 +268,8 @@ export default function SaveToToolboxDialog({
         </Alert>
         )}
         <CodeEditor
-          source={implementation}
+          initialSource={externalImplementation}
+          currentSource={implementation}
           onChange={handleImplementationChange}
         />
         <Box marginTop={4} />

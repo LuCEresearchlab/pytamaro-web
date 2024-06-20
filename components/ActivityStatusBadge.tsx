@@ -19,11 +19,8 @@ const StatusBadge = styled(Badge)<BadgeProps>(() => ({
   width: '100%',
 }));
 
-export function activityVariantStatus(
-  activities: ActivityVariantMetadata[],
-  variant: ActivityVariant,
-) : ActivityStatus {
-  const activity = activities.find((a) => a.id === activityVariantId(variant));
+function determineStatus(activities: ActivityVariantMetadata[], id: string) : ActivityStatus {
+  const activity = activities.find((a) => a.id === id);
   if (!activity) {
     return 'initial';
   }
@@ -31,6 +28,22 @@ export function activityVariantStatus(
     return 'completed';
   }
   return activity.cellsModified ? 'in-progress' : 'initial';
+}
+
+export function activityVariantStatus(
+  activities: ActivityVariantMetadata[],
+  variant: ActivityVariant,
+  fallbackIds?: string[],
+) : ActivityStatus {
+  const variantStatus = determineStatus(activities, activityVariantId(variant));
+  if (variantStatus !== 'initial') {
+    return variantStatus;
+  }
+  const fallbackStatuses = (fallbackIds || []).map((id) => determineStatus(activities, id));
+  if (fallbackStatuses.includes('completed')) {
+    return 'completed';
+  }
+  return 'initial';
 }
 
 export default function ActivityStatusBadge({
