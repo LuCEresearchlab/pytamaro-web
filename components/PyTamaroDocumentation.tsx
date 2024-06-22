@@ -4,15 +4,23 @@ import scrollToAnchor from "../src/scrollToAnchor.ts";
 import {Card, Stack, Typography} from "@mui/material";
 import {toolboxFunctionAnchor} from "../src/urlUtils.ts";
 import ToolboxFunctionCardContent from "./ToolboxFunctionCardContent.tsx";
-import {JsonConverter, language_string} from "../src/JsonAst/JsonConverter.ts";
+import {Function, json_obj_type, Module} from '../src/JsonAst/Json_structure.ts';
 
-const jsonConverter = new JsonConverter();
-await jsonConverter.init()
 
-export default function PyTamaroDocumentation({functionFilterNameDesc}: { functionFilterNameDesc: string }) {
+export default function PyTamaroDocumentation({functionFilterNameDesc, english, italian, german, french}: {
+    functionFilterNameDesc: string,
+    english: Module[],
+    italian: Module[],
+    german: Module[],
+    french: Module[]
+}) {
     const {metadata} = useLocalProfile();
-    const English = jsonConverter.languageDividedByType(language_string.English)
-    const functions = English.functions
+    let functions: Function[] = []
+    for (let mod of english) {
+        if (mod.functions) {
+            functions.push(...mod.functions)
+        }
+    }
 
     useEffect(() => {
         scrollToAnchor();
@@ -42,7 +50,7 @@ export default function PyTamaroDocumentation({functionFilterNameDesc}: { functi
                     {filteredFunctions.map((fn) => (
                         <Card key={fn.name} id={toolboxFunctionAnchor(fn.name)} className="anchor"
                               sx={{overflow: 'visible'}}>
-                            <ToolboxFunctionCardContent fn={fn}/>
+                            <ToolboxFunctionCardContent fn={fn} from_pyTamaro={true} obj_type={json_obj_type.function}/>
                         </Card>
                     ))}
                 </Stack>

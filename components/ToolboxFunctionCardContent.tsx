@@ -54,7 +54,7 @@ export default function ToolboxFunctionCardContent(
                 {!from_pyTamaro && LinkButton(fn as ToolboxFunction, summary)}
                 {/* NOTE: ('as ToolboxFunction' is an assertion since if the function doesn't come from_PyTamaro is from the toolbox) */}
             </Box>
-            {description(fn)}
+            {Description(fn)}
             {obj_type == json_obj_type.function && parametersTable(fn, from_pyTamaro)}
             {!from_pyTamaro && ImplementationAndUsage(fn as ToolboxFunction, summary)}
             {/* NOTE: ('as ToolboxFunction' is an assertion since if the function doesn't come from_PyTamaro is from the toolbox) */}
@@ -75,7 +75,7 @@ function LinkButton(fn: ToolboxFunction, summary: boolean): JSX.Element {
     </Button>
 }
 
-function description(fn: ToolboxFunction | Type | Function | Variable) {
+function Description(fn: ToolboxFunction | Type | Function | Variable) {
     if (typeof fn.description == "string") {
         return <Typography color="text.secondary">
             {fn.description}

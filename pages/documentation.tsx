@@ -10,8 +10,10 @@ import NavigationBar from '../components/NavigationBar';
 import PageTitle from '../components/PageTitle';
 import { translationProps } from '../src/serverSideTranslationProps';
 import PyTamaroDocumentation from "../components/PyTamaroDocumentation.tsx";
+import {JsonConverter, language_string} from "../src/JsonAst/JsonConverter.ts";
+import { Module } from '../src/JsonAst/Json_structure.ts';
 
-export default function Documentation() {
+export default function Documentation({English, Italian, French, German}:{English: Module[], Italian: Module[], French: Module[], German: Module[]}) {
     const [filterNameDesc, setFilterNameDesc] = useState('');
     const handleNewFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFilterNameDesc(e.target.value);
@@ -32,7 +34,7 @@ export default function Documentation() {
                         onChange={debounce(handleNewFilter, 100)}
                         sx={{ mb: 3 }}
                     />
-                    {/*<PyTamaroDocumentation functionFilterNameDesc={filterNameDesc}/>*/}
+                    <PyTamaroDocumentation functionFilterNameDesc={filterNameDesc} english={English} italian={Italian} german={German} french={French}/>
                 </Container>
             </Box>
         </div>
@@ -40,8 +42,15 @@ export default function Documentation() {
 }
 
 export async function getStaticProps() {
+    const jsonConverter = new JsonConverter()
+    await jsonConverter.init();
     return {
         props: {
+            /*Eseguito server side prima del render*/
+            English: jsonConverter.English,
+            Italian: jsonConverter.Italian,
+            French: jsonConverter.French,
+            German: jsonConverter.German,
             ...await translationProps(),
         },
     };

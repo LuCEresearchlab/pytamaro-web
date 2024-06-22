@@ -105,7 +105,7 @@ export class JsonConverter {
         functions: Function[],
         types: Type[],
         variables: Variable[]
-    } {
+    }| undefined {
         switch (language) {
             case language_string.English:
                 return this.divideArrayByType(this.English)
