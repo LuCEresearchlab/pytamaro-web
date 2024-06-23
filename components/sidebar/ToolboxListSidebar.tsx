@@ -10,7 +10,7 @@ import theme from '../../src/theme';
 import { toolboxFunctionPathname } from '../../src/urlUtils';
 import useWindowSize from '../../src/useWindowSize';
 import Popup from '../Popup';
-import ToolboxFunctionCardContent from '../ToolboxFunctionCardContent';
+import ToolboxFunctionCardContent from '../documentation/ToolboxFunctionCardContent.tsx';
 import { SIDEBAR_CHIPS_FONT_SIZE, SIDEBAR_CHIPS_WIDTH } from './Sidebar';
 import SidebarItem from './SidebarItem';
 

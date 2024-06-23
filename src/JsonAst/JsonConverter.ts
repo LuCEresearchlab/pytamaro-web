@@ -12,6 +12,13 @@ export enum language_string {
     Italian = "it",
 }
 
+export interface dividedModule {
+    // modules: Module[],
+    functions: Function[],
+    types: Type[],
+    variables: Variable[]
+}
+
 export class JsonConverter {
 
     English: Module[] = []
@@ -100,12 +107,7 @@ export class JsonConverter {
         return undefined
     }
 
-    public languageDividedByType(language: language_string): {
-        modules: Module[],
-        functions: Function[],
-        types: Type[],
-        variables: Variable[]
-    }| undefined {
+    public languageDividedByType(language: language_string): dividedModule {
         switch (language) {
             case language_string.English:
                 return this.divideArrayByType(this.English)
@@ -117,27 +119,22 @@ export class JsonConverter {
                 return this.divideArrayByType(this.Italian)
             default:
                 console.error("INCORRECT LANGUAGE")
-                return undefined
+                return {/*modules: [],*/ functions: [], types: [], variables: []}
         }
     }
 
-    private divideArrayByType(array: Module[]): {
-        modules: Module[],
-        functions: Function[],
-        types: Type[],
-        variables: Variable[]
-    } {
+    private divideArrayByType(array: Module[]): dividedModule {
         let result = {
-            modules: ([] as Module[]),
+            // modules: ([] as Module[]),
             functions: ([] as Function[]),
             types: ([] as Type[]),
             variables: ([] as Variable[])
         }
         for (let module of array) {
-            result.modules.push(module)
-            module.functions?.forEach((funct) => result.functions.push(funct))
-            module.types?.forEach((type) => result.types.push(type))
-            module.variables?.forEach((variable) => result.functions.push(variable))
+            // result.modules.push(module)
+            result.functions.push(...(module.functions ? module.functions : []))
+            result.types.push(...(module.types ? module.types : []))
+            result.variables.push(...(module.variables ? module.variables : []))
         }
         return result
     }

@@ -11,7 +11,8 @@ import useLocalProfile from '../src/localStorage/useLocalProfile';
 import names from '../src/pytamaroNames';
 import {ActivityVariant} from '../src/schemas/activitySchema';
 import {EventName, storeDbEvent} from '../src/storeDbEvent';
-import ToolboxFunctionCardContent from "./ToolboxFunctionCardContent.tsx";
+import ToolboxFunctionCardContent from "./documentation/ToolboxFunctionCardContent.tsx";
+import DocumentationCardContent from "./documentation/DocumentationCardContent.tsx";
 
 export default function PyTamaroAPI({
                                         name, language = undefined, activityVariant, smallerFont = false,
@@ -112,7 +113,8 @@ export default function PyTamaroAPI({
       >
           {isLoading ? <Typography component="span">Loading the documentation...</Typography> : null}
           {error ? <Typography component="span">Failed to load the documentation.</Typography> : null}
-          {data ? <ToolboxFunctionCardContent fn={data.obj} from_pyTamaro={true} obj_type={data.obj_type}/> : null}
+          {/*{data ? <ToolboxFunctionCardContent fn={data.obj} from_pyTamaro={true} obj_type={data.obj_type}/> : null}*/}
+          {data ? <DocumentationCardContent obj={data.obj} obj_type={data.obj_type}/> : null}
       </Popover>
     </span>
     );
