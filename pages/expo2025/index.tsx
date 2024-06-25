@@ -47,9 +47,16 @@ function activityGraphic(imageName: string, alt: string, sm: number, background:
       xs={12}
       sm={sm}
     >
-      <Card elevation={0} style={{ background: background }}>
+      <Card elevation={0} style={{ background }}>
         <CardMedia>
-          <div style={{ margin: '10%', position: 'relative', width: '80%', height: '110px', alignContent: 'center' }}>
+          <div style={{
+            margin: '10%',
+            position: 'relative',
+            width: '80%',
+            height: '110px',
+            alignContent: 'center',
+          }}
+          >
             <Image
               key={10}
               src={imagePath}
@@ -133,7 +140,6 @@ croix = superpose(
 fond = rectangle(32, 32, rouge)
 drapeau = superpose(croix, fond)
 `;
-
 
 export default function Expo2025() {
   return (
@@ -653,7 +659,7 @@ export default function Expo2025() {
           />
           <Typography paragraph>
             Like multilingual labeling of Swiss products,
-            TamaroCards expose students to other languages. 
+            TamaroCards expose students to other languages.
           </Typography>
           <Typography variant="h5" gutterBottom style={{ marginTop: '3rem', color: '#D2071C' }}>Our Track-Record</Typography>
           <Typography paragraph>
