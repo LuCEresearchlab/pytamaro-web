@@ -1,6 +1,7 @@
 import {
   Assignment,
-  Handyman, Route, TipsAndUpdates,
+  Construction,
+  Route, TipsAndUpdates
 } from '@mui/icons-material';
 import {
   Alert,
@@ -129,7 +130,7 @@ export default function MyProgress({ activities, curricula } :
             <Grid xs={12} lg={4}>
               <ResourceCard>
                 <CardIcon>
-                  <Handyman sx={{ fontSize: th.typography.h3.fontSize }} />
+                  <Construction sx={{ fontSize: th.typography.h3.fontSize }} />
                 </CardIcon>
                 <CardHeader
                   title="My Toolbox"
