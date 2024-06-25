@@ -251,11 +251,6 @@ export default function Expo2025() {
             Our research aims at studying the effectiveness of programming education.
             It is our long-term goal to better understand potential connections
             to general reasoning abilities.
-            Our Proposal for Swissnex @ the Swiss Pavilion
-            We propose to design and run
-            “The Visually Swiss Programming Experience”,
-            a highly interactive in-person learning experience
-            complemented with online activities tailored to the Swiss presence at the Expo 2025.
           </Typography>
           <Typography variant="h5" gutterBottom style={{ marginTop: '3rem', color: '#D2071C' }}>Our Proposal for Swissnex @ the Swiss Pavilion</Typography>
           <Typography paragraph>
@@ -760,7 +755,9 @@ export default function Expo2025() {
           <Typography variant="h6" gutterBottom style={{ marginTop: '2rem', color: '#008CCD' }}>PyTamaro Summer Academy &mdash; A Community of Practice</Typography>
           <Typography paragraph>
             To support the
+            {' '}
             <b>community</b>
+            {' '}
             of teachers, we organize the yearly
             {' '}
             <Link component={NextLink} href="/summeracademy">PyTamaro Summer Academy</Link>
@@ -844,7 +841,7 @@ export default function Expo2025() {
             </Grid>
           </Grid>
           <Typography variant="h6" gutterBottom style={{ marginTop: '2rem', color: '#008CCD' }}>Hour of Code &mdash; Co-Designed by Students for Teachers World-Wide</Typography>
-          <Typography paragraph>
+          <Typography paragraph style={{ marginBottom: '2rem' }}>
             To make our ideas available world-wide,
             we put together a
             {' '}
@@ -854,6 +851,10 @@ export default function Expo2025() {
             {' '}
             <a href="https://hourofcode.com/usicastle">online programming tutorial</a>
             {' '}
+            (and
+            {' '}
+            <Link component={NextLink} href="/hoc/castle/teacher-notes">teacher notes</Link>
+            )
             for the international “Hour of Code”.
           </Typography>
           <Grid container spacing={5} alignItems="flex-end">
@@ -862,7 +863,7 @@ export default function Expo2025() {
             { personCard('GiorgiaLillo.jpg', 'Giorgia Lillo') }
             { personCard('JamilaOubenali.jpg', 'Jamila Oubenali') }
           </Grid>
-          <Typography paragraph>
+          <Typography paragraph style={{ marginTop: '1rem' }}>
             Inspired by the imposing Fortezza Bellinzona,
             our team developed a one-hour self-guided virtual tutorial
             where learners can compose their own castle using the PyTamaro approach.
@@ -916,8 +917,8 @@ export default function Expo2025() {
           <Typography paragraph>
             We want middle and high school teachers to learn
             about an engaging but foundational approach
-            to introducing their students to programming.
-            We would love to
+            to introducing their students to programming,
+            and we would love to
             {' '}
             <b>grow a community of teachers beyond Switzerland</b>
             .
