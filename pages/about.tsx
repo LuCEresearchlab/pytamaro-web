@@ -71,7 +71,7 @@ const changelogEntries = [
   },
   {
     date: '2024-02-03',
-    icon: 'Handyman',
+    icon: 'Construction',
     title: 'Toolbox improvements',
     desc: 'The experience of using the toolbox has been improved with pagination to prevent the sidebar from growing too much and a new search filter in the dedicated page.',
   },
