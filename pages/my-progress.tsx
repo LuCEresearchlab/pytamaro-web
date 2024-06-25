@@ -1,7 +1,7 @@
 import {
   Assignment,
   Construction,
-  Route, TipsAndUpdates
+  Route, TipsAndUpdates,
 } from '@mui/icons-material';
 import {
   Alert,
