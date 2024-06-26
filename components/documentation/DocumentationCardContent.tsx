@@ -1,6 +1,18 @@
-import {Box, Card, CardContent, Table, TableBody, TableCell, TableHead, TableRow, Typography,} from '@mui/material';
+import {
+    Box,
+    Card,
+    CardContent, FormControlLabel,
+    FormGroup, Switch,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    Typography,
+} from '@mui/material';
 import theme from '../../src/theme.ts';
 import {Function, json_obj_type, Type, Variable} from '../../src/JsonAst/Json_structure.ts';
+import {useState} from "react";
 
 function TypeCell({type}: { type: string }) {
     return type === ''
@@ -19,6 +31,8 @@ export default function DocumentationCardContent({
     LinkButton?: JSX.Element | null
     ImplementationAndUsage?: JSX.Element | null
 }>) {
+    const [showOptional, setShowOptional] = useState(false);
+    const toggleShowOptional = () => setShowOptional(!showOptional);
     return (
         <CardContent sx={{pb: 1, minWidth: '80ch'}}>
             <Box display="flex">
@@ -27,10 +41,9 @@ export default function DocumentationCardContent({
                 </Typography>
                 <Typography component="span" fontFamily={theme.pytamaro.monospaceFontFamily} bgcolor="#e7f2fa"
                             borderTop="3px solid #6ab0de">
-                    {(obj_type == json_obj_type.function) ? functionSignature(obj) : obj.name}
+                    {(obj_type == json_obj_type.function) ? functionSignature(obj, showOptional) : obj.name}
                 </Typography>
                 {LinkButton}
-                {/* NOTE: ('as ToolboxFunction' is an assertion since if the function doesn't come from_PyTamaro is from the toolbox) */}
             </Box>
             <Typography color="text.secondary">
                 {obj.description ? obj.description?.content : ""}
@@ -50,52 +63,47 @@ export default function DocumentationCardContent({
             {obj_type == json_obj_type.function ?
                 <Card sx={{px: 2, my: 2}}>
                     <ParametersTable params={(obj as Function).parameters} return_type={(obj as Function).return_type}
-                                     return_description={(obj as Function).return_description}/>
+                                     return_description={(obj as Function).return_description}
+                                     showOptional={showOptional}/>
                 </Card>
                 : null}
+            <Typography color="text.secondary" fontWeight="bold" component="span" gutterBottom>
+                Optional parameters
+            </Typography>
+            <FormGroup sx={{display: 'inline', marginLeft: 2}}>
+                <FormControlLabel
+                    control={<Switch checked={showOptional} onChange={toggleShowOptional}/>}
+                    label={<Typography color="text.secondary">{showOptional ? 'Hide' : 'Show'}</Typography>}
+                />
+            </FormGroup>
             {ImplementationAndUsage}
-            {/*{!from_pyTamaro && ImplementationAndUsage(fn as ToolboxFunction, summary)}*/}
-            {/* NOTE: ('as ToolboxFunction' is an assertion since if the function doesn't come from_PyTamaro is from the toolbox) */}
         </CardContent>
     );
 }
 
-function ParametersTable({params, return_type, return_description}: Readonly<{
+function ParametersTable({params, return_type, return_description, showOptional}: Readonly<{
     params: Variable[] | undefined,
     return_type: string | undefined,
-    return_description: string | undefined
-}>) {
+    return_description: string | undefined,
+    showOptional: boolean
+}>): JSX.Element {
     return <Table aria-label="Function Parameters" size="small">
         <TableHead>
             <TableRow>
                 <TableCell sx={{pl: 0}}>Parameter/Return</TableCell>
                 <TableCell>Type</TableCell>
                 <TableCell>Description</TableCell>
-                <TableCell>Default value</TableCell>
+                {showOptional && (<TableCell>Default value</TableCell>)}
             </TableRow>
         </TableHead>
         <TableBody>
-            {params?.map((arg: Variable) => (
-                <TableRow
-                    key={arg.name}
-                >
-                    <TableCell component="th" scope="row" sx={{pl: 0}}>
-                        <Typography component="span"
-                                    fontFamily={theme.pytamaro.monospaceFontFamily}>{arg.name}</Typography>
-                    </TableCell>
-                    <TableCell>
-                        <TypeCell type={arg.type ? arg.type : ""}/>
-                    </TableCell>
-                    <TableCell component="th" scope="row" sx={{pl: 0}}>
-                        <Typography
-                            component="span">{arg.description ? arg.description.content : ""}</Typography>
-                    </TableCell>
-                    <TableCell component="th" scope="row" sx={{pl: 0}}>
-                        <Typography component="span"
-                                    fontFamily={theme.pytamaro.monospaceFontFamily}>{arg.default_value ? arg.default_value : ""}</Typography>
-                    </TableCell>
-                </TableRow>
-            ))}
+            {params?.map((arg: Variable) => {
+                if (arg.default_value) {
+                    return showOptional && (ParametersRow(arg, showOptional))
+                } else {
+                    return ParametersRow(arg, showOptional)
+                }
+            })}
             <TableRow
                 key="return"
                 sx={{
@@ -119,11 +127,37 @@ function ParametersTable({params, return_type, return_description}: Readonly<{
     </Table>
 }
 
-function functionSignature(fn: Function): string {
-    let signature = fn.name + " ("
+function ParametersRow(arg: Variable, showOptional: boolean) {
+    return <TableRow
+        key={arg.name}
+    >
+        <TableCell component="th" scope="row" sx={{pl: 0}}>
+            <Typography component="span"
+                        fontFamily={theme.pytamaro.monospaceFontFamily}>{arg.name}</Typography>
+        </TableCell>
+        <TableCell>
+            <TypeCell type={arg.type ? arg.type : ""}/>
+        </TableCell>
+        <TableCell component="th" scope="row" sx={{pl: 0}}>
+            <Typography
+                component="span">{arg.description ? arg.description.content : ""}</Typography>
+        </TableCell>
+        {showOptional && (<TableCell component="th" scope="row" sx={{pl: 0}}>
+            <Typography component="span"
+                        fontFamily={theme.pytamaro.monospaceFontFamily}>{arg.default_value ? arg.default_value : "N/A"}</Typography>
+        </TableCell>)}
+    </TableRow>
+}
+
+function functionSignature(fn: Function, showOptional: boolean): string {
+    let signature: string = fn.name + " ("
     if (fn.parameters) {
-        for (let arg of fn.parameters) {
-            signature += arg.name + ":" + arg.type + ", "
+        for (let param of fn.parameters) {
+            if (param.default_value != undefined && showOptional) {
+                signature += param.name + ": " + param.type + " = " + param.default_value + ", "
+            } else if (param.default_value == undefined) {
+                signature += param.name + ": " + param.type + ", "
+            }
         }
         signature = signature.substring(0, signature.length - 2)
     }
@@ -133,4 +167,23 @@ function functionSignature(fn: Function): string {
     }
     return signature
 }
+
+function hasDefault(parameters: Variable[]): boolean {
+    for (let param of parameters) {
+        if (param.default_value) {
+            return true;
+        }
+    }
+    return false
+}
+
+function hasDescription(parameters: Variable[]): boolean {
+    for (let param of parameters) {
+        if (param.description) {
+            return true;
+        }
+    }
+    return false;
+}
+
 

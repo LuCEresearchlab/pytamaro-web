@@ -11,12 +11,6 @@ import SolitaryCodeCell, {initialStateSingleCell} from '../SolitaryCodeCell.tsx'
 import {EnhancedStr, Function, json_obj_type, Variable} from '../../src/JsonAst/Json_structure.ts';
 import DocumentationCardContent from "./DocumentationCardContent.tsx";
 
-function TypeCell({type}: { type: string }) {
-    return type === ''
-        ? <Typography component="span" fontStyle="italic" color="text.secondary">N/A</Typography>
-        : <Typography component="span" fontFamily={theme.pytamaro.monospaceFontFamily}>{type}</Typography>;
-}
-
 export default function ToolboxFunctionCardContent(
     {
         fn, summary = false
@@ -38,6 +32,7 @@ export default function ToolboxFunctionCardContent(
 function translate(fn: ToolboxFunction): Function {
     let description: EnhancedStr = {content: fn.description}
     let parameters: Variable[] = []
+
     for (let arg of fn.args) {
         parameters.push({
             name: arg.name,
