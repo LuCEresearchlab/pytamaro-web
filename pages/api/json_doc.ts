@@ -1,26 +1,41 @@
 import {NextApiRequest, NextApiResponse} from "next";
-import {JsonConverter} from "../../src/JsonAst/JsonConverter.ts";
+import {JsonConverter, language_string} from "../../src/JsonAst/JsonConverter";
 
 const jsonConverter: JsonConverter = new JsonConverter()
-await jsonConverter.init()
+jsonConverter.init().then(() => {})
 
 export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
+    req: NextApiRequest,
+    res: NextApiResponse,
 ) {
-    const name = req.query.name?.toString()
-    const language = req.query.language?.toString()
-    console.log("NAME: ",name, " LANGUAGE: ", language)
-    if(name != undefined) {
-        const result = jsonConverter.find(name, language)
-        if(result == undefined){
-            res.status(500).send("No matching result")
+    const name = (req.query.name?.toString() ?? "").trim();
+    let language = convertToLanguageString(req.query.language?.toString()?.toLowerCase());
+
+    console.log("NAME: ", name, " LANGUAGE: ", language);
+    console.log(req.query);
+    if (name) {
+        const result = jsonConverter.find(name, language);
+        if (result == undefined) {
+            res.status(500).send("No matching result");
         } else {
-            res.status(200).json(result)
-            res.end()
+            res.status(200).json(result);
         }
+    } else {
+        res.status(400).send("No name defined");
     }
-    else{
-        res.status(500).send("No name defined")
+}
+
+function convertToLanguageString(language: string | undefined){
+    switch (language){
+        case "en":
+            return language_string.English
+        case "fr":
+            return language_string.French
+        case "de":
+            return language_string.German
+        case "it":
+            return language_string.Italian
+        default:
+            return undefined
     }
 }

@@ -3,7 +3,6 @@ import Link from 'next/link';
 import {useState} from 'react';
 import {ToolboxFunction} from '../../src/localStorage/schema.ts';
 import {toolboxActivityVariant} from '../../src/specialActivities.ts';
-import theme from '../../src/theme.ts';
 import {activityVariantPathname, toolboxFunctionPathname} from '../../src/urlUtils.ts';
 import useReadOnlyTemporaryActivity from '../../src/useReadOnlyTemporaryActivity.ts';
 import CodeEditor from '../CodeEditor.tsx';
@@ -25,7 +24,8 @@ export default function ToolboxFunctionCardContent(
     return (
         <DocumentationCardContent obj={translated} obj_type={json_obj_type.function}
                                   ImplementationAndUsage={ImplementationAndUsage(fn, summary)}
-                                  LinkButton={LinkButton(fn, summary)}/>
+                                  LinkButton={LinkButton(fn, summary)}
+                                  showTypeInitial={true}/>
     );
 }
 
@@ -69,7 +69,7 @@ function ImplementationAndUsage(fn: ToolboxFunction, summary: boolean) {
     const activityVariant = toolboxActivityVariant(fn.name);
     const activity = useReadOnlyTemporaryActivity(usageCodeCells, activityVariant);
 
-    return <div>{!summary && (
+    return <>{!summary && (
         <Box sx={{my: 2}}>
             <Typography color="text.secondary" fontWeight="bold" component="span">
                 Implementation
@@ -106,7 +106,7 @@ function ImplementationAndUsage(fn: ToolboxFunction, summary: boolean) {
                 activityVariant={activityVariant}
                 readOnly
             />
-        )}</div>
+        )}</>
 }
 
 

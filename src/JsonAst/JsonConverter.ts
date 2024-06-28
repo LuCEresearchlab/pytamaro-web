@@ -12,8 +12,7 @@ export enum language_string {
     Italian = "it",
 }
 
-export interface dividedModule {
-    // modules: Module[],
+export interface DividedModule {
     functions: Function[],
     types: Type[],
     variables: Variable[]
@@ -107,7 +106,7 @@ export class JsonConverter {
         return undefined
     }
 
-    public languageDividedByType(language: language_string): dividedModule {
+    public languageDividedByType(language: language_string): DividedModule {
         switch (language) {
             case language_string.English:
                 return this.divideArrayByType(this.English)
@@ -123,7 +122,7 @@ export class JsonConverter {
         }
     }
 
-    private divideArrayByType(array: Module[]): dividedModule {
+    private divideArrayByType(array: Module[]): DividedModule {
         let result = {
             // modules: ([] as Module[]),
             functions: ([] as Function[]),

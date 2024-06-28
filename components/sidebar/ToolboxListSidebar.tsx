@@ -45,7 +45,7 @@ function SidebarToolboxFunction({ fn, skipPopup }: { fn: ToolboxFunction, skipPo
             fontFamily: theme.pytamaro.monospaceFontFamily,
             fontSize: SIDEBAR_CHIPS_FONT_SIZE,
           }}
-        />
+      />
         <Popup
           id={toolboxPopupId}
           open={open}

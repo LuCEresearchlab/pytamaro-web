@@ -1,32 +1,31 @@
 /* eslint-disable react/no-danger */
 /* eslint-disable @next/next/no-img-element */
 import {
-    Popover, Typography, useTheme,
+    Card,
+    ClickAwayListener,
+    Popover, Tooltip, Typography, useTheme,
 } from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import axios from 'axios';
 import {useState} from 'react';
 import logAnalyticsEvent, {AnalyticsEventName} from '../src/analyticsEvent';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
-import names from '../src/pytamaroNames';
 import {ActivityVariant} from '../src/schemas/activitySchema';
 import {EventName, storeDbEvent} from '../src/storeDbEvent';
-import ToolboxFunctionCardContent from "./documentation/ToolboxFunctionCardContent.tsx";
 import DocumentationCardContent from "./documentation/DocumentationCardContent.tsx";
+import Popup from "./Popup.tsx";
 
 export default function PyTamaroAPI({
                                         name, language = undefined, activityVariant, smallerFont = false,
                                     }:
-                                        {
+                                        Readonly<{
                                             name: string,
                                             language?: string | undefined,
                                             activityVariant: ActivityVariant,
                                             smallerFont?: boolean
-                                        }) {
+                                        }>) {
     // When not provided explicitly, the language is inferred from the activity variant.
-    const nameWithLang = `${language || activityVariant.language}.${name}`;
-    const nameInfo = names[nameWithLang];
-
+    const nameWithLang = `${language ?? activityVariant.language}.${name}`;
     const theme = useTheme();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [timeoutId, setTimeoutId] = useState<ReturnType<typeof setTimeout>>();
@@ -53,69 +52,53 @@ export default function PyTamaroAPI({
 
     const {isLoading, error, data} = useQuery({
         queryKey: [`docs-${nameWithLang}`],
-        queryFn: () => axios.get(`/api/json_doc?name=${name}&language=${language || activityVariant.language}`
+        queryFn: () => axios.get(`/api/json_doc?name=${name}&language=${language ?? activityVariant.language}`
         )
             .then((response) => {
-                // We climb up the DOM tree one level to find the element that contains both
-                // <dt> and <dd> (term and description).
                 return response.data
             }),
     });
 
     return (
-        <span style={{
-            display: 'inline-flex',
-            alignItems: 'baseline',
-        }}
-        >
-      <img
-          src="/favicon.ico"
-          style={{
-              height: smallerFont ? '0.8em' : '1em',
-              width: 'auto',
-              display: 'inline-block',
-              transform: `translateY(.${smallerFont ? '1' : '2'}em)`,
-              paddingRight: '.1em',
-          }}
-          alt="PyTamaro icon"
-      />
-      <Typography
-          component="span"
-          aria-owns={open ? 'mouse-onclick-popover' : undefined}
-          aria-haspopup="true"
-          onClick={handlePopoverOpen}
-          style={{
-              color: theme.pytamaro.redColor,
-              fontSize: smallerFont ? '0.8em' : '1em',
-              fontFamily: theme.pytamaro.monospaceFontFamily,
-          }}
-      >
-        {name}
-      </Typography>
-      <Popover
-          id="mouse-onclick-popover"
-          // sx={{
-          //     pointerEvents: 'none',
-          //     ml: 0.5,
-          // }}
-          open={open}
-          anchorEl={anchorEl}
-          anchorOrigin={{
-              vertical: 'center',
-              horizontal: 'right',
-          }}
-          transformOrigin={{
-              vertical: 'center',
-              horizontal: 'left',
-          }}
-          onClose={handlePopoverClose}
-          disableRestoreFocus
-      >
-          {isLoading ? <Typography component="span">Loading the documentation...</Typography> : null}
-          {error ? <Typography component="span">Failed to load the documentation.</Typography> : null}
-          {/*{data ? <ToolboxFunctionCardContent fn={data.obj} from_pyTamaro={true} obj_type={data.obj_type}/> : null}*/}
-          {data ? <DocumentationCardContent obj={data.obj} obj_type={data.obj_type}/> : null}
-      </Popover>
-    </span>
+        <ClickAwayListener onClickAway={handlePopoverClose}>
+            <span style={{
+                display: 'inline-flex',
+                alignItems: 'baseline',
+            }}>
+            <img
+                src="/favicon.ico"
+                style={{
+                    height: smallerFont ? '0.8em' : '1em',
+                    width: 'auto',
+                    display: 'inline-block',
+                    transform: `translateY(.${smallerFont ? '1' : '2'}em)`,
+                    paddingRight: '.1em',
+                }}
+                alt="PyTamaro icon"
+            />
+                <Tooltip title="Click to see more" arrow placement="bottom">
+                    <Typography
+                        component="span"
+                        aria-owns={open ? 'mouse-onclick-popover' : undefined}
+                        aria-haspopup="true"
+                        onClick={handlePopoverOpen}
+                        style={{
+                            color: theme.pytamaro.redColor,
+                            fontSize: smallerFont ? '0.8em' : '1em',
+                            fontFamily: theme.pytamaro.monospaceFontFamily,
+                        }}
+                    >
+                        {name}
+                    </Typography>
+                </Tooltip>
+                <Popup id="mouse-onclick-popover" anchorEl={anchorEl} open={open} placement="right">
+                    <Card>
+                        {isLoading ? <Typography component="span">Loading the documentation...</Typography> : null}
+                        {error ? <Typography component="span">Failed to load the documentation.</Typography> : null}
+                        {data ? <DocumentationCardContent obj={data.obj} obj_type={data.obj_type}/> : null}
+                    </Card>
+                </Popup>
+            </span>
+        </ClickAwayListener>
     );
 }

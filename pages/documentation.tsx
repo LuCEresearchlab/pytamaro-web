@@ -10,14 +10,14 @@ import NavigationBar from '../components/NavigationBar';
 import PageTitle from '../components/PageTitle';
 import {translationProps} from '../src/serverSideTranslationProps';
 import PyTamaroDocumentation from "../components/documentation/PyTamaroDocumentation.tsx";
-import {dividedModule, JsonConverter, language_string} from "../src/JsonAst/JsonConverter.ts";
+import {DividedModule, JsonConverter, language_string} from "../src/JsonAst/JsonConverter.ts";
 import {Module} from '../src/JsonAst/Json_structure.ts';
 
 export default function Documentation({English, Italian, French, German}: {
-    English: dividedModule,
-    Italian: dividedModule,
-    French: dividedModule,
-    German: dividedModule
+    English: DividedModule,
+    Italian: DividedModule,
+    French: DividedModule,
+    German: DividedModule
 }) {
     const [filterNameDesc, setFilterNameDesc] = useState('');
     const handleNewFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,12 +34,12 @@ export default function Documentation({English, Italian, French, German}: {
                     <PageTitle>PyTamaro documentation</PageTitle>
                     <TextField
                         fullWidth
-                        label="Search by function name or description"
+                        label="Search by name or description"
                         variant="outlined"
                         onChange={debounce(handleNewFilter, 100)}
                         sx={{mb: 3}}
                     />
-                    <PyTamaroDocumentation functionFilterNameDesc={filterNameDesc} English={English} Italian={Italian}
+                    <PyTamaroDocumentation filterNameDesc={filterNameDesc} English={English} Italian={Italian}
                                            French={French} German={German}/>
                 </Container>
             </Box>

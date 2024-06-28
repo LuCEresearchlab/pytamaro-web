@@ -5,16 +5,16 @@ import {Card, Stack} from "@mui/material";
 import {toolboxFunctionAnchor} from "../../src/urlUtils.ts";
 import {json_obj_type} from '../../src/JsonAst/Json_structure.ts';
 import DocumentationCardContent from "./DocumentationCardContent.tsx";
-import {dividedModule} from "../../src/JsonAst/JsonConverter.ts";
+import {DividedModule} from "../../src/JsonAst/JsonConverter.ts";
 
 
-export default function PyTamaroDocumentation({functionFilterNameDesc, English, Italian, French, German}: {
-    functionFilterNameDesc: string,
-    English: dividedModule,
-    Italian: dividedModule,
-    French: dividedModule,
-    German: dividedModule
-}) {
+export default function PyTamaroDocumentation({filterNameDesc, English, Italian, French, German}: Readonly<{
+    filterNameDesc: string,
+    English: DividedModule,
+    Italian: DividedModule,
+    French: DividedModule,
+    German: DividedModule
+}>) {
     const {metadata} = useLocalProfile();
 
     useEffect(() => {
@@ -22,8 +22,16 @@ export default function PyTamaroDocumentation({functionFilterNameDesc, English, 
     }, [English.functions]);
 
     const filteredFunctions = English.functions.filter((fn) => {
-        const search = functionFilterNameDesc.toLowerCase();
+        const search = filterNameDesc.toLowerCase();
         return fn.name.toLowerCase().includes(search) || fn.description?.content.toLowerCase().includes(search);
+    });
+    const filteredType = English.types.filter((type) => {
+        const search = filterNameDesc.toLowerCase();
+        return type.name.toLowerCase().includes(search) || type.description?.content.toLowerCase().includes(search);
+    });
+    const filteredVariables = English.variables.filter((variable) => {
+        const search = filterNameDesc.toLowerCase();
+        return variable.name.toLowerCase().includes(search) || variable.description?.content.toLowerCase().includes(search);
     });
 
     return (
@@ -42,21 +50,21 @@ export default function PyTamaroDocumentation({functionFilterNameDesc, English, 
             direction="column"
             spacing={3}
         >
-            {English.functions.map((fn) => (
+            {filteredFunctions.map((fn) => (
                 <Card key={fn.name} id={toolboxFunctionAnchor(fn.name)} className="anchor"
                       sx={{overflow: 'visible'}}>
                     <DocumentationCardContent obj={fn} obj_type={json_obj_type.function}/>
                 </Card>
             ))}
 
-            {English.types.map((type) => (
+            {filteredType.map((type) => (
                 <Card key={type.name} id={toolboxFunctionAnchor(type.name)} className="anchor"
                       sx={{overflow: 'visible'}}>
                     <DocumentationCardContent obj={type} obj_type={json_obj_type.type}/>
                 </Card>
             ))}
 
-            {English.variables.map((variable) => (
+            {filteredVariables.map((variable) => (
                 <Card key={variable.name} id={toolboxFunctionAnchor(variable.name)} className="anchor"
                       sx={{overflow: 'visible'}}>
                     <DocumentationCardContent obj={variable} obj_type={json_obj_type.variable}/>
