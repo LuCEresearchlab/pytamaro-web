@@ -11,8 +11,6 @@ export default async function handler(
     const name = (req.query.name?.toString() ?? "").trim();
     let language = convertToLanguageString(req.query.language?.toString()?.toLowerCase());
 
-    console.log("NAME: ", name, " LANGUAGE: ", language);
-    console.log(req.query);
     if (name) {
         const result = jsonConverter.find(name, language);
         if (result == undefined) {

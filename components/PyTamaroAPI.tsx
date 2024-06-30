@@ -14,6 +14,9 @@ import {ActivityVariant} from '../src/schemas/activitySchema';
 import {EventName, storeDbEvent} from '../src/storeDbEvent';
 import DocumentationCardContent from "./documentation/DocumentationCardContent.tsx";
 import Popup from "./Popup.tsx";
+import useLocalTranslation from "../src/localStorage/useLocalTranslation.ts";
+
+
 
 export default function PyTamaroAPI({
                                         name, language = undefined, activityVariant, smallerFont = false,
@@ -30,6 +33,8 @@ export default function PyTamaroAPI({
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [timeoutId, setTimeoutId] = useState<ReturnType<typeof setTimeout>>();
     const {metadata} = useLocalProfile();
+
+    const { t } = useLocalTranslation();
 
     const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -76,7 +81,7 @@ export default function PyTamaroAPI({
                 }}
                 alt="PyTamaro icon"
             />
-                <Tooltip title="Click to see more" arrow placement="bottom">
+                <Tooltip title={t("documentationPopUp.clickToSeeMore")} arrow placement="bottom">
                     <Typography
                         component="span"
                         aria-owns={open ? 'mouse-onclick-popover' : undefined}
@@ -93,8 +98,8 @@ export default function PyTamaroAPI({
                 </Tooltip>
                 <Popup id="mouse-onclick-popover" anchorEl={anchorEl} open={open} placement="right">
                     <Card>
-                        {isLoading ? <Typography component="span">Loading the documentation...</Typography> : null}
-                        {error ? <Typography component="span">Failed to load the documentation.</Typography> : null}
+                        {isLoading ? <Typography component="span">{t("documentationPopUp.loading")}</Typography> : null}
+                        {error ? <Typography component="span">{t("documentationPopUp.failed")}</Typography> : null}
                         {data ? <DocumentationCardContent obj={data.obj} obj_type={data.obj_type}/> : null}
                     </Card>
                 </Popup>

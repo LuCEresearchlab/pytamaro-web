@@ -12,6 +12,7 @@ import {translationProps} from '../src/serverSideTranslationProps';
 import PyTamaroDocumentation from "../components/documentation/PyTamaroDocumentation.tsx";
 import {DividedModule, JsonConverter, language_string} from "../src/JsonAst/JsonConverter.ts";
 import {Module} from '../src/JsonAst/Json_structure.ts';
+import useLocalTranslation from "../src/localStorage/useLocalTranslation.ts";
 
 export default function Documentation({English, Italian, French, German}: {
     English: DividedModule,
@@ -19,6 +20,7 @@ export default function Documentation({English, Italian, French, German}: {
     French: DividedModule,
     German: DividedModule
 }) {
+    const {t} = useLocalTranslation()
     const [filterNameDesc, setFilterNameDesc] = useState('');
     const handleNewFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFilterNameDesc(e.target.value);
@@ -31,7 +33,7 @@ export default function Documentation({English, Italian, French, German}: {
             <Box>
                 <NavigationBar/>
                 <Container maxWidth="md">
-                    <PageTitle>PyTamaro documentation</PageTitle>
+                    <PageTitle>{t("PyTamaroDocumentation")}</PageTitle>
                     <TextField
                         fullWidth
                         label="Search by name or description"

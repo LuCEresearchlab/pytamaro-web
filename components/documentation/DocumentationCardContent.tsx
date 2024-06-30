@@ -10,9 +10,13 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
-import theme from '../../src/theme.ts';
-import {Function, json_obj_type, Type, Variable} from '../../src/JsonAst/Json_structure.ts';
-import {useState} from "react";
+import theme from '../../src/theme';
+import {Function, json_obj_type, Type, Variable} from '../../src/JsonAst/Json_structure';
+import {JSXElementConstructor, ReactElement, ReactFragment, ReactPortal, useState} from "react";
+import useLocalTranslation from "../../src/localStorage/useLocalTranslation";
+import {TFunction} from "i18next";
+
+let t: TFunction<string[], undefined>
 
 function TypeCell({type}: { type: string }) {
     return type === ''
@@ -38,12 +42,15 @@ export default function DocumentationCardContent({
     const [showOptional, setShowOptional] = useState(showOptionalInitial);
     const toggleShowOptional = () => setShowOptional(!showOptional);
     const [showType, setShowType] = useState(showTypeInitial);
-    const toggleShowType = () => setShowType(!showType);
+    const toggleShowType = () => setShowType(!showType)
+
+    t = useLocalTranslation().t;
+
     return (
         <CardContent sx={{pb: 1, maxWidth: '100ch'}}>
             <Box display="flex">
                 <Typography color="text.secondary" component="span" mr="1ch" fontWeight="bold">
-                    {obj_type}
+                    {t("documentationPopUp."+obj_type?.toLowerCase())}
                 </Typography>
                 <Typography component="span" fontFamily={theme.pytamaro.monospaceFontFamily} bgcolor="#e7f2fa"
                             borderTop="3px solid #6ab0de">
@@ -96,12 +103,12 @@ function FunctionSpecificCard({fn, optional, types}: Readonly<{
             <Box sx={{my: 2}}>
                 <Typography color="text.secondary" fontWeight="bold" component="span"
                             gutterBottom>
-                    Optional parameters
+                    {t("documentationPopUp.optionalParameters")}
                 </Typography>
                 <FormGroup sx={{display: 'inline', marginLeft: 2}}>
                     <FormControlLabel
                         control={<Switch checked={optional.show} onChange={optional.toggle}/>}
-                        label={<Typography color="text.secondary">{optional.show ? 'Hide' : 'Show'}</Typography>}
+                        label={<Typography color="text.secondary">{optional.show ? t("hide") : t("show")}</Typography>}
                     />
                 </FormGroup>
             </Box> : null}
@@ -109,12 +116,12 @@ function FunctionSpecificCard({fn, optional, types}: Readonly<{
         <Box sx={{my: 2}}>
             <Typography color="text.secondary" fontWeight="bold" component="span"
                         gutterBottom>
-                Type
+                {t("documentationPopUp.type")}
             </Typography>
             <FormGroup sx={{display: 'inline', marginLeft: 2}}>
                 <FormControlLabel
                     control={<Switch checked={types.show} onChange={types.toggle}/>}
-                    label={<Typography color="text.secondary">{types.show ? 'Hide' : 'Show'}</Typography>}
+                    label={<Typography color="text.secondary">{types.show ? t("hide") : t("show")}</Typography>}
                 />
             </FormGroup>
         </Box>
@@ -132,10 +139,10 @@ function ParametersTable({params, return_type, return_description, showOptional,
     return <Table aria-label="Function Parameters" size="small">
         <TableHead>
             <TableRow>
-                <TableCell sx={{pl: 0}}>Parameter/Return</TableCell>
-                {showType && (<TableCell>Type</TableCell>)}
-                {showDescription && (<TableCell>Description</TableCell>)}
-                {showOptional && (<TableCell>Default value</TableCell>)}
+                <TableCell sx={{pl: 0}}>{t("documentationPopUp.parameterReturn")}</TableCell>
+                {showType && (<TableCell>{t("documentationPopUp.type")}</TableCell>)}
+                {showDescription && (<TableCell>{t("documentationPopUp.description")}</TableCell>)}
+                {showOptional && (<TableCell>{t("documentationPopUp.defaultValue")}</TableCell>)}
             </TableRow>
         </TableHead>
         <TableBody>
@@ -155,7 +162,7 @@ function ParametersTable({params, return_type, return_description, showOptional,
                 }}
             >
                 <TableCell component="th" scope="row" sx={{pl: 0}}>
-                    <Typography component="span">Return Value</Typography>
+                    <Typography component="span">{t("documentationPopUp.returnValue")}</Typography>
                 </TableCell>
                 {showType && (<TableCell>
                     <TypeCell

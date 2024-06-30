@@ -49,5 +49,22 @@
     "doNow": "Do Now!",
     "saveAndContinue": "Save and Continue",
     "didIt": "I did it!",
-    "yourAnswer": "Your answer"
+    "yourAnswer": "Your answer",
+    "documentationPopUp": {
+        "clickToSeeMore": "Click to see more",
+        "parameterReturn": "Parameter/Return",
+        "type": "Type",
+        "description": "Description",
+        "defaultValue": "Default value",
+        "optionalParameters": "Optional parameters",
+        "module" : "Module",
+        "function" : "Function",
+        "variable" : "Variable",
+        "returnValue": "Return Value",
+        "loading" : "Loading the documentation...",
+        "failed" : "Failed to load the documentation."
+    },
+    "PyTamaroDocumentation": "PyTamaro documentation",
+    "hide": "Hide",
+    "show": "Show"
 }

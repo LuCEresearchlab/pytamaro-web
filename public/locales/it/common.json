@@ -48,5 +48,22 @@
     "doNow": "Da fare adesso!",
     "saveAndContinue": "Salva e continua",
     "didIt": "L'ho fatto!",
-    "yourAnswer": "La tua risposta"
+    "yourAnswer": "La tua risposta",
+    "documentationPopUp": {
+        "clickToSeeMore": "Clickare per mostrare dettagli",
+        "parameterReturn": "Parametri/Ritorno",
+        "type": "Tipo",
+        "description": "Descrizione",
+        "defaultValue": "Valore di default",
+        "optionalParameters": "Parameteri opzionali",
+        "module" : "Modulo",
+        "function" : "Funzione",
+        "variable" : "Variabile",
+        "returnValue": "Valore ritornato",
+        "loading" : "Caricamento della documentazione...",
+        "failed" : "Caricamento della documentazione non riuscito."
+    },
+    "PyTamaroDocumentation": "Documentazione PyTamaro",
+    "hide": "Nascondi",
+    "show": "Mostra"
 }
