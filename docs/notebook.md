@@ -70,3 +70,4 @@ The `id` must be unique within an activity, so that we can keep track of which "
     </div>
   </Stack>
   ```
+- `<Task>Fill in the missing parts of the code</Task>` to render a high visibility task box with the specified content. This is useful to highlight a task that the user should complete.
