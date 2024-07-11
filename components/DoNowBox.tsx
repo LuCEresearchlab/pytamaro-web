@@ -12,6 +12,10 @@ import theme from '../src/theme';
 
 const doNowBoxClassName = 'do-now-box';
 
+function domElementId(id: string) {
+  return `donow-${id}`;
+}
+
 export default function DoNowBox({
   id, requireAnswer, children, activityVariant,
 }:
@@ -34,9 +38,10 @@ export default function DoNowBox({
     // We need to find (to blur) all the elements after the current Do Now box
     // in the same Markdown cell, as well as all the elements within the
     // subsequent Markdown/Code cells.
-    const nextElementsCurrentCell = document.querySelectorAll(`#${id} ~ *`);
+    const nextElementsCurrentCell = document.querySelectorAll(`#${domElementId(id)} ~ *`);
     const allNextElements = Array.from(nextElementsCurrentCell);
-    let nextElementsHolder = document.getElementById(id)?.parentElement?.nextElementSibling;
+    let nextElementsHolder = document.getElementById(domElementId(id))?.parentElement
+      ?.nextElementSibling;
     while (nextElementsHolder) {
       allNextElements.push(...Array.from(nextElementsHolder.querySelectorAll('*')));
       nextElementsHolder = nextElementsHolder.nextElementSibling;
@@ -86,7 +91,7 @@ export default function DoNowBox({
   return (
     <Alert
       severity="warning"
-      id={id}
+      id={domElementId(id)}
       className={doNowBoxClassName}
       icon={<AccessAlarm />}
       sx={{ fontSize: theme.typography.body1.fontSize, marginY: 2 }}
