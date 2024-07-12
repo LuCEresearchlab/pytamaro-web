@@ -222,7 +222,7 @@ export default function Home({ welcomeCurriculum, activities } :
                   <CardContent>
                     <Typography fontSize="1.1rem" paragraph gutterBottom>
                       Are you already familiar with PyTamaro and looking for inspiration?
-                      Are new to the library and just want to see some examples?
+                      Are you new to the library and just want to see some examples?
                     </Typography>
                     <Typography fontSize="1.1rem" paragraph>
                       Check out our constantly growing
