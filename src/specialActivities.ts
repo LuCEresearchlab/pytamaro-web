@@ -24,7 +24,7 @@ export const toolboxDemoActivityVariant = {
 
 export const printableGraphicActivityVariant = {
   authorSlug: 'luce',
-  activitySlug: 'printable-graphic',
+  activitySlug: 'paper-cutouts',
   language: 'en',
   version: 'v1',
 };
