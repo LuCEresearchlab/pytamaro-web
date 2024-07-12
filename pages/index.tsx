@@ -3,7 +3,6 @@ import {
   Code, Folder,
   GitHub,
   Groups,
-  Hiking,
   People,
   Route,
   School,
@@ -29,7 +28,6 @@ import {
 import Grid from '@mui/material/Unstable_Grid2';
 import anime from 'animejs';
 import { shuffle } from 'lodash';
-import Image from 'next/image';
 import { useEffect } from 'react';
 import Carousel from 'react-material-ui-carousel';
 import CompactActivityVariantCard from '../components/ActivityCardMedia';
@@ -43,6 +41,7 @@ import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
 import {
   activitiesByAuthorPathname, curriculaPathname, curriculumPathname, pytamaroDocsUrl,
+  teachingResourcesPathname,
 } from '../src/urlUtils';
 
 function HomePagePrimaryButton(props: { icon: JSX.Element, text: string, href: string }) {
@@ -273,7 +272,7 @@ export default function Home({ welcomeCurriculum, activities } :
                 <Grid xs={12} md={7}>
                   <CardHeader
                     avatar={<Route color="primary" />}
-                    title="Teacher-Designed Curricula"
+                    title="A Variety of Curricula, Designed by Teachers"
                     titleTypographyProps={{ variant: 'h5', color: 'primary', fontWeight: 'bold' }}
                     sx={{ pb: 0 }}
                   />
@@ -292,6 +291,43 @@ export default function Home({ welcomeCurriculum, activities } :
                   <Box padding={2} height="100%" alignItems="center" justifyContent="center" display="flex">
                     <Stack spacing={2}>
                       <HomePagePrimaryButton icon={<Route />} text="Explore all curricula" href={curriculaPathname()} />
+                    </Stack>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Card>
+          </Paper>
+          <Paper elevation={4}>
+            <Card>
+              <Grid container>
+                <Grid xs={12} md={7}>
+                  <CardHeader
+                    avatar={<School color="primary" />}
+                    title="Teaching with PyTamaro?"
+                    titleTypographyProps={{
+                      variant: 'h5',
+                      color: 'primary',
+                      fontWeight: 'bold',
+                    }}
+                    sx={{ pb: 0 }}
+                  />
+                  <CardContent>
+                    <Typography fontSize="1.1rem" paragraph gutterBottom>
+                      Use our simple TamaroCards to teach programming with
+                      PyTamaro.
+                    </Typography>
+                    <Typography fontSize="1.1rem" paragraph gutterBottom>
+                      Sign up for the PyTamaro Summer Academy.
+                    </Typography>
+                    <Typography fontSize="1.1rem" paragraph gutterBottom>
+                      Print and cut out your own PyTamaro graphic.
+                    </Typography>
+                  </CardContent>
+                </Grid>
+                <Grid xs={12} md={5}>
+                  <Box padding={2} height="100%" alignItems="center" justifyContent="center" display="flex">
+                    <Stack spacing={2}>
+                      <HomePagePrimaryButton icon={<School />} text="Resources for Teachers" href={teachingResourcesPathname()} />
                     </Stack>
                   </Box>
                 </Grid>
@@ -332,44 +368,6 @@ export default function Home({ welcomeCurriculum, activities } :
           </Paper>
           <Paper elevation={4}>
             <Card>
-              <CardActionArea href="/tamarocards">
-                <Grid container>
-                  <Grid xs={12} md={7}>
-                    <CardHeader
-                      avatar={<School color="primary" />}
-                      title="Teaching with PyTamaro? Get your TamaroCards!"
-                      titleTypographyProps={{ variant: 'h5', color: 'primary', fontWeight: 'bold' }}
-                      sx={{ pb: 0 }}
-                    />
-                    <CardContent>
-                      <Typography fontSize="1.1rem" paragraph gutterBottom>
-                        Use our simple paper cards to teach programming with PyTamaro.
-                      </Typography>
-                      <Typography fontSize="1.1rem" paragraph gutterBottom>
-                        Let students compose PyTamaro code by arranging and connecting cards,
-                        and let them interpret other students&apos; card compositions.
-                      </Typography>
-                    </CardContent>
-                  </Grid>
-                  <Grid xs={12} md={5}>
-                    <Box padding={2} position="relative" height="12rem" alignItems="center" justifyContent="center" display="flex">
-                      <Image
-                        src="/SA-2023-Table3.jpg"
-                        alt="Alpe Foppa panorama"
-                        fill
-                        style={{
-                          objectFit: 'contain',
-                          padding: theme.spacing(1),
-                        }}
-                      />
-                    </Box>
-                  </Grid>
-                </Grid>
-              </CardActionArea>
-            </Card>
-          </Paper>
-          <Paper elevation={4}>
-            <Card>
               <Grid container>
                 <Grid xs={12} md={7}>
                   <CardHeader
@@ -399,44 +397,6 @@ export default function Home({ welcomeCurriculum, activities } :
                   </Box>
                 </Grid>
               </Grid>
-            </Card>
-          </Paper>
-          <Paper elevation={4}>
-            <Card>
-              <CardActionArea href="/summeracademy">
-                <Grid container>
-                  <Grid xs={12} md={7}>
-                    <CardHeader
-                      avatar={<Hiking color="primary" />}
-                      title="Ready for an Adventure?"
-                      titleTypographyProps={{ variant: 'h5', color: 'primary', fontWeight: 'bold' }}
-                      sx={{ pb: 0 }}
-                    />
-                    <CardContent>
-                      <Typography fontSize="1.1rem" paragraph gutterBottom>
-                        Sign up for the PyTamaro Summer Academy.
-                      </Typography>
-                      <Typography fontSize="1.1rem" paragraph gutterBottom>
-                        A unique chance to combine learning with PyTamaro
-                        and a hike on Monte Tamaro!
-                      </Typography>
-                    </CardContent>
-                  </Grid>
-                  <Grid xs={12} md={5}>
-                    <Box padding={2} position="relative" height="12rem" alignItems="center" justifyContent="center" display="flex">
-                      <Image
-                        src="/AlpeFoppa.jpg"
-                        alt="Alpe Foppa panorama"
-                        fill
-                        style={{
-                          objectFit: 'contain',
-                          padding: theme.spacing(1),
-                        }}
-                      />
-                    </Box>
-                  </Grid>
-                </Grid>
-              </CardActionArea>
             </Card>
           </Paper>
         </Stack>

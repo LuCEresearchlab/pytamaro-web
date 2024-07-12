@@ -22,6 +22,13 @@ export const toolboxDemoActivityVariant = {
   version: 'v1',
 };
 
+export const printableGraphicActivityVariant = {
+  authorSlug: 'luce',
+  activitySlug: 'printable-graphic',
+  language: 'en',
+  version: 'v1',
+};
+
 export function isToolboxActivity(variant: ActivityVariant) {
   const reference = toolboxActivityVariant('');
   return variant.authorSlug === reference.authorSlug
@@ -33,5 +40,6 @@ export function isToolboxActivity(variant: ActivityVariant) {
 export function isSpecialActivity(variant: ActivityVariant) {
   return isToolboxActivity(variant)
   || isEqual(variant, rapidPlaygroundActivityVariant)
-  || isEqual(variant, toolboxDemoActivityVariant);
+  || isEqual(variant, toolboxDemoActivityVariant)
+  || isEqual(variant, printableGraphicActivityVariant);
 }
