@@ -96,6 +96,7 @@ function ImgElement({ dataURI } : { dataURI: string }) {
         maxWidth: '100%',
         maxHeight: '600px',
         display: 'flex',
+        position: 'relative',
         padding: theme.spacing(0.5),
         ...CHECKERED_PATTERN,
       }}
