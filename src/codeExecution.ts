@@ -32,7 +32,7 @@ export function isExecutionFailed(res: ExecutionResponse): res is FailedExecutio
  * Update this version at every change to the process below
  * that turns cells into files for execution.
  */
-export const CODE_EXECUTION_CELLS_TO_FILES_VERSION = 6;
+export const CODE_EXECUTION_CELLS_TO_FILES_VERSION = 7;
 
 export const DRIVER_FILE = 'driver';
 export const PREVIOUS_CELLS_FILE = 'previous_cells';
@@ -62,7 +62,7 @@ function toolboxSingleModuleName(fn: BareboneToolboxFunction) {
 
 export async function importedToolboxNames(source: string) {
   try {
-    const imports : PythonName[] = await imported_names(source);
+    const imports: PythonName[] = await imported_names(source);
     const toolboxImports = imports.filter(({ module }) => module === TOOLBOX_FILE);
     return uniq(toolboxImports.map(({ name }) => name));
   } catch {
@@ -91,12 +91,15 @@ async function toolboxDriverSource(functions: BareboneToolboxFunction[]) {
   return joinLines(sortedFunctions.map((fn) => `from ${toolboxSingleModuleName(fn)} import ${fn.name}`));
 }
 
-export async function toolboxFiles(functions: BareboneToolboxFunction[]) {
+export async function toolboxFiles(
+  functions: BareboneToolboxFunction[],
+  noEmptyToolbox: boolean = false,
+) {
   const singleFiles = functions.map((fn) => ({
     name: `${toolboxSingleModuleName(fn)}.py`,
     content: fn.source,
   }));
-  if (singleFiles.length === 0) {
+  if (singleFiles.length === 0 && noEmptyToolbox) {
     return [];
   }
   const toolboxMainFile = {

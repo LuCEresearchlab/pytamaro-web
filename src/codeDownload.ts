@@ -27,7 +27,8 @@ export default async function downloadSourceCode(
   } else {
     const files = [
       mainFile,
-      ...await toolboxFiles(toolboxFunctions),
+      // Do not include the toolbox file if it is empty
+      ...await toolboxFiles(toolboxFunctions, true),
       ...extraPythonFiles,
     ];
     const zip = new JSZip();
