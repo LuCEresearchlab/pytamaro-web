@@ -11,7 +11,8 @@ import NavigationBar from '../components/NavigationBar';
 import { listAuthorsProfiles } from '../src/fs-content/authors';
 import { AuthorProfile } from '../src/schemas/authorSchema';
 import { translationProps } from '../src/serverSideTranslationProps';
-import { authorPathname } from '../src/urlUtils';
+import { printableGraphicActivityVariant } from '../src/specialActivities';
+import { activityVariantPathname, authorPathname } from '../src/urlUtils';
 
 const collaborators = [
   {
@@ -92,6 +93,12 @@ const changelogEntries = [
     icon: 'Category',
     title: 'Searching activities by concepts',
     desc: 'The platform now supports tagging activities with concepts. You can search for activities that teach a specific concept, or filter out activities that teach a concept you want to exclude.',
+  },
+  {
+    date: '2024-07-12',
+    icon: 'Printer',
+    title: 'Print ready-to-cut pieces from your own graphic',
+    desc: <span>A new <Link href={activityVariantPathname(printableGraphicActivityVariant)}>automatic system</Link> creates ready-to-cut pieces from any PyTamaro graphic. Teachers can quickly print them and have students compose the graphic starting from atomic shapes!</span>,
   },
 ];
 
