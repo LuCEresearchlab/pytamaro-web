@@ -239,6 +239,7 @@ export default function Home({ welcomeCurriculum, activities } :
                       <Carousel
                         interval={2000}
                         indicators={false}
+                        navButtonsAlwaysInvisible
                       >
                         {featuredActivities.filter((activity) => activity.slug !== 'swiss-flag').map((activity) => (
                           <CompactActivityVariantCard
