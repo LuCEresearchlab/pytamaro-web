@@ -22,6 +22,7 @@
     "@emotion/styled": "^11.10.5",
     "@fontsource/fira-code": "^5.0.2",
     "@fontsource/fira-sans": "^5.0.2",
+    "@fontsource/material-icons": "^5.0.18",
     "@formatjs/intl-localematcher": "^0.5.1",
     "@hapi/topo": "^6.0.2",
     "@monaco-editor/react": "^4.5.1",
