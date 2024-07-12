@@ -8,7 +8,7 @@ import {
   Container,
   Grid,
   Stack,
-  Typography
+  Typography,
 } from '@mui/material';
 import Head from 'next/head';
 import Image from 'next/image';
