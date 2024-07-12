@@ -123,7 +123,7 @@ export function pytamaroDocsUrl() {
 }
 
 export function teachingResourcesPathname() {
-  return '/teaching';
+  return '/teaching-resources';
 }
 
 /* Toolbox */
