@@ -49,5 +49,7 @@
     "doNow": "Do Now!",
     "saveAndContinue": "Save and Continue",
     "didIt": "I did it!",
-    "yourAnswer": "Your answer"
+    "yourAnswer": "Your answer",
+    "activityInProgress": "Activity in progress",
+    "activityCompleted": "Activity completed"
 }

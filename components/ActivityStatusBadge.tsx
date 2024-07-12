@@ -51,7 +51,7 @@ export default function ActivityStatusBadge({
 } :
 { children: JSX.Element, status: ActivityStatus, locked ?: boolean,
   small ?: boolean, noInProgress ?: boolean }) {
-  const { t } = useLocalTranslation(['curriculum']);
+  const { t } = useLocalTranslation();
   if (!locked && (status === 'initial' || (noInProgress && status === 'in-progress'))) {
     return children;
   }

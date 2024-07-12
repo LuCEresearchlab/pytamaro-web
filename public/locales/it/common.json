@@ -48,5 +48,7 @@
     "doNow": "Da fare adesso!",
     "saveAndContinue": "Salva e continua",
     "didIt": "L'ho fatto!",
-    "yourAnswer": "La tua risposta"
+    "yourAnswer": "La tua risposta",
+    "activityInProgress": "Attività in corso",
+    "activityCompleted": "Attività completata"
 }
