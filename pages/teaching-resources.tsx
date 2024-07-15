@@ -122,7 +122,7 @@ export default function Teaching() {
                       display="flex"
                     >
                       <Image
-                        src="/printable-monkey.png"
+                        src="/paper-cutouts.png"
                         alt="Print and cut out Monkey"
                         fill
                         style={{
