@@ -86,6 +86,7 @@ export default function PyTamaroAPI({
           fontSize: smallerFont ? '0.8em' : '1em',
           fontFamily: theme.pytamaro.monospaceFontFamily,
         }}
+        translate="no"
       >
         {name}
       </Typography>

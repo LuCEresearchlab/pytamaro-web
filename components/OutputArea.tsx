@@ -189,7 +189,7 @@ export default function OutputArea(
         ...(dimmed ? { opacity: theme.palette.action.disabledOpacity } : {}),
       }}
     >
-      <div className="output-area">
+      <div className="output-area" translate="no">
         {stdout.split(pytamaroDataUriRegex).filter(negate(isEmpty)).map((chunk, idx) => (
           chunk.startsWith(dataURIPrefix('image/png')) || chunk.startsWith(dataURIPrefix('image/gif'))
             ? <ImgElement key={idx} dataURI={chunk} />

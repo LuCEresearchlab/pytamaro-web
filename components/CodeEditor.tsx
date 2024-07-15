@@ -212,7 +212,7 @@ export default function CodeEditor({
   }, 100);
 
   return (
-    <div ref={containerRef}>
+    <div ref={containerRef} translate="no">
       <Editor
         language={LANGUAGE}
         theme="luce"
