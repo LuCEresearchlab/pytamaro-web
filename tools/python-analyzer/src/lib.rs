@@ -1,7 +1,7 @@
 use wasm_bindgen::prelude::*;
 extern crate console_error_panic_hook;
 use rustpython_parser::{Mode, parse as parser_parse};
-use rustpython_parser::ast::{Visitor, Stmt, StmtImportFrom, StmtFunctionDef, Expr, ExprCall, ExprConstant};
+use rustpython_parser::ast::{Visitor, Stmt, StmtImportFrom, StmtFunctionDef, Expr, ExprCall, ExprConstant, Arguments, ArgWithDefault};
 use serde::{Deserialize, Serialize};
 pub fn start() {
     console_error_panic_hook::set_once();
@@ -17,10 +17,13 @@ export interface PythonFunction {
     name: string;
     args: PythonFunctionArgument[];
     return_type_str: string;
+    docstring: string;
 };
 export interface PythonFunctionArgument {
     name: string;
     type_str: string;
+    default: string | undefined;
+    variable_length: boolean;
 };
 "#;
 
@@ -48,16 +51,40 @@ struct PythonFunction {
     name: String,
     args: Vec<PythonFunctionArgument>,
     return_type_str: String,
+    docstring: String,
 }
 
 #[derive(Serialize, Deserialize)]
 struct PythonFunctionArgument {
     name: String,
     type_str: String,
+    default: Option<String>,
+    variable_length: bool,
 }
 
-fn get_type_str(optional_expr: Option<Box<Expr>>) -> String {
-    optional_expr.map_or(String::new(), |expr| expr.to_string())
+fn get_type_str(optional_expr: &Option<Box<Expr>>) -> String {
+    optional_expr.as_ref().map_or_else(|| String::new(), |expr| expr.to_string())
+}
+
+fn argument_with_default(arg: &ArgWithDefault) -> PythonFunctionArgument {
+    PythonFunctionArgument {
+        name: arg.def.arg.to_string(),
+        type_str: get_type_str(&arg.def.annotation),
+        default: arg.default.as_ref().map(|expr| expr.to_string()),
+        variable_length: false,
+    }
+}
+
+fn arguments(ast_args: &Arguments) -> Vec<PythonFunctionArgument> {
+    let args = ast_args.args.iter().map(argument_with_default);
+    let vararg = ast_args.vararg.as_ref().map(|arg| PythonFunctionArgument {
+        name: arg.arg.to_string(),
+        type_str: get_type_str(&arg.annotation),
+        default: None,
+        variable_length: true,
+    });
+    let kwonlyargs = ast_args.kwonlyargs.iter().map(argument_with_default);
+    return args.chain(vararg).chain(kwonlyargs).collect(); 
 }
 
 struct FunctionDefinitionsCollector {
@@ -67,11 +94,16 @@ impl Visitor for FunctionDefinitionsCollector {
     fn visit_stmt_function_def(&mut self, node: StmtFunctionDef) {
         self.functions.push(PythonFunction {
             name: node.name.to_string(),
-            args: node.args.args.iter().map(|arg| PythonFunctionArgument {
-                name: arg.def.arg.to_string(),
-                type_str: get_type_str(arg.def.annotation.clone())
-            }).collect(),
-            return_type_str: get_type_str(node.returns.clone()),
+            args: arguments(&node.args),
+            return_type_str: get_type_str(&node.returns),
+            docstring: node.body.first().and_then(|stmt| {
+                if let Stmt::Expr(expr) = stmt {
+                    if let Expr::Constant(constant) = expr.value.as_ref() {
+                        return constant.value.as_str().map(|s| s.to_string());
+                    }
+                }
+                return None;
+            }).unwrap_or(String::new()),
         });
     }
 }
@@ -81,9 +113,10 @@ struct CalledNamesCollector {
 }
 impl Visitor for CalledNamesCollector {
     fn visit_expr_call(&mut self, node: ExprCall) {
-        if let Expr::Name(name) = *node.func {
+        if let Expr::Name(name) = &*node.func {
             self.names.push(name.id.to_string());
         }
+        self.generic_visit_expr_call(node);
     }
 }
 
