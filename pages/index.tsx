@@ -30,7 +30,7 @@ import anime from 'animejs';
 import { shuffle } from 'lodash';
 import { useEffect } from 'react';
 import Carousel from 'react-material-ui-carousel';
-import CompactActivityVariantCard from '../components/ActivityCardMedia';
+import ActivityCardMedia from '../components/ActivityCardMedia';
 import { ActivityCardActionAreaContent } from '../components/curriculum/ActivityCard';
 import { allActivities } from '../src/curricula';
 import { basicActivities, listVisibleActivities } from '../src/fs-content/activities';
@@ -242,7 +242,7 @@ export default function Home({ welcomeCurriculum, activities } :
                         navButtonsAlwaysInvisible
                       >
                         {featuredActivities.filter((activity) => activity.slug !== 'swiss-flag').map((activity) => (
-                          <CompactActivityVariantCard
+                          <ActivityCardMedia
                             key={activity.slug}
                             activity={activity}
                             variant={activity.variants[0]}
