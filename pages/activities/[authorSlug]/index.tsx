@@ -1,5 +1,7 @@
 import ViewCompactIcon from '@mui/icons-material/ViewCompact';
 import {
+  Box,
+  Button,
   Stack,
   ToggleButton, Tooltip, Typography,
 } from '@mui/material';
@@ -53,6 +55,7 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
   const [allowedLanguages, setAllowedLanguages] = useState<string[]>(Array.from(languages));
   const [allowedConcepts, setAllowedConcepts] = useState<string[]>(Object.keys(knownConcepts));
   const [compactView, setCompactView] = useState<CompactMode>('normal');
+  const [initialConcepts, setInitialConcepts] = useState(conceptsOptions);
 
   useEffect(() => {
     setFilteredActivities(
@@ -91,10 +94,11 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
       <Grid container spacing={2}>
         <Grid xs={12} lg={6}>
           <SelectAll
+            key={Object.keys(initialConcepts).join()}
             title="Concepts"
             placeholder="Concept"
             options={conceptsOptions}
-            initialSelection={conceptsOptions}
+            initialSelection={initialConcepts}
             onSelectionChange={setAllowedConcepts}
             maxTagsShown={5}
           />
@@ -127,6 +131,20 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
       <Typography color="textSecondary" textAlign="center" paddingTop={2}>
         {`${format(filteredActivities.length, 'activity matches', 'activities match')} the search criteria`}
       </Typography>
+      {filteredActivities.length === 0 && allowedConcepts.length > 0
+        && allowedAuthors.length > 0 && allowedLanguages.length > 0 && (
+        <Box textAlign="center">
+          <Typography gutterBottom>
+            Activities might not yet be tagged with the selected concepts!
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={() => { setInitialConcepts([]); setAllowedConcepts([]); }}
+          >
+            Remove filter on concepts
+          </Button>
+        </Box>
+      )}
     </Stack>
   );
 }
