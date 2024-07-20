@@ -12,7 +12,6 @@ import {
   CardContent,
   CardHeader,
   Container,
-  Link,
   Typography,
   styled,
 } from '@mui/material';
@@ -163,14 +162,22 @@ export default function MyProgress({ activities, curricula } :
             iconMapping={{
               success: <TipsAndUpdates fontSize="inherit" />,
             }}
-            sx={{ my: 3 }}
+            sx={{ my: 3, display: 'flex', '.MuiAlert-message': { pt: 0.5 } }}
           >
-            Do you want to export/import all your data? Review or change your privacy settings?
-            Visit the
-            {' '}
-            <Link href={myDataPathname()}>My Data</Link>
-            {' '}
-            page.
+            <Typography component="span" mr={2}>
+              Do you want to export or import all your data? Review or change your privacy settings?
+            </Typography>
+            <Button
+              color="success"
+              variant="outlined"
+              size="small"
+              href={myDataPathname()}
+              sx={{ whiteSpace: 'pre-wrap' }}
+            >
+              Go To
+              {' '}
+              <span style={{ fontWeight: 'bold' }}>My Data</span>
+            </Button>
           </Alert>
         </Container>
       </Box>
