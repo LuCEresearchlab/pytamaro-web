@@ -1,3 +1,5 @@
+import {ToolboxFunction} from "../localStorage/schema.ts";
+
 export interface EnhancedStr {
     content: string;
     images?: Image[];
@@ -40,5 +42,57 @@ export enum json_obj_type {
     module = "Module",
     function = "Function",
     type = "Type",
-    variable = "Variable"
+    variable = "Variable",
+    toolbox = "ToolboxFunction"
+}
+
+export function functionSignature(fn: Function, showOptional: boolean, showType: boolean): string {
+    let signature: string = fn.name + " ("
+    if (fn.parameters && fn.parameters.length != 0) {
+        for (let param of fn.parameters) {
+            let typeString = (showType && param.type ? (": " + param.type) : "")
+            if (param.default_value != undefined && showOptional) {
+                signature += param.name + typeString + " = " + param.default_value + ", "
+            } else if (param.default_value == undefined) {
+                signature += param.name + typeString + ", "
+            }
+        }
+        signature = signature.substring(0, signature.length - 2)
+    }
+    signature += ")"
+    if (fn.return_type) {
+        signature += "->" + (showType ? fn.return_type : "");
+    }
+    return signature
+}
+
+export function functionMandatoryParameter(fn: Function){
+    let count = 0;
+    if (fn.parameters && fn.parameters.length != 0) {
+        for (let param of fn.parameters) {
+            if (param.default_value == undefined) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+
+export function translateToFunction(fn: ToolboxFunction): Function {
+    let description: EnhancedStr = {content: fn.description}
+    let parameters: Variable[] = []
+
+    for (let arg of fn.args) {
+        parameters.push({
+            name: arg.name,
+            type: arg.typeUnparsed,
+        });
+    }
+    return {
+        name: fn.name,
+        description: description,
+        return_type: fn.returnTypeUnparsed,
+        parameters: parameters
+    }
 }

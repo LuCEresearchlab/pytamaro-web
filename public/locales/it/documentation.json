@@ -1,19 +1,23 @@
 {
   "documentationPopUp": {
-    "clickToSeeMore": "Clickare per mostrare dettagli",
-    "parameterReturn": "Parametri/Ritorno",
-    "type": "Tipo",
-    "description": "Descrizione",
-    "defaultValue": "Valore di default",
-    "optionalParameters": "Parameteri opzionali",
-    "module": "Modulo",
-    "function": "Funzione",
-    "variable": "Variabile",
-    "returnValue": "Valore ritornato",
-    "loading": "Caricamento della documentazione...",
-    "failed": "Caricamento della documentazione non riuscito."
-  },
-  "PyTamaroDocumentation": "Documentazione PyTamaro",
-  "hide": "Nascondi",
-  "show": "Mostra"
+        "clickToSeeMore": "Clickare per mostrare dettagli",
+        "parameterReturn": "Parametri/Ritorno",
+        "type": "Tipo",
+        "description": "Descrizione",
+        "defaultValue": "Valore di default",
+        "optionalParameters": "Parameteri opzionali",
+        "module": "Modulo",
+        "function": "Funzione",
+        "variable": "Variabile",
+        "returnValue": "Valore ritornato",
+        "loading": "Caricamento della documentazione...",
+        "failed": "Caricamento della documentazione non riuscito.",
+        "viewDetails": "Mostra Dettagli",
+        "viewOriginalActivity": "Mostra Attività Di Origine",
+        "implementation": "Implementazione",
+        "usage": "Uso"
+    },
+    "PyTamaroDocumentation": "Documentazione PyTamaro",
+    "hide": "Nascondi",
+    "show": "Mostra"
 }

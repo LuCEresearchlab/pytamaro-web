@@ -1,20 +1,23 @@
 import {
     Box,
     Card,
-    CardContent, FormControlLabel,
-    FormGroup, Switch,
+    CardContent,
     Table,
     TableBody,
     TableCell,
     TableHead,
-    TableRow,
+    TableRow, Tooltip,
     Typography,
 } from '@mui/material';
 import theme from '../../src/theme';
 import {Function, json_obj_type, Type, Variable} from '../../src/JsonAst/Json_structure';
-import {JSXElementConstructor, ReactElement, ReactFragment, ReactPortal, useState} from "react";
+import React, {useState} from "react";
 import useLocalTranslation from "../../src/localStorage/useLocalTranslation";
 import {TFunction} from "i18next";
+import {Settings, Visibility} from "@mui/icons-material";
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import {functionSignature} from "../../src/JsonAst/Json_structure";
 
 let t: TFunction<string[], undefined>
 
@@ -50,13 +53,17 @@ export default function DocumentationCardContent({
         <CardContent sx={{pb: 1, maxWidth: '100ch'}}>
             <Box display="flex">
                 <Typography color="text.secondary" component="span" mr="1ch" fontWeight="bold">
-                    {t("documentationPopUp."+obj_type?.toLowerCase())}
+                    {t("documentationPopUp." + obj_type?.toLowerCase())}
                 </Typography>
                 <Typography component="span" fontFamily={theme.pytamaro.monospaceFontFamily} bgcolor="#e7f2fa"
                             borderTop="3px solid #6ab0de">
                     {(obj_type == json_obj_type.function) ? functionSignature(obj, showOptional, showType) : obj.name}
                 </Typography>
-                {LinkButton}
+                {obj_type == json_obj_type.function ?
+                    <OptionButton fn={obj as Function}
+                                  optional={{show: showOptional, toggle: toggleShowOptional}}
+                                  types={{show: showType, toggle: toggleShowType}} LinkButton={LinkButton}/> : null}
+                {/*{LinkButton}*/}
             </Box>
             <Typography color="text.secondary">
                 {obj.description ? obj.description?.content : ""}
@@ -74,58 +81,24 @@ export default function DocumentationCardContent({
                 </figure>)
             }
             {obj_type == json_obj_type.function ?
-                <FunctionSpecificCard fn={obj as Function}
-                                      optional={{show: showOptional, toggle: toggleShowOptional}}
-                                      types={{show: showType, toggle: toggleShowType}}/> : null}
+                <FunctionSpecificCard fn={obj as Function} showOptional={showOptional} showType={showType}/> : null}
             {ImplementationAndUsage}
         </CardContent>
     );
 }
 
-function FunctionSpecificCard({fn, optional, types}: Readonly<{
+function FunctionSpecificCard({fn, showOptional, showType}: Readonly<{
     fn: Function,
-    optional: {
-        show: boolean,
-        toggle: () => void
-    },
-    types: {
-        show: boolean,
-        toggle: () => void
-    }
+    showOptional: boolean,
+    showType: boolean
 }>): JSX.Element {
-    return <> <Card sx={{px: 2, my: 2}}>
-        <ParametersTable params={fn.parameters} return_type={fn.return_type}
+    return <Card sx={{px: 2, my: 2}}>
+        <ParametersTable params={fn.parameters}
+                         return_type={fn.return_type}
                          return_description={fn.return_description}
-                         showOptional={optional.show}
-                         showType={types.show}/>
+                         showOptional={showOptional}
+                         showType={showType}/>
     </Card>
-        {hasDefault(fn.parameters) ?
-            <Box sx={{my: 2}}>
-                <Typography color="text.secondary" fontWeight="bold" component="span"
-                            gutterBottom>
-                    {t("documentationPopUp.optionalParameters")}
-                </Typography>
-                <FormGroup sx={{display: 'inline', marginLeft: 2}}>
-                    <FormControlLabel
-                        control={<Switch checked={optional.show} onChange={optional.toggle}/>}
-                        label={<Typography color="text.secondary">{optional.show ? t("hide") : t("show")}</Typography>}
-                    />
-                </FormGroup>
-            </Box> : null}
-
-        <Box sx={{my: 2}}>
-            <Typography color="text.secondary" fontWeight="bold" component="span"
-                        gutterBottom>
-                {t("documentationPopUp.type")}
-            </Typography>
-            <FormGroup sx={{display: 'inline', marginLeft: 2}}>
-                <FormControlLabel
-                    control={<Switch checked={types.show} onChange={types.toggle}/>}
-                    label={<Typography color="text.secondary">{types.show ? t("hide") : t("show")}</Typography>}
-                />
-            </FormGroup>
-        </Box>
-    </>
 }
 
 function ParametersTable({params, return_type, return_description, showOptional, showType}: Readonly<{
@@ -198,24 +171,56 @@ function parameterRow(arg: Variable, showOptional: boolean, showType: boolean, s
     </TableRow>
 }
 
-function functionSignature(fn: Function, showOptional: boolean, showType: boolean): string {
-    let signature: string = fn.name + " ("
-    if (fn.parameters) {
-        for (let param of fn.parameters) {
-            let typeString = (showType && param.type ? (": " + param.type) : "")
-            if (param.default_value != undefined && showOptional) {
-                signature += param.name + typeString + " = " + param.default_value + ", "
-            } else if (param.default_value == undefined) {
-                signature += param.name + typeString + ", "
-            }
-        }
-        signature = signature.substring(0, signature.length - 2)
-    }
-    signature += ")"
-    if (fn.return_type) {
-        signature += "->" + (showType ? fn.return_type : "");
-    }
-    return signature
+// function functionSignature(fn: Function, showOptional: boolean, showType: boolean): string {
+//     let signature: string = fn.name + " ("
+//     if (fn.parameters && fn.parameters.length != 0) {
+//         for (let param of fn.parameters) {
+//             let typeString = (showType && param.type ? (": " + param.type) : "")
+//             if (param.default_value != undefined && showOptional) {
+//                 signature += param.name + typeString + " = " + param.default_value + ", "
+//             } else if (param.default_value == undefined) {
+//                 signature += param.name + typeString + ", "
+//             }
+//         }
+//         signature = signature.substring(0, signature.length - 2)
+//     }
+//     signature += ")"
+//     if (fn.return_type) {
+//         signature += "->" + (showType ? fn.return_type : "");
+//     }
+//     return signature
+// }
+
+function OptionButton({fn, optional, types, LinkButton = null}: Readonly<{
+    fn: Function,
+    optional: {
+        show: boolean,
+        toggle: () => void
+    },
+    types: {
+        show: boolean,
+        toggle: () => void
+    },
+    LinkButton?: JSX.Element | null,
+}>): JSX.Element {
+    return <ToggleButtonGroup
+        aria-label="text formatting"
+        sx={{ml: 'auto'}}
+    >
+        {hasDefault(fn.parameters) ?
+            <ToggleButton value="optional" selected={optional.show} onChange={optional.toggle} aria-label="bold" size="small">
+                <Tooltip
+                    title={(optional.show ? t("hide") : t("show")) + " " + t("documentationPopUp.optionalParameters")}>
+                    <Settings/>
+                </Tooltip>
+            </ToggleButton> : null}
+        <ToggleButton value="types" selected={types.show} onChange={types.toggle} aria-label="italic" size="small">
+            <Tooltip title={(types.show ? t("hide") : t("show")) + " " + t("documentationPopUp.type")}>
+                <Visibility/>
+            </Tooltip>
+        </ToggleButton>
+        {LinkButton}
+    </ToggleButtonGroup>
 }
 
 function hasDefault(parameters: Variable[] | undefined): boolean {

@@ -1,14 +1,18 @@
 import {Box, Button, FormControlLabel, FormGroup, Switch, Typography,} from '@mui/material';
 import Link from 'next/link';
 import {useState} from 'react';
-import {ToolboxFunction} from '../../src/localStorage/schema.ts';
-import {toolboxActivityVariant} from '../../src/specialActivities.ts';
-import {activityVariantPathname, toolboxFunctionPathname} from '../../src/urlUtils.ts';
-import useReadOnlyTemporaryActivity from '../../src/useReadOnlyTemporaryActivity.ts';
-import CodeEditor from '../CodeEditor.tsx';
-import SolitaryCodeCell, {initialStateSingleCell} from '../SolitaryCodeCell.tsx';
-import {EnhancedStr, Function, json_obj_type, Variable} from '../../src/JsonAst/Json_structure.ts';
-import DocumentationCardContent from "./DocumentationCardContent.tsx";
+import {ToolboxFunction} from '../../src/localStorage/schema';
+import {toolboxActivityVariant} from '../../src/specialActivities';
+import {activityVariantPathname, toolboxFunctionPathname} from '../../src/urlUtils';
+import useReadOnlyTemporaryActivity from '../../src/useReadOnlyTemporaryActivity';
+import CodeEditor from '../CodeEditor';
+import SolitaryCodeCell, {initialStateSingleCell} from '../SolitaryCodeCell';
+import {json_obj_type, translateToFunction} from '../../src/JsonAst/Json_structure';
+import DocumentationCardContent from "./DocumentationCardContent";
+import {TFunction} from "i18next";
+import useLocalTranslation from "../../src/localStorage/useLocalTranslation";
+
+let t: TFunction<string[], undefined>
 
 export default function ToolboxFunctionCardContent(
     {
@@ -19,7 +23,8 @@ export default function ToolboxFunctionCardContent(
             summary?: boolean
         }>,
 ) {
-    const translated = translate(fn)
+    const translated = translateToFunction(fn)
+    t = useLocalTranslation().t;
 
     return (
         <DocumentationCardContent obj={translated} obj_type={json_obj_type.function}
@@ -27,24 +32,6 @@ export default function ToolboxFunctionCardContent(
                                   LinkButton={LinkButton(fn, summary)}
                                   showTypeInitial={true}/>
     );
-}
-
-function translate(fn: ToolboxFunction): Function {
-    let description: EnhancedStr = {content: fn.description}
-    let parameters: Variable[] = []
-
-    for (let arg of fn.args) {
-        parameters.push({
-            name: arg.name,
-            type: arg.typeUnparsed,
-        });
-    }
-    return {
-        name: fn.name,
-        description: description,
-        return_type: fn.returnTypeUnparsed,
-        parameters: parameters
-    }
 }
 
 function LinkButton(fn: ToolboxFunction, summary: boolean): JSX.Element {
@@ -56,7 +43,7 @@ function LinkButton(fn: ToolboxFunction, summary: boolean): JSX.Element {
         size="small"
         sx={{ml: 'auto'}}
     >
-        {summary ? 'View Details' : 'View Original Activity'}
+        {summary ? t('documentationPopUp.viewDetails') : t('documentationPopUp.viewOriginalActivity')}
     </Button>
 }
 
@@ -72,12 +59,12 @@ function ImplementationAndUsage(fn: ToolboxFunction, summary: boolean) {
     return <>{!summary && (
         <Box sx={{my: 2}}>
             <Typography color="text.secondary" fontWeight="bold" component="span">
-                Implementation
+                {t("documentationPopUp.implementation")}
             </Typography>
             <FormGroup sx={{display: 'inline', marginLeft: 2}}>
                 <FormControlLabel
                     control={<Switch checked={showSource} onChange={toggleShowSource}/>}
-                    label={<Typography color="text.secondary">{showSource ? 'Hide' : 'Show'}</Typography>}
+                    label={<Typography color="text.secondary">{showSource ? t('hide') : t('show')}</Typography>}
                 />
             </FormGroup>
             {showSource && (
@@ -90,13 +77,13 @@ function ImplementationAndUsage(fn: ToolboxFunction, summary: boolean) {
         </Box>
     )}
         <Typography color="text.secondary" fontWeight="bold" component="span" gutterBottom>
-            Usage
+            {t("documentationPopUp.usage")}
         </Typography>
         {!summary && (
             <FormGroup sx={{display: 'inline', marginLeft: 2}}>
                 <FormControlLabel
                     control={<Switch checked={showUsage} onChange={toggleShowUsage}/>}
-                    label={<Typography color="text.secondary">{showUsage ? 'Hide' : 'Show'}</Typography>}
+                    label={<Typography color="text.secondary">{showUsage ? t('hide') : t('show')}</Typography>}
                 />
             </FormGroup>
         )}

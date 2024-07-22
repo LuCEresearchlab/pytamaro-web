@@ -323,7 +323,7 @@ export default function Home({ welcomeCurriculum, activities } :
                     <Stack spacing={2}>
                       <HomePagePrimaryButton icon={<TerminalIcon />} text="Try in the browser" href="/playground" />
                       <HomePagePrimaryButton icon={<InstallDesktop />} text="How to Install & FAQ" href="/install" />
-                      <HomePagePrimaryButton icon={<MenuBookIcon />} text="Documentation" href={pytamaroDocsUrl()} />
+                      <HomePagePrimaryButton icon={<MenuBookIcon />} text="Documentation" href="/documentation" /> {/*pytamaroDocsUrl()*/}
                     </Stack>
                   </Box>
                 </Grid>

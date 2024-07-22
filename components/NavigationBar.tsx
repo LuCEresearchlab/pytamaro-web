@@ -41,7 +41,7 @@ const smallScreensNavItems = [
   ...navItems,
   {
     name: 'documentation',
-    url: pytamaroDocsUrl(),
+    url: '/documentation'//pytamaroDocsUrl(),
   },
   {
     name: 'playground',
