@@ -1,12 +1,14 @@
 import ViewCompactIcon from '@mui/icons-material/ViewCompact';
 import {
+  Box,
+  Button,
   Stack,
   ToggleButton, Tooltip, Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { countBy, orderBy } from 'lodash';
 import { useEffect, useState } from 'react';
-import ActivitiesGallery from '../../../components/ActivitiesGallery';
+import ActivitiesGallery, { CompactMode } from '../../../components/ActivitiesGallery';
 import NavigationBar from '../../../components/NavigationBar';
 import SelectAll from '../../../components/SelectAll';
 import { visibleActivities } from '../../../src/fs-content/activities';
@@ -52,7 +54,8 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
   const [allowedAuthors, setAllowedAuthors] = useState<string[]>([defaultAuthorSlug]);
   const [allowedLanguages, setAllowedLanguages] = useState<string[]>(Array.from(languages));
   const [allowedConcepts, setAllowedConcepts] = useState<string[]>(Object.keys(knownConcepts));
-  const [compactView, setCompactView] = useState(false);
+  const [compactView, setCompactView] = useState<CompactMode>('normal');
+  const [initialConcepts, setInitialConcepts] = useState(conceptsOptions);
 
   useEffect(() => {
     setFilteredActivities(
@@ -70,13 +73,18 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
   return (
     <Stack spacing={2}>
       <NavigationBar>
-        <Tooltip arrow title="Compact View">
+        <Tooltip arrow title={compactView === 'normal' ? 'Compact View' : 'Normal View'}>
           <ToggleButton
             color="neutral"
             value="compact"
-            selected={compactView}
-            onChange={() => {
-              setCompactView(!compactView);
+            selected={compactView !== 'normal'}
+            onChange={(ev: React.MouseEvent<HTMLElement, MouseEvent>) => {
+              setCompactView((current) => {
+                if (current === 'normal') {
+                  return ev.shiftKey ? 'no-cards' : 'compact';
+                }
+                return 'normal';
+              });
             }}
           >
             <ViewCompactIcon />
@@ -86,10 +94,11 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
       <Grid container spacing={2}>
         <Grid xs={12} lg={6}>
           <SelectAll
+            key={Object.keys(initialConcepts).join()}
             title="Concepts"
             placeholder="Concept"
             options={conceptsOptions}
-            initialSelection={conceptsOptions}
+            initialSelection={initialConcepts}
             onSelectionChange={setAllowedConcepts}
             maxTagsShown={5}
           />
@@ -122,6 +131,20 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
       <Typography color="textSecondary" textAlign="center" paddingTop={2}>
         {`${format(filteredActivities.length, 'activity matches', 'activities match')} the search criteria`}
       </Typography>
+      {filteredActivities.length === 0 && allowedConcepts.length > 0
+        && allowedAuthors.length > 0 && allowedLanguages.length > 0 && (
+        <Box textAlign="center">
+          <Typography gutterBottom>
+            Activities might not yet be tagged with the selected concepts!
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={() => { setInitialConcepts([]); setAllowedConcepts([]); }}
+          >
+            Remove filter on concepts
+          </Button>
+        </Box>
+      )}
     </Stack>
   );
 }

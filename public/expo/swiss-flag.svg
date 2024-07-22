@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="320" height="320" shape-rendering="crispEdges">
+	<path fill="red" d="M0 0L320 0L320 320L0 320L0 0Z"/>
+	<path fill="white" transform="matrix(0 -1 1 0 130 260)" d="M0 0L200 0L200 60L0 60L0 0Z"/>
+	<path fill="white" transform="translate(60 130)" d="M0 0L200 0L200 60L0 60L0 0Z"/>
+</svg>

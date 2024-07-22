@@ -5,7 +5,6 @@ import {
   Card, CardActionArea,
   CardActions,
   CardContent,
-  CardMedia,
   Chip,
   IconButton,
   Typography,
@@ -16,7 +15,8 @@ import Link from 'next/link';
 import {
   BasicActivity, activityVariantId, canonicalVariantForLanguage,
 } from '../src/schemas/activitySchema';
-import { activityAssetPathname, activityPathname, activityVariantPathname } from '../src/urlUtils';
+import { activityPathname, activityVariantPathname } from '../src/urlUtils';
+import ActivityCardMedia from './ActivityCardMedia';
 import ActivityConcepts from './ActivityConcepts';
 
 const VISIBILITY_PRIORITY = {
@@ -26,12 +26,14 @@ const VISIBILITY_PRIORITY = {
   hidden: 4,
 };
 
+export type CompactMode = 'normal' | 'compact' | 'no-cards';
+
 export default function ActivitiesGallery({
-  activities, preferredLanguage = undefined, compactView = false,
+  activities, preferredLanguage = undefined, compactView = 'normal',
 } :
 { activities : BasicActivity[],
   preferredLanguage?: string,
-  compactView?: boolean
+  compactView?: CompactMode
 }) {
   // Order by visibility (lowest priority first),
   // then number of variants (highest first),
@@ -44,8 +46,10 @@ export default function ActivitiesGallery({
 
   const conceptsFrequency = countBy(sortedActivities.flatMap((a) => a.concepts));
 
+  const compact = compactView !== 'normal';
+
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={compactView === 'no-cards' ? 0.2 : 2}>
       {sortedActivities.map((activity) => {
         // Get available canonical variants for this activity,
         // trying to match the preferred language first.
@@ -67,37 +71,30 @@ export default function ActivitiesGallery({
           <Grid
             xs={12}
             sm={6}
-            md={compactView ? 3 : 4}
-            lg={compactView ? 2 : 3}
+            md={compact ? 3 : 4}
+            lg={compact ? 2 : 3}
             key={activityVariantId(seletectedVariant)}
           >
-            <Card elevation={8} sx={{ height: '100%' }}>
-              <CardActionArea
-                href={activityVariantPathname(seletectedVariant)}
-                disabled={isDraft}
-              >
-                <CardMedia
-                  component="img"
-                  height="300"
-                  image={activityAssetPathname(
-                    activity.authorSlug,
-                    activity.slug,
-                    activity.previewImage.filename,
-                  )}
-                  alt={selectedLangInfo.title}
-                  sx={{ padding: 1, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
-                />
-                { !compactView && (
-                <CardContent sx={{ pb: 0 }}>
-                  <Typography gutterBottom variant="h5" component="span" sx={{ display: 'flex' }}>
-                    {selectedLangInfo.title}
-                    {activity.visibility === 'featured'
+            {compactView === 'no-cards' ? (
+              <ActivityCardMedia activity={activity} variant={seletectedVariant} height="300" padding={1} />
+            ) : (
+              <Card elevation={8} sx={{ height: '100%' }}>
+                <CardActionArea
+                  href={activityVariantPathname(seletectedVariant)}
+                  disabled={isDraft}
+                >
+                  <ActivityCardMedia activity={activity} variant={seletectedVariant} height="300" padding={1} />
+                  { !compact && (
+                  <CardContent sx={{ pb: 0 }}>
+                    <Typography gutterBottom variant="h5" component="span" sx={{ display: 'flex' }}>
+                      {selectedLangInfo.title}
+                      {activity.visibility === 'featured'
                           && (
                           <Verified
                             sx={{ marginLeft: 1, color: 'primary.main' }}
                           />
                           )}
-                    {isDraft
+                      {isDraft
                           && (
                           <Chip
                             icon={<HourglassBottom />}
@@ -105,29 +102,30 @@ export default function ActivitiesGallery({
                             sx={{ marginLeft: 2, textTransform: 'uppercase', fontWeight: 'bold' }}
                           />
                           )}
-                  </Typography>
-                </CardContent>
+                    </Typography>
+                  </CardContent>
+                  )}
+                </CardActionArea>
+                {!compact && (
+                <CardActions>
+                  <ActivityConcepts
+                    concepts={activity.concepts}
+                    conceptsFrequency={conceptsFrequency}
+                    small
+                  />
+                  <Box style={{ marginLeft: 'auto' }} component="span">
+                    <IconButton
+                      size="small"
+                      href={activityPathname(activity.authorSlug, activity.slug)}
+                      component={Link}
+                    >
+                      <InfoIcon />
+                    </IconButton>
+                  </Box>
+                </CardActions>
                 )}
-              </CardActionArea>
-              {!compactView && (
-              <CardActions>
-                <ActivityConcepts
-                  concepts={activity.concepts}
-                  conceptsFrequency={conceptsFrequency}
-                  small
-                />
-                <Box style={{ marginLeft: 'auto' }} component="span">
-                  <IconButton
-                    size="small"
-                    href={activityPathname(activity.authorSlug, activity.slug)}
-                    component={Link}
-                  >
-                    <InfoIcon />
-                  </IconButton>
-                </Box>
-              </CardActions>
-              )}
-            </Card>
+              </Card>
+            )}
           </Grid>
         );
       })}

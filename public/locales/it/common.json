@@ -70,5 +70,7 @@
     },
     "PyTamaroDocumentation": "Documentazione PyTamaro",
     "hide": "Nascondi",
-    "show": "Mostra"
+    "show": "Mostra",
+    "activityInProgress": "Attività in corso",
+    "activityCompleted": "Attività completata"
 }

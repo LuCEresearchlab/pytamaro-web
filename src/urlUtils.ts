@@ -122,6 +122,10 @@ export function pytamaroDocsUrl() {
   return 'https://pytamaro.readthedocs.org';
 }
 
+export function teachingResourcesPathname() {
+  return '/teaching-resources';
+}
+
 /* Toolbox */
 
 export function toolboxFunctionAnchor(functionName: string) {

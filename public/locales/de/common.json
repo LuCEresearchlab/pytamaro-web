@@ -49,5 +49,7 @@
     "doNow": "Jetzt machen!",
     "saveAndContinue": "Speichern und weiter",
     "didIt": "Ich hab's getan!",
-    "yourAnswer": "Deine Antwort"
+    "yourAnswer": "Deine Antwort",
+    "activityInProgress": "Aktivität in Bearbeitung",
+    "activityCompleted": "Aktivität abgeschlossen"
 }

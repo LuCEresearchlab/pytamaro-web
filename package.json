@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "prebuild": "npm run validate-notebooks && npm run create-assets",
     "validate-notebooks": "npm run check-donow && npm run check-python-sources",
     "check-donow": "cross-env NODE_OPTIONS=--experimental-wasm-modules node --no-warnings --loader ts-node/esm tools/checkNotebookDoNow.mts",
@@ -22,6 +22,7 @@
     "@emotion/styled": "^11.10.5",
     "@fontsource/fira-code": "^5.0.2",
     "@fontsource/fira-sans": "^5.0.2",
+    "@fontsource/material-icons": "^5.0.18",
     "@formatjs/intl-localematcher": "^0.5.1",
     "@hapi/topo": "^6.0.2",
     "@monaco-editor/react": "^4.5.1",

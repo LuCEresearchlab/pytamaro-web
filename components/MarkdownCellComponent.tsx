@@ -91,7 +91,7 @@ function headerComponent(slugger: GithubSlugger, props: any, level: string) {
   const id = slugger.slug(props.children);
   return createElement(
     level,
-    { id },
+    { id: `header-${id}` },
     props.children,
   );
 }

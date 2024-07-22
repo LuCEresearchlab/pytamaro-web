@@ -1,6 +1,7 @@
 import {
   Assignment,
-  Handyman, Route, TipsAndUpdates,
+  Construction,
+  Route, TipsAndUpdates,
 } from '@mui/icons-material';
 import {
   Alert,
@@ -11,7 +12,6 @@ import {
   CardContent,
   CardHeader,
   Container,
-  Link,
   Typography,
   styled,
 } from '@mui/material';
@@ -129,7 +129,7 @@ export default function MyProgress({ activities, curricula } :
             <Grid xs={12} lg={4}>
               <ResourceCard>
                 <CardIcon>
-                  <Handyman sx={{ fontSize: th.typography.h3.fontSize }} />
+                  <Construction sx={{ fontSize: th.typography.h3.fontSize }} />
                 </CardIcon>
                 <CardHeader
                   title="My Toolbox"
@@ -162,14 +162,22 @@ export default function MyProgress({ activities, curricula } :
             iconMapping={{
               success: <TipsAndUpdates fontSize="inherit" />,
             }}
-            sx={{ my: 3 }}
+            sx={{ my: 3, display: 'flex', '.MuiAlert-message': { pt: 0.5 } }}
           >
-            Do you want to export/import all your data? Review or change your privacy settings?
-            Visit the
-            {' '}
-            <Link href={myDataPathname()}>My Data</Link>
-            {' '}
-            page.
+            <Typography component="span" mr={2}>
+              Do you want to export or import all your data? Review or change your privacy settings?
+            </Typography>
+            <Button
+              color="success"
+              variant="outlined"
+              size="small"
+              href={myDataPathname()}
+              sx={{ whiteSpace: 'pre-wrap' }}
+            >
+              Go To
+              {' '}
+              <span style={{ fontWeight: 'bold' }}>My Data</span>
+            </Button>
           </Alert>
         </Container>
       </Box>

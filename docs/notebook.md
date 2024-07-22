@@ -70,3 +70,9 @@ The `id` must be unique within an activity, so that we can keep track of which "
     </div>
   </Stack>
   ```
+- To highlight a task that the user should complete you can use the `<Task>` component:
+  ```
+  <Task>
+  Fill in the missing parts of the code!
+  </Task>
+  ``` 
