@@ -1,5 +1,6 @@
 import {NextApiRequest, NextApiResponse} from "next";
-import {JsonConverter, language_string} from "../../src/JsonAst/JsonConverter";
+import {JsonConverter} from "../../src/JsonAst/JsonConverter";
+import {language_string} from "../../src/JsonAst/Json_structure.ts";
 
 const jsonConverter: JsonConverter = new JsonConverter()
 jsonConverter.init().then(() => {})

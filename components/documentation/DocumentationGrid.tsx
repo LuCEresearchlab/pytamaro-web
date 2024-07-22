@@ -1,84 +1,183 @@
 import {useEffect} from "react";
 import scrollToAnchor from "../../src/scrollToAnchor.ts";
-import {Card, Typography} from "@mui/material";
-import {json_obj_type, Function, functionMandatoryParameter} from '../../src/JsonAst/Json_structure.ts';
+import {Typography} from "@mui/material";
+import {
+    Function,
+    functionMandatoryParameter,
+    json_obj_type,
+    library_string
+} from '../../src/JsonAst/Json_structure.ts';
 import {DividedModule} from "../../src/JsonAst/JsonConverter.ts";
 import SmallDocumentationCard from "./SmallDocumentationCard.tsx";
 import Grid from "@mui/material/Unstable_Grid2";
 import {ToolboxFunction} from "../../src/localStorage/schema.ts";
 
-export default function DocumentationGrid({filterNameDesc, names, toolboxFunctions, showToolbox}: Readonly<{
+export default function DocumentationGrid({
+                                              filterNameDesc,
+                                              English,
+                                              Italian,
+                                              German,
+                                              French,
+                                              toolboxFunctions,
+                                              showToolbox
+                                          }: Readonly<{
     filterNameDesc: string,
-    names: DividedModule,
+    English: DividedModule,
+    Italian: DividedModule,
+    German: DividedModule,
+    French: DividedModule,
     toolboxFunctions: ToolboxFunction[]
     showToolbox: boolean
 }>): JSX.Element {
 
     useEffect(() => {
         scrollToAnchor();
-    }, [names]);
+    }, [[English, Italian, German, French,]]);
 
     const search = filterNameDesc.toLowerCase();
-    const filteredFunctions = names.functions.filter((fn) => {
-        return fn.name.toLowerCase().includes(search) || (isValidSignature(search, fn) && fn)
-    });
-    const filteredType = names.types.filter((type) => {
-        return type.name.toLowerCase().includes(search);
-    });
-    const filteredVariables = names.variables.filter((variable) => {
-        return variable.name.toLowerCase().includes(search);
-    });
+    const filteredEnglish = filtering(English, search);
+    const filteredItalian = filtering(Italian, search);
+    const filteredGerman = filtering(German, search);
+    const filteredFrench = filtering(French, search);
+
     const filteredToolbox = toolboxFunctions.filter((fn) => {
-        return fn.name.toLowerCase().includes(search);
+        return fn.name.toLowerCase()
+            .includes(search);
     })
 
     return (
         // eslint-disable-next-line no-nested-ternary
-        names.functions.length === 0 && names.variables.length === 0 && names.types.length === 0 && toolboxFunctions.length === 0 ? (
+        noValue(English, Italian, German, French, toolboxFunctions) ? (
             <Typography variant="body1" marginY={3}>
                 No elements found.
             </Typography>
         ) : (
-            filteredFunctions.length === 0 && filteredVariables.length === 0 && filteredType.length === 0 && filteredToolbox.length === 0 ? (
+            noValue(filteredEnglish, filteredItalian, filteredGerman, filteredFrench, filteredToolbox) ? (
                 <Typography variant="body1" marginY={3}>
                     No elements matches the search criteria.
                 </Typography>
             ) : (
-                <Grid container direction="row" justifyContent="space-around" alignItems="flex-start" spacing={3}
+                <Grid container direction="row" justifyContent="space-around"
+                      alignItems="flex-start" spacing={3}
                       columns={2}>
-
-                    {filteredFunctions.map((fn, index) => (
-                        <Grid xs={1} display="flex" justifyContent="stretch" alignItems="stretch">
-                            <SmallDocumentationCard obj={fn} obj_type={json_obj_type.function}/>
-                        </Grid>
-                    ))}
-
-                    {filteredType.map((type, index) => (
-                        <Grid xs={1} display="flex" justifyContent="stretch" alignItems="stretch">
-                            <SmallDocumentationCard obj={type} obj_type={json_obj_type.type}/>
-                        </Grid>
-                    ))}
-
-                    {filteredVariables.map((variable, index) => (
-                        <Grid xs={1} display="flex" justifyContent="stretch" alignItems="stretch">
-                            <SmallDocumentationCard obj={variable} obj_type={json_obj_type.variable}/>
-                        </Grid>))}
+                    <FunctionCards English={filteredEnglish} Italian={filteredItalian}
+                                   German={filteredGerman} French={filteredFrench}/>
+                    <VariableCards English={filteredEnglish} Italian={filteredItalian}
+                                   German={filteredGerman} French={filteredFrench}/>
+                    <TypeCards English={filteredEnglish} Italian={filteredItalian}
+                               German={filteredGerman} French={filteredFrench}/>
 
                     {showToolbox ? filteredToolbox.map((fn, index) => (
                         <Grid xs={1} display="flex" justifyContent="stretch" alignItems="stretch">
-                            <SmallDocumentationCard obj={fn} obj_type={json_obj_type.toolbox}/>
+                            <SmallDocumentationCard obj={fn} obj_type={json_obj_type.toolbox} library={library_string.Toolbox}/>
                         </Grid>)) : null}
                 </Grid>
             )
         ));
 }
 
+function FunctionCards({
+                           English,
+                           Italian,
+                           German,
+                           French
+                       }: Readonly<{
+    English: DividedModule, Italian: DividedModule, German: DividedModule, French: DividedModule,
+}>): JSX.Element {
+    return <>
+        {English.functions.map((fn, index) => (
+            <Grid xs={1} display="flex" justifyContent="stretch" alignItems="stretch">
+                <SmallDocumentationCard obj={fn} obj_type={json_obj_type.function} library={library_string.English}/>
+            </Grid>
+        ))}
+        {Italian.functions.map((fn, index) => (
+            <Grid xs={1} display="flex" justifyContent="stretch" alignItems="stretch">
+                <SmallDocumentationCard obj={fn} obj_type={json_obj_type.function} library={library_string.Italian}/>
+            </Grid>
+        ))}
+        {German.functions.map((fn, index) => (
+            <Grid xs={1} display="flex" justifyContent="stretch" alignItems="stretch">
+                <SmallDocumentationCard obj={fn} obj_type={json_obj_type.function} library={library_string.German}/>
+            </Grid>
+        ))}
+        {French.functions.map((fn, index) => (
+            <Grid xs={1} display="flex" justifyContent="stretch" alignItems="stretch">
+                <SmallDocumentationCard obj={fn} obj_type={json_obj_type.function} library={library_string.French}/>
+            </Grid>
+        ))}
+    </>
+}
+
+function TypeCards({
+                       English,
+                       Italian,
+                       German,
+                       French
+                   }: Readonly<{
+    English: DividedModule, Italian: DividedModule, German: DividedModule, French: DividedModule,
+}>): JSX.Element {
+    return <>
+        {English.types.map((type, index) => (
+            <Grid xs={1} display="flex" justifyContent="stretch" alignItems="stretch">
+                <SmallDocumentationCard obj={type} obj_type={json_obj_type.type} library={library_string.English}/>
+            </Grid>
+        ))}
+        {Italian.types.map((type, index) => (
+            <Grid xs={1} display="flex" justifyContent="stretch" alignItems="stretch">
+                <SmallDocumentationCard obj={type} obj_type={json_obj_type.type} library={library_string.Italian}/>
+            </Grid>
+        ))}
+        {German.types.map((type, index) => (
+            <Grid xs={1} display="flex" justifyContent="stretch" alignItems="stretch">
+                <SmallDocumentationCard obj={type} obj_type={json_obj_type.type} library={library_string.German}/>
+            </Grid>
+        ))}
+        {French.types.map((type, index) => (
+            <Grid xs={1} display="flex" justifyContent="stretch" alignItems="stretch">
+                <SmallDocumentationCard obj={type} obj_type={json_obj_type.type} library={library_string.French}/>
+            </Grid>
+        ))}
+    </>
+}
+
+function VariableCards({
+                           English,
+                           Italian,
+                           German,
+                           French
+                       }: Readonly<{
+    English: DividedModule, Italian: DividedModule, German: DividedModule, French: DividedModule,
+}>): JSX.Element {
+    return <>
+        {English.variables.map((variable, index) => (
+            <Grid xs={1} display="flex" justifyContent="stretch" alignItems="stretch">
+                <SmallDocumentationCard obj={variable} obj_type={json_obj_type.variable} library={library_string.English}/>
+            </Grid>
+        ))}
+        {Italian.variables.map((variable, index) => (
+            <Grid xs={1} display="flex" justifyContent="stretch" alignItems="stretch">
+                <SmallDocumentationCard obj={variable} obj_type={json_obj_type.variable} library={library_string.Italian}/>
+            </Grid>
+        ))}
+        {German.variables.map((variable, index) => (
+            <Grid xs={1} display="flex" justifyContent="stretch" alignItems="stretch">
+                <SmallDocumentationCard obj={variable} obj_type={json_obj_type.variable} library={library_string.German}/>
+            </Grid>
+        ))}
+        {French.variables.map((variable, index) => (
+            <Grid xs={1} display="flex" justifyContent="stretch" alignItems="stretch">
+                <SmallDocumentationCard obj={variable} obj_type={json_obj_type.variable} library={library_string.French}/>
+            </Grid>
+        ))}
+    </>
+}
 
 function parseSignature(signature: string): { paramTypes: string[], returnType: string | null } {
     const arrowIndex = signature.indexOf('->');
-    let paramPart = arrowIndex >= 0 ? signature.slice(0, arrowIndex).trim() : signature.trim();
-    let returnType = arrowIndex >= 0 ? signature.slice(arrowIndex + 2).trim() : null;
-
+    let paramPart = arrowIndex >= 0 ? signature.slice(0, arrowIndex)
+        .trim() : signature.trim();
+    let returnType = arrowIndex >= 0 ? signature.slice(arrowIndex + 2)
+        .trim() : null;
 
     // Remove parentheses from parameter part
     if (paramPart.startsWith('(') && paramPart.endsWith(')')) {
@@ -86,13 +185,20 @@ function parseSignature(signature: string): { paramTypes: string[], returnType: 
     }
 
     // Split parameter types by comma
-    const paramTypes = paramPart ? paramPart.split(',').map(type => type.trim()) : [];
+    const paramTypes = paramPart ? paramPart.split(',')
+        .map(type => type.trim()) : [];
 
-    return {paramTypes, returnType};
+    return {
+        paramTypes,
+        returnType
+    };
 }
 
 function isValidSignature(signature: string, func: Function): boolean {
-    const {paramTypes, returnType} = parseSignature(signature);
+    const {
+        paramTypes,
+        returnType
+    } = parseSignature(signature);
 
     // Check parameter types
     if (signature.includes("(") && signature.includes(")")) {
@@ -130,4 +236,33 @@ function isValidSignature(signature: string, func: Function): boolean {
     }
 
     return true;
+}
+
+function filtering(names: DividedModule, search: string) {
+    let result: DividedModule = {
+        functions: [],
+        types: [],
+        variables: []
+    }
+    result.functions = names.functions.filter((fn) => {
+        return fn.name.toLowerCase()
+            .includes(search) || (isValidSignature(search, fn) && fn)
+    });
+    result.types = names.types.filter((type) => {
+        return type.name.toLowerCase()
+            .includes(search);
+    });
+    result.variables = names.variables.filter((variable) => {
+        return variable.name.toLowerCase()
+            .includes(search);
+    });
+    return result
+}
+
+function noValue(English: DividedModule, Italian: DividedModule, German: DividedModule, French: DividedModule, ToolBox: ToolboxFunction[]) {
+    return (isEmpty(English) && isEmpty(Italian) && isEmpty(German) && isEmpty(French) && ToolBox.length === 0)
+}
+
+function isEmpty(names: DividedModule) {
+    return (names.functions.length === 0 && names.variables.length === 0 && names.types.length === 0)
 }

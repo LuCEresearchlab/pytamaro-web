@@ -1,16 +1,16 @@
-import {Function, json_obj_type, Module, Type, Variable} from "./Json_structure.ts";
+import {
+    Function,
+    json_obj_type,
+    language_string,
+    Module,
+    Type,
+    Variable
+} from "./Json_structure.ts";
 
 import {readdir, readFile} from 'fs/promises';
 import path from "path";
 
 const BASE_PATH: string = path.join(process.cwd(), "public/JsonDocumentation");
-
-export enum language_string {
-    English = "en",
-    French = "fr",
-    German = "de",
-    Italian = "it",
-}
 
 export interface DividedModule {
     functions: Function[],

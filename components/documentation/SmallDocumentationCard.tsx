@@ -4,7 +4,13 @@ import {
     Typography
 } from '@mui/material';
 import theme from '../../src/theme';
-import {Function, json_obj_type, translateToFunction, Type, Variable} from '../../src/JsonAst/Json_structure';
+import {
+    Function,
+    json_obj_type, library_string,
+    translateToFunction,
+    Type,
+    Variable
+} from '../../src/JsonAst/Json_structure';
 import React, {useState} from "react";
 import useLocalTranslation from "../../src/localStorage/useLocalTranslation";
 import {TFunction} from "i18next";
@@ -26,9 +32,11 @@ let t: TFunction<string[], undefined>
 export default function SmallDocumentationCard({
                                                    obj,
                                                    obj_type = json_obj_type.function,
+                                                   library = library_string.English
                                                }: Readonly<{
     obj: Function | Type | Variable | ToolboxFunction,
     obj_type?: json_obj_type,
+    library: library_string
 }>) {
     t = useLocalTranslation().t;
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -45,7 +53,10 @@ export default function SmallDocumentationCard({
 
     const confirm = useConfirm();
     const {metadata} = useLocalProfile();
-    const {list, deleteFunction} = useLocalToolbox();
+    const {
+        list,
+        deleteFunction
+    } = useLocalToolbox();
 
     const askDeleteToolboxFunction = (fn: ToolboxFunction) => {
         confirm({
@@ -64,17 +75,19 @@ export default function SmallDocumentationCard({
                         then it is perfectly fine to delete it.
                     </Typography>
                     <Typography gutterBottom>
-                        You can change all the details of this function (except for its name) using the Edit button.
+                        You can change all the details of this function (except for its name) using
+                        the Edit button.
                     </Typography>
                 </>,
             title: 'Are you sure you want to delete this function?',
             confirmationText: 'I understand, Delete',
 
-        }).then(() => {
-            logAnalyticsEvent(AnalyticsEventName.DeleteToolboxFunction, {name: fn.name});
-            storeDbEvent(EventName.DeleteToolboxFunction, metadata, {fn});
-            deleteFunction(fn);
-        });
+        })
+            .then(() => {
+                logAnalyticsEvent(AnalyticsEventName.DeleteToolboxFunction, {name: fn.name});
+                storeDbEvent(EventName.DeleteToolboxFunction, metadata, {fn});
+                deleteFunction(fn);
+            });
     };
 
     return (
@@ -84,21 +97,30 @@ export default function SmallDocumentationCard({
                 alignItems: 'baseline',
                 width: "100%"
             }}>
-                <Tooltip title={t("documentationPopUp.clickToSeeMore")} arrow placement="bottom" sx={{minWidth: '100%'}}>
-                    <Card key={obj.name + "-" + obj_type + "-"} id={obj.name} sx={{overflow: 'visible', minWidth: '100%'}}>
-                    <CardContent sx={{pb: 1, maxWidth: '100ch'}} onClick={handlePopoverOpen}>
+                <Tooltip title={t("documentationPopUp.clickToSeeMore")} arrow placement="bottom"
+                         sx={{minWidth: '100%'}}>
+                    <Card key={obj.name + "-" + obj_type + "-"} id={obj.name} sx={{
+                        overflow: 'visible',
+                        minWidth: '100%'
+                    }}>
+                    <CardContent sx={{
+                        pb: 1,
+                        maxWidth: '100ch'
+                    }} onClick={handlePopoverOpen}>
                         <Box display="block" sx={{alignContent: 'center'}}>
-                             <Typography color="text.secondary" component="span" mr="1ch" fontWeight="bold"
+                             <Typography color="text.secondary" component="span" mr="1ch"
+                                         fontWeight="bold"
                                          alignContent="center">
                                 {t("documentationPopUp." + obj_type?.toLowerCase())}
                             </Typography>
                             <Typography color="text.secondary" component="span" mr="1ch"
                                         alignContent="center">
-                                from {(obj_type == json_obj_type.toolbox) ? "toolbox" : "pytamaro"}
+                                from {library}
                             </Typography>
                         </Box>
                         <Box display="block" sx={{alignContent: 'center'}}>
-                            <Typography component="span" fontFamily={theme.pytamaro.monospaceFontFamily}
+                            <Typography component="span"
+                                        fontFamily={theme.pytamaro.monospaceFontFamily}
                                         bgcolor="#e7f2fa"
                                         borderTop="3px solid #6ab0de" alignContent="center">
                                 {(obj_type == json_obj_type.function) ? functionSignature((obj as Function), true, true) :
@@ -111,11 +133,13 @@ export default function SmallDocumentationCard({
                 </Tooltip>
                 <Popup id="mouse-onclick-popover" anchorEl={anchorEl} open={open} placement="right">
                         {(obj_type == json_obj_type.toolbox) ?
-                            <Card key={obj.name} id={toolboxFunctionAnchor(obj.name)} className="anchor"
+                            <Card key={obj.name} id={toolboxFunctionAnchor(obj.name)}
+                                  className="anchor"
                                   sx={{overflow: 'visible'}}>
                                 <ToolboxFunctionCardContent fn={obj as ToolboxFunction}/>
                                 <CardActions sx={{justifyContent: 'center'}}>
-                                    <EditToolboxFunctionButton toolboxFunction={obj as ToolboxFunction}/>
+                                    <EditToolboxFunctionButton
+                                        toolboxFunction={obj as ToolboxFunction}/>
                                     <Button
                                         onClick={() => askDeleteToolboxFunction(obj as ToolboxFunction)}
                                         color="error"
@@ -128,7 +152,7 @@ export default function SmallDocumentationCard({
                             :
                             <Card key={obj.name} id={obj_type + obj.name}>
                                 <DocumentationCardContent obj={(obj as Function | Type | Variable)}
-                                                          obj_type={obj_type}/>
+                                                          obj_type={obj_type} showOptionalInitial={true} showTypeInitial={true}/>
                             </Card>}
                 </Popup>
                             </span>

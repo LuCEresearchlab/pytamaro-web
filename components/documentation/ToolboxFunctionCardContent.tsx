@@ -16,7 +16,8 @@ let t: TFunction<string[], undefined>
 
 export default function ToolboxFunctionCardContent(
     {
-        fn, summary = false
+        fn,
+        summary = false
     }:
         Readonly<{
             fn: ToolboxFunction
@@ -61,10 +62,14 @@ function ImplementationAndUsage(fn: ToolboxFunction, summary: boolean) {
             <Typography color="text.secondary" fontWeight="bold" component="span">
                 {t("documentationPopUp.implementation")}
             </Typography>
-            <FormGroup sx={{display: 'inline', marginLeft: 2}}>
+            <FormGroup sx={{
+                display: 'inline',
+                marginLeft: 2
+            }}>
                 <FormControlLabel
                     control={<Switch checked={showSource} onChange={toggleShowSource}/>}
-                    label={<Typography color="text.secondary">{showSource ? t('hide') : t('show')}</Typography>}
+                    label={<Typography
+                        color="text.secondary">{showSource ? t('hide') : t('show')}</Typography>}
                 />
             </FormGroup>
             {showSource && (
@@ -80,10 +85,14 @@ function ImplementationAndUsage(fn: ToolboxFunction, summary: boolean) {
             {t("documentationPopUp.usage")}
         </Typography>
         {!summary && (
-            <FormGroup sx={{display: 'inline', marginLeft: 2}}>
+            <FormGroup sx={{
+                display: 'inline',
+                marginLeft: 2
+            }}>
                 <FormControlLabel
                     control={<Switch checked={showUsage} onChange={toggleShowUsage}/>}
-                    label={<Typography color="text.secondary">{showUsage ? t('hide') : t('show')}</Typography>}
+                    label={<Typography
+                        color="text.secondary">{showUsage ? t('hide') : t('show')}</Typography>}
                 />
             </FormGroup>
         )}

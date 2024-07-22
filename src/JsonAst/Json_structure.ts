@@ -96,3 +96,18 @@ export function translateToFunction(fn: ToolboxFunction): Function {
         parameters: parameters
     }
 }
+
+export enum language_string {
+    English = "en",
+    French = "fr",
+    German = "de",
+    Italian = "it",
+}
+
+export enum library_string {
+    English = "pytamaro",
+    French = "pytamaro.fr",
+    German = "pytamaro.de",
+    Italian = "pytamaro.it",
+    Toolbox = "toolbox"
+}
