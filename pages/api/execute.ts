@@ -137,3 +137,11 @@ export default async function handler(
   }
   res.status(200).json(response);
 }
+
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb',
+    },
+  },
+};
