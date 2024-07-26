@@ -36,7 +36,9 @@ services:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./db/migrations:/migrations
   nginx-proxy:
-    image: nginxproxy/nginx-proxy
+    build:
+      context: ..
+      dockerfile: docker/nginx-proxy/Dockerfile
     restart: always
     ports:
       - "9009:9009"
