@@ -3,12 +3,12 @@ import {
   Alert, AlertTitle, Box, Button, Collapse, TextField,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
-import useLocalProfile from '../src/localStorage/useLocalProfile';
-import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import { ActivityVariant, activityVariantId } from '../src/schemas/activitySchema';
-import { EventName, storeDbEvent } from '../src/storeDbEvent';
-import theme from '../src/theme';
+import logAnalyticsEvent, { AnalyticsEventName } from '../../src/analyticsEvent';
+import useLocalProfile from '../../src/localStorage/useLocalProfile';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
+import { ActivityVariant, activityVariantId } from '../../src/schemas/activitySchema';
+import { EventName, storeDbEvent } from '../../src/storeDbEvent';
+import theme from '../../src/theme';
 
 const doNowBoxClassName = 'do-now-box';
 

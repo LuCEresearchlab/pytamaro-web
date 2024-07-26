@@ -2,9 +2,9 @@
 import {
   Link, useTheme,
 } from '@mui/material';
-import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
-import { activityVariantFromId } from '../src/schemas/activitySchema';
-import { activityVariantPathname } from '../src/urlUtils';
+import logAnalyticsEvent, { AnalyticsEventName } from '../../src/analyticsEvent';
+import { activityVariantFromId } from '../../src/schemas/activitySchema';
+import { activityVariantPathname } from '../../src/urlUtils';
 
 export default function ActivityLink({ id, fragment = undefined, children }:
 { id: string, fragment?: string, children: React.ReactNode }) {

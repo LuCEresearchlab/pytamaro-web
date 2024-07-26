@@ -4,12 +4,12 @@ import { MDXRemote } from 'next-mdx-remote';
 import { ReactNode, createElement } from 'react';
 import { ActivityVariant, MarkdownCell, NotebookCell } from '../src/schemas/activitySchema';
 import { activityAssetPathname } from '../src/urlUtils';
-import ActivityLink from './ActivityLink';
 import { COLORIZE_CLASSNAME } from './CodeEditor';
-import DoNowBox from './DoNowBox';
+import ActivityLink from './markdown/ActivityLink';
+import DoNowBox from './markdown/DoNowBox';
+import TaskBox from './markdown/TaskBox';
 import PyTamaroAPI from './PyTamaroAPI';
 import ResponsiveReactPlayer from './ResponsiveReactPlayer';
-import TaskBox from './TaskBox';
 
 function imgSourceTransformer(
   src: string,

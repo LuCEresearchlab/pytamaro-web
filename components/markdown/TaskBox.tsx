@@ -1,7 +1,7 @@
 import {
   Alert, Typography,
 } from '@mui/material';
-import theme from '../src/theme';
+import theme from '../../src/theme';
 
 const taskBoxClassName = 'task-box';
 
@@ -20,6 +20,9 @@ export default function TaskBox({
         backgroundColor: 'rgba(255, 255, 255, 0.5)',
         paddingY: 0,
         marginY: 2,
+        '& .MuiAlert-message': {
+          paddingY: 0.25,
+        },
       }}
     >
       {children}
