@@ -7,7 +7,7 @@ import {activityVariantPathname, toolboxFunctionPathname} from '../../src/urlUti
 import useReadOnlyTemporaryActivity from '../../src/useReadOnlyTemporaryActivity';
 import CodeEditor from '../CodeEditor';
 import SolitaryCodeCell, {initialStateSingleCell} from '../SolitaryCodeCell';
-import {json_obj_type, translateToFunction} from '../../src/JsonAst/Json_structure';
+import {json_obj_type, library_string, translateToFunction} from '../../src/JsonAst/Json_structure';
 import DocumentationCardContent from "./DocumentationCardContent";
 import {TFunction} from "i18next";
 import useLocalTranslation from "../../src/localStorage/useLocalTranslation";
@@ -28,7 +28,7 @@ export default function ToolboxFunctionCardContent(
     t = useLocalTranslation().t;
 
     return (
-        <DocumentationCardContent obj={translated} obj_type={json_obj_type.function}
+        <DocumentationCardContent obj={translated} obj_type={json_obj_type.function} library={library_string.Toolbox}
                                   ImplementationAndUsage={ImplementationAndUsage(fn, summary)}
                                   LinkButton={LinkButton(fn, summary)}
                                   showTypeInitial={true}/>

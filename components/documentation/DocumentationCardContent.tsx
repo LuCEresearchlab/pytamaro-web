@@ -10,7 +10,7 @@ import {
     Typography,
 } from '@mui/material';
 import theme from '../../src/theme';
-import {Function, json_obj_type, Type, Variable} from '../../src/JsonAst/Json_structure';
+import {Function, json_obj_type, library_string, Type, Variable} from '../../src/JsonAst/Json_structure';
 import React, {useState} from "react";
 import useLocalTranslation from "../../src/localStorage/useLocalTranslation";
 import {TFunction} from "i18next";
@@ -30,6 +30,7 @@ function TypeCell({type}: { type: string }) {
 export default function DocumentationCardContent({
                                                      obj,
                                                      obj_type = json_obj_type.function,
+                                                     library = library_string.English,
                                                      LinkButton = null,
                                                      ImplementationAndUsage = null,
                                                      showOptionalInitial = false,
@@ -37,6 +38,7 @@ export default function DocumentationCardContent({
                                                  }: Readonly<{
     obj: Function | Type | Variable,
     obj_type?: json_obj_type,
+    library?: library_string,
     LinkButton?: JSX.Element | null,
     ImplementationAndUsage?: JSX.Element | null,
     showOptionalInitial?: boolean,
@@ -55,15 +57,19 @@ export default function DocumentationCardContent({
                 <Typography color="text.secondary" component="span" mr="1ch" fontWeight="bold">
                     {t("documentationPopUp." + obj_type?.toLowerCase())}
                 </Typography>
-                <Typography component="span" fontFamily={theme.pytamaro.monospaceFontFamily} bgcolor="#e7f2fa"
-                            borderTop="3px solid #6ab0de">
-                    {(obj_type == json_obj_type.function) ? functionSignature(obj, showOptional, showType) : obj.name}
+                <Typography color="text.secondary" component="span" mr="1ch">
+                    from {library}
                 </Typography>
                 {obj_type == json_obj_type.function ?
                     <OptionButton fn={obj as Function}
                                   optional={{show: showOptional, toggle: toggleShowOptional}}
                                   types={{show: showType, toggle: toggleShowType}} LinkButton={LinkButton}/> : null}
-                {/*{LinkButton}*/}
+            </Box>
+            <Box display="flex" marginTop="1ch">
+                <Typography component="span" fontFamily={theme.pytamaro.monospaceFontFamily} bgcolor="#e7f2fa"
+                            borderTop="3px solid #6ab0de">
+                    {(obj_type == json_obj_type.function) ? functionSignature(obj, showOptional, showType) : obj.name}
+                </Typography>
             </Box>
             <Typography color="text.secondary">
                 {obj.description ? obj.description?.content : ""}
@@ -171,26 +177,6 @@ function parameterRow(arg: Variable, showOptional: boolean, showType: boolean, s
     </TableRow>
 }
 
-// function functionSignature(fn: Function, showOptional: boolean, showType: boolean): string {
-//     let signature: string = fn.name + " ("
-//     if (fn.parameters && fn.parameters.length != 0) {
-//         for (let param of fn.parameters) {
-//             let typeString = (showType && param.type ? (": " + param.type) : "")
-//             if (param.default_value != undefined && showOptional) {
-//                 signature += param.name + typeString + " = " + param.default_value + ", "
-//             } else if (param.default_value == undefined) {
-//                 signature += param.name + typeString + ", "
-//             }
-//         }
-//         signature = signature.substring(0, signature.length - 2)
-//     }
-//     signature += ")"
-//     if (fn.return_type) {
-//         signature += "->" + (showType ? fn.return_type : "");
-//     }
-//     return signature
-// }
-
 function OptionButton({fn, optional, types, LinkButton = null}: Readonly<{
     fn: Function,
     optional: {
@@ -208,7 +194,8 @@ function OptionButton({fn, optional, types, LinkButton = null}: Readonly<{
         sx={{ml: 'auto'}}
     >
         {hasDefault(fn.parameters) ?
-            <ToggleButton value="optional" selected={optional.show} onChange={optional.toggle} aria-label="bold" size="small">
+            <ToggleButton value="optional" selected={optional.show} onChange={optional.toggle} aria-label="bold"
+                          size="small">
                 <Tooltip
                     title={(optional.show ? t("hide") : t("show")) + " " + t("documentationPopUp.optionalParameters")}>
                     <Settings/>

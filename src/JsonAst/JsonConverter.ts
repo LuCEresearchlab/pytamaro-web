@@ -1,11 +1,4 @@
-import {
-    Function,
-    json_obj_type,
-    language_string,
-    Module,
-    Type,
-    Variable
-} from "./Json_structure.ts";
+import {Function, json_obj_type, language_string, library_string, Module, Type, Variable} from "./Json_structure.ts";
 
 import {readdir, readFile} from 'fs/promises';
 import path from "path";
@@ -46,44 +39,46 @@ export class JsonConverter {
     public find(name: string, language?: language_string): {
         "obj_type": json_obj_type,
         "obj": Module | Function | Type | Variable
+        "library": library_string
     } | undefined {
         if (language) {
             switch (language) {
                 case language_string.English:
-                    return this.findInArray(this.English, name)
+                    return this.findInArray(this.English, name, library_string.English)
                 case language_string.French:
-                    return this.findInArray(this.French, name)
+                    return this.findInArray(this.French, name, library_string.French)
                 case language_string.German:
-                    return this.findInArray(this.German, name)
+                    return this.findInArray(this.German, name, library_string.German)
                 case language_string.Italian:
-                    return this.findInArray(this.Italian, name)
+                    return this.findInArray(this.Italian, name, library_string.Italian)
                 default:
                     console.error("INCORRECT LANGUAGE")
                     return undefined
             }
         } else {
-            let result = this.findInArray(this.English, name)
+            let result = this.findInArray(this.English, name, library_string.English)
             if (result == undefined) {
-                result = this.findInArray(this.French, name)
+                result = this.findInArray(this.French, name, library_string.French)
             }
             if (result == undefined) {
-                result = this.findInArray(this.German, name)
+                result = this.findInArray(this.German, name, library_string.German)
             }
             if (result == undefined) {
-                result = this.findInArray(this.Italian, name)
+                result = this.findInArray(this.Italian, name, library_string.Italian)
             }
             return result
         }
     }
 
-    private findInArray(array: Module[], name: string): {
+    private findInArray(array: Module[], name: string, library: library_string): {
         "obj_type": json_obj_type,
         "obj": Module | Function | Type | Variable
+        "library": library_string
     } | undefined {
         name = name.toLowerCase()
         for (let module of array) {
             if (module.name.toLowerCase() == name) {
-                return {"obj_type": json_obj_type.module, "obj": module}
+                return {"obj_type": json_obj_type.module, "obj": module, "library": library}
             } else {
                 let result = module.functions?.find(fun => fun.name.toLowerCase() == name)
                 let obj_type: json_obj_type = json_obj_type.function
@@ -98,7 +93,8 @@ export class JsonConverter {
                 if (result != undefined) {
                     return {
                         "obj_type": obj_type,
-                        "obj": result
+                        "obj": result,
+                        "library": library
                     }
                 }
             }

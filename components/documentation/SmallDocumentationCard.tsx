@@ -118,7 +118,7 @@ export default function SmallDocumentationCard({
                                 from {library}
                             </Typography>
                         </Box>
-                        <Box display="block" sx={{alignContent: 'center'}}>
+                        <Box display="block" sx={{alignContent: 'center'}}  marginTop="1ch">
                             <Typography component="span"
                                         fontFamily={theme.pytamaro.monospaceFontFamily}
                                         bgcolor="#e7f2fa"
@@ -152,7 +152,7 @@ export default function SmallDocumentationCard({
                             :
                             <Card key={obj.name} id={obj_type + obj.name}>
                                 <DocumentationCardContent obj={(obj as Function | Type | Variable)}
-                                                          obj_type={obj_type} showOptionalInitial={true} showTypeInitial={true}/>
+                                                          obj_type={obj_type} showOptionalInitial={true} showTypeInitial={true} library={library}/>
                             </Card>}
                 </Popup>
                             </span>

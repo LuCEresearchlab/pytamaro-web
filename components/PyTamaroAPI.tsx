@@ -100,7 +100,7 @@ export default function PyTamaroAPI({
                     <Card>
                         {isLoading ? <Typography component="span">{t("documentationPopUp.loading")}</Typography> : null}
                         {error ? <Typography component="span">{t("documentationPopUp.failed")}</Typography> : null}
-                        {data ? <DocumentationCardContent obj={data.obj} obj_type={data.obj_type}/> : null}
+                        {data ? <DocumentationCardContent obj={data.obj} obj_type={data.obj_type} library={data.library}/> : null}
                     </Card>
                 </Popup>
             </span>
