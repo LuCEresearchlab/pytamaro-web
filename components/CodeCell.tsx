@@ -61,7 +61,7 @@ export default function CodeCell({
     && (executionResponse.stdout + executionResponse.stderr).length === 0;
   const [inputFunctionCalled, setInputFunctionCalled] = useState(false);
   const [ellipsis, setEllipsis] = useState(false);
-  const tipShown = noOutput || inputFunctionCalled || ellipsis;
+  const outputHidden = noOutput || inputFunctionCalled;
 
   const debouncedFindCalledNames = useMemo(() => {
     const findCalledNames = async (currentCellSource: string) => {
@@ -108,7 +108,7 @@ export default function CodeCell({
             firstLineNumber={firstLineNumber}
             readOnly={readOnly}
             executionResponse={executionResponse}
-            collapsedErrorMarkers={tipShown}
+            collapsedErrorMarkers={outputHidden}
             resetCounter={resetCounter}
           />
         </CardContent>
@@ -128,7 +128,7 @@ export default function CodeCell({
         )}
         {inputFunctionCalled && <InputTip />}
         {ellipsis && <EllipsisTip />}
-        {!tipShown && (
+        {!outputHidden && (
         <Collapse in={codeCellExecutionState.outputAreaVisible} timeout="auto" unmountOnExit>
           <CardContent>
             <StaleOutputBadge
