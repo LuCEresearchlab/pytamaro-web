@@ -34,3 +34,6 @@
 [submodule "ehinger"]
 	path = data/ehinger
 	url = git@github.com:LuCEresearchlab/pytamaro-web-ehinger.git
+[submodule "warin"]
+	path = data/warin
+	url = git@github.com:LuCEresearchlab/pytamaro-web-warin.git
