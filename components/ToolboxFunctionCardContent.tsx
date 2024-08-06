@@ -8,9 +8,10 @@ import {
 import Link from 'next/link';
 import { useState } from 'react';
 import { ToolboxFunction } from '../src/localStorage/schema';
+import { isPlaygroundVariant } from '../src/playground';
 import { toolboxActivityVariant } from '../src/specialActivities';
 import theme from '../src/theme';
-import { activityVariantPathname, toolboxFunctionPathname } from '../src/urlUtils';
+import { activityVariantPathname, playgroundPathname, toolboxFunctionPathname } from '../src/urlUtils';
 import useReadOnlyTemporaryActivity from '../src/useReadOnlyTemporaryActivity';
 import CodeEditor from './CodeEditor';
 import SolitaryCodeCell, { initialStateSingleCell } from './SolitaryCodeCell';
@@ -36,7 +37,8 @@ export default function ToolboxFunctionCardContent(
   const usageCodeCells = initialStateSingleCell(fn.usage);
   const activityVariant = toolboxActivityVariant(fn.name);
   const activity = useReadOnlyTemporaryActivity(usageCodeCells, activityVariant);
-  const originalActivityPathname = activityVariantPathname(fn.originalActivity);
+  const originalActivityPathname = isPlaygroundVariant(fn.originalActivity)
+    ? playgroundPathname() : activityVariantPathname(fn.originalActivity);
   return (
     <CardContent sx={{ pb: 1, minWidth: '80ch' }}>
       <Box display="flex">

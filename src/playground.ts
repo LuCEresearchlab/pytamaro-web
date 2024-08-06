@@ -1,4 +1,5 @@
 import { isEqual } from 'lodash';
+import { ActivityVariant } from './schemas/activitySchema';
 
 export const playgroundInitialSource = `from pytamaro import rectangle, red, show_graphic
 
@@ -22,4 +23,8 @@ export function isPlayground(
     authorSlug, activitySlug, language, version,
   };
   return isEqual(variant, playgroundActivityVariant);
+}
+
+export function isPlaygroundVariant(activityVariant: ActivityVariant) {
+  return isEqual(activityVariant, playgroundActivityVariant);
 }
