@@ -11,6 +11,7 @@ import { MDXRemote } from 'next-mdx-remote';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
+import { useResizeDetector } from 'react-resize-detector';
 import AttributionInfo from '../../../../components/AttributionInfo';
 import InfoButton from '../../../../components/InfoButton';
 import NavigationBar from '../../../../components/NavigationBar';
@@ -41,6 +42,8 @@ export default function CurriculumPage({ curriculum, author }:
   const [nodesInitialized, setNodesInitialized] = useState(false);
 
   const curriculumStarted = findCurriculum(curriculum) !== -1;
+
+  const { width: mainContentWidth, ref: mainContentRef } = useResizeDetector();
 
   const confirm = useConfirm();
 
@@ -76,7 +79,7 @@ export default function CurriculumPage({ curriculum, author }:
           <CurriculumCompetenciesSidebar curriculum={curriculum} />
         </Sidebar>
         <CentralContent>
-          <Stack spacing={2} alignItems="center">
+          <Stack spacing={2} alignItems="center" ref={mainContentRef}>
             <Container maxWidth="md">
               <Typography variant="h3" marginY={3}>{curriculum.title}</Typography>
               <Typography variant="subtitle1" marginY={3}>
@@ -84,12 +87,18 @@ export default function CurriculumPage({ curriculum, author }:
                 <MDXRemote {...curriculum.description} />
               </Typography>
             </Container>
-            <div ref={curriculumFlowRef}>
+            <div
+              ref={curriculumFlowRef}
+              style={{
+                width: '100%', display: 'flex', justifyContent: 'center', overflowX: 'auto',
+              }}
+            >
               <CurriculumFlow
                 curriculum={curriculum}
                 metadata={metadata}
                 setMetadata={setMetadata}
                 setNodesInitialized={setNodesInitialized}
+                availableWidth={mainContentWidth || 800}
               />
             </div>
             <Divider sx={{ mb: 3 }} />

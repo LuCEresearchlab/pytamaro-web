@@ -19,6 +19,10 @@ code, pre {
 
 /* React flow styles */
 
+.react-flow {
+    overflow-x: auto !important;
+}
+
 .react-flow__controls {
     position: fixed !important;
 }

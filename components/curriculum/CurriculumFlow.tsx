@@ -25,7 +25,6 @@ import 'reactflow/dist/style.css';
 import { anchorName } from '../../src/curricula';
 import { Metadata } from '../../src/localStorage/schema';
 import scrollToAnchor from '../../src/scrollToAnchor';
-import useWindowSize from '../../src/useWindowSize';
 import { activityVariantStatus } from '../ActivityStatusBadge';
 
 const nodeOptions = {
@@ -128,16 +127,16 @@ function getFlowElements(
   metadata: Metadata,
   setMetadata: Dispatch<SetStateAction<Metadata>>,
   router: NextRouter,
-  windowWidth: number,
+  availableWidth: number,
 ) {
   const size = (perc: number, minValue: number, maxValue: number) => Math.max(
     minValue,
-    Math.min(windowWidth * perc, maxValue),
+    Math.min(availableWidth * perc, Math.min(availableWidth, maxValue)),
   );
   const nodeTypeDimensions = {
     activity: {
-      width: size(0.22, 150, 350),
-      height: size(0.2, 130, 260),
+      width: size(0.28, 150, 350),
+      height: size(0.25, 130, 260),
     },
     join: {
       width: size(0.02, 10, 20),
@@ -233,7 +232,7 @@ function getFlowElements(
     const rowWidth = n * dim.width;
     let gap = layerSpacing;
     if (n > 2) {
-      gap *= 0.8;
+      gap *= 0.6;
     }
     if (n > 3) {
       gap *= 0.7;
@@ -338,39 +337,30 @@ function Flow({ nodes, edges, setNodesInitialized }:
 
 export default function CurriculumFlow(
   {
-    curriculum, metadata, setMetadata, setNodesInitialized,
+    curriculum, metadata, setMetadata, setNodesInitialized, availableWidth,
   }
   : { curriculum : Curriculum,
     metadata : Metadata,
     setMetadata: Dispatch<SetStateAction<Metadata>>,
-    setNodesInitialized: (initialized: boolean) => void
+    setNodesInitialized: (initialized: boolean) => void,
+    availableWidth: number
   },
 ) {
-  const { width: windowWidth } = useWindowSize();
   const router = useRouter();
   const {
     nodes, edges, width, height,
-  } = getFlowElements(curriculum, metadata, setMetadata, router, windowWidth);
+  } = getFlowElements(curriculum, metadata, setMetadata, router, availableWidth);
 
   return (
     <Box
       style={{
-        overflow: 'auto',
-        maxWidth: '100%',
         width,
-        alignSelf: 'center',
+        height,
       }}
     >
-      <Box
-        style={{
-          width,
-          height,
-        }}
-      >
-        <ReactFlowProvider>
-          <Flow nodes={nodes} edges={edges} setNodesInitialized={setNodesInitialized} />
-        </ReactFlowProvider>
-      </Box>
+      <ReactFlowProvider>
+        <Flow nodes={nodes} edges={edges} setNodesInitialized={setNodesInitialized} />
+      </ReactFlowProvider>
     </Box>
   );
 }
