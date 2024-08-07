@@ -8,6 +8,7 @@ import { COLORIZE_CLASSNAME } from './CodeEditor';
 import ActivityLink from './markdown/ActivityLink';
 import DoNowBox from './markdown/DoNowBox';
 import TaskBox from './markdown/TaskBox';
+import Icon from './markdown/Icon';
 import PyTamaroAPI from './PyTamaroAPI';
 import ResponsiveReactPlayer from './ResponsiveReactPlayer';
 
@@ -117,6 +118,9 @@ export default function MarkdownCellComponent({ slugger, cell, activityVariant }
     ),
     Task: ({ children }: { children: ReactNode }) => (
       TaskBox({ children })
+    ),
+    Icon: ({ children, size = 24, color = 'black' }: { children: string, name: string, size?: number, color?: string }) => (
+      Icon({ children, size, color })
     ),
     h1: (props: any) => headerComponent(slugger, props, 'h1'),
     h2: (props: any) => headerComponent(slugger, props, 'h2'),
