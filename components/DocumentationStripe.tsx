@@ -56,6 +56,14 @@ export default function DocumentationStripe({ sources, activityVariant } :
 
   const namesToShow = uniqWith(flatten(reverse(knownNamesPerCell || [])), isEqual);
 
+  if (namesToShow.length === 0 && !shownAtLeastOnce) {
+    return null;
+  }
+
+  let infoMessage = '';
+  if (namesPerCell === undefined) infoMessage = 'Syntax Error';
+  if (namesToShow.length === 0) infoMessage = 'No names imported from PyTamaro';
+
   return (
     <Box>
       <Stack direction="row" columnGap={1} alignItems="baseline" useFlexGap marginX={0.5}>
@@ -83,10 +91,7 @@ export default function DocumentationStripe({ sources, activityVariant } :
           onClick={toggleNamesExpanded}
           onDelete={toggleNamesExpanded}
         />
-        {namesPerCell === undefined
-          && <Typography variant="body2" sx={{ color: '#dddddd' }}>Syntax Error</Typography>}
-        {namesToShow.length === 0 && shownAtLeastOnce
-          && <Typography variant="body2" sx={{ color: '#dddddd' }}>No name imported from PyTamaro</Typography>}
+        <Typography variant="body2" sx={{ color: '#dddddd' }}>{infoMessage}</Typography>
       </Stack>
     </Box>
   );
