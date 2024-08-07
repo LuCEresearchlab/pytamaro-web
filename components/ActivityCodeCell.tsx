@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import { ActivityVariant, PlatformConfiguration, PythonFile } from '../src/schemas/activitySchema';
-import { countLines, joinLines } from '../src/sourceUtils';
+import { countLines } from '../src/sourceUtils';
 import useReset from '../src/useReset';
 import CodeCell from './CodeCell';
 import FailedExecutionSnackbar from './FailedExecutionSnackbar';
@@ -78,7 +78,7 @@ export default function ActivityCodeCell({
         onExecutionRequested={() => handleExecute(cellIdx)}
         firstLineNumber={1 + precedingLines}
         activityVariant={activityVariant}
-        cumulativeSource={joinLines(sourcesUpTo(cellIdx))}
+        sourcesUpTo={sourcesUpTo(cellIdx)}
         platformConfig={platformConfig}
         resetCounter={resetCounter}
         extraActions={(

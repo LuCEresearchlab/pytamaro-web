@@ -53,7 +53,7 @@ export default function SolitaryCodeCell({
       readOnly={readOnly}
       platformConfig={platformConfigWithDefaults()}
       extraActions={extraActions}
-      cumulativeSource={codeCells[0].source}
+      sourcesUpTo={[codeCells[0].source]}
       resetCounter={resetCounter}
     />
   );

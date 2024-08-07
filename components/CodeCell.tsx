@@ -14,6 +14,7 @@ import { CodeCellExecutionState } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { called_names, find_ellipsis, imported_names } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant, PlatformConfiguration } from '../src/schemas/activitySchema';
+import { joinLines } from '../src/sourceUtils';
 import { EllipsisTip, InputTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
 import DocumentationStripe from './DocumentationStripe';
@@ -35,7 +36,7 @@ export function isExecutionError(response: ExecutionResponse | undefined) {
 
 export default function CodeCell({
   initialSource, currentSource, codeCellExecutionState, onSourceChanged, onExecutionRequested,
-  firstLineNumber, activityVariant, cumulativeSource, platformConfig, resetCounter,
+  firstLineNumber, activityVariant, sourcesUpTo, platformConfig, resetCounter,
   extraActions = null, readOnly = false,
 } :
 { initialSource: string,
@@ -45,7 +46,7 @@ export default function CodeCell({
   onExecutionRequested: () => Promise<any>,
   firstLineNumber : number,
   activityVariant: ActivityVariant,
-  cumulativeSource: string,
+  sourcesUpTo: string[],
   platformConfig: PlatformConfiguration,
   resetCounter: number,
   extraActions?: React.ReactNode
@@ -95,7 +96,12 @@ export default function CodeCell({
   return (
     <Paper elevation={readOnly ? 0 : 4}>
       {!readOnly
-        && <DocumentationStripe source={currentSource} activityVariant={activityVariant} />}
+        && (
+        <DocumentationStripe
+          sources={sourcesUpTo}
+          activityVariant={activityVariant}
+        />
+        )}
       <Card>
         <CardContent>
           <CodeEditor
@@ -124,7 +130,7 @@ export default function CodeCell({
           </Stack>
         </CardActions>
         {noOutput && platformConfig.showNoOutputTip && (
-          <NoOutputTip importedNames={imported_names(cumulativeSource)} />
+          <NoOutputTip importedNames={imported_names(joinLines(sourcesUpTo))} />
         )}
         {inputFunctionCalled && <InputTip />}
         {ellipsis && <EllipsisTip />}

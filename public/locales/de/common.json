@@ -51,5 +51,7 @@
     "didIt": "Ich hab's getan!",
     "yourAnswer": "Deine Antwort",
     "activityInProgress": "Aktivität in Bearbeitung",
-    "activityCompleted": "Aktivität abgeschlossen"
+    "activityCompleted": "Aktivität abgeschlossen",
+    "showLess": "Weniger anzeigen",
+    "showAll": "Alle anzeigen"
 }

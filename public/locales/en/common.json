@@ -51,5 +51,7 @@
     "didIt": "I did it!",
     "yourAnswer": "Your answer",
     "activityInProgress": "Activity in progress",
-    "activityCompleted": "Activity completed"
+    "activityCompleted": "Activity completed",
+    "showLess": "Show Less",
+    "showAll": "Show All"
 }
