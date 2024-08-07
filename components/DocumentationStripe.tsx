@@ -1,4 +1,4 @@
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { ExpandMore } from '@mui/icons-material';
 import {
   Box, Chip, Stack, Typography,
 } from '@mui/material';
@@ -12,6 +12,7 @@ import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import PyTamaroNames from '../src/pytamaroNames';
 import { PythonName, imported_names } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant } from '../src/schemas/activitySchema';
+import theme from '../src/theme';
 import PyTamaroAPI from './PyTamaroAPI';
 
 export default function DocumentationStripe({ sources, activityVariant } :
@@ -86,8 +87,16 @@ export default function DocumentationStripe({ sources, activityVariant } :
         <Chip
           size="small"
           label={namesExpanded ? t('showLess') : t('showAll')}
-          deleteIcon={namesExpanded ? <ExpandLess /> : <ExpandMore />}
-          sx={{ flexGrow: '1', height: '1rem', visibility: (tooManyNames || namesExpanded) ? 'visible' : 'hidden' }}
+          deleteIcon={<ExpandMore />}
+          sx={{
+            flexGrow: '1',
+            height: '1rem',
+            visibility: (tooManyNames || namesExpanded) ? 'visible' : 'hidden',
+            '.MuiChip-deleteIcon': {
+              transform: `rotate(${namesExpanded ? 180 : 0}deg)`,
+              transition: `transform ${theme.transitions.duration.shortest}ms`,
+            },
+          }}
           onClick={toggleNamesExpanded}
           onDelete={toggleNamesExpanded}
         />
