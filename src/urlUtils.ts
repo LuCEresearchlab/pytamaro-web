@@ -119,7 +119,7 @@ export function myToolboxPathname() {
 }
 
 export function pytamaroDocsUrl() {
-  return 'https://pytamaro.readthedocs.org';
+  return '/documentation'; // OLD = 'https://pytamaro.readthedocs.org'
 }
 
 export function teachingResourcesPathname() {

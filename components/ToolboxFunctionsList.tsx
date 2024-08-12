@@ -12,7 +12,7 @@ import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import theme from '../src/theme';
 import { toolboxFunctionAnchor } from '../src/urlUtils';
 import EditToolboxFunctionButton from './EditToolboxFunctionButton';
-import ToolboxFunctionCardContent from './documentation/ToolboxFunctionCardContent.tsx';
+import ToolboxFunctionCardContent from './documentation/ToolboxFunctionCardContent';
 
 export default function ToolboxFunctionsList({ filterNameDesc }: { filterNameDesc: string }) {
   const { metadata } = useLocalProfile();

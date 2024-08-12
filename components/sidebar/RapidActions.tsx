@@ -14,7 +14,7 @@ export default function RapidActions() {
         <Link
           variant="body2"
           underline="none"
-          href= "\documentation"//{pytamaroDocsUrl()}
+          href={pytamaroDocsUrl()}
           display="flex"
           target="_blank"
         >

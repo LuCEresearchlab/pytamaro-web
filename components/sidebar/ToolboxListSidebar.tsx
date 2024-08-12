@@ -10,7 +10,7 @@ import theme from '../../src/theme';
 import { toolboxFunctionPathname } from '../../src/urlUtils';
 import useWindowSize from '../../src/useWindowSize';
 import Popup from '../Popup';
-import ToolboxFunctionCardContent from '../documentation/ToolboxFunctionCardContent.tsx';
+import ToolboxFunctionCardContent from '../documentation/ToolboxFunctionCardContent';
 import { SIDEBAR_CHIPS_FONT_SIZE, SIDEBAR_CHIPS_WIDTH } from './Sidebar';
 import SidebarItem from './SidebarItem';
 
@@ -45,7 +45,7 @@ function SidebarToolboxFunction({ fn, skipPopup }: { fn: ToolboxFunction, skipPo
             fontFamily: theme.pytamaro.monospaceFontFamily,
             fontSize: SIDEBAR_CHIPS_FONT_SIZE,
           }}
-      />
+        />
         <Popup
           id={toolboxPopupId}
           open={open}
