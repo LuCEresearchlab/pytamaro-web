@@ -27,3 +27,11 @@ export default async function handler(
   );
   res.status(saved ? 200 : 500).send({});
 }
+
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb',
+    },
+  },
+};
