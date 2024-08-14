@@ -1,5 +1,6 @@
 import postgres from 'postgres';
 import { ActivityVariant } from '../../schemas/activitySchema';
+import { Curriculum } from '../../schemas/curriculumSchema';
 import { EventName } from '../../storeDbEvent';
 import { storeOrRetrieveRow, storeRow } from '../dbUtils';
 
@@ -28,6 +29,20 @@ export async function storeActivity(
       activity_slug: activity_variant.activitySlug,
       language: activity_variant.language,
       version: activity_variant.version,
+    },
+  );
+}
+
+export async function storeCurriculum(
+  sql: postgres.TransactionSql,
+  curriculum: Curriculum,
+) {
+  return storeOrRetrieveRow(
+    sql,
+    'curricula',
+    {
+      author_slug: curriculum.authorSlug,
+      curriculum_slug: curriculum.slug,
     },
   );
 }

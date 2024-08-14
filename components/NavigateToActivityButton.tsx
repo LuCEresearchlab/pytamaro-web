@@ -12,8 +12,10 @@ import {
   findStepIdx, findUnit,
   nextOrPreviousObviousActivity,
 } from '../src/curricula';
+import useLocalProfile from '../src/localStorage/useLocalProfile';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import { Curriculum, CurriculumUnit } from '../src/schemas/curriculumSchema';
+import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import { activityVariantWithCurriculum, curriculumWithAnchor } from '../src/urlUtils';
 
 function nextOrPreviousActivityIfPossible(
@@ -32,6 +34,7 @@ export default function NavigateToActivity({
 { activityVariant: ActivityVariant, curriculum: Curriculum,
   direction: NavigationDirection, completed: boolean }) {
   const { t } = useTranslation('activityfooter');
+  const { metadata } = useLocalProfile();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -39,11 +42,21 @@ export default function NavigateToActivity({
 
   const targetActivity = nextOrPreviousActivityIfPossible(activityVariant, curriculum, direction);
 
+  const logEvent = (navigationType: string, activity: ActivityVariant) => {
+    storeDbEvent(
+      EventName.CurriculumNavigation,
+      metadata,
+      { navigationType, curriculum, activityVariant: activity },
+    );
+  };
+
   const handleClick = () => {
     setLoading(true);
+    logEvent(isNext ? 'next_activity' : 'previous_activity', activityVariant);
     let url = '';
     if (targetActivity) {
       url = activityVariantWithCurriculum(targetActivity, curriculum);
+      logEvent('open_activity', targetActivity);
     } else {
       const { unitIdx, stepIdx, activityIdx } = findInCurriculum(curriculum, activityVariant);
       const anchor = anchorName(unitIdx, stepIdx, activityIdx);

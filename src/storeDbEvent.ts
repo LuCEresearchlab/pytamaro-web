@@ -8,6 +8,7 @@ export enum EventName {
   AddToolboxFunction = 'add_toolbox_function',
   DeleteToolboxFunction = 'delete_toolbox_function',
   DoNowCompleted = 'do_now_completed',
+  CurriculumNavigation = 'curriculum_navigation',
 }
 
 export async function alwaysStoreDbEvent(

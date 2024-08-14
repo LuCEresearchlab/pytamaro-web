@@ -10,9 +10,11 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { findStepIdx, findUnitIdx } from '../../src/curricula';
+import useLocalProfile from '../../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { getVariantTitle } from '../../src/schemas/activitySchema';
 import { Curriculum, CurriculumActivity } from '../../src/schemas/curriculumSchema';
+import { EventName, storeDbEvent } from '../../src/storeDbEvent';
 import theme from '../../src/theme';
 import {
   activityAssetPathname,
@@ -126,11 +128,20 @@ export default function ActivityCard({
   height?: number | undefined,
 }) {
   const { t } = useLocalTranslation(['curriculum']);
+  const { metadata } = useLocalProfile();
   const { variant } = curriculumActivity;
 
   const unitIdx = findUnitIdx(curriculum, curriculumActivity.variant);
   const stepIdx = findStepIdx(curriculum.units[unitIdx], curriculumActivity.variant);
   const firstStep = unitIdx === 0 && stepIdx === 0;
+
+  const logActivityOpen = () => {
+    storeDbEvent(EventName.CurriculumNavigation, metadata, {
+      navigationType: 'open_activity',
+      activityVariant: variant,
+      curriculum,
+    });
+  };
 
   return (
     <Box
@@ -154,6 +165,7 @@ export default function ActivityCard({
             <span>
               <CardActionArea
                 href={activityVariantWithCurriculum(variant, curriculum)}
+                onClick={logActivityOpen}
                 disabled={!isUnlocked}
               >
                 <ActivityCardActionAreaContent
