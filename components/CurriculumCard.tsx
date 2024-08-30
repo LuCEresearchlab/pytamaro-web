@@ -34,8 +34,11 @@ function CurriculumDescriptionListItem({ children = null }: { children?: React.R
   );
 }
 
-export default function CurriculumCard({ curriculum, userActivities = undefined }:
-{ curriculum: Curriculum, userActivities?: ActivityVariantMetadata[] }) {
+export default function CurriculumCard({
+  curriculum, userActivities = undefined,
+  alwaysClickable = false,
+} : { curriculum: Curriculum, userActivities?: ActivityVariantMetadata[],
+  alwaysClickable?: boolean }) {
   const [previewActivities, setPreviewActivities] = useState<CurriculumActivity[]>([]);
   useEffect(() => {
     const activities = allActivities(curriculum);
@@ -48,7 +51,7 @@ export default function CurriculumCard({ curriculum, userActivities = undefined 
     setPreviewActivities(concat(fixedActivities, otherActivities));
   }, [curriculum]);
   const userCompetencies = findUserCompetencies(curriculum, userActivities || []);
-  const clickable = curriculum.visibility === 'featured' || curriculum.visibility === 'visible';
+  const clickable = alwaysClickable || curriculum.visibility === 'featured' || curriculum.visibility === 'visible';
   return (
     <Card>
       <CardActionArea
