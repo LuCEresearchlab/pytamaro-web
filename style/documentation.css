@@ -1,0 +1,39 @@
+.popup {
+    padding: 10px;
+}
+
+.example {
+    width: 100%;
+    justify-content: center;
+    display: flex;
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 90%;
+}
+
+thead th {
+    border: 1px solid #dddddd;
+    border-bottom: #404040;
+    text-align: center;
+    padding: 8px;
+}
+
+tbody td {
+    border: 1px solid #dddddd;
+    padding: 8px;
+}
+
+.signature {
+    text-align: right;
+}
+
+.result {
+    text-align: left;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}

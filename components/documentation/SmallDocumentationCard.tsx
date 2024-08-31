@@ -160,8 +160,8 @@ export default function SmallDocumentationCard({
                   alignContent="center"
                 >
                   from
-                  { ' ' }
-                  { library }
+                  {' '}
+                  {library}
                 </Typography>
               </Box>
               <Box display="block" sx={{ alignContent: 'center' }} marginTop="1ch">
@@ -172,11 +172,16 @@ export default function SmallDocumentationCard({
                   borderTop="3px solid #6ab0de"
                   alignContent="center"
                 >
+                  {/* eslint-disable-next-line no-nested-ternary */}
                   {(obj_type === JsonObjType.function)
-                    ? functionSignature((obj as Function), true, true) : null}
-                  {(obj_type === JsonObjType.toolbox)
-                    ? functionSignature(translateToFunction((obj as ToolboxFunction)), true, true)
-                    : obj.name}
+                    ? functionSignature((obj as Function), true, true) : (
+                      (obj_type === JsonObjType.toolbox)
+                        ? functionSignature(
+                          translateToFunction((obj as ToolboxFunction)),
+                          true,
+                          true,
+                        )
+                        : obj.name)}
                 </Typography>
               </Box>
             </CardContent>

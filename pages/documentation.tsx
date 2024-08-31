@@ -20,6 +20,7 @@ import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import { LanguageString } from '../src/JsonAst/Json_structure';
 import Popup from '../components/Popup';
 import scrollToAnchor from '../src/scrollToAnchor';
+import '../style/documentation.css';
 
 export default function Documentation({
   English,
@@ -208,16 +209,6 @@ export default function Documentation({
       <PageTitle>{t('PyTamaroDocumentation')}</PageTitle>
 
       <Grid container spacing={2}>
-        <Grid xs={12} lg={4}>
-          <SelectAll
-            title="Kind"
-            placeholder="Kind"
-            options={typeOption}
-            initialSelection={typeOption}
-            onSelectionChange={setAllowedTypes}
-            maxTagsShown={3}
-          />
-        </Grid>
         <ClickAwayListener onClickAway={handlePopoverClose}>
           <Grid xs={12} lg={4}>
             <TextField
@@ -238,8 +229,8 @@ export default function Documentation({
               open={open}
               placement="right"
             >
-              <Card>
-                <Typography>There are two possibility to search:</Typography>
+              <Card className="popup">
+                <h2>There are two possibility to search:</h2>
                 <ul>
                   <li>
                     By utilizing the
@@ -254,32 +245,92 @@ export default function Documentation({
                     {' '}
                     <b>function signature</b>
                     {' '}
-                    with this
-                    structure
-                    {' '}
+                    with this structure (each part is
+                    optional):
                     <br />
                     <i>
                       (parameter type, parameter type, ...) -
                       {'>'}
-                      {' '}
                       return type
                     </i>
                   </li>
                 </ul>
-                TODO: ADD example signature with brief explanation
+                <h2> Example of signature usage </h2>
+                <div className="example">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Signature</th>
+                        <th>Retrieved functions (from pytamaro)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="signature">
+                          <i>
+                            (Graphic, Graphic) -
+                            {'>'}
+                            {' '}
+                            Graphic
+                          </i>
+                        </td>
+                        <td className="result">above, beside, compose, overlay</td>
+                      </tr>
+                      <tr>
+                        <td className="signature"><i>(List[Graphic])</i></td>
+                        <td className="result">show_animation</td>
+                      </tr>
+                      <tr>
+                        <td className="signature"><i>(str, List[Graphic])</i></td>
+                        <td className="result">save_animation</td>
+                      </tr>
+                      <tr>
+                        <td className="signature">
+                          <i>
+                            () -
+                            {'>'}
+                            Graphic
+                          </i>
+                        </td>
+                        <td className="result">empty_graphic</td>
+                      </tr>
+                      <tr>
+                        <td className="signature">
+                          <i>
+                            {' '}
+                            -
+                            {'>'}
+                            {' '}
+                            Color
+                          </i>
+                        </td>
+                        <td className="result">hsl_color, hsv_color, rgb_color</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </Card>
             </Popup>
           </Grid>
         </ClickAwayListener>
-
-        <Grid xs={12} lg={4}>
+        <Grid xs={12} lg={3}>
+          <SelectAll
+            title="Kind"
+            placeholder="Kind"
+            options={typeOption}
+            initialSelection={typeOption}
+            onSelectionChange={setAllowedTypes}
+            maxTagsShown={3}
+          />
+        </Grid>
+        <Grid xs={12} lg={5}>
           <SelectAll
             title="Library"
             placeholder="Library"
             options={libraryOption}
             initialSelection={initialLibrary}
             onSelectionChange={setAllowedLibrary}
-            maxTagsShown={3}
+            maxTagsShown={5}
           />
         </Grid>
       </Grid>

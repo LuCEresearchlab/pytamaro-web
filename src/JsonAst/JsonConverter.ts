@@ -4,7 +4,7 @@ import {
   Function, JsonObjType, LanguageString, LibraryString, Module, Type, Variable,
 } from './Json_structure';
 
-const BASE_PATH: string = path.join(process.cwd(), 'public/JsonDocumentation');
+const BASE_PATH: string = path.join(process.cwd(), 'public/documentation');
 
 export interface DividedModule {
   functions: Function[],
@@ -33,6 +33,7 @@ export class JsonConverter {
   private async readFiles(folder: string): Promise<Module[]> {
     const files = await readdir(folder);
     const result: Module[] = [];
+    // const fileContents = await Promise.all(files.map((f) => readFile(path.join(folder, f), 'utf-8')));
     // eslint-disable-next-line no-restricted-syntax
     for (const file of files) {
       // eslint-disable-next-line no-await-in-loop

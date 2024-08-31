@@ -35,21 +35,16 @@ function parseSignature(signature: string): { paramTypes: string[], returnType: 
   };
 }
 
+// TODO: add possibilities to visualize intermediate results
 function isValidSignature(signature: string, func: Function): boolean {
   const {
     paramTypes,
     returnType,
   } = parseSignature(signature);
 
-  // Check parameter types
   if (signature.includes('(') && signature.includes(')')) {
     if (func.parameters) {
       const funcParamTypes = func.parameters.map((param) => param.type?.toLowerCase());
-
-      // TODO : keep or remove or change to don't count optional parameter?
-      // if (paramTypes.length !== funcParamTypes.length) {
-      //     return false;
-      // }
 
       if (paramTypes.length !== functionMandatoryParameter(func)) {
         return false;
@@ -61,11 +56,10 @@ function isValidSignature(signature: string, func: Function): boolean {
         }
       }
     } else if (paramTypes.length > 0) {
-      return false; // If function has no parameters but signature specifies parameters
+      return false;
     }
   }
 
-  // Check return type
   if (func.return_type) {
     if (returnType !== '') {
       if (returnType !== func.return_type.toLowerCase()) {
@@ -73,10 +67,10 @@ function isValidSignature(signature: string, func: Function): boolean {
       }
     }
   } else if (returnType !== null) {
-    return false; // If function has no return type but signature specifies a return type
+    return false;
   }
 
-  return false;
+  return true;
 }
 
 function filtering(names: DividedModule, search: string) {
@@ -297,7 +291,7 @@ export default function DocumentationGrid({
     .includes(search));
 
   return (
-  // eslint-disable-next-line no-nested-ternary
+    // eslint-disable-next-line no-nested-ternary
     noValue(English, Italian, German, French, toolboxFunctions) ? (
       <Typography variant="body1" marginY={3}>
         No elements found.

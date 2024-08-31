@@ -1,0 +1,130 @@
+{
+  "name": "Output",
+  "description": {
+    "content": "Functions for output (show or save) of graphics."
+  },
+  "functions": [
+    {
+      "name": "save_animation",
+      "description": {
+        "content": "Save a sequence of graphics as an animation (GIF).\nGraphics are sequentially reproduced (normally at 25 frames per second) in\na loop (unless specificied otherwise)."
+      },
+      "parameters": [
+        {
+          "name": "filename",
+          "description": {
+            "content": "name of the file to create, including the extension \u2018.gif\u2019"
+          },
+          "type": "str"
+        },
+        {
+          "name": "graphics",
+          "description": {
+            "content": "list of graphics to be saved as an animation"
+          },
+          "type": "List[Graphic]"
+        },
+        {
+          "name": "duration",
+          "description": {
+            "content": "duration in milliseconds for each frame\n(defaults to 40 milliseconds, which leads to 25 frames per second)"
+          },
+          "type": "int",
+          "default_value": "40"
+        },
+        {
+          "name": "loop",
+          "description": {
+            "content": "whether the GIF should loop indefinitely (defaults to true)"
+          },
+          "type": "bool",
+          "default_value": "True"
+        }
+      ]
+    },
+    {
+      "name": "save_graphic",
+      "description": {
+        "content": "Save a graphic to a file.\nTwo file formats are supported: PNG (raster graphics) and SVG (vector graphics).\nThe extension of the filename (either \u201c.png\u201d or \u201c.svg\u201d) determines the format.\nGraphics with no area cannot be saved in the PNG format.\nWhen debug is True, adorns the visualization with useful information\nfor debugging: a red border around the bounding box and a yellowish cross\naround the pinning position."
+      },
+      "parameters": [
+        {
+          "name": "filename",
+          "description": {
+            "content": "name of the file to create (with the extension)"
+          },
+          "type": "str"
+        },
+        {
+          "name": "graphic",
+          "description": {
+            "content": "graphic to be saved"
+          },
+          "type": "Graphic"
+        },
+        {
+          "name": "debug",
+          "description": {
+            "content": "can be optionally set to True to overlay debugging\ninformation"
+          },
+          "type": "bool",
+          "default_value": "False"
+        }
+      ]
+    },
+    {
+      "name": "show_animation",
+      "description": {
+        "content": "Show a sequence of graphics as an animation (GIF).\nGraphics are sequentially reproduced (normally at 25 frames per second) in\na loop (unless specificied otherwise)."
+      },
+      "parameters": [
+        {
+          "name": "graphics",
+          "description": {
+            "content": "list of graphics to be shown as an animation"
+          },
+          "type": "List[Graphic]"
+        },
+        {
+          "name": "duration",
+          "description": {
+            "content": "duration in milliseconds for each frame\n(defaults to 40 milliseconds, which leads to 25 frames per second)"
+          },
+          "type": "int",
+          "default_value": "40"
+        },
+        {
+          "name": "loop",
+          "description": {
+            "content": "whether the animation should loop indefinitely (defaults to true)"
+          },
+          "type": "bool",
+          "default_value": "True"
+        }
+      ]
+    },
+    {
+      "name": "show_graphic",
+      "description": {
+        "content": "Show a graphic. Graphics with no area cannot be shown.\nWhen debug is True, adorns the visualization with useful information\nfor debugging: a red border around the bounding box and a yellowish cross\naround the pinning position."
+      },
+      "parameters": [
+        {
+          "name": "graphic",
+          "description": {
+            "content": "graphic to be shown"
+          },
+          "type": "Graphic"
+        },
+        {
+          "name": "debug",
+          "description": {
+            "content": "can be optionally set to True to overlay debugging\ninformation"
+          },
+          "type": "bool",
+          "default_value": "False"
+        }
+      ]
+    }
+  ]
+}
