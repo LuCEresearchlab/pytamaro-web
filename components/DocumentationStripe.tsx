@@ -10,7 +10,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import PyTamaroNames from '../src/pytamaroNames';
-import { PythonName, imported_names } from '../src/python-analyzer/python_analyzer';
+import { PythonName, analyze } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import theme from '../src/theme';
 import PyTamaroAPI from './PyTamaroAPI';
@@ -18,21 +18,12 @@ import PyTamaroAPI from './PyTamaroAPI';
 export default function DocumentationStripe({ sources, activityVariant } :
 { sources: string[], activityVariant: ActivityVariant }) {
   const { t } = useLocalTranslation();
-  const [namesPerCell, setNamesPerCell] = useState<PythonName[][] | undefined>();
-  const [shownAtLeastOnce, setShownAtLeastOnce] = useState(false);
+  const [namesPerCell, setNamesPerCell] = useState<PythonName[][]>();
   const [tooManyNames, setTooManyNames] = useState(false);
   const [namesExpanded, setNamesExpanded] = useState(false);
   useEffect(() => {
-    try {
-      const newNamesPerCell = sources.map(imported_names);
-      setNamesPerCell(newNamesPerCell);
-      if (newNamesPerCell.some((names) => names.length > 0)) {
-        setShownAtLeastOnce(true);
-      }
-    } catch {
-      setNamesPerCell(undefined);
-      setShownAtLeastOnce(true);
-    }
+    const newNamesPerCell = sources.map((source) => analyze(source).imported_names);
+    setNamesPerCell(newNamesPerCell);
   }, [sources]);
   const moduleToLanguage: Record<string, string> = {
     // eslint-disable-next-line quote-props
@@ -57,13 +48,9 @@ export default function DocumentationStripe({ sources, activityVariant } :
 
   const namesToShow = uniqWith(flatten(reverse(knownNamesPerCell || [])), isEqual);
 
-  if (namesToShow.length === 0 && !shownAtLeastOnce) {
+  if (namesToShow.length === 0) {
     return null;
   }
-
-  let infoMessage = '';
-  if (namesPerCell === undefined) infoMessage = 'Syntax Error';
-  if (namesToShow.length === 0) infoMessage = 'No names imported from PyTamaro';
 
   return (
     <Box>
@@ -100,7 +87,6 @@ export default function DocumentationStripe({ sources, activityVariant } :
           onClick={toggleNamesExpanded}
           onDelete={toggleNamesExpanded}
         />
-        <Typography variant="body2" sx={{ color: '#dddddd' }}>{infoMessage}</Typography>
       </Stack>
     </Box>
   );

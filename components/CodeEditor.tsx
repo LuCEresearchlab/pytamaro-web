@@ -7,6 +7,7 @@ import {
 import { ExecutionResponse } from '../src/codeExecution';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import { moduleImportCompletionProvider, pytamaroImportCompletionProvider, toolboxImportCompletionProvider } from '../src/monacoSuggestions';
+import { analyze, ParseError } from '../src/python-analyzer/python_analyzer';
 import { addMarkers } from '../src/pythonTraceback';
 import scrollToAnchor from '../src/scrollToAnchor';
 import theme from '../src/theme';
@@ -204,10 +205,37 @@ export default function CodeEditor({
     }
   }, [editorInstance, initialSource, clearMarkers, resetCounter]);
 
+  const addParseErrorMarkers = (parseErrors: ParseError[]) => {
+    if (monacoInstance && editorInstance) {
+      const model = editorInstance.getModel();
+      monacoInstance.editor.setModelMarkers(
+        model,
+        'owner',
+        parseErrors.map((error) => {
+          const startPosition = model.getPositionAt(error.location[0]);
+          const endPosition = model.getPositionAt(error.location[1]);
+          return ({
+            startLineNumber: startPosition.lineNumber,
+            startColumn: startPosition.column,
+            endLineNumber: endPosition.lineNumber,
+            endColumn: endPosition.column,
+            message: error.message,
+            severity: monacoInstance.MarkerSeverity.Error,
+          });
+        }),
+      );
+    }
+  };
+
+  const debouncedAddParseErrorMarkers = debounce((source: string) => {
+    addParseErrorMarkers(analyze(source).parse_errors);
+  }, 500);
+
   const debouncedHandleSourceChanged = debounce((newSource: string | undefined) => {
     if (newSource !== undefined) {
       onChange(newSource);
       clearMarkers();
+      debouncedAddParseErrorMarkers(newSource);
     }
   }, 100);
 

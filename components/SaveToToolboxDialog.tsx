@@ -24,7 +24,7 @@ import { ExecutionResponse, TOOLBOX_FILE } from '../src/codeExecution';
 import { CodeCellState, ToolboxFunction } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
-import { PythonFunction, defined_functions } from '../src/python-analyzer/python_analyzer';
+import { analyze, PythonFunction } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
 import { toolboxActivityVariant } from '../src/specialActivities';
@@ -168,7 +168,7 @@ export default function SaveToToolboxDialog({
   useEffect(() => {
     const findNewFunctions = async () => {
       try {
-        const newFunctions : PythonFunction[] = await defined_functions(implementation);
+        const newFunctions : PythonFunction[] = await analyze(implementation).defined_functions;
         setFunctions(newFunctions);
       } catch (e) {
         setFunctions([]);
