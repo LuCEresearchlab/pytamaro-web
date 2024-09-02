@@ -4,7 +4,7 @@ import {
 } from '@mui/material';
 import { debounce } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
-import { PythonFunction, defined_functions } from '../src/python-analyzer/python_analyzer';
+import { AnalysisResult, analyze } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
 import CustomSnackbar from './CustomSnackbar';
@@ -22,13 +22,11 @@ export default function SaveToToolboxButton({ sources, originalActivity } :
 
   const debouncedFindFunctionsDefinitions = useMemo(() => {
     const findFunctionDefinitions = async (currentCellSource: string) => {
-      try {
-        const newFunctions : PythonFunction[] = await defined_functions(currentCellSource);
-        const atLeastOneFunction = newFunctions.length > 0;
-        setAvailable(atLeastOneFunction);
-      } catch (e) {
-        setAvailable(false);
-      }
+      const analysisResult : AnalysisResult = await analyze(currentCellSource);
+      const newFunctions = analysisResult.defined_functions;
+      const atLeastOneFunction = newFunctions.length > 0;
+      const noErrors = analysisResult.parse_errors.length === 0;
+      setAvailable(atLeastOneFunction && noErrors);
     };
 
     return debounce(findFunctionDefinitions, 100);

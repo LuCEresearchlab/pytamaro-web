@@ -5,14 +5,13 @@ import {
   Card, CardActions, CardContent, Collapse, Paper,
   Stack,
   Tooltip,
-  debounce,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ExecutionResponse, isExecutionCompleted } from '../src/codeExecution';
 import { CodeCellExecutionState } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import { called_names, find_ellipsis, imported_names } from '../src/python-analyzer/python_analyzer';
+import { AnalysisResult, analyze } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant, PlatformConfiguration } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
 import { EllipsisTip, InputTip, NoOutputTip } from './CodeCellTips';
@@ -64,34 +63,14 @@ export default function CodeCell({
   const [ellipsis, setEllipsis] = useState(false);
   const outputHidden = noOutput || inputFunctionCalled;
 
-  const debouncedFindCalledNames = useMemo(() => {
-    const findCalledNames = async (currentCellSource: string) => {
-      try {
-        const names : string[] = await called_names(currentCellSource);
-        setInputFunctionCalled(names.includes('input'));
-      } catch (e) {
-        setInputFunctionCalled(false);
-      }
-    };
-
-    return debounce(findCalledNames, 100);
-  }, []);
-
-  const debouncedFindEllipsis = useMemo(() => {
-    const findEllipsis = async (currentCellSource: string) => {
-      try {
-        setEllipsis(await find_ellipsis(currentCellSource));
-      } catch (e) {
-        setEllipsis(false);
-      }
-    };
-    return debounce(findEllipsis, 100);
-  }, []);
-
   useEffect(() => {
-    debouncedFindCalledNames(currentSource);
-    debouncedFindEllipsis(currentSource);
-  }, [currentSource, debouncedFindCalledNames, debouncedFindEllipsis]);
+    const analyzeSource = async () => {
+      const analysisResult : AnalysisResult = await analyze(currentSource);
+      setInputFunctionCalled(analysisResult.called_names.includes('input'));
+      setEllipsis(analysisResult.has_ellipsis);
+    };
+    analyzeSource();
+  }, [currentSource]);
 
   return (
     <Paper elevation={readOnly ? 0 : 4}>
@@ -130,7 +109,7 @@ export default function CodeCell({
           </Stack>
         </CardActions>
         {noOutput && platformConfig.showNoOutputTip && (
-          <NoOutputTip importedNames={imported_names(joinLines(sourcesUpTo))} />
+          <NoOutputTip importedNames={analyze(joinLines(sourcesUpTo)).imported_names} />
         )}
         {inputFunctionCalled && <InputTip />}
         {ellipsis && <EllipsisTip />}

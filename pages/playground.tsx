@@ -25,7 +25,7 @@ import ToolboxListSidebar from '../components/sidebar/ToolboxListSidebar';
 import getActivitiesWithAPIs, { ActivityVariantWithNames } from '../src/activitiesAPIs';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import { playgroundActivityVariant, playgroundInitialSource } from '../src/playground';
-import { PythonName, imported_names } from '../src/python-analyzer/python_analyzer';
+import { PythonName, analyze } from '../src/python-analyzer/python_analyzer';
 import { translationProps } from '../src/serverSideTranslationProps';
 import useReset from '../src/useReset';
 
@@ -73,7 +73,7 @@ export default function Playground({ activitiesWithNames } :
   useEffect(() => {
     const recommendActivities = () => {
       try {
-        const currentlyImported = uniqueNames(imported_names(codeCells[0].source));
+        const currentlyImported = uniqueNames(analyze(codeCells[0].source).imported_names);
         const scores = activitiesWithNames.map((activityWithName: ActivityVariantWithNames) => {
           const { importedNames } = activityWithName;
           // Simple scoring algorithm:

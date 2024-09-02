@@ -7,6 +7,7 @@ import type {
 import { TOOLBOX_FILE } from './codeExecution';
 import { ToolboxFunction } from './localStorage/schema';
 import PyTamaroNames from './pytamaroNames';
+import { AnalysisResult, analyze } from './python-analyzer/python_analyzer';
 
 function kind(monacoInstance: any, type: string) {
   const map : Record<string, any> = {
@@ -94,7 +95,20 @@ export function pytamaroImportCompletionProvider(
 ) {
   return {
     provideCompletionItems(model: EditorNamespace.ITextModel, position: Position) {
-      const text = currentLineText(model, position);
+      const analysisResult : AnalysisResult = analyze(model.getValue());
+      const offset = model.getOffsetAt(position);
+      const importStmt = analysisResult.import_ranges.find(
+        ([start, end]) => start <= offset && offset <= end,
+      );
+      if (!importStmt) return { suggestions: [] };
+      const startPosition = model.getPositionAt(importStmt[0]);
+      const endPosition = model.getPositionAt(importStmt[1]);
+      const text = model.getValueInRange({
+        startLineNumber: startPosition.lineNumber,
+        startColumn: startPosition.column,
+        endLineNumber: endPosition.lineNumber,
+        endColumn: endPosition.column,
+      });
       const regexes = Object.keys(PYTAMARO_MODULES).map((module) => `from\\s+(${module})\\s+import\\s+`);
       const pytamaroMatch = regexes.map((regex) => text.match(regex)).find(negate(isNull));
       if (!pytamaroMatch) return { suggestions: [] };
