@@ -1,6 +1,7 @@
 import {
   Card,
-  Chip, ClickAwayListener, Stack, TablePagination,
+  Chip,
+  Stack, TablePagination,
 } from '@mui/material';
 import { useState } from 'react';
 import { ToolboxFunction } from '../../src/localStorage/schema';
@@ -9,55 +10,44 @@ import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import theme from '../../src/theme';
 import { toolboxFunctionPathname } from '../../src/urlUtils';
 import useWindowSize from '../../src/useWindowSize';
-import Popup from '../Popup';
+import { Popover, PopoverContent, PopoverTrigger } from '../Popover';
 import ToolboxFunctionCardContent from '../ToolboxFunctionCardContent';
 import { SIDEBAR_CHIPS_FONT_SIZE, SIDEBAR_CHIPS_WIDTH } from './Sidebar';
 import SidebarItem from './SidebarItem';
 
 function SidebarToolboxFunction({ fn, skipPopup }: { fn: ToolboxFunction, skipPopup: boolean }) {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    if (skipPopup) {
-      window.open(toolboxFunctionPathname(fn.name));
-    } else {
-      setAnchorEl(event.currentTarget);
-    }
+  const handleClick = () => {
+    if (skipPopup) window.open(toolboxFunctionPathname(fn.name));
   };
+  const element = (
+    <Chip
+      label={fn.name}
+      size="small"
+      variant="filled"
+      sx={{
+        width: SIDEBAR_CHIPS_WIDTH,
+        fontFamily: theme.pytamaro.monospaceFontFamily,
+        fontSize: SIDEBAR_CHIPS_FONT_SIZE,
+        cursor: 'pointer',
+      }}
+      onClick={handleClick}
+    />
+  );
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
-  const toolboxPopupId = `toolbox-popup-${fn.name}`;
+  if (skipPopup) {
+    return element;
+  }
   return (
-    <ClickAwayListener onClickAway={handleClose}>
-      <div>
-        <Chip
-          label={fn.name}
-          size="small"
-          variant="filled"
-          aria-describedby={toolboxPopupId}
-          onClick={handleClick}
-          sx={{
-            width: SIDEBAR_CHIPS_WIDTH,
-            fontFamily: theme.pytamaro.monospaceFontFamily,
-            fontSize: SIDEBAR_CHIPS_FONT_SIZE,
-          }}
-        />
-        <Popup
-          id={toolboxPopupId}
-          open={open}
-          anchorEl={anchorEl}
-          placement="right"
-        >
-          <Card>
-            <ToolboxFunctionCardContent fn={fn} summary />
-          </Card>
-        </Popup>
-      </div>
-    </ClickAwayListener>
+    <Popover placement="right">
+      <PopoverTrigger>
+        {element}
+      </PopoverTrigger>
+      <PopoverContent>
+        <Card>
+          <ToolboxFunctionCardContent fn={fn} summary />
+        </Card>
+      </PopoverContent>
+    </Popover>
   );
 }
 

@@ -100,6 +100,12 @@ const changelogEntries = [
     title: 'Print ready-to-cut pieces from your own graphic',
     desc: <span>A new <Link href={activityVariantPathname(printableGraphicActivityVariant)}>automatic system</Link> creates ready-to-cut pieces from any PyTamaro graphic. Teachers can quickly print them and have students compose the graphic starting from atomic shapes!</span>,
   },
+  {
+    date: '2024-09-04',
+    icon: 'MenuBook',
+    title: 'Judicious: a new documentation system',
+    desc: <span>The documentation is now powered by <Link href="https://chiodini.org/publications/splashe24-judicious.pdf">Judicious</Link>, a new system which gradually presents information and offers a diagrammatic representation for functions and constants. Enjoy a uniform documentation for PyTamaro, the toolbox, and even part of the Python standard library.</span>,
+  },
 ];
 
 export default function AboutPage({ authorsProfiles } : { authorsProfiles: AuthorProfile[] }) {
@@ -138,7 +144,7 @@ export default function AboutPage({ authorsProfiles } : { authorsProfiles: Autho
                     secondary={entry.desc}
                   />
                 </ListItem>
-                {(idx !== shownEntries.length - 1) && <Divider variant="inset" component="li" />}
+                {(idx !== shownEntries.length - 1) && <Divider variant="middle" component="li" />}
               </>
             ))}
           </List>

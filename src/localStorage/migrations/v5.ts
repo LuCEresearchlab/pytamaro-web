@@ -1,7 +1,9 @@
 import {
   ActivityVariantMetadata,
-  CurriculumMetadata, Metadata, ToolboxFunction,
+  CurriculumMetadata,
+  ToolboxFunction,
 } from '../schema';
+import { MetadataV5 } from './v6';
 
 export interface MetadataV4 {
   dataModelVersion: string;
@@ -13,7 +15,7 @@ export interface MetadataV4 {
   curricula: CurriculumMetadata[]
 }
 
-export default function migrateToV5(metadata: MetadataV4) : Metadata {
+export default function migrateToV5(metadata: MetadataV4) : MetadataV5 {
   const newMetadata = {
     ...metadata,
     dataModelVersion: '5',

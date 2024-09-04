@@ -1,14 +1,14 @@
 import {
-  Avatar, Box, Card, Chip, ClickAwayListener, Stack,
+  Avatar, Box, Card, Chip,
+  Stack,
 } from '@mui/material';
 import { sortBy } from 'lodash';
-import { useState } from 'react';
 import { competencyColor } from '../src/curriculumCompetencies';
 import { Curriculum, CurriculumActivity, CurriculumCompetency } from '../src/schemas/curriculumSchema';
 import theme from '../src/theme';
 import CompetencyCardContent from './CompetencyCardContent';
 import GenericMuiIcon from './GenericMuiIcon';
-import Popup from './Popup';
+import { Popover, PopoverContent, PopoverTrigger } from './Popover';
 import { SIDEBAR_CHIPS_FONT_SIZE, SIDEBAR_CHIPS_WIDTH } from './sidebar/Sidebar';
 
 export function myCompetencyChipId(competency: CurriculumCompetency) {
@@ -18,21 +18,9 @@ export function myCompetencyChipId(competency: CurriculumCompetency) {
 function UserCompetencyChip({ curriculum, competency, completedActivities }:
 { curriculum: Curriculum, competency: CurriculumCompetency,
   completedActivities: CurriculumActivity[] }) {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
-  const popoverId = `competency-popover-${competency.id}`;
   return (
-    <ClickAwayListener onClickAway={handleClose}>
-      <div>
+    <Popover placement="right">
+      <PopoverTrigger>
         <Chip
           id={myCompetencyChipId(competency)}
           label={(
@@ -60,9 +48,6 @@ function UserCompetencyChip({ curriculum, competency, completedActivities }:
               iconName={competency.icon}
             />
           )}
-          aria-owns={open ? popoverId : undefined}
-          aria-haspopup="true"
-          onClick={handleClick}
           sx={{
             width: SIDEBAR_CHIPS_WIDTH,
             fontSize: SIDEBAR_CHIPS_FONT_SIZE,
@@ -74,18 +59,13 @@ function UserCompetencyChip({ curriculum, competency, completedActivities }:
             },
           }}
         />
-        <Popup
-          id={popoverId}
-          open={open}
-          anchorEl={anchorEl}
-          placement="right"
-        >
-          <Card>
-            <CompetencyCardContent curriculum={curriculum} competency={competency} />
-          </Card>
-        </Popup>
-      </div>
-    </ClickAwayListener>
+      </PopoverTrigger>
+      <PopoverContent>
+        <Card elevation={0}>
+          <CompetencyCardContent curriculum={curriculum} competency={competency} />
+        </Card>
+      </PopoverContent>
+    </Popover>
   );
 }
 export default function UserCompetenciesStack({ curriculum, userCompetencies, direction } : {

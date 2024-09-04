@@ -6,11 +6,12 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   const {
-    uuid, experimentKey, name, activityVariant,
+    uuid, experimentKey, module, name, activityVariant,
   } = req.body;
   const saved = await saveAPILookupEvent(
     uuid,
     experimentKey,
+    module,
     name,
     activityVariant,
   );

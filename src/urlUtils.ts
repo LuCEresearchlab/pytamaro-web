@@ -141,3 +141,9 @@ export function toolboxFunctionPathname(functionName: string) {
 export function conceptPathname(concept: string) {
   return `/concepts/${concept}`;
 }
+
+/* Documentation */
+
+export function judiciousDocPathname(module: string) {
+  return `/docs/${module}.json`;
+}

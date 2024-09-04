@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { type ExecutionResponse } from '../codeExecution';
 import { ActivityVariant } from '../schemas/activitySchema';
 
-export const CURRENT_VERSION = '5';
+export const CURRENT_VERSION = '6';
 
 export interface Metadata {
   dataModelVersion: string;
@@ -13,6 +13,13 @@ export interface Metadata {
   toolbox: ToolboxFunction[],
   curricula: CurriculumMetadata[],
   platformLocale: string | null, // null means not explicitly chosen
+  docs: DocsMetadata,
+}
+
+export interface DocsMetadata {
+  showOptional: boolean,
+  showDiagram: boolean,
+  showTypes: boolean,
 }
 
 export interface ToolboxFunction {
@@ -80,6 +87,14 @@ export function getDefaultActivityVariantMetadata(activityVariantId: string)
   };
 }
 
+export function defaultDocsMetadata() : DocsMetadata {
+  return {
+    showOptional: false,
+    showDiagram: true,
+    showTypes: false,
+  };
+}
+
 export function getDefaultMetadata() : Metadata {
   return {
     dataModelVersion: CURRENT_VERSION,
@@ -90,5 +105,6 @@ export function getDefaultMetadata() : Metadata {
     toolbox: [],
     curricula: [],
     platformLocale: null,
+    docs: defaultDocsMetadata(),
   };
 }

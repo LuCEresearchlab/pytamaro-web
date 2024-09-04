@@ -1,7 +1,7 @@
 import {
-  Avatar, Box, Card, ClickAwayListener, Stack,
+  Avatar, Box, Card,
+  Stack,
 } from '@mui/material';
-import { useState } from 'react';
 import { allActivities } from '../../src/curricula';
 import { competencyColor } from '../../src/curriculumCompetencies';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
@@ -10,7 +10,7 @@ import { Curriculum, CurriculumCompetency } from '../../src/schemas/curriculumSc
 import theme from '../../src/theme';
 import CompetencyCardContent from '../CompetencyCardContent';
 import GenericMuiIcon from '../GenericMuiIcon';
-import Popup from '../Popup';
+import { Popover, PopoverContent, PopoverTrigger } from '../Popover';
 import { myCompetencyChipId } from '../UserCompetenciesStack';
 import SidebarTitle from './SidebarTitle';
 
@@ -18,16 +18,6 @@ const AVATAR_SIZE = 24;
 
 function CompetencyAvatar({ curriculum, competency } :
 { curriculum: Curriculum, competency: CurriculumCompetency }) {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   const highlightCorrespondingMyCompetency = (brigheter: boolean) => {
     const element = document.getElementById(myCompetencyChipId(competency));
     if (element) {
@@ -35,11 +25,9 @@ function CompetencyAvatar({ curriculum, competency } :
     }
   };
 
-  const open = Boolean(anchorEl);
-  const popoverId = `activity-competency-popover-${competency.id}`;
   return (
-    <ClickAwayListener onClickAway={handleClose}>
-      <div>
+    <Popover placement="left">
+      <PopoverTrigger>
         <Avatar
           sx={{
             bgcolor: theme.palette[competencyColor(competency)].main,
@@ -47,9 +35,6 @@ function CompetencyAvatar({ curriculum, competency } :
             height: AVATAR_SIZE,
             cursor: 'pointer',
           }}
-          aria-owns={open ? popoverId : undefined}
-          aria-haspopup="true"
-          onClick={handleClick}
           onMouseEnter={() => highlightCorrespondingMyCompetency(true)}
           onMouseLeave={() => highlightCorrespondingMyCompetency(false)}
         >
@@ -58,18 +43,13 @@ function CompetencyAvatar({ curriculum, competency } :
             fontSize="large"
           />
         </Avatar>
-        <Popup
-          id={popoverId}
-          open={open}
-          anchorEl={anchorEl}
-          placement="left"
-        >
-          <Card>
-            <CompetencyCardContent curriculum={curriculum} competency={competency} noActivities />
-          </Card>
-        </Popup>
-      </div>
-    </ClickAwayListener>
+      </PopoverTrigger>
+      <PopoverContent>
+        <Card elevation={0}>
+          <CompetencyCardContent curriculum={curriculum} competency={competency} noActivities />
+        </Card>
+      </PopoverContent>
+    </Popover>
   );
 }
 
