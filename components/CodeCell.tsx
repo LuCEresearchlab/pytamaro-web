@@ -16,9 +16,9 @@ import { ActivityVariant, PlatformConfiguration } from '../src/schemas/activityS
 import { joinLines } from '../src/sourceUtils';
 import { EllipsisTip, InputTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
-import DocumentationStripe from './DocumentationStripe';
 import OutputArea from './OutputArea';
 import RunButton from './RunButton';
+import DocumentationStripe from './documentation/DocumentationStripe';
 
 const StaleOutputBadge = styled(Badge)<BadgeProps>(() => ({
   '& .MuiBadge-badge': {

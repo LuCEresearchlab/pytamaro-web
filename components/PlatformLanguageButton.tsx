@@ -1,7 +1,6 @@
 import { Translate } from '@mui/icons-material';
 import {
   Card,
-  ClickAwayListener,
   FormControl, IconButton,
   MenuItem,
   Select,
@@ -12,7 +11,7 @@ import {
 import { useState } from 'react';
 import capitalizedLocalizedLanguageDisplayName from '../src/internationalization';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import Popup from './Popup';
+import { Popover, PopoverContent, PopoverTrigger } from './Popover';
 
 const config = require('../next-i18next.config');
 
@@ -44,8 +43,8 @@ export default function PlatformLanguageButton() {
   const id = open ? 'platform-language-popover' : undefined;
 
   return (
-    <ClickAwayListener onClickAway={handleClose} mouseEvent="onMouseUp">
-      <div>
+    <Popover placement="bottom">
+      <PopoverTrigger>
         <IconButton
           sx={{ ml: 1 }}
           color="neutral"
@@ -54,32 +53,27 @@ export default function PlatformLanguageButton() {
         >
           <Translate />
         </IconButton>
-        <Popup
-          id={id}
-          open={open}
-          anchorEl={anchorEl}
-          placement="bottom"
-        >
-          <Card>
-            <Stack sx={{ p: 2 }} spacing={2}>
-              <Typography>{t('selectPlatformLanguage')}</Typography>
-              <FormControl>
-                <Select
-                  id="locale-select"
-                  value={i18n.language}
-                  onChange={handleChange}
-                >
-                  {languages.map((language) => (
-                    <MenuItem key={language} value={language}>
-                      {capitalizedLocalizedLanguageDisplayName(language)}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Stack>
-          </Card>
-        </Popup>
-      </div>
-    </ClickAwayListener>
+      </PopoverTrigger>
+      <PopoverContent>
+        <Card elevation={0}>
+          <Stack sx={{ p: 2 }} spacing={2}>
+            <Typography>{t('selectPlatformLanguage')}</Typography>
+            <FormControl>
+              <Select
+                id="locale-select"
+                value={i18n.language}
+                onChange={handleChange}
+              >
+                {languages.map((language) => (
+                  <MenuItem key={language} value={language}>
+                    {capitalizedLocalizedLanguageDisplayName(language)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Stack>
+        </Card>
+      </PopoverContent>
+    </Popover>
   );
 }

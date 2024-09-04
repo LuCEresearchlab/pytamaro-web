@@ -7,8 +7,9 @@ import migrateToV2, { MetadataV1 } from './migrations/v2';
 import migrateToV3, { MetadataV2 } from './migrations/v3';
 import migrateToV4, { MetadataV3 } from './migrations/v4';
 import migrateToV5, { MetadataV4 } from './migrations/v5';
+import migrateToV6, { MetadataV5 } from './migrations/v6';
 import {
-  ActivityVariantMetadata, METADATA_KEY, Metadata, getDefaultMetadata,
+  ActivityVariantMetadata, DocsMetadata, METADATA_KEY, Metadata, getDefaultMetadata,
 } from './schema';
 
 function migrations(metadata: { dataModelVersion: string }) : Metadata {
@@ -23,6 +24,9 @@ function migrations(metadata: { dataModelVersion: string }) : Metadata {
   }
   if (metadata.dataModelVersion === '4') {
     return migrations(migrateToV5(metadata as MetadataV4));
+  }
+  if (metadata.dataModelVersion === '5') {
+    return migrations(migrateToV6(metadata as MetadataV5));
   }
   return metadata as Metadata;
 }
@@ -91,6 +95,14 @@ export default function useLocalProfile() {
     }));
   };
 
+  const docsMetadata = metadata.docs;
+
+  const setDocsMetadata = (newDocsMetadata: DocsMetadata) => {
+    setMetadata((currentMetadata) => produce(currentMetadata, (draft) => {
+      draft.docs = newDocsMetadata;
+    }));
+  };
+
   return {
     metadata,
     dataSharingAllowed,
@@ -102,5 +114,7 @@ export default function useLocalProfile() {
     findCurriculum,
     removeCurriculum,
     setPlatformLocale,
+    docsMetadata,
+    setDocsMetadata,
   };
 }

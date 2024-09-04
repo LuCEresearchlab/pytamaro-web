@@ -11,7 +11,6 @@ import Head from 'next/head';
 import PageFooter from '../components/PageFooter';
 import createEmotionCache from '../src/createEmotionCache';
 import theme from '../src/theme';
-import '../style/rtd.css';
 import '../style/styles.css';
 
 // Fonts

@@ -1,19 +1,21 @@
 import postgres from 'postgres';
-import conn from '../dbConnection';
-import { eventTableName, storeActivity, storeEvent } from './event';
-import { storeRow } from '../dbUtils';
 import { ActivityVariant } from '../../schemas/activitySchema';
 import { EventName } from '../../storeDbEvent';
+import conn from '../dbConnection';
+import { storeRow } from '../dbUtils';
+import { eventTableName, storeActivity, storeEvent } from './event';
 
 async function storeEventAPILookup(
   sql: postgres.TransactionSql,
   event_id: number,
   activity_id: number,
+  module: string,
   name: string,
 ) {
   return storeRow(sql, eventTableName(EventName.APILookup), {
     id: event_id,
     activity_id,
+    module,
     name,
   });
 }
@@ -21,6 +23,7 @@ async function storeEventAPILookup(
 export default async function saveAPILookupEvent(
   user_uuid: string,
   experiment_key: string,
+  module: string,
   name: string,
   activity_variant: ActivityVariant,
 ) : Promise<boolean> {
@@ -32,6 +35,7 @@ export default async function saveAPILookupEvent(
         sql,
         await pEventId,
         await pActivityId,
+        module,
         name,
       );
     });
