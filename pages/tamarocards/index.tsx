@@ -288,11 +288,16 @@ export default function TamaroCardsPage() {
           />
 
           <Typography marginY={1}>
-            When composing or interpreting an expression,
-            students can annotate the visual expression with the values emitted by the cards.
-            Values of built-in types (int, float, str, bool) are written as normal Python literals.
-            Values of PyTamaro types (Graphic, Color, Point) are drawn graphically;
-            graphics can even be cut out from colored sheets of paper.
+            Students can annotate the visual expression with the values emitted by the cards.
+            They don't necessarily need to annotate each card:
+            showing the values produced by the literal cards
+            (which literally are the values written on the card)
+            doesn't add any information;
+            and showing the values produced by the constant cards (like colors)
+            may not add much either.
+            We usually focus on annotating values that are graphics,
+            either by drawing that graphic,
+            or by producing and placing a paper cut-out of that graphic.
           </Typography>
 
           <Typography variant="h5" marginY={3}>
