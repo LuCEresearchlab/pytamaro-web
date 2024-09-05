@@ -187,7 +187,7 @@ export default function TamaroCardsPage() {
             TamaroCards
           </Typography>
 
-          <Typography>
+          <Typography marginY={3}>
             Literals are white empty pieces of paper,
             constants are blue rectangles,
             functions are red rounded rectangles, and
@@ -246,7 +246,7 @@ export default function TamaroCardsPage() {
           <Typography variant="h5" marginY={3}>
             Composing Cards into Expressions
           </Typography>
-          <Typography marginY={1}>
+          <Typography marginY={3}>
             To express a computation (i.e., the creation of a graphic),
             students connect together individual cards into an expression.
             They can place cards next to each other,
@@ -271,8 +271,8 @@ export default function TamaroCardsPage() {
           <Typography variant="h5" marginY={3}>
             Evaluating Expressions
           </Typography>
-          <Typography marginY={1}>
-            The evaluation of the expression flows from left to right.
+          <Typography>
+            The evaluation of a TamaroCard expression flows from left to right.
             Each constant, function, and operator emits a value on its right.
             Function arguments enter functions from the left,
             and, similarly, operands enter operators from the left.
@@ -303,7 +303,7 @@ export default function TamaroCardsPage() {
           <Typography variant="h5" marginY={3}>
             Translating Cards to Python Code
           </Typography>
-          <Typography marginY={1}>
+          <Typography>
             Once students understand the meaning of cards and their compositions,
             it makes sense to transition from TamaroCards to Python source code.
           </Typography>
@@ -316,11 +316,12 @@ export default function TamaroCardsPage() {
             }}
           />
           <Typography>
-            Like for evaluation, also for translation we can use a systematic approach:
+            We can translate a TamaroCard expression into a Python source expression
+            using a systematic approach:
             a depth-first traversal of the tree.
             We draw a line (let's call it a "street")
             through the tree to make the traversal explicit.
-            We starting at the root of the tree (the rightmost card).
+            We start at the root of the tree (the rightmost card).
             Whenever we visit a function card for the first time,
             we write down the function's name followed by an opening parenthesis.
             Between each of a card's arguments, we write down a comma.
@@ -464,9 +465,7 @@ export default function TamaroCardsPage() {
             Note that the individual cards, unlike the documentation,
             do not contain any annotations on parameters, return values, or constant values.
             This is akin to code:
-            when you call a function, you just write its name,
-            and you provide arguments,
-            but you don't write the names of the parameters.
+            when you call a function, you just write its name and provide arguments.
           </Typography>
 
           <Typography variant="h4" marginY={3}>
@@ -580,6 +579,47 @@ export default function TamaroCardsPage() {
             you go beyond the TamaroCard notional machine.
             You can still use them,
             but only to reason about the pure and immutable parts of the code.
+          </Typography>
+
+          <Typography variant="h4" marginY={3}>
+            Working With TamaroCards Can Prevent Misconceptions
+          </Typography>
+          <Typography marginY={3}>
+            Teaching students to compose programs using TamaroCards,
+            and translating TamaroCard expressions to Python code systematically,
+            helps to combat known Python programming misconceptions, such as
+            {' '}
+            <a href="https://progmiscon.org/misconceptions/Python/OutsideInFunctionNesting/">OutsideInFunctionNesting</a>
+            ,
+            {' '}
+            <a href="https://progmiscon.org/misconceptions/Python/NoAtomicExpression/">NoAtomicExpression</a>
+            , and
+            {' '}
+            <a href="https://progmiscon.org/misconceptions/Python/ParenthesesOnlyIfArgument/">ParenthesesOnlyIfArgument</a>
+            .
+          </Typography>
+
+          <Typography variant="h4" marginY={3}>
+            TamaroCards: A Variant of the "Expression As Tree" Notional Machine
+          </Typography>
+          <Typography marginY={3}>
+            The
+            {' '}
+            <a href="https://notionalmachines.github.io/nms/ExpressionAsTree-1.html">"Expression as Tree" notional machine</a>
+            {' '}
+            visually represents expressions as trees.
+            {' '}
+            <a href="https://expressiontutor.org/">Expression Tutor</a>
+            {' '}
+            is an online platform built around that notional machine.
+            It's goal is to help students understand the
+            structure, evaluation, and typing of expressions.
+            While the expression trees in Expression Tutor look different
+            from TamaroCard expression trees,
+            they are equivalent in many ways.
+            TamaroCards are a specialized, unplugged, variant of
+            the "Expression as Tree" notional machine,
+            with a focus on expressions that are used to produce PyTamaro graphics.
           </Typography>
 
           <Typography variant="h4" marginY={3}>
