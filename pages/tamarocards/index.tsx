@@ -355,7 +355,7 @@ export default function TamaroCardsPage() {
           />
           <Grid container spacing={5} alignItems="flex-end">
             {
-              api.map(({ name, desc, img }) => (
+              api.map(({ name, img }) => (
                 <Grid
                   key={name}
                   item
@@ -576,7 +576,8 @@ export default function TamaroCardsPage() {
             And once you introduce imperative Python features,
             such as mutable variables or loops in Python,
             you go beyond the TamaroCard notional machine.
-            You can still use them, but only to reason about the pure and immutable parts of the code.
+            You can still use them,
+            but only to reason about the pure and immutable parts of the code.
           </Typography>
 
           <Typography variant="h4" marginY={3}>
