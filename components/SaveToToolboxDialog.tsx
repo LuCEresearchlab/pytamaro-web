@@ -200,6 +200,15 @@ export default function SaveToToolboxDialog({
     }
   };
 
+  const initDocstring = (newSelectedFn: string) => {
+    if (newSelectedFn && newSelectedFn !== selectedFunction) {
+      const sourceDocstring = functions.find((f) => f.name === newSelectedFn)?.docstring;
+      if (sourceDocstring !== undefined) {
+        setDescription(sourceDocstring);
+      }
+    }
+  };
+
   const resetSelectedFunction = () => {
     setSelectedFunction('');
   };
@@ -291,6 +300,7 @@ export default function SaveToToolboxDialog({
                   selectedFunction={selectedFunction}
                   setSelectedFunction={(newSelectedFn) => {
                     initUsage(newSelectedFn);
+                    initDocstring(newSelectedFn);
                     setSelectedFunction(newSelectedFn);
                   }}
                 />
