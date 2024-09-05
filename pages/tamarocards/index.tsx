@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import ArticleIcon from '@mui/icons-material/Article';
 import FolderZipIcon from '@mui/icons-material/FolderZip';
 import {
@@ -221,7 +222,7 @@ export default function TamaroCardsPage() {
             {' '}
             onto which
             students write the corresponding literal value
-            (such as 250, or &quot;ciao&quot;).
+            (such as 250, or "ciao").
             For other arguments we want to use constants,
             such as the predefined constants for the base colors
             (e.g.,
@@ -239,7 +240,7 @@ export default function TamaroCardsPage() {
             {' '}
             <strong>Operator cards</strong>
             {' '}
-            for Python&apos;s most important unary, binary, and ternary operators.
+            for Python's most important unary, binary, and ternary operators.
           </Typography>
 
           <Typography variant="h5" marginY={3}>
@@ -275,10 +276,6 @@ export default function TamaroCardsPage() {
             Each constant, function, and operator emits a value on its right.
             Function arguments enter functions from the left,
             and, similarly, operands enter operators from the left.
-            Students can place cards near each other,
-            and they can draw lines with pencil to connect the cards.
-            We recommend putting large sheets of paper on the table,
-            so students can easily draw between cards.
           </Typography>
 
           <Image
@@ -316,12 +313,12 @@ export default function TamaroCardsPage() {
           <Typography>
             Like for evaluation, also for translation we can use a systematic approach:
             a depth-first traversal of the tree.
-            We draw a line (let&apos;s call it a &quot;street&quot;)
+            We draw a line (let's call it a "street")
             through the tree to make the traversal explicit.
             We starting at the root of the tree (the rightmost card).
             Whenever we visit a function card for the first time,
-            we write down the function&apos;s name followed by an opening parenthesis.
-            Between each of a card&apos;s arguments, we write down a comma.
+            we write down the function's name followed by an opening parenthesis.
+            Between each of a card's arguments, we write down a comma.
             And when we visit the card the last time, we write down a closing parenthesis.
 
           </Typography>
@@ -332,7 +329,7 @@ export default function TamaroCardsPage() {
           <Typography marginY={1}>
             When using the TamaroCards,
             we provide each student (or student team)
-            with the &quot;documentation&quot; in the form of a few printed pages.
+            with the "documentation" in the form of a few printed pages.
           </Typography>
           <Typography>
             Each documentation page shows a specific set of cards.
@@ -464,7 +461,7 @@ export default function TamaroCardsPage() {
             This is akin to code:
             when you call a function, you just write its name,
             and you provide arguments,
-            but you don&apos;t write the names of the parameters.
+            but you don't write the names of the parameters.
           </Typography>
 
           <Typography variant="h4" marginY={3}>
@@ -540,9 +537,9 @@ export default function TamaroCardsPage() {
             TamaroCards are designed for composing relatively simple Python expressions,
             mostly involving calls to PyTamaro functions.
             However, when including the function definition cards
-            (from the &quot;Names&quot; card sheet),
+            (from the "Names" card sheet),
             and the if-else card
-            (from the &quot;Operators&quot; card sheet),
+            (from the "Operators" card sheet),
             TamaroCards actually represent a
             {' '}
             <strong>
