@@ -106,6 +106,7 @@ export default function DoNowBox({
           label={t('yourAnswer')}
           variant="outlined"
           fullWidth
+          multiline
           value={answer}
           onChange={(event) => setAnswer(event.target.value)}
           disabled={alreadyDidIt}

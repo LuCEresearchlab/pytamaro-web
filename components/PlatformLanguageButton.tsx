@@ -8,7 +8,6 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
 import capitalizedLocalizedLanguageDisplayName from '../src/internationalization';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { Popover, PopoverContent, PopoverTrigger } from './Popover';
@@ -22,25 +21,11 @@ export default function PlatformLanguageButton() {
 
   const languages = config.i18n.locales as string[];
 
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   const handleChange = (event: SelectChangeEvent) => {
     const newLang = event.target.value as string;
     setPlatformLocale(newLang);
     i18n.changeLanguage(newLang);
-    handleClose();
   };
-
-  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const open = Boolean(anchorEl);
-  const id = open ? 'platform-language-popover' : undefined;
 
   return (
     <Popover placement="bottom">
@@ -48,8 +33,6 @@ export default function PlatformLanguageButton() {
         <IconButton
           sx={{ ml: 1 }}
           color="neutral"
-          onClick={handleButtonClick}
-          aria-describedby={id}
         >
           <Translate />
         </IconButton>

@@ -21,11 +21,11 @@ export default function TaskBox({
         paddingY: 0,
         marginY: 2,
         '& .MuiAlert-message': {
-          paddingY: 0.25,
+          paddingY: 0,
         },
       }}
     >
-      {children}
+      {typeof children === 'string' ? <p>{children}</p> : children}
     </Alert>
   );
 }
