@@ -29,6 +29,13 @@ export const printableGraphicActivityVariant = {
   version: 'v1',
 };
 
+export const tamaroCardsPageActivityVariant = {
+  authorSlug: 'luce',
+  activitySlug: 'tamaro-cards-page',
+  language: 'en',
+  version: 'v1',
+};
+
 export function isToolboxActivity(variant: ActivityVariant) {
   const reference = toolboxActivityVariant('');
   return variant.authorSlug === reference.authorSlug
@@ -38,8 +45,11 @@ export function isToolboxActivity(variant: ActivityVariant) {
 }
 
 export function isSpecialActivity(variant: ActivityVariant) {
-  return isToolboxActivity(variant)
-  || isEqual(variant, rapidPlaygroundActivityVariant)
-  || isEqual(variant, toolboxDemoActivityVariant)
-  || isEqual(variant, printableGraphicActivityVariant);
+  const otherSpecialActivities = [
+    rapidPlaygroundActivityVariant,
+    toolboxDemoActivityVariant,
+    printableGraphicActivityVariant,
+    tamaroCardsPageActivityVariant,
+  ];
+  return isToolboxActivity(variant) || otherSpecialActivities.some((a) => isEqual(a, variant));
 }

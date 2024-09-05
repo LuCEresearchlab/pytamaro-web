@@ -1,5 +1,5 @@
-import FolderZipIcon from '@mui/icons-material/FolderZip';
 import ArticleIcon from '@mui/icons-material/Article';
+import FolderZipIcon from '@mui/icons-material/FolderZip';
 import {
   Avatar,
   Box,
@@ -19,12 +19,17 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
+import PyTamaroAPI from '../../components/documentation/PyTamaroAPI';
 import NavigationBar from '../../components/NavigationBar';
 import SA23_TableImage from '../../public/SA-2023-Table.jpg';
 import SA23_TableImage2 from '../../public/SA-2023-Table2.jpg';
 import SA23_TableImage3 from '../../public/SA-2023-Table3.jpg';
-import ExampleCardsImage from '../../public/tamarocards/v2/ExampleCards@0.5x.png';
-import UnparseImage from '../../public/tamarocards/v2/unparse.gif';
+import TamaroCardSheetsPyTamaroFunctionsCommon from '../../public/tamarocards/v2/CardSheet/Common@0.25x.png';
+import TamaroCardSheetsPyTamaroConstants from '../../public/tamarocards/v2/CardSheet/Constants@0.25x.png';
+import TamaroCardSheetsPyTamaroFunctions from '../../public/tamarocards/v2/CardSheet/Functions@0.25x.png';
+import TamaroCardSheetsNames from '../../public/tamarocards/v2/CardSheet/Names@0.25x.png';
+import TamaroCardSheetsPythonFunctions from '../../public/tamarocards/v2/CardSheet/PythonFunctions@0.25x.png';
+import TamaroCardSheetsPythonOperators from '../../public/tamarocards/v2/CardSheet/PythonOperators@0.25x.png';
 import DocLanguagePythonOperators from '../../public/tamarocards/v2/Doc/Language-Python-Operators@0.25x.png';
 import DocLibraryPyTamaroColors from '../../public/tamarocards/v2/Doc/Library-PyTamaro-Colors@0.25x.png';
 import DocLibraryPyTamaroCombinators from '../../public/tamarocards/v2/Doc/Library-PyTamaro-Combinators@0.25x.png';
@@ -32,13 +37,14 @@ import DocLibraryPyTamaroOutput from '../../public/tamarocards/v2/Doc/Library-Py
 import DocLibraryPyTamaroPinning from '../../public/tamarocards/v2/Doc/Library-PyTamaro-Pinning@0.25x.png';
 import DocLibraryPyTamaroPrimitives from '../../public/tamarocards/v2/Doc/Library-PyTamaro-Primitives@0.25x.png';
 import DocLibraryPythonFunctions from '../../public/tamarocards/v2/Doc/Library-Python-Functions@0.25x.png';
-import TamaroCardSheetsPyTamaroConstants from '../../public/tamarocards/v2/CardSheet/Constants@0.25x.png';
-import TamaroCardSheetsPyTamaroFunctions from '../../public/tamarocards/v2/CardSheet/Functions@0.25x.png';
-import TamaroCardSheetsPyTamaroFunctionsCommon from '../../public/tamarocards/v2/CardSheet/Common@0.25x.png';
-import TamaroCardSheetsNames from '../../public/tamarocards/v2/CardSheet/Names@0.25x.png';
-import TamaroCardSheetsPythonFunctions from '../../public/tamarocards/v2/CardSheet/PythonFunctions@0.25x.png';
-import TamaroCardSheetsPythonOperators from '../../public/tamarocards/v2/CardSheet/PythonOperators@0.25x.png';
+import ExampleCardsImage from '../../public/tamarocards/v2/ExampleCards@0.5x.png';
+import UnparseImage from '../../public/tamarocards/v2/unparse.gif';
 import { translationProps } from '../../src/serverSideTranslationProps';
+import { tamaroCardsPageActivityVariant } from '../../src/specialActivities';
+
+function API({ name } : { name: string }) {
+  return <PyTamaroAPI name={name} activityVariant={tamaroCardsPageActivityVariant} />;
+}
 
 export default function TamaroCardsPage() {
   const api = [
@@ -210,7 +216,10 @@ export default function TamaroCardsPage() {
             (such as 250, or &quot;ciao&quot;).
             For other arguments we want to use constants,
             such as the predefined constants for the base colors
-            (e.g., red).
+            (e.g.,
+            {' '}
+            <API name="red" />
+            )
             We provide
             {' '}
             <strong>Constant cards</strong>
@@ -280,7 +289,7 @@ export default function TamaroCardsPage() {
             we write down the function&apos;s name followed by an opening parenthesis.
             Between each of a card&apos;s arguments, we write down a comma.
             And when we visit the card the last time, we write down a closing parenthesis.
-            
+
           </Typography>
 
           <Typography variant="h4" marginY={3}>
