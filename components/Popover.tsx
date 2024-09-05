@@ -13,7 +13,6 @@ import {
   useClick,
   useDismiss,
   useFloating,
-  useId,
   useInteractions,
   useMergeRefs,
   useRole,
@@ -183,6 +182,7 @@ React.HTMLProps<HTMLDivElement>
         context={floatingContext}
         modal={context.modal}
         initialFocus={-1}
+        closeOnFocusOut={false}
       >
         <div
           ref={ref}
@@ -205,61 +205,5 @@ React.HTMLProps<HTMLDivElement>
         </div>
       </FloatingFocusManager>
     </FloatingPortal>
-  );
-});
-
-export const PopoverHeading = React.forwardRef<
-HTMLHeadingElement,
-React.HTMLProps<HTMLHeadingElement>
->((props, ref) => {
-  const { setLabelId } = usePopoverContext();
-  const id = useId();
-
-  // Only sets `aria-labelledby` on the Popover root element
-  // if this component is mounted inside it.
-  React.useLayoutEffect(() => {
-    setLabelId(id);
-    return () => setLabelId(undefined);
-  }, [id, setLabelId]);
-
-  return (
-    <h2 {...props} ref={ref} id={id}>
-      {props.children}
-    </h2>
-  );
-});
-
-export const PopoverDescription = React.forwardRef<
-HTMLParagraphElement,
-React.HTMLProps<HTMLParagraphElement>
->((props, ref) => {
-  const { setDescriptionId } = usePopoverContext();
-  const id = useId();
-
-  // Only sets `aria-describedby` on the Popover root element
-  // if this component is mounted inside it.
-  React.useLayoutEffect(() => {
-    setDescriptionId(id);
-    return () => setDescriptionId(undefined);
-  }, [id, setDescriptionId]);
-
-  return <p {...props} ref={ref} id={id} />;
-});
-
-export const PopoverClose = React.forwardRef<
-HTMLButtonElement,
-React.ButtonHTMLAttributes<HTMLButtonElement>
->((props, ref) => {
-  const { setOpen } = usePopoverContext();
-  return (
-    <button
-      type="button"
-      ref={ref}
-      {...props}
-      onClick={(event) => {
-        props.onClick?.(event);
-        setOpen(false);
-      }}
-    />
   );
 });
