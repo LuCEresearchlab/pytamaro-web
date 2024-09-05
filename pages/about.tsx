@@ -106,6 +106,12 @@ const changelogEntries = [
     title: 'Judicious: a new documentation system',
     desc: <span>The documentation is now powered by <Link href="https://chiodini.org/publications/splashe24-judicious.pdf">Judicious</Link>, a new system which gradually presents information and offers a diagrammatic representation for functions and constants. Enjoy a uniform documentation for PyTamaro, the toolbox, and even part of the Python standard library.</span>,
   },
+  {
+    date: '2024-09-05',
+    icon: 'Schema',
+    title: 'Tamaro Cards: Version 2',
+    desc: <span>New and improved <Link href="/tamarocards">TamaroCards</Link> for a tangible, unplugged way to compose programs. Better documentation, slightly improved cards, including a few new ones, and downloads of card documentation pictures for your course material.</span>,
+  },
 ];
 
 export default function AboutPage({ authorsProfiles } : { authorsProfiles: AuthorProfile[] }) {
