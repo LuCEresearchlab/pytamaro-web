@@ -40,6 +40,7 @@ import { Curriculum } from '../src/schemas/curriculumSchema';
 import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
 import {
+  aboutPathname,
   activitiesByAuthorPathname, curriculaPathname, curriculumPathname, pytamaroDocsUrl,
   teachingResourcesPathname,
 } from '../src/urlUtils';
@@ -381,7 +382,7 @@ export default function Home({ welcomeCurriculum, activities } :
                 <Box padding={2} height="100%" alignItems="center" justifyContent="center" display="flex">
                   <Stack spacing={2}>
                     <HomePagePrimaryButton icon={<GitHub />} text="PyTamaro on GitHub" href="https://github.com/LuCEresearchlab/pytamaro" />
-                    <HomePagePrimaryButton icon={<Groups />} text="About this platform" href="/about" />
+                    <HomePagePrimaryButton icon={<Groups />} text="About this platform" href={aboutPathname()} />
                   </Stack>
                 </Box>
               </Grid>

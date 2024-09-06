@@ -6,10 +6,12 @@ import {
 import { useState } from 'react';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import {
+  aboutPathname,
   activitiesByAuthorPathname, curriculaPathname, myProgressPathname,
   playgroundPathname, pytamaroDocsUrl,
 } from '../src/urlUtils';
 import FeedbackDialog from './FeedbackDialog';
+import NotificationsButton from './NotificationsButton';
 import PlatformLanguageButton from './PlatformLanguageButton';
 import SidebarItem from './sidebar/SidebarItem';
 import ToolboxListSidebar from './sidebar/ToolboxListSidebar';
@@ -33,7 +35,7 @@ const navItems = [
   },
   {
     name: 'about',
-    url: '/about',
+    url: aboutPathname(),
   },
 ];
 
@@ -115,6 +117,7 @@ export default function NavigationBar(props: { children?: React.ReactNode }) {
         </Stack>
         {children}
         <FeedbackDialog />
+        <NotificationsButton />
         <PlatformLanguageButton />
       </Toolbar>
     </AppBar>

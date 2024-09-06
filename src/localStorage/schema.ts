@@ -1,8 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
+import { changelogEntries } from '../../components/ChangelogList';
 import { type ExecutionResponse } from '../codeExecution';
 import { ActivityVariant } from '../schemas/activitySchema';
 
-export const CURRENT_VERSION = '6';
+export const CURRENT_VERSION = '7';
 
 export interface Metadata {
   dataModelVersion: string;
@@ -14,6 +15,7 @@ export interface Metadata {
   curricula: CurriculumMetadata[],
   platformLocale: string | null, // null means not explicitly chosen
   docs: DocsMetadata,
+  lastNotificationSeen: number,
 }
 
 export interface DocsMetadata {
@@ -106,5 +108,6 @@ export function getDefaultMetadata() : Metadata {
     curricula: [],
     platformLocale: null,
     docs: defaultDocsMetadata(),
+    lastNotificationSeen: changelogEntries.length - 1,
   };
 }

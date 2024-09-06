@@ -3,30 +3,28 @@ import { Dispatch, SetStateAction } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
 import { ActivityVariant, activityVariantId } from '../schemas/activitySchema';
 import { Curriculum, curriculumToId } from '../schemas/curriculumSchema';
-import migrateToV2, { MetadataV1 } from './migrations/v2';
-import migrateToV3, { MetadataV2 } from './migrations/v3';
-import migrateToV4, { MetadataV3 } from './migrations/v4';
-import migrateToV5, { MetadataV4 } from './migrations/v5';
-import migrateToV6, { MetadataV5 } from './migrations/v6';
+import migrateToV2 from './migrations/v2';
+import migrateToV3 from './migrations/v3';
+import migrateToV4 from './migrations/v4';
+import migrateToV5 from './migrations/v5';
+import migrateToV6 from './migrations/v6';
+import migrateToV7 from './migrations/v7';
 import {
   ActivityVariantMetadata, DocsMetadata, METADATA_KEY, Metadata, getDefaultMetadata,
 } from './schema';
 
 function migrations(metadata: { dataModelVersion: string }) : Metadata {
-  if (metadata.dataModelVersion === '1') {
-    return migrations(migrateToV2(metadata as MetadataV1));
-  }
-  if (metadata.dataModelVersion === '2') {
-    return migrations(migrateToV3(metadata as MetadataV2));
-  }
-  if (metadata.dataModelVersion === '3') {
-    return migrations(migrateToV4(metadata as MetadataV3));
-  }
-  if (metadata.dataModelVersion === '4') {
-    return migrations(migrateToV5(metadata as MetadataV4));
-  }
-  if (metadata.dataModelVersion === '5') {
-    return migrations(migrateToV6(metadata as MetadataV5));
+  const migrationForVersion: { [key: string]: (metadata: any) => any } = {
+    1: migrateToV2,
+    2: migrateToV3,
+    3: migrateToV4,
+    4: migrateToV5,
+    5: migrateToV6,
+    6: migrateToV7,
+  };
+  const possibleMigration = migrationForVersion[metadata.dataModelVersion];
+  if (possibleMigration) {
+    return migrations(possibleMigration(metadata));
   }
   return metadata as Metadata;
 }

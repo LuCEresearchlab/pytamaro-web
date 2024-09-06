@@ -126,6 +126,10 @@ export function teachingResourcesPathname() {
   return '/teaching-resources';
 }
 
+export function aboutPathname() {
+  return '/about';
+}
+
 /* Toolbox */
 
 export function toolboxFunctionAnchor(functionName: string) {
