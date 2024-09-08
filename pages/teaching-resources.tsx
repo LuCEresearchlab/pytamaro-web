@@ -1,6 +1,8 @@
+/* eslint-disable react/no-unescaped-entities */
 import { Hiking, Print, School } from '@mui/icons-material';
 import {
   Box,
+  Button,
   Card,
   CardActionArea,
   CardContent,
@@ -30,8 +32,32 @@ export default function Teaching() {
         <Container maxWidth="lg">
           <PageTitle>Resources for Teachers</PageTitle>
           <Typography textAlign="center" fontSize="1.2rem" sx={{ mb: 4 }}>
-            This page contains assorted resources to help you teach programming with PyTamaro.
-            More is coming soon!
+            This page contains assorted resources
+            to help you teach Python programming with PyTamaro.
+          </Typography>
+          <Image
+            src="/pencils.png"
+            alt="pencil"
+            width="1280"
+            height="285"
+            sizes="100vw"
+            style={{
+              width: '100%',
+              height: 'auto',
+            }}
+          />
+          <Typography textAlign="center" fontSize="1.2rem" sx={{ mb: 2, mt: 4 }}>
+            Stay informed about new resources and updates?
+          </Typography>
+          <Typography textAlign="center" sx={{ mb: 2 }}>
+            <Button variant="contained" size="large" href="mailto:matthias.hauswirth@usi.ch?subject=Sign%20me%20up%20for%20the%20PyTamaro%20Newsletter&body=Dear%20Matthias,%0D%0A%0D%0AMy%20name%20is%20xxxxx.%0D%0A%0D%0AI%20am%20teaching%20xxxxx%20at%20xxxxx.%0D%0A%0D%0AI%20would%20like%20to%20subscribe%20to%20the%20Luce%20PyTamaro%20newsletter.%0D%0A%0D%0AThanks!">
+              Sign up for our newsletter
+            </Button>
+          </Typography>
+          <Typography textAlign="center" fontSize="0.8rem" sx={{ mb: 4 }}>
+            This button is just a mailto link.
+            It will open your email client so you can send us an email.
+            This way we don't have to handle personally identifiable information on this web site.
           </Typography>
           <Stack spacing={4}>
             <Card elevation={4}>
@@ -151,11 +177,12 @@ export default function Teaching() {
                     />
                     <CardContent>
                       <Typography fontSize="1.1rem" paragraph gutterBottom>
-                        Sign up for the PyTamaro Summer Academy.
+                        Become a part of our community of practice
+                        by spending a few days in Lugano over the summer.
                       </Typography>
                       <Typography fontSize="1.1rem" paragraph gutterBottom>
-                        A unique chance to combine learning with PyTamaro and
-                        a hike on Monte Tamaro!
+                        Learn new teaching approaches,
+                        exchange successes and failures, and have fun!
                       </Typography>
                     </CardContent>
                   </Grid>
