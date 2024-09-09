@@ -29,13 +29,15 @@ function reverseUniq<T>(array: T[][]): T[] {
   return uniqWith(flatten(reverse(slice(array))), isEqual);
 }
 
+const COLLAPSED_HEIGHT = 1.5 * theme.typography.htmlFontSize;
+
 export default function DocumentationStripe({ sources, activityVariant } :
 { sources: string[], activityVariant: ActivityVariant }) {
   const { t } = useLocalTranslation();
   const { list } = useLocalToolbox();
   const [importedNamesPerCell, setImportedNamesPerCell] = useState<PythonName[][]>([]);
   const [functionsPerCell, setFunctionsPerCell] = useState<PythonFunction[][]>([]);
-  const [tooManyNames, setTooManyNames] = useState(false);
+  const [namesMultipleLines, setNamesMultipleLines] = useState(false);
   const [namesExpanded, setNamesExpanded] = useState(false);
 
   useEffect(() => {
@@ -50,7 +52,7 @@ export default function DocumentationStripe({ sources, activityVariant } :
 
   const onResize = useCallback(({ entry } : { entry: ResizeObserverEntry | null }) => {
     const target : HTMLDivElement | null = entry?.target as HTMLDivElement;
-    setTooManyNames(target && target.offsetHeight < target.scrollHeight);
+    setNamesMultipleLines(target && target.scrollHeight > COLLAPSED_HEIGHT);
   }, []);
   const { ref: elementsRef } = useResizeDetector({ onResize });
 
@@ -102,7 +104,7 @@ export default function DocumentationStripe({ sources, activityVariant } :
         <Typography variant="body2">
           Docs:
         </Typography>
-        <Stack direction="row" rowGap={0.1} columnGap={1} alignItems="baseline" useFlexGap flexWrap="wrap" overflow="hidden" ref={elementsRef} maxHeight={namesExpanded ? 'none' : '1.5rem'}>
+        <Stack direction="row" rowGap={0.1} columnGap={1} alignItems="baseline" useFlexGap flexWrap="wrap" overflow="hidden" ref={elementsRef} maxHeight={namesExpanded ? 'none' : COLLAPSED_HEIGHT}>
           {namesToDocElement.map(({ module, element }) => (
             <DocElement
               key={`${module}-${element?.name}`}
@@ -120,7 +122,7 @@ export default function DocumentationStripe({ sources, activityVariant } :
           sx={{
             flexGrow: '1',
             height: '1rem',
-            visibility: (tooManyNames || namesExpanded) ? 'visible' : 'hidden',
+            visibility: namesMultipleLines ? 'visible' : 'hidden',
             '.MuiChip-deleteIcon': {
               transform: `rotate(${namesExpanded ? 180 : 0}deg)`,
               transition: `transform ${theme.transitions.duration.shortest}ms`,
