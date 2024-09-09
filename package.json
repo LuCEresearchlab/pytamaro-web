@@ -21,7 +21,7 @@
     "@emotion/server": "^11.10.0",
     "@emotion/styled": "^11.10.5",
     "@floating-ui/react": "^0.26.23",
-    "@fontsource/fira-code": "^5.0.2",
+    "@fontsource-variable/fira-code": "^5.0.20",
     "@fontsource/fira-sans": "^5.0.2",
     "@fontsource/material-icons": "^5.0.18",
     "@formatjs/intl-localematcher": "^0.5.1",
