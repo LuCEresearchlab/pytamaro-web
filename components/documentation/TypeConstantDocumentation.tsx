@@ -39,7 +39,7 @@ export default function TypeConstantDocumentation({ element, module }
               {module === '.' ? 'your code' : `library ${module}`}
             </Typography>
           </span>
-          <ConfigButtons available={[SHOW_TYPES_KEY]} />
+          <ConfigButtons available={element.kind === 'constant' ? [SHOW_TYPES_KEY] : []} />
         </Box>
         <Typography>
           <span {...hoverProps(nameId(), hoverElement, setHoverElement)}>

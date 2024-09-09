@@ -78,7 +78,7 @@
             ],
             "returnValue": {
                 "type": "Color",
-                "description": "une couleur avec les composantes HSLA donn\u00e9es."
+                "description": "une couleur avec le composantes HSVA donn\u00e9es"
             }
         },
         {
@@ -118,7 +118,7 @@
             ],
             "returnValue": {
                 "type": "Color",
-                "description": "une couleur avec les composantes HSLA donn\u00e9es."
+                "description": "une couleur avec les composantes RGBA donn\u00e9es"
             }
         },
         {
@@ -335,12 +335,12 @@
                 {
                     "name": "nom_fichier",
                     "type": "str",
-                    "description": "le nom du fichier \u00e0 cr\u00e9er (contenant l\u2019extension \u201c.gif\u201d)"
+                    "description": "le nom du fichier \u00e0 cr\u00e9er (avec l\u2019extension)"
                 },
                 {
                     "name": "graphique",
                     "type": "Graphic",
-                    "description": "le graphique \u00e0 montrer"
+                    "description": "le graphique \u00e0 sauvegarder"
                 },
                 {
                     "name": "debug",
@@ -390,9 +390,10 @@
                     "Cr\u00e9\u00e9 un graphique vide. Quand un graphique vide est compos\u00e9 avec n\u2019importe quel autre graphique, il se comporte comme l\u2019\u00e9l\u00e9ment neutre: le r\u00e9sultat est toujours \u00e9gal \u00e0 l\u2019autre graphique."
                 ]
             },
+            "parameters": [],
             "returnValue": {
                 "type": "Graphic",
-                "description": "un graphique avec l\u2019ellipse sp\u00e9cifi\u00e9e"
+                "description": "un graphique vide (largeur et hauteur 0)"
             }
         },
         {
@@ -407,22 +408,22 @@
                 {
                     "name": "largeur",
                     "type": "float",
-                    "description": "largeur de l\u2019ellipse"
+                    "description": "largeur du rectangle"
                 },
                 {
                     "name": "hauteur",
                     "type": "float",
-                    "description": "hauteur de l\u2019ellipse"
+                    "description": "hauteur du rectangle"
                 },
                 {
                     "name": "couleur",
                     "type": "Color",
-                    "description": "couleur \u00e0 utiliser pour remplir l\u2019ellipse"
+                    "description": "couleur qui remplira le rectangle"
                 }
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "un graphique avec l\u2019ellipse sp\u00e9cifi\u00e9e"
+                "description": "un graphique avec le rectangle sp\u00e9cifi\u00e9"
             }
         },
         {
@@ -449,12 +450,12 @@
                 {
                     "name": "couleur",
                     "type": "Color",
-                    "description": "couleur \u00e0 utiliser pour remplir l\u2019ellipse"
+                    "description": "couleur \u00e0 utiliser pour remplir le secteur circulaire"
                 }
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "un graphique avec l\u2019ellipse sp\u00e9cifi\u00e9e"
+                "description": "un graphique avec le secteur circulaire sp\u00e9cifi\u00e9"
             }
         },
         {
@@ -486,12 +487,12 @@
                 {
                     "name": "couleur",
                     "type": "Color",
-                    "description": "couleur \u00e0 utiliser pour remplir l\u2019ellipse"
+                    "description": "la couleur \u00e0 utiliser pour le rendu du texte"
                 }
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "un graphique avec l\u2019ellipse sp\u00e9cifi\u00e9e"
+                "description": "le texte sp\u00e9cifi\u00e9 sous forme de graphique"
             }
         },
         {
@@ -518,17 +519,17 @@
                 {
                     "name": "angle",
                     "type": "float",
-                    "description": "angle au centre, en degr\u00e9s"
+                    "description": "angle compris entre les deux c\u00f4t\u00e9, en degr\u00e9s"
                 },
                 {
                     "name": "couleur",
                     "type": "Color",
-                    "description": "couleur \u00e0 utiliser pour remplir l\u2019ellipse"
+                    "description": "couleur \u00e0 utiliser pour remplir le secteur circulaire"
                 }
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "un graphique avec l\u2019ellipse sp\u00e9cifi\u00e9e"
+                "description": "un graphique avec le triangle sp\u00e9cifi\u00e9"
             }
         },
         {
@@ -680,7 +681,7 @@
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "un nouveau graphique avec le nouveau point d\u2019ancrage"
+                "description": "le graphique r\u00e9sultant apr\u00e8s avoir plac\u00e9 les deux graphiques l\u2019un au-dessus de l\u2019autre"
             }
         },
         {
@@ -701,12 +702,12 @@
                 {
                     "name": "graphique_arriere_plan",
                     "type": "Graphic",
-                    "description": "le graphique en arri\u00e8re plan"
+                    "description": null
                 }
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "un nouveau graphique avec le nouveau point d\u2019ancrage"
+                "description": "le graphique qui r\u00e9sulte de la composition"
             }
         },
         {
@@ -732,7 +733,7 @@
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "un nouveau graphique avec le nouveau point d\u2019ancrage"
+                "description": "le graphique r\u00e9sultant apr\u00e8s avoir plac\u00e9 les deux graphiques l\u2019un \u00e0 c\u00f4t\u00e9 de l\u2019autre"
             }
         },
         {
@@ -743,14 +744,16 @@
                     "Retourne la hauteur du graphique."
                 ]
             },
-            "parameters": {
-                "name": "graphique",
-                "type": "Graphic",
-                "description": "le graphique originel"
-            },
+            "parameters": [
+                {
+                    "name": "graphique",
+                    "type": "Graphic",
+                    "description": "graphique duquel calculer la hauteur"
+                }
+            ],
             "returnValue": {
                 "type": "int",
-                "description": "un nouveau graphique avec le nouveau point d\u2019ancrage"
+                "description": "la hauteur du graphique"
             }
         },
         {
@@ -761,14 +764,16 @@
                     "Retourne la largeur du graphique."
                 ]
             },
-            "parameters": {
-                "name": "graphique",
-                "type": "Graphic",
-                "description": "le graphique originel"
-            },
+            "parameters": [
+                {
+                    "name": "graphique",
+                    "type": "Graphic",
+                    "description": "graphique duquel calculer la largeur"
+                }
+            ],
             "returnValue": {
                 "type": "int",
-                "description": "un nouveau graphique avec le nouveau point d\u2019ancrage"
+                "description": "la largeur du graphique"
             }
         },
         {
@@ -788,12 +793,12 @@
                 {
                     "name": "graphique",
                     "type": "Graphic",
-                    "description": "le graphique originel"
+                    "description": "le graphique \u00e0 pivoter"
                 }
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "un nouveau graphique avec le nouveau point d\u2019ancrage"
+                "description": "un nouveau graphique pivot\u00e9"
             }
         },
         {
@@ -819,7 +824,7 @@
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "un nouveau graphique avec le nouveau point d\u2019ancrage"
+                "description": "le graphique r\u00e9sultant de la superposition des deux graphiques fournis"
             }
         }
     ]

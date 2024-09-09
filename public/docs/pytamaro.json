@@ -78,7 +78,7 @@
             ],
             "returnValue": {
                 "type": "Color",
-                "description": "a color with the provided HSLA components"
+                "description": "a color with the provided HSVA components."
             }
         },
         {
@@ -118,7 +118,7 @@
             ],
             "returnValue": {
                 "type": "Color",
-                "description": "a color with the provided HSLA components"
+                "description": "a color with the provided RGBA components"
             }
         },
         {
@@ -281,7 +281,7 @@
                 {
                     "name": "filename",
                     "type": "str",
-                    "description": "name of the file to create, including the extension \u2018.gif\u2019"
+                    "description": "name of the file to create (with the extension)"
                 },
                 {
                     "name": "graphic",
@@ -310,7 +310,7 @@
                 {
                     "name": "graphics",
                     "type": "List[Graphic]",
-                    "description": "list of graphics to be saved as an animation"
+                    "description": "list of graphics to be shown as an animation"
                 },
                 {
                     "name": "duration",
@@ -322,7 +322,7 @@
                     "name": "loop",
                     "type": "bool",
                     "default": "True",
-                    "description": "whether the GIF should loop indefinitely (defaults to true)"
+                    "description": "whether the animation should loop indefinitely (defaults to true)"
                 }
             ],
             "sideEffects": true
@@ -340,7 +340,7 @@
                 {
                     "name": "graphic",
                     "type": "Graphic",
-                    "description": "graphic to be saved"
+                    "description": "graphic to be shown"
                 },
                 {
                     "name": "debug",
@@ -406,12 +406,12 @@
                 {
                     "name": "color",
                     "type": "Color",
-                    "description": "the color to be used to fill the circular sector"
+                    "description": "the color to be used to fill the circle"
                 }
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "the specified circular sector as a graphic"
+                "description": "the specified circle as a graphic"
             }
         },
         {
@@ -422,9 +422,10 @@
                     "Creates an empty graphic. When an empty graphic is composed with any other graphic, it behaves as a neutral element: the result is always identical to the other graphic."
                 ]
             },
+            "parameters": [],
             "returnValue": {
                 "type": "Graphic",
-                "description": "the specified circular sector as a graphic"
+                "description": "an empty graphic (width and height 0)"
             }
         },
         {
@@ -439,22 +440,22 @@
                 {
                     "name": "width",
                     "type": "float",
-                    "description": "width of the ellipse"
+                    "description": "width of the rectangle"
                 },
                 {
                     "name": "height",
                     "type": "float",
-                    "description": "height of the ellipse"
+                    "description": "height of the rectangle"
                 },
                 {
                     "name": "color",
                     "type": "Color",
-                    "description": "the color to be used to fill the circular sector"
+                    "description": "the color to be used to fill the rectangle"
                 }
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "the specified circular sector as a graphic"
+                "description": "the specified rectangle as a graphic"
             }
         },
         {
@@ -486,12 +487,12 @@
                 {
                     "name": "color",
                     "type": "Color",
-                    "description": "the color to be used to fill the circular sector"
+                    "description": "the color to be used to render the text"
                 }
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "the specified circular sector as a graphic"
+                "description": "the specified text as a graphic"
             }
         },
         {
@@ -518,17 +519,17 @@
                 {
                     "name": "angle",
                     "type": "float",
-                    "description": "central angle, in degrees"
+                    "description": "angle between the two sides, in degrees"
                 },
                 {
                     "name": "color",
                     "type": "Color",
-                    "description": "the color to be used to fill the circular sector"
+                    "description": "the color to be used to fill the triangle"
                 }
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "the specified circular sector as a graphic"
+                "description": "the specified triangle as a graphic"
             }
         },
         {
@@ -680,7 +681,7 @@
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "the resulting graphic after placing the two graphics one above the other"
+                "description": "the resulting graphic after placing the two graphics one besides the other"
             }
         },
         {
@@ -706,7 +707,7 @@
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "the resulting graphic after placing the two graphics one above the other"
+                "description": "the resulting composed graphic"
             }
         },
         {
@@ -717,14 +718,16 @@
                     "Returns the height of a graphic."
                 ]
             },
-            "parameters": {
-                "name": "graphic",
-                "type": "Graphic",
-                "description": "graphic to calculate the height of"
-            },
+            "parameters": [
+                {
+                    "name": "graphic",
+                    "type": "Graphic",
+                    "description": "graphic to calculate the height of"
+                }
+            ],
             "returnValue": {
                 "type": "int",
-                "description": "the resulting graphic after placing the two graphics one above the other"
+                "description": "height of the graphic"
             }
         },
         {
@@ -735,14 +738,16 @@
                     "Returns the width of a graphic."
                 ]
             },
-            "parameters": {
-                "name": "graphic",
-                "type": "Graphic",
-                "description": "graphic to calculate the height of"
-            },
+            "parameters": [
+                {
+                    "name": "graphic",
+                    "type": "Graphic",
+                    "description": "graphic to calculate the width of"
+                }
+            ],
             "returnValue": {
                 "type": "int",
-                "description": "the resulting graphic after placing the two graphics one above the other"
+                "description": "width of the graphic"
             }
         },
         {
@@ -768,7 +773,7 @@
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "the resulting graphic after placing the two graphics one above the other"
+                "description": "the resulting graphic after overlaying the two provided ones"
             }
         },
         {
@@ -789,12 +794,12 @@
                 {
                     "name": "graphic",
                     "type": "Graphic",
-                    "description": "graphic to calculate the height of"
+                    "description": "original graphic"
                 }
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "the resulting graphic after placing the two graphics one above the other"
+                "description": "a new graphic with the specified pinning position"
             }
         },
         {
@@ -814,12 +819,12 @@
                 {
                     "name": "graphic",
                     "type": "Graphic",
-                    "description": "graphic to calculate the height of"
+                    "description": "the graphic to rotate"
                 }
             ],
             "returnValue": {
                 "type": "Graphic",
-                "description": "the resulting graphic after placing the two graphics one above the other"
+                "description": "a new, rotated graphic"
             }
         }
     ]
