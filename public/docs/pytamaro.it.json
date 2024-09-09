@@ -78,7 +78,7 @@
             ],
             "returnValue": {
                 "type": "Colore",
-                "description": "un colore con le componenti HSLA indicate"
+                "description": "un colore con le componenti HSVA indicate"
             }
         },
         {
@@ -118,7 +118,7 @@
             ],
             "returnValue": {
                 "type": "Colore",
-                "description": "un colore con le componenti HSLA indicate"
+                "description": "un colore con le componenti RGBA indicate"
             }
         },
         {
@@ -281,7 +281,7 @@
                 {
                     "name": "nome_file",
                     "type": "str",
-                    "description": "nome del file da creare (inclusa l\u2019estensione \u2018.gif\u2019)"
+                    "description": "nome del file da creare (con l\u2019estensione)"
                 },
                 {
                     "name": "grafica",
@@ -390,9 +390,10 @@
                     "Crea una grafica vuota. Quando una grafica vuota viene composta con ogni altra grafica, si comporta da elemento neutro: il risultato \u00e8 sempre uguale all\u2019altra grafica."
                 ]
             },
+            "parameters": [],
             "returnValue": {
                 "type": "Grafica",
-                "description": "una grafica con l\u2019ellisse specificato"
+                "description": "una grafica vuota (larghezza e altezza 0)"
             }
         },
         {
@@ -407,22 +408,22 @@
                 {
                     "name": "larghezza",
                     "type": "float",
-                    "description": "larghezza dell\u2019ellisse"
+                    "description": "larghezza del rettangolo"
                 },
                 {
                     "name": "altezza",
                     "type": "float",
-                    "description": "altezza dell\u2019ellisse"
+                    "description": "altezza del rettangolo"
                 },
                 {
                     "name": "colore",
                     "type": "Colore",
-                    "description": "colore da usare per riempire l\u2019ellisse"
+                    "description": "colore da usare per riempire il rettangolo"
                 }
             ],
             "returnValue": {
                 "type": "Grafica",
-                "description": "una grafica con l\u2019ellisse specificato"
+                "description": "una grafica con il rettangolo specificato"
             }
         },
         {
@@ -449,12 +450,12 @@
                 {
                     "name": "colore",
                     "type": "Colore",
-                    "description": "colore da usare per riempire l\u2019ellisse"
+                    "description": "colore da usare per riempire il settore circolare"
                 }
             ],
             "returnValue": {
                 "type": "Grafica",
-                "description": "una grafica con l\u2019ellisse specificato"
+                "description": "una grafica con il settore circolare specificato"
             }
         },
         {
@@ -486,12 +487,12 @@
                 {
                     "name": "colore",
                     "type": "Colore",
-                    "description": "colore da usare per riempire l\u2019ellisse"
+                    "description": "colore da usare per fare il rendering del testo"
                 }
             ],
             "returnValue": {
                 "type": "Grafica",
-                "description": "una grafica con l\u2019ellisse specificato"
+                "description": "una grafica con il testo specificato"
             }
         },
         {
@@ -518,17 +519,17 @@
                 {
                     "name": "angolo",
                     "type": "float",
-                    "description": "angolo al centro, in gradi"
+                    "description": "angolo compreso tra i due lati, in gradi"
                 },
                 {
                     "name": "colore",
                     "type": "Colore",
-                    "description": "colore da usare per riempire l\u2019ellisse"
+                    "description": "colore da usare per riempire il triangolo"
                 }
             ],
             "returnValue": {
                 "type": "Grafica",
-                "description": "una grafica con l\u2019ellisse specificato"
+                "description": "una grafica con il triangolo specificato"
             }
         },
         {
@@ -665,14 +666,16 @@
                     "Ritorna l\u2019altezza di una grafica."
                 ]
             },
-            "parameters": {
-                "name": "grafica",
-                "type": "Grafica",
-                "description": "grafica di cui calcolare l\u2019altezza"
-            },
+            "parameters": [
+                {
+                    "name": "grafica",
+                    "type": "Grafica",
+                    "description": "grafica di cui calcolare l\u2019altezza"
+                }
+            ],
             "returnValue": {
                 "type": "int",
-                "description": "grafica risultante dall\u2019affiancamento orizzontale delle due grafiche fornite"
+                "description": "altezza della grafica"
             }
         },
         {
@@ -698,7 +701,7 @@
             ],
             "returnValue": {
                 "type": "Grafica",
-                "description": "grafica risultante dall\u2019affiancamento orizzontale delle due grafiche fornite"
+                "description": "la grafica risultante composta"
             }
         },
         {
@@ -719,12 +722,12 @@
                 {
                     "name": "grafica",
                     "type": "Grafica",
-                    "description": "grafica di cui calcolare l\u2019altezza"
+                    "description": "grafica originale"
                 }
             ],
             "returnValue": {
                 "type": "Grafica",
-                "description": "grafica risultante dall\u2019affiancamento orizzontale delle due grafiche fornite"
+                "description": "una nuova grafica con una posizione di fissaggio aggiornata"
             }
         },
         {
@@ -735,14 +738,16 @@
                     "Ritorna la larghezza di una grafica."
                 ]
             },
-            "parameters": {
-                "name": "grafica",
-                "type": "Grafica",
-                "description": "grafica di cui calcolare l\u2019altezza"
-            },
+            "parameters": [
+                {
+                    "name": "grafica",
+                    "type": "Grafica",
+                    "description": "grafica di cui calcolare la larghezza"
+                }
+            ],
             "returnValue": {
                 "type": "int",
-                "description": "grafica risultante dall\u2019affiancamento orizzontale delle due grafiche fornite"
+                "description": "larghezza della grafica"
             }
         },
         {
@@ -762,12 +767,12 @@
                 {
                     "name": "grafica",
                     "type": "Grafica",
-                    "description": "grafica di cui calcolare l\u2019altezza"
+                    "description": "grafica da ruotare"
                 }
             ],
             "returnValue": {
                 "type": "Grafica",
-                "description": "grafica risultante dall\u2019affiancamento orizzontale delle due grafiche fornite"
+                "description": "una nuova grafica, ruotata"
             }
         },
         {
@@ -793,7 +798,7 @@
             ],
             "returnValue": {
                 "type": "Grafica",
-                "description": "grafica risultante dall\u2019affiancamento orizzontale delle due grafiche fornite"
+                "description": "grafica risultante dall\u2019affiancamento verticale delle due grafiche fornite"
             }
         },
         {
@@ -819,7 +824,7 @@
             ],
             "returnValue": {
                 "type": "Grafica",
-                "description": "grafica risultante dall\u2019affiancamento orizzontale delle due grafiche fornite"
+                "description": "grafica risultante dalla sovrapposizione delle due fornite"
             }
         }
     ]

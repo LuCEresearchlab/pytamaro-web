@@ -78,7 +78,7 @@
             ],
             "returnValue": {
                 "type": "Farbe",
-                "description": "eine Farbe mit den gegebenen HSLA-Komponenten"
+                "description": "eine Farbe mit den gegebenen HSVA-Komponenten"
             }
         },
         {
@@ -118,7 +118,7 @@
             ],
             "returnValue": {
                 "type": "Farbe",
-                "description": "eine Farbe mit den gegebenen HSLA-Komponenten"
+                "description": "eine Farbe mit den gegebenen RGBA-Komponenten"
             }
         },
         {
@@ -282,7 +282,7 @@
                 {
                     "name": "datei_name",
                     "type": "str",
-                    "description": "Name der zu kreierenden Datei (mit Erweiterung \u2018.gif\u2019)"
+                    "description": "Name der zu kreierenden Datei (mit Erweiterung)"
                 },
                 {
                     "name": "grafik",
@@ -311,7 +311,7 @@
                 {
                     "name": "grafiken",
                     "type": "list[Grafik]",
-                    "description": "Liste der zu speichernden Grafiken"
+                    "description": "Liste der anzuzeigenden Grafiken"
                 },
                 {
                     "name": "dauer",
@@ -342,7 +342,7 @@
                 {
                     "name": "grafik",
                     "type": "Grafik",
-                    "description": "zu speichernde Grafik"
+                    "description": "die anzuzeigende Grafik"
                 },
                 {
                     "name": "debug",
@@ -413,12 +413,12 @@
                 {
                     "name": "farbe",
                     "type": "Farbe",
-                    "description": "Farbe des Dreiecks"
+                    "description": "F\u00fcllfarbe der Ellipse"
                 }
             ],
             "returnValue": {
                 "type": "Grafik",
-                "description": "eine Grafik mit dem gegebenen Dreieck"
+                "description": "eine Grafik mit der gegebenen Ellipse"
             }
         },
         {
@@ -440,17 +440,17 @@
                 {
                     "name": "winkel",
                     "type": "float",
-                    "description": "Winkel von der ersten zu der zweiten Seiten, in Grad"
+                    "description": "Winkel des Sektors, in Grad"
                 },
                 {
                     "name": "farbe",
                     "type": "Farbe",
-                    "description": "Farbe des Dreiecks"
+                    "description": "F\u00fcllfarbe des Kreissektors"
                 }
             ],
             "returnValue": {
                 "type": "Grafik",
-                "description": "eine Grafik mit dem gegebenen Dreieck"
+                "description": "eine Grafik mit dem gegebenen Kreissektor"
             }
         },
         {
@@ -461,9 +461,10 @@
                     "Erzeugt eine leere Grafik. Wenn eine leere Grafik mit einer anderen Grafik kombiniert wird verh\u00e4lt sie sich als neutrales Element: das Ergebnis der Komposition ist einfach gleich der anderen Grafik."
                 ]
             },
+            "parameters": [],
             "returnValue": {
                 "type": "Grafik",
-                "description": "eine Grafik mit dem gegebenen Dreieck"
+                "description": "eine leere Grafik (Breite und H\u00f6he sind 0)"
             }
         },
         {
@@ -478,22 +479,22 @@
                 {
                     "name": "breite",
                     "type": "float",
-                    "description": "Breite der Ellipse"
+                    "description": "die Breite des Rechtecks"
                 },
                 {
                     "name": "hoehe",
                     "type": "float",
-                    "description": "H\u00f6he der Ellipse"
+                    "description": "die H\u00f6he des Rechtecks"
                 },
                 {
                     "name": "farbe",
                     "type": "Farbe",
-                    "description": "Farbe des Dreiecks"
+                    "description": "F\u00fcllfarbe des Rechtecks"
                 }
             ],
             "returnValue": {
                 "type": "Grafik",
-                "description": "eine Grafik mit dem gegebenen Dreieck"
+                "description": "eine Grafik mit dem gegebenen Rechteck"
             }
         },
         {
@@ -525,12 +526,12 @@
                 {
                     "name": "farbe",
                     "type": "Farbe",
-                    "description": "Farbe des Dreiecks"
+                    "description": "Farbe, in der der Text dargestellt werden soll"
                 }
             ],
             "returnValue": {
                 "type": "Grafik",
-                "description": "eine Grafik mit dem gegebenen Dreieck"
+                "description": "eine Grafik bestehend aus dem gegebenen Text"
             }
         },
         {
@@ -676,12 +677,12 @@
                 {
                     "name": "grafik",
                     "type": "Grafik",
-                    "description": "zu rotierende Grafik"
+                    "description": null
                 }
             ],
             "returnValue": {
                 "type": "Grafik",
-                "description": "die neue, rotierte Grafik"
+                "description": "eine neue Grafik mit der gegebenen Fixierposition"
             }
         },
         {
@@ -692,14 +693,16 @@
                     "Gibt die Breite der gegebenen Grafik zur\u00fcck."
                 ]
             },
-            "parameters": {
-                "name": "grafik",
-                "type": "Grafik",
-                "description": "zu rotierende Grafik"
-            },
+            "parameters": [
+                {
+                    "name": "grafik",
+                    "type": "Grafik",
+                    "description": "Grafik deren Breite gesucht ist"
+                }
+            ],
             "returnValue": {
                 "type": "int",
-                "description": "die neue, rotierte Grafik"
+                "description": "Breite der Grafik"
             }
         },
         {
@@ -710,14 +713,16 @@
                     "Gibt die H\u00f6he der gegebenen Grafik zur\u00fcck."
                 ]
             },
-            "parameters": {
-                "name": "grafik",
-                "type": "Grafik",
-                "description": "zu rotierende Grafik"
-            },
+            "parameters": [
+                {
+                    "name": "grafik",
+                    "type": "Grafik",
+                    "description": "Grafik deren H\u00f6he gesucht ist"
+                }
+            ],
             "returnValue": {
                 "type": "int",
-                "description": "die neue, rotierte Grafik"
+                "description": "H\u00f6he der Grafik"
             }
         },
         {
@@ -743,7 +748,7 @@
             ],
             "returnValue": {
                 "type": "Grafik",
-                "description": "die neue, rotierte Grafik"
+                "description": "die zusammengesetzte Grafik"
             }
         },
         {
@@ -769,7 +774,7 @@
             ],
             "returnValue": {
                 "type": "Grafik",
-                "description": "die neue, rotierte Grafik"
+                "description": "die zusammengesetzte Grafik"
             }
         },
         {
@@ -795,7 +800,7 @@
             ],
             "returnValue": {
                 "type": "Grafik",
-                "description": "die neue, rotierte Grafik"
+                "description": "die zusammengesetzte Grafik"
             }
         },
         {
@@ -821,7 +826,7 @@
             ],
             "returnValue": {
                 "type": "Grafik",
-                "description": "die neue, rotierte Grafik"
+                "description": "die zusammengesetzte Grafik"
             }
         }
     ]
