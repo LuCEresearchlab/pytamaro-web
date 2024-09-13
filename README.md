@@ -1,5 +1,6 @@
 <img src="public/PyTamaro-horizontal.png" alt="PyTamaro Logo" style="background-color:white;" />
 
+
 This repository contains the PyTamaro web plaform, served at https://pytamaro.si.usi.ch.
 
 ## Executive Summary: How is this all organized?
