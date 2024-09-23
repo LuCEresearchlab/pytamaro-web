@@ -171,8 +171,11 @@ function CodeElement({ content } : { content : string }) {
 }
 
 export default function OutputArea(
-  { executionError, executionResponse, dimmed = false }:
-  { executionError: boolean, executionResponse: CompletedExecutionResponse, dimmed?: boolean },
+  {
+    executionError, executionResponse, dimmed = false, sx = {},
+  } :
+  { executionError: boolean, executionResponse: CompletedExecutionResponse, dimmed?: boolean,
+    sx?: CSSProperties },
 ) {
   const pytamaroDataUriRegex = /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
   const { stdout, stderr } = executionResponse;
@@ -187,6 +190,7 @@ export default function OutputArea(
         px: 2,
         borderColor: executionError ? 'error.main' : undefined,
         ...(dimmed ? { opacity: theme.palette.action.disabledOpacity } : {}),
+        ...sx,
       }}
     >
       <div className="output-area" translate="no">

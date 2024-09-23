@@ -9,6 +9,7 @@ import {
 import Grid from '@mui/material/Unstable_Grid2';
 import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import ActivitiesStripe from '../components/ActivitiesStripe';
 import DownloadCodeButton from '../components/CodeDownloadButton';
@@ -41,10 +42,13 @@ const FullWidthAlert = styled(Alert)<AlertProps>(() => ({
 
 export default function Playground({ activitiesWithNames } :
 { activitiesWithNames : ActivityVariantWithNames[] }) {
+  const [initialSource, setInitialSource] = useState(playgroundInitialSource);
+
   const localActivity = useLocalActivity(
-    initialStateSingleCell(playgroundInitialSource),
+    initialStateSingleCell(initialSource),
     playgroundActivityVariant,
   );
+
   const {
     codeCells, codeExecutionStates, cellsModified, executionFailed, sourcesUpTo,
     handleResetAllCellsNoConfirm, handleToggleOutputArea, handleResetSingleCell,
@@ -67,6 +71,35 @@ export default function Playground({ activitiesWithNames } :
         newReset();
       });
   };
+
+  const { query } = useRouter();
+  const codeFromQuery = query?.code;
+  useEffect(
+    () => {
+      const replaceCode = (newCode: string) => {
+        setInitialSource(newCode);
+        handleResetAllCellsNoConfirm();
+        newReset();
+      };
+      if (typeof codeFromQuery === 'string') {
+        const queryCode = Buffer.from(codeFromQuery, 'base64').toString('utf-8');
+        const userCode = codeCells[0].source;
+        if (userCode !== queryCode) {
+          if (userCode === playgroundInitialSource) {
+            replaceCode(queryCode);
+          } else {
+            confirm({ description: 'You are about to replace the code in your playground with new code!', confirmationText: 'Ok, replace my code' })
+              .then(() => {
+                replaceCode(queryCode);
+              });
+          }
+        }
+      }
+    },
+    // We need to run this only once, when the query changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [codeFromQuery],
+  );
 
   const [fullWidthCell, setFullWidthCell] = useState(false);
 

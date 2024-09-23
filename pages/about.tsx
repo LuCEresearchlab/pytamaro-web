@@ -81,7 +81,7 @@ export default function AboutPage({ authorsProfiles } : { authorsProfiles: Autho
               justifyContent: 'center',
             }}
           />
-          <Typography variant="h4" gutterBottom>🧑‍🤝‍🧑 Who?</Typography>
+          <Typography id="who" variant="h4" gutterBottom>🧑‍🤝‍🧑 Who?</Typography>
           <Typography variant="body1" paragraph>
             This web platform for PyTamaro has been developed at
             the

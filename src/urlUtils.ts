@@ -90,8 +90,14 @@ export function authorPathname(authorSlug: string) {
 
 /* Extra */
 
-export function playgroundPathname() {
-  return '/playground';
+export function playgroundPathname(initialCode?: string) {
+  const basePath = '/playground';
+  if (!initialCode) {
+    return basePath;
+  }
+  const base64code = Buffer.from(initialCode).toString('base64');
+  const queryParams = new URLSearchParams({ code: base64code });
+  return `${basePath}?${queryParams.toString()}`;
 }
 
 export function curriculaPathname() {

@@ -41,6 +41,11 @@ declare module '@mui/material/IconButton' {
     neutral: true;
   }
 }
+declare module '@mui/material/Button' {
+  interface ButtonPropsColorOverrides {
+    neutral: true;
+  }
+}
 
 // Create a theme instance.
 const theme = responsiveFontSizes(createTheme({

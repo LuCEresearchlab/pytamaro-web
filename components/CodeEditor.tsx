@@ -1,4 +1,4 @@
-import Editor, { loader } from '@monaco-editor/react';
+import Editor from '@monaco-editor/react';
 import { debounce } from 'lodash';
 import { type editor as EditorNamespace } from 'monaco-editor';
 import {
@@ -11,30 +11,9 @@ import { analyze, ParseError } from '../src/python-analyzer/python_analyzer';
 import { addMarkers } from '../src/pythonTraceback';
 import scrollToAnchor from '../src/scrollToAnchor';
 import theme from '../src/theme';
-
-// Load the same version of monaco-editor specified in the package.json from a
-// CDN. We add it as a dependency to get the types, but we avoid bundling it as
-// it increases the load on our server, needs to be transpiled with webpack,
-// makes the dev server slow).
-loader.config({
-  paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.46.0/min/vs' },
-});
-
-const themeName = 'luce';
-const luceTheme = {
-  base: 'vs', // use vscode light as base theme
-  inherit: true,
-  rules: [],
-  colors: {
-    'editorLineNumber.foreground': '#60bcd9',
-    'editorLineNumber.activeForeground': '#60bcd9',
-    'editor.wordHighlightBackground': '#57575710',
-  },
-};
-
-const LANGUAGE = 'python';
-const RUN_CODE_CONDITION_KEY = 'executionAllowedCondition';
-export const COLORIZE_CLASSNAME = 'monaco-colorize';
+import {
+  colorizeElements, LANGUAGE, luceTheme, RUN_CODE_CONDITION_KEY, themeName,
+} from './editor/utils';
 
 export default function CodeEditor({
   initialSource, currentSource, executionResponse = undefined, onChange = () => {},
@@ -98,10 +77,7 @@ export default function CodeEditor({
     });
 
     if (monaco.pytamaroColorized === undefined) {
-      // Colorize code
-      document.querySelectorAll(`.${COLORIZE_CLASSNAME}`).forEach((element) => {
-        monaco.editor.colorizeElement(element, {});
-      });
+      colorizeElements(monaco);
       // eslint-disable-next-line no-param-reassign
       monaco.pytamaroColorized = true;
     }
