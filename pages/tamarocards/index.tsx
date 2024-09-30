@@ -22,7 +22,7 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import PyTamaroAPI from '../../components/documentation/PyTamaroAPI';
+import InlineAPI from '../../components/documentation/InlineAPI';
 import NavigationBar from '../../components/NavigationBar';
 import SA23_TableImage from '../../public/SA-2023-Table.jpg';
 import SA23_TableImage2 from '../../public/SA-2023-Table2.jpg';
@@ -41,14 +41,14 @@ import DocLibraryPyTamaroPinning from '../../public/tamarocards/v2/Doc/Library-P
 import DocLibraryPyTamaroPrimitives from '../../public/tamarocards/v2/Doc/Library-PyTamaro-Primitives@0.25x.png';
 import DocLibraryPythonFunctions from '../../public/tamarocards/v2/Doc/Library-Python-Functions@0.25x.png';
 import ExampleCardsImage from '../../public/tamarocards/v2/ExampleCards@0.5x.png';
-import ExampleExpressionImage from '../../public/tamarocards/v2/ExampleExpression@0.5x.png';
 import ExampleEvaluationImage from '../../public/tamarocards/v2/ExampleEvaluation@0.5x.png';
+import ExampleExpressionImage from '../../public/tamarocards/v2/ExampleExpression@0.5x.png';
 import UnparseImage from '../../public/tamarocards/v2/unparse.gif';
 import { translationProps } from '../../src/serverSideTranslationProps';
 import { tamaroCardsPageActivityVariant } from '../../src/specialActivities';
 
 function API({ name } : { name: string }) {
-  return <PyTamaroAPI name={name} activityVariant={tamaroCardsPageActivityVariant} />;
+  return <InlineAPI name={name} activityVariant={tamaroCardsPageActivityVariant} />;
 }
 
 export default function TamaroCardsPage() {

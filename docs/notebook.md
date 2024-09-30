@@ -43,11 +43,14 @@ There are three ways to include an image in your activity:
 
 Special components that can be used:
 
-- `<API>above</API>` to render a name (e.g., `above`) from the PyTamaro library with the appropriate style
-  and automatic link to the documentation.
+- `<API>above</API>` to render a name (e.g., `above`) from the PyTamaro library with a distinguished style
+  and an automatic popup to retrieve the documentation.
 
   The language of the API (e.g., `rettangolo` for PyTamaro in Italian) is automatically chosen based on the language of the activity.
-  Optionally, it is possible to specify a `lang` attribute (e.g., `<API lang="en">rectangle</API>` in a German activity) to force a language for the API independently from the language of the activity. 
+  Optionally, it is possible to specify a `lang` attribute (e.g., `<API lang="en">rectangle</API>` in a German activity) to force a language for the API independently from the language of the activity.
+
+  For selected modules from the standard library, you can use the `module` attribute to specify the module name (e.g., `<API module="math">sqrt</API>`).
+  Use the module `builtins` for built-in functions (e.g., `<API module="builtins">print</API>`). 
 
 - `<Activity id="luce/sliced-pitaya/en/v1" fragment="ring-of-seeds">Sliced Pitaya activity</Activity>` to render a link to another activity.
   You can optionally specify a fragment to link to a specific section of the activity. The `id` should refer to a fully qualified activity variant identifier,

@@ -4,7 +4,7 @@ import { MDXRemote } from 'next-mdx-remote';
 import { ReactNode, createElement } from 'react';
 import { ActivityVariant, MarkdownCell, NotebookCell } from '../src/schemas/activitySchema';
 import { activityAssetPathname } from '../src/urlUtils';
-import PyTamaroAPI from './documentation/PyTamaroAPI';
+import InlineAPI from './documentation/InlineAPI';
 import { COLORIZE_CLASSNAME } from './editor/utils';
 import ActivityLink from './markdown/ActivityLink';
 import DoNowBox from './markdown/DoNowBox';
@@ -59,13 +59,14 @@ function imgComponent(props: any, cell: NotebookCell, authorSlug: string, activi
   );
 }
 
-function PyTamaroAPIComponent(
+function InlineAPIComponent(
   name: string,
   activityVariant: ActivityVariant,
   lang?: string,
+  module?: string,
 ) {
   return (
-    <PyTamaroAPI name={name} activityVariant={activityVariant} language={lang} />
+    <InlineAPI name={name} activityVariant={activityVariant} language={lang} module={module} />
   );
 }
 
@@ -105,8 +106,9 @@ export default function MarkdownCellComponent({ slugger, cell, activityVariant }
     code: codeComponent,
     ReactPlayer: ResponsiveReactPlayer,
     Stack,
-    API: ({ lang, children: name }: { lang?: string, children: string }) => (
-      PyTamaroAPIComponent(name, activityVariant, lang)
+    API: ({ lang, module, children: name } :
+    { lang?: string, module?: string, children: string }) => (
+      InlineAPIComponent(name, activityVariant, lang, module)
     ),
     Activity: ActivityLink,
     DoNow: ({ id, requireAnswer = false, children } :
