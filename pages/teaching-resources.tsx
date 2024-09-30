@@ -179,7 +179,7 @@ export default function Teaching() {
                   <Grid xs={12} md={7}>
                     <CardHeader
                       avatar={<Print color="primary" />}
-                      title="Print Ready-To-Cut Pieces From Your Own graphic!"
+                      title="Print Ready-To-Cut Pieces From Your Own Graphic!"
                       titleTypographyProps={{
                         variant: 'h5',
                         color: 'primary',
