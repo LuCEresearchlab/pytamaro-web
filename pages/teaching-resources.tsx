@@ -1,5 +1,10 @@
 /* eslint-disable react/no-unescaped-entities */
-import { Hiking, Print, School } from '@mui/icons-material';
+import {
+  Hiking,
+  AccountBalance,
+  Print,
+  School,
+} from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -17,7 +22,10 @@ import Image from 'next/image';
 import NavigationBar from '../components/NavigationBar';
 import PageTitle from '../components/PageTitle';
 import { translationProps } from '../src/serverSideTranslationProps';
-import { printableGraphicActivityVariant } from '../src/specialActivities';
+import {
+  printableGraphicActivityVariant,
+  mathematicalFoundationsActivityVariant,
+} from '../src/specialActivities';
 import theme from '../src/theme';
 import { activityVariantPathname } from '../src/urlUtils';
 
@@ -66,7 +74,7 @@ export default function Teaching() {
                   <Grid xs={12} md={7}>
                     <CardHeader
                       avatar={<School color="primary" />}
-                      title="Unplugged programming with TamaroCards!"
+                      title="Unplugged Programming With TamaroCards!"
                       titleTypographyProps={{
                         variant: 'h5',
                         color: 'primary',
@@ -112,6 +120,58 @@ export default function Teaching() {
             <Card elevation={4}>
               <CardActionArea
                 href={activityVariantPathname(
+                  mathematicalFoundationsActivityVariant,
+                )}
+              >
+                <Grid container>
+                  <Grid xs={12} md={7}>
+                    <CardHeader
+                      avatar={<AccountBalance color="primary" />}
+                      title="Explore the Mathematical Foundations of PyTamaro"
+                      titleTypographyProps={{
+                        variant: 'h5',
+                        color: 'primary',
+                        fontWeight: 'bold',
+                      }}
+                      sx={{ pb: 0 }}
+                    />
+                    <CardContent>
+                      <Typography fontSize="1.1rem" paragraph gutterBottom>
+                        Are you a mathematician? Then check this out!
+                      </Typography>
+                      <Typography fontSize="1.1rem" paragraph gutterBottom>
+                        PyTamaro is based on a principled foundation: algebra.
+                        The reasoning about PyTamaro graphics corresponds
+                        to the reasoning about algebraic expressions.
+                      </Typography>
+                    </CardContent>
+                  </Grid>
+                  <Grid xs={12} md={5}>
+                    <Box
+                      padding={2}
+                      position="relative"
+                      height="12rem"
+                      alignItems="center"
+                      justifyContent="center"
+                      display="flex"
+                    >
+                      <Image
+                        src="/mathematical-foundations.png"
+                        alt="Table of Algebraic Concepts"
+                        fill
+                        style={{
+                          objectFit: 'contain',
+                          padding: theme.spacing(1),
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                </Grid>
+              </CardActionArea>
+            </Card>
+            <Card elevation={4}>
+              <CardActionArea
+                href={activityVariantPathname(
                   printableGraphicActivityVariant,
                 )}
               >
@@ -119,7 +179,7 @@ export default function Teaching() {
                   <Grid xs={12} md={7}>
                     <CardHeader
                       avatar={<Print color="primary" />}
-                      title="Print ready-to-cut pieces from your own graphic!"
+                      title="Print Ready-To-Cut Pieces From Your Own graphic!"
                       titleTypographyProps={{
                         variant: 'h5',
                         color: 'primary',

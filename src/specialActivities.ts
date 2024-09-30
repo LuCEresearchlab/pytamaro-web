@@ -36,6 +36,13 @@ export const tamaroCardsPageActivityVariant = {
   version: 'v1',
 };
 
+export const mathematicalFoundationsActivityVariant = {
+  authorSlug: 'luce',
+  activitySlug: 'mathematical-foundations',
+  language: 'en',
+  version: 'v1',
+};
+
 export function isToolboxActivity(variant: ActivityVariant) {
   const reference = toolboxActivityVariant('');
   return variant.authorSlug === reference.authorSlug
@@ -50,6 +57,7 @@ export function isSpecialActivity(variant: ActivityVariant) {
     toolboxDemoActivityVariant,
     printableGraphicActivityVariant,
     tamaroCardsPageActivityVariant,
+    mathematicalFoundationsActivityVariant,
   ];
   return isToolboxActivity(variant) || otherSpecialActivities.some((a) => isEqual(a, variant));
 }
