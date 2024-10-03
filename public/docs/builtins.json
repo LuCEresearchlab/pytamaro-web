@@ -45,7 +45,7 @@
             "parameters": [
                 {
                     "name": "sequence",
-                    "type": "any",
+                    "type": "Any",
                     "description": "sequence or collection"
                 }
             ],

@@ -4,13 +4,12 @@ import {
   Chip,
   Stack, Typography,
 } from '@mui/material';
-import { useQueries } from '@tanstack/react-query';
-import axios from 'axios';
 import {
   flatten, isEqual, reverse, slice, uniqWith,
 } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
+import useJudiciousDocData from '../../src/documentation';
 import useLocalToolbox from '../../src/localStorage/useLocalToolbox';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import {
@@ -19,9 +18,7 @@ import {
   PythonName,
 } from '../../src/python-analyzer/python_analyzer';
 import { ActivityVariant } from '../../src/schemas/activitySchema';
-import { JudiciousModule } from '../../src/schemas/documentation';
 import theme from '../../src/theme';
-import { judiciousDocPathname } from '../../src/urlUtils';
 import DocElement from './DocElement';
 import { definedFnToJudiciousFunction, toolboxToJudiciousFunction } from './utils';
 
@@ -65,15 +62,7 @@ export default function DocumentationStripe({ sources, activityVariant } :
 
   const toolboxFunctions = list();
 
-  const modulesResults = useQueries({
-    queries: modulesToFetch.map((module) => ({
-      queryKey: [module],
-      queryFn: (): Promise<JudiciousModule> => axios.get(judiciousDocPathname(module))
-        .then((response) => response.data),
-    })),
-  });
-  const modulesData = modulesResults.map((result) => result.data)
-    .filter((data) => data !== undefined);
+  const modulesData = useJudiciousDocData(modulesToFetch);
 
   const namesToShow = allDefinedFunctions.map(({ name }) => ({ module: '.', name })).concat(allImportedNames);
 

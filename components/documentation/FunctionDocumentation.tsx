@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { JudiciousFunction } from '../../src/schemas/documentation';
 import theme from '../../src/theme';
 import CodeElement from './CodeElement';
@@ -23,6 +24,7 @@ import {
 
 export default function FunctionDocumentation({ fn, module } :
 { fn: JudiciousFunction, module: string }) {
+  const { t } = useLocalTranslation();
   const [hoverElement, setHoverElement] = useState<string>('');
   const {
     name, description, parameters, returnValue,
@@ -43,16 +45,14 @@ export default function FunctionDocumentation({ fn, module } :
         <Box sx={{ display: 'flex' }}>
           <span>
             <Typography color={theme.pytamaro.redColor} fontWeight="bold" component="span">
-              Function
+              {t('Function')}
             </Typography>
-            <Typography color="text.secondary" component="span" sx={{ whiteSpace: 'pre' }}>
-              {' from '}
-            </Typography>
+            &nbsp;
             <Typography color="text.secondary" component="span" {...hoverProps(moduleId(), hoverElement, setHoverElement)}>
-              {module === '.' ? 'your code' : `library ${module}`}
+              {module === '.' ? t('fromYourCode') : t('fromLibrary', { module })}
             </Typography>
             {fn.sideEffects && (
-            <Chip size="small" label="Side Effects" color="error" variant="filled" sx={{ ml: 1 }} />
+            <Chip size="small" label={t('sideEffects')} color="error" variant="filled" sx={{ ml: 1 }} />
             )}
           </span>
           <ConfigButtons available={availableOptions} />
@@ -130,7 +130,7 @@ export default function FunctionDocumentation({ fn, module } :
       )}
       {params.length > 0 && params.some((param) => param.description.length > 0) && (
         <>
-          <Divider sx={{ mt: 3, mb: 1 }}>Parameters</Divider>
+          <Divider sx={{ mt: 3, mb: 1 }}>{t('parameters')}</Divider>
           {params.map((param, i) => (
             <Typography
               gutterBottom
@@ -147,7 +147,7 @@ export default function FunctionDocumentation({ fn, module } :
       )}
       {returnValue && returnValue.description.length > 0 && (
         <>
-          <Divider sx={{ mt: 3, mb: 1 }}>Return</Divider>
+          <Divider sx={{ mt: 3, mb: 1 }}>{t('return')}</Divider>
           <Typography
             color="text.secondary"
             component="span"

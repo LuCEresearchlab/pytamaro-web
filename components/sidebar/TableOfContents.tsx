@@ -87,12 +87,14 @@ export default function TableOfContents({
   const [items, setItems] = React.useState<TOCItem[]>([]);
   React.useEffect(() => {
     if (elementRef.current && initialized) {
-      const headings = Array.from(elementRef.current.querySelectorAll(selector)).map((heading) => ({
-        text: heading.textContent || '',
-        hash: heading.id,
-        indent: parseInt(heading.tagName[1], 10) >= 3,
+      const elements = Array.from(elementRef.current.querySelectorAll<HTMLElement>(selector)).map((
+        element,
+      ) => ({
+        text: element.dataset.tocTitle || element.textContent || '',
+        hash: element.id,
+        indent: element.dataset.tocIndent === 'true' || (element.tagName[0] === 'H' && parseInt(element.tagName[1], 10) >= 3),
       }));
-      setItems(headings);
+      setItems(elements);
     }
   }, [elementRef, selector, initialized]);
 

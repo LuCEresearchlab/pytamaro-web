@@ -7,7 +7,7 @@ import { useState } from 'react';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import {
   aboutPathname,
-  activitiesByAuthorPathname, curriculaPathname, myProgressPathname,
+  activitiesByAuthorPathname, curriculaPathname, documentationPathname, myProgressPathname,
   playgroundPathname, pytamaroDocsUrl,
 } from '../src/urlUtils';
 import FeedbackDialog from './FeedbackDialog';
@@ -42,8 +42,12 @@ const navItems = [
 const smallScreensNavItems = [
   ...navItems,
   {
-    name: 'documentation',
+    name: 'PyTamaro ReadTheDocs',
     url: pytamaroDocsUrl(),
+  },
+  {
+    name: 'documentation',
+    url: documentationPathname(),
   },
   {
     name: 'playground',

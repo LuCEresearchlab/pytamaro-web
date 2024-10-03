@@ -4,6 +4,7 @@ import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 
 type Option = {
   id: string;
@@ -19,7 +20,7 @@ export default function SelectAll({
   initialSelection?: Option[], onSelectionChange: (selectedIds: string[]) => void }) {
   const [selectedOptions, setSelectedOptions] = useState(initialSelection);
   const router = useRouter();
-
+  const { t } = useLocalTranslation();
   return (
     <Autocomplete
       multiple
@@ -28,7 +29,7 @@ export default function SelectAll({
         const filter = createFilterOptions<Option>();
         const filtered = filter(opts, params);
         return [{
-          label: 'Select All', id: '__ALL__', url: '', all: true,
+          label: t('selectAll'), id: '__ALL__', url: '', all: true,
         }, ...filtered];
       }}
       limitTags={maxTagsShown}

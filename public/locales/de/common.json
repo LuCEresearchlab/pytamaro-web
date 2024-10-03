@@ -53,5 +53,21 @@
     "activityInProgress": "Aktivität in Bearbeitung",
     "activityCompleted": "Aktivität abgeschlossen",
     "showLess": "Weniger anzeigen",
-    "showAll": "Alle anzeigen"
+    "showAll": "Alle anzeigen",
+    "library": "Bibliothek",
+    "selectLibrary": "Wähle eine Bibliothek",
+    "kind": "Art",
+    "selectKind": "Wähle eine Art",
+    "textualSearch": "Textsuche",
+    "nameOrDescription": "Name oder Beschreibung",
+    "selectToSeeDoc": "Wählen Sie eine Bibliothek aus, um ihre Dokumentation anzuzeigen",
+    "Function": "Funktion",
+    "Constant": "Konstante",
+    "Type": "Typ",
+    "selectAll": "Alle auswählen",
+    "fromYourCode": "aus Deinem Code",
+    "fromLibrary": "aus der Bibliothek {{module}}",
+    "parameters": "Parameter",
+    "return": "Rückgabe", 
+    "sideEffects": "Nebeneffekte"
 }

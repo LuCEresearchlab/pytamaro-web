@@ -1,8 +1,6 @@
 /* eslint-disable react/no-danger */
 /* eslint-disable @next/next/no-img-element */
 import {
-  Card,
-  CardContent,
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
@@ -13,8 +11,7 @@ import { JudiciousConstant, JudiciousFunction, JudiciousType } from '../../src/s
 import { EventName, storeDbEvent } from '../../src/storeDbEvent';
 import theme from '../../src/theme';
 import { Popover, PopoverContent, PopoverTrigger } from '../Popover';
-import FunctionDocumentation from './FunctionDocumentation';
-import TypeConstantDocumentation from './TypeConstantDocumentation';
+import DocElementCard from './DocElementCard';
 import { iconPath } from './utils';
 
 export default function DocElement({
@@ -66,13 +63,7 @@ export default function DocElement({
           </Typography>
         </PopoverTrigger>
         <PopoverContent>
-          <Card elevation={0}>
-            <CardContent sx={{ pb: 1, minWidth: '60ch', maxWidth: '90ch' }}>
-              {element.kind === 'function'
-                ? <FunctionDocumentation fn={element} module={module} />
-                : <TypeConstantDocumentation element={element} module={module} />}
-            </CardContent>
-          </Card>
+          <DocElementCard module={module} element={element} />
         </PopoverContent>
       </Popover>
     </div>

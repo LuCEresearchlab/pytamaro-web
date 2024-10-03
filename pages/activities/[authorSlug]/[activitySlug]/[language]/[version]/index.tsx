@@ -3,7 +3,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import GithubSlugger from 'github-slugger';
 import Head from 'next/head';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import ActivityCodeCell from '../../../../../../components/ActivityCodeCell';
 import ActivityFooter from '../../../../../../components/ActivityFooter';
 import ActivityResetButton from '../../../../../../components/ActivityResetButton';
@@ -39,6 +39,7 @@ import { translationProps } from '../../../../../../src/serverSideTranslationPro
 import { isSpecialActivity } from '../../../../../../src/specialActivities';
 import { activityVariantPathnameFromParts } from '../../../../../../src/urlUtils';
 import useCurriculumFromQuery from '../../../../../../src/useCurriculumFromQuery';
+import useIsMounted from '../../../../../../src/useIsMounted';
 import useReset from '../../../../../../src/useReset';
 
 const userType = 'student';
@@ -70,12 +71,7 @@ export default function NotebookPage({
 
   const slugger = new GithubSlugger();
 
-  // We need to keep track of this to render the table of content only after the
-  // component has mounted.
-  const [componentMounted, setComponentMounted] = useState(false);
-  useEffect(() => {
-    setComponentMounted(true);
-  }, []);
+  const isMounted = useIsMounted();
 
   return (
     <div key={activityVariantId(activityVariant)}>
@@ -154,7 +150,7 @@ export default function NotebookPage({
             {curriculum && (
               <CurriculumUnitSidebar curriculum={curriculum} activityVariant={activityVariant} />
             )}
-            <TableOfContents initialized={componentMounted} elementRef={cellsRef} selector="h2[id], h3[id]" title={t('contents')} />
+            <TableOfContents initialized={isMounted} elementRef={cellsRef} selector="h2[id], h3[id]" title={t('contents')} />
             {curriculum && (
               <ActivityCompetenciesSidebar
                 curriculum={curriculum}

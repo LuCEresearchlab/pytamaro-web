@@ -157,3 +157,11 @@ export function conceptPathname(concept: string) {
 export function judiciousDocPathname(module: string) {
   return `/docs/${module}.json`;
 }
+
+export function documentationPathname() {
+  return '/documentation';
+}
+
+export function documentationModulePathname(module: string) {
+  return `${documentationPathname()}/${module}`;
+}

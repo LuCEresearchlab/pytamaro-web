@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import {
   JudiciousConstant,
   JudiciousType,
@@ -22,21 +23,20 @@ export default function TypeConstantDocumentation({ element, module }
     name, description,
   } = element;
   const { docsMetadata } = useLocalProfile();
+  const { t } = useLocalTranslation();
   return (
     <>
       <Box mb={1}>
         <Box sx={{ display: 'flex' }}>
           <span>
-            <Typography color="primary" fontWeight="bold" component="span">{element.kind === 'constant' ? 'Constant' : 'Type'}</Typography>
-            <Typography color="text.secondary" component="span" sx={{ whiteSpace: 'pre' }}>
-              {' from '}
-            </Typography>
+            <Typography color="primary" fontWeight="bold" component="span">{t(element.kind === 'constant' ? 'Constant' : 'Type')}</Typography>
+            &nbsp;
             <Typography
               color="text.secondary"
               component="span"
               {...hoverProps(moduleId(), hoverElement, setHoverElement)}
             >
-              {module === '.' ? 'your code' : `library ${module}`}
+              {module === '.' ? t('fromYourCode') : t('fromLibrary', { module })}
             </Typography>
           </span>
           <ConfigButtons available={element.kind === 'constant' ? [SHOW_TYPES_KEY] : []} />
