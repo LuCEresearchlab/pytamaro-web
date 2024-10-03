@@ -21,6 +21,7 @@ import {
 import Grid from '@mui/material/Unstable_Grid2';
 import anime from 'animejs';
 import { shuffle } from 'lodash';
+import Head from 'next/head';
 import Image from 'next/image';
 import { useEffect } from 'react';
 import Carousel from 'react-material-ui-carousel';
@@ -161,6 +162,10 @@ export default function Home({ activities } :
 
   return (
     <div>
+      <Head>
+        <title>PyTamaro</title>
+        <meta name="description" content="PyTamaro: Learn programming in Python with graphics. Explore activities connected to data science, colors, animations, and more. Completely free, in your browser!" />
+      </Head>
       <div
         style={{
           display: 'flex',
