@@ -11,6 +11,7 @@ import NavigationBar from '../../components/NavigationBar';
 import PageTitle from '../../components/PageTitle';
 import SelectAll from '../../components/SelectAll';
 import CentralContent from '../../components/sidebar/CentralContent';
+import LibrariesListSidebar from '../../components/sidebar/LibrariesListSidebar';
 import Sidebar from '../../components/sidebar/Sidebar';
 import TableOfContents from '../../components/sidebar/TableOfContents';
 import useJudiciousDocData, { allKinds } from '../../src/documentation';
@@ -53,7 +54,9 @@ export default function Documentation({ modules } : { modules: string[] }) {
       </Head>
       <NavigationBar />
       <Grid container>
-        <Sidebar side="left" />
+        <Sidebar side="left">
+          <LibrariesListSidebar modules={allModules} />
+        </Sidebar>
         <CentralContent>
           <PageTitle>{t('documentation')}</PageTitle>
           <Grid container spacing={2} mb={4}>
