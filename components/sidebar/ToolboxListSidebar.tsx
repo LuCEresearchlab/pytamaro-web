@@ -28,8 +28,8 @@ function SidebarToolboxFunction({ fn, skipPopup }: { fn: ToolboxFunction, skipPo
         width: SIDEBAR_CHIPS_WIDTH,
         fontFamily: theme.pytamaro.monospaceFontFamily,
         fontSize: SIDEBAR_CHIPS_FONT_SIZE,
-        cursor: 'pointer',
       }}
+      clickable
       onClick={handleClick}
     />
   );

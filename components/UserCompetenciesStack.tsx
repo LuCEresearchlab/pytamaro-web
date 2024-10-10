@@ -23,6 +23,7 @@ function UserCompetencyChip({ curriculum, competency, completedActivities }:
       <PopoverTrigger>
         <Chip
           id={myCompetencyChipId(competency)}
+          clickable
           label={(
             <Box display="flex" justifyContent="space-between">
               <Box sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{competency.name}</Box>
