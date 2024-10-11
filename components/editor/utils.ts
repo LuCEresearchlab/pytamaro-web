@@ -11,7 +11,7 @@ export const luceTheme = {
     'editor.wordHighlightBackground': '#57575710',
   },
 };
-export const LANGUAGE = 'python';
+
 export const RUN_CODE_CONDITION_KEY = 'executionAllowedCondition';
 export const COLORIZE_CLASSNAME = 'monaco-colorize';
 

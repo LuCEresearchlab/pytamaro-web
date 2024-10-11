@@ -5,6 +5,7 @@ import { ReactNode, createElement } from 'react';
 import { ActivityVariant, MarkdownCell, NotebookCell } from '../src/schemas/activitySchema';
 import { activityAssetPathname } from '../src/urlUtils';
 import InlineAPI from './documentation/InlineAPI';
+import { STRICT_PYTHON3_LANG_ID } from './editor/strictPython3';
 import { COLORIZE_CLASSNAME } from './editor/utils';
 import ActivityLink from './markdown/ActivityLink';
 import DoNowBox from './markdown/DoNowBox';
@@ -73,7 +74,7 @@ function InlineAPIComponent(
 function codeComponent(props: any) {
   const codeProps : Record<string, string> = {};
   if (props.className === 'language-python') {
-    codeProps['data-lang'] = 'python';
+    codeProps['data-lang'] = STRICT_PYTHON3_LANG_ID;
     codeProps.className = COLORIZE_CLASSNAME;
   }
   let source = props.children;
