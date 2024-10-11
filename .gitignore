@@ -36,12 +36,10 @@ next-env.d.ts
 
 # generated assets from activities
 public/activities
-# Sentry
-.sentryclirc
-
-# Sentry
-next.config.original.js
 
 # Cypress
 cypress/videos
 cypress/screenshots
+
+# Sentry Config File
+.env.sentry-build-plugin

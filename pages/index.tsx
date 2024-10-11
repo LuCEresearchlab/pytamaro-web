@@ -26,6 +26,7 @@ import Image from 'next/image';
 import { useEffect } from 'react';
 import Carousel from 'react-material-ui-carousel';
 import ActivityCardMedia from '../components/ActivityCardMedia';
+import { registerCustomPythonLanguage, STRICT_PYTHON3_LANG_ID } from '../components/editor/strictPython3';
 import { COLORIZE_CLASSNAME, colorizeElements, configureEditor } from '../components/editor/utils';
 import OutputArea from '../components/OutputArea';
 import PanoramaAlpeFoppa from '../public/PanoramaAlpeFoppa.jpg';
@@ -82,7 +83,7 @@ function PythonCodeCard({
         <CardContent sx={{ overflowX: 'auto' }}>
           <Box
             className={COLORIZE_CLASSNAME}
-            data-lang="python"
+            data-lang={STRICT_PYTHON3_LANG_ID}
             sx={{
               fontFamily: theme.pytamaro.monospaceFontFamily, whiteSpace: 'pre', fontVariantLigatures: 'none',
             }}
@@ -157,6 +158,7 @@ export default function Home({ activities } :
   const monaco = useMonaco();
 
   useEffect(() => {
+    registerCustomPythonLanguage(monaco);
     colorizeElements(monaco);
   }, [monaco]);
 

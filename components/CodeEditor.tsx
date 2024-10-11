@@ -6,13 +6,16 @@ import {
 } from 'react';
 import { ExecutionResponse } from '../src/codeExecution';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
-import { moduleImportCompletionProvider, pytamaroImportCompletionProvider, toolboxImportCompletionProvider } from '../src/monacoSuggestions';
+import {
+  moduleImportCompletionProvider, pytamaroImportCompletionProvider, toolboxImportCompletionProvider,
+} from '../src/monacoSuggestions';
 import { analyze, ParseError } from '../src/python-analyzer/python_analyzer';
 import { addMarkers } from '../src/pythonTraceback';
 import scrollToAnchor from '../src/scrollToAnchor';
 import theme from '../src/theme';
+import { registerCustomPythonLanguage, STRICT_PYTHON3_LANG_ID } from './editor/strictPython3';
 import {
-  colorizeElements, LANGUAGE, luceTheme, RUN_CODE_CONDITION_KEY, themeName,
+  colorizeElements, luceTheme, RUN_CODE_CONDITION_KEY, themeName,
 } from './editor/utils';
 
 export default function CodeEditor({
@@ -43,6 +46,8 @@ export default function CodeEditor({
   ) => {
     monacoRef.current = monaco;
     editorRef.current = editor;
+
+    registerCustomPythonLanguage(monaco);
 
     monaco.editor.defineTheme(themeName, luceTheme);
     monaco.editor.setTheme(themeName);
@@ -133,7 +138,8 @@ export default function CodeEditor({
         pytamaroImportCompletionProvider(monacoInstance),
       ];
       const disposers = providers.map(
-        (provider) => monacoInstance.languages.registerCompletionItemProvider(LANGUAGE, provider),
+        (provider) => monacoInstance.languages
+          .registerCompletionItemProvider(STRICT_PYTHON3_LANG_ID, provider),
       );
       monacoInstance.pytamaroCompletionProvidersRegistered = true;
       return () => {
@@ -218,7 +224,7 @@ export default function CodeEditor({
   return (
     <div ref={containerRef} translate="no">
       <Editor
-        language={LANGUAGE}
+        language={STRICT_PYTHON3_LANG_ID}
         theme="luce"
         defaultValue={currentSource}
         onMount={handleEditorMount}
