@@ -32,10 +32,10 @@ import TamaroCardsExample from '../../public/expo/TamaroCardsExample.png';
 import Info1010 from '../../public/expo/Info1010.png';
 import Info1010Exhibit from '../../public/expo/Info1010Exhibit.png';
 import GymInfLogo from '../../public/expo/gyminf_logo.png';
-import SA23_ColorImage from '../../public/SA-2023-Colors.jpg';
-import SA23_FoppaImage from '../../public/SA-2023-Foppa.jpg';
-import SA23_TableImage from '../../public/SA-2023-Table.jpg';
-import SA23_TableImage2 from '../../public/SA-2023-Table2.jpg';
+import SA23_ColorImage from '../../public/events/2023-SA-Colors.jpg';
+import SA23_FoppaImage from '../../public/events/2023-SA-Foppa.jpg';
+import SA23_TableImage from '../../public/events/2023-SA-Table.jpg';
+import SA23_TableImage2 from '../../public/events/2023-SA-Table2.jpg';
 import HOC from '../../public/expo/HOC.png';
 import { translationProps } from '../../src/serverSideTranslationProps';
 
