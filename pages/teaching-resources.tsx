@@ -96,7 +96,7 @@ export default function Teaching() {
                       </Typography>
                     </CardContent>
                   </Grid>
-                  <Grid xs={12} md={5}>
+                  <Grid xs={12} md={5} sx={{ background: '#B6A99B' }}>
                     <Box
                       padding={2}
                       position="relative"
@@ -106,8 +106,8 @@ export default function Teaching() {
                       display="flex"
                     >
                       <Image
-                        src="/SA-2023-Table3.jpg"
-                        alt="Alpe Foppa panorama"
+                        src="/TamaroCardsUse.jpg"
+                        alt="Use of Tamaro Cards"
                         fill
                         style={{
                           objectFit: 'contain',
@@ -148,7 +148,7 @@ export default function Teaching() {
                       </Typography>
                     </CardContent>
                   </Grid>
-                  <Grid xs={12} md={5}>
+                  <Grid xs={12} md={5} sx={{ background: '#E1F6FF' }}>
                     <Box
                       padding={2}
                       position="relative"
@@ -202,7 +202,7 @@ export default function Teaching() {
                       </Typography>
                     </CardContent>
                   </Grid>
-                  <Grid xs={12} md={5}>
+                  <Grid xs={12} md={5} sx={{ background: '#5C2382' }}>
                     <Box
                       padding={2}
                       position="relative"
@@ -254,7 +254,7 @@ export default function Teaching() {
                       </Typography>
                     </CardContent>
                   </Grid>
-                  <Grid xs={12} md={5}>
+                  <Grid xs={12} md={5} sx={{ background: '#FDFBDE' }}>
                     <Box
                       padding={2}
                       position="relative"
@@ -264,7 +264,7 @@ export default function Teaching() {
                       display="flex"
                     >
                       <Image
-                        src="/paper-cutouts.png"
+                        src="/paper-cutouts-transparent.png"
                         alt="Print and cut out Monkey"
                         fill
                         style={{
@@ -302,7 +302,7 @@ export default function Teaching() {
                       </Typography>
                     </CardContent>
                   </Grid>
-                  <Grid xs={12} md={5}>
+                  <Grid xs={12} md={5} sx={{ background: '#81B4E9' }}>
                     <Box
                       padding={2}
                       position="relative"
