@@ -43,6 +43,13 @@ export const mathematicalFoundationsActivityVariant = {
   version: 'v1',
 };
 
+export const multipleLanguagesActivityVariant = {
+  authorSlug: 'luce',
+  activitySlug: 'multiple-languages',
+  language: 'en',
+  version: 'v1',
+};
+
 export function isToolboxActivity(variant: ActivityVariant) {
   const reference = toolboxActivityVariant('');
   return variant.authorSlug === reference.authorSlug

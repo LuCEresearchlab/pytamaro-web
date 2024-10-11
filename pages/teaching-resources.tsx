@@ -4,6 +4,7 @@ import {
   AccountBalance,
   Print,
   School,
+  Translate,
 } from '@mui/icons-material';
 import {
   Box,
@@ -25,6 +26,7 @@ import { translationProps } from '../src/serverSideTranslationProps';
 import {
   printableGraphicActivityVariant,
   mathematicalFoundationsActivityVariant,
+  multipleLanguagesActivityVariant,
 } from '../src/specialActivities';
 import theme from '../src/theme';
 import { activityVariantPathname } from '../src/urlUtils';
@@ -157,6 +159,60 @@ export default function Teaching() {
                     >
                       <Image
                         src="/mathematical-foundations.png"
+                        alt="Table of Algebraic Concepts"
+                        fill
+                        style={{
+                          objectFit: 'contain',
+                          padding: theme.spacing(1),
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                </Grid>
+              </CardActionArea>
+            </Card>
+            <Card elevation={4}>
+              <CardActionArea
+                href={activityVariantPathname(
+                  multipleLanguagesActivityVariant,
+                )}
+              >
+                <Grid container>
+                  <Grid xs={12} md={7}>
+                    <CardHeader
+                      avatar={<Translate color="primary" />}
+                      title="Find Out About Support for Multiple Languages"
+                      titleTypographyProps={{
+                        variant: 'h5',
+                        color: 'primary',
+                        fontWeight: 'bold',
+                      }}
+                      sx={{ pb: 0 }}
+                    />
+                    <CardContent>
+                      <Typography fontSize="1.1rem" paragraph gutterBottom>
+                        Unlike most libraries,
+                        PyTamaro is available in several natural languages.
+                      </Typography>
+                      <Typography fontSize="1.1rem" paragraph gutterBottom>
+                        Language choice is not just about the PyTamaro library,
+                        but also about the PyTamaro Web platform,
+                        and the available activities.
+                        Find out more!
+                      </Typography>
+                    </CardContent>
+                  </Grid>
+                  <Grid xs={12} md={5}>
+                    <Box
+                      padding={2}
+                      position="relative"
+                      height="12rem"
+                      alignItems="center"
+                      justifyContent="center"
+                      display="flex"
+                    >
+                      <Image
+                        src="/multiple-languages.svg"
                         alt="Table of Algebraic Concepts"
                         fill
                         style={{
