@@ -238,7 +238,7 @@ export default function Teaching() {
                     <CardContent>
                       <Typography fontSize="1.1rem" paragraph gutterBottom>
                         Become a part of our community of practice
-                        by spending a few days in Lugano over the summer.
+                        by spending a few days in Lugano.
                       </Typography>
                       <Typography fontSize="1.1rem" paragraph gutterBottom>
                         Learn new teaching approaches,
@@ -256,7 +256,7 @@ export default function Teaching() {
                       display="flex"
                     >
                       <Image
-                        src="/AlpeFoppa.jpg"
+                        src="/PyTamaroAcademy-Banner.jpg"
                         alt="Alpe Foppa panorama"
                         fill
                         style={{

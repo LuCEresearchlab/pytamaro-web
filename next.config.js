@@ -44,6 +44,25 @@ const nextConfig = {
     },
   },
   i18n,
+  async redirects() {
+    return [
+      {
+        source: '/summeracademy',
+        destination: '/academy',
+        permanent: true,
+      },
+      {
+        source: '/summeracademy/2023',
+        destination: '/academy/sa2023',
+        permanent: true,
+      },
+      {
+        source: '/summeracademy/2024',
+        destination: '/academy/sa2024',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig
