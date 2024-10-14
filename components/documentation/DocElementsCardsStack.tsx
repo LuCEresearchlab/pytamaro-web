@@ -19,7 +19,7 @@ export default function DocElementsCardsStack({ modules, elementsRef } :
     ),
   }));
   return (
-    <Container ref={elementsRef}>
+    <Stack spacing={6} ref={elementsRef} alignItems="center">
       {modulesSortedElements.map((modData) => {
         const modName = modData.module;
         return (
@@ -34,6 +34,6 @@ export default function DocElementsCardsStack({ modules, elementsRef } :
           </Container>
         );
       })}
-    </Container>
+    </Stack>
   );
 }
