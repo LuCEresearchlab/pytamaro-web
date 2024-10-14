@@ -132,9 +132,9 @@ module.exports = withSentryConfig(
   }
 );
 
-module.exports = {
-  ...module.exports,
-  experimental: {
-    instrumentationHook: process.env.NODE_ENV === 'production',
-  },
-}
+// module.exports = {
+//   ...module.exports,
+//   experimental: {
+//     instrumentationHook: process.env.NODE_ENV === 'production',
+//   },
+// }
