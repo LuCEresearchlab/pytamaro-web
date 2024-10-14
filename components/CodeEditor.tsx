@@ -15,8 +15,10 @@ import scrollToAnchor from '../src/scrollToAnchor';
 import theme from '../src/theme';
 import { registerCustomPythonLanguage, STRICT_PYTHON3_LANG_ID } from './editor/strictPython3';
 import {
-  colorizeElements, luceTheme, RUN_CODE_CONDITION_KEY, themeName,
+  colorizeElements, configureEditor, luceTheme, RUN_CODE_CONDITION_KEY, themeName,
 } from './editor/utils';
+
+configureEditor();
 
 export default function CodeEditor({
   initialSource, currentSource, executionResponse = undefined, onChange = () => {},
