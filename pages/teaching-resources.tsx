@@ -4,6 +4,7 @@ import {
   AccountBalance,
   Print,
   School,
+  Translate,
 } from '@mui/icons-material';
 import {
   Box,
@@ -25,6 +26,7 @@ import { translationProps } from '../src/serverSideTranslationProps';
 import {
   printableGraphicActivityVariant,
   mathematicalFoundationsActivityVariant,
+  multipleLanguagesActivityVariant,
 } from '../src/specialActivities';
 import theme from '../src/theme';
 import { activityVariantPathname } from '../src/urlUtils';
@@ -94,7 +96,7 @@ export default function Teaching() {
                       </Typography>
                     </CardContent>
                   </Grid>
-                  <Grid xs={12} md={5}>
+                  <Grid xs={12} md={5} sx={{ background: '#B6A99B' }}>
                     <Box
                       padding={2}
                       position="relative"
@@ -104,8 +106,8 @@ export default function Teaching() {
                       display="flex"
                     >
                       <Image
-                        src="/SA-2023-Table3.jpg"
-                        alt="Alpe Foppa panorama"
+                        src="/TamaroCardsUse.jpg"
+                        alt="Use of Tamaro Cards"
                         fill
                         style={{
                           objectFit: 'contain',
@@ -146,7 +148,7 @@ export default function Teaching() {
                       </Typography>
                     </CardContent>
                   </Grid>
-                  <Grid xs={12} md={5}>
+                  <Grid xs={12} md={5} sx={{ background: '#E1F6FF' }}>
                     <Box
                       padding={2}
                       position="relative"
@@ -157,6 +159,60 @@ export default function Teaching() {
                     >
                       <Image
                         src="/mathematical-foundations.png"
+                        alt="Table of Algebraic Concepts"
+                        fill
+                        style={{
+                          objectFit: 'contain',
+                          padding: theme.spacing(1),
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                </Grid>
+              </CardActionArea>
+            </Card>
+            <Card elevation={4}>
+              <CardActionArea
+                href={activityVariantPathname(
+                  multipleLanguagesActivityVariant,
+                )}
+              >
+                <Grid container>
+                  <Grid xs={12} md={7}>
+                    <CardHeader
+                      avatar={<Translate color="primary" />}
+                      title="Find Out About Support for Multiple Languages"
+                      titleTypographyProps={{
+                        variant: 'h5',
+                        color: 'primary',
+                        fontWeight: 'bold',
+                      }}
+                      sx={{ pb: 0 }}
+                    />
+                    <CardContent>
+                      <Typography fontSize="1.1rem" paragraph gutterBottom>
+                        Unlike most libraries,
+                        PyTamaro is available in several natural languages.
+                      </Typography>
+                      <Typography fontSize="1.1rem" paragraph gutterBottom>
+                        Language choice is not just about the PyTamaro library,
+                        but also about the PyTamaro Web platform,
+                        and the available activities.
+                        Find out more!
+                      </Typography>
+                    </CardContent>
+                  </Grid>
+                  <Grid xs={12} md={5} sx={{ background: '#5C2382' }}>
+                    <Box
+                      padding={2}
+                      position="relative"
+                      height="12rem"
+                      alignItems="center"
+                      justifyContent="center"
+                      display="flex"
+                    >
+                      <Image
+                        src="/multiple-languages.svg"
                         alt="Table of Algebraic Concepts"
                         fill
                         style={{
@@ -198,7 +254,7 @@ export default function Teaching() {
                       </Typography>
                     </CardContent>
                   </Grid>
-                  <Grid xs={12} md={5}>
+                  <Grid xs={12} md={5} sx={{ background: '#FDFBDE' }}>
                     <Box
                       padding={2}
                       position="relative"
@@ -208,7 +264,7 @@ export default function Teaching() {
                       display="flex"
                     >
                       <Image
-                        src="/paper-cutouts.png"
+                        src="/paper-cutouts-transparent.png"
                         alt="Print and cut out Monkey"
                         fill
                         style={{
@@ -238,7 +294,7 @@ export default function Teaching() {
                     <CardContent>
                       <Typography fontSize="1.1rem" paragraph gutterBottom>
                         Become a part of our community of practice
-                        by spending a few days in Lugano over the summer.
+                        by spending a few days in Lugano.
                       </Typography>
                       <Typography fontSize="1.1rem" paragraph gutterBottom>
                         Learn new teaching approaches,
@@ -246,7 +302,7 @@ export default function Teaching() {
                       </Typography>
                     </CardContent>
                   </Grid>
-                  <Grid xs={12} md={5}>
+                  <Grid xs={12} md={5} sx={{ background: '#81B4E9' }}>
                     <Box
                       padding={2}
                       position="relative"
@@ -256,7 +312,7 @@ export default function Teaching() {
                       display="flex"
                     >
                       <Image
-                        src="/AlpeFoppa.jpg"
+                        src="/PyTamaroAcademy-Banner.jpg"
                         alt="Alpe Foppa panorama"
                         fill
                         style={{

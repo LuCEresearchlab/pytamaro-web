@@ -1,11 +1,11 @@
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
-import LandscapeIcon from '@mui/icons-material/Landscape';
-import LanguageIcon from '@mui/icons-material/Language';
-import SchoolIcon from '@mui/icons-material/School';
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import {
   Box,
+  Button,
   Card,
+  CardActionArea,
+  CardActions,
   CardContent,
   CardHeader,
   CardMedia,
@@ -19,13 +19,20 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
+import Carousel from 'react-material-ui-carousel';
 import anime from 'animejs';
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
 import { useEffect } from 'react';
-import Carousel from 'react-material-ui-carousel';
 import NavigationBar from '../../components/NavigationBar';
+import PyTamaroLogo from '../../public/PyTamaroLogo.png';
+import HeroImage from '../../public/events/HeroUniversity.jpg';
+import Summer2023CardImage from '../../public/events/2023-SA-CardImage.jpg';
+import Summer2024CardImage from '../../public/events/2024-SA-CardImage.jpg';
+import ZCU2024CardImage from '../../public/events/2024-ZCU-CardImage.jpg';
+import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
+import Theory from '../../public/artturi-jalli-gYrYa37fAKI-unsplash.jpg';
 import PanoramaAlpeFoppa from '../../public/PanoramaAlpeFoppa.jpg';
 import PanoramaBottaChurch from '../../public/PanoramaBottaChurch.jpg';
 import PanoramaCampusEst from '../../public/PanoramaCampusEst.jpg';
@@ -38,13 +45,9 @@ import PanoramaSanSalvatore from '../../public/PanoramaSanSalvatore.jpg';
 import PanoramaTamaroLemaDry from '../../public/PanoramaTamaroLemaDry.jpg';
 import PanoramaTamaroLemaLugano from '../../public/PanoramaTamaroLemaLugano.jpg';
 import PanoramaUSI from '../../public/PanoramaUSI.jpg';
-import PyTamaroLogo from '../../public/PyTamaroLogo.png';
-import HeroImage from '../../public/SA-2024.jpg';
-import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
-import Theory from '../../public/artturi-jalli-gYrYa37fAKI-unsplash.jpg';
 import { translationProps } from '../../src/serverSideTranslationProps';
 
-export default function SummerAcademy() {
+export default function Academy() {
   useEffect(() => {
     const tl = anime.timeline({
       easing: 'easeOutQuad',
@@ -95,11 +98,11 @@ export default function SummerAcademy() {
   return (
     <div>
       <Head>
-        <title>PyTamaro Summer Academy 2024</title>
+        <title>PyTamaro Academy</title>
       </Head>
       <Box>
         <NavigationBar>
-          <Typography variant="h6">PyTamaro Summer Academy 2024</Typography>
+          <Typography variant="h6">PyTamaro Academy</Typography>
         </NavigationBar>
         <div
           style={{
@@ -108,10 +111,11 @@ export default function SummerAcademy() {
           }}
         >
           <Image
+            key={10}
             src={HeroImage}
-            alt="Photo of Alpe Foppa"
-            width="2048"
-            height="576"
+            alt="Photo of USI"
+            width="1280"
+            height="285"
             sizes="100vw"
             style={{
               width: '100%',
@@ -119,6 +123,106 @@ export default function SummerAcademy() {
             }}
           />
         </div>
+        <Container maxWidth="lg">
+          <Typography variant="h3" align="center" marginTop={6} marginBottom={3}>PyTamaro Academy @ USI in Lugano</Typography>
+          <Typography align="center" marginY={3}>
+            Workshops to support teachers who consider using PyTamaro in their classroom.
+          </Typography>
+          <Typography variant="h4" align="center" marginTop={6} marginBottom={3}>Upcoming Editions</Typography>
+          <Typography align="center" marginY={3}>
+            Are you interested in participating in one of our workshops
+            to learn how to teach programming in an engaging but deep way?
+            Would you like to bring along a group of fellow teachers?
+            For a day? Or two? Or an entire week?
+            {' '}
+            <a href="mailto:Matthias.Hauswirth@usi.ch">Contact us</a>
+            {' '}
+            to see whether we can organize a PyTamaro Academy workshop for you!
+          </Typography>
+          <Typography variant="h4" align="center" marginTop={6} marginBottom={3}>Prior Editions</Typography>
+          <Grid container spacing={5} alignItems="flex-end">
+            {
+              [
+                {
+                  past: true,
+                  month: 'October',
+                  year: 2024,
+                  slug: 'zcu2024',
+                  title: 'PyTamaro Academy for ZCU',
+                  image: ZCU2024CardImage,
+                  description: 'A one-day workshop for 16 Czech pre-service and in-service teachers and teacher trainers.',
+                },
+                {
+                  past: true,
+                  month: 'July',
+                  year: 2024,
+                  slug: 'sa2024',
+                  title: 'PyTamaro Summer Academy',
+                  image: Summer2024CardImage,
+                  description: 'A week-long summer course for 6 Swiss high school and middle school teachers.',
+                },
+                {
+                  past: true,
+                  month: 'August',
+                  year: 2023,
+                  slug: 'sa2023',
+                  title: 'PyTamaro Summer Academy',
+                  image: Summer2023CardImage,
+                  description: 'A week-long summer course for 16 Swiss high & middle school teachers and students.',
+                },
+              ].map((instance) => (
+                <Grid
+                  key={instance.slug}
+                  item
+                  xs={12}
+                  md={4}
+                >
+                  <Card>
+                    <CardActionArea LinkComponent={NextLink} href={`academy/${instance.slug}`}>
+
+                      <CardMedia>
+                        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                          <Image
+                            src={instance.image}
+                            alt="Photo by Artturi Jalli on Unsplash"
+                            sizes="100vw"
+                            style={{
+                              width: '100%',
+                              height: 'auto',
+                            }}
+                          />
+                        </div>
+                      </CardMedia>
+                      <CardHeader
+                        title={instance.title}
+                        subheader={`${instance.month} ${instance.year}`}
+                      />
+                      <CardContent>
+                        <Typography
+                          component="p"
+                          variant="body2"
+                        >
+                          {instance.description}
+                        </Typography>
+                      </CardContent>
+                      <CardActions>
+                        <Button size="small">Learn More</Button>
+                      </CardActions>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+              ))
+            }
+          </Grid>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              margin: '2rem 0',
+            }}
+          />
+        </Container>
+
         <Box
           sx={{
             minHeight: '8vw',
@@ -163,51 +267,6 @@ export default function SummerAcademy() {
             }}
           />
         </Box>
-        <Container maxWidth="lg">
-          <Card>
-            <CardMedia>
-              <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                <Image
-                  key={10}
-                  src={PanoramaUSI}
-                  alt="Photo of USI"
-                  width="1280"
-                  height="285"
-                  sizes="100vw"
-                  style={{
-                    width: '100%',
-                    height: 'auto',
-                  }}
-                />
-              </div>
-            </CardMedia>
-            <Container maxWidth="lg">
-              <Typography variant="h4" align="center" marginY={3}>Five-Day Summer Academy at the Software Institute at USI in Lugano</Typography>
-            </Container>
-            <CardHeader
-              title="Monday, July 22 to Friday, July 26"
-              subheader="Daily Schedule: 9:00 to 17:00"
-              titleTypographyProps={{ align: 'center' }}
-              subheaderTypographyProps={{
-                align: 'center',
-              }}
-            />
-            <CardContent>
-              <Typography variant="h5" align="center" marginY={3} sx={{ color: '#d2071b', fontWeight: 'bold' }}>
-                <a href="https://usi.qualtrics.com/jfe/form/SV_1YORVllskWREhlY">Register Here!</a>
-              </Typography>
-              <Typography variant="h5" align="center" marginY={3} sx={{ color: '#d2071b' }}>
-                Spaces are limited to around 20 participants.
-              </Typography>
-              <Typography align="center" marginY={3}>
-                If you are curious, you may want to check out what we did in
-                {' '}
-                <Link component={NextLink} href="2023">PyTamaro Summer Academy 2023</Link>
-                !
-              </Typography>
-            </CardContent>
-          </Card>
-        </Container>
         <Container maxWidth="lg" sx={{ marginTop: '25px' }}>
           <List>
             <ListItem>
@@ -246,139 +305,8 @@ export default function SummerAcademy() {
           </List>
         </Container>
 
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            margin: '1rem 0',
-          }}
-        />
-
         <Container maxWidth="lg" component="main">
-          <Grid container spacing={5} alignItems="flex-end">
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
-            >
-              <Card>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <LanguageIcon color="primary" sx={{ fontSize: 80 }} />
-                </Box>
-                <CardHeader
-                  title="Multilingual"
-                  subheader="Deutsch ∙ Italiano ∙ Français ∙ English"
-                  titleTypographyProps={{ align: 'center' }}
-                  subheaderTypographyProps={{
-                    align: 'center',
-                  }}
-                />
-                <CardContent>
-                  <Typography
-                    component="p"
-                    variant="subtitle1"
-                  >
-                    The PyTamaro library supports German, Italian, French, and English.
-                    In this summer academy we will speak them all.
-                    Join us, and learn to program in your native language!
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
-            >
-              <Card>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <SchoolIcon color="primary" sx={{ fontSize: 80 }} />
-                </Box>
-                <CardHeader
-                  title="Teachers &amp; Students"
-                  subheader="Learn Together"
-                  titleTypographyProps={{ align: 'center' }}
-                  subheaderTypographyProps={{
-                    align: 'center',
-                  }}
-                />
-                <CardContent>
-                  <Typography
-                    component="p"
-                    variant="subtitle1"
-                  >
-                    Programming is a collaborative activity.
-                    To participate in this summer academy,
-                    you can participate as a team:
-                    each teacher brings along 1-3 students.
-                    Or we team you up.
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
-            >
-              <Card>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <LandscapeIcon color="primary" sx={{ fontSize: 80 }} />
-                </Box>
-                <CardHeader
-                  title="Learning and Fun"
-                  subheader="Minds that Match our Mountains"
-                  titleTypographyProps={{ align: 'center' }}
-                  subheaderTypographyProps={{
-                    align: 'center',
-                  }}
-                />
-                <CardContent>
-                  <Typography
-                    component="p"
-                    variant="subtitle1"
-                  >
-                    The summer academy will take place at USI in Lugano,
-                    but we will explore the beautiful surroundings.
-                    Yes, we will discover PyTamaro. But also Monte Tamaro!
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-          </Grid>
-        </Container>
-
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            margin: '1rem 0',
-          }}
-        />
-
-        <Container maxWidth="lg" component="main">
-          <Typography variant="h4" align="center" marginY={3}>Programming: Deep like Mathematics, Creative like Art</Typography>
+          <Typography variant="h4" align="center" marginTop={6} marginBottom={3}>Programming: Deep like Mathematics, Creative like Art</Typography>
         </Container>
 
         <Container maxWidth="lg" component="main">
@@ -466,12 +394,11 @@ export default function SummerAcademy() {
         </Container>
 
         <Container maxWidth="lg" component="main">
-          <Typography variant="h4" align="center" marginY={3}>Location</Typography>
+          <Typography variant="h4" align="center" marginTop={9} marginBottom={3}>Location</Typography>
         </Container>
-
         <Container maxWidth="lg">
           <p>
-            The PyTamaro Summer Academy will take place at USI,
+            The PyTamaro Academy workshops take place at USI,
             the Università della Svizzera italiana,
             in beautiful Lugano.
             The USI Campus is within walking distance from the lake and the city center.
@@ -647,9 +574,27 @@ export default function SummerAcademy() {
 
         <Container maxWidth="lg">
           <Typography align="center" marginY={3}>
+            The PyTamaro Academy is organized by the Lugano Computing Education Research Lab (
+            <a href="https://luce.si.usi.ch/">LuCE</a>
+            ) at the Software Institute
+            of the Faculty of Informatics
+            at USI.
+          </Typography>
+          <Typography align="center" marginY={3}>
             For more information contact&nbsp;
             <a href="mailto:Matthias.Hauswirth@usi.ch">Matthias.Hauswirth@usi.ch</a>
             .
+          </Typography>
+        </Container>
+        <Container maxWidth="lg" component="main">
+          <Typography variant="h4" align="center" marginTop={9} marginBottom={3}>Can&apos;t make it to Lugano?</Typography>
+          <Typography align="center" marginY={3}>
+            Check out the
+            {' '}
+            <Link component={NextLink} href="/teaching-resources">teaching resources</Link>
+            {' '}
+            available on this site
+            (and sign up for our newsletter).
           </Typography>
         </Container>
 
