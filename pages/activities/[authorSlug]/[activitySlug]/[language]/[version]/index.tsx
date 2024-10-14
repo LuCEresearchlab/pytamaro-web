@@ -25,7 +25,6 @@ import { findIncludingCurricula } from '../../../../../../src/curricula';
 import { findVersions, readActivity } from '../../../../../../src/fs-content/activities';
 import { getAuthorProfile, listAuthorsWithContent, listCurriculaAllAuthors } from '../../../../../../src/fs-content/authors';
 import { CodeCellState } from '../../../../../../src/localStorage/schema';
-import useLocalTranslation from '../../../../../../src/localStorage/useLocalTranslation';
 import getNotebookContent from '../../../../../../src/notebook';
 import {
   Activity,
@@ -64,8 +63,6 @@ export default function NotebookPage({
   const curriculum = curricula.find((c) => curriculumToId(c) === curriculumId);
   const title = getVariantTitle(activity, activityVariant);
   const pageTitle = `${title} - PyTamaro`;
-
-  const { t } = useLocalTranslation(['common']);
 
   const { resetCounter, newReset } = useReset();
 
@@ -150,7 +147,7 @@ export default function NotebookPage({
             {curriculum && (
               <CurriculumUnitSidebar curriculum={curriculum} activityVariant={activityVariant} />
             )}
-            <TableOfContents initialized={isMounted} elementRef={cellsRef} selector="h2[id], h3[id]" title={t('contents')} />
+            <TableOfContents initialized={isMounted} elementRef={cellsRef} selector="h2[id], h3[id]" titleKey="contents" />
             {curriculum && (
               <ActivityCompetenciesSidebar
                 curriculum={curriculum}

@@ -36,7 +36,7 @@ export default function DocumentationModule({ module }: { module: string }) {
           </Grid>
         </CentralContent>
         <Sidebar side="right">
-          <TableOfContents key={JSON.stringify(modules)} initialized={isMounted} elementRef={elementsRef} selector="div[id]" title={t('contents')} />
+          <TableOfContents key={JSON.stringify(modules)} initialized={isMounted} elementRef={elementsRef} selector="div[id]" titleKey="contents" />
         </Sidebar>
       </Grid>
     </div>

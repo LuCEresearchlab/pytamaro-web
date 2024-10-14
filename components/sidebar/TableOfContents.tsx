@@ -7,6 +7,7 @@ import throttle from 'lodash/throttle';
 import Link from 'next/link';
 import * as React from 'react';
 import { RefObject } from 'react';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import th from '../../src/theme';
 import SidebarItem from './SidebarItem';
 
@@ -81,9 +82,10 @@ interface TOCItem {
 }
 
 export default function TableOfContents({
-  elementRef, selector, title, initialized,
+  elementRef, selector, titleKey, initialized,
 } :
-{ elementRef: RefObject<HTMLElement>, selector: string, title: string, initialized: boolean }) {
+{ elementRef: RefObject<HTMLElement>, selector: string, titleKey: string, initialized: boolean }) {
+  const { t } = useLocalTranslation();
   const [items, setItems] = React.useState<TOCItem[]>([]);
   React.useEffect(() => {
     if (elementRef.current && initialized) {
@@ -169,7 +171,7 @@ export default function TableOfContents({
   );
 
   return items.length > 0 ? (
-    <SidebarItem title={title}>
+    <SidebarItem title={t(titleKey)}>
       <NavList>
         {items.map((item) => (
           <li key={item.text}>

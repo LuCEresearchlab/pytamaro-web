@@ -25,7 +25,6 @@ import ToolboxListSidebar from '../../../../components/sidebar/ToolboxListSideba
 import { getAuthorProfile, listAuthorsWithContent } from '../../../../src/fs-content/authors';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
 import useLocalProfile from '../../../../src/localStorage/useLocalProfile';
-import useLocalTranslation from '../../../../src/localStorage/useLocalTranslation';
 import { AuthorProfile } from '../../../../src/schemas/authorSchema';
 import { Curriculum } from '../../../../src/schemas/curriculumSchema';
 import { translationProps } from '../../../../src/serverSideTranslationProps';
@@ -37,7 +36,6 @@ export default function CurriculumPage({ curriculum, author }:
     metadata, setMetadata, findCurriculum, removeCurriculum,
   } = useLocalProfile();
   const router = useRouter();
-  const { t } = useLocalTranslation(['curriculum']);
   const curriculumFlowRef = useRef<HTMLDivElement>(null);
   const [nodesInitialized, setNodesInitialized] = useState(false);
 
@@ -108,7 +106,7 @@ export default function CurriculumPage({ curriculum, author }:
           </Stack>
         </CentralContent>
         <Sidebar side="right">
-          <TableOfContents elementRef={curriculumFlowRef} initialized={nodesInitialized} selector=".curriculum-unit[id]" title={t('inThisCurriculum')} />
+          <TableOfContents elementRef={curriculumFlowRef} initialized={nodesInitialized} selector=".curriculum-unit[id]" titleKey="curriculum:inThisCurriculum" />
         </Sidebar>
       </Grid>
     </>

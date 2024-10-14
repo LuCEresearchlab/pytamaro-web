@@ -96,7 +96,7 @@ export default function Documentation({ modules } : { modules: string[] }) {
             : <DocElementsCardsStack modules={modulesDataToShow} elementsRef={elementsRef} /> }
         </CentralContent>
         <Sidebar side="right">
-          <TableOfContents key={JSON.stringify(modulesDataToShow)} initialized={isMounted} elementRef={elementsRef} selector="div[id]" title={t('contents')} />
+          <TableOfContents key={JSON.stringify(modulesDataToShow)} initialized={isMounted} elementRef={elementsRef} selector="div[id]" titleKey="contents" />
         </Sidebar>
       </Grid>
     </div>
