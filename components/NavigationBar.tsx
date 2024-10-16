@@ -8,7 +8,7 @@ import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import {
   aboutPathname,
   activitiesByAuthorPathname, curriculaPathname, documentationPathname, myProgressPathname,
-  playgroundPathname, pytamaroDocsUrl,
+  playgroundPathname,
 } from '../src/urlUtils';
 import FeedbackDialog from './FeedbackDialog';
 import NotificationsButton from './NotificationsButton';
@@ -41,10 +41,6 @@ const navItems = [
 
 const smallScreensNavItems = [
   ...navItems,
-  {
-    name: 'PyTamaro ReadTheDocs',
-    url: pytamaroDocsUrl(),
-  },
   {
     name: 'documentation',
     url: documentationPathname(),

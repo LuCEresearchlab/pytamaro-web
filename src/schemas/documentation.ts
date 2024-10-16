@@ -1,7 +1,10 @@
 export type JudiciousModule = {
   module: string;
-  elements: (JudiciousFunction | JudiciousType | JudiciousConstant)[];
+  summary: string;
+  elements: JudiciousElement[];
 };
+
+export type JudiciousElement = JudiciousFunction | JudiciousType | JudiciousConstant;
 
 export type JudiciousFunction = {
   kind: 'function';

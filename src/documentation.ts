@@ -15,8 +15,8 @@ export default function useJudiciousDocData(modules: string[]) {
     .filter((data) => data !== undefined);
 }
 
-export const allKinds = [
-  { id: 'function', label: 'Function', priority: 0 },
-  { id: 'constant', label: 'Constant', priority: 1 },
-  { id: 'type', label: 'Type', priority: 2 },
-];
+export const allKinds = {
+  function: { id: 'function', label: 'Function', priority: 0 },
+  constant: { id: 'constant', label: 'Constant', priority: 1 },
+  type: { id: 'type', label: 'Type', priority: 2 },
+};

@@ -1,49 +1,35 @@
 import {
-  TextField,
+  Container,
+  Divider,
+  Link,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import { debounce } from 'lodash';
+import { sortBy } from 'lodash';
 import Head from 'next/head';
-import { useRef, useState } from 'react';
-import DocElementsCardsStack from '../../components/documentation/DocElementsCardsStack';
+import { iconPath } from '../../components/documentation/utils';
 import NavigationBar from '../../components/NavigationBar';
 import PageTitle from '../../components/PageTitle';
-import SelectAll from '../../components/SelectAll';
 import CentralContent from '../../components/sidebar/CentralContent';
-import LibrariesListSidebar from '../../components/sidebar/LibrariesListSidebar';
 import Sidebar from '../../components/sidebar/Sidebar';
-import TableOfContents from '../../components/sidebar/TableOfContents';
-import useJudiciousDocData, { allKinds } from '../../src/documentation';
-import allDocumentationModules from '../../src/fs-content/documentation';
+import allDocumentationModules, { readDocumentation } from '../../src/fs-content/documentation';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
+import { JudiciousModule } from '../../src/schemas/documentation';
 import { translationProps } from '../../src/serverSideTranslationProps';
-import { documentationModulePathname } from '../../src/urlUtils';
-import useIsMounted from '../../src/useIsMounted';
+import { documentationModulePathname, pytamaroDocsUrl } from '../../src/urlUtils';
 
-export default function Documentation({ modules } : { modules: string[] }) {
+export default function Documentation({ modulesData } : { modulesData: JudiciousModule[] }) {
   const { t } = useLocalTranslation();
-  const isMounted = useIsMounted();
-  const elementsRef = useRef<HTMLDivElement>(null);
 
-  const allModules = modules.map((name) => ({
-    id: name,
-    label: name,
-    url: documentationModulePathname(name),
-  }));
-  const [selectedModulesIds, setSelectedModulesIds] = useState<string[]>([]);
-  const [selectedKindsIds, setSelectedKindsIds] = useState(allKinds.map((kind) => kind.id));
-  const localizedKinds = allKinds.map((kind) => ({ ...kind, label: t(kind.label) }));
-  const [searchText, setSearchText] = useState('');
-
-  const modulesData = useJudiciousDocData(selectedModulesIds);
-  const modulesDataToShow = modulesData.map((data) => ({
-    module: data.module,
-    elements: data.elements.filter((element) => selectedKindsIds.includes(element.kind)).filter(
-      (element) => element.name.includes(searchText)
-                || element.description.p.some((text) => text.includes(searchText)),
-    ),
-  }));
+  const sortedModules = sortBy(modulesData, (module) => [
+    module.module.startsWith('pytamaro') ? 1 : 0,
+    module.module,
+  ]);
 
   return (
     <div>
@@ -54,50 +40,58 @@ export default function Documentation({ modules } : { modules: string[] }) {
       </Head>
       <NavigationBar />
       <Grid container>
-        <Sidebar side="left">
-          <LibrariesListSidebar modules={allModules} />
-        </Sidebar>
+        <Sidebar side="left" />
         <CentralContent>
           <PageTitle>{t('documentation')}</PageTitle>
-          <Grid container spacing={2} mb={4}>
-            <Grid xs={12} md={6}>
-              <SelectAll
-                title={t('library')}
-                placeholder={t('selectLibrary')}
-                options={allModules}
-                maxTagsShown={3}
-                initialSelection={[]}
-                onSelectionChange={setSelectedModulesIds}
-              />
-            </Grid>
-            <Grid xs={12} md={6}>
-              <SelectAll
-                title={t('kind')}
-                placeholder={t('selectKind')}
-                key={JSON.stringify(localizedKinds)}
-                options={localizedKinds}
-                maxTagsShown={3}
-                onSelectionChange={setSelectedKindsIds}
-              />
-            </Grid>
-            <Grid xs={12}>
-              <TextField
-                InputLabelProps={{ shrink: true }}
-                fullWidth
-                label={t('textualSearch')}
-                placeholder={t('nameOrDescription')}
-                variant="outlined"
-                onChange={debounce((e) => setSearchText(e.target.value), 100)}
-              />
-            </Grid>
-          </Grid>
-          {selectedModulesIds.length === 0
-            ? <Typography variant="body1" textAlign="center" fontWeight="bold">{t('selectToSeeDoc')}</Typography>
-            : <DocElementsCardsStack modules={modulesDataToShow} elementsRef={elementsRef} /> }
+          <Container maxWidth="md">
+            <Typography my={4} textAlign="center">
+              {t('selectToSeeDoc')}
+            </Typography>
+            <List sx={{ bgcolor: 'background.paper' }}>
+              {sortedModules.map((data, index) => (
+                <div key={data.module}>
+                  <ListItem>
+                    <ListItemButton
+                      href={documentationModulePathname(data.module)}
+                    >
+                      <ListItemAvatar>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={iconPath(data.module)}
+                          alt="Library logo"
+                          height={32}
+                        />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={data.module}
+                        secondary={data.summary}
+                        sx={{
+                          '& .MuiListItemText-primary': {
+                            fontSize: '1.2rem',
+                          },
+                          '& .MuiListItemText-secondary': {
+                            fontSize: '1rem',
+                          },
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                  {index === sortedModules.length - 1 ? null : <Divider variant="middle" component="li" />}
+                </div>
+              ))}
+            </List>
+            <Typography mt={10} textAlign="center">
+              See also the official documentation of
+              {' '}
+              <Link href="https://docs.python.org/3/library/index.html">The Python Standard Library</Link>
+              {' '}
+              and of
+              {' '}
+              <Link href={pytamaroDocsUrl()}>PyTamaro on ReadTheDocs</Link>
+            </Typography>
+          </Container>
         </CentralContent>
-        <Sidebar side="right">
-          <TableOfContents key={JSON.stringify(modulesDataToShow)} initialized={isMounted} elementRef={elementsRef} selector="div[id]" titleKey="contents" />
-        </Sidebar>
+        <Sidebar side="right" />
       </Grid>
     </div>
   );
@@ -107,7 +101,7 @@ export async function getStaticProps() {
   return {
     props: {
       ...await translationProps(),
-      modules: await allDocumentationModules(),
+      modulesData: await Promise.all((await allDocumentationModules()).map(readDocumentation)),
     },
   };
 }

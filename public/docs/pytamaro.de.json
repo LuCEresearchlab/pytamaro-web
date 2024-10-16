@@ -1,5 +1,6 @@
 {
     "module": "pytamaro.de",
+    "summary": "PyTamaro graphics library (German API)",
     "elements": [
         {
             "kind": "function",

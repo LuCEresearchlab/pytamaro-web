@@ -7,7 +7,7 @@ import { useState } from 'react';
 import logAnalyticsEvent, { AnalyticsEventName } from '../../src/analyticsEvent';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';
 import { ActivityVariant } from '../../src/schemas/activitySchema';
-import { JudiciousConstant, JudiciousFunction, JudiciousType } from '../../src/schemas/documentation';
+import { JudiciousElement } from '../../src/schemas/documentation';
 import { EventName, storeDbEvent } from '../../src/storeDbEvent';
 import theme from '../../src/theme';
 import { Popover, PopoverContent, PopoverTrigger } from '../Popover';
@@ -17,7 +17,7 @@ import { iconPath } from './utils';
 export default function DocElement({
   module, element, activityVariant, smallerFont,
 } :
-{ module: string, element: JudiciousFunction | JudiciousConstant | JudiciousType,
+{ module: string, element: JudiciousElement,
   activityVariant: ActivityVariant, smallerFont: boolean }) {
   const [hover, setHover] = useState(false);
   const { metadata } = useLocalProfile();

@@ -1,0 +1,75 @@
+import { Container, Typography } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
+import Head from 'next/head';
+import DocElementCard from '../../../../components/documentation/DocElementCard';
+import NavigationBar from '../../../../components/NavigationBar';
+import PageTitle from '../../../../components/PageTitle';
+import CentralContent from '../../../../components/sidebar/CentralContent';
+import Sidebar from '../../../../components/sidebar/Sidebar';
+import { allKinds } from '../../../../src/documentation';
+import allDocumentationModules, { readDocumentation } from '../../../../src/fs-content/documentation';
+import useLocalTranslation from '../../../../src/localStorage/useLocalTranslation';
+import { JudiciousElement } from '../../../../src/schemas/documentation';
+import { translationProps } from '../../../../src/serverSideTranslationProps';
+
+export default function SingleElementDocPage({ module, element }:
+{ module: string, element: JudiciousElement }) {
+  const { t } = useLocalTranslation();
+  const title = `${t('documentation')} ${module}.${element.name}`;
+  return (
+    <div>
+      <Head>
+        <title>
+          {title}
+        </title>
+      </Head>
+      <NavigationBar />
+      <Grid container>
+        <Sidebar side="left" />
+        <CentralContent>
+          <PageTitle>
+            {t('documentation')}
+          </PageTitle>
+          <Container maxWidth="md">
+            <Typography my={4} gutterBottom textAlign="center" fontSize="1.2rem">
+              {t('library')}
+              {' '}
+              <Typography component="span" fontSize="1.2rem" fontWeight="bold">
+                {module}
+              </Typography>
+              {' - '}
+              {t(allKinds[element.kind].label)}
+              {' '}
+              <Typography component="span" fontSize="1.2rem" fontWeight="bold">
+                {element.name}
+              </Typography>
+            </Typography>
+            <DocElementCard module={module} element={element} elevation={0} />
+          </Container>
+        </CentralContent>
+        <Sidebar side="right" />
+      </Grid>
+    </div>
+  );
+}
+
+export async function getStaticProps({ params } : { params: { module: string, name: string } }) {
+  return {
+    props: {
+      ...await translationProps(),
+      module: params.module,
+      element: (await readDocumentation(params.module)).elements
+        .find((element) => element.name === params.name),
+    },
+  };
+}
+
+export async function getStaticPaths() {
+  const modulesData = await Promise.all((await allDocumentationModules()).map(readDocumentation));
+  return {
+    paths: modulesData.flatMap((moduleData) => moduleData.elements.map(
+      (element) => ({ params: { module: moduleData.module, name: element.name, element } }),
+    )),
+    fallback: false,
+  };
+}

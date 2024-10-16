@@ -1,24 +1,39 @@
+import { Category, Functions, Numbers } from '@mui/icons-material';
+import {
+  Avatar, Container, Divider, List, ListItem, ListItemAvatar, ListItemButton, ListItemText,
+  Typography,
+} from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
+import { sortBy } from 'lodash';
 import Head from 'next/head';
-import { useRef } from 'react';
-import DocElementsCardsStack from '../../../components/documentation/DocElementsCardsStack';
 import NavigationBar from '../../../components/NavigationBar';
 import PageTitle from '../../../components/PageTitle';
 import CentralContent from '../../../components/sidebar/CentralContent';
 import Sidebar from '../../../components/sidebar/Sidebar';
-import TableOfContents from '../../../components/sidebar/TableOfContents';
-import useJudiciousDocData from '../../../src/documentation';
-import allDocumentationModules from '../../../src/fs-content/documentation';
+import { allKinds } from '../../../src/documentation';
+import allDocumentationModules, { readDocumentation } from '../../../src/fs-content/documentation';
 import useLocalTranslation from '../../../src/localStorage/useLocalTranslation';
+import { JudiciousElement, JudiciousModule } from '../../../src/schemas/documentation';
 import { translationProps } from '../../../src/serverSideTranslationProps';
-import useIsMounted from '../../../src/useIsMounted';
+import { documentationElementPathname } from '../../../src/urlUtils';
 
-export default function DocumentationModule({ module }: { module: string }) {
-  const modules = useJudiciousDocData([module]);
-  const isMounted = useIsMounted();
-  const elementsRef = useRef<HTMLDivElement>(null);
+export function sortElements(elements: JudiciousElement[]) {
+  return sortBy(
+    elements,
+    (element) => allKinds[element.kind].priority,
+    (element) => element.name,
+  );
+}
+
+export default function DocumentationModule({ moduleData }: { moduleData: JudiciousModule }) {
   const { t } = useLocalTranslation();
-  const title = `${t('documentation')} ${module}`;
+  const title = `${t('documentation')} ${moduleData.module}`;
+  const icons = {
+    function: <Functions />,
+    constant: <Numbers />,
+    type: <Category />,
+  };
+  const elements = sortElements(moduleData.elements);
   return (
     <div>
       <Head>
@@ -29,15 +44,55 @@ export default function DocumentationModule({ module }: { module: string }) {
         <Sidebar side="left" />
         <CentralContent>
           <PageTitle>
-            {title}
+            {t('documentation')}
           </PageTitle>
-          <Grid>
-            <DocElementsCardsStack modules={modules} elementsRef={elementsRef} />
-          </Grid>
+          <Container maxWidth="md">
+            <Typography mt={4} gutterBottom textAlign="center" fontSize="1.2rem">
+              {t('library')}
+              {' '}
+              <Typography component="span" fontSize="1.2rem" fontWeight="bold">
+                {moduleData.module}
+              </Typography>
+            </Typography>
+            <Typography mb={4} textAlign="center">
+              {moduleData.summary}
+            </Typography>
+            <List sx={{ bgcolor: 'background.paper' }}>
+              {elements.map((element, index) => (
+                <div key={element.name}>
+                  <ListItem>
+                    <ListItemButton
+                      href={documentationElementPathname(moduleData.module, element.name)}
+                    >
+                      <ListItemAvatar>
+                        <Avatar>
+                          {icons[element.kind]}
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={element.name}
+                        secondary={element.description.p[0]}
+                        sx={{
+                          '& .MuiListItemText-primary': {
+                            fontSize: '1.2rem',
+                          },
+                          '& .MuiListItemText-secondary': {
+                            fontSize: '1rem',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          },
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                  {index === elements.length - 1 ? null : <Divider variant="middle" component="li" />}
+                </div>
+              ))}
+            </List>
+          </Container>
         </CentralContent>
-        <Sidebar side="right">
-          <TableOfContents key={JSON.stringify(modules)} initialized={isMounted} elementRef={elementsRef} selector="div[id]" titleKey="contents" />
-        </Sidebar>
+        <Sidebar side="right" />
       </Grid>
     </div>
   );
@@ -47,7 +102,7 @@ export async function getStaticProps({ params } : { params: { module: string } }
   return {
     props: {
       ...await translationProps(),
-      module: params.module,
+      moduleData: await readDocumentation(params.module),
     },
   };
 }

@@ -1,5 +1,6 @@
 {
     "module": "builtins",
+    "summary": "Common functions available without imports",
     "elements": [
         {
             "kind": "function",

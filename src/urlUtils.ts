@@ -165,3 +165,7 @@ export function documentationPathname() {
 export function documentationModulePathname(module: string) {
   return `${documentationPathname()}/${module}`;
 }
+
+export function documentationElementPathname(module: string, element: string) {
+  return `${documentationModulePathname(module)}/${element}`;
+}
