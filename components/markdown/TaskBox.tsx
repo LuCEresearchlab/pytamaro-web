@@ -1,6 +1,7 @@
 import {
   Alert, Typography,
 } from '@mui/material';
+import { isValidElement } from 'react';
 import theme from '../../src/theme';
 
 const taskBoxClassName = 'task-box';
@@ -25,7 +26,7 @@ export default function TaskBox({
         },
       }}
     >
-      {typeof children === 'string' ? <p>{children}</p> : children}
+      {isValidElement(children) && children.type === 'p' ? children : <p>{children}</p>}
     </Alert>
   );
 }
