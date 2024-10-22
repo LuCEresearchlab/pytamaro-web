@@ -29,10 +29,11 @@ width?: string,
   const { metadata } = useLocalProfile();
   const { activity, variant } = activityWithVariant;
   const langInfo = languageInfoForVariant(activity, variant);
+  const status = activityVariantStatus(metadata.activities, variant);
   return (
     <Box sx={{ width }}>
       <ActivityStatusBadge
-        status={activityVariantStatus(metadata.activities, variant)}
+        status={status}
         small
         noInProgress={noInProgress}
       >
@@ -41,7 +42,7 @@ width?: string,
             width, height: '100%',
           }}
         >
-          <CardActionArea href={activityVariantPathname(variant)} sx={{ height: '100%' }}>
+          <CardActionArea disabled={status === 'initial'} href={activityVariantPathname(variant)} sx={{ height: '100%' }}>
             <>
               <ActivityCardMedia activity={activity} variant={variant} />
               <CardContent sx={{ height: '100%' }}>
