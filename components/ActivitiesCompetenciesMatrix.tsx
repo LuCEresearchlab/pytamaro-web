@@ -10,6 +10,7 @@ import { competencyColor } from '../src/curriculumCompetencies';
 import { activityVariantId, getVariantTitle } from '../src/schemas/activitySchema';
 import { Curriculum } from '../src/schemas/curriculumSchema';
 import theme from '../src/theme';
+import { activityVariantPathname } from '../src/urlUtils';
 import CompetencyAvatar from './CompetencyAvatar';
 
 export function competencyAnchor(competency: { id: string }) {
@@ -44,7 +45,7 @@ export default function ActivitiesCompetenciesMatrix({ curriculum }: { curriculu
             <CustomCell />
             {curriculum.competencies.map((competency) => (
               <HeaderCell key={competency.id}>
-                <Link underline="none" color={competencyColor(competency)} href={`#${competencyAnchor(competency)}`}>{competency.name}</Link>
+                <Link underline="hover" color={competencyColor(competency)} href={`#${competencyAnchor(competency)}`}>{competency.name}</Link>
               </HeaderCell>
             ))}
           </TableRow>
@@ -56,7 +57,9 @@ export default function ActivitiesCompetenciesMatrix({ curriculum }: { curriculu
               sx={{ '&:last-child td, &:last-child th': { borderBottom: 0 } }}
             >
               <CustomCell component="th" scope="row">
-                {getVariantTitle(activity.activity, activity.variant)}
+                <Link underline="hover" color="inherit" href={activityVariantPathname(activity.variant)}>
+                  {getVariantTitle(activity.activity, activity.variant)}
+                </Link>
               </CustomCell>
               {curriculum.competencies.map((competency) => (
                 <CustomCell key={competency.id} style={{ padding: theme.spacing(1) }}>
