@@ -61,7 +61,6 @@ export default function CompetencyCardContent({
                     width="30ch"
                     noVariantInfo
                     noInProgress
-                    clickingDisabled
                   />
                 ))}
               </Stack>

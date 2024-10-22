@@ -5,7 +5,7 @@ import {
 import VariantCard from './VariantCard';
 
 export default function VariantsGallery({
-  activitiesWithVariants, noVariantInfo = false, noInProgress = false, clickingDisabled = false,
+  activitiesWithVariants, noVariantInfo = false, noInProgress = false,
 } :
 { activitiesWithVariants : {
   activity: Activity,
@@ -13,7 +13,6 @@ export default function VariantsGallery({
 }[],
 noVariantInfo?: boolean,
 noInProgress?: boolean,
-clickingDisabled?: boolean,
 }) {
   return (
     <Grid container spacing={2} rowSpacing={4}>
@@ -28,7 +27,6 @@ clickingDisabled?: boolean,
             activityWithVariant={activityWithVariant}
             noVariantInfo={noVariantInfo}
             noInProgress={noInProgress}
-            clickingDisabled={clickingDisabled}
           />
         </Grid>
       ))}

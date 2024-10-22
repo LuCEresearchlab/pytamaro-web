@@ -4,7 +4,6 @@ import {
   CardContent,
   Typography,
 } from '@mui/material';
-import { useRouter } from 'next/router';
 import getLanguageDisplayName from '../src/internationalization';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import {
@@ -16,20 +15,8 @@ import { activityVariantPathname } from '../src/urlUtils';
 import ActivityCardMedia from './ActivityCardMedia';
 import ActivityStatusBadge, { activityVariantStatus } from './ActivityStatusBadge';
 
-function MaybeActionArea({ disabled, children, onClick }:
-{ disabled: boolean, children: JSX.Element, onClick: () => void }) {
-  if (disabled) {
-    return children;
-  }
-  return (
-    <CardActionArea onClick={onClick}>
-      {children}
-    </CardActionArea>
-  );
-}
-
 export default function VariantCard({
-  activityWithVariant, noVariantInfo = false, noInProgress = false, clickingDisabled = false, width = '100%',
+  activityWithVariant, noVariantInfo = false, noInProgress = false, width = '100%',
 } :
 { activityWithVariant : {
   activity: BasicActivity,
@@ -37,14 +24,9 @@ export default function VariantCard({
 },
 noVariantInfo?: boolean,
 noInProgress?: boolean,
-clickingDisabled?: boolean,
 width?: string,
 }) {
   const { metadata } = useLocalProfile();
-  const router = useRouter();
-  const handleClick = (variant: ActivityVariant) => {
-    router.push(activityVariantPathname(variant));
-  };
   const { activity, variant } = activityWithVariant;
   const langInfo = languageInfoForVariant(activity, variant);
   return (
@@ -59,10 +41,10 @@ width?: string,
             width, height: '100%',
           }}
         >
-          <MaybeActionArea disabled={clickingDisabled} onClick={() => handleClick(variant)}>
+          <CardActionArea href={activityVariantPathname(variant)} sx={{ height: '100%' }}>
             <>
               <ActivityCardMedia activity={activity} variant={variant} />
-              <CardContent>
+              <CardContent sx={{ height: '100%' }}>
                 <Typography gutterBottom variant="h6">
                   {langInfo.title}
                 </Typography>
@@ -73,7 +55,7 @@ width?: string,
                 )}
               </CardContent>
             </>
-          </MaybeActionArea>
+          </CardActionArea>
         </Card>
       </ActivityStatusBadge>
     </Box>
