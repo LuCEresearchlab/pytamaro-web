@@ -28,7 +28,7 @@ export default function SidebarPlayground() {
         </Typography>
       </PopoverTrigger>
       <PopoverContent>
-        <Paper sx={{ minWidth: '80ch' }} elevation={0}>
+        <Paper sx={{ minWidth: '80ch', maxWidth: '100ch' }} elevation={0}>
           <RapidPlayground
             initialCodeCells={initialCodeCells}
             codeCells={codeCells}
