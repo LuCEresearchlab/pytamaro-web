@@ -1,8 +1,9 @@
 {
     "module": "pytamaro.fr",
-    "summary": "PyTamaro graphics library (French API)",
+    "summary": "PyTamaro graphics (French API)",
     "elements": [
         {
+            "section": "Couleurs",
             "kind": "function",
             "name": "couleur_hsl",
             "description": {
@@ -43,6 +44,7 @@
             }
         },
         {
+            "section": "Couleurs",
             "kind": "function",
             "name": "couleur_hsv",
             "description": {
@@ -83,6 +85,7 @@
             }
         },
         {
+            "section": "Couleurs",
             "kind": "function",
             "name": "couleur_rgb",
             "description": {
@@ -123,6 +126,7 @@
             }
         },
         {
+            "section": "Couleurs",
             "kind": "type",
             "name": "Couleur",
             "type": null,
@@ -133,6 +137,7 @@
             }
         },
         {
+            "section": "Couleurs",
             "kind": "constant",
             "name": "blanc",
             "type": "Color",
@@ -143,6 +148,7 @@
             }
         },
         {
+            "section": "Couleurs",
             "kind": "constant",
             "name": "bleu",
             "type": "Color",
@@ -153,6 +159,7 @@
             }
         },
         {
+            "section": "Couleurs",
             "kind": "constant",
             "name": "cyan",
             "type": "Color",
@@ -163,6 +170,7 @@
             }
         },
         {
+            "section": "Couleurs",
             "kind": "constant",
             "name": "jaune",
             "type": "Color",
@@ -173,6 +181,7 @@
             }
         },
         {
+            "section": "Couleurs",
             "kind": "constant",
             "name": "magenta",
             "type": "Color",
@@ -183,6 +192,7 @@
             }
         },
         {
+            "section": "Couleurs",
             "kind": "constant",
             "name": "noir",
             "type": "Color",
@@ -193,6 +203,7 @@
             }
         },
         {
+            "section": "Couleurs",
             "kind": "constant",
             "name": "rouge",
             "type": "Color",
@@ -203,6 +214,7 @@
             }
         },
         {
+            "section": "Couleurs",
             "kind": "constant",
             "name": "transparent",
             "type": "Color",
@@ -213,6 +225,7 @@
             }
         },
         {
+            "section": "Couleurs",
             "kind": "constant",
             "name": "vert",
             "type": "Color",
@@ -223,17 +236,7 @@
             }
         },
         {
-            "kind": "type",
-            "name": "Graphique",
-            "type": null,
-            "description": {
-                "p": [
-                    "Un graphique (image) avec un point d\u2019ancrage.",
-                    "Le point d\u2019ancrage est utilis\u00e9 pour les op\u00e9rations suivantes:"
-                ]
-            }
-        },
-        {
+            "section": "Sortie",
             "kind": "function",
             "name": "montre_animation",
             "description": {
@@ -264,6 +267,7 @@
             "sideEffects": true
         },
         {
+            "section": "Sortie",
             "kind": "function",
             "name": "montre_graphique",
             "description": {
@@ -288,6 +292,7 @@
             "sideEffects": true
         },
         {
+            "section": "Sortie",
             "kind": "function",
             "name": "sauvegarde_animation",
             "description": {
@@ -323,6 +328,7 @@
             "sideEffects": true
         },
         {
+            "section": "Sortie",
             "kind": "function",
             "name": "sauvegarde_graphique",
             "description": {
@@ -353,6 +359,7 @@
             "sideEffects": true
         },
         {
+            "section": "Graphiques primitifs",
             "kind": "function",
             "name": "ellipse",
             "description": {
@@ -384,6 +391,7 @@
             }
         },
         {
+            "section": "Graphiques primitifs",
             "kind": "function",
             "name": "graphique_vide",
             "description": {
@@ -398,6 +406,7 @@
             }
         },
         {
+            "section": "Graphiques primitifs",
             "kind": "function",
             "name": "rectangle",
             "description": {
@@ -428,6 +437,7 @@
             }
         },
         {
+            "section": "Graphiques primitifs",
             "kind": "function",
             "name": "secteur_circulaire",
             "description": {
@@ -460,6 +470,7 @@
             }
         },
         {
+            "section": "Graphiques primitifs",
             "kind": "function",
             "name": "texte",
             "description": {
@@ -497,6 +508,7 @@
             }
         },
         {
+            "section": "Graphiques primitifs",
             "kind": "function",
             "name": "triangle",
             "description": {
@@ -534,6 +546,19 @@
             }
         },
         {
+            "section": "Graphiques primitifs",
+            "kind": "type",
+            "name": "Graphique",
+            "type": null,
+            "description": {
+                "p": [
+                    "Un graphique (image) avec un point d\u2019ancrage.",
+                    "Le point d\u2019ancrage est utilis\u00e9 pour les op\u00e9rations suivantes:"
+                ]
+            }
+        },
+        {
+            "section": "Points",
             "kind": "type",
             "name": "Point",
             "type": "ass",
@@ -544,6 +569,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "bas_centre",
             "type": "Point",
@@ -554,6 +580,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "bas_droite",
             "type": "Point",
@@ -564,6 +591,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "bas_gauche",
             "type": "Point",
@@ -574,6 +602,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "centre",
             "type": "Point",
@@ -584,6 +613,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "centre_droite",
             "type": "Point",
@@ -594,6 +624,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "centre_gauche",
             "type": "Point",
@@ -604,6 +635,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "haut_centre",
             "type": "Point",
@@ -614,6 +646,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "haut_droite",
             "type": "Point",
@@ -624,6 +657,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "haut_gauche",
             "type": "Point",
@@ -634,6 +668,7 @@
             }
         },
         {
+            "section": "Op\u00e9rations",
             "kind": "function",
             "name": "ancre",
             "description": {
@@ -660,6 +695,7 @@
             }
         },
         {
+            "section": "Op\u00e9rations",
             "kind": "function",
             "name": "au_dessus",
             "description": {
@@ -686,6 +722,7 @@
             }
         },
         {
+            "section": "Op\u00e9rations",
             "kind": "function",
             "name": "compose",
             "description": {
@@ -712,6 +749,7 @@
             }
         },
         {
+            "section": "Op\u00e9rations",
             "kind": "function",
             "name": "cote_a_cote",
             "description": {
@@ -738,6 +776,7 @@
             }
         },
         {
+            "section": "Op\u00e9rations",
             "kind": "function",
             "name": "hauteur_graphique",
             "description": {
@@ -758,6 +797,7 @@
             }
         },
         {
+            "section": "Op\u00e9rations",
             "kind": "function",
             "name": "largeur_graphique",
             "description": {
@@ -778,6 +818,7 @@
             }
         },
         {
+            "section": "Op\u00e9rations",
             "kind": "function",
             "name": "pivote",
             "description": {
@@ -803,6 +844,7 @@
             }
         },
         {
+            "section": "Op\u00e9rations",
             "kind": "function",
             "name": "superpose",
             "description": {

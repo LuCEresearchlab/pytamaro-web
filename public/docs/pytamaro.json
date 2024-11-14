@@ -1,8 +1,9 @@
 {
     "module": "pytamaro",
-    "summary": "PyTamaro graphics library (English API)",
+    "summary": "PyTamaro graphics (English API)",
     "elements": [
         {
+            "section": "Colors",
             "kind": "function",
             "name": "hsl_color",
             "description": {
@@ -43,6 +44,7 @@
             }
         },
         {
+            "section": "Colors",
             "kind": "function",
             "name": "hsv_color",
             "description": {
@@ -83,6 +85,7 @@
             }
         },
         {
+            "section": "Colors",
             "kind": "function",
             "name": "rgb_color",
             "description": {
@@ -123,6 +126,7 @@
             }
         },
         {
+            "section": "Colors",
             "kind": "type",
             "name": "Color",
             "type": "ass",
@@ -133,6 +137,7 @@
             }
         },
         {
+            "section": "Colors",
             "kind": "constant",
             "name": "black",
             "type": "Color",
@@ -143,6 +148,7 @@
             }
         },
         {
+            "section": "Colors",
             "kind": "constant",
             "name": "blue",
             "type": "Color",
@@ -153,6 +159,7 @@
             }
         },
         {
+            "section": "Colors",
             "kind": "constant",
             "name": "cyan",
             "type": "Color",
@@ -163,6 +170,7 @@
             }
         },
         {
+            "section": "Colors",
             "kind": "constant",
             "name": "green",
             "type": "Color",
@@ -173,6 +181,7 @@
             }
         },
         {
+            "section": "Colors",
             "kind": "constant",
             "name": "magenta",
             "type": "Color",
@@ -183,6 +192,7 @@
             }
         },
         {
+            "section": "Colors",
             "kind": "constant",
             "name": "red",
             "type": "Color",
@@ -193,6 +203,7 @@
             }
         },
         {
+            "section": "Colors",
             "kind": "constant",
             "name": "transparent",
             "type": "Color",
@@ -203,6 +214,7 @@
             }
         },
         {
+            "section": "Colors",
             "kind": "constant",
             "name": "white",
             "type": "Color",
@@ -213,6 +225,7 @@
             }
         },
         {
+            "section": "Colors",
             "kind": "constant",
             "name": "yellow",
             "type": "Color",
@@ -223,17 +236,7 @@
             }
         },
         {
-            "kind": "type",
-            "name": "Graphic",
-            "type": "ass",
-            "description": {
-                "p": [
-                    "A graphic (image) with a position for pinning.",
-                    "The pinning position is used in the following operations:"
-                ]
-            }
-        },
-        {
+            "section": "Output",
             "kind": "function",
             "name": "save_animation",
             "description": {
@@ -269,6 +272,7 @@
             "sideEffects": true
         },
         {
+            "section": "Output",
             "kind": "function",
             "name": "save_graphic",
             "description": {
@@ -299,6 +303,7 @@
             "sideEffects": true
         },
         {
+            "section": "Output",
             "kind": "function",
             "name": "show_animation",
             "description": {
@@ -329,6 +334,7 @@
             "sideEffects": true
         },
         {
+            "section": "Output",
             "kind": "function",
             "name": "show_graphic",
             "description": {
@@ -353,6 +359,7 @@
             "sideEffects": true
         },
         {
+            "section": "Primitive graphics",
             "kind": "function",
             "name": "circular_sector",
             "description": {
@@ -385,6 +392,7 @@
             }
         },
         {
+            "section": "Primitive graphics",
             "kind": "function",
             "name": "ellipse",
             "description": {
@@ -416,6 +424,7 @@
             }
         },
         {
+            "section": "Primitive graphics",
             "kind": "function",
             "name": "empty_graphic",
             "description": {
@@ -430,6 +439,7 @@
             }
         },
         {
+            "section": "Primitive graphics",
             "kind": "function",
             "name": "rectangle",
             "description": {
@@ -460,6 +470,7 @@
             }
         },
         {
+            "section": "Primitive graphics",
             "kind": "function",
             "name": "text",
             "description": {
@@ -497,6 +508,7 @@
             }
         },
         {
+            "section": "Primitive graphics",
             "kind": "function",
             "name": "triangle",
             "description": {
@@ -534,6 +546,19 @@
             }
         },
         {
+            "section": "Primitive graphics",
+            "kind": "type",
+            "name": "Graphic",
+            "type": "ass",
+            "description": {
+                "p": [
+                    "A graphic (image) with a position for pinning.",
+                    "The pinning position is used in the following operations:"
+                ]
+            }
+        },
+        {
+            "section": "Points",
             "kind": "type",
             "name": "Point",
             "type": "ass",
@@ -544,6 +569,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "bottom_center",
             "type": "Point",
@@ -554,6 +580,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "bottom_left",
             "type": "Point",
@@ -564,6 +591,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "bottom_right",
             "type": "Point",
@@ -574,6 +602,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "center",
             "type": "Point",
@@ -584,6 +613,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "center_left",
             "type": "Point",
@@ -594,6 +624,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "center_right",
             "type": "Point",
@@ -604,6 +635,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "top_center",
             "type": "Point",
@@ -614,6 +646,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "top_left",
             "type": "Point",
@@ -624,6 +657,7 @@
             }
         },
         {
+            "section": "Points",
             "kind": "constant",
             "name": "top_right",
             "type": "Point",
@@ -634,6 +668,7 @@
             }
         },
         {
+            "section": "Operations",
             "kind": "function",
             "name": "above",
             "description": {
@@ -660,6 +695,7 @@
             }
         },
         {
+            "section": "Operations",
             "kind": "function",
             "name": "beside",
             "description": {
@@ -686,6 +722,7 @@
             }
         },
         {
+            "section": "Operations",
             "kind": "function",
             "name": "compose",
             "description": {
@@ -712,6 +749,7 @@
             }
         },
         {
+            "section": "Operations",
             "kind": "function",
             "name": "graphic_height",
             "description": {
@@ -732,6 +770,7 @@
             }
         },
         {
+            "section": "Operations",
             "kind": "function",
             "name": "graphic_width",
             "description": {
@@ -752,6 +791,7 @@
             }
         },
         {
+            "section": "Operations",
             "kind": "function",
             "name": "overlay",
             "description": {
@@ -778,6 +818,7 @@
             }
         },
         {
+            "section": "Operations",
             "kind": "function",
             "name": "pin",
             "description": {
@@ -804,6 +845,7 @@
             }
         },
         {
+            "section": "Operations",
             "kind": "function",
             "name": "rotate",
             "description": {

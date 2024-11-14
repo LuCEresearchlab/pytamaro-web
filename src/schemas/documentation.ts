@@ -8,6 +8,7 @@ export type JudiciousElement = JudiciousFunction | JudiciousType | JudiciousCons
 
 export type JudiciousFunction = {
   kind: 'function';
+  section?: string;
   name: string;
   description: JudiciousDescription;
   parameters: JudiciousParameter[];
@@ -46,4 +47,5 @@ export type JudiciousConstant = {
 export type JudiciousSimpleElement = {
   name: string;
   description: JudiciousDescription;
+  section?: string;
 };

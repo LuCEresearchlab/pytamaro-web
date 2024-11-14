@@ -1,8 +1,9 @@
 {
     "module": "pytamaro.de",
-    "summary": "PyTamaro graphics library (German API)",
+    "summary": "PyTamaro graphics (German API)",
     "elements": [
         {
+            "section": "Farben",
             "kind": "function",
             "name": "hsl_farbe",
             "description": {
@@ -43,6 +44,7 @@
             }
         },
         {
+            "section": "Farben",
             "kind": "function",
             "name": "hsv_farbe",
             "description": {
@@ -83,6 +85,7 @@
             }
         },
         {
+            "section": "Farben",
             "kind": "function",
             "name": "rgb_farbe",
             "description": {
@@ -123,6 +126,7 @@
             }
         },
         {
+            "section": "Farben",
             "kind": "type",
             "name": "Farbe",
             "type": null,
@@ -133,6 +137,7 @@
             }
         },
         {
+            "section": "Farben",
             "kind": "constant",
             "name": "blau",
             "type": "Farbe",
@@ -143,6 +148,7 @@
             }
         },
         {
+            "section": "Farben",
             "kind": "constant",
             "name": "cyan",
             "type": "Farbe",
@@ -153,6 +159,7 @@
             }
         },
         {
+            "section": "Farben",
             "kind": "constant",
             "name": "gelb",
             "type": "Farbe",
@@ -163,6 +170,7 @@
             }
         },
         {
+            "section": "Farben",
             "kind": "constant",
             "name": "gruen",
             "type": "Farbe",
@@ -173,6 +181,7 @@
             }
         },
         {
+            "section": "Farben",
             "kind": "constant",
             "name": "magenta",
             "type": "Farbe",
@@ -183,6 +192,7 @@
             }
         },
         {
+            "section": "Farben",
             "kind": "constant",
             "name": "rot",
             "type": "Farbe",
@@ -193,6 +203,7 @@
             }
         },
         {
+            "section": "Farben",
             "kind": "constant",
             "name": "schwarz",
             "type": "Farbe",
@@ -203,6 +214,7 @@
             }
         },
         {
+            "section": "Farben",
             "kind": "constant",
             "name": "transparent",
             "type": "Farbe",
@@ -213,6 +225,7 @@
             }
         },
         {
+            "section": "Farben",
             "kind": "constant",
             "name": "weiss",
             "type": "Farbe",
@@ -223,17 +236,7 @@
             }
         },
         {
-            "kind": "type",
-            "name": "Grafik",
-            "type": null,
-            "description": {
-                "p": [
-                    "Eine Grafik mit einer Fixierposition.",
-                    "Die Fixierposition wird von den folgenden Operationen verwendet:"
-                ]
-            }
-        },
-        {
+            "section": "Ausgabe",
             "kind": "function",
             "name": "speichere_animation",
             "description": {
@@ -269,6 +272,7 @@
             "sideEffects": true
         },
         {
+            "section": "Ausgabe",
             "kind": "function",
             "name": "speichere_grafik",
             "description": {
@@ -300,6 +304,7 @@
             "sideEffects": true
         },
         {
+            "section": "Ausgabe",
             "kind": "function",
             "name": "zeige_animation",
             "description": {
@@ -330,6 +335,7 @@
             "sideEffects": true
         },
         {
+            "section": "Ausgabe",
             "kind": "function",
             "name": "zeige_grafik",
             "description": {
@@ -355,6 +361,7 @@
             "sideEffects": true
         },
         {
+            "section": "Primitive Grafiken",
             "kind": "function",
             "name": "dreieck",
             "description": {
@@ -392,6 +399,7 @@
             }
         },
         {
+            "section": "Primitive Grafiken",
             "kind": "function",
             "name": "ellipse",
             "description": {
@@ -423,6 +431,7 @@
             }
         },
         {
+            "section": "Primitive Grafiken",
             "kind": "function",
             "name": "kreis_sektor",
             "description": {
@@ -455,6 +464,7 @@
             }
         },
         {
+            "section": "Primitive Grafiken",
             "kind": "function",
             "name": "leere_grafik",
             "description": {
@@ -469,6 +479,7 @@
             }
         },
         {
+            "section": "Primitive Grafiken",
             "kind": "function",
             "name": "rechteck",
             "description": {
@@ -499,6 +510,7 @@
             }
         },
         {
+            "section": "Primitive Grafiken",
             "kind": "function",
             "name": "text",
             "description": {
@@ -536,6 +548,19 @@
             }
         },
         {
+            "section": "Primitive Grafiken",
+            "kind": "type",
+            "name": "Grafik",
+            "type": null,
+            "description": {
+                "p": [
+                    "Eine Grafik mit einer Fixierposition.",
+                    "Die Fixierposition wird von den folgenden Operationen verwendet:"
+                ]
+            }
+        },
+        {
+            "section": "Punkte",
             "kind": "type",
             "name": "Punkt",
             "type": null,
@@ -546,6 +571,7 @@
             }
         },
         {
+            "section": "Punkte",
             "kind": "constant",
             "name": "mitte",
             "type": "Point",
@@ -556,6 +582,7 @@
             }
         },
         {
+            "section": "Punkte",
             "kind": "constant",
             "name": "mitte_links",
             "type": "Point",
@@ -566,6 +593,7 @@
             }
         },
         {
+            "section": "Punkte",
             "kind": "constant",
             "name": "mitte_rechts",
             "type": "Point",
@@ -576,6 +604,7 @@
             }
         },
         {
+            "section": "Punkte",
             "kind": "constant",
             "name": "oben_links",
             "type": "Point",
@@ -586,6 +615,7 @@
             }
         },
         {
+            "section": "Punkte",
             "kind": "constant",
             "name": "oben_mitte",
             "type": "Point",
@@ -596,6 +626,7 @@
             }
         },
         {
+            "section": "Punkte",
             "kind": "constant",
             "name": "oben_rechts",
             "type": "Point",
@@ -606,6 +637,7 @@
             }
         },
         {
+            "section": "Punkte",
             "kind": "constant",
             "name": "unten_links",
             "type": "Point",
@@ -616,6 +648,7 @@
             }
         },
         {
+            "section": "Punkte",
             "kind": "constant",
             "name": "unten_mitte",
             "type": "Point",
@@ -626,6 +659,7 @@
             }
         },
         {
+            "section": "Punkte",
             "kind": "constant",
             "name": "unten_rechts",
             "type": "Point",
@@ -636,6 +670,7 @@
             }
         },
         {
+            "section": "Operationen",
             "kind": "function",
             "name": "drehe",
             "description": {
@@ -661,6 +696,7 @@
             }
         },
         {
+            "section": "Operationen",
             "kind": "function",
             "name": "fixiere",
             "description": {
@@ -687,6 +723,7 @@
             }
         },
         {
+            "section": "Operationen",
             "kind": "function",
             "name": "grafik_breite",
             "description": {
@@ -707,6 +744,7 @@
             }
         },
         {
+            "section": "Operationen",
             "kind": "function",
             "name": "grafik_hoehe",
             "description": {
@@ -727,6 +765,7 @@
             }
         },
         {
+            "section": "Operationen",
             "kind": "function",
             "name": "kombiniere",
             "description": {
@@ -753,6 +792,7 @@
             }
         },
         {
+            "section": "Operationen",
             "kind": "function",
             "name": "neben",
             "description": {
@@ -779,6 +819,7 @@
             }
         },
         {
+            "section": "Operationen",
             "kind": "function",
             "name": "ueber",
             "description": {
@@ -805,6 +846,7 @@
             }
         },
         {
+            "section": "Operationen",
             "kind": "function",
             "name": "ueberlagere",
             "description": {

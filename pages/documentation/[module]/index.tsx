@@ -1,10 +1,14 @@
 import { Category, Functions, Numbers } from '@mui/icons-material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Avatar, Container, Divider, List, ListItem, ListItemAvatar, ListItemButton, ListItemText,
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import { sortBy } from 'lodash';
+import { groupBy, sortBy } from 'lodash';
 import Head from 'next/head';
 import NavigationBar from '../../../components/NavigationBar';
 import PageTitle from '../../../components/PageTitle';
@@ -33,7 +37,7 @@ export default function DocumentationModule({ moduleData }: { moduleData: Judici
     constant: <Numbers />,
     type: <Category />,
   };
-  const elements = sortElements(moduleData.elements);
+  const sections = groupBy(moduleData.elements, 'section');
   return (
     <div>
       <Head>
@@ -57,39 +61,54 @@ export default function DocumentationModule({ moduleData }: { moduleData: Judici
             <Typography mb={4} textAlign="center">
               {moduleData.summary}
             </Typography>
-            <List sx={{ bgcolor: 'background.paper' }}>
-              {elements.map((element, index) => (
-                <div key={element.name}>
-                  <ListItem>
-                    <ListItemButton
-                      href={documentationElementPathname(moduleData.module, element.name)}
-                    >
-                      <ListItemAvatar>
-                        <Avatar>
-                          {icons[element.kind]}
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={element.name}
-                        secondary={element.description.p[0]}
-                        sx={{
-                          '& .MuiListItemText-primary': {
-                            fontSize: '1.2rem',
-                          },
-                          '& .MuiListItemText-secondary': {
-                            fontSize: '1rem',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          },
-                        }}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                  {index === elements.length - 1 ? null : <Divider variant="middle" component="li" />}
-                </div>
+            <div>
+              {sortBy(Object.keys(sections)).map((section) => (
+                <Accordion key={section}>
+                  {section !== 'undefined' && (
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="h6" fontWeight="normal">
+                      {section}
+                    </Typography>
+                  </AccordionSummary>
+                  )}
+                  <AccordionDetails sx={{ p: 0 }}>
+                    <List sx={{ bgcolor: 'background.paper' }}>
+                      {sortElements(sections[section]).map((element, index) => (
+                        <div key={element.name}>
+                          <ListItem>
+                            <ListItemButton
+                              href={documentationElementPathname(moduleData.module, element.name)}
+                            >
+                              <ListItemAvatar>
+                                <Avatar>
+                                  {icons[element.kind]}
+                                </Avatar>
+                              </ListItemAvatar>
+                              <ListItemText
+                                primary={element.name}
+                                secondary={element.description.p[0]}
+                                sx={{
+                                  '& .MuiListItemText-primary': {
+                                    fontSize: '1.2rem',
+                                  },
+                                  '& .MuiListItemText-secondary': {
+                                    fontSize: '1rem',
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                  },
+                                }}
+                              />
+                            </ListItemButton>
+                          </ListItem>
+                          {index === sections[section].length - 1 ? null : <Divider variant="middle" component="li" />}
+                        </div>
+                      ))}
+                    </List>
+                  </AccordionDetails>
+                </Accordion>
               ))}
-            </List>
+            </div>
           </Container>
         </CentralContent>
         <Sidebar side="right" />

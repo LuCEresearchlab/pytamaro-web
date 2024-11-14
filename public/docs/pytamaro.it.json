@@ -1,8 +1,9 @@
 {
     "module": "pytamaro.it",
-    "summary": "PyTamaro graphics library (Italian API)",
+    "summary": "PyTamaro graphics (Italian API)",
     "elements": [
         {
+            "section": "Colori",
             "kind": "function",
             "name": "colore_hsl",
             "description": {
@@ -43,6 +44,7 @@
             }
         },
         {
+            "section": "Colori",
             "kind": "function",
             "name": "colore_hsv",
             "description": {
@@ -83,6 +85,7 @@
             }
         },
         {
+            "section": "Colori",
             "kind": "function",
             "name": "colore_rgb",
             "description": {
@@ -123,6 +126,7 @@
             }
         },
         {
+            "section": "Colori",
             "kind": "type",
             "name": "Colore",
             "type": null,
@@ -133,6 +137,7 @@
             }
         },
         {
+            "section": "Colori",
             "kind": "constant",
             "name": "bianco",
             "type": "Colore",
@@ -143,6 +148,7 @@
             }
         },
         {
+            "section": "Colori",
             "kind": "constant",
             "name": "blu",
             "type": "Colore",
@@ -153,6 +159,7 @@
             }
         },
         {
+            "section": "Colori",
             "kind": "constant",
             "name": "ciano",
             "type": "Colore",
@@ -163,6 +170,7 @@
             }
         },
         {
+            "section": "Colori",
             "kind": "constant",
             "name": "giallo",
             "type": "Colore",
@@ -173,6 +181,7 @@
             }
         },
         {
+            "section": "Colori",
             "kind": "constant",
             "name": "magenta",
             "type": "Colore",
@@ -183,6 +192,7 @@
             }
         },
         {
+            "section": "Colori",
             "kind": "constant",
             "name": "nero",
             "type": "Colore",
@@ -193,6 +203,7 @@
             }
         },
         {
+            "section": "Colori",
             "kind": "constant",
             "name": "rosso",
             "type": "Colore",
@@ -203,6 +214,7 @@
             }
         },
         {
+            "section": "Colori",
             "kind": "constant",
             "name": "trasparente",
             "type": "Colore",
@@ -213,6 +225,7 @@
             }
         },
         {
+            "section": "Colori",
             "kind": "constant",
             "name": "verde",
             "type": "Colore",
@@ -223,17 +236,7 @@
             }
         },
         {
-            "kind": "type",
-            "name": "Grafica",
-            "type": null,
-            "description": {
-                "p": [
-                    "Una grafica (immagine) con una posizione per fissare.",
-                    "La posizione di fissaggio viene usata nelle seguenti operazioni:"
-                ]
-            }
-        },
-        {
+            "section": "Output",
             "kind": "function",
             "name": "salva_animazione",
             "description": {
@@ -269,6 +272,7 @@
             "sideEffects": true
         },
         {
+            "section": "Output",
             "kind": "function",
             "name": "salva_grafica",
             "description": {
@@ -299,6 +303,7 @@
             "sideEffects": true
         },
         {
+            "section": "Output",
             "kind": "function",
             "name": "visualizza_animazione",
             "description": {
@@ -329,6 +334,7 @@
             "sideEffects": true
         },
         {
+            "section": "Output",
             "kind": "function",
             "name": "visualizza_grafica",
             "description": {
@@ -353,6 +359,7 @@
             "sideEffects": true
         },
         {
+            "section": "Grafiche primitive",
             "kind": "function",
             "name": "ellisse",
             "description": {
@@ -384,6 +391,7 @@
             }
         },
         {
+            "section": "Grafiche primitive",
             "kind": "function",
             "name": "grafica_vuota",
             "description": {
@@ -398,6 +406,7 @@
             }
         },
         {
+            "section": "Grafiche primitive",
             "kind": "function",
             "name": "rettangolo",
             "description": {
@@ -428,6 +437,7 @@
             }
         },
         {
+            "section": "Grafiche primitive",
             "kind": "function",
             "name": "settore_circolare",
             "description": {
@@ -460,6 +470,7 @@
             }
         },
         {
+            "section": "Grafiche primitive",
             "kind": "function",
             "name": "testo",
             "description": {
@@ -497,6 +508,7 @@
             }
         },
         {
+            "section": "Grafiche primitive",
             "kind": "function",
             "name": "triangolo",
             "description": {
@@ -534,6 +546,19 @@
             }
         },
         {
+            "section": "Grafiche primitive",
+            "kind": "type",
+            "name": "Grafica",
+            "type": null,
+            "description": {
+                "p": [
+                    "Una grafica (immagine) con una posizione per fissare.",
+                    "La posizione di fissaggio viene usata nelle seguenti operazioni:"
+                ]
+            }
+        },
+        {
+            "section": "Punti",
             "kind": "type",
             "name": "Punto",
             "type": null,
@@ -544,6 +569,7 @@
             }
         },
         {
+            "section": "Punti",
             "kind": "constant",
             "name": "alto_centro",
             "type": "Point",
@@ -554,6 +580,7 @@
             }
         },
         {
+            "section": "Punti",
             "kind": "constant",
             "name": "alto_destra",
             "type": "Point",
@@ -564,6 +591,7 @@
             }
         },
         {
+            "section": "Punti",
             "kind": "constant",
             "name": "alto_sinistra",
             "type": "Point",
@@ -574,6 +602,7 @@
             }
         },
         {
+            "section": "Punti",
             "kind": "constant",
             "name": "basso_centro",
             "type": "Point",
@@ -584,6 +613,7 @@
             }
         },
         {
+            "section": "Punti",
             "kind": "constant",
             "name": "basso_destra",
             "type": "Point",
@@ -594,6 +624,7 @@
             }
         },
         {
+            "section": "Punti",
             "kind": "constant",
             "name": "basso_sinistra",
             "type": "Point",
@@ -604,6 +635,7 @@
             }
         },
         {
+            "section": "Punti",
             "kind": "constant",
             "name": "centro",
             "type": "Point",
@@ -614,6 +646,7 @@
             }
         },
         {
+            "section": "Punti",
             "kind": "constant",
             "name": "centro_destra",
             "type": "Point",
@@ -624,6 +657,7 @@
             }
         },
         {
+            "section": "Punti",
             "kind": "constant",
             "name": "centro_sinistra",
             "type": "Point",
@@ -634,6 +668,7 @@
             }
         },
         {
+            "section": "Operazioni",
             "kind": "function",
             "name": "accanto",
             "description": {
@@ -660,6 +695,7 @@
             }
         },
         {
+            "section": "Operazioni",
             "kind": "function",
             "name": "altezza_grafica",
             "description": {
@@ -680,6 +716,7 @@
             }
         },
         {
+            "section": "Operazioni",
             "kind": "function",
             "name": "componi",
             "description": {
@@ -706,6 +743,7 @@
             }
         },
         {
+            "section": "Operazioni",
             "kind": "function",
             "name": "fissa",
             "description": {
@@ -732,6 +770,7 @@
             }
         },
         {
+            "section": "Operazioni",
             "kind": "function",
             "name": "larghezza_grafica",
             "description": {
@@ -752,6 +791,7 @@
             }
         },
         {
+            "section": "Operazioni",
             "kind": "function",
             "name": "ruota",
             "description": {
@@ -777,6 +817,7 @@
             }
         },
         {
+            "section": "Operazioni",
             "kind": "function",
             "name": "sopra",
             "description": {
@@ -803,6 +844,7 @@
             }
         },
         {
+            "section": "Operazioni",
             "kind": "function",
             "name": "sovrapponi",
             "description": {
