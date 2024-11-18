@@ -3,7 +3,9 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import GithubSlugger from 'github-slugger';
 import Head from 'next/head';
-import { useRef, useState } from 'react';
+import {
+  useEffect, useMemo, useRef, useState,
+} from 'react';
 import ActivityCodeCell from '../../../../../../components/ActivityCodeCell';
 import ActivityFooter from '../../../../../../components/ActivityFooter';
 import ActivityResetButton from '../../../../../../components/ActivityResetButton';
@@ -66,9 +68,13 @@ export default function NotebookPage({
 
   const { resetCounter, newReset } = useReset();
 
-  const slugger = new GithubSlugger();
-
   const isMounted = useIsMounted();
+
+  const slugger = useMemo(() => new GithubSlugger(), []);
+
+  useEffect(() => {
+    slugger.reset();
+  }, [slugger]);
 
   return (
     <div key={activityVariantId(activityVariant)}>
