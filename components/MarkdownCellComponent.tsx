@@ -2,6 +2,7 @@ import { Box, Stack } from '@mui/material';
 import type GithubSlugger from 'github-slugger';
 import { MDXRemote } from 'next-mdx-remote';
 import { ReactNode, createElement } from 'react';
+import { onlyText } from 'react-children-utilities';
 import { ActivityVariant, MarkdownCell, NotebookCell } from '../src/schemas/activitySchema';
 import { activityAssetPathname } from '../src/urlUtils';
 import InlineAPI from './documentation/InlineAPI';
@@ -90,7 +91,7 @@ function codeComponent(props: any) {
 }
 
 function headerComponent(slugger: GithubSlugger, props: any, level: string) {
-  const id = slugger.slug(props.children);
+  const id = slugger.slug(onlyText(props.children));
   return createElement(
     level,
     { id: `header-${id}` },

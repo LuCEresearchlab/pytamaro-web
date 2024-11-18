@@ -49,6 +49,7 @@
     "next-plausible": "^3.11.3",
     "postgres": "^3.3.4",
     "react": "^18.2.0",
+    "react-children-utilities": "^2.10.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^13.3.1",
     "react-markdown": "^8.0.3",
