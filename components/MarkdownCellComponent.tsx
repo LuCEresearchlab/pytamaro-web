@@ -1,8 +1,6 @@
 import { Box, Stack } from '@mui/material';
-import type GithubSlugger from 'github-slugger';
 import { MDXRemote } from 'next-mdx-remote';
-import { ReactNode, createElement } from 'react';
-import { onlyText } from 'react-children-utilities';
+import { ReactNode } from 'react';
 import { ActivityVariant, MarkdownCell, NotebookCell } from '../src/schemas/activitySchema';
 import { activityAssetPathname } from '../src/urlUtils';
 import InlineAPI from './documentation/InlineAPI';
@@ -90,17 +88,8 @@ function codeComponent(props: any) {
   );
 }
 
-function headerComponent(slugger: GithubSlugger, props: any, level: string) {
-  const id = slugger.slug(onlyText(props.children));
-  return createElement(
-    level,
-    { id: `header-${id}` },
-    props.children,
-  );
-}
-
-export default function MarkdownCellComponent({ slugger, cell, activityVariant } :
-{ slugger: GithubSlugger, cell: MarkdownCell, activityVariant: ActivityVariant }) {
+export default function MarkdownCellComponent({ cell, activityVariant } :
+{ cell: MarkdownCell, activityVariant: ActivityVariant }) {
   const adHocComponents = {
     img: (props: any) => (
       imgComponent(props, cell, activityVariant.authorSlug, activityVariant.activitySlug)
@@ -122,12 +111,6 @@ export default function MarkdownCellComponent({ slugger, cell, activityVariant }
     Task: ({ children }: { children: ReactNode }) => (
       TaskBox({ children })
     ),
-    h1: (props: any) => headerComponent(slugger, props, 'h1'),
-    h2: (props: any) => headerComponent(slugger, props, 'h2'),
-    h3: (props: any) => headerComponent(slugger, props, 'h3'),
-    h4: (props: any) => headerComponent(slugger, props, 'h4'),
-    h5: (props: any) => headerComponent(slugger, props, 'h5'),
-    h6: (props: any) => headerComponent(slugger, props, 'h6'),
   };
   return (
     <MDXRemote

@@ -3,9 +3,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import GithubSlugger from 'github-slugger';
 import Head from 'next/head';
-import {
-  useEffect, useMemo, useRef, useState,
-} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ActivityCodeCell from '../../../../../../components/ActivityCodeCell';
 import ActivityFooter from '../../../../../../components/ActivityFooter';
 import ActivityResetButton from '../../../../../../components/ActivityResetButton';
@@ -69,12 +67,22 @@ export default function NotebookPage({
   const { resetCounter, newReset } = useReset();
 
   const isMounted = useIsMounted();
-
-  const slugger = useMemo(() => new GithubSlugger(), []);
+  const [headingsReady, setHeadingsReady] = useState(false);
 
   useEffect(() => {
-    slugger.reset();
-  }, [slugger]);
+    if (isMounted) {
+      const slugger = new GithubSlugger();
+      const headings = cellsRef.current?.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      headings?.forEach((heading) => {
+        // eslint-disable-next-line no-param-reassign
+        heading.id = slugger.slug(heading.textContent || '');
+      });
+      setHeadingsReady(true);
+    }
+    return () => {
+      setHeadingsReady(false);
+    };
+  }, [isMounted]);
 
   return (
     <div key={activityVariantId(activityVariant)}>
@@ -106,16 +114,15 @@ export default function NotebookPage({
             )}
           </Sidebar>
           <CentralContent>
+            <Container maxWidth="md">
+              <Typography variant="h3" marginY={3}>{title}</Typography>
+              {!curriculum && <GoToCurriculaBanner curricula={curricula} />}
+            </Container>
             <Box ref={cellsRef} className="activity-content">
-              <Container maxWidth="md">
-                <Typography variant="h3" marginY={3}>{title}</Typography>
-                {!curriculum && <GoToCurriculaBanner curricula={curricula} />}
-              </Container>
               {cells.map((cell: NotebookCell, idx) => (cell.cell_type === 'markdown'
                 ? (
                   <Container maxWidth="md" key={cell.id}>
                     <MarkdownCellComponent
-                      slugger={slugger}
                       cell={cell as MarkdownCell}
                       activityVariant={activityVariant}
                     />
@@ -153,7 +160,7 @@ export default function NotebookPage({
             {curriculum && (
               <CurriculumUnitSidebar curriculum={curriculum} activityVariant={activityVariant} />
             )}
-            <TableOfContents initialized={isMounted} elementRef={cellsRef} selector="h2[id], h3[id]" titleKey="contents" />
+            <TableOfContents initialized={headingsReady} elementRef={cellsRef} selector="h2[id], h3[id]" titleKey="contents" />
             {curriculum && (
               <ActivityCompetenciesSidebar
                 curriculum={curriculum}
