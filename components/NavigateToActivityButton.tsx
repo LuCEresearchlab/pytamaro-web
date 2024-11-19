@@ -83,7 +83,7 @@ export default function NavigateToActivity({
           endIcon={isNext ? <ArrowForward /> : undefined}
           onClick={handleClick}
         >
-          {message}
+          <span>{message}</span>
         </LoadingButton>
       </span>
     </Tooltip>
