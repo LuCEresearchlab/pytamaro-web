@@ -32,7 +32,7 @@ export default function CodeEditor({
   readOnly?: boolean, collapsedErrorMarkers?: boolean, resetCounter?: number }) {
   const { list } = useLocalToolbox();
   const monacoRef = useRef<any>(null);
-  const editorRef = useRef<any>(null);
+  const editorRef = useRef<EditorNamespace.IStandaloneCodeEditor | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const monacoInstance = monacoRef.current;
@@ -192,22 +192,24 @@ export default function CodeEditor({
   const addParseErrorMarkers = (parseErrors: ParseError[]) => {
     if (monacoInstance && editorInstance) {
       const model = editorInstance.getModel();
-      monacoInstance.editor.setModelMarkers(
-        model,
-        'owner',
-        parseErrors.map((error) => {
-          const startPosition = model.getPositionAt(error.location[0]);
-          const endPosition = model.getPositionAt(error.location[1]);
-          return ({
-            startLineNumber: startPosition.lineNumber,
-            startColumn: startPosition.column,
-            endLineNumber: endPosition.lineNumber,
-            endColumn: endPosition.column,
-            message: error.message,
-            severity: monacoInstance.MarkerSeverity.Error,
-          });
-        }),
-      );
+      if (model) {
+        monacoInstance.editor.setModelMarkers(
+          model,
+          'owner',
+          parseErrors.map((error) => {
+            const startPosition = model.getPositionAt(error.location[0]);
+            const endPosition = model.getPositionAt(error.location[1]);
+            return ({
+              startLineNumber: startPosition.lineNumber,
+              startColumn: startPosition.column,
+              endLineNumber: endPosition.lineNumber,
+              endColumn: endPosition.column,
+              message: error.message,
+              severity: monacoInstance.MarkerSeverity.Error,
+            });
+          }),
+        );
+      }
     }
   };
 
