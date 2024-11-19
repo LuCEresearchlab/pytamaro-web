@@ -98,7 +98,7 @@ module.exports = withSentryConfig(
     sentryUrl: "https://sentry.luce.si.usi.ch/",
 
     // Only print logs for uploading source maps in CI
-    silent: false,
+    silent: !process.env.CI,
 
     // For all available options, see:
     // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
