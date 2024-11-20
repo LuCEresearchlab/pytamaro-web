@@ -9,7 +9,8 @@ import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
 import { activityVariantPathnameFromParts } from '../src/urlUtils';
 
-const PYTAMARO_VERSION = '0.7.0';
+const PYTHON_VERSION = '3.13';
+const PYTAMARO_VERSION = '1.0.2';
 
 function SectionHeading({ children } : { children: React.ReactNode }) {
   return (
@@ -81,7 +82,7 @@ export default function Install() {
             Which environment is used to execute my Python code?
           </QuestionHeading>
           <QuestionBody>
-            We execute your code in an enviroment with <a href="https://docs.python.org/3/whatsnew/3.12.html">Python 3.12</a> and <code>pytamaro</code> version <a href={`https://pypi.org/project/pytamaro/${PYTAMARO_VERSION}/`}><code>{PYTAMARO_VERSION}</code></a>.
+            We execute your code in an enviroment with <a href={`https://docs.python.org/3/whatsnew/${PYTHON_VERSION}.html`}>{`Python ${PYTHON_VERSION}`}</a> and <code>pytamaro</code> version <a href={`https://pypi.org/project/pytamaro/${PYTAMARO_VERSION}/`}><code>{PYTAMARO_VERSION}</code></a>.
             For the text in your graphics, you can use these fonts:
             <ul>
               {['Fira Sans',
