@@ -164,7 +164,7 @@ Note: since `isolatedModules` is set, the file should contain some import or exp
 <summary>Expand</summary>
 
 The Python Analyzer in `tools/python-analyzer` is a Rust library
-that leverages [RustPython's Parser](https://github.com/RustPython/Parser)
+that leverages [Ruff's Python Parser](https://github.com/astral-sh/ruff)
 and is compiled to WebAssembly using [`wasm-pack`](https://rustwasm.github.io/wasm-pack/).
 Pre-built JavaScript files (for a bundler, usable both by the browser and by Node.js) are already included in this repository at `src/python-analyzer`.
-To rebuild the parser, install a Rust toolchain and run `npm run build-python-analyzer`.
+To rebuild the analyzer, install a Rust toolchain and run `npm run build-python-analyzer`.
