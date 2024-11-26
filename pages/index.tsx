@@ -29,7 +29,7 @@ import ActivityCardMedia from '../components/ActivityCardMedia';
 import { registerCustomPythonLanguage, STRICT_PYTHON3_LANG_ID } from '../components/editor/strictPython3';
 import { COLORIZE_CLASSNAME, colorizeElements, configureEditor } from '../components/editor/utils';
 import ExecutionOutputArea from '../components/OutputArea';
-import PanoramaAlpeFoppa from '../public/PanoramaAlpeFoppa.jpg';
+import PanoramaAlpeFoppa from '../public/AlpeFoppa.jpg';
 import { basicActivities, listVisibleActivities } from '../src/fs-content/activities';
 import { BasicActivity } from '../src/schemas/activitySchema';
 import { translationProps } from '../src/serverSideTranslationProps';
@@ -184,12 +184,8 @@ export default function Home({ activities } :
             width: '100%',
             height: 'auto',
             minHeight: '15vh',
-            maxHeight: '284px',
+            maxHeight: 'min(20vh, 576px)',
             objectFit: 'cover',
-            mask: 'linear-gradient(to bottom, black 80%, rgba(0, 0, 0, 0.8) 90%, rgba(0, 0, 0, 0.4) 95%, rgba(0, 0, 0, 0) 100%)',
-            maskPosition: 'bottom',
-            maskSize: '100% 100%',
-            maskRepeat: 'no-repeat',
           }}
         />
         <Box sx={{ display: { xs: 'none', md: 'block' } }}>
