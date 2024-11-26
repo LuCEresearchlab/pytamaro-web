@@ -20,7 +20,7 @@ export default function RunButton({
   const showPlayIcon = !executing && !executionFinished;
   return (
     <Stack direction="row" spacing={2} alignItems="center">
-      <Tooltip arrow title={buttonTooltip} placement="top">
+      <Tooltip arrow title={buttonTooltip} placement="left">
         <span>
           <LoadingButton
             onClick={onExecutionRequested}
