@@ -16,7 +16,7 @@ import { ActivityVariant, PlatformConfiguration } from '../src/schemas/activityS
 import { joinLines } from '../src/sourceUtils';
 import { EllipsisTip, InputTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
-import OutputArea from './OutputArea';
+import ExecutionOutputArea from './OutputArea';
 import RunButton from './RunButton';
 import DocumentationStripe from './documentation/DocumentationStripe';
 
@@ -122,7 +122,7 @@ export default function CodeCell({
               invisible={codeCellExecutionState.outputSynced}
             >
               {executionResponse && isExecutionCompleted(executionResponse) && (
-              <OutputArea
+              <ExecutionOutputArea
                 executionError={executionError}
                 executionResponse={executionResponse}
                 dimmed={!codeCellExecutionState.outputSynced}

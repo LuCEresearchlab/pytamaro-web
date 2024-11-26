@@ -1,7 +1,7 @@
 /* eslint-disable react/no-danger */
 /* eslint-disable @next/next/no-img-element */
 import {
-  Typography,
+  Typography
 } from '@mui/material';
 import { useState } from 'react';
 import logAnalyticsEvent, { AnalyticsEventName } from '../../src/analyticsEvent';
@@ -63,7 +63,7 @@ export default function DocElement({
           </Typography>
         </PopoverTrigger>
         <PopoverContent>
-          <DocElementCard module={module} element={element} />
+          <DocElementCard module={module} element={element} sx={{ maxHeight: '95vh', overflowY: 'auto' }} />
         </PopoverContent>
       </Popover>
     </div>

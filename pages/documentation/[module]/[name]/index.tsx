@@ -1,4 +1,4 @@
-import { Container, Typography } from '@mui/material';
+import { Container, Link, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import Head from 'next/head';
 import DocElementCard from '../../../../components/documentation/DocElementCard';
@@ -12,8 +12,8 @@ import useLocalTranslation from '../../../../src/localStorage/useLocalTranslatio
 import { JudiciousElement } from '../../../../src/schemas/documentation';
 import { translationProps } from '../../../../src/serverSideTranslationProps';
 
-export default function SingleElementDocPage({ module, element }:
-{ module: string, element: JudiciousElement }) {
+export default function SingleElementDocPage({ module, officialBaseUrl, element }:
+{ module: string, officialBaseUrl: string | null, element: JudiciousElement }) {
   const { t } = useLocalTranslation();
   const title = `${t('documentation')} ${module}.${element.name}`;
   return (
@@ -45,6 +45,18 @@ export default function SingleElementDocPage({ module, element }:
               </Typography>
             </Typography>
             <DocElementCard module={module} element={element} elevation={0} />
+            {officialBaseUrl && element.urlSuffix && (
+              <Typography mt={10} textAlign="center">
+                See also
+                {' '}
+                <Link href={officialBaseUrl + element.urlSuffix}>
+                  {element.name}
+                  {' '}
+                  in the
+                  official documentation
+                </Link>
+              </Typography>
+            )}
           </Container>
         </CentralContent>
         <Sidebar side="right" />
@@ -54,12 +66,13 @@ export default function SingleElementDocPage({ module, element }:
 }
 
 export async function getStaticProps({ params } : { params: { module: string, name: string } }) {
+  const doc = await readDocumentation(params.module);
   return {
     props: {
       ...await translationProps(),
       module: params.module,
-      element: (await readDocumentation(params.module)).elements
-        .find((element) => element.name === params.name),
+      officialBaseUrl: doc.officialBaseUrl || null,
+      element: doc.elements.find((element) => element.name === params.name),
     },
   };
 }

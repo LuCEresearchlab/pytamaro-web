@@ -1,6 +1,7 @@
 {
     "module": "functools",
     "summary": "Higher-order functions",
+    "officialBaseUrl": "https://docs.python.org/3/library/functools.html",
     "elements": [
         {
             "kind": "function",
@@ -34,5 +35,17 @@
                 "description": "The accumulated value"
             }
         }
-    ]
+    ],
+    "examples": [
+        {
+            "code": "reduce(lambda acc, s: acc + ' ' + s, ['Many', 'strings', 'folded', 'together'])",
+            "result": "Many strings folded together"
+        },
+        {
+            "code": "reduce(lambda acc, s: acc + ' ' + s, [], '')",
+            "result": "",
+            "usesOptional": true
+        }
+    ],
+    "urlSuffix": "#functools.reduce"
 }

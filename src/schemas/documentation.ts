@@ -1,10 +1,16 @@
 export type JudiciousModule = {
   module: string;
   summary: string;
+  officialBaseUrl?: string;
   elements: JudiciousElement[];
 };
 
 export type JudiciousElement = JudiciousFunction | JudiciousType | JudiciousConstant;
+
+type JudiciousElementCommon = {
+  examples?: JudiciousExample[];
+  urlSuffix?: string;
+};
 
 export type JudiciousFunction = {
   kind: 'function';
@@ -17,7 +23,7 @@ export type JudiciousFunction = {
     description: string;
   };
   sideEffects?: boolean;
-};
+} & JudiciousElementCommon;
 
 export type JudiciousDescription = {
   p: string[];
@@ -37,15 +43,23 @@ export type JudiciousParameter = {
 
 export type JudiciousType = {
   kind: 'type';
-} & JudiciousSimpleElement;
+} & JudiciousSimpleElement & JudiciousElementCommon;
 
 export type JudiciousConstant = {
   kind: 'constant';
   type: string;
-} & JudiciousSimpleElement;
+} & JudiciousSimpleElement & JudiciousElementCommon;
 
 export type JudiciousSimpleElement = {
   name: string;
   description: JudiciousDescription;
   section?: string;
+};
+
+export type JudiciousExample = {
+  code: string;
+  result?: string;
+  stdin?: string;
+  stdout?: string;
+  usesOptional?: boolean;
 };

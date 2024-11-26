@@ -5,7 +5,7 @@ import {
   Avatar, Divider, Link, List, ListItem, ListItemAvatar, ListItemText,
 } from '@mui/material';
 import { printableGraphicActivityVariant } from '../src/specialActivities';
-import { activityVariantPathname } from '../src/urlUtils';
+import { activityVariantPathname, documentationElementPathname } from '../src/urlUtils';
 import GenericMuiIcon from './GenericMuiIcon';
 
 // Chronological order, form oldest to newest.
@@ -76,6 +76,12 @@ export const changelogEntries = [
     icon: 'Schema',
     title: 'Tamaro Cards: Version 2',
     desc: <span>New and improved <Link href="/tamarocards">TamaroCards</Link> for a tangible, unplugged way to compose programs. Better documentation, slightly improved cards, including a few new ones, and downloads of card documentation pictures for your course material.</span>,
+  },
+  {
+    date: '2024-11-25',
+    icon: 'LibraryBooks',
+    title: 'Examples in the documentation',
+    desc: <span>The documentation now includes examples both for PyTamaro and the Python standard library. Check out the examples for <Link href={documentationElementPathname('pytamaro', 'triangle')}><code>triangle</code></Link> and <Link href={documentationElementPathname('builtins', 'print')}><code>print</code></Link>!</span>,
   },
 ];
 

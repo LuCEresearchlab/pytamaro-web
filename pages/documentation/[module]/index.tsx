@@ -4,7 +4,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Avatar, Container, Divider, List, ListItem, ListItemAvatar, ListItemButton, ListItemText,
+  Avatar, Container, Divider, Link, List, ListItem, ListItemAvatar, ListItemButton, ListItemText,
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -109,6 +109,19 @@ export default function DocumentationModule({ moduleData }: { moduleData: Judici
                 </Accordion>
               ))}
             </div>
+            {moduleData.officialBaseUrl && (
+              <Typography mt={10} textAlign="center">
+                See also the
+                {' '}
+                <Link href={moduleData.officialBaseUrl}>
+                  official documentation of the
+                  {' '}
+                  {moduleData.module}
+                  {' '}
+                  module
+                </Link>
+              </Typography>
+            )}
           </Container>
         </CentralContent>
         <Sidebar side="right" />

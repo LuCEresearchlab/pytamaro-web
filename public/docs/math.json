@@ -1,6 +1,7 @@
 {
     "module": "math",
     "summary": "Basic mathematical functions and constants",
+    "officialBaseUrl": "https://docs.python.org/3/library/math.html",
     "elements": [
         {
             "kind": "function",
@@ -11,14 +12,25 @@
             "parameters": [
                 {
                     "name": "angle",
-                    "type": "float",
+                    "type": "int | float",
                     "description": "angle in radians"
                 }
             ],
             "returnValue": {
                 "type": "float",
                 "description": "sine of the angle"
-            }
+            },
+            "examples": [
+                {
+                    "code": "sin(0)",
+                    "result": "0.0"
+                },
+                {
+                    "code": "sin(pi / 2)",
+                    "result": "1.0"
+                }
+            ],
+            "urlSuffix": "#math.sin"
         },
         {
             "kind": "function",
@@ -29,14 +41,25 @@
             "parameters": [
                 {
                     "name": "angle",
-                    "type": "float",
+                    "type": "int | float",
                     "description": "angle in radians"
                 }
             ],
             "returnValue": {
                 "type": "float",
                 "description": "cosine of the angle"
-            }
+            },
+            "examples": [
+                {
+                    "code": "cos(0)",
+                    "result": "1.0"
+                },
+                {
+                    "code": "cos(pi)",
+                    "result": "-1.0"
+                }
+            ],
+            "urlSuffix": "#math.cos"
         },
         {
             "kind": "function",
@@ -47,14 +70,25 @@
             "parameters": [
                 {
                     "name": "angle",
-                    "type": "float",
+                    "type": "int | float",
                     "description": "angle in radians"
                 }
             ],
             "returnValue": {
                 "type": "float",
                 "description": "tangent of the angle"
-            }
+            },
+            "examples": [
+                {
+                    "code": "tan(0)",
+                    "result": "0.0"
+                },
+                {
+                    "code": "tan(pi / 4)",
+                    "result": "1.0"
+                }
+            ],
+            "urlSuffix": "#math.tan"
         },
         {
             "kind": "function",
@@ -65,14 +99,25 @@
             "parameters": [
                 {
                     "name": "value",
-                    "type": "float",
+                    "type": "int | float",
                     "description": "value between -1 and 1"
                 }
             ],
             "returnValue": {
                 "type": "float",
                 "description": "angle in radians"
-            }
+            },
+            "examples": [
+                {
+                    "code": "asin(0)",
+                    "result": "0.0"
+                },
+                {
+                    "code": "asin(1)",
+                    "result": "1.5707963267948966"
+                }
+            ],
+            "urlSuffix": "#math.asin"
         },
         {
             "kind": "function",
@@ -83,14 +128,25 @@
             "parameters": [
                 {
                     "name": "value",
-                    "type": "float",
+                    "type": "int | float",
                     "description": "value between -1 and 1"
                 }
             ],
             "returnValue": {
                 "type": "float",
                 "description": "angle in radians"
-            }
+            },
+            "examples": [
+                {
+                    "code": "acos(1)",
+                    "result": "0.0"
+                },
+                {
+                    "code": "acos(0)",
+                    "result": "1.5707963267948966"
+                }
+            ],
+            "urlSuffix": "#math.acos"
         },
         {
             "kind": "function",
@@ -108,7 +164,18 @@
             "returnValue": {
                 "type": "float",
                 "description": "angle in radians"
-            }
+            },
+            "examples": [
+                {
+                    "code": "radians(180)",
+                    "result": "3.141592653589793"
+                },
+                {
+                    "code": "radians(360)",
+                    "result": "6.283185307179586"
+                }
+            ],
+            "urlSuffix": "#math.radians"
         },
         {
             "kind": "function",
@@ -119,12 +186,12 @@
             "parameters": [
                 {
                     "name": "x",
-                    "type": "float",
+                    "type": "int | float",
                     "description": "value to compute the logarithm of"
                 },
                 {
                     "name": "base",
-                    "type": "float",
+                    "type": "int | float",
                     "description": "base of the logarithm",
                     "default": "e"
                 }
@@ -132,7 +199,19 @@
             "returnValue": {
                 "type": "float",
                 "description": "logarithm of the provided value"
-            }
+            },
+            "examples": [
+                {
+                    "code": "log(e)",
+                    "result": "1.0"
+                },
+                {
+                    "code": "log(100, 10)",
+                    "result": "2.0",
+                    "usesOptional": true
+                }
+            ],
+            "urlSuffix": "#math.log"
         },
         {
             "kind": "function",
@@ -143,14 +222,25 @@
             "parameters": [
                 {
                     "name": "x",
-                    "type": "float",
+                    "type": "int | float",
                     "description": "number to compute the square root of"
                 }
             ],
             "returnValue": {
                 "type": "float",
                 "description": "square root of the provided number"
-            }
+            },
+            "examples": [
+                {
+                    "code": "sqrt(4)",
+                    "result": "2.0"
+                },
+                {
+                    "code": "sqrt(2)",
+                    "result": "1.4142135623730951"
+                }
+            ],
+            "urlSuffix": "#math.sqrt"
         },
         {
             "kind": "function",
@@ -161,14 +251,25 @@
             "parameters": [
                 {
                     "name": "x",
-                    "type": "float",
+                    "type": "int | float",
                     "description": "exponent of the formula eˣ"
                 }
             ],
             "returnValue": {
                 "type": "float",
                 "description": "exponential of the provided number"
-            }
+            },
+            "examples": [
+                {
+                    "code": "exp(0)",
+                    "result": "1.0"
+                },
+                {
+                    "code": "exp(1)",
+                    "result": "2.718281828459045"
+                }
+            ],
+            "urlSuffix": "#math.exp"
         },
         {
             "kind": "constant",
@@ -176,7 +277,30 @@
             "type": "float",
             "description": {
                 "p": ["The mathematical constant π = 3.141592…"]
-            }
+            },
+            "examples": [
+                {
+                    "code": "pi",
+                    "result": "3.141592653589793"
+                }
+            ],
+            "urlSuffix": "#math.pi"
+        },
+        {
+            "kind": "constant",
+            "name": "tau",
+            "type": "float",
+            "description": {
+                "p": ["The mathematical constant τ = 6.283185…",
+                      "τ is the ratio of a circle's circumference to its radius, and is equal to 2π."]
+            },
+            "examples": [
+                {
+                    "code": "tau",
+                    "result": "6.283185307179586"
+                }
+            ],
+            "urlSuffix": "#math.tau"
         },
         {
             "kind": "constant",
@@ -184,7 +308,14 @@
             "type": "float",
             "description": {
                 "p": ["The mathematical constant e = 2.718281…"]
-            }
+            },
+            "examples": [
+                {
+                    "code": "e",
+                    "result": "2.718281828459045"
+                }
+            ],
+            "urlSuffix": "#math.e"
         }
     ]
 } 

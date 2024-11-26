@@ -1,6 +1,7 @@
 {
     "module": "string",
     "summary": "Common constants for characters",
+    "officialBaseUrl": "https://docs.python.org/3/library/string.html",
     "elements": [
         {
             "kind": "constant",
@@ -8,7 +9,14 @@
             "type": "str",
             "description": {
                 "p": ["Sequence of lowercase letters 'abcdefghijklmnopqrstuvwxyz'."]
-            }
+            },
+            "examples": [
+                {
+                    "code": "ascii_lowercase",
+                    "result": "'abcdefghijklmnopqrstuvwxyz'"
+                }
+            ],
+            "urlSuffix": "#string.ascii_lowercase"
         },
         {
             "kind": "constant",
@@ -16,7 +24,14 @@
             "type": "str",
             "description": {
                 "p": ["Sequence of uppercase letters 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'."]
-            }
+            },
+            "examples": [
+                {
+                    "code": "ascii_uppercase",
+                    "result": "'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"
+                }
+            ],
+            "urlSuffix": "#string.ascii_uppercase"
         },
         {
             "kind": "constant",
@@ -24,7 +39,14 @@
             "type": "str",
             "description": {
                 "p": ["Concatenation of the `ascii_lowercas` and `ascii_uppercase` constants."]
-            }
+            },
+            "examples": [
+                {
+                    "code": "ascii_letters",
+                    "result": "'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'"
+                }
+            ],
+            "urlSuffix": "#string.ascii_letters"
         },
         {
             "kind": "constant",
@@ -40,7 +62,14 @@
             "type": "str",
             "description": {
                 "p": ["Sequence of hexadecimal digits '0123456789abcdefABCDEF'."]
-            }
+            },
+            "examples": [
+                {
+                    "code": "hexdigits",
+                    "result": "'0123456789abcdefABCDEF'"
+                }
+            ],
+            "urlSuffix": "#string.hexdigits"
         },
         {
             "kind": "constant",
@@ -48,7 +77,14 @@
             "type": "str",
             "description": {
                 "p": ["Sequence of octal digits '01234567'."]
-            }
+            },
+            "examples": [
+                {
+                    "code": "octdigits",
+                    "result": "'01234567'"
+                }
+            ],
+            "urlSuffix": "#string.octdigits"
         },
         {
             "kind": "constant",
@@ -56,7 +92,14 @@
             "type": "str",
             "description": {
                 "p": ["Sequence of ASCII characters which are considered punctuation: `!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~`"]
-            }
+            },
+            "examples": [
+                {
+                    "code": "punctuation",
+                    "result": "'!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~'"
+                }
+            ],
+            "urlSuffix": "#string.punctuation"
         },
         {
             "kind": "constant",
@@ -64,7 +107,14 @@
             "type": "str",
             "description": {
                 "p": ["Sequence of ASCII characters which are considered printable: `digits`, `ascii_letters`, `punctuation`, and `whitespace`."]
-            }
+            },
+            "examples": [
+                {
+                    "code": "printable",
+                    "result": "'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ \\t\\n\\r\\x0b\\x0c'"
+                }
+            ],
+            "urlSuffix": "#string.printable"
         },
         {
             "kind": "constant",
@@ -72,7 +122,14 @@
             "type": "str",
             "description": {
                 "p": ["Sequence of ASCII characters which are considered whitespace: space, tab, linefeed, return, formfeed, and vertical tab."]
-            }
+            },
+            "examples": [
+                {
+                    "code": "whitespace",
+                    "result": "' \\t\\n\\r\\x0b\\x0c'"
+                }
+            ],
+            "urlSuffix": "#string.whitespace"
         }
     ]
 } 

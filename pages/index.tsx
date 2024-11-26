@@ -28,7 +28,7 @@ import Carousel from 'react-material-ui-carousel';
 import ActivityCardMedia from '../components/ActivityCardMedia';
 import { registerCustomPythonLanguage, STRICT_PYTHON3_LANG_ID } from '../components/editor/strictPython3';
 import { COLORIZE_CLASSNAME, colorizeElements, configureEditor } from '../components/editor/utils';
-import OutputArea from '../components/OutputArea';
+import ExecutionOutputArea from '../components/OutputArea';
 import PanoramaAlpeFoppa from '../public/PanoramaAlpeFoppa.jpg';
 import { basicActivities, listVisibleActivities } from '../src/fs-content/activities';
 import { BasicActivity } from '../src/schemas/activitySchema';
@@ -103,7 +103,7 @@ function PythonCodeCard({
           )}
         </CardContent>
       </PythonBadge>
-      <OutputArea
+      <ExecutionOutputArea
         executionError={false}
         executionResponse={{
           stdout,

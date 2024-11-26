@@ -4,6 +4,7 @@ import {
   Box,
   Chip,
   Divider,
+  Stack,
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
@@ -13,6 +14,7 @@ import { JudiciousFunction } from '../../src/schemas/documentation';
 import theme from '../../src/theme';
 import CodeElement from './CodeElement';
 import ConfigButtons, { SHOW_DIAGRAM_KEY, SHOW_OPTIONAL_KEY, SHOW_TYPES_KEY } from './ConfigButtons';
+import DocumentationExample from './DocumentationExample';
 import FunctionDiagram from './FunctionDiagram';
 import {
   hoverProps,
@@ -27,7 +29,7 @@ export default function FunctionDocumentation({ fn, module } :
   const { t } = useLocalTranslation();
   const [hoverElement, setHoverElement] = useState<string>('');
   const {
-    name, description, parameters, returnValue,
+    name, description, parameters, returnValue, examples,
   } = fn;
   const { docsMetadata } = useLocalProfile();
   const params = visibleParameters(parameters, docsMetadata.showOptional);
@@ -35,10 +37,15 @@ export default function FunctionDocumentation({ fn, module } :
     || param.variableLength);
   const hasTypes = parameters.some((param) => param.type !== '')
     || (returnValue && returnValue.type !== '');
+  const hasExamplesUsingOptional = examples?.some((ex) => ex.usesOptional) || false;
   const availableOptions = [];
-  if (hasOptionalParams) { availableOptions.push(SHOW_OPTIONAL_KEY); }
+  if (hasOptionalParams || hasExamplesUsingOptional) { availableOptions.push(SHOW_OPTIONAL_KEY); }
   if (hasTypes) { availableOptions.push(SHOW_TYPES_KEY); }
   availableOptions.push(SHOW_DIAGRAM_KEY);
+
+  const shownExamples = examples
+    ?.filter((ex) => !ex.usesOptional || (ex.usesOptional && docsMetadata.showOptional)) || [];
+
   return (
     <>
       <Box mb={1}>
@@ -155,6 +162,16 @@ export default function FunctionDocumentation({ fn, module } :
           >
             {sentence(returnValue.description)}
           </Typography>
+        </>
+      )}
+      {shownExamples.length > 0 && (
+        <>
+          <Divider sx={{ mt: 3, mb: 1 }}>{t('examples')}</Divider>
+          <Stack spacing={2}>
+            {shownExamples.map((example, idx) => (
+              <DocumentationExample example={example} key={idx} />
+            ))}
+          </Stack>
         </>
       )}
     </>

@@ -170,14 +170,27 @@ function CodeElement({ content } : { content : string }) {
   );
 }
 
-export default function OutputArea(
+export function OutputArea({ data, sx = {}, preStyle = {} } :
+{ data : string, sx?: CSSProperties, preStyle?: CSSProperties }) {
+  const pytamaroDataUriRegex = /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
+  return (
+    <div className="output-area" translate="no" style={sx}>
+      {data.split(pytamaroDataUriRegex).filter(negate(isEmpty)).map((chunk, idx) => (
+        chunk.startsWith(dataURIPrefix('image/png')) || chunk.startsWith(dataURIPrefix('image/gif'))
+          ? <ImgElement key={idx} dataURI={chunk} />
+          : <SinglePreElement key={idx} lines={splitLines(chunk)} style={preStyle} />
+      ))}
+    </div>
+  );
+}
+
+export default function ExecutionOutputArea(
   {
     executionError, executionResponse, dimmed = false, sx = {},
   } :
-  { executionError: boolean, executionResponse: CompletedExecutionResponse, dimmed?: boolean,
-    sx?: CSSProperties },
+  { executionError: boolean, executionResponse: CompletedExecutionResponse,
+    dimmed?: boolean, sx?: CSSProperties },
 ) {
-  const pytamaroDataUriRegex = /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
   const { stdout, stderr } = executionResponse;
   return (
     <Card
@@ -193,14 +206,8 @@ export default function OutputArea(
         ...sx,
       }}
     >
-      <div className="output-area" translate="no">
-        {stdout.split(pytamaroDataUriRegex).filter(negate(isEmpty)).map((chunk, idx) => (
-          chunk.startsWith(dataURIPrefix('image/png')) || chunk.startsWith(dataURIPrefix('image/gif'))
-            ? <ImgElement key={idx} dataURI={chunk} />
-            : <SinglePreElement key={idx} lines={splitLines(chunk)} />
-        ))}
-        {stderr ? <CodeElement content={stderr} /> : null}
-      </div>
+      <OutputArea data={stdout} />
+      {stderr && <CodeElement content={stderr} />}
     </Card>
   );
 }

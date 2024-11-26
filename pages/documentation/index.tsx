@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Container,
   Divider,
   Link,
@@ -7,8 +8,10 @@ import {
   ListItemAvatar,
   ListItemButton,
   ListItemText,
+  TextField,
   Typography,
 } from '@mui/material';
+import { createFilterOptions } from '@mui/material/Autocomplete';
 import Grid from '@mui/material/Unstable_Grid2';
 import { sortBy } from 'lodash';
 import Head from 'next/head';
@@ -21,7 +24,7 @@ import allDocumentationModules, { readDocumentation } from '../../src/fs-content
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { JudiciousModule } from '../../src/schemas/documentation';
 import { translationProps } from '../../src/serverSideTranslationProps';
-import { documentationModulePathname, pytamaroDocsUrl } from '../../src/urlUtils';
+import { documentationElementPathname, documentationModulePathname, pytamaroDocsUrl } from '../../src/urlUtils';
 
 export default function Documentation({ modulesData } : { modulesData: JudiciousModule[] }) {
   const { t } = useLocalTranslation();
@@ -47,6 +50,28 @@ export default function Documentation({ modulesData } : { modulesData: Judicious
             <Typography my={4} textAlign="center">
               {t('selectToSeeDoc')}
             </Typography>
+            <Autocomplete
+              options={sortedModules.flatMap((module) => module.elements.map((element) => ({
+                ...element,
+                module: module.module,
+              })))}
+              renderOption={(_props, option) => (
+                <ListItemButton
+                  href={documentationElementPathname(option.module, option.name)}
+                >
+                  <ListItemText primary={option.name} secondary={option.description.p[0]} />
+                </ListItemButton>
+              )}
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              renderInput={(params) => <TextField {...params} label={t('findName')} />}
+              filterOptions={createFilterOptions({
+                limit: 10,
+                stringify: (option) => option.name + option.description.p[0],
+                trim: true,
+              })}
+              sx={{ mb: 6 }}
+              freeSolo
+            />
             <List sx={{ bgcolor: 'background.paper' }}>
               {sortedModules.map((data, index) => (
                 <div key={data.module}>

@@ -61,7 +61,7 @@
     "selectKind": "Seleziona un genere",
     "textualSearch": "Ricerca testuale",
     "nameOrDescription": "Nome o Descrizione",
-    "selectToSeeDoc": "Seleziona una libreria per vedere la sua documentazione",
+    "selectToSeeDoc": "Cerca un nome o seleziona una libreria per vederne la documentazione",
     "Function": "Funzione",
     "Constant": "Costante",
     "Type": "Tipo",
@@ -70,5 +70,15 @@
     "fromLibrary": "dalla libreria {{module}}",
     "parameters": "Parametri",
     "return": "Ritorno",
-    "sideEffects": "Effetti collaterali"
+    "sideEffects": "Effetti collaterali",
+    "examples": "Esempi",
+    "code": "Codice",
+    "result": "Risultato",
+    "I/O": "I/O",
+    "input": "Input",
+    "output": "Output",
+    "codeTooltip": "Codice Python",
+    "outputTooltip": "Output dell'esecuzione del codice",
+    "resultTooltip": "Risultato della valutazione del codice",
+    "findName": "Trova un nome" 
 }

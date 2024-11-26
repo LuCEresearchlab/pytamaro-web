@@ -41,7 +41,22 @@
             "returnValue": {
                 "type": "Colore",
                 "description": "un colore con le componenti HSLA indicate"
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, colore_hsl(0, 1.0, 1.0)))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAVklEQVR4nO3PgQkAIRDAsPf33/lcQjBIM0G7Zma+B/y3A05pRNOIphFNI5pGNI1oGtE0omlE04imEU0jmkY0jWga0TSiaUTTiKYRTSOaRjSNaBrRNKLZPMQEYExCaC0AAAAASUVORK5CYII=@@@PYTAMARO_DATA_URI_END@@@"
+                },
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, colore_hsl(120, 1.0, 0.5)))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAV0lEQVR4nO3PAQ3AMAzAsH78OfckLi26bATJMzs7P3BuB3zFSI2RGiM1RmqM1BipMVJjpMZIjZEaIzVGaozUGKkxUmOkxkiNkRojNUZqjNQYqTFSY6TmBQayAmIsA0wnAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                },
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, colore_hsl(240, 1.0, 1.0, 0.25)))",
+                    "usesOptional": true,
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAWElEQVR4nO3PAQnAMBDAwK7K6t/Uz8SgYdwpSJ6ZOesH9u2ArxipMVJjpMZIjZEaIzVGaozUGKkxUmOkxkiNkRojNUZqjNQYqTFSY6TGSI2RGiM1RmqM1LzzwAOhg+w9+gAAAABJRU5ErkJggg==@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Colori",
@@ -82,7 +97,22 @@
             "returnValue": {
                 "type": "Colore",
                 "description": "un colore con le componenti HSVA indicate"
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, colore_hsv(0, 1.0, 1.0)))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAV0lEQVR4nO3PAQ3AMAzAsH78OfckLi26bATJszM7P3BuB3zFSI2RGiM1RmqM1BipMVJjpMZIjZEaIzVGaozUGKkxUmOkxkiNkRojNUZqjNQYqTFSY6TmBQexAmKeVPnfAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                },
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, colore_hsv(120, 1.0, 1.0)))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAV0lEQVR4nO3PAQ3AMAzAsH78OfckLi26bATJMzs7P3BuB3zFSI2RGiM1RmqM1BipMVJjpMZIjZEaIzVGaozUGKkxUmOkxkiNkRojNUZqjNQYqTFSY6TmBQayAmIsA0wnAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                },
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, colore_hsv(240, 1.0, 1.0, 0.25)))",
+                    "usesOptional": true,
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAWElEQVR4nO3PAQnAMBDAwF+V1b+pzUShYdwpSJ6Zd88PrNsBpxipMVJjpMZIjZEaIzVGaozUGKkxUmOkxkiNkRojNUZqjNQYqTFSY6TGSI2RGiM1RmqM1Hy8rwGjLM/6CgAAAABJRU5ErkJggg==@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Colori",
@@ -123,7 +153,26 @@
             "returnValue": {
                 "type": "Colore",
                 "description": "un colore con le componenti RGBA indicate"
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, colore_rgb(255, 0, 0)))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAV0lEQVR4nO3PAQ3AMAzAsH78OfckLi26bATJszM7P3BuB3zFSI2RGiM1RmqM1BipMVJjpMZIjZEaIzVGaozUGKkxUmOkxkiNkRojNUZqjNQYqTFSY6TmBQexAmKeVPnfAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                },
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, colore_rgb(0, 255, 0)))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAV0lEQVR4nO3PAQ3AMAzAsH78OfckLi26bATJMzs7P3BuB3zFSI2RGiM1RmqM1BipMVJjpMZIjZEaIzVGaozUGKkxUmOkxkiNkRojNUZqjNQYqTFSY6TmBQayAmIsA0wnAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                },
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, colore_rgb(127, 127, 127)))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAV0lEQVR4nO3PgQ2AIBDAQGDxH12WMLExdxO0e2ae9QPn64C3GKkxUmOkxkiNkRojNUZqjNQYqTFSY6TGSI2RGiM1RmqM1BipMVJjpMZIjZEaIzVGaozUXFlPAuAGQnCvAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                },
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, colore_rgb(0, 0, 255, 0.2)))",
+                    "usesOptional": true,
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAWElEQVR4nO3PAQnAMBDAwF8t1b+2zUShYdwpSJ6Zd88PrNsBpxipMVJjpMZIjZEaIzVGaozUGKkxUmOkxkiNkRojNUZqjNQYqTFSY6TGSI2RGiM1RmqM1Hy+awGWOVBiJAAAAABJRU5ErkJggg==@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Colori",
@@ -145,7 +194,13 @@
                 "p": [
                     "Colore bianco"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, bianco))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAVklEQVR4nO3PgQkAIRDAsPf33/lcQjBIM0G7Zma+B/y3A05pRNOIphFNI5pGNI1oGtE0omlE04imEU0jmkY0jWga0TSiaUTTiKYRTSOaRjSNaBrRNKLZPMQEYExCaC0AAAAASUVORK5CYII=@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Colori",
@@ -156,7 +211,13 @@
                 "p": [
                     "Colore blu"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, blu))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAV0lEQVR4nO3PAQ3AMAzAsH78OfckLi26bATJM7M7P3BuB3zFSI2RGiM1RmqM1BipMVJjpMZIjZEaIzVGaozUGKkxUmOkxkiNkRojNUZqjNQYqTFSY6TmBQWzAmK1okW+AAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Colori",
@@ -167,7 +228,13 @@
                 "p": [
                     "Colore ciano"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, ciano))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAV0lEQVR4nO3PgQkAIRDAMP39dz6XED5IM0G718ysB3x/B9zSiKYRTSOaRjSNaBrRNKJpRNOIphFNI5pGNI1oGtE0omlE04imEU0jmkY0jWga0TSiaURzACC8A2H5zWIQAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Colori",
@@ -178,7 +245,13 @@
                 "p": [
                     "Colore giallo"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, giallo))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAV0lEQVR4nO3PgQkAIRDAMP39dz6XED5IM0G7Z9asB3x/B9zSiKYRTSOaRjSNaBrRNKJpRNOIphFNI5pGNI1oGtE0omlE04imEU0jmkY0jWga0TSiaURzACK6A2GgOBbsAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Colori",
@@ -189,7 +262,13 @@
                 "p": [
                     "Colore magenta"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, magenta))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAV0lEQVR4nO3PgQkAIRDAMP39dz6XED5IM0G7Z82sB3x/B9zSiKYRTSOaRjSNaBrRNKJpRNOIphFNI5pGNI1oGtE0omlE04imEU0jmkY0jWga0TSiaURzACG7A2HFgS74AAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Colori",
@@ -200,7 +279,13 @@
                 "p": [
                     "Colore nero"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, nero))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAVklEQVR4nO3PgQkAIRDAsPP331mXED5IM0G7ZmbPA76/A25pRNOIphFNI5pGNI1oGtE0omlE04imEU0jmkY0jWga0TSiaUTTiKYRTSOaRjSNaBrRNKI565oBYxivQ0IAAAAASUVORK5CYII=@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Colori",
@@ -211,7 +296,13 @@
                 "p": [
                     "Colore rosso"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, rosso))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAV0lEQVR4nO3PAQ3AMAzAsH78OfckLi26bATJszM7P3BuB3zFSI2RGiM1RmqM1BipMVJjpMZIjZEaIzVGaozUGKkxUmOkxkiNkRojNUZqjNQYqTFSY6TmBQexAmKeVPnfAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Colori",
@@ -222,7 +313,13 @@
                 "p": [
                     "Colore completamente trasparente"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, trasparente))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAIElEQVR4nO3BAQEAAACCIP+vbkhAAQAAAAAAAAAAwKMBJ0IAAdXu39oAAAAASUVORK5CYII=@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Colori",
@@ -233,7 +330,13 @@
                 "p": [
                     "Colore verde"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, verde))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAV0lEQVR4nO3PAQ3AMAzAsH78OfckLi26bATJMzs7P3BuB3zFSI2RGiM1RmqM1BipMVJjpMZIjZEaIzVGaozUGKkxUmOkxkiNkRojNUZqjNQYqTFSY6TmBQayAmIsA0wnAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Output",
@@ -269,7 +372,18 @@
                     "description": "determina se la GIF debba riprodursi in loop indefinitamente (default a True)"
                 }
             ],
-            "sideEffects": true
+            "sideEffects": true,
+            "examples": [
+                {
+                    "code": "salva_animazione('flash.gif', [rettangolo(50, 50, giallo), rettangolo(50, 50, nero)])",
+                    "stdout": ""
+                },
+                {
+                    "code": "salva_animazione('flash.gif', [rettangolo(50, 50, giallo), rettangolo(50, 50, nero)], 1000, True)",
+                    "usesOptional": true,
+                    "stdout": ""
+                }
+            ]
         },
         {
             "section": "Output",
@@ -300,7 +414,18 @@
                     "description": "pu\u00f2 facoltativamente essere impostato a True per sovrapporre informazioni di debug"
                 }
             ],
-            "sideEffects": true
+            "sideEffects": true,
+            "examples": [
+                {
+                    "code": "salva_grafica('football_pitch.png', rettangolo(100, 60, verde))",
+                    "stdout": ""
+                },
+                {
+                    "code": "salva_grafica('football_pitch.png', rettangolo(100, 60, verde), True)",
+                    "usesOptional": true,
+                    "stdout": ""
+                }
+            ]
         },
         {
             "section": "Output",
@@ -331,7 +456,18 @@
                     "description": "determina se la GIF debba riprodursi in loop indefinitamente (default a True)"
                 }
             ],
-            "sideEffects": true
+            "sideEffects": true,
+            "examples": [
+                {
+                    "code": "visualizza_animazione([rettangolo(50, 50, giallo), rettangolo(50, 50, nero)])",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/gif;base64,R0lGODlhMgAyAIEAAP//AAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQIBAAAACwAAAAAMgAyAAAIUwABCBxIsKDBgwgTKlzIsKHDhxAjSpxIsaLFixgzatzIsaPHjyBDihxJsqTJkyhTqlzJsqXLlzBjypxJs6bNmzhz6tzJs6fPn0CDCh1KtKjRhwEBACH5BAgEAAAALAAAAAAyADIAgQAAAAAAAAAAAAAAAAhTAAEIHEiwoMGDCBMqXMiwocOHECNKnEixosWLGDNq3Mixo8ePIEOKHEmypMmTKFOqXMmypcuXMGPKnEmzps2bOHPq3Mmzp8+fQIMKHUq0qNGHAQEAOw==@@@PYTAMARO_DATA_URI_END@@@"
+                },
+                {
+                    "code": "visualizza_animazione([rettangolo(50, 50, giallo), rettangolo(50, 50, nero)], 1000, True)",
+                    "usesOptional": true,
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/gif;base64,R0lGODlhMgAyAIEAAP//AAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQIZAAAACwAAAAAMgAyAAAIUwABCBxIsKDBgwgTKlzIsKHDhxAjSpxIsaLFixgzatzIsaPHjyBDihxJsqTJkyhTqlzJsqXLlzBjypxJs6bNmzhz6tzJs6fPn0CDCh1KtKjRhwEBACH5BAhkAAAALAAAAAAyADIAgQAAAAAAAAAAAAAAAAhTAAEIHEiwoMGDCBMqXMiwocOHECNKnEixosWLGDNq3Mixo8ePIEOKHEmypMmTKFOqXMmypcuXMGPKnEmzps2bOHPq3Mmzp8+fQIMKHUq0qNGHAQEAOw==@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Output",
@@ -356,7 +492,18 @@
                     "description": "pu\u00f2 facoltativamente essere impostato a True per sovrapporre informazioni di debug"
                 }
             ],
-            "sideEffects": true
+            "sideEffects": true,
+            "examples": [
+                {
+                    "code": "visualizza_grafica(rettangolo(100, 60, verde))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAA8CAYAAACQPx/OAAAApklEQVR4nO3RQQ0AIBDAsAP/nuGNAvZoFSzZmjNnyNi/A3gZEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIzAWnWQJ2gmwaEgAAAABJRU5ErkJggg==@@@PYTAMARO_DATA_URI_END@@@"
+                },
+                {
+                    "code": "visualizza_grafica(rettangolo(100, 60, verde), True)",
+                    "usesOptional": true,
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG4AAABGCAYAAAAtpKGgAAAB0UlEQVR4nO3bPW7CMByG8ZeqM0qP0Usw9dhMbD0Bx2jE2KUdUCXa5sN2nODnz/ssoCCZyD+Bgh12fdd9yeF6uvcJuLIMB81w0AwH7XnoYPfRb3wabqr+pft3zJ84aIaDZjhohoNmOGiGg2Y4aIaDZjhohoNmOGiGg2Y4aIaDZjhoKLjDRfp8vz62POYWYeAOF+l4vj4/nutM9BpjbhUC7naCf1o60WuMuWUIuL8TfHu8ZKKH0Obeq7UQcG+v46/l4k2hzb1XSyHgTvs6eClop33++d0jBJy0HC8SmgSCk8rxoqFJMDgpHy8imiTthv6tQ7ghNvUiIwLa0A2xWDhpHm8qCpoU8E7mua/NsUhoY6HhpHy8CGhSADgpHS8KmhQE7hELAZd6kUJaRJ4LD5d7ZRkFDw1X+nMgAh4WLuUHeM1dhdZCwqUuY9XaVWgxHFzu2mNUPBRc6YJxRDwM3NJV/mh4CLhaWzOR8BBwNbdmUvAIIeDGJrp07XEKzzcLVWxoopcuGK8x5pYh4KTfE11rgtcYc6vQO+CPUrgd8EfOcNAMB81w0AwHzXDQDAfNcNAMB81w0AwHzXDQDAfNcNAMB21wP861nz9x0AwHzXDQDAftG4LWx3u+gCYNAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Grafiche primitive",
@@ -388,7 +535,17 @@
             "returnValue": {
                 "type": "Grafica",
                 "description": "una grafica con l\u2019ellisse specificato"
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(ellisse(100, 50, rosso))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAYAAACqNX6+AAAB6ElEQVR4nO2c3XKDIBBGD76Y9Mlinyz0yehFMNH43yps9Dsz3GScZofTXQgCDqNEuI187FPbQkith4PvrTHlwJX88gg1rw72bO/svQi8pAUHP4XiyCuk81/vKdf5awltyynoUCGdDGjbJxN4yDFZ6maJcIsQT97Gxjg7JAl3Ax2Vu91NyblINqxt5cRIhBExEnGsmNWzrPiYMYWtXyAA8GunztWahyLckYz/EFIfLjIrJEKd/pDfI6qL4+NjRlbPPTRZslSiDmWyhI1miGQcTpjKlIEQycjGqJSeEMnIzkBKbwyJEPPGIwBcx8MzQ9ZOy8T+dPu+Sh/UaGpbEt+WrjZDmnKxiEQDqXZp7LCBA1dlXZkUs0S4VWjssIR3Kle2WLXaK/IhIcaQEGNUaO3KEkFCbBH0w9AQDlw7hoSSgQggOdBalh0aSELS+91QMJir89xhrxdUBhh9QZXweUMRvPV5T0hKm94D4lAG24EGv9QlJRuje7NGl04k5XC2bZSDnpRwTEyXJLCw8XrV7nft792F4OBr6SEdR8jDvscR4FHC0ny5+WtUF6Rx4LIcq9ZJqn1PTknM2US8E3Us2i7xGlljW8IUJ8qcLJmQ+/KZms+5+yRwtstnloi6nmlAUSFzTJQHz8kvMPsFJop1aj8GjMkAAAAASUVORK5CYII=@@@PYTAMARO_DATA_URI_END@@@"
+                },
+                {
+                    "code": "visualizza_grafica(ellisse(75, 75, nero))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAABLCAYAAAA4TnrqAAACDUlEQVR4nO2cYW6DMAxGP7iYczOzk4WbdT/WqCFtStyFxGn8pE9iomrNk+NWwFjQD4623T059nsCP9WrKWBp+FlBzlbxPcN7dZFXG8KfpFuD8P3zhoMBeLSRlMZjEGmEPoJyUSmN0K+Thuo0Rn8hJeGrBJSguZtUdRlVKLxnmgkbXVQzYazgIGuG6+p58G2iLhNGCg7qypCJaixsFlFVhHkFB9Ay/lNRrKD4HmGpKFJQdM+QRJZXUHDP+FJRpKBYDaFUzKvTyrdTnfNw8LMmO7lhISNw6K5UlmtXxxBsuR02q05mV9xZLmdxclzYiAeYDfY8C/DoLBvs7yHgecAbr3HAYxnaEjxnsc4SsMLmVSlsnSXAZAlYYT9GS3EL7JuwGFuGAkyWAJMlwGQJMFkCTJaAFceb8Y08u8kqZ7dlKMBkCbCTf+XYyT8JQdbWs4gB2ACbWaXsgF03LOVw3RCwpZhjCxuxrL15GWOw53Z49L8RQ1N8LCcd8FmLk7LFf9idf+95e+cfYFd7Aq70hbPPrsOsOoMUFNwzJJEF2H9YiPEKim8Z/6koYL7l+G9mEUY1ZM0grJqoACs4qCFEBb5NGNfV8wwpOEjVHZUyurBmogKE8X6H+UtMCGD0l1ASvkqAFM1d5qHo+VkxhP5y4qiUlNKz09R20hkEe5rkR1whrqmglg91TeFo22GAJ+D+AqeTjvUQkdmaAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Grafiche primitive",
@@ -403,7 +560,13 @@
             "returnValue": {
                 "type": "Grafica",
                 "description": "una grafica vuota (larghezza e altezza 0)"
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(grafica_vuota())",
+                    "stdout": "Impossibile mostrare/salvare una grafica di dimensione 0x0 poich\u00e9 non ha area\n"
+                }
+            ]
         },
         {
             "section": "Grafiche primitive",
@@ -434,7 +597,17 @@
             "returnValue": {
                 "type": "Grafica",
                 "description": "una grafica con il rettangolo specificato"
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(rettangolo(100, 60, verde))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAA8CAYAAACQPx/OAAAApklEQVR4nO3RQQ0AIBDAsAP/nuGNAvZoFSzZmjNnyNi/A3gZEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIzAWnWQJ2gmwaEgAAAABJRU5ErkJggg==@@@PYTAMARO_DATA_URI_END@@@"
+                },
+                {
+                    "code": "visualizza_grafica(rettangolo(50, 50, rosso))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAV0lEQVR4nO3PAQ3AMAzAsH78OfckLi26bATJszM7P3BuB3zFSI2RGiM1RmqM1BipMVJjpMZIjZEaIzVGaozUGKkxUmOkxkiNkRojNUZqjNQYqTFSY6TmBQexAmKeVPnfAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Grafiche primitive",
@@ -467,7 +640,22 @@
             "returnValue": {
                 "type": "Grafica",
                 "description": "una grafica con il settore circolare specificato"
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(settore_circolare(100, 30, blu))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAYAAACqNX6+AAABqElEQVR4nO2aW66DMAxEzVX3lews3RntytIPLpS2QTwSexKYI1nqHyaj8VCDCFEgOpHYo7sgkxAx/ldAd3RhPoSYFTEmhrQQdIkx0a0IQZfY8JMTW4ou0WF1PNElNuQIQZcU5NB4okvKU1oIuiSDIuNpqXr03TWEqhDzcug7rRy18USX7MdUiFmRL8zG01KFpc46y2PAE52IPNBdDHTJs/+zbgPD9H7ige7kTTrcb9Zt2BN7EfHoLhJ4EXmimzAEnhMM9wHzx9ic+hlbJ8qQj5zw2F4249ENKNHCeLrE2GpZiFMJ0lROrFVAn2YGpxJirB59qgc5w3haqqbY83VHs+XGu634sbfGdYcafvxR6eqk2nXH1ThzTmzLkUocUtNaHAs4Qy6VEysMwQ50CHPiCy8iT4BDxpygGCkMBZnG093umk3hRUzeqUcngwhe/1qt03XKDolB2no/AUcp1GMQjqZDFB5ZHE+Z3As5hEKUokCGMCdKkuEQrjs0OOAQrjs02RnqXHdos9EhXHdYseIQ5oQ1Cw5hTqBICMLHWCSzkcV1Rw10/JddFy90LuCRaG41RgAAAABJRU5ErkJggg==@@@PYTAMARO_DATA_URI_END@@@"
+                },
+                {
+                    "code": "visualizza_grafica(settore_circolare(100, 120, blu))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAABkCAYAAABkW8nwAAAEBUlEQVR4nO2dbW6zMBCEh14s+54s7sninoz3RyBNKCkGbO9H55FQlaQBS53ODmsDA0wyXgDIygfpwM7ytC0YPg/sixQy6B5+vD69EKyLqQcZ3+LLwPClNI4wdBTWiwulfsc9Rbr/oLsZY7wC4w0YxyDbbeGypA/jZRKTtgB6bdfJiUl9/pyYKLK2UEy/i4zsYLwgVmZqvd1AF/sNulMFgV21/4qGoKAabH9ZYBQUBVYVCooCqwoFZWALJbABGG/Qm6Mjr2QAKcJc5YD76XDWHgh5IQPDP+1BnOFj+u/I2gMhL4j38jitbqBrGSbDYXn8uP+gaxlGAGRv7rVYjzWOOsMghWQv2etj8TppDIIUI1P2umgPZIuVFaR0LSdky+61dCyAPS0vyNSDNMmKsBjkHSFWS+OaYwHMWt7I1sT1RljDFygub2RLLYmNy78Y5B2SLYT6d6VwJvUYBKmKWAj1BRescvWDU7Kmc205FkDX8opoOleBsNh+cIxoiavEsQC6lmdEQ1yFwmL7wTnSW1w77zbD9oNzcq9AX1oKZ1KLQZBuSC/n2ims4RMM8t6RHh36Azde4zLmIEjL5c57SyHYfghDbjlxfeJWkQzyMRia3C70gGM9SLUGQTRpE+ZPqpWuFYRcuw1xxrEATk5HQWrnrQr1lasf4lAvb511LIBZKxD18lYFYbH9EAip1TyteKrJIB8IOds8rVEKZ1LFfRFd0tkdVBQW5xEDIWdLYuWuK+cRY3H8LLFmKQSDfDSOnyVWFhYAZq1IyNHGaQNhcRlzMNKRLzV8ECbbD4FIex8G2qIUzqSG+yZ9SXu/0FBYbD/EYl/7ofEzodl+iEV5+6FlKQTbD9Eod60OT7Gna8WizLUaOxbA9kM0ylyrg2PNsP0Qh23X6uBYD6TjsUhTtl2ro7AY5AMhW7/Q07EAZq0oyNYcYmdh0bUCkX77sGN4f4ZBPgbvQ3zvUjiTlI5LqvI+xCs5FkDXCkF+dwW1lmMBbD9EQN6FeEVhMcgHQdbeVCyFAOcRo/AzxGuWQtC1ovCzHCoLC7DwQCFyGlm+YUBYANh+8E5avqGcsZ7h7ZB885qzrDgWQNdyzmuz1JCwGOQjYagUAmw/eOe7HBpyLIDLmONgTFjA3ituiSW+c5ZBYQGga7nHWMZ6hu0Hn9xzllXHAuharjEsLLYffHKfNzQsLAB0LY8IYF5YbD94xXB4f4bLmB2RgeGfccd6INoDIMUIYL4UzjDIe8OJsAAwa7nCkbDoWn4Yr46EBXAZsx+cCQsAS6ILHAqLqx884FBYANh+MI9TYTHIG0ecdN7X4DJmyzh1LIDziLZx7FgznEe0iGPHepC0B0B+EsCxAC5jtkcExwLoWub4DzL+2H5VO1TEAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                },
+                {
+                    "code": "visualizza_grafica(settore_circolare(100, 120, blu), True)",
+                    "usesOptional": true,
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,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@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Grafiche primitive",
@@ -505,7 +693,18 @@
             "returnValue": {
                 "type": "Grafica",
                 "description": "una grafica con il testo specificato"
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(testo('PyTamaro', 'Fira Sans', 32, blu))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,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@@@PYTAMARO_DATA_URI_END@@@"
+                },
+                {
+                    "code": "visualizza_grafica(testo('PyTamaro', 'Ubuntu', 32, blu), True)",
+                    "usesOptional": true,
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,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@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Grafiche primitive",
@@ -543,7 +742,22 @@
             "returnValue": {
                 "type": "Grafica",
                 "description": "una grafica con il triangolo specificato"
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(triangolo(100, 100, 60, blu))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABXCAYAAADyDOBXAAAC7UlEQVR4nO2ZW27rMAxE6bsx664s2lnalakfidHYtawXJZLyHEAfBRJXpjI+E4RoCsL6WkAJ4flaQAHhQRTCez2kd9PKIr2BdkLY/72Yvqd/0hto4+wxZT8lRgnrx6PquCD48YTnxYFA8GO5TIfplBgV4FHkMewJ3qDUS6RtT/DmPkH56diwlRJjCamRNQTfiSyRTyV45VzW3NRCSnhpSoeplBgRXqnIY+gXvAGpc1ZXezVYGSyPqsMCDTSJHILnpUc6bAleGV3SgZTUsftZttdSKXilNXCUfPXVYIW1d+QnV2dKFNFV5BB8OV1FDsGXIZIOpCSOSDqQknOG1NzUekhPgUhN7Q1Begcv5Guwgtqr6XGhIyWCiIocgv+LqMgh+D0q0yGeEkGJaRF5DBnBC0ndgjxl9iiUEO3p2BifEoGEWJKmpb1WoVrk6gQ/AJU1N7VmTYnJdAxPyUBphTDuf/VgjOAHSd1CzU0xwz0QkfFHldijqyMmRR5bT+lpNjJVOmZIyVTpsJ4SFT/L9lqPXlPrWOVC6HdtDfSpwZ1q7zQV8QIz9zilyGNrlZ52BlOKPLae0tNOcKt0dEkJs5hC4L2eCb6Ilv9cF2OUuhnJceM4750xIbdMxwc8NZgpIerlNgCeGTAcSFiJyLVfxzyOQ/AcCfEM15gF33qBxgNBOg641pQ0iujuIo9RL/iGhNy25mZQP5uGhCAd19SlpDIhqLlp6mZUcSAQeSauRvA1CfEV77krvvQNhQcSHoR0lOBKU1IoHoi8jnzBFyQENbee/NllnlxYieirbjPgjSNavlMvyk2Ib9oKIMqcYcaBoOYy4XIEn5MQ37wVsOFTL0gcCGouMy4l+ITUUXP7EK/BFwlBze1HfLaRk0LNHYA7q8GxhPiuWwFEkRmfHAhq7iDcWQ0+eWRB5GPZC/6QEIh8PPuZHxKCdMjwm5KPhOBnWTl+Z/8+EIhcGLcJfkuIF9sK2PBERAu+BKrCLWhWuvgB6vauEVt0JnkAAAAASUVORK5CYII=@@@PYTAMARO_DATA_URI_END@@@"
+                },
+                {
+                    "code": "visualizza_grafica(triangolo(100, 100, 120, blu))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAABXCAYAAADmtbzzAAADC0lEQVR4nO2bW66jMBBEK7OxMCuDWRmelXk+boiYKOQBNt1tnyP1x/1BvlCqKjVBUh6lfBVAWfJVyvlHYABFyeNNXAgMSnMXVpbyTDxCIf5zrZXAAA6T5yfiIh7hKPcivzXEI+xl07XoX3CUl8Kif8Fenhb5raF/wTd8LCz6F3zD2yJP/4K9vC3yxCPsYZdrITD4hN2uRTzCOw4JC4HBFl+tH4hH+IZiwmI9AWsOF3niEbY4XORfCAw6popr0b9AKlzk6V+wprqw6F99copr0b/6pFqRp3/1TfUiTzz2y+muhcD6wMS1iMc+OLXII7C+MBcW8dgmLlwLgbWJWZEnHtvGvMhvDe4VH3euRTwacSl/yZzLX7MYSbr8tj5ED/yqcM2pwjVLMdC/zqGCY0nOXWvNIF3+Wh+iRWo4liQNla5bmkT/CofbIr81xGMM3K4fEFh8wrnWMrOIR++YiwSBtYmr94h7Z7S+i/CUsJGIwHwTtsg/m1nEoyeaca2VwMABTbnWekbrOwttFPmtuVrf3c4xF0DNmRGYGU271kpgYEBzRX5rRus73RnNFvmtuVrf8Y7oxrWWmRHYKXTnWsuM1ne+A7oo8gjMBvMHbDmziMdadBuJCKw+3RX5rRmtn0Rj4FoIrBq41sPMChyPlb4r3EvO1idwSIr49Xat7wr3MlkfwCFDxHh05lgSrvWWIcLX294cS4rzFbUVKUL/cuhY0s+NQ2AfkLz2L4+OJdG1PmWI2L+MYf0QeT3hNAoXKPI7SJIm64LvNQoXJusDBGTQT8EnHl9DJB4cBPYc3iMWmFmO+pcjcC0EVgVcq/CM1k/UEV3/jLnWXGs9Lefrhkdytj5BgyRVWE94Xzc8MlkfoEEG3d8/dg1FvvKMJZ5SsCiUbr0gWZ+iA4Yj8RgtCnX7Z5P1KTog6cB6IqBjLVDkTyR9+/OcgI51Z7I+QEcM3/avwI4l4VomJH2wnojsWBK/MrVgUJCfRx+E9YPH9UTwKJRYP7hhki5/lj+iR6FYP7hhWsdjA461wBt7R6R/jue8J20nn0QAAAAASUVORK5CYII=@@@PYTAMARO_DATA_URI_END@@@"
+                },
+                {
+                    "code": "visualizza_grafica(triangolo(100, 100, 120, blu), True)",
+                    "usesOptional": true,
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAABhCAYAAABRe6o8AAAFX0lEQVR4nO2dS47bRhCGfwU5gM6iA4wqiI/iheE7BNOG76CVbyIDorwysvBVonUChFl4NKHlJtnP6gf/DyAwkOwmgfmmu1hVbO5u+/0IQgrxS+kLINuGApKiUEBSFApIivKr7cP97S8BdlflayGdY7vhXZgBxxEYjzkviJAZAXdXAMP3Y7xQRJKLhRlw99vLD4JXEQlJy9pNiJn8LC/L8nO+yyFbY0XA3QfLh4bLMkmFSxpGZj4bKCKJxUHA1xsSG/L9Oy7LJAzXRLRZ/57xIfHHUcDFWXCK4bJMfPAoxb2mZdYQMD4kjvjWgo3HvxUwPiQr7Gz1uf3ttpv/L2NoA6uwvrxtPGvBs0jg+Qcuy+SRAAGdb0hsCFjWIxNC+wFN5HmFaRsCBAu4uyJeQuD//CGX5Y0S0RFtrROHMjA+3CaxLfkmxUW8IGB8uDkiBdx9QPgNyRzC+HA7pHgoySQYY2ZcLsu9k0DAqLTMGgLGh12T6rFMk2icOQQs63VJIgGTpWXWMIwP+yLhg+lJ0zJrGC7LfZB6ZwSTeLwlBIwPmyexgFnSMmsIGB82S469YUyGMR3Py7Jea2QQMGtaxoWBy3I7ZNody7l9PxcClvWaIOf2bCbj2K4I0zZ1E9CS70Nw+34uhI8FlCNVS74Pknl8XwbGh3WRWcDiNyQ2BEzbVIPGFr1G4RwhGMaH5VEQsMpZcIrhslwOpU3Ki6dl1hAwPiyC5i75RvFcoQgYH6qiKGCROnEohvGhDtrvCTHK54vFcFnOi7KA1d+Q2BCwrJeNEm9KMgXOmQLhspyeAgKqte/nwrDtKx2F3hWn2r6fi2EaH/7zJyhkACVfVmhKnPR8EpxPkmo4ATCcT8dx/BcDJfSnoID6aZnzSXA8XHE8XJNJeB8TACihP6Vf12q0TjQVBUASCR/HBCihL4UF1EnLPB2Gn0QB4iS0yXfn93eXgflDN0rPgIDCLPjlm+DNe3saL0TCJfnevL/gyzcBWNZzogIBddIyqSR0lG+KYf5wngoEBLTSMrESBsg3xXBZ/plKBASg1L4fKmGkfHcEbPv6gYoE1KsT+0qYSL4pAsaHAKoSEIBiWsZVwgzyTTFbjw8zP5YZwniB4tN0T4cBn0/+DdsJ5HtkAGB6fmy0xGOZAei27y/NhHNkkA/YaNtXhQICUK4T+0iYSb4psqVlucIl+I7+rgpry7GCfDakl2W5kSX4FdE+4R9vTdT3mRh6TttULKBu+/7S3e6dlF00ngg6jQ8rFhCAUizoIt+dghICHcaHlQuYfxZcku/jJ/vvubCEQEdlvcoFBHKmZdaSzB8/maRdNIkRdBAfNiAggAxLsWuFI3UrVwYEDZf1GhEwbfu+b3mtAQmBRst6jQgIINEsGFrbbURCoLH4sCEB429IYhsLGpJQ0Eh82JCAACJmwVRdLQ1JCDQQHzYmYFj7/txDSUBYeW1NwkIVkyVMtbs53Pb78fEofU3rjKPv8XS4jH9/xQ/H0+HiPc7amOfTMWpMhaPYsmx1rVEBn2OFiZXPNmYD8j2IqEtHAgIvf8lBwqSSbzpmY/JNj2et35jNtYrbsdYYj2hvr8GakdxtX621Y63Q5GaXNTOgQHzYsIBAA7vvt4ZAue2rcQEBtL3ZZa2IVnzYgYBdbHZZKyb3styBgADqeyliTwgyxoedCMgbEgUEGcp6nQgIgLGgFiZlfNiRgJwFlTEpluWOBASYllFHEBkfdiYgAC7FJRAExocNl+KWGBupZ3eL2Mp6nZXiFpHSF7BxBtdluVMBeUNSAQKHsl6nAgJgLFgLspS2scaAhGjR8wxIGoACkqJQQFIUCkiK8h8t/qVOZBLcWQAAAABJRU5ErkJggg==@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Grafiche primitive",
@@ -577,7 +791,13 @@
                 "p": [
                     "Il punto centrale del lato superiore del rettangolo di delimitazione della grafica"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(fissa(alto_centro, ellisse(100, 50, blu)), True)",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG4AAABFCAYAAACrMNMOAAAEUUlEQVR4nO2dPVLcMBiGXxFIUqTYk1BswaTCyky4DAegRUw6DkCVm5CZlakYii04CQUFAYJS2DJmkWzJ/vyj5XtmPAv+kYWe1a9lASTE0w2yx2usqMN9vMbq6QYZdbgMKmmm3MjkPV5jZcNNSd7O1BEI4ekGmXmBru2SFPLKMKT93bxApyJPTB2BEB6vYTyH9Ofv+NExzDfS6nz+Pv90SSLHiR13AqNjzmuS1nCvWZGEuL0D5FTy2qTtHSCPj+H4JCEOoJG3LdKAhMQB/eRtkzQgMXFAN3nbJg0AxN1i4WuxzZqd/Wd8Pb93Hvt3u4u/J98AAF/O7/Fp/9l53sPJN7zc7g4WxyFJVhzQLg/AVkoDEhcHNMvzkbo0IME6bpOX2108lMViCNsgDdgCcUC4vG2RBgDOv2JxdzfjIR9z6tx9BXm5ljJbuhuI+TrD0ZXWwJsxzxrijCR6A+Cqzpx13PTiTIbX5ruEpylf5/JCwifNkq8zHB3rkAhovArWgJi0uzBjcVUuUl2uDpFmiZDnQhUf4+bOGYnrJ6pOjDRLT3l1VPExrMiJxZlTBBZ7oTRJ+3lcDKD8uXA/9SGUZ9HFRi9xAnFVXaVownulTdrVWgIADpd6THkWBcK6cURx9LmrTqg0y0TyAKJc6HJE3I8zp4AxKL5xkjbsglhpAHC1llXRuUm2zHF58f4aIiQAVaSJpxvTESJxJqsJG4wu0iwTyrOoUiDJnJae4kwGmBW8nVo6+kizzEAeAOgizfoJ7CHOnBaRGH6OBoU0y0zkSRQCOxefHcWZFQYuFuv8+u2+Vaw0S5M8370GQpVpGc/dYmE2N//Zti4bfztcrkxtQqw5XK5mGWaPzVt0Oh2Fi5tO2mZCUybwEGFSy3M5CuzHmQwjNEAYAIDc7Lh37MextJHRTcWmJaRxonpHhYlFtZ3QIs6sMEJzn3mHREtXoUHcm4eZzPiopiKzKccp8qgwsSjfgSZxkjwaTCzSd8AjjnYkm+mD24Uvx8nhIsJEIl07Wdz8ka6dWzEh9iPC4hKFxSWKT5weMxJMI9q1k8XNH+3ayeLmj3bt9IgTue8CZlS0b1Itj1XOG+U70CCOc93E6KYp7C3dAdFpnSyGgua0D+nHSZqIMBHIthMCxIk8JCCGDBnylk/gyInIwY2VMZChr2ZFDHmJM3DOGxIZ8z5d5FglF5sDIWNfguwwyFzJ0/HXMhtoQIgub652fDog8rK5qrpdzwBQfbpbPR/riLPiG8O5LwJd5rJerxcTPY8TP8DFZxsaRV1GMqhB+CC1Kj4lWGAdjUoY3QpFAzwBtwKFwMeuA1VZJJIKsww8daGqAyU+Ri5UKHJX7zqsjZHWABQ5YP+xw3CL1kyEwgQLtU28CNubF0vUOPfsjSo/9ViyZrQIWxPVlGuJ6Udp1OuP061nmYg4H+/m0Ev0F6vxru6d34KjweKY+cMTYhOFxSUKi0sUFpco/wF3RFigFRGrRQAAAABJRU5ErkJggg==@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Punti",
@@ -588,7 +808,13 @@
                 "p": [
                     "Il vertice in alto a destra del rettangolo di delimitazione della grafica"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(fissa(alto_destra, ellisse(100, 50, blu)), True)",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHcAAABFCAYAAABwi3ksAAAEOUlEQVR4nO2cu27bMBSGf7pOL0AGP0mGDkE3MUCepUPmIqsZdMsDZOqbZDCdyciQwU/iIUBTJzE76BLZlsSrKFk+H2A4kMIjJZ8OKZISASI6r49I1gvMQsddLzB7fUQSOi5hSCZWZZ9ggtcLzPK4uWAWKjih5/URidpA7myWn3/gwidudpHw8jY2Aie5EVkvoGp2OQuuEpszcglIuMFG1RIAcJcqukksG4GT3IicnGMeSrBO7Mk55iQ3MiEEm4gFqFruBB/BpmIBktsZLoJtxAIAW00mdXdwRARGZ2/4evtcue99Oca/61MAwJfbZ3w6e6v8vSqxAMntBTrBAKzFAiS3NzQJrqNJLEBtbm/YLMd4yapgE3RiAZLbK0wFv1yfQicWAMZVGyerVY+HJdW0ZgdHzZ1kCZl9KmA3bucTmAdgjfq74vflGJtlpbY9Ktvc7uWqBB9/HIdeWmgkPi4CCTBtloSiqbuT874c49vPN62jnsgtslHEPa41Iv1qJ8tNxJbQTjZ0JPdgZOoQ6Ze/bEuxOY2CI8pVU3RTxcZCph970bqRp7+/TmVDN6lWcMtyi7ZThIl3MAgYttUmQ4qryURp+sGVgluSO/gsNUWiIZtNx4pzR7aCA/dz1RRQCumVy8PGPkg4AJH+T7a7cLaTAIC2H7w32RBIrkpKUolqRCY5cRGbYyPYU65KADVD7cAAscv9HZdwFJuzWY6NHtnxkKumSKXWHYTY4f6OI/le7c5UbI7JfLCjXDUDVcHW/P4jKrfbis1pEsxGEJZyi7a1MiDRzMMTx+XV9gMWl1cznJwrmXUbrakS7PCAnEpAbas3ZcGXVzM8PPF8lwwhuFwLGPZzSWxE+O7gh+tYhEHmktjISNcM3sWkWhYhDkRYIUIE0chVLjMVhD+84aEEYxrkbk2YE/ERvtVzU+YKn8BEEIRP4Sa53CcwEQTuU7hGrn99T4TC3UVd5nLXgERwuGtBktt/uGtBeih9wJDcAUNyB0ydXBnzJIhGpGtBktt/pGtBktt/pGvBGrls7hOUCIb0eQmNxpb7jfAp3CCXsrdjpO+ro5quEPNacJLwwf9/b9LP5b4HIazhIYIYyGXzUAcjjOCh3uQ3HKFic9ANVgx4yCUaLIYf2Q0og9uEh157w3JsmaroluBtLKriMHFQCJZhT+UokQBjba2W4zgrxObZrboIeTJHhmi7q+k55cdu0iuPstgCmWVr64uaBZrPZRegqlqHRNq2RhsYCjhZX1TVHCS5jEQhNd5KdEArT2LkkhnDcbfJIqt+o0vNafkxm6JN5jiObBZIszRKm6rDbPlPb9gcyNdIGtzCYwKRF/80peOFPbdeNhNxjumNyL5lLKGujnqyamuZ4vUJju5Hw8THj91VswOSW8feOzMc/vIl9u4Fum8rdwkql+g/gdbEIA4VkjtgSO6AIbkD5j8z0aw2LNFb+AAAAABJRU5ErkJggg==@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Punti",
@@ -599,7 +825,13 @@
                 "p": [
                     "Il vertice in alto a sinistra del rettangolo di delimitazione della grafica"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(fissa(alto_sinistra, ellisse(100, 50, blu)), True)",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHcAAABFCAYAAABwi3ksAAAEI0lEQVR4nO2cu27bMBSGf6pOL0AGP0mHDEGniAHSPkmnPECmomHXoHOHPksB05mMDB7yJEaRooHTmh1kqbJFUeJNUuTzAYYcSqFkfz68S0CJ9QKzpzukCEiMPAlL1gvM1guo9QIqlIwYeRLtSYBMAgCeJ6oNpK+MGHkSdrB9CTs7E/CjU8xtMzXl+fIdmG1+hBsJSyDqdrpEW9OPxSYvwo/k6BRz05duIzhGKUC4kwBACMEkdngk+RsfwSR2mCTlP1wEk9jhom25Pt0hVRvIun96vDrG5n6CVzcPePH2j/EYoj9quyVNgv/eT0jswDH2OZsE6yCxwyEx7Wyqg/chscOi1WjRz7Nj9frmwXgMiR0ereSuplNlajwBQ2sZqxT6FjyvSS8jty8N7IvrFcVmNZ2q/bRWcn9/nyiT2CKzTgXvCORolhYDsd1KgPX6w3aSa+rH6ognWF1v34jweQdFbLeyS+HWcm3FFpkGEVxEpvDLp3dEtolbpFvJNYl9vDrGm68P3NRNchOsUmRfhva8I0Bmr/CiW8ttEru5n2C6WrGmfnA7waOJUFskABGq6NbJrfRz24jN8ZtNUimgZig+5MHBAUhAqVJ7Iig7cm3E5tgLVmn2gSDrznWAiBiSC7kuYnPaCP708fN1KVIJPSKkZAY0T9v9+jCV++nT1apSXzfVwReXM9wutachqkhY1MnaOjfkfGxTBP/4do6zE9k2u0OHI6uTnaO4doGca1/VJHi+TCly7RFZdaaslwVrF8j5DkIcnSpxcTnbSZsvU7y/lK5ZHjocWRRbCa4skPMTW7SE+e2SIxdMYoMhbQS3nhXaT6s2qFQKTUv47ERSURwevt/Qcp4Vaim3cgwRFV4W3GqEyg01az6GCIxsOiCAXHUNGmnqCXNQhYhcESAPwg1uamB5yo0z4E1YIep2+EZubcZEZ/C66PWQaz9iQkSD6xJ9IlebIdELQpcYqCtEDBEfuSLURRBxoMgdMT5yZaiLIOJAckcMFcvjQOgSPeQO96YoIsM3cmWIiyB80QcaDT8+f0TdDk+5bA6K3j6RpuoxQIOKnYME94Uw7QzVWjaehIiCaFqwHkgum4MmErpEtumtBOznkuCOkNuqsJHAgxgkODKirVggyggVCY4Etx04ijT8yOYAY6BWdAgkNIvQ2xB5bJmdg6LYB5F9h26PVuhg4qCIYhH/XKNBwqEY3qfDWSH2hYrqRiQyqc7RWqaHKb+iqBbdn3uwSASUmtPTfC6blyJZ9HMNg0AggtScAUzWF5I5DkO0RCaUbT97tEcIBryFMySje/CYyDbxFjhEvj83Js/moZ458v+rm4d7PmO5++zcgCb6uootEkUPoL+lRyOSW0flrkMO/0EUiUr3bXjrx4LKJYbPAFrLRCxI7oghuSOG5I6Yf3270eHO8UUNAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Punti",
@@ -610,7 +842,13 @@
                 "p": [
                     "Il punto centrale del lato inferiore del rettangolo di delimitazione della grafica"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(fissa(basso_centro, ellisse(100, 50, blu)), True)",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG4AAABFCAYAAACrMNMOAAAD4klEQVR4nO2cP07zMBiHf64+EANDT8LQATE1RuI0HIC1YeUAnAapLlPFwMBJOjCggvA3NE1bZDt2/Cd29D6SFyc4b/PwJo4Tm22mUwmiOCZDB0D0g8QVCokrFBJXKP9UldPNhqUOxA65UFTyprggmvIH9ujYThJUHUimqhxWnKxwEMHhLiUUAge5AmCrgeJQilNmXFraLOIYTpIKjpN4JHCQKYYUCQwirs2ofSkJjjbmY5HpL7EJL5VyAaAO325W1DEkqhxF7lXKBSCXgJQYvzQAqHe/VS41HalgRBInF0eyeJxjZA3HQWIUgYHFnQgjdtQxBAYSR8IsqEMK9BQnKxLmTN0IrHwa8RAnl1COPhCWiOYc9qKHOFk1B+R9D0q08KYH6px9juJkhV2WcdcDEVo4dtnnJM9BXCuNiINwkWcpjqQlQtjKsxBH0hIjbOTZZJzwDoVwRXTt0CGuf3eV8MV87g3iTl5oEunhpkumKePq4KEQrtS6DSZxPHgYhCtct0EjLu67JMIFtQtdxvF4gRCOcFUlicsfrqqkD2ILhcQVCokrFJ04kTIIwohQVZK4/BGqSsMHsZJmqmYBUzoy3eNEvGAIS4RuA41V5k2t22AQx1agrBsSYZoR1PE4wG4DB0NYYz73Ns9xPEwghAO8awcLcWxl0xARDG4zadJy5CQPefOZwHbNMJ+JrNv0gFvPdN1Mp/Jv0e+9nyuQvsxnS7ldoy3z2TLLNj2K9jMFlSPHsco284Tb3/kxnwm8PJ/eq1+eb72yJEabPRFwybQGj6nE6eYPbNf6cO7ul3h9dwtDJe2Y85tkg0bCpuceeCoxu0UicXf3+i/VXLOkS5rpWIHhPo9bnq912ApgDJFHWV7feRB5NtJcs7cH9e6c+S23Eeh9HHuMLdBXXgbS6kZYkFUZAr9IjSuwr7yBpdUhhe2J9Ab8RKAI2bKrvIGkCUQStqfYBWpsOxmJpdWpFqgZaBE2uUCAJaG65JkIJE0gwZJQGYk7xm9trz7yPKQJDLAIW6bi/uK+7KGLPAdpAhkve5ihOBP6hUZt5B1JExjjQqMlMrn6wcXTp3Gfr4dL/H5ksERnAEbxQayNNAC4ePrE5OonQUTxKV6crbQ9Y5FXtDhXaXvGIK9YcV3Svh4u8fVwqd1eurxMe49mvt9QyV/9UBqbgJ9dY+W6b0kUl3GuIs6usWIT/bOg/IX4foP2s4FcKUpc3+wZo7xixPle8sYmrwhxoe5TY5JXROdku4Z2dKdP56LrH+H8Jv/zUkTG6bKkb4/QlHmmjMyJIsSpTrRvNz5Gm4SG7zdU2zVkyPtQjDZT8B9RQZilw7dxBQAAAABJRU5ErkJggg==@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Punti",
@@ -621,7 +859,13 @@
                 "p": [
                     "Il vertice in basso a destra del rettangolo di delimitazione della grafica"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(fissa(basso_destra, ellisse(100, 50, blu)), True)",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHcAAABFCAYAAABwi3ksAAAD4ElEQVR4nO2cu27bMBSGfxoN0MEo8iQZMmSMaaCP0qlzkamolY59gEx9lACmMxkZ+iwZAjRwgrCDLVt2SYqHF1GWzwd4sc1L9OVQNEkd8XR+rsEcHedPT6LtO6MuOsKUgeUOGJY7YFjugPlgetPnZl0GPTO8KTcvCmrzOkDcEuvphNBJrzAVLCtXT7CTJUEXlwqF3T+AAsSiUD+Mcn0cGSO3W7bRKFFOpAmJvf5oYCdclZTtSwG528isX8eExLbPTdn9HM47HJb1DECVvt5eUeUQHeoo82xZzwA9B7TG8MUCQLX+W/XcMvnrlExy9awhVOZpo9dI7EQXk5xY7p5UZk1VSnIiuSzVg6pryZFy9YSlkqk2kie5G4qQq+cwrvIwnqjNNcxGgFw92XRKpu7MCSI3M+ssUUyUqydYR6tM35WTRWIdxckFE+RuxTJ5UKkFe8plsR2hUgr2kMtiO0alEuwTuSpFQwwJlaKSFrl5p+qMi/hr75C7t2nOdI+MHZ5dkVvFVMwkoYop7JIrYypmkiBjClvklt+LZGrCXdgiV4ZWyCRHhhZkuf1HhhbkQ+kDhuUOGJY7YGxyVZedYJyo0IIst/+o0IKOQ+man7jvBSL4wQHXPVfFdIlJgoopzGvL/aaKKeyQKxbg6C2Jin2SsOWnkJjGVM7EEH/tfX7nythGGDIyRSUecsUiVWOMFzLVg92eK1QsOCXXlwqrpcD1pTr8SIaKfX3EZLWEfn3E9vQGYfmRBafg+lLh/m59O72/mzYFyxix+n09+dXvULVg4tryVrByf48x0RRbc383xfcvsyqF2JpacETaBH5eiMpqab+sYgR5dgWjYJsjk9gmEbtCYgqWS+LzV/tp1eZw6kObWDGCjNzyEwtACPBqlhcPfyR+/v5R2T73FTy6eEOb2LMrLBJnszmJjDWhVHWmG5+oaw7RTUejizd8/PVsbaRZNvFmvbjlSP6Pan1NdimMzq6wECP7Lc0WwRSxQLaTGHuSVZ42eo2CQWoTqmCqWICTjKWmoiYZ8xmi/34bK6pYoFhiTz3DcaYHPEQhQXrANsEuXD+hepC19ahyQSpkSuwZItglFuiF3ENONyUvRXCbWKCXcl0MP5m2j+CXmzE+PTy3OjLKZcrRNisGWO5R4iO2xmdY5icOegJFLOC3VMlyewBVbE2bYJZbmDaxLzdjvNyMrZ+7BPd0VnwaUDYQqJsNAEduMaiyQjYbWG4BQqIQCNhsiO0oQyNUbA1FMN9zOyRWLLUultshqyWsC0YUsTUZD8gxVGzDaYhYwD1EJzggx1AwyQgVm7NOJgLTox856vwHgHvxn+P3NBcAAAAASUVORK5CYII=@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Punti",
@@ -632,7 +876,13 @@
                 "p": [
                     "Il vertice in basso a sinistra del rettangolo di delimitazione della grafica"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(fissa(basso_sinistra, ellisse(100, 50, blu)), True)",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHcAAABFCAYAAABwi3ksAAAD+klEQVR4nO2cPW7bMBiGX6pJ2iEocpIOGYJMNQ30ND1AxprpmANkKHqTFDCdycjQoSfJEKCp04YdJMt/JEWKpCjL3wMYjiVbpv3kFf9kMjjweHamXJ5H9IsidwGIdJDcAUNyBwzJHTBHbV949vjIYhYkHmqi2cirmy9idxO7bnGc5OgavU6CdC/ML7eWyNFOXAxkdav+ZrNM5dA6ap3cblEjrCTynCXZgmOjPPX3K8q7vCnvcXLVBP2T2Qa5uqVL9h4kdzBC1+GoP48CylTLLk7hPZA7SKE2RHmnJErJyU7dGbtCagIohfLD8nzlyAYHIMrvQNvCDyaD3A2pRImoJE+rxmMUOpRLUh3gAGSsJHcgV43K/0iS6oGokhyU4sRy1QRlN4CnfZ/BIqtgtCKhXEprJHjbFCeQq0ZV3crjH/ugkb6CI8tVI6zGWon4SJ/GVkS5JLYjhGuCI8klsR0jXQTHSq6IdBzCHdkkOILcemyY6B5h2xkjudY3IJLCbekNlJtmwJvwQph2hCbXeGCiM7gpvQFy481eEMFw3caQ5GoPSGRB6DbSdcsDJkSuiFUIIg2U3AFDyR0wlNwBEyJXxioEEYzQbQyQm+93McQOUreRRqj2H2kKWqDcfv6c8cAQph00K7TfSFv1GEEuuwY1rnIhbDvpSoz9hTc1aiPJZTPQREKXcJfeSi335QGjxRzq5QEtp/L0gu9uOT6ey3aHJHQI125oAZRi1WtZb6pXyFiC7245Rucz/Lgdk+A4cJ8eSrEudkm4YMaWYpeQ4GC478ARW8wxhaG+ZAX48QVmvmti2I55cknLSHoiATZuepLOUXFyiTEMXZk2CbaJ/fS59Q/WDhXuItZEAQBNgosPf50OZhP79fsXcf9Tu4vYRQCMhY7fb5xabXKer07x+mu1Psr2adnl9F4+UhNQv9iEhEdreB3taXn9gS3B726eYEqwu1igbO0xBhK8jqiSOo4527YziOEr2E/sxt6lZG56v4EjsZKaZAKmVYv3+eoU7++fnFrafsU5iDWpBBIsMua9sKdNHixrXbQTu81gREtkWh6wcf3GBsE7xBG7TW8X9tQhUVcz3c13t16S9/e3I/XGoTuURqwJWpJ3naD1lt/ePMEmuFuxNuqUr8M125qQ0Db0+nn1SVK52/1gIj9RT8skuF80TtYv5pi6iAXsAx1E91jl2lrK/wwJJcH9wSi3aRDjz9UpCe452jrXZ+Qp/igVEYud5PrKij0fTMRjQ27bFJLgflLLDT29kuD+UQDx6k0S3C8STNs1XSDnNnBChFOwQn9FREhL15RgVvR+RmdQFMcXmG1/6TG6MNuCqVuUkfCfk+hZzDGlujYP/wGcwbHfLkLWEAAAAABJRU5ErkJggg==@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Punti",
@@ -643,7 +893,13 @@
                 "p": [
                     "Il punto centrale del rettangolo di delimitazione della grafica"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(fissa(centro, ellisse(100, 50, blu)), True)",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG4AAAA8CAYAAACHHY8HAAADaklEQVR4nO2cPY7jIBiGX1arrb1XSTVVQqQ9zV4i5BJzmpFMpko1V9nU07CF7fwJML+Gz+GRaLCFiR99hD/DLl2n0CDHj9IVaITRxBGliSNKE0eUn7rM7nJhS1fEDXXQZPIx+SDH9AQ7epazCLoOJNNllhWndriJ4PCXkgqJm1wJsFOhemjFaSNuWa5RxFFOkg6Oh/oo4CZTlhQJFBF3jagpUYLjWud7kcs3sQs2leoAQKQvtypEDok6R5l7leoAqB5QCuuXBgBi+K2qN3SkkpFJnDrcyeJ5nlE1HDeJWQQmFvcgrDEgcghMJK4Jc0CkFBgpTu2aMG/EKHAXU0iEONVDO/vQcESO7zCIAHFqNz6Qhz40lO1G4vvMsN3Iqsv0gI89UP/ou3Sdek7mu6emcfm03fTq+4xr2m76KsuMSEZ5OkceEad2KNQ0bjcSH+/7h7yP931UlOQoMxLpE3mOMyflpAHA99k8kfPnb4/PL+5Vnk7aPb/eiu7m4M/zoIEzJ2WlAYMcE75RMifN9qyFkC6R59JUyuiqRPL5xZPIc5HmG72ZkHM3zIgL766mJlYeIWkj9ndvEfewoFkFofLoSQMwDBWMTaYt4kTyqiTAVx5RaRPCdMHSq1RFu1ZzuHYyCEsbYVpHBnH/BCqNuHvm5NmgIQ0AIC7db/GcaWoqedaqJGKu2TRBSBpgcEFaHOAvj5g0wFMcKVzlEZRmZBXiXpFViHPtpBSeRE6KSZxcshIx+PYsCcqTukzS4kKHA8TkSV1mG4BX31nRD8Bt/3EyX2XicJ3GSrWqUBBpukBurtJ37pG4PGG6YBHHTqgs6kInjInKk7YvgmaGAyxsIjADsbP89OTZ373LOI6nqUg4qZZmCMnjcze0zUIaVrJZCBgL4gkqFYQpSkK787bIK7xZiDt/6do2xNLcEOsp7iqvLykv5QvOUaZn6m3STOIiPiUu8/3AypAuPffEnxKzPZq4GHjMcCtyWYedAMZQ6SxLpYjhncUdt5FoPY4dm8BZxCgsyakMiRdSm0ANIqWwiUwr4A8CZZ5nVI1EJmETmbcusOPwB/wyUShGWfvcpw0tuOdkisJVRaLETVa26NJRwel5pM72kihwCFs79tAPiYqPPaxQnI120OiEVlyjflaxIfYVaeKI0sQRpYkjyn/BWxOPbxSdlwAAAABJRU5ErkJggg==@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Punti",
@@ -654,7 +910,13 @@
                 "p": [
                     "Il punto centrale del lato destro del rettangolo di delimitazione della grafica"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(fissa(centro_destra, ellisse(100, 50, blu)), True)",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHcAAAA8CAYAAABcpiUlAAADvUlEQVR4nO2cPU7jQBTH/xOBREHBSSgoKPFEyw1WW+wVqFc0W8S0HIBD7GpvwCqTVBEFBSehQFoEKLOFPYljzXg+/DGD836SiySO/fAvbzyeNwx7PjmRID4dJ8/PzLbPZIhAiDiQ3BFDckcMyR0xB7o3XW7WcZAzzZu83HwQ5VaD3XgeZxBCO71M98W4cmWGrSwOf3FdIbD9AQiALSLFoZXr4kibucOyyUaOeCJ1cOzEI4GtcBFTtisR5G4yU22fCY5NzFXZaTbnAzbLcgYg7/64SZH3ITrUUc+9ZTkD5ByQEuMXCwB58bfKuaHzNyg9yZWzilDezzmShmMrOprkjuXuSCUK8liSO5JLUh3Ih5bcUq7MSKo3eSk56/tELeTKObSjPIQjoryGvREgV2ZlULzrYPaFizOBtxXDxZngZc+6dRa/PyB7W0G+P2BzLE+5MkORrbxtMPvKxZnA/d0UAHB/Ny0FQ7QR/P6ATK6LVlSuIZRgD7kbsUQgVbGKUjAQKLgqVqEEO45QkdgueFuZB5Uur+ZYPnIA4PVxa5MjndgqDplLYrvi8srcf/LNYJtYNgF3aZaNByD8WD5yD8FmJqcfsIk9PMfCIrffrvo+4i5Yf+0npx84un0xfl+JBRqb5Z2iOdEhjoJ5vXn2EQs033Nz52gJb1wEf/3yO1evfcUCjfVcSZPVB0D3eFSFTcD//TgWvmIBY+bGr0XuC7YMlmsEiQXMzTL3CZBoh02wiSaxAMlNBl/BNrEATUpPClfBr9fHsIkFSO6oIbkJYes5K45uX1At7ZkwyRWecREtcRWrqJb2TJDcBPAVq7AJNshNcwb9GHEZxHi9PjZ+3iS46Z4rXAMkwrCJ/f7zlzg8x2L9dIAQwTS2HAmb2MurOf78/Zar1yGCG+SyBSh7e8FF7PKRi/qMDF/Blkch5n+XJxpxFAvTtfcR7PKcyx32IRxwF9t8zddPB2AT8z40QS4CCU6QA8qTcbd9CROmceMmsU0cnmNhymDXCXJqdxLcEl1hIFSsQifYcYJcnY1g4RsEUVAVvO0Vh4lVVAVXS4Etlk2g/xfqAOHyRBJh2QQ2BcltA+/7UbNlyY8tAMZAo1k+5MU163+po47queyGJFvJS6mDFWU6LtaTZA350FIVPc3E2JEs+jlH0ghElKroeZoNuyk6DXuTzXkpdJpCTXzAOVQqm0eV0QJboVGzVEcCq7Z+qrUgBSIs7BnqKAG5dWhJ3jojktsELaatCJZLpE8Cq7YSMSG5I4bkjhiSO2L+A6ZE+h/kFiGmAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Punti",
@@ -665,7 +927,13 @@
                 "p": [
                     "Il punto centrale del lato sinistro del rettangolo di delimitazione della grafica"
                 ]
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(fissa(centro_sinistra, ellisse(100, 50, blu)), True)",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHcAAAA8CAYAAABcpiUlAAADzElEQVR4nO2cP27bMBSHf1Qbt0NQOBfpkCHwVNFAc5kcIKuZNQfwZVIgVKYgQ4acxEOGNmnDDqRk2aZESqZEWX4fICSgbYn25yfS/PMYPFhNp8rnecSwSGJXgOgOkjtiSO6IIbkj5nPbF05XKxayIuFQC0shN0dTxG4Ru2lxns6xdXq9BNleGF9uIZGjnbgQSHOY/1kWqR5WR60jt19UirVEHrMmW3Bs1Kf4fIX+EzfKBxy5aoHhyWyDXB/dRfYBRO5ohJbhKN6PAnRUyz5u4QOQO0qhdQj9R0loyZ3duiP+FFILQCnoN8vj1SMaHIDQn4G1h783EeRuSCU0wki+N53HIPQol6R6wAHIUJHcg1yV6m8kSW2AMJG8VxR3LFctoH8G8G6vM1qkCYxWFHLfn5C+PUK9PyHQPV9H692S48e5DHPK44S3jeIE0GLVhx5GUx+Q+wlWqWlb+d2SIz3P8Gs5J8H7I5sKTspic9oLVinMWGsuNocEB0E26Wyxt0fco6JNZAn4yQUyv+HHarFlJjNasRMAvj3CZXOUTGaYA5uRm+MfwX5if1617hsQm0ifW3QCAC7Byfe/rvMIwC324Zm7zkP4I12Ci95yneCvt6+oFqzHhklsFETdgzvTdnVt8O/rU3y86LmGdZurFImNCgeYtV+0M4jRLILVgsRGR1Q9UDnh7orgbw+v7G6ZKhI7CPhqeia3C2tXU9QJRs2wIontHbGanontQudSGYfgHUhsHFbTs50y58TBZIb5vxe/BRskdlh4zQr9uT6FSzCJHR6042DEeMn9cvuKT45RKpoYGB5OuW+PuHeJzSHBw6JWrsdPoR1IcBSErbBSrmsQYzLDPHu2j1uT4N6RtkKrXN/x5csrKUhwdGTV7gWaODh8uNfEga/YLcTllQRFcBRk3Z6jQm5LsTB7XSQJjoKoezAB6sWyBLxa7OZFSHCvcNdOQVogd5hwrwVyLLGHdi7W/3osg/mSVEUwLZALgvDd25ucXCBjyWbkNhdbvLJSMPWag8Cb7OdNAKAsuL3YHJYBjKHUySKxQeBNd+N3nBNDLUC7+/ZFAmzuepLXArmwsBsUe06JFnAfsVX0MJ/LMlNB0f21RoPQTdt+SVF6nKxnN6YtFv1d8+CQaNhpqiPCSgySbEGYSJ2HTGEUcZlNIZnjONtkibXUTtIVDSAPFcsAmE7DUeSkEugpyRilB+weuT76TQ84YLllBpvY04ZE0cz0l9jzgOXaoJS8ZUYmt4oiystwS5kLCWtH7wiSaRPDh3YcjBiSO2JI7oghuSPmPyEy67LShyNSAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Operazioni",
@@ -692,7 +960,13 @@
             "returnValue": {
                 "type": "Grafica",
                 "description": "grafica risultante dall\u2019affiancamento orizzontale delle due grafiche fornite"
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(accanto(rettangolo(100, 50, rosso), rettangolo(50, 50, blu)))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAAyCAYAAAC+jCIaAAAAoUlEQVR4nO3SgQkAIRADwfP771mrWF5kpoJAdu2ZPVxjPXLH9/cA3iQsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCInEAG6QDYt+OcQwAAAAASUVORK5CYII=@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Operazioni",
@@ -713,7 +987,14 @@
             "returnValue": {
                 "type": "int",
                 "description": "altezza della grafica"
-            }
+            },
+            "examples": [
+                {
+                    "code": "altezza_grafica(rettangolo(100, 50, rosso))",
+                    "result": "50",
+                    "stdout": ""
+                }
+            ]
         },
         {
             "section": "Operazioni",
@@ -740,7 +1021,13 @@
             "returnValue": {
                 "type": "Grafica",
                 "description": "la grafica risultante composta"
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(componi(fissa(alto_destra, rettangolo(50, 50, blu)), fissa(basso_sinistra, rettangolo(100, 50, rosso))))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAABkCAYAAABkW8nwAAABKUlEQVR4nO3dsQkAMQwEQfn779kfuoLFYGYquGBRqjWP2DP79gaO7/YA3iQsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIrFm9iOfSde6vYDDxSIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiLxAzLmBMU4CfN6AAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Operazioni",
@@ -767,7 +1054,14 @@
             "returnValue": {
                 "type": "Grafica",
                 "description": "una nuova grafica con una posizione di fissaggio aggiornata"
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(fissa(alto_destra, rettangolo(50, 50, blu)), True)",
+                    "usesOptional": true,
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEUAAABFCAYAAAAcjSspAAACNklEQVR4nO3bv27aUBiG8ceO02TI4N4IQ4eoG46Uq8kFZI7ULRfQqXeSgYQJMTD4RuohQwoEOpQjucnrvzhJP/o9EssBHeGf7AMcAAy1mjNezpgMPe9yxmQ1Zzz0vG/eDmS7uw0Gs5wxCfMGmGioyd+y1ZzxdsP9i+H7T1+52GfeHW5WHotiMhMoyxnbirt6wyiQUNxnwvcuivWTB7I+l1IdSBSTmUA5PudhKJgmkONzHkygwDAwbUDAyOUT2gemLQgYQ4F+MF1AAKIiTatW9n+6eLTm9PZR3vecJ/y6PgPg5PaRo9FaPk6BgGEUaIYBOoOAcRSoh6mqDgQMrikv2+QJT7tLpU1NIHAAKNAe5un6jCYQgEQNpsXPHk/tg5vC3SJj/EUf83OesMnl4b7qIM4UgLvv1SDwZ8E9abn2HARKE0joaLSmzTtf8yhtQUo1fiQwjVIHcnk1qVt8a2HMojSBTBdZ06tSJYxJlDYgoT4w5lC6gIS6wphC6QMS6gJjBmUfkNAmT1ptbZpAGQIk1GY/xgTKtx83crwrSKgOJoq5MYEyXWRcXv39ItEXJKRgzG1cl2H2BQmVYcpbCnKTyeSnZFGRfn41lhZF4xeAZs6U98xRRI4ichSRo4gcReQoIkcROYrIUUSOInIUkaOIHEXkKCJHETmKyFFEjiJyFJGjiBxF5CgiRxE5ishRRI4ichSRo4gcReQoIkcROYrIUUSOIpJ/lVK/Ffuf8jNF5CgiRxE5iug3Aj0BpeBnrKgAAAAASUVORK5CYII=@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Operazioni",
@@ -788,7 +1082,14 @@
             "returnValue": {
                 "type": "int",
                 "description": "larghezza della grafica"
-            }
+            },
+            "examples": [
+                {
+                    "code": "larghezza_grafica(rettangolo(100, 50, rosso))",
+                    "result": "100",
+                    "stdout": ""
+                }
+            ]
         },
         {
             "section": "Operazioni",
@@ -814,7 +1115,17 @@
             "returnValue": {
                 "type": "Grafica",
                 "description": "una nuova grafica, ruotata"
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(ruota(45, rettangolo(100, 50, rosso)))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGoAAABqCAYAAABUIcSXAAACo0lEQVR4nO3cQW4jIRBG4WdfLMnN5mb2nKxnMSZynK423Q1UAf+Tal/SJxArQK22wG2BD+891EYPpOUxworYC5KwImYgCStSb5CEFaFMJGF5thNJWB4dRBJWy04iCatFhZCEVbPCSMKqUSUkYZWsMpKwStQISVhnaowkrCM5IQlrT85IwsopCJKwtgqGJKy1giIJ67ngSMKCbpDmxuoMaU6sTpHmwuocaQ6sQZDGxhoMaUysQZHGwhocaQysSZD6xpoMqU+sSZH6wpoc6RfW1RPDaoEb8Om9R4DuCevivclrQlrtMxSUkMzuYa4+IZndL/AVAkpIZvcLfEGAx4SQzL6RwBlKSGY/kMARSkhmv5DACUpIZqtI4AAlJDMTCRpDCclsEwkaQgnJ7C0SNIISklkWEjSAEpJZNhJUhhKS2S4kqAglJLPdSFAJSkhmh5CgApSQzA4jQWEoIZmdQoKCUEIyO40EhaCEZFYECQpACcmsGBKchBKSWVEkOAElJLPiSHAQSkhmVZDgAJSQzKohwU4oIZlVRYIdUEIyq44EmVBCMmuCBBlQQjJrhgRvoIRk1hQJNqCEZNYcCQwoIZm5IMEKlJDM3JDgBUpIZq5I8AQlJDN3JHhACcksBBLAVUhmYZDg/4n6471EwEIhAVwv8BedqOfCIf1ogY8AH2B4z83bIavJsfpASk2K1RdSajKsPpFSk2D1jZQaHGsMpNSgWGMhpQbDGhMpNQjW2EipzrHmQEp1ijUXUqozrDmRUp1gzY2UCo4lpOeCYglprWBYQtoqCJaQcnLGEtKenLCEdKTGWEI6UyMsIZWoMpaQSlYJS0g1KowlpJoVwhJSi05iCallB7GE5NFOLCF5loklpAi9wRJSpAwsIUXsBUtIkXtgCcnoH2Fkq0Siu8TdAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                },
+                {
+                    "code": "visualizza_grafica(ruota(-45, rettangolo(100, 50, rosso)))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGoAAABqCAYAAABUIcSXAAACpklEQVR4nO3cS27jMBBF0WttLO6d9c6SXpkziBmobbOsD8kqku8CAiSNHnAgDgVBusHHDT69dyijO9LtfgkrYg9IwopYBklYkXqDJKwIbUQSlmc7kYTl0UEkYbXsJJKwWlQISVg1K4wkrBpVQhJWySojCatEjZCEdabGSMI6khOSsPbkjCSsLQVBEpZVMCRhvSookrDWBUcSFnSDNDdWZ0hzYnWKNBdW50hzYA2CNDbWYEhjYg2KNBbW4EhjYE2C1DfWZEh9Yk2K1BfW5EjhsRb4QQK+fKeE6BoVaxHSUyGxFuCv94iAhcNaLvAHfVGvCoW1AAgrWxisJd0IK1sIrGX9IKxs7ljL4wthZXPFeoICYRm5Yb2EAmEZuWBloUBYRs2xTCgQllFTrLdQICyjZliboEBYRk2wNkOBsIyqY+2CAmEZVcXaDQXCMqqGdQgKhGVUBeswFAjLqDjWKSgQllFRrNNQICyjYlhFoEBYRkWwikGBsIxOYxWFAmEZncIqDgXCMjqMVQUKhGV0CKsaFAjLaDdWVSgQltEurOpQICyjzVhNoEBYRpuwmkGBsIzeYjWFAmEZmVjNoUBYRlksFygQltFLLDcoEJbRE5YrFAjL6D8sdygQltEv1sV7ybr7qKv3joB9hYICYWW6hjj61ukYfOp6gX/eI7Ld4DPAD0K8rw9vh01NjtUHUmpSrL6QUpNh9YmUmgSrb6TU4FhjIKUGxRoLKTUY1phIqUGwxkZKdY41B1KqU6y5kFKdYc2JlOoEa26kVHAsIa0LiiWkVwXDEpJVECwhbckZS0h7csIS0pEaYwnpTI2whFSiylhCKlklLCHVqDCWkGpWCEtILTqJJaSWHcQSkkc7sYTk2UYsIUXoDZaQIpXBElLEHrCEFLk7Vhikb8yDrTzfrPpsAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Operazioni",
@@ -841,7 +1152,13 @@
             "returnValue": {
                 "type": "Grafica",
                 "description": "grafica risultante dall\u2019affiancamento verticale delle due grafiche fornite"
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(sopra(rettangolo(100, 50, rosso), rettangolo(50, 50, blu)))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAABDUlEQVR4nO3cwQ2AMAwAsYb9dy5vBqCckL1Aqpzy7ey19iLj+voBPAkSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxMyZMfsnv9bN6/tyITGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDE3eo4ExVZfR+4AAAAASUVORK5CYII=@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         },
         {
             "section": "Operazioni",
@@ -868,7 +1185,13 @@
             "returnValue": {
                 "type": "Grafica",
                 "description": "grafica risultante dalla sovrapposizione delle due fornite"
-            }
+            },
+            "examples": [
+                {
+                    "code": "visualizza_grafica(sovrapponi(rettangolo(50, 50, blu), rettangolo(100, 50, rosso)))",
+                    "stdout": "@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAYAAACqNX6+AAAAmUlEQVR4nO3RMRHAMAzAQKf8OacYOrin4Z+ABp07c2fZ2U/84s5ZbzzrBT4xJMaQGENiDIkxJMaQGENiDIkxJMaQGENiDIkxJMaQGENiDIkxJMaQGENiDIkxJMaQGENiDIkxJMaQGENiDIkxJMaQGENiDIkxJMaQGENiDIkxJMaQGENiDIkxJMaQGENiDIkxJMaQGENiDIl5Ab/RBGKoEKnEAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@"
+                }
+            ]
         }
     ]
 }

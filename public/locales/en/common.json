@@ -61,7 +61,7 @@
     "selectKind": "Select a kind",
     "textualSearch": "Textual Search",
     "nameOrDescription": "Name or Description",
-    "selectToSeeDoc": "Select a library to see its documentation",
+    "selectToSeeDoc": "Search a name or select a library to see its documentation",
     "Function": "Function",
     "Constant": "Constant",
     "Type": "Type",
@@ -70,5 +70,15 @@
     "fromLibrary": "from library {{module}}",
     "parameters": "Parameters",
     "return": "Return",
-    "sideEffects": "Side Effects"
+    "sideEffects": "Side Effects",
+    "examples": "Examples",
+    "code": "Code",
+    "result": "Result",
+    "I/O": "I/O",
+    "input": "Input",
+    "output": "Output",
+    "codeTooltip": "Python code",
+    "outputTooltip": "Output of running code",
+    "resultTooltip": "Result of evaluating code",
+    "findName": "Find a name"
 }

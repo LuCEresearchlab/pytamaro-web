@@ -1,6 +1,7 @@
 {
     "module": "random",
     "summary": "Functions involving randomness",
+    "officialBaseUrl": "https://docs.python.org/3/library/random.html",
     "elements": [
         {
             "kind": "function",
@@ -26,7 +27,18 @@
                 "type": "int",
                 "description": "A random integer between a and b, inclusive"
             },
-            "sideEffects": true
+            "sideEffects": true,
+            "examples": [
+                {
+                    "code": "randint(1, 10)",
+                    "result": "7"
+                },
+                {
+                    "code": "randint(1, 10)",
+                    "result": "10"
+                }
+            ],
+            "urlSuffix": "#random.randint"
         },
         {
             "kind": "function",
@@ -41,7 +53,18 @@
                 "type": "float",
                 "description": "A random floating point number between 0 and 1"
             },
-            "sideEffects": true
+            "sideEffects": true,
+            "examples": [
+                {
+                    "code": "random()",
+                    "result": "0.12345678901234567"
+                },
+                {
+                    "code": "random()",
+                    "result": "0.9876543210987654"
+                }
+            ],
+            "urlSuffix": "#random.random"
         },
         {
             "kind": "function",
@@ -62,7 +85,18 @@
                 "type": "T",
                 "description": "A random element from the sequence"
             },
-            "sideEffects": true
+            "sideEffects": true,
+            "examples": [
+                {
+                    "code": "choice(['Lugano', 'Zürich', 'Genève'])",
+                    "result": "'Lugano'"
+                },
+                {
+                    "code": "choice(['Lugano', 'Zürich', 'Genève'])",
+                    "result": "'Zürich'"
+                }
+            ],
+            "urlSuffix": "#random.choice"
         },
         {
             "kind": "function",
@@ -101,7 +135,21 @@
             "returnValue": {
                 "type": "List[T]",
                 "description": "A list with `k` random elements from the sequence"
-            }
+            },
+            "sideEffects": true,
+            "examples": [
+                {
+                    "code": "choices(['Lugano', 'Zürich', 'Genève'], k=2)",
+                    "result": "['Lugano', 'Zürich']",
+                    "usesOptional": true
+                },
+                {
+                    "code": "choices(['Lugano', 'Zürich', 'Genève'], weights=[0.7, 0.3, 0], k=3)",
+                    "result": "['Zürich', 'Lugano', 'Lugano']",
+                    "usesOptional": true
+                }
+            ],
+            "urlSuffix": "#random.choices"
         },
         {
             "kind": "function",
@@ -118,7 +166,18 @@
                     "description": "A sequence of elements which itself will be shuffled"
                 }
             ],
-            "sideEffects": true
+            "sideEffects": true,
+            "examples": [
+                {
+                    "code": "cities = ['Lugano', 'Zürich', 'Genève']\nshuffle(cities)\ncities",
+                    "result": "['Zürich', 'Genève', 'Lugano']"
+                },
+                {
+                    "code": "cities = ['Lugano', 'Zürich', 'Genève']\nshuffle(cities)\ncities",
+                    "result": "['Genève', 'Lugano', 'Zürich']"
+                }
+            ],
+            "urlSuffix": "#random.shuffle"
         },
         {
             "kind": "function",
@@ -150,7 +209,19 @@
             "returnValue": {
                 "type": "List[T]",
                 "description": "A list with `k` random elements from the sequence"
-            }
+            },
+            "sideEffects": true,
+            "examples": [
+                {
+                    "code": "sample(['Lugano', 'Zürich', 'Genève'], k=2)",
+                    "result": "['Lugano', 'Zürich']"
+                },
+                {
+                    "code": "sample(['Lugano', 'Zürich', 'Genève'], k=3)",
+                    "result": "['Zürich', 'Genève', 'Lugano']"
+                }
+            ],
+            "urlSuffix": "#random.sample"
         }
     ]
 } 

@@ -26,7 +26,7 @@ export function configureEditor() {
 }
 
 export function colorizeElements(monaco: ReturnType<typeof useMonaco>) {
-  document.querySelectorAll<HTMLElement>(`.${COLORIZE_CLASSNAME}`).forEach((element) => {
+  document.querySelectorAll<HTMLElement>(`.${COLORIZE_CLASSNAME}:not(.vs)`).forEach((element) => {
     monaco?.editor.colorizeElement(element, {});
   });
 }

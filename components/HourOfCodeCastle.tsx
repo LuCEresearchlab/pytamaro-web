@@ -3,7 +3,7 @@ import { isExecutionCompleted } from '../src/codeExecution';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import { PythonFile } from '../src/schemas/activitySchema';
 import DownloadCodeButton from './CodeDownloadButton';
-import OutputArea from './OutputArea';
+import ExecutionOutputArea from './OutputArea';
 
 export default function HourOfCodeCastle({ language, extraPythonFiles } :
 { language: string, extraPythonFiles: PythonFile[] }) {
@@ -21,7 +21,7 @@ export default function HourOfCodeCastle({ language, extraPythonFiles } :
   return (
     <Stack direction="column" spacing={2}>
       {executionResponse && isExecutionCompleted(executionResponse)
-       && <OutputArea executionError={false} executionResponse={executionResponse} />}
+       && <ExecutionOutputArea executionError={false} executionResponse={executionResponse} />}
       <DownloadCodeButton codeCells={codeCells} extraPythonFiles={extraPythonFiles} />
     </Stack>
   );
