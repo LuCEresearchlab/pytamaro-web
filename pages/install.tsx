@@ -10,7 +10,7 @@ import theme from '../src/theme';
 import { activityVariantPathnameFromParts } from '../src/urlUtils';
 
 const PYTHON_VERSION = '3.13';
-const PYTAMARO_VERSION = '1.0.2';
+const PYTAMARO_VERSION = '1.1.0';
 
 function SectionHeading({ children } : { children: React.ReactNode }) {
   return (
