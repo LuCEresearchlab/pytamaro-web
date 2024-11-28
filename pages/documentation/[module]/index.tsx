@@ -10,6 +10,7 @@ import {
 import Grid from '@mui/material/Unstable_Grid2';
 import { groupBy, sortBy } from 'lodash';
 import Head from 'next/head';
+import DocBreadcrumbs from '../../../components/documentation/DocBreadcrumbs';
 import NavigationBar from '../../../components/NavigationBar';
 import PageTitle from '../../../components/PageTitle';
 import CentralContent from '../../../components/sidebar/CentralContent';
@@ -51,13 +52,9 @@ export default function DocumentationModule({ moduleData }: { moduleData: Judici
             {t('documentation')}
           </PageTitle>
           <Container maxWidth="md">
-            <Typography mt={4} gutterBottom textAlign="center" fontSize="1.2rem">
-              {t('library')}
-              {' '}
-              <Typography component="span" fontSize="1.2rem" fontWeight="bold">
-                {moduleData.module}
-              </Typography>
-            </Typography>
+            <DocBreadcrumbs
+              module={moduleData.module}
+            />
             <Typography mb={4} textAlign="center">
               {moduleData.summary}
             </Typography>

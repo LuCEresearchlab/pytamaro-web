@@ -1,6 +1,7 @@
 import { Container, Link, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import Head from 'next/head';
+import DocBreadcrumbs from '../../../../components/documentation/DocBreadcrumbs';
 import DocElementCard from '../../../../components/documentation/DocElementCard';
 import NavigationBar from '../../../../components/NavigationBar';
 import PageTitle from '../../../../components/PageTitle';
@@ -31,19 +32,11 @@ export default function SingleElementDocPage({ module, officialBaseUrl, element 
             {t('documentation')}
           </PageTitle>
           <Container maxWidth="md">
-            <Typography my={4} gutterBottom textAlign="center" fontSize="1.2rem">
-              {t('library')}
-              {' '}
-              <Typography component="span" fontSize="1.2rem" fontWeight="bold">
-                {module}
-              </Typography>
-              {' - '}
-              {t(allKinds[element.kind].label)}
-              {' '}
-              <Typography component="span" fontSize="1.2rem" fontWeight="bold">
-                {element.name}
-              </Typography>
-            </Typography>
+            <DocBreadcrumbs
+              module={module}
+              name={element.name}
+              nameKind={allKinds[element.kind].label}
+            />
             <DocElementCard module={module} element={element} elevation={0} />
             {officialBaseUrl && element.urlSuffix && (
               <Typography mt={10} textAlign="center">
