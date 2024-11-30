@@ -1,5 +1,6 @@
+import { Engineering } from '@mui/icons-material';
 import {
-  Alert, Typography,
+  Alert,
 } from '@mui/material';
 import { isValidElement } from 'react';
 import theme from '../../src/theme';
@@ -13,7 +14,7 @@ export default function TaskBox({
   return (
     <Alert
       severity="info"
-      icon={<Typography sx={{ fontSize: '2rem' }}>🎯</Typography>}
+      icon={<Engineering />}
       className={taskBoxClassName}
       sx={{
         fontSize: theme.typography.body1.fontSize,
@@ -23,6 +24,10 @@ export default function TaskBox({
         marginY: 2,
         '& .MuiAlert-message': {
           paddingY: 0,
+        },
+        '& .MuiAlert-icon': {
+          paddingY: 0,
+          marginTop: '1rem',
         },
       }}
     >
