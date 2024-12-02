@@ -1,9 +1,5 @@
 /* tslint:disable */
 /* eslint-disable */
-/**
-* @param {string} python_source
-* @returns {any}
-*/
 export function analyze(python_source: string): any;
 
 export interface PythonName {
