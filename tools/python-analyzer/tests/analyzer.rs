@@ -96,6 +96,14 @@ fn test_called_names() {
 }
 
 #[wasm_bindgen_test]
+fn test_called_names_inside_expr() {
+    assert_eq!(
+        serde_wasm_bindgen::from_value::<AnalysisResult>(analyze("f() + g()")).unwrap().called_names,
+        vec!["f".to_string(), "g".to_string()],
+    );
+}
+
+#[wasm_bindgen_test]
 fn test_imported_names_with_parse_errors() {
     let result = serde_wasm_bindgen::from_value::<AnalysisResult>(analyze("from mod import a, b,\n\n1+")).unwrap();
     assert_eq!(

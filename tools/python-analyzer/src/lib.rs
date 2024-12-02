@@ -155,8 +155,8 @@ impl Visitor<'_> for CalledNamesCollector {
             if let Expr::Name(name) = &*callnode.func {
                 self.names.push(name.id.to_string());
             }
-            visitor::walk_expr(self, node);
         }
+        visitor::walk_expr(self, node);
     }
 }
 
