@@ -392,7 +392,8 @@
                 },
                 {
                     "code": "list(enumerate(['Lugano', 'Zürich', 'Lausanne'], start=1))",
-                    "result": "[(1, 'Lugano'), (2, 'Zürich'), (3, 'Lausanne')]"
+                    "result": "[(1, 'Lugano'), (2, 'Zürich'), (3, 'Lausanne')]",
+                    "usesOptional": true
                 }
             ],
             "urlSuffix": "#enumerate"
@@ -588,7 +589,8 @@
                 },
                 {
                     "code": "min([('Lugano', 70_000), ('Bergamo', 120_000)], key=lambda city: city[1])",
-                    "result": "('Lugano', 70000)"
+                    "result": "('Lugano', 70000)",
+                    "usesOptional": true
                 }
             ],
             "urlSuffix": "#min"
