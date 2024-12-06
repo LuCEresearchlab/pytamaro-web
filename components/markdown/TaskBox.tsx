@@ -1,8 +1,8 @@
 import { Engineering } from '@mui/icons-material';
 import {
   Alert,
+  Box,
 } from '@mui/material';
-import { isValidElement } from 'react';
 import theme from '../../src/theme';
 
 const taskBoxClassName = 'task-box';
@@ -31,7 +31,9 @@ export default function TaskBox({
         },
       }}
     >
-      {isValidElement(children) && children.type === 'p' ? children : <p>{children}</p>}
+      <Box marginY="1em">
+        {children}
+      </Box>
     </Alert>
   );
 }
