@@ -168,3 +168,15 @@ that leverages [Ruff's Python Parser](https://github.com/astral-sh/ruff)
 and is compiled to WebAssembly using [`wasm-pack`](https://rustwasm.github.io/wasm-pack/).
 Pre-built JavaScript files (for a bundler, usable both by the browser and by Node.js) are already included in this repository at `src/python-analyzer`.
 To rebuild the analyzer, install a Rust toolchain and run `npm run build-python-analyzer`.
+</details>
+
+## How does the Judicious documentation work?
+<details>
+<summary>Expand</summary>
+
+JSON files for the Judicious documentation are stored inside the `public/docs` folder.
+
+The documentation for the modules in the standard library is authored manually.
+
+The documentation for the PyTamaro modules can be generated automatically by running `python judicious_transformer.py` inside the `docs` folder of the [pytamaro repository](https://github.com/LuCEresearchlab/pytamaro) and copying the generated JSON files here (e.g., `cp _build/judicious/* ../../pytamaro-web/public/docs/`).
+</details>
