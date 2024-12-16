@@ -179,6 +179,35 @@
         },
         {
             "kind": "function",
+            "name": "degrees",
+            "description": {
+                "p": ["Converts the given angle from radians to degrees."]
+            },
+            "parameters": [
+                {
+                    "name": "angle",
+                    "type": "float",
+                    "description": "angle in radians"
+                }
+            ],
+            "returnValue": {
+                "type": "float",
+                "description": "angle in degrees"
+            },
+            "examples": [
+                {
+                    "code": "degrees(pi)",
+                    "result": "180.0"
+                },
+                {
+                    "code": "degrees(pi / 2)",
+                    "result": "90.0"
+                }
+            ],
+            "urlSuffix": "#math.degrees"
+        },
+        {
+            "kind": "function",
             "name": "log",
             "description": {
                 "p": ["Returns the logarithm of the given value.", "Unless a different base is provided, computes the natural logarithm."]
