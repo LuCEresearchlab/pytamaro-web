@@ -82,7 +82,7 @@ export default function NotebookPage({
     return () => {
       setHeadingsReady(false);
     };
-  }, [isMounted]);
+  }, [isMounted, cells]);
 
   return (
     <div key={activityVariantId(activityVariant)}>
