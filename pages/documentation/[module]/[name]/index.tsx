@@ -16,13 +16,12 @@ import { translationProps } from '../../../../src/serverSideTranslationProps';
 export default function SingleElementDocPage({ module, officialBaseUrl, element }:
 { module: string, officialBaseUrl: string | null, element: JudiciousElement }) {
   const { t } = useLocalTranslation();
-  const title = `${t('documentation')} ${module}.${element.name}`;
+  const nameKind = allKinds[element.kind].label;
+  const title = `Python ${t('documentation')} ${t(nameKind)} ${element.name}`;
   return (
     <div>
       <Head>
-        <title>
-          {title}
-        </title>
+        <title>{title}</title>
       </Head>
       <NavigationBar />
       <Grid container>
@@ -35,7 +34,7 @@ export default function SingleElementDocPage({ module, officialBaseUrl, element 
             <DocBreadcrumbs
               module={module}
               name={element.name}
-              nameKind={allKinds[element.kind].label}
+              nameKind={nameKind}
             />
             <DocElementCard module={module} element={element} elevation={0} />
             {officialBaseUrl && element.urlSuffix && (

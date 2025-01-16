@@ -38,7 +38,7 @@ export default function Documentation({ modulesData } : { modulesData: Judicious
     <div>
       <Head>
         <title>
-          {`${t('documentation')} - PyTamaro`}
+          {`Python ${t('documentation')}`}
         </title>
       </Head>
       <NavigationBar />

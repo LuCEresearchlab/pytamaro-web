@@ -32,7 +32,7 @@ export function sortElements(elements: JudiciousElement[]) {
 
 export default function DocumentationModule({ moduleData }: { moduleData: JudiciousModule }) {
   const { t } = useLocalTranslation();
-  const title = `${t('documentation')} ${moduleData.module}`;
+  const title = `Python ${t('documentation')} ${t('library')} ${moduleData.module}`;
   const icons = {
     function: <Functions />,
     constant: <Numbers />,
