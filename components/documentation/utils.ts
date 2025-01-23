@@ -70,7 +70,7 @@ export function definedFnToJudiciousFunction(fn: PythonFunction): JudiciousFunct
       default: arg.default,
       variableLength: arg.variable_length,
     })),
-    ...(fn.return_type_str !== '') && {
+    ...(fn.return_type_str !== '' || fn.explicit_return) && {
       returnValue: {
         type: fn.return_type_str,
         description: '',
