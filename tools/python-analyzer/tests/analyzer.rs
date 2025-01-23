@@ -35,7 +35,7 @@ fn test_imported_names() {
 #[wasm_bindgen_test]
 fn test_defined_functions() {
     assert_eq!(
-        serde_wasm_bindgen::from_value::<AnalysisResult>(analyze("def f(a: int)->list[int]:\n    \"\"\"Doc\"\"\"\n    pass\ndef g(a, b = 1, *c): pass")).unwrap().defined_functions,
+        serde_wasm_bindgen::from_value::<AnalysisResult>(analyze("def f(a: int)->list[int]:\n    \"\"\"Doc\"\"\"\n    pass\ndef g(a, b = 1, *c): return 0")).unwrap().defined_functions,
         vec![
             PythonFunction {
                 name: "f".to_string(),
@@ -49,6 +49,7 @@ fn test_defined_functions() {
                 ],
                 return_type_str: "list[int]".to_string(),
                 docstring: "Doc".to_string(),
+                explicit_return: false,
             },
             PythonFunction {
                 name: "g".to_string(),
@@ -74,6 +75,7 @@ fn test_defined_functions() {
                 ],
                 return_type_str: "".to_string(),
                 docstring: "".to_string(),
+                explicit_return: true,
             },
         ]
     );

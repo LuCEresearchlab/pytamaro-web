@@ -26,6 +26,7 @@ export interface PythonFunction {
     args: PythonFunctionArgument[];
     return_type_str: string;
     docstring: string;
+    explicit_return: boolean;
 };
 export interface PythonFunctionArgument {
     name: string;
@@ -87,6 +88,7 @@ pub struct PythonFunction {
     pub args: Vec<PythonFunctionArgument>,
     pub return_type_str: String,
     pub docstring: String,
+    pub explicit_return: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
@@ -141,6 +143,7 @@ impl StatementVisitor<'_> for FunctionDefinitionsCollector {
                     }
                     None
                 }).unwrap_or(String::new()),
+                explicit_return: fndefnode.body.iter().any(|stmt| matches!(stmt, Stmt::Return(_))),
             });
         }
     }
