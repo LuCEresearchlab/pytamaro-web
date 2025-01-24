@@ -18,6 +18,7 @@ import {
   PythonName,
 } from '../../src/python-analyzer/python_analyzer';
 import { ActivityVariant } from '../../src/schemas/activitySchema';
+import { JudiciousElement } from '../../src/schemas/documentation';
 import theme from '../../src/theme';
 import DocElement from './DocElement';
 import { definedFnToJudiciousFunction, toolboxToJudiciousFunction } from './utils';
@@ -28,8 +29,11 @@ function reverseUniq<T>(array: T[][]): T[] {
 
 const COLLAPSED_HEIGHT = 1.5 * theme.typography.htmlFontSize;
 
-export default function DocumentationStripe({ sources, activityVariant } :
-{ sources: string[], activityVariant: ActivityVariant }) {
+export default function DocumentationStripe({
+  sources, activityVariant, extraDocumentation = [],
+} :
+{ sources: string[], activityVariant: ActivityVariant,
+  extraDocumentation?: { module: string, elements: JudiciousElement[] }[] }) {
   const { t } = useLocalTranslation();
   const { list } = useLocalToolbox();
   const [importedNamesPerCell, setImportedNamesPerCell] = useState<PythonName[][]>([]);
@@ -74,6 +78,13 @@ export default function DocumentationStripe({ sources, activityVariant } :
     if (module === '.') {
       const definedFunction = allDefinedFunctions.find((fn) => fn.name === name);
       return definedFunction && [{ module: '.', element: definedFnToJudiciousFunction(definedFunction) }];
+    }
+    if (extraDocumentation.find((file) => file.module === module)) {
+      const element = extraDocumentation.find((file) => file.module === module)
+        ?.elements.find((el) => el.name === name);
+      if (element) {
+        return [{ module, element }];
+      }
     }
     const moduleData = modulesData.find((data) => data?.module === module);
     if (name === '*') {

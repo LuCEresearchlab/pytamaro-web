@@ -33,7 +33,11 @@ export default function TypeConstantDocumentation({ element, module }
   const availableOptions = [];
   if (hasExamplesUsingOptional) { availableOptions.push(SHOW_OPTIONAL_KEY); }
   if (element.kind === 'constant') {
-    availableOptions.push(...[SHOW_TYPES_KEY, SHOW_DIAGRAM_KEY]);
+    const hasType = element.type !== '';
+    if (hasType) {
+      availableOptions.push(SHOW_TYPES_KEY);
+    }
+    availableOptions.push(SHOW_DIAGRAM_KEY);
   }
   return (
     <>

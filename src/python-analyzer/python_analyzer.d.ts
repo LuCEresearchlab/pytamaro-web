@@ -23,9 +23,15 @@ export interface ParseError {
     message: string;
     location: [number, number];
 };
+export interface PythonConstant {
+    name: string;
+    type_str: string;
+    docstring: string;
+};
 export interface AnalysisResult {
     imported_names: PythonName[];
     defined_functions: PythonFunction[];
+    defined_constants: PythonConstant[];
     called_names: string[];
     has_ellipsis: boolean;
     import_ranges: [number, number][];

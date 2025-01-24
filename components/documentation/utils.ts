@@ -1,6 +1,6 @@
 import { ToolboxFunction } from '../../src/localStorage/schema';
-import { PythonFunction } from '../../src/python-analyzer/python_analyzer';
-import { JudiciousFunction, JudiciousParameter } from '../../src/schemas/documentation';
+import { PythonConstant, PythonFunction } from '../../src/python-analyzer/python_analyzer';
+import { JudiciousConstant, JudiciousFunction, JudiciousParameter } from '../../src/schemas/documentation';
 
 export const HOVER_COLOR = '#c2ecff';
 export const DARK_HOVER_COLOR = '#0eb4ff';
@@ -96,6 +96,17 @@ export function toolboxToJudiciousFunction(fn: ToolboxFunction): JudiciousFuncti
         type: fn.returnTypeUnparsed,
         description: '',
       },
+    },
+  };
+}
+
+export function definedConstantToJudiciousConstant(constant: PythonConstant): JudiciousConstant {
+  return {
+    kind: 'constant',
+    name: constant.name,
+    type: constant.type_str,
+    description: {
+      p: [constant.docstring],
     },
   };
 }

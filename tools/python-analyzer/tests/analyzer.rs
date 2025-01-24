@@ -1,7 +1,7 @@
 use std::vec;
 
 use wasm_bindgen_test::*;
-use python_analyzer::{analyze, AnalysisResult, ParseError, PythonFunction, PythonFunctionArgument, PythonName};
+use python_analyzer::{analyze, AnalysisResult, ParseError, PythonFunction, PythonFunctionArgument, PythonName, PythonConstant};
 
 #[wasm_bindgen_test]
 fn test_no_parse_errors() {
@@ -144,6 +144,31 @@ fn test_import_ranges() {
         vec![
             (0, 20),
             (21, 39),
+        ]
+    );
+}
+
+#[wasm_bindgen_test]
+fn test_defined_constants() {
+    let result = serde_wasm_bindgen::from_value::<AnalysisResult>(analyze("foo = 42\nbar = 42 ** 42\n\"\"\"squared\"\"\"\npi: float = 3.14\n\'tau/2\'")).unwrap();
+    assert_eq!(
+        result.defined_constants,
+        vec![
+            PythonConstant {
+                name: "foo".to_string(),
+                type_str: "".to_string(),
+                docstring: "".to_string(),
+            },
+            PythonConstant {
+                name: "bar".to_string(),
+                type_str: "".to_string(),
+                docstring: "squared".to_string(),
+            },
+            PythonConstant {
+                name: "pi".to_string(),
+                type_str: "float".to_string(),
+                docstring: "tau/2".to_string(),
+            },
         ]
     );
 }

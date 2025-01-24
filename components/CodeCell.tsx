@@ -13,6 +13,7 @@ import { CodeCellExecutionState } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { AnalysisResult, analyze } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant, PlatformConfiguration } from '../src/schemas/activitySchema';
+import { JudiciousElement } from '../src/schemas/documentation';
 import { joinLines } from '../src/sourceUtils';
 import { EllipsisTip, InputTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
@@ -36,7 +37,7 @@ export function isExecutionError(response: ExecutionResponse | undefined) {
 export default function CodeCell({
   initialSource, currentSource, codeCellExecutionState, onSourceChanged, onExecutionRequested,
   firstLineNumber, activityVariant, sourcesUpTo, platformConfig, resetCounter,
-  extraActions = null, readOnly = false,
+  extraDocumentation = [], extraActions = null, readOnly = false,
 } :
 { initialSource: string,
   currentSource: string,
@@ -48,6 +49,7 @@ export default function CodeCell({
   sourcesUpTo: string[],
   platformConfig: PlatformConfiguration,
   resetCounter: number,
+  extraDocumentation?: { module: string, elements: JudiciousElement[] }[],
   extraActions?: React.ReactNode
   readOnly?: boolean
 }) {
@@ -79,6 +81,7 @@ export default function CodeCell({
         <DocumentationStripe
           sources={sourcesUpTo}
           activityVariant={activityVariant}
+          extraDocumentation={extraDocumentation}
         />
         )}
       <Card>

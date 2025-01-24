@@ -6,14 +6,11 @@ use ruff_python_ast::Parameters;
 use wasm_bindgen::prelude::*;
 extern crate console_error_panic_hook;
 use ruff_python_ast::Stmt;
+use ruff_python_ast::StmtExpr;
 use ruff_python_ast::visitor::Visitor;
 use ruff_python_parser::{Mode, parse_unchecked};
 use ruff_text_size::Ranged;
-
 use serde::{Deserialize, Serialize};
-pub fn start() {
-    console_error_panic_hook::set_once();
-}
 
 #[wasm_bindgen(typescript_custom_section)]
 const TYPES: &'static str = r#"
@@ -38,9 +35,15 @@ export interface ParseError {
     message: string;
     location: [number, number];
 };
+export interface PythonConstant {
+    name: string;
+    type_str: string;
+    docstring: string;
+};
 export interface AnalysisResult {
     imported_names: PythonName[];
     defined_functions: PythonFunction[];
+    defined_constants: PythonConstant[];
     called_names: string[];
     has_ellipsis: boolean;
     import_ranges: [number, number][];
@@ -99,15 +102,19 @@ pub struct PythonFunctionArgument {
     pub variable_length: bool,
 }
 
+fn expr_source(expr: &Expr, source: &str) -> String {
+    source[expr.range()].to_string()
+}
+
 fn get_type_str(optional_expr: &Option<Box<Expr>>, source: &str) -> String {
-    optional_expr.as_ref().map_or_else(String::new, |expr| source[expr.range()].to_string())
+    optional_expr.as_ref().map_or_else(String::new, |expr| expr_source(expr, source))
 }
 
 fn parameter_with_default(param: &ParameterWithDefault, source: &str) -> PythonFunctionArgument {
     PythonFunctionArgument {
         name: param.parameter.name.to_string(),
         type_str: get_type_str(&param.parameter.annotation, source),
-        default: param.default.as_ref().map(|expr| source[expr.range()].to_string()),
+        default: param.default.as_ref().map(|expr| expr_source(expr, source)),
         variable_length: false,
     }
 }
@@ -124,17 +131,17 @@ fn parameters(ast_params: &Parameters, source: &str) -> Vec<PythonFunctionArgume
     args.chain(vararg).chain(kwonlyargs).collect()
 }
 
-struct FunctionDefinitionsCollector {
+struct FunctionDefinitionsCollector<'a> {
     functions: Vec<PythonFunction>,
-    source: String,
+    source: &'a str,
 }
-impl StatementVisitor<'_> for FunctionDefinitionsCollector {
+impl<'a> StatementVisitor<'a> for FunctionDefinitionsCollector<'a> {
     fn visit_stmt(&mut self, node: &Stmt) {
         if let Stmt::FunctionDef(fndefnode) = node {
             self.functions.push(PythonFunction {
                 name: fndefnode.name.to_string(),
-                args: parameters(&fndefnode.parameters, &self.source),
-                return_type_str: get_type_str(&fndefnode.returns, &self.source),
+                args: parameters(&fndefnode.parameters, self.source),
+                return_type_str: get_type_str(&fndefnode.returns, self.source),
                 docstring: fndefnode.body.first().and_then(|stmt| {
                     if let Stmt::Expr(expr) = stmt {
                         if let Expr::StringLiteral(strliteralnode) = expr.value.as_ref() {
@@ -145,6 +152,53 @@ impl StatementVisitor<'_> for FunctionDefinitionsCollector {
                 }).unwrap_or(String::new()),
                 explicit_return: fndefnode.body.iter().any(|stmt| matches!(stmt, Stmt::Return(_))),
             });
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
+pub struct PythonConstant {
+    pub name: String,
+    pub type_str: String,
+    pub docstring: String,
+}
+
+fn extract_docstring_from_next_stmt(stmt: Option<&Stmt>) -> String {
+    if let Some(Stmt::Expr(StmtExpr { value, .. })) = stmt {
+        if let Expr::StringLiteral(strliteralnode) = value.as_ref() {
+            return strliteralnode.value.to_str().to_string();
+        }
+    }
+    String::new()
+}
+
+struct ConstantDefinitionsCollector<'a> {
+    constants: Vec<PythonConstant>,
+    source: &'a str,
+}
+impl<'a> StatementVisitor<'a> for ConstantDefinitionsCollector<'a> {
+    fn visit_body(&mut self, body: &[Stmt]) {
+        for (i, stmt) in body.iter().enumerate() {
+            if let Stmt::Assign(assignnode) = stmt {
+                if assignnode.targets.len() == 1 {
+                    if let Expr::Name(namenode) = &assignnode.targets[0] {
+                        self.constants.push(PythonConstant {
+                            name: namenode.id.to_string(),
+                            type_str: String::new(),
+                            docstring: extract_docstring_from_next_stmt(body.get(i + 1)),
+                        });
+                    }
+                }
+            }
+            if let Stmt::AnnAssign(annassignnode) = stmt {
+                if let Expr::Name(namenode) = &*annassignnode.target {
+                    self.constants.push(PythonConstant {
+                        name: namenode.id.to_string(),
+                        type_str: expr_source(&annassignnode.annotation, self.source),
+                        docstring: extract_docstring_from_next_stmt(body.get(i + 1)),
+                    });
+                }
+            }
         }
     }
 }
@@ -185,6 +239,7 @@ pub struct ParseError {
 pub struct AnalysisResult {
     pub imported_names: Vec<PythonName>,
     pub defined_functions: Vec<PythonFunction>,
+    pub defined_constants: Vec<PythonConstant>,
     pub called_names: Vec<String>,
     pub has_ellipsis: bool,
     pub import_ranges: Vec<(u32, u32)>,
@@ -193,6 +248,7 @@ pub struct AnalysisResult {
 
 #[wasm_bindgen]
 pub fn analyze(python_source: &str) -> JsValue {
+    console_error_panic_hook::set_once();
     let parsed = parse_unchecked(python_source, Mode::Module);
     let parse_errors = parsed.errors().iter().map(|e| ParseError {
         message: e.error.to_string(),
@@ -205,9 +261,14 @@ pub fn analyze(python_source: &str) -> JsValue {
         collector.names
     };
     let defined_functions = {
-        let mut collector = FunctionDefinitionsCollector { functions: Vec::new(), source: python_source.to_string() };
+        let mut collector = FunctionDefinitionsCollector { functions: Vec::new(), source: python_source };
         collector.visit_body(&stmts); 
         collector.functions
+    };
+    let defined_constants = {
+        let mut collector = ConstantDefinitionsCollector { constants: Vec::new(), source: python_source };
+        collector.visit_body(&stmts);
+        collector.constants
     };
     let called_names = {
         let mut collector = CalledNamesCollector { names: Vec::new() };
@@ -229,6 +290,7 @@ pub fn analyze(python_source: &str) -> JsValue {
     let result = AnalysisResult {
         imported_names,
         defined_functions,
+        defined_constants,
         called_names,
         has_ellipsis,
         import_ranges,
