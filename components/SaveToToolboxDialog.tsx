@@ -165,17 +165,22 @@ export default function SaveToToolboxDialog({
     setImplementation(externalImplementation);
   }, [externalImplementation]);
 
+  const resetSelectedFunction = () => {
+    setSelectedFunction('');
+  };
+
+  const resetDescription = () => {
+    setDescription('');
+  };
+
   useEffect(() => {
-    const findNewFunctions = async () => {
-      try {
-        const newFunctions : PythonFunction[] = await analyze(implementation).defined_functions;
-        setFunctions(newFunctions);
-      } catch (e) {
-        setFunctions([]);
-      }
-    };
-    findNewFunctions();
-  }, [implementation]);
+    const newFunctions : PythonFunction[] = analyze(implementation).defined_functions;
+    // Reset the selected function if a function with such a name does not exist anymore
+    if (selectedFunction && !newFunctions.some((f) => f.name === selectedFunction)) {
+      resetSelectedFunction();
+    }
+    setFunctions(newFunctions);
+  }, [implementation, selectedFunction]);
 
   const activityVariant = toolboxActivityVariant(selectedFunction);
 
@@ -203,27 +208,16 @@ export default function SaveToToolboxDialog({
   const initDocstring = (newSelectedFn: string) => {
     if (newSelectedFn && newSelectedFn !== selectedFunction) {
       const sourceDocstring = functions.find((f) => f.name === newSelectedFn)?.docstring;
-      if (sourceDocstring !== undefined) {
+      if (sourceDocstring) {
         setDescription(sourceDocstring);
       }
     }
-  };
-
-  const resetSelectedFunction = () => {
-    setSelectedFunction('');
-  };
-
-  const resetDescription = () => {
-    setDescription('');
   };
 
   const handleImplementationChange = (newImplementation: string) => {
     setImplementation(newImplementation);
     setUsageExecutedSuccessfully(false);
     setInvalidUsageExecution(true);
-    if (!replaceExistingFunction) {
-      resetSelectedFunction();
-    }
   };
 
   return (
