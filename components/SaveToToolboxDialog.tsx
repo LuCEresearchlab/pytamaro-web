@@ -309,9 +309,10 @@ export default function SaveToToolboxDialog({
                 variant="filled"
                 size="small"
                 helperText="Document what this function does"
-                inputProps={{ sx: { pt: 0 } }}
+                sx={{ '& .MuiInputBase-root': { pt: 0.5 } }}
                 FormHelperTextProps={{ sx: { textAlign: 'center' } }}
                 fullWidth
+                multiline
                 value={description}
                 onChange={(event : React.ChangeEvent<HTMLInputElement>) => {
                   setDescription(event.target.value);
