@@ -37,3 +37,6 @@
 [submodule "warin"]
 	path = data/warin
 	url = git@github.com:LuCEresearchlab/pytamaro-web-warin.git
+[submodule "pillonel"]
+	path = data/pillonel
+	url = git@github.com:LuCEresearchlab/pytamaro-web-pillonel.git
