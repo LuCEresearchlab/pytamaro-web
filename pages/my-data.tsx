@@ -54,6 +54,11 @@ export default function MyData() {
   const dataSharingOptIn = () => updateDataSharingPreference('yes');
   const dataSharingOptOut = () => updateDataSharingPreference('no');
 
+  let currentSharingPreferenceDesc = 'not expressed';
+  if (currentSharingPreference !== 'unknown') {
+    currentSharingPreferenceDesc = `data collection${currentSharingPreference === 'yes' ? ' enabled' : ' disabled'}`;
+  }
+
   return (
     <div>
       <Head>
@@ -110,12 +115,7 @@ export default function MyData() {
               Anonymous data sharing for research
             </Typography>
             <Typography variant="body1" marginBottom={3}>
-              Current preference:
-              {' '}
-              {currentSharingPreference === 'yes' && 'data collection enabled'}
-              {currentSharingPreference === 'no' && 'data collection disabled'}
-              {currentSharingPreference === 'unknown' && 'not expressed'}
-              .
+              {`Current preference: ${currentSharingPreferenceDesc}.`}
             </Typography>
             <Stack direction="row" spacing={2}>
               <Button variant="contained" color="success" disabled={currentSharingPreference === 'yes'} onClick={dataSharingOptIn}>Enable</Button>
