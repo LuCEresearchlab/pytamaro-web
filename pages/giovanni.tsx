@@ -63,16 +63,21 @@ function Arrow() {
   );
 }
 
-function BasicCard() {
-  const langs = ["rectangle", "rechteck", "rettangolo"];
+interface BasicCardProps {
+  name: string;
+  type: string; // For now just "Function"
+  params: { name: string; type: string }[];
+  url: string;
+  returnValue: { type: string; description: string };
+}
+
+function BasicCard({ name, type, params, url, returnValue }: BasicCardProps) {
+  // const langs = ["rectangle", "rechteck", "rettangolo"];
   const totalHeight = "300px";
   const totalWidth = "150px";
-  const inputFields = 4;
-  const outputFields = 1;
 
   return (
     <div>
-      <h1 style={{ marginLeft: "10px" }}>Basic Card</h1>
       <div style={{ display: "flex", justifyContent: "center" }}>
         <div
           style={{
@@ -83,7 +88,7 @@ function BasicCard() {
           }}
         >
           {/* arrows to the left of the card */}
-          {Array.from({ length: inputFields }).map((_, index) => (
+          {Array.from({ length: params?.length }).map((_, index) => (
             <Arrow key={index} />
           ))}
         </div>
@@ -113,7 +118,9 @@ function BasicCard() {
             }}
           >
             {/* Maps list of languages to card */}
-            {langs.map((lang, index) => (
+            <p style={{ fontWeight: "bold", margin: "2px 0" }}>{name}</p>
+            {/* commented for now since we still dont have languages 
+             {langs.map((lang, index) => (
               <p
                 key={index}
                 style={{
@@ -123,7 +130,7 @@ function BasicCard() {
               >
                 {lang}
               </p>
-            ))}
+            ))} */}
           </div>
           {/* Rectangle svg at the bottom of the card */}
           <RectangleFunctionSvg />
@@ -136,7 +143,7 @@ function BasicCard() {
           }}
         >
           {/* Output arrows to the right of the card */}
-          {Array.from({ length: outputFields }).map((_, index) => (
+          {Array.from({ length: returnValue ? 1 : 0 }).map((_, index) => (
             <Arrow key={index} />
           ))}
         </div>
@@ -159,12 +166,24 @@ export default function Giovanni() {
   const [cards, setCards] = useState<Card[]>([]);
 
   useEffect(() => {
-    setCards(CardsJson.elements as Card[]);
-    console.log(cards.forEach((c) => c.name));
+    setCards(CardsJson.elements.filter((c) => c.kind === "function") as Card[]);
+    console.log(CardsJson.elements);
   }, []);
   return (
     <div>
-      <BasicCard />
+      {cards.map((card, index) => (
+        <div key={index}>
+          <BasicCard
+            name={card.name}
+            type={card.kind}
+            params={card.parameters}
+            url={
+              card.description.figure?.url ? card.description.figure.url : ""
+            }
+            returnValue={card.returnValue}
+          />
+        </div>
+      ))}
     </div>
   );
 }
