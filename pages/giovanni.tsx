@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/quotes */
 import { useEffect, useState } from "react";
 import CardsJson from "../public/docs/pytamaro.json";
@@ -122,18 +123,27 @@ function BasicCard({ name, type, params, url, returnValue }: BasicCardProps) {
             {/* commented for now since we still dont have languages 
              {langs.map((lang, index) => (
               <p
-                key={index}
-                style={{
-                  fontWeight: index === 0 ? "bold" : "normal",
-                  margin: "2px 0",
-                }}
+          key={index}
+          style={{
+            fontWeight: index === 0 ? "bold" : "normal",
+            margin: "2px 0",
+          }}
               >
-                {lang}
+          {lang}
               </p>
             ))} */}
           </div>
           {/* Rectangle svg at the bottom of the card */}
-          <RectangleFunctionSvg />
+          {/* <RectangleFunctionSvg /> */}
+          <img
+            src={url}
+            alt="FunctionImage"
+            style={{
+              maxWidth: "80%",
+              maxHeight: "80%",
+              objectFit: "contain",
+            }}
+          />
         </div>
         <div
           style={{
