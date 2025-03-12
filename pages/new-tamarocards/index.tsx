@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/quotes */
 import { useEffect, useState } from "react";
-import CardsJson from "../public/docs/pytamaro.json";
+import CardsJson from "../../public/docs/pytamaro.json";
 
 function RectangleFunctionSvg() {
   return (
@@ -120,7 +120,7 @@ function BasicCard({ name, type, params, url, returnValue }: BasicCardProps) {
           >
             {/* Maps list of languages to card */}
             <p style={{ fontWeight: "bold", margin: "2px 0" }}>{name}</p>
-            {/* commented for now since we still dont have languages 
+            {/* commented for now since we still dont have languages
              {langs.map((lang, index) => (
               <p
           key={index}
@@ -171,6 +171,10 @@ interface Card {
   returnValue: { type: string; description: string };
   examples: { code: string; usesOptional?: boolean; stdout: string }[];
 }
+
+// Luca's comments:
+// - Use the types already defined (e.g., JudiciousFunction), instead of defining new ones
+// - useEffect/useState seems not necessary here
 
 export default function Giovanni() {
   const [cards, setCards] = useState<Card[]>([]);

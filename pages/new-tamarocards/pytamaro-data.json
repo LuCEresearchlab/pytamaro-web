@@ -1,0 +1,18 @@
+// Localization from https://github.com/LuCEresearchlab/pytamaro/blob/main/pytamaro/localization.py 
+// Card images from https://pytamaro.si.usi.ch/tamarocards
+{
+ "compose": {
+        "localization": {
+            "en": "compose",
+            "it": "componi",
+            "de": "kombiniere",
+            "fr": "compose",
+        },
+        "icon": "<svg>...</svg>",
+        "parametersIcon": [
+            "<svg>...</svg>",
+            "<svg>...</svg>",
+        ],
+        "returnIcon": "<svg>...</svg>",
+    }
+}
