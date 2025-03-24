@@ -92,11 +92,14 @@ export default function CodeEditor({
 
   const clearMarkers = useCallback(() => {
     if (monacoInstance && editorInstance) {
-      // Only clear markers and close the open ones if there are any
-      // (otherwise this inappropriately focuses the editor).
-      if (monacoInstance.editor.getModelMarkers().length > 0) {
-        monacoInstance.editor.setModelMarkers(editorInstance.getModel(), 'owner', []);
-        editorInstance.trigger('', 'closeMarkersNavigation', {});
+      // Delete all the markers
+      monacoInstance.editor.setModelMarkers(editorInstance.getModel(), 'owner', []);
+      // Close any open markers
+      // We do this using MarkerController directly to explicitly avoid focusing the editor,
+      // as another editor might have the focus and should not lose it.
+      const markerController: any = editorInstance.getContribution('editor.contrib.markerController');
+      if (markerController?.close) {
+        markerController.close(false); // false: do not focus
       }
     }
   }, [monacoInstance, editorInstance]);
