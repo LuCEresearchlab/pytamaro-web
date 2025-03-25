@@ -1,11 +1,11 @@
 <img src="public/PyTamaro-horizontal.png" alt="PyTamaro Logo" style="background-color:white;" />
 
 
-This repository contains the PyTamaro web plaform, served at https://pytamaro.si.usi.ch.
+This repository contains the PyTamaro web platform, served at https://pytamaro.si.usi.ch.
 
 ## Executive Summary: How is this all organized?
 
-The web plaform is implemented using [Next.js](https://nextjs.org/).
+The web platform is implemented using [Next.js](https://nextjs.org/).
 The actual content is stored in separate repositories, one for each author, which are imported as git submodules.
 Activities are created as [Jupyter notebooks](https://jupyter.org/).
 
@@ -14,12 +14,12 @@ Activities are created as [Jupyter notebooks](https://jupyter.org/).
 <summary>Expand</summary>
 
 First, set up a local development environment
-as described in the "How do I set up a development enviroment..." section below.
+as described in the "How do I set up a development environment..." section below.
 
 As a very first step, complete your author profile in the `author.json` file.
 Your content will NOT appear until you add at the very least your name.
 
-You can work on your content (activites and curricula) by adding and changing the files in your submodule's folder (locateda at `data/<author-slug>/...`).
+You can work on your content (activities and curricula) by adding and changing the files in your submodule's folder (located at `data/<author-slug>/...`).
 Check out the LuCE's content folder at `data/luce` for examples of activities and curricula.
 
 When you are ready and want to commit your changes:
@@ -94,7 +94,7 @@ See this document for [the structure of a content repository](docs/content-repo.
 <details>
 <summary>Expand</summary>
 
-Activites and curricula are responsiblity of a certain author and are maintained in external repositories.
+Activities and curricula are responsibility of a certain author and are maintained in external repositories.
 See the [Luce repository](https://github.com/LuCEresearchlab/pytamaro-web-luce/) for an example.
 Such repositories are imported to this repository as git submodules.
 
