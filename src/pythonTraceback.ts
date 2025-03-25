@@ -67,3 +67,8 @@ export function processTraceback(content: string) {
     errorLines, userTracebackLines, libraryTracebackLines, collapsed,
   };
 }
+
+export function isErrorInvolvingToolbox(content: string) {
+  const regex = / {2}File "\/home\/glot\/toolbox_(.*).py", line (\d+), in \1/;
+  return splitLines(content).some((line) => regex.test(line));
+}

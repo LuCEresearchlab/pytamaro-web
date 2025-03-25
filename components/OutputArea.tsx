@@ -1,7 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/no-array-index-key */
-import { Fullscreen } from '@mui/icons-material';
+import { Construction, Fullscreen } from '@mui/icons-material';
 import {
+  Alert,
   Box, Button, Card,
   Collapse,
   Dialog,
@@ -15,7 +16,7 @@ import {
   useState,
 } from 'react';
 import { CompletedExecutionResponse } from '../src/codeExecution';
-import { processTraceback } from '../src/pythonTraceback';
+import { isErrorInvolvingToolbox, processTraceback } from '../src/pythonTraceback';
 import { joinLines, splitLines } from '../src/sourceUtils';
 import theme from '../src/theme';
 
@@ -184,6 +185,14 @@ export function OutputArea({ data, sx = {}, preStyle = {} } :
   );
 }
 
+function ToolboxErrorAlert() {
+  return (
+    <Alert severity="warning" color="error" icon={<Construction />}>
+      This error involves a function from the toolbox.
+    </Alert>
+  );
+}
+
 export default function ExecutionOutputArea(
   {
     executionError, executionResponse, dimmed = false, sx = {},
@@ -200,14 +209,17 @@ export default function ExecutionOutputArea(
         position: 'relative',
         overflowX: 'auto',
         width: '100%',
-        px: 2,
         borderColor: executionError ? 'error.main' : undefined,
         ...(dimmed ? { opacity: theme.palette.action.disabledOpacity } : {}),
         ...sx,
       }}
     >
-      <OutputArea data={stdout} />
-      {stderr && <CodeElement content={stderr} />}
+
+      {isErrorInvolvingToolbox(stderr) && <ToolboxErrorAlert /> }
+      <Box sx={{ px: 2 }}>
+        <OutputArea data={stdout} />
+        {stderr && <CodeElement content={stderr} />}
+      </Box>
     </Card>
   );
 }
