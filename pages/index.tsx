@@ -418,7 +418,7 @@ export default function Home({ activities } :
           </Grid>
           <Grid xs={12} md={4}>
             <Card sx={{ height: '100%' }}>
-              <CardActionArea href="https://www.chiodini.org/publications/splashe23-pytamaro.pdf" sx={{ height: '100%' }}>
+              <CardActionArea href="/research" sx={{ height: '100%' }}>
                 <CardHeader
                   title="Based on Research"
                   titleTypographyProps={{ variant: 'h5', color: 'primary', fontWeight: 'bold' }}
@@ -426,15 +426,11 @@ export default function Home({ activities } :
                 />
                 <CardContent sx={{ pt: 0 }}>
                   <Typography variant="body1" color="textSecondary" fontSize="1.1rem">
-                    Learn how the design of PyTamaro fosters
+                    Read our
                     {' '}
-                    <strong>abstraction</strong>
+                    <strong>research papers</strong>
                     {' '}
-                    and
-                    {' '}
-                    <strong>problem decomposition</strong>
-                    {' '}
-                    skills.
+                    to learn about the design of PyTamaro and this web platform.
                   </Typography>
                 </CardContent>
               </CardActionArea>
