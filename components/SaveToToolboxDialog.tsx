@@ -383,7 +383,7 @@ export default function SaveToToolboxDialog({
             )}
           </>
         ) : (
-          <Alert severity="error">No function definitions found (possibly due to a syntax error)</Alert>
+          <Alert severity="error">No function definitions found</Alert>
         )}
       </DialogContent>
     </Dialog>
