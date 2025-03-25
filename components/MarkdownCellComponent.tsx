@@ -1,4 +1,4 @@
-import { Box, Stack } from '@mui/material';
+import { Box, Link, Stack } from '@mui/material';
 import { MDXRemote } from 'next-mdx-remote';
 import { ReactNode } from 'react';
 import { ActivityVariant, MarkdownCell, NotebookCell } from '../src/schemas/activitySchema';
@@ -88,12 +88,25 @@ function codeComponent(props: any) {
   );
 }
 
+function linkComponent(props: any) {
+  return (
+    <Link
+      target="_blank"
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...props}
+    >
+      {props.children}
+    </Link>
+  );
+}
+
 export default function MarkdownCellComponent({ cell, activityVariant } :
 { cell: MarkdownCell, activityVariant: ActivityVariant }) {
   const adHocComponents = {
     img: (props: any) => (
       imgComponent(props, cell, activityVariant.authorSlug, activityVariant.activitySlug)
     ),
+    a: linkComponent,
     code: codeComponent,
     ReactPlayer: ResponsiveReactPlayer,
     Stack,
