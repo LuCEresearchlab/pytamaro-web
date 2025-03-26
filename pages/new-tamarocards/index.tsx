@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/indent */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/quotes */
+import { useState } from "react";
 import CardsJson from "./pytamaro-function-data.json";
 import FunctionCard from "./function-card";
 import ValueCard from "./value-card";
@@ -17,9 +18,35 @@ interface Card {
 
 export default function CardsRender() {
   const cards = Object.values(CardsJson) as Card[];
+  const [showIcons, setShowIcons] = useState(true);
 
   return (
     <>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginBottom: "20px",
+          padding: "10px",
+        }}
+      >
+        <label
+          htmlFor="show-icons-checkbox"
+          style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+        >
+          <input
+            id="show-icons-checkbox"
+            type="checkbox"
+            checked={showIcons}
+            onChange={() => setShowIcons(!showIcons)}
+            style={{ marginRight: "8px", width: "18px", height: "18px" }}
+          />
+          <span style={{ fontSize: "16px", fontWeight: "bold" }}>
+            Show Parameter/Return Icons
+          </span>
+        </label>
+      </div>
+
       <div
         style={{
           display: "flex",
@@ -46,6 +73,9 @@ export default function CardsRender() {
                 description: card.returnIcon || "",
               }}
               languages={Object.values(card.localization)}
+              parameterIcons={showIcons ? card.parametersIcon : undefined}
+              returnIcon={showIcons ? card.returnIcon : ""}
+              showIcons={showIcons}
             />
           </div>
         ))}
