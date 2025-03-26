@@ -12,6 +12,7 @@ import useLocalProfile from '../src/localStorage/useLocalProfile';
 import { aboutPathname } from '../src/urlUtils';
 import ChangelogList, { changelogEntries } from './ChangelogList';
 import { Popover, PopoverContent, PopoverTrigger } from './Popover';
+import theme from '../src/theme';
 
 const DEFAULT_SHOW_COUNT = 3;
 
@@ -38,8 +39,10 @@ export default function NotificationsButton() {
     <Popover placement="bottom" open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger onClick={handleClick}>
         <IconButton
-          sx={{ ml: 1 }}
-          color="neutral"
+          sx={{
+            color: theme.palette.text.primary,
+            ml: 1,
+          }}
         >
           <Badge badgeContent={unreadCount} invisible={isOpen} color="error">
             <Notifications />

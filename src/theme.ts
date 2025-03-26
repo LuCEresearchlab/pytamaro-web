@@ -54,13 +54,10 @@ const theme = responsiveFontSizes(createTheme({
       main: '#008BCB',
     },
     secondary: {
-      main: '#19857b',
+      main: '#E1F5FD',
     },
     error: {
       main: red.A400,
-    },
-    neutral: {
-      main: '#fff',
     },
   },
   pytamaro: {

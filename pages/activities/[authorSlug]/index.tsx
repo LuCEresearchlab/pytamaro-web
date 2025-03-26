@@ -1,9 +1,12 @@
 import ViewCompactIcon from '@mui/icons-material/ViewCompact';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import {
   Box,
   Button,
+  IconButton,
   Stack,
-  ToggleButton, Tooltip, Typography,
+  Tooltip,
+  Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { countBy, orderBy } from 'lodash';
@@ -19,11 +22,14 @@ import { BasicActivity } from '../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../src/schemas/authorSchema';
 import { translationProps } from '../../../src/serverSideTranslationProps';
 import { activitiesByAuthorPathname, authorPathname, conceptPathname } from '../../../src/urlUtils';
+import theme from '../../../src/theme';
 
 export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsProfiles }:
-{ defaultAuthorSlug: string,
-  activities: BasicActivity[],
-  authorsProfiles: AuthorProfile[] }) {
+  {
+    defaultAuthorSlug: string,
+    activities: BasicActivity[],
+    authorsProfiles: AuthorProfile[]
+  }) {
   const authorOptions = authorsProfiles.map((author) => ({
     id: author.slug,
     label: author.name,
@@ -73,12 +79,12 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
   return (
     <Stack spacing={2}>
       <NavigationBar>
-        <Tooltip arrow title={compactView === 'normal' ? 'Compact View' : 'Normal View'}>
-          <ToggleButton
-            color="neutral"
-            value="compact"
-            selected={compactView !== 'normal'}
-            onChange={(ev: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        <Tooltip
+          arrow
+          title={`Switch to ${compactView === 'normal' ? 'compact' : 'normal'} view`}
+        >
+          <IconButton
+            onClick={(ev: React.MouseEvent<HTMLElement, MouseEvent>) => {
               setCompactView((current) => {
                 if (current === 'normal') {
                   return ev.shiftKey ? 'no-cards' : 'compact';
@@ -86,9 +92,15 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
                 return 'normal';
               });
             }}
+            style={{
+              border: 0,
+            }}
+            value="compact"
           >
-            <ViewCompactIcon />
-          </ToggleButton>
+            {compactView === 'normal'
+              ? <ViewModuleIcon sx={{ color: theme.palette.text.primary }} />
+              : <ViewCompactIcon sx={{ color: theme.palette.text.primary }} />}
+          </IconButton>
         </Tooltip>
       </NavigationBar>
       <Grid container spacing={2}>
@@ -133,18 +145,18 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
       </Typography>
       {filteredActivities.length === 0 && allowedConcepts.length > 0
         && allowedAuthors.length > 0 && allowedLanguages.length > 0 && (
-        <Box textAlign="center">
-          <Typography gutterBottom>
-            Activities might not yet be tagged with the selected concepts!
-          </Typography>
-          <Button
-            variant="contained"
-            onClick={() => { setInitialConcepts([]); setAllowedConcepts([]); }}
-          >
-            Remove filter on concepts
-          </Button>
-        </Box>
-      )}
+          <Box textAlign="center">
+            <Typography gutterBottom>
+              Activities might not yet be tagged with the selected concepts!
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={() => { setInitialConcepts([]); setAllowedConcepts([]); }}
+            >
+              Remove filter on concepts
+            </Button>
+          </Box>
+        )}
     </Stack>
   );
 }

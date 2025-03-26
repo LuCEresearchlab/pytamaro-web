@@ -14,6 +14,7 @@ import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { Activity, ActivityVariant } from '../src/schemas/activitySchema';
 import { activityVariantPathnameFromParts } from '../src/urlUtils';
 import { Popover, PopoverContent, PopoverTrigger } from './Popover';
+import theme from '../src/theme';
 
 export default function VariantSelector({ activity, activityVariant }:
 { activity: Activity, activityVariant: ActivityVariant }) {
@@ -42,8 +43,10 @@ export default function VariantSelector({ activity, activityVariant }:
     <Popover placement="bottom">
       <PopoverTrigger>
         <IconButton
-          sx={{ ml: 1 }}
-          color="neutral"
+          sx={{
+            color: theme.palette.text.primary,
+            ml: 1,
+          }}
         >
           <List />
         </IconButton>

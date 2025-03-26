@@ -15,6 +15,7 @@ import { useState } from 'react';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import { EventName, alwaysStoreDbEvent } from '../src/storeDbEvent';
 import CustomSnackbar from './CustomSnackbar';
+import theme from '../src/theme';
 
 export default function FeedbackDialog() {
   const [open, setOpen] = useState(false);
@@ -69,7 +70,14 @@ export default function FeedbackDialog() {
   return (
     <div>
       <Tooltip arrow title="Send Feedback">
-        <IconButton color="neutral" aria-label="feedback" sx={{ ml: 1 }} onClick={handleClickOpen}>
+        <IconButton
+          aria-label="feedback"
+          onClick={handleClickOpen}
+          sx={{
+            color: theme.palette.text.primary,
+            ml: 1,
+          }}
+        >
           <FeedbackIcon />
         </IconButton>
       </Tooltip>

@@ -25,9 +25,7 @@ export default function Academy() {
         <title>PyTamaro Academy for ZCU 2024</title>
       </Head>
       <Box>
-        <NavigationBar>
-          <Typography variant="h6">PyTamaro Academy for ZCU 2024</Typography>
-        </NavigationBar>
+        <NavigationBar />
         <div
           style={{
             display: 'flex',

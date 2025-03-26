@@ -148,9 +148,7 @@ export default function Expo2025() {
         <title>The Visually Swiss Programming Experience</title>
       </Head>
       <Box>
-        <NavigationBar>
-          <Typography variant="h6">The Visually Swiss Programming Experience</Typography>
-        </NavigationBar>
+        <NavigationBar />
         <div
           style={{
             display: 'flex',

@@ -32,9 +32,7 @@ export default function Academy() {
         <title>PyTamaro Summer Academy 2023</title>
       </Head>
       <Box>
-        <NavigationBar>
-          <Typography variant="h6">PyTamaro Summer Academy 2023</Typography>
-        </NavigationBar>
+        <NavigationBar />
         <div
           style={{
             display: 'flex',

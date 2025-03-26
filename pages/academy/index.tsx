@@ -101,9 +101,7 @@ export default function Academy() {
         <title>PyTamaro Academy</title>
       </Head>
       <Box>
-        <NavigationBar>
-          <Typography variant="h6">PyTamaro Academy</Typography>
-        </NavigationBar>
+        <NavigationBar />
         <div
           style={{
             display: 'flex',

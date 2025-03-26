@@ -19,17 +19,17 @@ import {
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import anime from 'animejs';
 import { shuffle } from 'lodash';
+import { useEffect } from 'react';
+import anime from 'animejs';
 import Head from 'next/head';
 import Image from 'next/image';
-import { useEffect } from 'react';
 import Carousel from 'react-material-ui-carousel';
 import ActivityCardMedia from '../components/ActivityCardMedia';
+import NavigationBar from '../components/NavigationBar';
+import ExecutionOutputArea from '../components/OutputArea';
 import { registerCustomPythonLanguage, STRICT_PYTHON3_LANG_ID } from '../components/editor/strictPython3';
 import { COLORIZE_CLASSNAME, colorizeElements, configureEditor } from '../components/editor/utils';
-import ExecutionOutputArea from '../components/OutputArea';
-import PanoramaAlpeFoppa from '../public/AlpeFoppa.jpg';
 import { basicActivities, listVisibleActivities } from '../src/fs-content/activities';
 import { BasicActivity } from '../src/schemas/activitySchema';
 import { translationProps } from '../src/serverSideTranslationProps';
@@ -37,8 +37,12 @@ import { joinLines } from '../src/sourceUtils';
 import theme from '../src/theme';
 import {
   aboutPathname,
-  activitiesByAuthorPathname, curriculaPathname, playgroundPathname, teachingResourcesPathname,
+  activitiesByAuthorPathname,
+  curriculaPathname,
+  playgroundPathname,
+  teachingResourcesPathname,
 } from '../src/urlUtils';
+import PanoramaAlpeFoppa from '../public/AlpeFoppa.jpg';
 
 configureEditor();
 
@@ -52,9 +56,16 @@ const PythonBadge = styled(Badge)<BadgeProps>(() => ({
 }));
 
 function PythonCodeCard({
-  lines, preludeLines = [], stdout, pytamaro = false,
-}
-: { lines: string[], preludeLines?: string[], stdout: string, pytamaro?: boolean }) {
+  lines,
+  preludeLines = [],
+  stdout,
+  pytamaro = false,
+} : {
+  lines: string[],
+  preludeLines?: string[],
+  stdout: string,
+  pytamaro?: boolean,
+}) {
   return (
     <Card sx={{ height: '100%' }}>
       <PythonBadge
@@ -69,16 +80,16 @@ function PythonCodeCard({
               alt="Python logo"
             />
             {pytamaro && (
-            <img
-              src="/favicon.ico"
-              style={{
-                height: '2em', width: 'auto', transform: 'translateY(-0.2em)',
-              }}
-              alt="PyTamaro logo"
-            />
+              <img
+                src="/favicon.ico"
+                style={{
+                  height: '2em', width: 'auto', transform: 'translateY(-0.2em)',
+                }}
+                alt="PyTamaro logo"
+              />
             )}
           </div>
-    )}
+        )}
       >
         <CardContent sx={{ overflowX: 'auto' }}>
           <Box
@@ -91,15 +102,15 @@ function PythonCodeCard({
             {joinLines(lines)}
           </Box>
           {pytamaro && (
-          <Button
-            variant="outlined"
-            size="small"
-            href={playgroundPathname(joinLines([...preludeLines, ...lines]))}
-            sx={{ position: 'absolute', bottom: '.5rem', right: '.5rem' }}
-            endIcon={<PlayCircle />}
-          >
-            Try it!
-          </Button>
+            <Button
+              variant="outlined"
+              size="small"
+              href={playgroundPathname(joinLines([...preludeLines, ...lines]))}
+              sx={{ position: 'absolute', bottom: '.5rem', right: '.5rem' }}
+              endIcon={<PlayCircle />}
+            >
+              Try it!
+            </Button>
           )}
         </CardContent>
       </PythonBadge>
@@ -116,8 +127,8 @@ function PythonCodeCard({
   );
 }
 
-export default function Home({ activities } :
-{ activities: BasicActivity[] }) {
+export default function Home({ activities }:
+  { activities: BasicActivity[] }) {
   const featuredActivities = shuffle(activities.filter((activity) => activity.visibility === 'featured'));
 
   useEffect(() => {
@@ -168,50 +179,35 @@ export default function Home({ activities } :
         <title>PyTamaro</title>
         <meta name="description" content="PyTamaro: Learn programming in Python with graphics. Explore activities connected to data science, colors, animations, and more. Completely free, in your browser!" />
       </Head>
-      <div
+      <NavigationBar home>
+        <Button
+          variant="contained"
+          href={playgroundPathname()}
+          endIcon={<PlayCircle />}>
+          Playground
+        </Button>
+      </NavigationBar>
+      <Image
+        src={PanoramaAlpeFoppa}
+        alt="Photo of Alpe Foppa"
+        width="2048"
+        height="576"
+        sizes="100vw"
         style={{
-          display: 'flex',
-          justifyContent: 'center',
+          width: "100%",
+          height: "auto",
+          minHeight: "15vh",
+          maxHeight: "min(20vh, 576px)",
+          objectFit: "cover",
+          position: "absolute",
+          top: 0,
+          left: 0,
         }}
-      >
-        <Image
-          src={PanoramaAlpeFoppa}
-          alt="Photo of Alpe Foppa"
-          width="2048"
-          height="576"
-          sizes="100vw"
-          style={{
-            width: '100%',
-            height: 'auto',
-            minHeight: '15vh',
-            maxHeight: 'min(20vh, 576px)',
-            objectFit: 'cover',
-          }}
-        />
-        <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-          <img
-            src="PyTamaro-horizontal.png"
-            alt="PyTamaro logo"
-            style={{
-              position: 'absolute', left: '1rem', height: '5vh', minHeight: '3rem',
-            }}
-          />
-        </Box>
-        <Box>
-          <Button
-            variant="contained"
-            color="neutral"
-            href={playgroundPathname()}
-            endIcon={<PlayCircle />}
-            style={{
-              position: 'absolute', right: '1rem', top: '1rem',
-            }}
-          >
-            Playground
-          </Button>
-        </Box>
-      </div>
+      />
       <Container maxWidth="xl">
+        {/* Image spacing */}
+        <div style={{ height: "16vh" }} />
+
         <Box
           display="flex"
           justifyContent="center"
