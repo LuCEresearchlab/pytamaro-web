@@ -13,7 +13,7 @@ interface Card {
   returnIcon?: string;
 }
 
-export default function Giovanni() {
+export default function CardsRender() {
   const cards = Object.values(CardsJson) as Card[];
 
   return (
