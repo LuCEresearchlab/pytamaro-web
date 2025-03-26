@@ -9,7 +9,6 @@ import Arrow from "./arrow";
 import PyTamaroSymbol from "./PyTamaro-symbol";
 
 interface BasicCardProps {
-  name: string;
   type: string;
   params: { name: string; type: string }[];
   svg: string;
@@ -29,7 +28,7 @@ function RenderSvg({ svg }: { svg: string }) {
   return (
     <div
       style={{
-        width: "70%",
+        width: "60%",
         height: "auto",
         display: "flex",
         justifyContent: "center",
@@ -42,7 +41,6 @@ function RenderSvg({ svg }: { svg: string }) {
 }
 
 function BasicCard({
-  name,
   type,
   params,
   svg,
@@ -152,7 +150,14 @@ export default function Giovanni() {
   const cards = Object.values(CardsJson) as Card[];
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "center",
+        gap: "20px",
+      }}
+    >
       {cards.map((card, index) => (
         <div key={index}>
           <BasicCard
