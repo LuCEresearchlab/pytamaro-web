@@ -5,6 +5,8 @@
 /* eslint-disable @typescript-eslint/quotes */
 import CardsJson from "./pytamaro-function-data.json";
 import FunctionCard from "./function-card";
+import ValueCard from "./value-card";
+import ConstantCard from "./constant-card";
 
 interface Card {
   localization: { [lang: string]: string };
@@ -17,36 +19,42 @@ export default function CardsRender() {
   const cards = Object.values(CardsJson) as Card[];
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "center",
-        gap: "20px",
-      }}
-    >
-      {cards.map((card, index) => (
-        <div key={index}>
-          <FunctionCard
-            type="function"
-            params={
-              Array.isArray(card.parametersIcon)
-                ? card.parametersIcon.map((icon: string, i: number) => ({
-                    name: `Param ${i + 1}`,
-                    type: "Icon",
-                  }))
-                : []
-            }
-            svg={card.icon}
-            returnValue={{
-              type: "Icon",
-              description: card.returnIcon || "",
-            }}
-            languages={Object.values(card.localization)}
-          />
-        </div>
-      ))}
-    </div>
+    <>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          gap: "20px",
+        }}
+      >
+        {cards.map((card, index) => (
+          <div key={index}>
+            <FunctionCard
+              type="function"
+              params={
+                Array.isArray(card.parametersIcon)
+                  ? card.parametersIcon.map((icon: string, i: number) => ({
+                      name: `Param ${i + 1}`,
+                      type: "Icon",
+                    }))
+                  : []
+              }
+              svg={card.icon}
+              returnValue={{
+                type: "Icon",
+                description: card.returnIcon || "",
+              }}
+              languages={Object.values(card.localization)}
+            />
+          </div>
+        ))}
+      </div>
+      <ValueCard value={250} />
+      <ValueCard value={50} />
+      <ValueCard value={0} />
+      <ConstantCard />
+    </>
   );
 }
 
