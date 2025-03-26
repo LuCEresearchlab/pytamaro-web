@@ -4,7 +4,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/quotes */
 import { useEffect, useState } from "react";
-import CardsJson from "./pytamaro-data.json";
+import CardsJson from "./pytamaro-function-data.json";
 import Arrow from "./arrow";
 import PyTamaroSymbol from "./PyTamaro-symbol";
 
