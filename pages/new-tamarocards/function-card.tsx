@@ -7,6 +7,7 @@
 import { useEffect, useRef, useState } from "react";
 import Arrow from "./arrow";
 import PyTamaroSymbol from "./PyTamaro-symbol";
+import RenderSvg from "./render-svg";
 
 interface BasicCardProps {
   type: string;
