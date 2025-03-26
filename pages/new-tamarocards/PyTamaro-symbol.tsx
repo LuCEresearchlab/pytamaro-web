@@ -1,0 +1,20 @@
+export default function PyTamaroSymbol() {
+  return (
+    <svg
+      width="40"
+      height="20"
+      viewBox="0 0 121 87"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ marginTop: "5px" }}
+    >
+      <path d="M23 65L3.08141 30.5L42.9186 30.5L23 65Z" fill="#7F99EF" />
+      <path d="M23 65L3.08141 30.5L42.9186 30.5L23 65Z" fill="#7F99EF" />
+      <path d="M23 65L3.08141 30.5L42.9186 30.5L23 65Z" fill="#6589FF" />
+      <path d="M98 65L78.0814 30.5L117.919 30.5L98 65Z" fill="#7F99EF" />
+      <path d="M98 65L78.0814 30.5L117.919 30.5L98 65Z" fill="#7F99EF" />
+      <path d="M98 65L78.0814 30.5L117.919 30.5L98 65Z" fill="#6589FF" />
+      <path d="M60.5 0L98.1721 65.25H22.8279L60.5 0Z" fill="#F84545" />
+    </svg>
+  );
+}
