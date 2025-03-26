@@ -3,17 +3,18 @@
 /* eslint-disable @typescript-eslint/indent */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/quotes */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import CardsJson from "./pytamaro-function-data.json";
 import Arrow from "./arrow";
 import PyTamaroSymbol from "./PyTamaro-symbol";
 
 interface BasicCardProps {
   name: string;
-  type: string; // For now just "Function"
+  type: string;
   params: { name: string; type: string }[];
   svg: string;
   returnValue: { type: string; description: string };
+  languages: string[];
 }
 
 function RenderSvg({ svg }: { svg: string }) {
@@ -25,13 +26,46 @@ function RenderSvg({ svg }: { svg: string }) {
 
   if (!clientSvg) return null;
 
-  return <div dangerouslySetInnerHTML={{ __html: clientSvg }} />;
+  return (
+    <div
+      style={{
+        width: "70%",
+        height: "auto",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        overflow: "hidden",
+      }}
+      dangerouslySetInnerHTML={{ __html: clientSvg }}
+    />
+  );
 }
 
-function BasicCard({ name, type, params, svg, returnValue }: BasicCardProps) {
-  // const langs = ["rectangle", "rechteck", "rettangolo"];
+function BasicCard({
+  name,
+  type,
+  params,
+  svg,
+  returnValue,
+  languages,
+}: BasicCardProps) {
   const totalHeight = "300px";
-  const totalWidth = "150px";
+  const baseWidth = 150;
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [calculatedWidth, setCalculatedWidth] = useState(baseWidth);
+
+  useEffect(() => {
+    if (cardRef.current) {
+      const cardWidth = cardRef.current.scrollWidth;
+      const textWidth = Array.from(
+        cardRef.current.querySelectorAll("p")
+      ).reduce((maxWidth, p) => Math.max(maxWidth, p.scrollWidth), 0);
+      const newWidth = Math.max(cardWidth, textWidth) + 20; // Add some padding
+      if (newWidth > baseWidth) {
+        setCalculatedWidth(newWidth);
+      }
+    }
+  }, [languages]);
 
   return (
     <div>
@@ -50,8 +84,9 @@ function BasicCard({ name, type, params, svg, returnValue }: BasicCardProps) {
           ))}
         </div>
         <div
+          ref={cardRef}
           style={{
-            width: totalWidth,
+            width: `${calculatedWidth}px`,
             height: totalHeight,
             border: "5px solid red",
             backgroundColor: "#FBE3E3",
@@ -75,19 +110,17 @@ function BasicCard({ name, type, params, svg, returnValue }: BasicCardProps) {
             }}
           >
             {/* Maps list of languages to card */}
-            <p style={{ fontWeight: "bold", margin: "2px 0" }}>{name}</p>
-            {/* commented for now since we still dont have languages
-             {langs.map((lang, index) => (
+            {languages.map((lang, index) => (
               <p
-          key={index}
-          style={{
-            fontWeight: index === 0 ? "bold" : "normal",
-            margin: "2px 0",
-          }}
+                key={index}
+                style={{
+                  fontWeight: index === 0 ? "bold" : "normal",
+                  margin: "2px 0",
+                }}
               >
-          {lang}
+                {lang}
               </p>
-            ))} */}
+            ))}
           </div>
           <RenderSvg svg={svg} />
         </div>
@@ -107,9 +140,6 @@ function BasicCard({ name, type, params, svg, returnValue }: BasicCardProps) {
     </div>
   );
 }
-// Luca's comments:
-// - Use the types already defined (e.g., JudiciousFunction), instead of defining new ones
-// - useEffect/useState seems not necessary here
 
 interface Card {
   localization: { [lang: string]: string };
@@ -127,7 +157,7 @@ export default function Giovanni() {
         <div key={index}>
           <BasicCard
             name={card.localization.en}
-            type="Function"
+            type="function"
             params={
               Array.isArray(card.parametersIcon)
                 ? card.parametersIcon.map((icon: string, i: number) => ({
@@ -141,6 +171,7 @@ export default function Giovanni() {
               type: "Icon",
               description: card.returnIcon || "",
             }}
+            languages={Object.values(card.localization)}
           />
         </div>
       ))}
