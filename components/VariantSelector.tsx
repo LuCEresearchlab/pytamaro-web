@@ -12,9 +12,9 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { Activity, ActivityVariant } from '../src/schemas/activitySchema';
+import theme from '../src/theme';
 import { activityVariantPathnameFromParts } from '../src/urlUtils';
 import { Popover, PopoverContent, PopoverTrigger } from './Popover';
-import theme from '../src/theme';
 
 export default function VariantSelector({ activity, activityVariant }:
 { activity: Activity, activityVariant: ActivityVariant }) {
@@ -45,7 +45,6 @@ export default function VariantSelector({ activity, activityVariant }:
         <IconButton
           sx={{
             color: theme.palette.text.primary,
-            ml: 1,
           }}
         >
           <List />

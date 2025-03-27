@@ -9,10 +9,10 @@ import {
 import produce from 'immer';
 import { useState } from 'react';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
+import theme from '../src/theme';
 import { aboutPathname } from '../src/urlUtils';
 import ChangelogList, { changelogEntries } from './ChangelogList';
 import { Popover, PopoverContent, PopoverTrigger } from './Popover';
-import theme from '../src/theme';
 
 const DEFAULT_SHOW_COUNT = 3;
 
@@ -41,7 +41,6 @@ export default function NotificationsButton() {
         <IconButton
           sx={{
             color: theme.palette.text.primary,
-            ml: 1,
           }}
         >
           <Badge badgeContent={unreadCount} invisible={isOpen} color="error">

@@ -11,20 +11,19 @@ import {
   Toolbar,
   useScrollTrigger,
 } from '@mui/material';
-import React, { cloneElement, useState } from 'react';
+import React, { cloneElement, useEffect, useState } from 'react';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
+import theme from '../src/theme';
 import {
+  aboutPathname,
   activitiesByAuthorPathname,
   curriculaPathname,
-  documentationPathname,
   myProgressPathname,
 } from '../src/urlUtils';
-import SidebarItem from './sidebar/SidebarItem';
-import ToolboxListSidebar from './sidebar/ToolboxListSidebar';
 import FeedbackDialog from './FeedbackDialog';
 import NotificationsButton from './NotificationsButton';
 import PlatformLanguageButton from './PlatformLanguageButton';
-import theme from '../src/theme';
+import ToolboxListSidebar from './sidebar/ToolboxListSidebar';
 
 const navItems = [
   {
@@ -40,31 +39,27 @@ const navItems = [
     url: myProgressPathname(),
   },
   {
-    name: 'documentation',
-    url: documentationPathname(),
+    name: 'about',
+    url: aboutPathname(),
   },
 ];
 
-function ScrollAppBarChanges(props: {
-  enabled: boolean,
-  children?: React.ReactElement,
-}) {
-  const {
-    enabled,
-    children,
-  } = props;
+function ScrollAppBarChanges({ enabled = false, children }:
+{ enabled: boolean, children: React.ReactElement }) {
+  const [scrollThreshold, setScrollThreshold] = useState(100);
 
-  // Hooks needs to be called in the exact same order in every
-  // component render, so we can't move this inside the if.
-  // Reference: eslint:react-hooks/rules-of-hooks
-  const trigger = useScrollTrigger({
+  useEffect(() => {
+    const element = document.getElementById('homepage-landscape');
+    const elementAppBar = document.getElementById('app-bar');
+    setScrollThreshold((element && elementAppBar)
+      ? element.offsetTop + element.offsetHeight - elementAppBar.offsetHeight
+      : 100);
+  }, []);
+
+  const scrolled = useScrollTrigger({
     disableHysteresis: true,
-    threshold: 0,
+    threshold: scrollThreshold,
   });
-
-  if (!children) {
-    return null;
-  }
 
   if (!enabled) {
     return children;
@@ -72,24 +67,33 @@ function ScrollAppBarChanges(props: {
 
   return cloneElement(children, {
     sx: {
-      background: trigger
-        ? '#fff'
-        : 'linear-gradient(0deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.5) 100%);',
+      background: scrolled ? theme.palette.secondary.main : '#ffffff80',
     },
-    variant: trigger ? 'outlined' : 'elevation',
   });
 }
 
-// eslint-disable-next-line react/require-default-props
-export default function NavigationBar(props: {
-  home?: boolean,
-  children?: React.ReactNode,
-}) {
-  const {
-    home,
-    children,
-  } = props;
+function PyTamaroHomeLogo() {
+  return (
+    <IconButton
+      href="/"
+      style={{
+        borderRadius: 0,
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        alt="PyTamaro"
+        src="/logo-navbar.png"
+        style={{
+          height: '1.3rem',
+        }}
+      />
+    </IconButton>
+  );
+}
 
+export default function NavigationBar({ home = false, children = null }:
+{ home?: boolean, children?: React.ReactNode }) {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -104,10 +108,11 @@ export default function NavigationBar(props: {
   return (
     <ScrollAppBarChanges enabled={home === true}>
       <AppBar
-        position='sticky'
+        id="app-bar"
+        position="sticky"
         elevation={0}
         sx={{
-          background: '#fff',
+          background: theme.palette.secondary.main,
         }}
       >
         <Toolbar>
@@ -116,42 +121,47 @@ export default function NavigationBar(props: {
             display: {
               lg: 'none',
               xs: 'flex',
-            }
-          }}>
+            },
+          }}
+          >
             <IconButton
-              aria-controls='menu-appbar'
-              aria-haspopup='true'
-              aria-label='Menu'
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              aria-label="Menu"
               onClick={handleOpenNavMenu}
-              size='large'
+              size="large"
               sx={{
-                color: theme.palette.text.primary
+                color: theme.palette.text.primary,
               }}
             >
               <MenuIcon />
             </IconButton>
             <Drawer
-              anchor='left'
+              anchor="left"
               onClose={handleCloseNavMenu}
               open={Boolean(anchorElNav)}
               sx={{
                 display: { xs: 'block', lg: 'none' },
               }}
+              PaperProps={{
+                style: {
+                  backgroundColor: theme.palette.secondary.main,
+                },
+              }}
             >
               <Box m={1}>
-                <SidebarItem title='PyTamaro'>
-                  <Stack direction='column'>
-                    {navItems.map((item) => (
-                      <MenuItem
-                        component='a'
-                        key={item.url}
-                        href={item.url}
-                      >
-                        {t(item.name)}
-                      </MenuItem>
-                    ))}
-                  </Stack>
-                </SidebarItem>
+                <Stack direction="column">
+                  <PyTamaroHomeLogo />
+                  {navItems.map((item) => (
+                    <MenuItem
+                      component="a"
+                      key={item.url}
+                      href={item.url}
+                    >
+                      {t(item.name)}
+                    </MenuItem>
+                  ))}
+                </Stack>
                 <Divider sx={{ m: 1 }} />
                 <ToolboxListSidebar skipPopup />
               </Box>
@@ -159,44 +169,31 @@ export default function NavigationBar(props: {
           </Box>
 
           <Stack
-            direction='row'
+            direction="row"
             display={{
               lg: 'flex',
               xs: 'none',
             }}
-            divider={
+            divider={(
               <Divider
                 flexItem
-                orientation='vertical' />
-            }
+                orientation="vertical"
+                variant="middle"
+              />
+            )}
+            useFlexGap
             spacing={1}
             sx={{
               flexGrow: 1,
             }}
           >
-            <IconButton
-              disableRipple
-              href='/'
-              sx={{
-                paddingLeft: 0,
-                paddingRight: 0,
-              }}
-            >
-              <img
-                alt='PyTamaro'
-                src='/PyTamaro-horizontal.png'
-                style={{
-                  height: '3rem',
-                  minHeight: '1rem',
-                }} />
-            </IconButton>
-
+            <PyTamaroHomeLogo />
             {navItems.map((item) => (
               <Button
                 href={item.url}
                 key={item.url}
                 style={{
-                  textTransform: 'none'
+                  textTransform: 'none',
                 }}
                 sx={{
                   color: theme.palette.text.primary,
@@ -208,21 +205,20 @@ export default function NavigationBar(props: {
           </Stack>
 
           <Stack
-            direction='row'
+            direction="row"
             spacing={1}
             sx={{
-              flexGrow: 1
-            }}
-            style={{
-              position: 'absolute',
-              right: '1rem',
+              marginLeft: 'auto',
             }}
           >
-
-            {home || <FeedbackDialog />}
-            {home || <NotificationsButton />}
-            {home || <PlatformLanguageButton />}
             {children}
+            {!home && (
+            <>
+              <FeedbackDialog />
+              <NotificationsButton />
+              <PlatformLanguageButton />
+            </>
+            )}
           </Stack>
         </Toolbar>
       </AppBar>

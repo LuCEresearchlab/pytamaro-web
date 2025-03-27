@@ -21,15 +21,15 @@ import { knownConcepts } from '../../../src/schemas/activityConcepts';
 import { BasicActivity } from '../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../src/schemas/authorSchema';
 import { translationProps } from '../../../src/serverSideTranslationProps';
-import { activitiesByAuthorPathname, authorPathname, conceptPathname } from '../../../src/urlUtils';
 import theme from '../../../src/theme';
+import { activitiesByAuthorPathname, authorPathname, conceptPathname } from '../../../src/urlUtils';
 
 export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsProfiles }:
-  {
-    defaultAuthorSlug: string,
-    activities: BasicActivity[],
-    authorsProfiles: AuthorProfile[]
-  }) {
+{
+  defaultAuthorSlug: string,
+  activities: BasicActivity[],
+  authorsProfiles: AuthorProfile[]
+}) {
   const authorOptions = authorsProfiles.map((author) => ({
     id: author.slug,
     label: author.name,
@@ -156,7 +156,7 @@ export default function ActivitiesPage({ defaultAuthorSlug, activities, authorsP
               Remove filter on concepts
             </Button>
           </Box>
-        )}
+      )}
     </Stack>
   );
 }

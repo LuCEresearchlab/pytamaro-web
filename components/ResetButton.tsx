@@ -10,9 +10,8 @@ export default function ResetButton({ enabled, onReset, tooltip }:
         <IconButton
           sx={{
             color: enabled ? theme.palette.text.primary : theme.palette.text.disabled,
-            ml: 1,
           }}
-          style={enabled ? {} : { pointerEvents: 'none' }}
+          disabled={!enabled}
           onClick={onReset}
         >
           <RestartAlt />

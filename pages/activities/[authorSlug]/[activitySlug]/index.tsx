@@ -58,7 +58,7 @@ export default function ActivityInfoPage({ activity, author, includingCurricula 
                 activity.slug,
                 activity.previewImage.filename,
               )}
-              alt='Activity Image'
+              alt="Activity Image"
               style={{
                 padding: '1rem',
                 objectFit: 'contain',

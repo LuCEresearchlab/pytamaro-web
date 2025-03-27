@@ -19,17 +19,18 @@ import {
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import { shuffle } from 'lodash';
-import { useEffect } from 'react';
 import anime from 'animejs';
+import { shuffle } from 'lodash';
 import Head from 'next/head';
 import Image from 'next/image';
+import { useEffect } from 'react';
 import Carousel from 'react-material-ui-carousel';
 import ActivityCardMedia from '../components/ActivityCardMedia';
 import NavigationBar from '../components/NavigationBar';
 import ExecutionOutputArea from '../components/OutputArea';
 import { registerCustomPythonLanguage, STRICT_PYTHON3_LANG_ID } from '../components/editor/strictPython3';
 import { COLORIZE_CLASSNAME, colorizeElements, configureEditor } from '../components/editor/utils';
+import PanoramaAlpeFoppa from '../public/AlpeFoppa.jpg';
 import { basicActivities, listVisibleActivities } from '../src/fs-content/activities';
 import { BasicActivity } from '../src/schemas/activitySchema';
 import { translationProps } from '../src/serverSideTranslationProps';
@@ -42,7 +43,6 @@ import {
   playgroundPathname,
   teachingResourcesPathname,
 } from '../src/urlUtils';
-import PanoramaAlpeFoppa from '../public/AlpeFoppa.jpg';
 
 configureEditor();
 
@@ -128,7 +128,7 @@ function PythonCodeCard({
 }
 
 export default function Home({ activities }:
-  { activities: BasicActivity[] }) {
+{ activities: BasicActivity[] }) {
   const featuredActivities = shuffle(activities.filter((activity) => activity.visibility === 'featured'));
 
   useEffect(() => {
@@ -183,30 +183,32 @@ export default function Home({ activities }:
         <Button
           variant="contained"
           href={playgroundPathname()}
-          endIcon={<PlayCircle />}>
+          endIcon={<PlayCircle />}
+        >
           Playground
         </Button>
       </NavigationBar>
       <Image
+        id="homepage-landscape"
         src={PanoramaAlpeFoppa}
         alt="Photo of Alpe Foppa"
         width="2048"
         height="576"
         sizes="100vw"
         style={{
-          width: "100%",
-          height: "auto",
-          minHeight: "15vh",
-          maxHeight: "min(20vh, 576px)",
-          objectFit: "cover",
-          position: "absolute",
+          width: '100%',
+          height: 'auto',
+          minHeight: '15vh',
+          maxHeight: 'min(20vh, 576px)',
+          objectFit: 'cover',
+          position: 'absolute',
           top: 0,
           left: 0,
         }}
       />
       <Container maxWidth="xl">
         {/* Image spacing */}
-        <div style={{ height: "16vh" }} />
+        <div style={{ height: '16vh' }} />
 
         <Box
           display="flex"

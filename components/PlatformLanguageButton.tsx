@@ -10,8 +10,8 @@ import {
 } from '@mui/material';
 import capitalizedLocalizedLanguageDisplayName from '../src/internationalization';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import { Popover, PopoverContent, PopoverTrigger } from './Popover';
 import theme from '../src/theme';
+import { Popover, PopoverContent, PopoverTrigger } from './Popover';
 
 const config = require('../next-i18next.config');
 
@@ -34,7 +34,6 @@ export default function PlatformLanguageButton() {
         <IconButton
           sx={{
             color: theme.palette.text.primary,
-            ml: 1,
           }}
         >
           <Translate />
