@@ -28,8 +28,8 @@ import { shuffle } from 'lodash';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useEffect } from 'react';
-import Carousel from 'react-material-ui-carousel';
 import ActivityCardMedia from '../components/ActivityCardMedia';
+import Carousel from '../components/Carousel';
 import NavigationBar from '../components/NavigationBar';
 import ExecutionOutputArea from '../components/OutputArea';
 import {
@@ -423,11 +423,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                   </Typography>
                 </CardContent>
                 <Box padding={2}>
-                  <Carousel
-                    interval={2000}
-                    indicators={false}
-                    navButtonsAlwaysInvisible
-                  >
+                  <Carousel interval={2000}>
                     {featuredActivities
                       .filter((activity) => activity.slug !== 'swiss-flag')
                       .map((activity) => (

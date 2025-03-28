@@ -19,20 +19,19 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import Carousel from 'react-material-ui-carousel';
 import anime from 'animejs';
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
 import { useEffect } from 'react';
+import Carousel from '../../components/Carousel';
 import NavigationBar from '../../components/NavigationBar';
-import PyTamaroLogo from '../../public/PyTamaroLogo.png';
-import HeroImage from '../../public/events/HeroUniversity.jpg';
+import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
+import Theory from '../../public/artturi-jalli-gYrYa37fAKI-unsplash.jpg';
 import Summer2023CardImage from '../../public/events/2023-SA-CardImage.jpg';
 import Summer2024CardImage from '../../public/events/2024-SA-CardImage.jpg';
 import ZCU2024CardImage from '../../public/events/2024-ZCU-CardImage.jpg';
-import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
-import Theory from '../../public/artturi-jalli-gYrYa37fAKI-unsplash.jpg';
+import HeroImage from '../../public/events/HeroUniversity.jpg';
 import PanoramaAlpeFoppa from '../../public/PanoramaAlpeFoppa.jpg';
 import PanoramaBottaChurch from '../../public/PanoramaBottaChurch.jpg';
 import PanoramaCampusEst from '../../public/PanoramaCampusEst.jpg';
@@ -45,6 +44,7 @@ import PanoramaSanSalvatore from '../../public/PanoramaSanSalvatore.jpg';
 import PanoramaTamaroLemaDry from '../../public/PanoramaTamaroLemaDry.jpg';
 import PanoramaTamaroLemaLugano from '../../public/PanoramaTamaroLemaLugano.jpg';
 import PanoramaUSI from '../../public/PanoramaUSI.jpg';
+import PyTamaroLogo from '../../public/PyTamaroLogo.png';
 import { translationProps } from '../../src/serverSideTranslationProps';
 
 export default function Academy() {

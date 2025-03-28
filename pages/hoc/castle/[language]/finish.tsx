@@ -15,7 +15,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import Carousel from 'react-material-ui-carousel';
+import Carousel from '../../../../components/Carousel';
 import HourOfCodeCastle from '../../../../components/HourOfCodeCastle';
 import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
 import NavigationBar from '../../../../components/NavigationBar';
@@ -227,11 +227,7 @@ export default function FinishHocCastlePage({
                     {t('finish.learnPythonDesc1')}
                   </Typography>
 
-                  <Carousel
-                    interval={4000}
-                    indicators={false}
-                    sx={{ marginBottom: '20px' }}
-                  >
+                  <Carousel interval={4000} sx={{ marginBottom: '20px' }}>
                     {[
                       {
                         author: 'luce',
