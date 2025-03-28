@@ -1,11 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/no-array-index-key */
-import {
-  Box,
-  Divider,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Divider, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
@@ -14,24 +9,32 @@ import {
   JudiciousType,
 } from '../../src/schemas/documentation';
 import CodeElement from './CodeElement';
-import ConfigButtons, { SHOW_DIAGRAM_KEY, SHOW_OPTIONAL_KEY, SHOW_TYPES_KEY } from './ConfigButtons';
+import ConfigButtons, {
+  SHOW_DIAGRAM_KEY,
+  SHOW_OPTIONAL_KEY,
+  SHOW_TYPES_KEY,
+} from './ConfigButtons';
 import ConstantDiagram from './ConstantDiagram';
 import DocumentationExample from './DocumentationExample';
-import {
-  hoverProps, moduleId, nameId, sentence,
-} from './utils';
+import { hoverProps, moduleId, nameId, sentence } from './utils';
 
-export default function TypeConstantDocumentation({ element, module }
-: { element: JudiciousConstant | JudiciousType, module: string }) {
+export default function TypeConstantDocumentation({
+  element,
+  module,
+}: {
+  element: JudiciousConstant | JudiciousType;
+  module: string;
+}) {
   const [hoverElement, setHoverElement] = useState<string>('');
-  const {
-    name, description, examples,
-  } = element;
+  const { name, description, examples } = element;
   const { docsMetadata } = useLocalProfile();
   const { t } = useLocalTranslation();
-  const hasExamplesUsingOptional = examples?.some((ex) => ex.usesOptional) || false;
+  const hasExamplesUsingOptional =
+    examples?.some((ex) => ex.usesOptional) || false;
   const availableOptions = [];
-  if (hasExamplesUsingOptional) { availableOptions.push(SHOW_OPTIONAL_KEY); }
+  if (hasExamplesUsingOptional) {
+    availableOptions.push(SHOW_OPTIONAL_KEY);
+  }
   if (element.kind === 'constant') {
     const hasType = element.type !== '';
     if (hasType) {
@@ -44,14 +47,18 @@ export default function TypeConstantDocumentation({ element, module }
       <Box mb={1}>
         <Box sx={{ display: 'flex' }}>
           <span>
-            <Typography color="primary" fontWeight="bold" component="span">{t(element.kind === 'constant' ? 'Constant' : 'Type')}</Typography>
+            <Typography color='primary' fontWeight='bold' component='span'>
+              {t(element.kind === 'constant' ? 'Constant' : 'Type')}
+            </Typography>
             &nbsp;
             <Typography
-              color="text.secondary"
-              component="span"
+              color='text.secondary'
+              component='span'
               {...hoverProps(moduleId(), hoverElement, setHoverElement)}
             >
-              {module === '.' ? t('fromYourCode') : t('fromLibrary', { module })}
+              {module === '.'
+                ? t('fromYourCode')
+                : t('fromLibrary', { module })}
             </Typography>
           </span>
           <ConfigButtons available={availableOptions} />
@@ -69,7 +76,7 @@ export default function TypeConstantDocumentation({ element, module }
           )}
         </Typography>
       </Box>
-      { element.kind === 'constant' && docsMetadata.showDiagram && (
+      {element.kind === 'constant' && docsMetadata.showDiagram && (
         <ConstantDiagram
           constant={element}
           module={module}
@@ -78,7 +85,7 @@ export default function TypeConstantDocumentation({ element, module }
         />
       )}
       {description.p.map((p, idx) => (
-        <Typography key={idx} color="text.secondary" gutterBottom>
+        <Typography key={idx} color='text.secondary' gutterBottom>
           {sentence(p)}
         </Typography>
       ))}

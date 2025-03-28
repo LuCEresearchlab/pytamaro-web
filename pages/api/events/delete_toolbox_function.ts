@@ -5,9 +5,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const {
-    uuid, experimentKey, fn,
-  } = req.body;
+  const { uuid, experimentKey, fn } = req.body;
   const saved = await saveDeleteToolboxFunctionEvent(
     uuid,
     experimentKey,

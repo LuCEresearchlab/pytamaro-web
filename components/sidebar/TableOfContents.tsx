@@ -8,19 +8,19 @@ import Link from 'next/link';
 import * as React from 'react';
 import { RefObject } from 'react';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
-import th from '../../src/theme';
+import theme from '../../src/theme';
 import SidebarItem from './SidebarItem';
 
 const NavList = styled(Typography)({
   padding: 0,
   margin: 0,
   listStyle: 'none',
-  marginLeft: `calc(-1 * (1px + ${th.spacing(1)}))`,
+  marginLeft: `calc(-1 * (1px + ${theme.spacing(1)}))`,
 });
 
 const NavItem = styled(Link, {
   shouldForwardProp: (prop) => prop !== 'active' && prop !== 'indent',
-})<{ active: boolean, theme: any, indent: boolean }>(({ active, theme, indent }) => {
+})<{ active: boolean; indent: boolean }>(({ active, indent }) => {
   const activeStyles = {
     borderLeftColor: theme.pytamaro.redColor,
     color: theme.pytamaro.redColor,
@@ -55,6 +55,7 @@ const NavItem = styled(Link, {
 
 const noop = () => {};
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function useThrottledOnScroll(callback: any, delay: number) {
   const throttledCallback = React.useMemo(
     () => (callback ? throttle(callback, delay) : noop),
@@ -69,8 +70,9 @@ function useThrottledOnScroll(callback: any, delay: number) {
     window.addEventListener('scroll', throttledCallback);
     return () => {
       window.removeEventListener('scroll', throttledCallback);
-      // @ts-ignore
-      throttledCallback.cancel();
+      if ('cancel' in throttledCallback) {
+        throttledCallback.cancel();
+      }
     };
   }, [throttledCallback]);
 }
@@ -82,19 +84,28 @@ interface TOCItem {
 }
 
 export default function TableOfContents({
-  elementRef, selector, titleKey, initialized,
-} :
-{ elementRef: RefObject<HTMLElement>, selector: string, titleKey: string, initialized: boolean }) {
+  elementRef,
+  selector,
+  titleKey,
+  initialized,
+}: {
+  elementRef: RefObject<HTMLElement>;
+  selector: string;
+  titleKey: string;
+  initialized: boolean;
+}) {
   const { t } = useLocalTranslation();
   const [items, setItems] = React.useState<TOCItem[]>([]);
   React.useEffect(() => {
     if (elementRef.current && initialized) {
-      const elements = Array.from(elementRef.current.querySelectorAll<HTMLElement>(selector)).map((
-        element,
-      ) => ({
+      const elements = Array.from(
+        elementRef.current.querySelectorAll<HTMLElement>(selector),
+      ).map((element) => ({
         text: element.dataset.tocTitle || element.textContent || '',
         hash: element.id,
-        indent: element.dataset.tocIndent === 'true' || (element.tagName[0] === 'H' && parseInt(element.tagName[1], 10) >= 3),
+        indent:
+          element.dataset.tocIndent === 'true' ||
+          (element.tagName[0] === 'H' && parseInt(element.tagName[1], 10) >= 3),
       }));
       setItems(elements);
     }
@@ -102,7 +113,9 @@ export default function TableOfContents({
 
   const [activeState, setActiveState] = React.useState<string | null>(null);
   const clickedRef = React.useRef(false);
-  const unsetClickedRef = React.useRef(null);
+  const unsetClickedRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const findActiveIndex = React.useCallback(() => {
     // Don't set the active index based on scroll if a link was just clicked
     if (clickedRef.current) {
@@ -121,8 +134,9 @@ export default function TableOfContents({
       const node = document.getElementById(item.hash);
 
       if (
-        node
-        && node.getBoundingClientRect().top > -document.documentElement.clientHeight / 4
+        node &&
+        node.getBoundingClientRect().top >
+          -document.documentElement.clientHeight / 4
       ) {
         active = item;
         break;
@@ -140,7 +154,6 @@ export default function TableOfContents({
   const handleClick = (hash: string) => () => {
     // Used to disable findActiveIndex if the page scrolls due to a click
     clickedRef.current = true;
-    // @ts-ignore
     unsetClickedRef.current = setTimeout(() => {
       clickedRef.current = false;
     }, 1000);
@@ -152,14 +165,14 @@ export default function TableOfContents({
 
   React.useEffect(
     () => () => {
-      // @ts-ignore
-      clearTimeout(unsetClickedRef.current);
+      if (unsetClickedRef.current) {
+        clearTimeout(unsetClickedRef.current);
+      }
     },
     [],
   );
 
   const itemLink = (item: TOCItem) => (
-    // @ts-ignore
     <NavItem
       href={`#${item.hash}`}
       onClick={handleClick(item.hash)}
@@ -174,9 +187,7 @@ export default function TableOfContents({
     <SidebarItem title={t(titleKey)}>
       <NavList>
         {items.map((item) => (
-          <li key={item.text}>
-            {itemLink(item)}
-          </li>
+          <li key={item.text}>{itemLink(item)}</li>
         ))}
       </NavList>
     </SidebarItem>

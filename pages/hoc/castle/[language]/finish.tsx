@@ -25,10 +25,21 @@ import CertificateImage from '../../../../public/hoc/hour_of_code_certificate.jp
 import { readActivity } from '../../../../src/fs-content/activities';
 import useLocalTranslation from '../../../../src/localStorage/useLocalTranslation';
 import { Activity } from '../../../../src/schemas/activitySchema';
-import { locales, translationProps } from '../../../../src/serverSideTranslationProps';
-import { activitiesByAuthorPathname, activityAssetPathname, curriculumPathname } from '../../../../src/urlUtils';
+import {
+  locales,
+  translationProps,
+} from '../../../../src/serverSideTranslationProps';
+import {
+  activitiesByAuthorPathname,
+  activityAssetPathname,
+  curriculumPathname,
+} from '../../../../src/urlUtils';
 
-export default function FinishHocCastlePage({ finalActivity } : { finalActivity: Activity }) {
+export default function FinishHocCastlePage({
+  finalActivity,
+}: {
+  finalActivity: Activity;
+}) {
   const router = useRouter();
   const language = router.query.language as string;
   const { i18n } = useLocalTranslation(['hourofcode']);
@@ -41,80 +52,105 @@ export default function FinishHocCastlePage({ finalActivity } : { finalActivity:
 
       <Box>
         <NavigationBar />
-        <Container maxWidth="md">
-          <Typography marginTop={5} variant="h5" align="center" color="textSecondary" paragraph>
+        <Container maxWidth='md'>
+          <Typography
+            marginTop={5}
+            variant='h5'
+            align='center'
+            color='textSecondary'
+            paragraph
+          >
             {t('hourOfCodeWithPyTamaro')}
           </Typography>
-          <Typography sx={{ mt: 2 }} variant="h3" align="center" color="textPrimary" gutterBottom>
+          <Typography
+            sx={{ mt: 2 }}
+            variant='h3'
+            align='center'
+            color='textPrimary'
+            gutterBottom
+          >
             {t('finish.missionAccomplished')}
           </Typography>
-          <Typography marginY={3} variant="h6" color="textSecondary">
+          <Typography marginY={3} variant='h6' color='textSecondary'>
             {t('finish.castleHelp')}
           </Typography>
           <Image
             src={DarkCastleImage}
-            alt="Photo of Castle"
-            width="1261"
-            height="831"
-            sizes="100vw"
+            alt='Photo of Castle'
+            width='1261'
+            height='831'
+            sizes='100vw'
             style={{
               width: '100%',
               height: 'auto',
             }}
           />
-          <Typography marginY={3}>
-            {t('finish.despiteThat')}
-          </Typography>
-          <Grid
-            container
-            spacing={2}
-            sx={{ marginY: 3 }}
-          >
-            <Grid
-              item
-              xs={12}
-              sm={8}
-            >
-              <Typography marginTop={0} variant="h5" color="textSecondary" paragraph>
+          <Typography marginY={3}>{t('finish.despiteThat')}</Typography>
+          <Grid container spacing={2} sx={{ marginY: 3 }}>
+            <Grid item xs={12} sm={8}>
+              <Typography
+                marginTop={0}
+                variant='h5'
+                color='textSecondary'
+                paragraph
+              >
                 {t('finish.leonardo')}
               </Typography>
               <Typography marginY={3}>
-                <Trans t={t} i18nKey="finish.tsunamiWave" components={{ strong: <strong /> }} />
+                <Trans
+                  t={t}
+                  i18nKey='finish.tsunamiWave'
+                  components={{ strong: <strong /> }}
+                />
               </Typography>
               <Typography marginY={3}>
-                <Trans t={t} i18nKey="finish.buzzaBiasca" components={{ a: <a href="https://hls-dhs-dss.ch/de/articles/028662/2004-11-04/" /> }} />
+                <Trans
+                  t={t}
+                  i18nKey='finish.buzzaBiasca'
+                  components={{
+                    a: (
+                      <a href='https://hls-dhs-dss.ch/de/articles/028662/2004-11-04/' />
+                    ),
+                  }}
+                />
               </Typography>
               <Typography marginY={3}>
-                <Trans t={t} i18nKey="finish.sketch" components={{ strong: <strong />, a: <a href="https://insubricahistorica.ch/blog/2021/09/22/la-buzza-di-biasca-del-1515/" /> }} />
+                <Trans
+                  t={t}
+                  i18nKey='finish.sketch'
+                  components={{
+                    strong: <strong />,
+                    a: (
+                      <a href='https://insubricahistorica.ch/blog/2021/09/22/la-buzza-di-biasca-del-1515/' />
+                    ),
+                  }}
+                />
               </Typography>
-              <Typography>
-                {t('finish.amazing')}
-              </Typography>
+              <Typography>{t('finish.amazing')}</Typography>
             </Grid>
 
-            <Grid
-              item
-              xs={12}
-              sm={4}
-            >
+            <Grid item xs={12} sm={4}>
               <Card>
                 <CardContent>
-                  <Typography gutterBottom variant="h5">
+                  <Typography gutterBottom variant='h5'>
                     {t('finish.claimYourCertificate')}
                   </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                  >
+                  <Typography variant='body2' color='text.secondary'>
                     {t('finish.claimYourCertificateDesc')}
                   </Typography>
                 </CardContent>
                 <CardMedia>
-                  <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                  <div
+                    style={{
+                      position: 'relative',
+                      width: '100%',
+                      height: '100%',
+                    }}
+                  >
                     <Image
                       src={CertificateImage}
-                      alt="Certificate"
-                      sizes="100vw"
+                      alt='Certificate'
+                      sizes='100vw'
                       style={{
                         width: '100%',
                         height: 'auto',
@@ -123,14 +159,14 @@ export default function FinishHocCastlePage({ finalActivity } : { finalActivity:
                   </div>
                 </CardMedia>
                 <CardContent>
-                  <Typography marginY={0} align="center">
-                    <Link href="https://code.org/api/hour/finish" passHref>
-                      <Button
-                        variant="contained"
-                        size="large"
-                        color="success"
-                      >
-                        <Trans t={t} i18nKey="finish.completeButton" components={{ br: <br /> }} />
+                  <Typography marginY={0} align='center'>
+                    <Link href='https://code.org/api/hour/finish' passHref>
+                      <Button variant='contained' size='large' color='success'>
+                        <Trans
+                          t={t}
+                          i18nKey='finish.completeButton'
+                          components={{ br: <br /> }}
+                        />
                       </Button>
                     </Link>
                   </Typography>
@@ -139,49 +175,55 @@ export default function FinishHocCastlePage({ finalActivity } : { finalActivity:
             </Grid>
           </Grid>
 
-          <Grid
-            container
-            spacing={2}
-          >
-            <Grid
-              item
-              xs={12}
-              sm={4}
-            >
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
               <Card>
                 <CardContent>
-                  <Typography variant="h5" color="text.secondary" paragraph>
-                    <Trans t={t} i18nKey="finish.keepCastle" components={{ br: <br /> }} />
+                  <Typography variant='h5' color='text.secondary' paragraph>
+                    <Trans
+                      t={t}
+                      i18nKey='finish.keepCastle'
+                      components={{ br: <br /> }}
+                    />
                   </Typography>
 
-                  <Typography variant="body2" color="text.secondary" paragraph>
+                  <Typography variant='body2' color='text.secondary' paragraph>
                     {t('finish.keepCastleDesc1')}
                   </Typography>
                   <HourOfCodeCastle
-                    language="en"
+                    language='en'
                     extraPythonFiles={finalActivity.extraPythonFiles}
                   />
-                  <Typography variant="body2" color="text.secondary" paragraph sx={{ mt: 2 }}>
+                  <Typography
+                    variant='body2'
+                    color='text.secondary'
+                    paragraph
+                    sx={{ mt: 2 }}
+                  >
                     {t('finish.keepCastleDesc2')}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                  <Typography
+                    variant='body2'
+                    color='text.secondary'
+                    gutterBottom
+                  >
                     {t('finish.keepCastleDesc3')}
                   </Typography>
                 </CardContent>
               </Card>
             </Grid>
 
-            <Grid
-              item
-              xs={12}
-              sm={4}
-            >
+            <Grid item xs={12} sm={4}>
               <Card>
                 <CardContent>
-                  <Typography variant="h5" color="text.secondary" paragraph>
-                    <Trans t={t} i18nKey="finish.learnPython" components={{ br: <br /> }} />
+                  <Typography variant='h5' color='text.secondary' paragraph>
+                    <Trans
+                      t={t}
+                      i18nKey='finish.learnPython'
+                      components={{ br: <br /> }}
+                    />
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" paragraph>
+                  <Typography variant='body2' color='text.secondary' paragraph>
                     {t('finish.learnPythonDesc1')}
                   </Typography>
 
@@ -190,105 +232,138 @@ export default function FinishHocCastlePage({ finalActivity } : { finalActivity:
                     indicators={false}
                     sx={{ marginBottom: '20px' }}
                   >
-                    {
-                      [
-                        {
-                          author: 'luce',
-                          activity: 'pacman-maze',
-                          image: 'pacman-maze.svg',
-                          background: 'black',
-                        },
-                        {
-                          author: 'luce',
-                          activity: 'chessboard',
-                          image: 'chessboard.svg',
-                          background: '#503a2f',
-                        },
-                        {
-                          author: 'luce',
-                          activity: 'swiss-hiking-signposts',
-                          image: 'mountain-trail-signpost.svg',
-                          background: '#4bac23',
-                        },
-                        {
-                          author: 'luce',
-                          activity: 'warming-stripes',
-                          image: 'stripes.png',
-                          background: 'white',
-                        },
-                        {
-                          author: 'luce',
-                          activity: 'isometric-bars',
-                          image: 'isometric-bars.svg',
-                          background: 'white',
-                        },
-                        {
-                          author: 'luce',
-                          activity: 'simple-box-plot',
-                          image: 'simple-box-plot.svg',
-                          background: 'white',
-                        },
-                      ].map((activity) => (
-                        <CardMedia
-                          key={`${activity.author}-${activity.activity}`}
-                          component="img"
-                          height={200}
-                          image={activityAssetPathname(
-                            activity.author,
-                            activity.activity,
-                            activity.image,
-                          )}
-                          sx={{ padding: 0.3, objectFit: 'contain', backgroundColor: activity.background }}
-                        />
-                      ))
-                    }
+                    {[
+                      {
+                        author: 'luce',
+                        activity: 'pacman-maze',
+                        image: 'pacman-maze.svg',
+                        background: 'black',
+                      },
+                      {
+                        author: 'luce',
+                        activity: 'chessboard',
+                        image: 'chessboard.svg',
+                        background: '#503a2f',
+                      },
+                      {
+                        author: 'luce',
+                        activity: 'swiss-hiking-signposts',
+                        image: 'mountain-trail-signpost.svg',
+                        background: '#4bac23',
+                      },
+                      {
+                        author: 'luce',
+                        activity: 'warming-stripes',
+                        image: 'stripes.png',
+                        background: 'white',
+                      },
+                      {
+                        author: 'luce',
+                        activity: 'isometric-bars',
+                        image: 'isometric-bars.svg',
+                        background: 'white',
+                      },
+                      {
+                        author: 'luce',
+                        activity: 'simple-box-plot',
+                        image: 'simple-box-plot.svg',
+                        background: 'white',
+                      },
+                    ].map((activity) => (
+                      <CardMedia
+                        key={`${activity.author}-${activity.activity}`}
+                        component='img'
+                        height={200}
+                        image={activityAssetPathname(
+                          activity.author,
+                          activity.activity,
+                          activity.image,
+                        )}
+                        sx={{
+                          padding: 0.3,
+                          objectFit: 'contain',
+                          backgroundColor: activity.background,
+                        }}
+                      />
+                    ))}
                   </Carousel>
 
-                  <Typography variant="body2" color="text.secondary" paragraph>
+                  <Typography variant='body2' color='text.secondary' paragraph>
                     {t('finish.learnPythonDesc2')}
                   </Typography>
 
-                  <Typography variant="body2" color="text.secondary" paragraph>
-                    <Trans t={t} i18nKey="finish.learnPythonDesc3" components={{ a: <a href={curriculumPathname('luce', 'welcome')} /> }} />
+                  <Typography variant='body2' color='text.secondary' paragraph>
+                    <Trans
+                      t={t}
+                      i18nKey='finish.learnPythonDesc3'
+                      components={{
+                        a: <a href={curriculumPathname('luce', 'welcome')} />,
+                      }}
+                    />
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    <Trans t={t} i18nKey="finish.learnPythonDesc4" components={{ a: <a href={activitiesByAuthorPathname('luce')} /> }} />
+                  <Typography
+                    variant='body2'
+                    color='text.secondary'
+                    gutterBottom
+                  >
+                    <Trans
+                      t={t}
+                      i18nKey='finish.learnPythonDesc4'
+                      components={{
+                        a: <a href={activitiesByAuthorPathname('luce')} />,
+                      }}
+                    />
                   </Typography>
                 </CardContent>
               </Card>
             </Grid>
 
-            <Grid
-              item
-              xs={12}
-              sm={4}
-            >
+            <Grid item xs={12} sm={4}>
               <Card>
                 <CardContent>
-                  <Typography variant="h5" color="textSecondary" paragraph>
-                    <Trans t={t} i18nKey="finish.visitFortezza" components={{ br: <br /> }} />
+                  <Typography variant='h5' color='textSecondary' paragraph>
+                    <Trans
+                      t={t}
+                      i18nKey='finish.visitFortezza'
+                      components={{ br: <br /> }}
+                    />
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    <Trans t={t} i18nKey="finish.visitFortezzaDesc1" components={{ a: <a href="https://fortezzabellinzona.ch/en/" /> }} />
+                  <Typography
+                    variant='body2'
+                    color='text.secondary'
+                    gutterBottom
+                  >
+                    <Trans
+                      t={t}
+                      i18nKey='finish.visitFortezzaDesc1'
+                      components={{
+                        a: <a href='https://fortezzabellinzona.ch/en/' />,
+                      }}
+                    />
                   </Typography>
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    marginTop: '20px',
-                    marginBottom: '17px',
-                  }}
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      marginTop: '20px',
+                      marginBottom: '17px',
+                    }}
                   >
                     <Image
                       src={FortezzaBellinzonaImage}
-                      alt="Fortezza Bellinzona"
-                      sizes="100vw"
+                      alt='Fortezza Bellinzona'
+                      sizes='100vw'
                       style={{
                         width: '90%',
                         height: 'auto',
                       }}
                     />
                   </div>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                  <Typography
+                    variant='body2'
+                    color='text.secondary'
+                    gutterBottom
+                  >
                     {t('finish.visitFortezzaDesc2')}
                   </Typography>
                 </CardContent>
@@ -296,9 +371,7 @@ export default function FinishHocCastlePage({ finalActivity } : { finalActivity:
             </Grid>
           </Grid>
 
-          <Typography marginY={3}>
-            {t('finish.finish')}
-          </Typography>
+          <Typography marginY={3}>{t('finish.finish')}</Typography>
 
           <HourOfCodeFooter />
         </Container>
@@ -311,7 +384,7 @@ export async function getStaticProps() {
   return {
     props: {
       finalActivity: await readActivity('luce-hoc', 'build-your-castle'),
-      ...await translationProps(['hourofcode', 'activityfooter']),
+      ...(await translationProps(['hourofcode', 'activityfooter'])),
     },
   };
 }

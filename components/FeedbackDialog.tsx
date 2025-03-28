@@ -1,7 +1,5 @@
 import FeedbackIcon from '@mui/icons-material/Feedback';
-import {
-  IconButton, Stack, Tooltip,
-} from '@mui/material';
+import { IconButton, Stack, Tooltip } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -20,7 +18,8 @@ import CustomSnackbar from './CustomSnackbar';
 export default function FeedbackDialog() {
   const [open, setOpen] = useState(false);
   const [errorMessageRequired, setErrorMessageRequired] = useState(false);
-  const [feedbackReceivedVisibile, setFeedbackReceivedVisible] = useState(false);
+  const [feedbackReceivedVisibile, setFeedbackReceivedVisible] =
+    useState(false);
   const [feedbackErrorVisible, setFeedbackErrorVisible] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -56,7 +55,10 @@ export default function FeedbackDialog() {
       comments: message,
     });
     const success = await alwaysStoreDbEvent(EventName.UserFeedback, metadata, {
-      name, email, message, pathname,
+      name,
+      email,
+      message,
+      pathname,
     });
     if (success) {
       handleClose();
@@ -69,9 +71,9 @@ export default function FeedbackDialog() {
 
   return (
     <div>
-      <Tooltip arrow title="Send Feedback">
+      <Tooltip arrow title='Send Feedback'>
         <IconButton
-          aria-label="feedback"
+          aria-label='feedback'
           onClick={handleClickOpen}
           sx={{
             color: theme.palette.text.primary,
@@ -85,16 +87,15 @@ export default function FeedbackDialog() {
         <DialogContent>
           <Stack spacing={2}>
             <DialogContentText>
-              Do you have an idea for a new activity?
-              Have you just bumped into a bug with our platform
-              or found problematic content?
+              Do you have an idea for a new activity? Have you just bumped into
+              a bug with our platform or found problematic content?
               <br />
               We welcome your feedback!
             </DialogContentText>
             <TextField
-              id="message"
-              label="Message"
-              variant="filled"
+              id='message'
+              label='Message'
+              variant='filled'
               required
               multiline
               minRows={3}
@@ -103,17 +104,17 @@ export default function FeedbackDialog() {
               onChange={(e) => setMessage(e.target.value)}
             />
             <TextField
-              id="name"
-              label="Name (optional)"
-              variant="filled"
+              id='name'
+              label='Name (optional)'
+              variant='filled'
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
             <TextField
-              id="email"
-              label="Email (optional)"
-              type="email"
-              variant="filled"
+              id='email'
+              label='Email (optional)'
+              type='email'
+              variant='filled'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -124,8 +125,18 @@ export default function FeedbackDialog() {
           <Button onClick={handleSend}>Send</Button>
         </DialogActions>
       </Dialog>
-      <CustomSnackbar visible={feedbackReceivedVisibile} setVisible={setFeedbackReceivedVisible} severity="success" message="Feedback received!" />
-      <CustomSnackbar visible={feedbackErrorVisible} setVisible={setFeedbackErrorVisible} severity="error" message="Could not send feedback!" />
+      <CustomSnackbar
+        visible={feedbackReceivedVisibile}
+        setVisible={setFeedbackReceivedVisible}
+        severity='success'
+        message='Feedback received!'
+      />
+      <CustomSnackbar
+        visible={feedbackErrorVisible}
+        setVisible={setFeedbackErrorVisible}
+        severity='error'
+        message='Could not send feedback!'
+      />
     </div>
   );
 }

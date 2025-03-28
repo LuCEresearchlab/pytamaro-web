@@ -7,22 +7,29 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material';
-import {
-  IconButton,
-  ListItemIcon,
-  Menu, MenuItem,
-} from '@mui/material';
+import { IconButton, ListItemIcon, Menu, MenuItem } from '@mui/material';
 import { useState } from 'react';
-import { CodeCellExecutionState, CodeCellState } from '../src/localStorage/schema';
+import {
+  CodeCellExecutionState,
+  CodeCellState,
+} from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 
 export default function MoreOptionsButton({
-  codeCellState, codeCellExecutionState, fullWidthCell,
-  onShowHideOutput, onReset, onFullWidthToggle,
-} :
-{ codeCellState: CodeCellState, codeCellExecutionState: CodeCellExecutionState,
-  fullWidthCell: boolean,
-  onShowHideOutput: () => void, onReset: () => void, onFullWidthToggle: () => void, }) {
+  codeCellState,
+  codeCellExecutionState,
+  fullWidthCell,
+  onShowHideOutput,
+  onReset,
+  onFullWidthToggle,
+}: {
+  codeCellState: CodeCellState;
+  codeCellExecutionState: CodeCellExecutionState;
+  fullWidthCell: boolean;
+  onShowHideOutput: () => void;
+  onReset: () => void;
+  onFullWidthToggle: () => void;
+}) {
   const { t } = useLocalTranslation(['common']);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -51,17 +58,17 @@ export default function MoreOptionsButton({
   return (
     <>
       <IconButton
-        aria-label="more"
-        id="long-button"
+        aria-label='more'
+        id='long-button'
         aria-controls={open ? 'long-menu' : undefined}
         aria-expanded={open ? 'true' : undefined}
-        aria-haspopup="true"
+        aria-haspopup='true'
         onClick={handleClick}
       >
         <MoreVert />
       </IconButton>
       <Menu
-        id="long-menu"
+        id='long-menu'
         MenuListProps={{
           'aria-labelledby': 'long-button',
         }}
@@ -80,29 +87,42 @@ export default function MoreOptionsButton({
       >
         <MenuItem onClick={handleReset}>
           <ListItemIcon sx={{ verticalAlign: 'middle' }}>
-            <RestartAlt fontSize="small" />
+            <RestartAlt fontSize='small' />
           </ListItemIcon>
           {t('resetCell')}
         </MenuItem>
         <MenuItem onClick={handleCopy}>
           <ListItemIcon sx={{ verticalAlign: 'middle' }}>
-            <ContentCopy fontSize="small" />
+            <ContentCopy fontSize='small' />
           </ListItemIcon>
           {t('copyCode')}
         </MenuItem>
-        <MenuItem onClick={handleFullWidthToggle} sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
+        <MenuItem
+          onClick={handleFullWidthToggle}
+          sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}
+        >
           <ListItemIcon sx={{ verticalAlign: 'middle' }}>
-            { fullWidthCell ? <CloseFullscreen fontSize="small" /> : <OpenInFull fontSize="small" />}
+            {fullWidthCell ? (
+              <CloseFullscreen fontSize='small' />
+            ) : (
+              <OpenInFull fontSize='small' />
+            )}
           </ListItemIcon>
-          { t(`${fullWidthCell ? 'normal' : 'wide'}Width`) }
+          {t(`${fullWidthCell ? 'normal' : 'wide'}Width`)}
         </MenuItem>
-        { codeCellExecutionState.executionResponse && (
-        <MenuItem onClick={handleShowHideOutputArea}>
-          <ListItemIcon sx={{ verticalAlign: 'middle' }}>
-            { codeCellExecutionState.outputAreaVisible ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
-          </ListItemIcon>
-          { t(`${codeCellExecutionState.outputAreaVisible ? 'hide' : 'show'}Output`) }
-        </MenuItem>
+        {codeCellExecutionState.executionResponse && (
+          <MenuItem onClick={handleShowHideOutputArea}>
+            <ListItemIcon sx={{ verticalAlign: 'middle' }}>
+              {codeCellExecutionState.outputAreaVisible ? (
+                <VisibilityOff fontSize='small' />
+              ) : (
+                <Visibility fontSize='small' />
+              )}
+            </ListItemIcon>
+            {t(
+              `${codeCellExecutionState.outputAreaVisible ? 'hide' : 'show'}Output`,
+            )}
+          </MenuItem>
         )}
       </Menu>
     </>

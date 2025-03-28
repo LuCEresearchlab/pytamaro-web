@@ -3,6 +3,7 @@
 A content repository is maintained by an author and contains activities and curricula.
 
 The profile of an author is described in a file named `author.json`. It contains the following fields:
+
 - `name`: the name of the author
 - `description`: free description (e.g., institution, members of a group; supports Markdown)
 
@@ -20,7 +21,7 @@ Each curriculum is a sequence of units.
 
 > Each unit is a sequence of steps that must be completed in order.
 
->> Each step contains multiple alternative activities; learners are required to complete at least one of them to complete the step. A step may be optional.
+> > Each step contains multiple alternative activities; learners are required to complete at least one of them to complete the step. A step may be optional.
 
 Each curriculum has a set of competencies.
 

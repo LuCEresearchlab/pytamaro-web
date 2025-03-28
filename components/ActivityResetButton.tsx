@@ -1,24 +1,36 @@
 import { isEqual } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
-import { CodeCellState, getDefaultActivityVariantMetadata } from '../src/localStorage/schema';
+import {
+  CodeCellState,
+  getDefaultActivityVariantMetadata,
+} from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import { ActivityVariant, activityVariantId } from '../src/schemas/activitySchema';
+import {
+  ActivityVariant,
+  activityVariantId,
+} from '../src/schemas/activitySchema';
 import ResetButton from './ResetButton';
 
-export default function ActivityResetButton({ activityVariant, initialCodeCells, newReset } : {
-  activityVariant: ActivityVariant,
-  initialCodeCells: CodeCellState[],
-  newReset: () => void,
+export default function ActivityResetButton({
+  activityVariant,
+  initialCodeCells,
+  newReset,
+}: {
+  activityVariant: ActivityVariant;
+  initialCodeCells: CodeCellState[];
+  newReset: () => void;
 }) {
-  const {
-    cellsModified,
-    handleResetAllCellsNoConfirm,
-  } = useLocalActivity(initialCodeCells, activityVariant);
+  const { cellsModified, handleResetAllCellsNoConfirm } = useLocalActivity(
+    initialCodeCells,
+    activityVariant,
+  );
   const { getActivityMetadata, setActivityMetadata } = useLocalProfile();
   const currentMetadata = getActivityMetadata(activityVariant);
-  const defaultMetadata = getDefaultActivityVariantMetadata(activityVariantId(activityVariant));
+  const defaultMetadata = getDefaultActivityVariantMetadata(
+    activityVariantId(activityVariant),
+  );
   const metadataModified = !isEqual(currentMetadata, defaultMetadata);
 
   const { t } = useLocalTranslation(['common']);
@@ -26,14 +38,22 @@ export default function ActivityResetButton({ activityVariant, initialCodeCells,
   const confirm = useConfirm();
   const handleGlobalReset = () => {
     confirm({
-      title: t('resetAreYouSure'), description: t('resetActivityWarning'), confirmationText: t('resetActivityConfirm'), cancellationText: t('resetActivityCancel'),
-    })
-      .then(() => {
-        handleResetAllCellsNoConfirm();
-        newReset();
-        setActivityMetadata(activityVariant, defaultMetadata);
-      });
+      title: t('resetAreYouSure'),
+      description: t('resetActivityWarning'),
+      confirmationText: t('resetActivityConfirm'),
+      cancellationText: t('resetActivityCancel'),
+    }).then(() => {
+      handleResetAllCellsNoConfirm();
+      newReset();
+      setActivityMetadata(activityVariant, defaultMetadata);
+    });
   };
 
-  return <ResetButton enabled={cellsModified || metadataModified} onReset={handleGlobalReset} tooltip={t('resetActivity')} />;
+  return (
+    <ResetButton
+      enabled={cellsModified || metadataModified}
+      onReset={handleGlobalReset}
+      tooltip={t('resetActivity')}
+    />
+  );
 }

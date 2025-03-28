@@ -26,11 +26,16 @@ export default async function saveDoNowCompletedEvent(
   activity_variant: ActivityVariant,
   do_now_id: string,
   answer: string,
-) : Promise<boolean> {
+): Promise<boolean> {
   try {
     await conn.begin(async (sql) => {
       const pActivityId = storeActivity(sql, activity_variant);
-      const pEventId = storeEvent(sql, user_uuid, experiment_key, EventName.DoNowCompleted);
+      const pEventId = storeEvent(
+        sql,
+        user_uuid,
+        experiment_key,
+        EventName.DoNowCompleted,
+      );
       await storeEventDoNowCompleted(
         sql,
         await pEventId,

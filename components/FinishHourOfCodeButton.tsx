@@ -15,15 +15,13 @@ export default function FinishHourOfCodeButton() {
       description: t('hourOfCode.description'),
       confirmationText: t('hourOfCode.confirmationText'),
       cancellationText: t('hourOfCode.cancellationText'),
-    }).then(
-      () => router.push(targetUrl),
-    );
+    }).then(() => router.push(targetUrl));
   };
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', mb: 6 }}>
       <Button
-        variant="outlined"
-        color="error"
+        variant='outlined'
+        color='error'
         startIcon={<HourglassEmpty />}
         onClick={handleClick}
       >

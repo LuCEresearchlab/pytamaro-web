@@ -47,8 +47,10 @@ import UnparseImage from '../../public/tamarocards/v2/unparse.gif';
 import { translationProps } from '../../src/serverSideTranslationProps';
 import { tamaroCardsPageActivityVariant } from '../../src/specialActivities';
 
-function API({ name } : { name: string }) {
-  return <InlineAPI name={name} activityVariant={tamaroCardsPageActivityVariant} />;
+function API({ name }: { name: string }) {
+  return (
+    <InlineAPI name={name} activityVariant={tamaroCardsPageActivityVariant} />
+  );
 }
 
 export default function TamaroCardsPage() {
@@ -132,29 +134,28 @@ export default function TamaroCardsPage() {
       <Box>
         <NavigationBar />
         <Container>
-          <Typography variant="h3" marginY={3}>
+          <Typography variant='h3' marginY={3}>
             TamaroCards - A Tangible Way to Compose Programs
           </Typography>
-          <Typography variant="h4" marginY={3}>
+          <Typography variant='h4' marginY={3}>
             Version 2, September 2024
           </Typography>
 
           <Typography marginY={3}>
-            PyTamaro is often used to teach complete novices.
-            For them, writing Python code on a computer can be challenging.
-            To support novices in reasoning about a graphic and its composition,
-            we developed TamaroCards.
-            Each Python function, constant, or operator is represented by a card.
-            The cards can be arranged on a table to compose a Python expression
-            that corresponds to a graphic.
+            PyTamaro is often used to teach complete novices. For them, writing
+            Python code on a computer can be challenging. To support novices in
+            reasoning about a graphic and its composition, we developed
+            TamaroCards. Each Python function, constant, or operator is
+            represented by a card. The cards can be arranged on a table to
+            compose a Python expression that corresponds to a graphic.
           </Typography>
 
           <Image
             src={SA23_TableImage}
-            alt="Photo of Table"
-            width="1261"
-            height="831"
-            sizes="100vw"
+            alt='Photo of Table'
+            width='1261'
+            height='831'
+            sizes='100vw'
             style={{
               width: '33%',
               height: 'auto',
@@ -162,10 +163,10 @@ export default function TamaroCardsPage() {
           />
           <Image
             src={SA23_TableImage3}
-            alt="Photo of Table"
-            width="1261"
-            height="831"
-            sizes="100vw"
+            alt='Photo of Table'
+            width='1261'
+            height='831'
+            sizes='100vw'
             style={{
               width: '33%',
               height: 'auto',
@@ -173,30 +174,29 @@ export default function TamaroCardsPage() {
           />
           <Image
             src={SA23_TableImage2}
-            alt="Photo of Table"
-            width="1261"
-            height="831"
-            sizes="100vw"
+            alt='Photo of Table'
+            width='1261'
+            height='831'
+            sizes='100vw'
             style={{
               width: '33%',
               height: 'auto',
             }}
           />
 
-          <Typography variant="h5" marginY={3}>
+          <Typography variant='h5' marginY={3}>
             TamaroCards
           </Typography>
 
           <Typography marginY={3}>
-            Literals are white empty pieces of paper,
-            constants are blue rectangles,
-            functions are red rounded rectangles, and
-            operators are green circles.
+            Literals are white empty pieces of paper, constants are blue
+            rectangles, functions are red rounded rectangles, and operators are
+            green circles.
           </Typography>
 
           <Image
             src={ExampleCardsImage}
-            alt="Example Cards"
+            alt='Example Cards'
             style={{
               width: '100%',
               height: 'auto',
@@ -204,58 +204,35 @@ export default function TamaroCardsPage() {
           />
 
           <Typography marginY={3}>
-            <strong>Function cards</strong>
-            {' '}
-            are the most important.
-            They are needed to produce or compose graphics.
-            They represent calls to functions such as
-            {' '}
-            <API name="rectangle" />
-            .
-            Functions have parameters (arrows on the left),
-            and we need to provide an argument for each parameter.
-            We use cards to specify the arguments.
-            Some arguments can simply be given literally,
-            using an empty white
-            {' '}
-            <strong>Literal card</strong>
-            {' '}
-            onto which
-            students write the corresponding literal value
-            (such as 250, or "ciao").
-            For other arguments we want to use constants,
-            such as the predefined constants for the base colors
-            (e.g.,
-            {' '}
-            <API name="red" />
-            )
-            We provide
-            {' '}
-            <strong>Constant cards</strong>
-            {' '}
-            for those.
-            More advanced TamaroCard expressions may involve operators
-            (like +, -, *, and /).
-            We provide
-            {' '}
-            <strong>Operator cards</strong>
-            {' '}
-            for Python's most important unary, binary, and ternary operators.
+            <strong>Function cards</strong> are the most important. They are
+            needed to produce or compose graphics. They represent calls to
+            functions such as <API name='rectangle' />. Functions have
+            parameters (arrows on the left), and we need to provide an argument
+            for each parameter. We use cards to specify the arguments. Some
+            arguments can simply be given literally, using an empty white{' '}
+            <strong>Literal card</strong> onto which students write the
+            corresponding literal value (such as 250, or "ciao"). For other
+            arguments we want to use constants, such as the predefined constants
+            for the base colors (e.g., <API name='red' />) We provide{' '}
+            <strong>Constant cards</strong> for those. More advanced TamaroCard
+            expressions may involve operators (like +, -, *, and /). We provide{' '}
+            <strong>Operator cards</strong> for Python's most important unary,
+            binary, and ternary operators.
           </Typography>
 
-          <Typography variant="h5" marginY={3}>
+          <Typography variant='h5' marginY={3}>
             Composing Cards into Expressions
           </Typography>
           <Typography marginY={3}>
-            To express a computation (i.e., the creation of a graphic),
-            students connect together individual cards into an expression.
-            They can place cards next to each other,
-            and where necessary they can draw connecting lines between them.
+            To express a computation (i.e., the creation of a graphic), students
+            connect together individual cards into an expression. They can place
+            cards next to each other, and where necessary they can draw
+            connecting lines between them.
           </Typography>
 
           <Image
             src={ExampleExpressionImage}
-            alt="Example Expression"
+            alt='Example Expression'
             style={{
               width: '100%',
               height: 'auto',
@@ -263,24 +240,25 @@ export default function TamaroCardsPage() {
           />
 
           <Typography marginY={1}>
-            To enable the drawing of connecting lines (and possible annotations),
-            it is best to arrange the cards on a big piece of paper.
-            We found that taping packaging paper on top of students' desks works particularly well.
+            To enable the drawing of connecting lines (and possible
+            annotations), it is best to arrange the cards on a big piece of
+            paper. We found that taping packaging paper on top of students'
+            desks works particularly well.
           </Typography>
 
-          <Typography variant="h5" marginY={3}>
+          <Typography variant='h5' marginY={3}>
             Evaluating Expressions
           </Typography>
           <Typography>
             The evaluation of a TamaroCard expression flows from left to right.
             Each constant, function, and operator emits a value on its right.
-            Function arguments enter functions from the left,
-            and, similarly, operands enter operators from the left.
+            Function arguments enter functions from the left, and, similarly,
+            operands enter operators from the left.
           </Typography>
 
           <Image
             src={ExampleEvaluationImage}
-            alt="Example Evaluation"
+            alt='Example Evaluation'
             style={{
               width: '100%',
               height: 'auto',
@@ -288,66 +266,59 @@ export default function TamaroCardsPage() {
           />
 
           <Typography marginY={1}>
-            Students can annotate the visual expression with the values emitted by the cards.
-            They don't necessarily need to annotate each card:
-            showing the values produced by the literal cards
-            (which literally are the values written on the card)
-            doesn't add any information;
-            and showing the values produced by the constant cards (like colors)
-            may not add much either.
-            We usually focus on annotating values that are graphics,
-            either by drawing that graphic,
-            or by producing and placing a paper cut-out of that graphic.
+            Students can annotate the visual expression with the values emitted
+            by the cards. They don't necessarily need to annotate each card:
+            showing the values produced by the literal cards (which literally
+            are the values written on the card) doesn't add any information; and
+            showing the values produced by the constant cards (like colors) may
+            not add much either. We usually focus on annotating values that are
+            graphics, either by drawing that graphic, or by producing and
+            placing a paper cut-out of that graphic.
           </Typography>
 
-          <Typography variant="h5" marginY={3}>
+          <Typography variant='h5' marginY={3}>
             Translating Cards to Python Code
           </Typography>
           <Typography>
-            Once students understand the meaning of cards and their compositions,
-            it makes sense to transition from TamaroCards to Python source code.
+            Once students understand the meaning of cards and their
+            compositions, it makes sense to transition from TamaroCards to
+            Python source code.
           </Typography>
           <Image
             src={UnparseImage}
-            alt="Translating Cards to Python Code"
+            alt='Translating Cards to Python Code'
             style={{
               width: '100%',
               height: 'auto',
             }}
           />
           <Typography>
-            We can translate a TamaroCard expression into a Python source expression
-            using a systematic approach:
-            a depth-first traversal of the tree.
-            We draw a line (let's call it a "street")
-            through the tree to make the traversal explicit.
-            We start at the root of the tree (the rightmost card).
-            Whenever we visit a function card for the first time,
-            we write down the function's name followed by an opening parenthesis.
-            Between each of a card's arguments, we write down a comma.
-            And when we visit the card the last time, we write down a closing parenthesis.
-
+            We can translate a TamaroCard expression into a Python source
+            expression using a systematic approach: a depth-first traversal of
+            the tree. We draw a line (let's call it a "street") through the tree
+            to make the traversal explicit. We start at the root of the tree
+            (the rightmost card). Whenever we visit a function card for the
+            first time, we write down the function's name followed by an opening
+            parenthesis. Between each of a card's arguments, we write down a
+            comma. And when we visit the card the last time, we write down a
+            closing parenthesis.
           </Typography>
 
-          <Typography variant="h4" marginY={3}>
+          <Typography variant='h4' marginY={3}>
             Printable Documentation Pages
           </Typography>
           <Typography marginY={1}>
-            When using the TamaroCards,
-            we provide each student (or student team)
-            with the "documentation" in the form of a few printed pages.
+            When using the TamaroCards, we provide each student (or student
+            team) with the "documentation" in the form of a few printed pages.
           </Typography>
           <Typography>
-            Each documentation page shows a specific set of cards.
-            These pages correspond to the library and language
-            {' '}
-            <b>documentation</b>
-            : they explain what each function, constant, or operator does.
-            The explanations are provided in a visual form:
-            showing example arguments and return values of functions,
-            example operands and results of operators,
-            and the specific values of constants.
-            This documentation should be sufficient to remember how to use the cards.
+            Each documentation page shows a specific set of cards. These pages
+            correspond to the library and language <b>documentation</b>: they
+            explain what each function, constant, or operator does. The
+            explanations are provided in a visual form: showing example
+            arguments and return values of functions, example operands and
+            results of operators, and the specific values of constants. This
+            documentation should be sufficient to remember how to use the cards.
           </Typography>
           <div
             style={{
@@ -356,65 +327,55 @@ export default function TamaroCardsPage() {
               margin: '1rem 0',
             }}
           />
-          <Grid container spacing={5} alignItems="flex-end">
-            {
-              api.map(({ name, img }) => (
-                <Grid
-                  key={name}
-                  item
-                  xs={12}
-                  sm={6}
-                >
-                  <Card key={name}>
-                    <CardActionArea LinkComponent={NextLink} href={`tamarocards/v1/api/PyTamaro-Cards-API-${name}.pdf`}>
-                      <CardMedia>
-                        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                          <Image
-                            src={img}
-                            alt={`Doc: ${name}`}
-                            sizes="100vw"
-                            style={{
-                              width: '100%',
-                              height: 'auto',
-                            }}
-                          />
-                        </div>
-                      </CardMedia>
-                    </CardActionArea>
-                  </Card>
-                </Grid>
-              ))
-            }
+          <Grid container spacing={5} alignItems='flex-end'>
+            {api.map(({ name, img }) => (
+              <Grid key={name} item xs={12} sm={6}>
+                <Card key={name}>
+                  <CardActionArea
+                    LinkComponent={NextLink}
+                    href={`tamarocards/v1/api/PyTamaro-Cards-API-${name}.pdf`}
+                  >
+                    <CardMedia>
+                      <div
+                        style={{
+                          position: 'relative',
+                          width: '100%',
+                          height: '100%',
+                        }}
+                      >
+                        <Image
+                          src={img}
+                          alt={`Doc: ${name}`}
+                          sizes='100vw'
+                          style={{
+                            width: '100%',
+                            height: 'auto',
+                          }}
+                        />
+                      </div>
+                    </CardMedia>
+                  </CardActionArea>
+                </Card>
+              </Grid>
+            ))}
           </Grid>
           <Typography marginY={3}>
-            Students use the documentation pages as a reference
-            when they try to understand the meaning of a specific card.
-            Using these pages is training students to use reference documentation.
-            We often initially distribute the
-            {' '}
-            <strong>Primitives</strong>
-            {' '}
-            and
-            {' '}
-            <strong>Colors</strong>
-            {' '}
-            pages,
-            then the
-            {' '}
-            <strong>Combinators</strong>
-            {' '}
-            page,
-            and later provide more pages as needed.
+            Students use the documentation pages as a reference when they try to
+            understand the meaning of a specific card. Using these pages is
+            training students to use reference documentation. We often initially
+            distribute the <strong>Primitives</strong> and{' '}
+            <strong>Colors</strong> pages, then the <strong>Combinators</strong>{' '}
+            page, and later provide more pages as needed.
           </Typography>
 
-          <Typography variant="h4" marginY={3}>
+          <Typography variant='h4' marginY={3}>
             Printable Card Sheets
           </Typography>
 
           <Typography marginY={1}>
-            The six sheets contain cards arranged in a way
-            so they can be printed and easily cut out.
-            The sheets contain more copies of more commonly needed cards.
+            The six sheets contain cards arranged in a way so they can be
+            printed and easily cut out. The sheets contain more copies of more
+            commonly needed cards.
           </Typography>
           <div
             style={{
@@ -423,60 +384,62 @@ export default function TamaroCardsPage() {
               margin: '1rem 0',
             }}
           />
-          <Grid container spacing={5} alignItems="flex-end">
-            {
-              sheets.map(({ name, desc, img }) => (
-                <Grid
-                  key={name}
-                  item
-                  xs={12}
-                  sm={6}
-                >
-                  <Card key={name}>
-                    <CardActionArea LinkComponent={NextLink} href={`tamarocards/v2/CardSheet/${name}.pdf`}>
-                      <CardMedia>
-                        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                          <Image
-                            src={img}
-                            alt={`API: ${name}`}
-                            sizes="100vw"
-                            style={{
-                              width: '100%',
-                              height: 'auto',
-                            }}
-                          />
-                        </div>
-                      </CardMedia>
-                      <CardHeader
-                        title={name}
-                        subheader={desc}
-                        titleTypographyProps={{ align: 'center' }}
-                        subheaderTypographyProps={{
-                          align: 'center',
+          <Grid container spacing={5} alignItems='flex-end'>
+            {sheets.map(({ name, desc, img }) => (
+              <Grid key={name} item xs={12} sm={6}>
+                <Card key={name}>
+                  <CardActionArea
+                    LinkComponent={NextLink}
+                    href={`tamarocards/v2/CardSheet/${name}.pdf`}
+                  >
+                    <CardMedia>
+                      <div
+                        style={{
+                          position: 'relative',
+                          width: '100%',
+                          height: '100%',
                         }}
-                      />
-                    </CardActionArea>
-                  </Card>
-                </Grid>
-              ))
-            }
+                      >
+                        <Image
+                          src={img}
+                          alt={`API: ${name}`}
+                          sizes='100vw'
+                          style={{
+                            width: '100%',
+                            height: 'auto',
+                          }}
+                        />
+                      </div>
+                    </CardMedia>
+                    <CardHeader
+                      title={name}
+                      subheader={desc}
+                      titleTypographyProps={{ align: 'center' }}
+                      subheaderTypographyProps={{
+                        align: 'center',
+                      }}
+                    />
+                  </CardActionArea>
+                </Card>
+              </Grid>
+            ))}
           </Grid>
           <Typography marginY={3}>
-            Note that the individual cards, unlike the documentation,
-            do not contain any annotations on parameters, return values, or constant values.
-            This is akin to code:
-            when you call a function, you just write its name and provide arguments.
+            Note that the individual cards, unlike the documentation, do not
+            contain any annotations on parameters, return values, or constant
+            values. This is akin to code: when you call a function, you just
+            write its name and provide arguments.
           </Typography>
 
-          <Typography variant="h4" marginY={3}>
+          <Typography variant='h4' marginY={3}>
             Individual Cards
           </Typography>
           <Typography>
             We recommend printing the above sheets and cutting out the cards.
-            However, if needed, one can download the ZIP file
-            which contains an individual PDF, SVG, and PNG file for each card.
-            This can be helpful, e.g., if you use a whiteboard application
-            to work with the cards.
+            However, if needed, one can download the ZIP file which contains an
+            individual PDF, SVG, and PNG file for each card. This can be
+            helpful, e.g., if you use a whiteboard application to work with the
+            cards.
           </Typography>
           <List>
             <ListItem>
@@ -485,40 +448,44 @@ export default function TamaroCardsPage() {
                   <FolderZipIcon />
                 </Avatar>
               </ListItemAvatar>
-              <ListItemText secondary="Packaged in a ZIP file">
-                <Link component={NextLink} href="tamarocards/v2/Card.zip">Individual Cards</Link>
+              <ListItemText secondary='Packaged in a ZIP file'>
+                <Link component={NextLink} href='tamarocards/v2/Card.zip'>
+                  Individual Cards
+                </Link>
               </ListItemText>
             </ListItem>
           </List>
 
-          <Typography variant="h4" marginY={3}>
+          <Typography variant='h4' marginY={3}>
             Individual Documentation Pictures
           </Typography>
           <Typography marginY={1}>
-            In some situations it can make sense to include
-            task-specific subsets of the documentation in teaching material.
-            For example, you may write a Word document with an exercise for your students,
-            and include the documentation of just those cards that are needed for that exercise.
-            For this purpose, we also include individual pictures files
-            of the documentation of each card.
-            You can download the ZIP file
-            which contains individual PDF, SVG, and PNG documentation pictures.
+            In some situations it can make sense to include task-specific
+            subsets of the documentation in teaching material. For example, you
+            may write a Word document with an exercise for your students, and
+            include the documentation of just those cards that are needed for
+            that exercise. For this purpose, we also include individual pictures
+            files of the documentation of each card. You can download the ZIP
+            file which contains individual PDF, SVG, and PNG documentation
+            pictures.
           </Typography>
-          <Alert severity="warning">
+          <Alert severity='warning'>
             <AlertTitle>
-              Do not use documentation pictures for composing TamaroCard expressions.
+              Do not use documentation pictures for composing TamaroCard
+              expressions.
             </AlertTitle>
             <Typography>
-              The documentation pictures include, in addition to the card,
-              extra annotations with example arguments and return values.
-              Those extra annotations conflict with the values
-              your students will have to reason about when looking the TamaroCard expression.
-              For this reason, use cards, not documentation pictures,
-              to construct a TamaroCard expression.
+              The documentation pictures include, in addition to the card, extra
+              annotations with example arguments and return values. Those extra
+              annotations conflict with the values your students will have to
+              reason about when looking the TamaroCard expression. For this
+              reason, use cards, not documentation pictures, to construct a
+              TamaroCard expression.
             </Typography>
             <Typography marginY={1}>
-              We recommend handing out the documentation pages (shown above) to students.
-              Those pages meaningfully group the documentation for related cards together.
+              We recommend handing out the documentation pages (shown above) to
+              students. Those pages meaningfully group the documentation for
+              related cards together.
             </Typography>
           </Alert>
           <List>
@@ -528,117 +495,103 @@ export default function TamaroCardsPage() {
                   <FolderZipIcon />
                 </Avatar>
               </ListItemAvatar>
-              <ListItemText secondary="Packaged in a ZIP file">
-                <Link component={NextLink} href="tamarocards/v2/CardDoc.zip">Individual Documentation Pictures</Link>
+              <ListItemText secondary='Packaged in a ZIP file'>
+                <Link component={NextLink} href='tamarocards/v2/CardDoc.zip'>
+                  Individual Documentation Pictures
+                </Link>
               </ListItemText>
             </ListItem>
           </List>
 
-          <Typography variant="h4" marginY={3}>
+          <Typography variant='h4' marginY={3}>
             When NOT To Use TamaroCards
           </Typography>
           <Typography marginY={3}>
-            TamaroCards are designed for composing relatively simple Python expressions,
-            mostly involving calls to PyTamaro functions.
-            However, when including the function definition cards
-            (from the "Names" card sheet),
-            and the if-else card
-            (from the "Operators" card sheet),
-            TamaroCards actually represent a
-            {' '}
-            <strong>
-              Turing-complete
-            </strong>
-            {' '}
+            TamaroCards are designed for composing relatively simple Python
+            expressions, mostly involving calls to PyTamaro functions. However,
+            when including the function definition cards (from the "Names" card
+            sheet), and the if-else card (from the "Operators" card sheet),
+            TamaroCards actually represent a <strong>Turing-complete</strong>{' '}
             programming language!
           </Typography>
           <Typography marginY={3}>
-            You can implement any algorithm with TamaroCards.
-            Even algorithms for which you normally would use loops!
-            Why?
-            Because loops are not the only way to repeat computations.
-            There are other ways, one of them being recursion.
-            And TamaroCards could be used to define recursive functions.
+            You can implement any algorithm with TamaroCards. Even algorithms
+            for which you normally would use loops! Why? Because loops are not
+            the only way to repeat computations. There are other ways, one of
+            them being recursion. And TamaroCards could be used to define
+            recursive functions.
           </Typography>
           <Typography marginY={3}>
-            TamaroCards focus on a functional subset of Python:
-            they contain pure functions (except
-            {' '}
-            <API name="show_graphic" />
-            )
-            and immutable variables (which we call constants).
-            We recommend to use TamaroCards at the very start of a programming course
-            for explaining
-            pure expressions,
-            constant definitions, and
-            the definition of pure functions.
+            TamaroCards focus on a functional subset of Python: they contain
+            pure functions (except <API name='show_graphic' />) and immutable
+            variables (which we call constants). We recommend to use TamaroCards
+            at the very start of a programming course for explaining pure
+            expressions, constant definitions, and the definition of pure
+            functions.
           </Typography>
           <Typography marginY={3}>
-            And once you introduce imperative Python features,
-            such as mutable variables or loops in Python,
-            you go beyond the TamaroCard notional machine.
-            You can still use them,
-            but only to reason about the pure and immutable parts of the code.
+            And once you introduce imperative Python features, such as mutable
+            variables or loops in Python, you go beyond the TamaroCard notional
+            machine. You can still use them, but only to reason about the pure
+            and immutable parts of the code.
           </Typography>
 
-          <Typography variant="h4" marginY={3}>
+          <Typography variant='h4' marginY={3}>
             Working With TamaroCards Can Prevent Misconceptions
           </Typography>
           <Typography marginY={3}>
-            Teaching students to compose programs using TamaroCards,
-            and translating TamaroCard expressions to Python code systematically,
-            helps to combat known Python programming misconceptions, such as
-            {' '}
-            <a href="https://progmiscon.org/misconceptions/Python/OutsideInFunctionNesting/">OutsideInFunctionNesting</a>
-            ,
-            {' '}
-            <a href="https://progmiscon.org/misconceptions/Python/NoAtomicExpression/">NoAtomicExpression</a>
-            , and
-            {' '}
-            <a href="https://progmiscon.org/misconceptions/Python/ParenthesesOnlyIfArgument/">ParenthesesOnlyIfArgument</a>
+            Teaching students to compose programs using TamaroCards, and
+            translating TamaroCard expressions to Python code systematically,
+            helps to combat known Python programming misconceptions, such as{' '}
+            <a href='https://progmiscon.org/misconceptions/Python/OutsideInFunctionNesting/'>
+              OutsideInFunctionNesting
+            </a>
+            ,{' '}
+            <a href='https://progmiscon.org/misconceptions/Python/NoAtomicExpression/'>
+              NoAtomicExpression
+            </a>
+            , and{' '}
+            <a href='https://progmiscon.org/misconceptions/Python/ParenthesesOnlyIfArgument/'>
+              ParenthesesOnlyIfArgument
+            </a>
             .
           </Typography>
 
-          <Typography variant="h4" marginY={3}>
+          <Typography variant='h4' marginY={3}>
             TamaroCards: A Variant of the "Expression As Tree" Notional Machine
           </Typography>
           <Typography marginY={3}>
-            The
-            {' '}
-            <a href="https://notionalmachines.github.io/nms/ExpressionAsTree-1.html">"Expression as Tree" notional machine</a>
-            {' '}
-            visually represents expressions as trees.
-            {' '}
-            <a href="https://expressiontutor.org/">Expression Tutor</a>
-            {' '}
-            is an online platform built around that notional machine.
-            It's goal is to help students understand the
-            structure, evaluation, and typing of expressions.
-            While the expression trees in Expression Tutor look different
-            from TamaroCard expression trees,
-            they are equivalent in many ways.
-            TamaroCards are a specialized, unplugged, variant of
-            the "Expression as Tree" notional machine,
-            with a focus on expressions that are used to produce PyTamaro graphics.
+            The{' '}
+            <a href='https://notionalmachines.github.io/nms/ExpressionAsTree-1.html'>
+              "Expression as Tree" notional machine
+            </a>{' '}
+            visually represents expressions as trees.{' '}
+            <a href='https://expressiontutor.org/'>Expression Tutor</a> is an
+            online platform built around that notional machine. It's goal is to
+            help students understand the structure, evaluation, and typing of
+            expressions. While the expression trees in Expression Tutor look
+            different from TamaroCard expression trees, they are equivalent in
+            many ways. TamaroCards are a specialized, unplugged, variant of the
+            "Expression as Tree" notional machine, with a focus on expressions
+            that are used to produce PyTamaro graphics.
           </Typography>
 
-          <Typography variant="h4" marginY={3}>
+          <Typography variant='h4' marginY={3}>
             Natural Languages
           </Typography>
           <Typography marginY={3}>
-            The
-            {' '}
-            <Link href="https://pytamaro.readthedocs.io/en/stable/">PyTamaro API</Link>
-            {' '}
-            currently exists in four different natural languages:
-            English, German, Italian, and French.
-            Each TamaroCard shows its function or constant name
-            in three of these supported languages (English, German, and Italian).
-            This is ideal for multi-lingual environments.
+            The{' '}
+            <Link href='https://pytamaro.readthedocs.io/en/stable/'>
+              PyTamaro API
+            </Link>{' '}
+            currently exists in four different natural languages: English,
+            German, Italian, and French. Each TamaroCard shows its function or
+            constant name in three of these supported languages (English,
+            German, and Italian). This is ideal for multi-lingual environments.
             A future version may include the French names as well.
           </Typography>
 
-          <Typography variant="h4" marginY={3}>
+          <Typography variant='h4' marginY={3}>
             Prior Version of TamaroCards
           </Typography>
           <Typography>
@@ -651,8 +604,10 @@ export default function TamaroCardsPage() {
                   <ArticleIcon />
                 </Avatar>
               </ListItemAvatar>
-              <ListItemText secondary="August 2023">
-                <Link component={NextLink} href="tamarocards/v1">Version 1</Link>
+              <ListItemText secondary='August 2023'>
+                <Link component={NextLink} href='tamarocards/v1'>
+                  Version 1
+                </Link>
               </ListItemText>
             </ListItem>
           </List>
@@ -665,7 +620,7 @@ export default function TamaroCardsPage() {
 export async function getStaticProps() {
   return {
     props: {
-      ...await translationProps(),
+      ...(await translationProps()),
     },
   };
 }

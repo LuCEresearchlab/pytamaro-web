@@ -3,22 +3,34 @@ import produce from 'immer';
 import { uniqBy } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import {
-  Dispatch, SetStateAction, useCallback, useEffect,
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
   useState,
 } from 'react';
 import useSessionStorageState from 'use-session-storage-state';
 import logAnalyticsEvent, { AnalyticsEventName } from './analyticsEvent';
 import {
-  ExecutionResponse, FailedExecution, importedToolboxNames, isExecutionCompleted,
+  ExecutionResponse,
+  FailedExecution,
+  importedToolboxNames,
+  isExecutionCompleted,
   isExecutionFailed,
 } from './codeExecution';
 import {
   CodeCellExecutionState,
-  CodeCellState, Metadata, ToolboxFunction,
+  CodeCellState,
+  Metadata,
+  ToolboxFunction,
   getDefaultActivityVariantMetadata,
 } from './localStorage/schema';
 import useLocalToolbox from './localStorage/useLocalToolbox';
-import { ActivityVariant, PythonFile, activityVariantId } from './schemas/activitySchema';
+import {
+  ActivityVariant,
+  PythonFile,
+  activityVariantId,
+} from './schemas/activitySchema';
 import { EventName, storeDbEvent } from './storeDbEvent';
 
 export function initialCodeExecutionState(): CodeCellExecutionState {
@@ -35,7 +47,9 @@ async function importedToolboxFunctions(
   getFromToolbox: (name: string) => ToolboxFunction | undefined,
 ) {
   const names = await importedToolboxNames(source);
-  const functions = await Promise.all(names.map((name) => getFromToolbox(name)));
+  const functions = await Promise.all(
+    names.map((name) => getFromToolbox(name)),
+  );
   return functions.filter((f): f is ToolboxFunction => f !== undefined);
 }
 
@@ -43,17 +57,17 @@ export async function transitivelyImportedToolboxFunctions(
   source: string,
   getFromToolbox: (name: string) => ToolboxFunction | undefined,
   alreadyImported: ToolboxFunction[] = [],
-) : Promise<ToolboxFunction[]> {
-  const newlyImportedFunctions = (await importedToolboxFunctions(source, getFromToolbox))
-    .filter((fn) => !alreadyImported.includes(fn));
+): Promise<ToolboxFunction[]> {
+  const newlyImportedFunctions = (
+    await importedToolboxFunctions(source, getFromToolbox)
+  ).filter((fn) => !alreadyImported.includes(fn));
   const importsOfImports = await Promise.all(
-    newlyImportedFunctions.map((fn) => (
-      transitivelyImportedToolboxFunctions(
-        fn.source,
-        getFromToolbox,
-        [...alreadyImported, ...newlyImportedFunctions],
-      )
-    )),
+    newlyImportedFunctions.map((fn) =>
+      transitivelyImportedToolboxFunctions(fn.source, getFromToolbox, [
+        ...alreadyImported,
+        ...newlyImportedFunctions,
+      ]),
+    ),
   );
   return [...newlyImportedFunctions, ...importsOfImports.flat()];
 }
@@ -63,7 +77,7 @@ async function executeOnServer(
   idx: number,
   toolboxFunctions: ToolboxFunction[],
   extraPythonFiles: PythonFile[],
-) : Promise<ExecutionResponse> {
+): Promise<ExecutionResponse> {
   try {
     const response = await axios.post('/api/execute', {
       sources,
@@ -90,21 +104,27 @@ export function useActivity(
   activityVariant: ActivityVariant,
   extraPythonFiles: PythonFile[],
   preExecute: () => ToolboxFunction | undefined = () => undefined,
-  postExecuteSingleCell:
-  (idx: number, executionResponse: ExecutionResponse) => void = () => {},
+  postExecuteSingleCell: (
+    idx: number,
+    executionResponse: ExecutionResponse,
+  ) => void = () => {},
 ) {
   const { getFunction } = useLocalToolbox();
   const variantId = activityVariantId(activityVariant);
   const variantMetadata = metadata.activities.find((a) => a.id === variantId);
 
-  const initialCodeExecutionStates = () => Array(initialCodeCells.length).fill(undefined)
-    .map(initialCodeExecutionState);
+  const initialCodeExecutionStates = () =>
+    Array(initialCodeCells.length)
+      .fill(undefined)
+      .map(initialCodeExecutionState);
 
   const [codeExecutionStates, setCodeExecutionStates] = useSessionStorageState(
     `pytamaro-web-executionv2-${variantId}`,
     { defaultValue: initialCodeExecutionStates() },
   );
-  const [executionFailed, setExecutionFailed] = useState<FailedExecution | undefined>(undefined);
+  const [executionFailed, setExecutionFailed] = useState<
+    FailedExecution | undefined
+  >(undefined);
 
   const completed = !!variantMetadata?.completed;
   const cellsModified = !!variantMetadata?.cellsModified;
@@ -112,11 +132,14 @@ export function useActivity(
   const markAsCompleted = useCallback(() => {
     setMetadata(
       produce((draft) => {
-        const draftVariantMetadata = draft.activities.find((a) => a.id === variantId);
+        const draftVariantMetadata = draft.activities.find(
+          (a) => a.id === variantId,
+        );
         if (draftVariantMetadata) {
           draftVariantMetadata.completed = true;
         } else {
-          const newVariantMetadata = getDefaultActivityVariantMetadata(variantId);
+          const newVariantMetadata =
+            getDefaultActivityVariantMetadata(variantId);
           newVariantMetadata.completed = true;
           draft.activities.push(newVariantMetadata);
         }
@@ -132,14 +155,18 @@ export function useActivity(
 
   /* Check if code cells have been modified (compared to their initial state) */
   useEffect(() => {
-    const newCellsModified = JSON.stringify(codeCells) !== JSON.stringify(initialCodeCells);
+    const newCellsModified =
+      JSON.stringify(codeCells) !== JSON.stringify(initialCodeCells);
     setMetadata(
       produce((draft) => {
-        const draftVariantMetadata = draft.activities.find((a) => a.id === variantId);
+        const draftVariantMetadata = draft.activities.find(
+          (a) => a.id === variantId,
+        );
         if (draftVariantMetadata) {
           draftVariantMetadata.cellsModified = newCellsModified;
         } else {
-          const newVariantMetadata = getDefaultActivityVariantMetadata(variantId);
+          const newVariantMetadata =
+            getDefaultActivityVariantMetadata(variantId);
           newVariantMetadata.cellsModified = newCellsModified;
           draft.activities.push(newVariantMetadata);
         }
@@ -148,13 +175,13 @@ export function useActivity(
   }, [codeCells, initialCodeCells, variantId, setMetadata]);
 
   const handleSourceChanged = (newSource: string, idx: number) => {
-    setCodeCells(
-      (currentCodeCells) => produce(currentCodeCells, (draft) => {
+    setCodeCells((currentCodeCells) =>
+      produce(currentCodeCells, (draft) => {
         draft[idx].source = newSource;
       }),
     );
-    setCodeExecutionStates(
-      (currentCodeExecutionStates) => produce(currentCodeExecutionStates, (draft) => {
+    setCodeExecutionStates((currentCodeExecutionStates) =>
+      produce(currentCodeExecutionStates, (draft) => {
         // Output of all the cells from `idx` is (potentially) no longer in sync
         for (let i = idx; i < codeCells.length; i += 1) {
           draft[i].outputSynced = false;
@@ -163,19 +190,23 @@ export function useActivity(
     );
   };
 
-  const sourcesUpTo = (idx: number) => codeCells.slice(0, idx + 1).map(sourceFromCell);
+  const sourcesUpTo = (idx: number) =>
+    codeCells.slice(0, idx + 1).map(sourceFromCell);
 
   const executionStarted = (idx: number) => {
-    setCodeExecutionStates(
-      (currentCodeExecutionStates) => produce(currentCodeExecutionStates, (draft) => {
+    setCodeExecutionStates((currentCodeExecutionStates) =>
+      produce(currentCodeExecutionStates, (draft) => {
         draft[idx].executionInProgress = true;
       }),
     );
   };
 
-  const executionFinished = (idx: number, response: ExecutionResponse | undefined) => {
-    setCodeExecutionStates(
-      (currentCodeExecutionStates) => produce(currentCodeExecutionStates, (draft) => {
+  const executionFinished = (
+    idx: number,
+    response: ExecutionResponse | undefined,
+  ) => {
+    setCodeExecutionStates((currentCodeExecutionStates) =>
+      produce(currentCodeExecutionStates, (draft) => {
         draft[idx].executionInProgress = false;
         if (response !== undefined) {
           if (isExecutionFailed(response)) {
@@ -183,8 +214,9 @@ export function useActivity(
           } else {
             draft[idx].executionResponse = response;
             draft[idx].outputSynced = true;
-            draft[idx].outputAreaVisible = isExecutionCompleted(response)
-              && (response.stdout + response.stderr).length > 0;
+            draft[idx].outputAreaVisible =
+              isExecutionCompleted(response) &&
+              (response.stdout + response.stderr).length > 0;
             // Mark the activity as completed when the last cell has been executed successfully.
             if (response.type === 'success' && idx === codeCells.length - 1) {
               markAsCompleted();
@@ -201,7 +233,12 @@ export function useActivity(
     idx: number,
   ) => {
     executionStarted(idx);
-    const response = await executeOnServer(sources, idx, toolboxFunctions, extraPythonFiles);
+    const response = await executeOnServer(
+      sources,
+      idx,
+      toolboxFunctions,
+      extraPythonFiles,
+    );
     executionFinished(idx, response);
     postExecuteSingleCell(idx, response);
     return response;
@@ -218,11 +255,18 @@ export function useActivity(
     };
 
     const sources = sourcesUpTo(idx);
-    const toolboxFunctionsByCell = await Promise.all(sources.map(
-      (source) => transitivelyImportedToolboxFunctions(source, functionLookup),
-    ));
-    const toolboxFunctions = uniqBy(toolboxFunctionsByCell.flat(), (fn) => fn.name);
-    logAnalyticsEvent(AnalyticsEventName.CodeExecution, { activity: variantId });
+    const toolboxFunctionsByCell = await Promise.all(
+      sources.map((source) =>
+        transitivelyImportedToolboxFunctions(source, functionLookup),
+      ),
+    );
+    const toolboxFunctions = uniqBy(
+      toolboxFunctionsByCell.flat(),
+      (fn) => fn.name,
+    );
+    logAnalyticsEvent(AnalyticsEventName.CodeExecution, {
+      activity: variantId,
+    });
     storeDbEvent(EventName.CodeExecution, metadata, {
       sources,
       initialSources: initialCodeCells.map(sourceFromCell),
@@ -237,15 +281,17 @@ export function useActivity(
     for (let i = 0; i <= idx; i += 1) {
       responses.push(handleExecuteSingleCell(sources, toolboxFunctions, i));
     }
-    const failedResponses = (await Promise.all(responses)).filter(isExecutionFailed);
+    const failedResponses = (await Promise.all(responses)).filter(
+      isExecutionFailed,
+    );
     if (failedResponses.length > 0) {
       setExecutionFailed(failedResponses[0]);
     }
   };
 
   const handleToggleOutputArea = (idx: number) => {
-    setCodeExecutionStates(
-      (currentCodeExecutionStates) => produce(currentCodeExecutionStates, (draft) => {
+    setCodeExecutionStates((currentCodeExecutionStates) =>
+      produce(currentCodeExecutionStates, (draft) => {
         draft[idx].outputAreaVisible = !draft[idx].outputAreaVisible;
       }),
     );
@@ -258,20 +304,23 @@ export function useActivity(
   };
 
   const handleResetSingleCell = (idx: number, postReset: () => void) => {
-    confirm({ description: 'You are about to reset the code in this cell. Other cells will be left unchanged. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete my code' })
-      .then(() => {
-        setCodeCells(
-          (currentCodeCells) => produce(currentCodeCells, (draft) => {
-            draft[idx] = initialCodeCells[idx];
-          }),
-        );
-        setCodeExecutionStates(
-          (currentCodeExecutionStates) => produce(currentCodeExecutionStates, (draft) => {
-            draft[idx] = initialCodeExecutionState();
-          }),
-        );
-        postReset();
-      });
+    confirm({
+      description:
+        'You are about to reset the code in this cell. Other cells will be left unchanged. This action cannot be undone! ⚠️',
+      confirmationText: 'Ok, delete my code',
+    }).then(() => {
+      setCodeCells((currentCodeCells) =>
+        produce(currentCodeCells, (draft) => {
+          draft[idx] = initialCodeCells[idx];
+        }),
+      );
+      setCodeExecutionStates((currentCodeExecutionStates) =>
+        produce(currentCodeExecutionStates, (draft) => {
+          draft[idx] = initialCodeExecutionState();
+        }),
+      );
+      postReset();
+    });
   };
 
   return {

@@ -1,7 +1,8 @@
 import { Translate } from '@mui/icons-material';
 import {
   Card,
-  FormControl, IconButton,
+  FormControl,
+  IconButton,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -13,12 +14,10 @@ import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import theme from '../src/theme';
 import { Popover, PopoverContent, PopoverTrigger } from './Popover';
 
-const config = require('../next-i18next.config');
+import config from '../next-i18next.config';
 
 export default function PlatformLanguageButton() {
-  const {
-    i18n, t, setPlatformLocale,
-  } = useLocalTranslation();
+  const { i18n, t, setPlatformLocale } = useLocalTranslation();
 
   const languages = config.i18n.locales as string[];
 
@@ -29,7 +28,7 @@ export default function PlatformLanguageButton() {
   };
 
   return (
-    <Popover placement="bottom">
+    <Popover placement='bottom'>
       <PopoverTrigger>
         <IconButton
           sx={{
@@ -45,7 +44,7 @@ export default function PlatformLanguageButton() {
             <Typography>{t('selectPlatformLanguage')}</Typography>
             <FormControl>
               <Select
-                id="locale-select"
+                id='locale-select'
                 value={i18n.language}
                 onChange={handleChange}
               >

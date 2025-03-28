@@ -1,5 +1,8 @@
 import { useEffect } from 'react';
-import { ActivityVariant, platformConfigWithDefaults } from '../src/schemas/activitySchema';
+import {
+  ActivityVariant,
+  platformConfigWithDefaults,
+} from '../src/schemas/activitySchema';
 import { useActivity } from '../src/useActivity';
 import CodeCell from './CodeCell';
 
@@ -12,22 +15,30 @@ export function emptySingleCell() {
 }
 
 export default function SolitaryCodeCell({
-  activity, activityVariant, resetCounter = 0, readOnly = false, requireNewExecution = false,
-  postSourceChange = () => {}, onExecutionRequest = () => {},
+  activity,
+  activityVariant,
+  resetCounter = 0,
+  readOnly = false,
+  requireNewExecution = false,
+  postSourceChange = () => {},
+  onExecutionRequest = () => {},
   extraActions = null,
-} :
-{ activity: ReturnType<typeof useActivity>,
-  activityVariant: ActivityVariant,
-  resetCounter?: number,
-  readOnly?: boolean,
-  requireNewExecution?: boolean,
-  postSourceChange?: (newSource: string) => void,
-  onExecutionRequest?: () => void,
-  extraActions?: React.ReactNode
+}: {
+  activity: ReturnType<typeof useActivity>;
+  activityVariant: ActivityVariant;
+  resetCounter?: number;
+  readOnly?: boolean;
+  requireNewExecution?: boolean;
+  postSourceChange?: (newSource: string) => void;
+  onExecutionRequest?: () => void;
+  extraActions?: React.ReactNode;
 }) {
   const {
-    initialCodeCells, codeCells, codeExecutionStates,
-    handleSourceChanged, handleExecute,
+    initialCodeCells,
+    codeCells,
+    codeExecutionStates,
+    handleSourceChanged,
+    handleExecute,
   } = activity;
   useEffect(() => {
     if (requireNewExecution) {

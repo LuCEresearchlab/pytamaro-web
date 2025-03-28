@@ -15,16 +15,16 @@ import MarketingImage from '../../../public/hoc/castle/MarketingImage-NoText-NoL
 import { translationProps } from '../../../src/serverSideTranslationProps';
 
 type LangRes = {
-  code: string,
+  code: string;
   locale: {
-    flag: string,
-    name: string,
-  },
+    flag: string;
+    name: string;
+  };
   intro: {
-    hoc: string,
-    goal: string,
-    notes: string,
-  },
+    hoc: string;
+    goal: string;
+    notes: string;
+  };
 };
 
 const RESOURCES: LangRes[] = [
@@ -75,11 +75,10 @@ export default function HocCastlePage() {
 
       <Box>
         <NavigationBar />
-        <Container maxWidth="md">
-
+        <Container maxWidth='md'>
           <Image
             src={MarketingImage}
-            alt="Photo of Castle"
+            alt='Photo of Castle'
             style={{
               display: 'block',
               margin: 'auto',
@@ -88,39 +87,31 @@ export default function HocCastlePage() {
             }}
           />
 
-          <Grid
-            container
-            justifyContent="center"
-            spacing={2}
-          >
+          <Grid container justifyContent='center' spacing={2}>
             {RESOURCES.map((lang) => (
-              <Grid
-                key={`lang_selector_${lang.code}`}
-                xs={4}
-                item
-              >
+              <Grid key={`lang_selector_${lang.code}`} xs={4} item>
                 <Card elevation={1}>
-                  <CardActionArea href={`/hoc/castle/${lang.code}/teacher-notes`}>
+                  <CardActionArea
+                    href={`/hoc/castle/${lang.code}/teacher-notes`}
+                  >
                     <CardContent>
                       <Typography
                         sx={{ fontSize: '2rem' }}
-                        color="text.secondary"
+                        color='text.secondary'
                         gutterBottom
                       >
                         {lang.locale.flag}
                       </Typography>
-                      <Typography variant="h5" component="div">
+                      <Typography variant='h5' component='div'>
                         {lang.locale.name}
                       </Typography>
-                      <Typography variant="body1">
+                      <Typography variant='body1'>
                         {lang.intro.notes}
                       </Typography>
-                      <Typography variant="caption">
+                      <Typography variant='caption'>
                         {lang.intro.hoc}
                       </Typography>
-                      <Typography variant="body2">
-                        {lang.intro.goal}
-                      </Typography>
+                      <Typography variant='body2'>{lang.intro.goal}</Typography>
                     </CardContent>
                   </CardActionArea>
                 </Card>
@@ -137,7 +128,7 @@ export default function HocCastlePage() {
 export async function getStaticProps() {
   return {
     props: {
-      ...await translationProps(),
+      ...(await translationProps()),
     },
   };
 }

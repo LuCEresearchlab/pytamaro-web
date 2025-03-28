@@ -5,9 +5,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const {
-    uuid, experimentKey, module, name, activityVariant,
-  } = req.body;
+  const { uuid, experimentKey, module, name, activityVariant } = req.body;
   const saved = await saveAPILookupEvent(
     uuid,
     experimentKey,

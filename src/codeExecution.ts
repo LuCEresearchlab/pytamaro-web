@@ -10,20 +10,24 @@ const { uniq } = lodash;
 export type ExecutionResponse = CompletedExecutionResponse | FailedExecution;
 
 export interface CompletedExecutionResponse {
-  type: 'success' | 'error',
-  stdout: string,
-  stderr: string,
+  type: 'success' | 'error';
+  stdout: string;
+  stderr: string;
 }
 
 export interface FailedExecution {
-  type: 'time-limit-exceeded' | 'output-limit-exceeded' | 'network-error',
+  type: 'time-limit-exceeded' | 'output-limit-exceeded' | 'network-error';
 }
 
-export function isExecutionCompleted(res: ExecutionResponse): res is CompletedExecutionResponse {
+export function isExecutionCompleted(
+  res: ExecutionResponse,
+): res is CompletedExecutionResponse {
   return res.type === 'success' || res.type === 'error';
 }
 
-export function isExecutionFailed(res: ExecutionResponse): res is FailedExecution {
+export function isExecutionFailed(
+  res: ExecutionResponse,
+): res is FailedExecution {
   return !isExecutionCompleted(res);
 }
 
@@ -40,8 +44,8 @@ export const CURRENT_CELL_FILE = 'cell';
 export const TOOLBOX_FILE = 'toolbox';
 
 export interface BareboneToolboxFunction {
-  name: string,
-  source: string,
+  name: string;
+  source: string;
 }
 
 // The source of the previous cells is embedded within a context manager that
@@ -63,7 +67,9 @@ function toolboxSingleModuleName(fn: BareboneToolboxFunction) {
 export async function importedToolboxNames(source: string) {
   try {
     const imports: PythonName[] = await analyze(source).imported_names;
-    const toolboxImports = imports.filter(({ module }) => module === TOOLBOX_FILE);
+    const toolboxImports = imports.filter(
+      ({ module }) => module === TOOLBOX_FILE,
+    );
     return uniq(toolboxImports.map(({ name }) => name));
   } catch {
     return [];
@@ -72,13 +78,18 @@ export async function importedToolboxNames(source: string) {
 
 async function toposortImports(functions: BareboneToolboxFunction[]) {
   const imports = new Topo.Sorter<string>();
-  const deps = await Promise.all(functions.map(async (fn) => (
-    { name: fn.name, neededNames: await importedToolboxNames(fn.source) }
-  )));
+  const deps = await Promise.all(
+    functions.map(async (fn) => ({
+      name: fn.name,
+      neededNames: await importedToolboxNames(fn.source),
+    })),
+  );
   deps.forEach(({ name, neededNames }) => {
     imports.add(name, { group: name, after: neededNames });
   });
-  return imports.nodes.map((name) => functions.find((fn) => fn.name === name) as ToolboxFunction);
+  return imports.nodes.map(
+    (name) => functions.find((fn) => fn.name === name) as ToolboxFunction,
+  );
 }
 
 async function toolboxDriverSource(functions: BareboneToolboxFunction[]) {
@@ -88,7 +99,11 @@ async function toolboxDriverSource(functions: BareboneToolboxFunction[]) {
   } catch {
     // Possibly a circular import
   }
-  return joinLines(sortedFunctions.map((fn) => `from ${toolboxSingleModuleName(fn)} import ${fn.name}`));
+  return joinLines(
+    sortedFunctions.map(
+      (fn) => `from ${toolboxSingleModuleName(fn)} import ${fn.name}`,
+    ),
+  );
 }
 
 export async function toolboxFiles(
@@ -106,10 +121,7 @@ export async function toolboxFiles(
     name: `${TOOLBOX_FILE}.py`,
     content: await toolboxDriverSource(functions),
   };
-  return [
-    toolboxMainFile,
-    ...singleFiles,
-  ];
+  return [toolboxMainFile, ...singleFiles];
 }
 
 export async function cellsToFiles(
@@ -124,7 +136,8 @@ export async function cellsToFiles(
   // to account for the previous cells.
   let currentCellSource = sources[idx];
   if (idx > 0) {
-    currentCellSource = emptyLines(countLines(previousCellsSource)) + currentCellSource;
+    currentCellSource =
+      emptyLines(countLines(previousCellsSource)) + currentCellSource;
   }
   const files = [
     {
@@ -139,7 +152,7 @@ export async function cellsToFiles(
       name: `${CURRENT_CELL_FILE}.py`,
       content: currentCellSource,
     },
-    ...await toolboxFiles(toolboxFunctions),
+    ...(await toolboxFiles(toolboxFunctions)),
     ...extraPythonFiles,
   ];
   // code-runner does not allow empty files, we work around this by including a no-op stmt

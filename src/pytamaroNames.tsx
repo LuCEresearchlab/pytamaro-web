@@ -57,7 +57,7 @@ interface NameInfo {
   type: 'class' | 'function' | 'value';
 }
 
-const names : Record<string, NameInfo> = {
+const names: Record<string, NameInfo> = {
   'en.Color': {
     fqname: 'pytamaro.color.Color',
     url: 'English/colors',

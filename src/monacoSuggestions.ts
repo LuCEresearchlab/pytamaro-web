@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { isNull, negate } from 'lodash';
 import type {
   editor as EditorNamespace,
@@ -10,7 +11,7 @@ import PyTamaroNames from './pytamaroNames';
 import { AnalysisResult, analyze } from './python-analyzer/python_analyzer';
 
 function kind(monacoInstance: any, type: string) {
-  const map : Record<string, any> = {
+  const map: Record<string, any> = {
     function: monacoInstance.languages.CompletionItemKind.Function,
     class: monacoInstance.languages.CompletionItemKind.Class,
     value: monacoInstance.languages.CompletionItemKind.Value,
@@ -19,7 +20,10 @@ function kind(monacoInstance: any, type: string) {
   return map[type];
 }
 
-function currentLineText(model: EditorNamespace.ITextModel, position: Position) : string {
+function currentLineText(
+  model: EditorNamespace.ITextModel,
+  position: Position,
+): string {
   return model.getValueInRange({
     startLineNumber: position.lineNumber,
     startColumn: 1,
@@ -28,7 +32,10 @@ function currentLineText(model: EditorNamespace.ITextModel, position: Position) 
   });
 }
 
-function getRangeLastWord(model: EditorNamespace.ITextModel, position: Position) : IRange {
+function getRangeLastWord(
+  model: EditorNamespace.ITextModel,
+  position: Position,
+): IRange {
   const word = model.getWordUntilPosition(position);
   return {
     startLineNumber: position.lineNumber,
@@ -43,59 +50,68 @@ export function toolboxImportCompletionProvider(
   toolboxFunctions: ToolboxFunction[],
 ) {
   return {
-    provideCompletionItems(model: EditorNamespace.ITextModel, position: Position) {
-      const isToolboxImport = currentLineText(model, position).match(`from\\s+${TOOLBOX_FILE}\\s+import\\s+`);
+    provideCompletionItems(
+      model: EditorNamespace.ITextModel,
+      position: Position,
+    ) {
+      const isToolboxImport = currentLineText(model, position).match(
+        `from\\s+${TOOLBOX_FILE}\\s+import\\s+`,
+      );
       return {
-        suggestions: isToolboxImport ? toolboxFunctions.map((fn) => ({
-          label: fn.name,
-          kind: kind(monacoInstance, 'function'),
-          detail: fn.description,
-          insertText: fn.name,
-          range: getRangeLastWord(model, position),
-        })) : [],
+        suggestions: isToolboxImport
+          ? toolboxFunctions.map((fn) => ({
+              label: fn.name,
+              kind: kind(monacoInstance, 'function'),
+              detail: fn.description,
+              insertText: fn.name,
+              range: getRangeLastWord(model, position),
+            }))
+          : [],
       };
     },
   };
 }
 
-const PYTAMARO_MODULES : Record<string, string> = {
+const PYTAMARO_MODULES: Record<string, string> = {
   // eslint-disable-next-line quote-props
-  'pytamaro': 'en',
+  pytamaro: 'en',
   'pytamaro.it': 'it',
   'pytamaro.de': 'de',
   'pytamaro.fr': 'fr',
 };
 
-const KNOWN_MODULES = [
-  TOOLBOX_FILE,
-  ...Object.keys(PYTAMARO_MODULES),
-];
+const KNOWN_MODULES = [TOOLBOX_FILE, ...Object.keys(PYTAMARO_MODULES)];
 
-export function moduleImportCompletionProvider(
-  monacoInstance: any,
-) {
+export function moduleImportCompletionProvider(monacoInstance: any) {
   return {
-    provideCompletionItems(model: EditorNamespace.ITextModel, position: Position) {
+    provideCompletionItems(
+      model: EditorNamespace.ITextModel,
+      position: Position,
+    ) {
       const text = currentLineText(model, position);
-      const isFromImport = text.match('from\\s+([^\\s]+)') && !text.match('import\\s');
+      const isFromImport =
+        text.match('from\\s+([^\\s]+)') && !text.match('import\\s');
       return {
-        suggestions: isFromImport ? KNOWN_MODULES.map((module) => ({
-          label: module,
-          kind: kind(monacoInstance, 'module'),
-          insertText: module,
-          range: getRangeLastWord(model, position),
-        })) : [],
+        suggestions: isFromImport
+          ? KNOWN_MODULES.map((module) => ({
+              label: module,
+              kind: kind(monacoInstance, 'module'),
+              insertText: module,
+              range: getRangeLastWord(model, position),
+            }))
+          : [],
       };
     },
   };
 }
 
-export function pytamaroImportCompletionProvider(
-  monacoInstance: any,
-) {
+export function pytamaroImportCompletionProvider(monacoInstance: any) {
   return {
-    provideCompletionItems(model: EditorNamespace.ITextModel, position: Position) {
-      const analysisResult : AnalysisResult = analyze(model.getValue());
+    provideCompletionItems(
+      model: EditorNamespace.ITextModel,
+      position: Position,
+    ) {
+      const analysisResult: AnalysisResult = analyze(model.getValue());
       const offset = model.getOffsetAt(position);
       const importStmt = analysisResult.import_ranges.find(
         ([start, end]) => start <= offset && offset <= end,
@@ -109,24 +125,28 @@ export function pytamaroImportCompletionProvider(
         endLineNumber: endPosition.lineNumber,
         endColumn: endPosition.column,
       });
-      const regexes = Object.keys(PYTAMARO_MODULES).map((module) => `from\\s+(${module})\\s+import\\s+`);
-      const pytamaroMatch = regexes.map((regex) => text.match(regex)).find(negate(isNull));
+      const regexes = Object.keys(PYTAMARO_MODULES).map(
+        (module) => `from\\s+(${module})\\s+import\\s+`,
+      );
+      const pytamaroMatch = regexes
+        .map((regex) => text.match(regex))
+        .find(negate(isNull));
       if (!pytamaroMatch) return { suggestions: [] };
       const pytamaroModule = pytamaroMatch[1];
       const lang = PYTAMARO_MODULES[pytamaroModule];
       const prefix = `${lang}.`;
-      const relevantNames = Object.entries(PyTamaroNames).filter(
-        ([name]) => name.startsWith(prefix),
+      const relevantNames = Object.entries(PyTamaroNames).filter(([name]) =>
+        name.startsWith(prefix),
       );
       return {
         suggestions: relevantNames.map(([name, info]) => {
           const shortName = name.replace(prefix, '');
-          return ({
+          return {
             label: shortName,
             kind: kind(monacoInstance, info.type),
             insertText: shortName,
             range: getRangeLastWord(model, position),
-          });
+          };
         }),
       };
     },

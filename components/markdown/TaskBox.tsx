@@ -1,19 +1,13 @@
 import { Engineering } from '@mui/icons-material';
-import {
-  Alert,
-  Box,
-} from '@mui/material';
+import { Alert, Box } from '@mui/material';
 import theme from '../../src/theme';
 
 const taskBoxClassName = 'task-box';
 
-export default function TaskBox({
-  children,
-}:
-{ children: React.ReactNode }) {
+export default function TaskBox({ children }: { children: React.ReactNode }) {
   return (
     <Alert
-      severity="info"
+      severity='info'
       icon={<Engineering />}
       className={taskBoxClassName}
       sx={{
@@ -31,9 +25,7 @@ export default function TaskBox({
         },
       }}
     >
-      <Box marginY="1em">
-        {children}
-      </Box>
+      <Box marginY='1em'>{children}</Box>
     </Alert>
   );
 }

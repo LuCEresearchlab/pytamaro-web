@@ -6,12 +6,12 @@ import { Activity, ActivityVariant } from './schemas/activitySchema';
 import { joinLines } from './sourceUtils';
 
 export interface ActivityVariantWithNames {
-  activity: Activity,
-  variant: ActivityVariant,
-  importedNames: PythonName[],
+  activity: Activity;
+  variant: ActivityVariant;
+  importedNames: PythonName[];
 }
 
-async function importedAPIs(variant: ActivityVariant) : Promise<PythonName[]> {
+async function importedAPIs(variant: ActivityVariant): Promise<PythonName[]> {
   const cells = await readNotebookContent(
     variant.authorSlug,
     variant.activitySlug,
@@ -19,26 +19,34 @@ async function importedAPIs(variant: ActivityVariant) : Promise<PythonName[]> {
     variant.version,
   );
   const codeCells = cellsVisibleToUser(cells, 'student').filter(isCodeCell);
-  return codeCells.flatMap((cell) => analyze(joinLines(cell.source)).imported_names);
+  return codeCells.flatMap(
+    (cell) => analyze(joinLines(cell.source)).imported_names,
+  );
 }
 
-export default async function getActivitiesWithAPIs(authorSlug: string)
-  : Promise<ActivityVariantWithNames[]> {
+export default async function getActivitiesWithAPIs(
+  authorSlug: string,
+): Promise<ActivityVariantWithNames[]> {
   const activities = await listVisibleActivities(authorSlug);
-  return (await Promise.all(
-    activities.map((activity) => (
-      Promise.all(activity.languagesInfo.map(async (info) => {
-        const variant = {
-          authorSlug,
-          activitySlug: activity.slug,
-          language: info.language,
-          version: info.latestVersion,
-        };
-        return {
-          activity,
-          variant,
-          importedNames: await importedAPIs(variant),
-        };
-      })))),
-  )).flat();
+  return (
+    await Promise.all(
+      activities.map((activity) =>
+        Promise.all(
+          activity.languagesInfo.map(async (info) => {
+            const variant = {
+              authorSlug,
+              activitySlug: activity.slug,
+              language: info.language,
+              version: info.latestVersion,
+            };
+            return {
+              activity,
+              variant,
+              importedNames: await importedAPIs(variant),
+            };
+          }),
+        ),
+      ),
+    )
+  ).flat();
 }

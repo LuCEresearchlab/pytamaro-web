@@ -13,7 +13,10 @@ import { findStepIdx, findUnitIdx } from '../../src/curricula';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { getVariantTitle } from '../../src/schemas/activitySchema';
-import { Curriculum, CurriculumActivity } from '../../src/schemas/curriculumSchema';
+import {
+  Curriculum,
+  CurriculumActivity,
+} from '../../src/schemas/curriculumSchema';
 import { EventName, storeDbEvent } from '../../src/storeDbEvent';
 import theme from '../../src/theme';
 import {
@@ -24,16 +27,19 @@ import ActivityStatusBadge, { ActivityStatus } from '../ActivityStatusBadge';
 import CompetencyAvatar from '../CompetencyAvatar';
 
 export function ActivityCardActionAreaContent({
-  curriculumActivity, curriculum,
+  curriculumActivity,
+  curriculum,
   height = undefined,
-} : {
-  curriculumActivity: CurriculumActivity,
-  curriculum: Curriculum,
-  height?: number | undefined,
+}: {
+  curriculumActivity: CurriculumActivity;
+  curriculum: Curriculum;
+  height?: number | undefined;
 }) {
   const COMPACT_MAX_COMPETENCIES_SHOWN = 4;
   const EXPANDED_MAX_COMPETENCIES_SHOWN = 20;
-  const [maxCompetenciesShown, setMaxCompetenciesShown] = useState(COMPACT_MAX_COMPETENCIES_SHOWN);
+  const [maxCompetenciesShown, setMaxCompetenciesShown] = useState(
+    COMPACT_MAX_COMPETENCIES_SHOWN,
+  );
   const { activity, variant } = curriculumActivity;
   const title = getVariantTitle(activity, variant);
 
@@ -42,31 +48,38 @@ export function ActivityCardActionAreaContent({
   return (
     <>
       <CardMedia
-        component="img"
+        component='img'
         height={height ? 0.82 * height : '82%'}
-        color="red"
+        color='red'
         image={activityAssetPathname(
           variant.authorSlug,
           variant.activitySlug,
           activity.previewImage.filename,
         )}
         alt={title}
-        sx={{ padding: 1, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
+        sx={{
+          padding: 1,
+          objectFit: 'contain',
+          backgroundColor: activity.previewImage.backgroundColor,
+        }}
       />
-      <CardContent sx={{
-        paddingY: { xs: 0, sm: 1 },
-        height: height ? 0.18 * height : '18%',
-        display: 'flex',
-        alignItems: 'baseline',
-        paddingRight: 0.5,
-      }}
+      <CardContent
+        sx={{
+          paddingY: { xs: 0, sm: 1 },
+          height: height ? 0.18 * height : '18%',
+          display: 'flex',
+          alignItems: 'baseline',
+          paddingRight: 0.5,
+        }}
       >
         <Typography
-          variant="h5"
-          component="div"
+          variant='h5'
+          component='div'
           sx={{
             fontSize: {
-              xs: '1rem', sm: '1.2rem', textOverflow: 'ellipsis',
+              xs: '1rem',
+              sm: '1.2rem',
+              textOverflow: 'ellipsis',
             },
             whiteSpace: 'nowrap',
             overflow: 'hidden',
@@ -91,11 +104,17 @@ export function ActivityCardActionAreaContent({
               fontSize: avatarFontSize,
             },
           }}
-          onMouseOver={() => setMaxCompetenciesShown(EXPANDED_MAX_COMPETENCIES_SHOWN)}
-          onMouseLeave={() => setMaxCompetenciesShown(COMPACT_MAX_COMPETENCIES_SHOWN)}
+          onMouseOver={() =>
+            setMaxCompetenciesShown(EXPANDED_MAX_COMPETENCIES_SHOWN)
+          }
+          onMouseLeave={() =>
+            setMaxCompetenciesShown(COMPACT_MAX_COMPETENCIES_SHOWN)
+          }
         >
           {curriculumActivity.learningObjectives.map((objective) => {
-            const competency = curriculum.competencies.find((c) => c.id === objective);
+            const competency = curriculum.competencies.find(
+              (c) => c.id === objective,
+            );
             return competency ? (
               <CompetencyAvatar
                 key={competency.id}
@@ -119,20 +138,23 @@ export default function ActivityCard({
   width = undefined,
   height = undefined,
 }: {
-  curriculumActivity: CurriculumActivity,
-  curriculum: Curriculum,
-  status: ActivityStatus,
-  isUnlocked: boolean,
-  id: string,
-  width?: number | undefined,
-  height?: number | undefined,
+  curriculumActivity: CurriculumActivity;
+  curriculum: Curriculum;
+  status: ActivityStatus;
+  isUnlocked: boolean;
+  id: string;
+  width?: number | undefined;
+  height?: number | undefined;
 }) {
   const { t } = useLocalTranslation(['curriculum']);
   const { metadata } = useLocalProfile();
   const { variant } = curriculumActivity;
 
   const unitIdx = findUnitIdx(curriculum, curriculumActivity.variant);
-  const stepIdx = findStepIdx(curriculum.units[unitIdx], curriculumActivity.variant);
+  const stepIdx = findStepIdx(
+    curriculum.units[unitIdx],
+    curriculumActivity.variant,
+  );
   const firstStep = unitIdx === 0 && stepIdx === 0;
 
   const logActivityOpen = () => {
@@ -158,10 +180,21 @@ export default function ActivityCard({
       <ActivityStatusBadge status={status} locked={!isUnlocked}>
         <Card
           sx={{
-            width: '100%', height: '100%', paddingBottom: 0,
+            width: '100%',
+            height: '100%',
+            paddingBottom: 0,
           }}
         >
-          <Tooltip arrow title={isUnlocked ? t('openActivity') : t(`unlockBy${firstStep ? 'Starting' : 'Completing'}`)} followCursor placement="top">
+          <Tooltip
+            arrow
+            title={
+              isUnlocked
+                ? t('openActivity')
+                : t(`unlockBy${firstStep ? 'Starting' : 'Completing'}`)
+            }
+            followCursor
+            placement='top'
+          >
             <span>
               <CardActionArea
                 href={activityVariantWithCurriculum(variant, curriculum)}

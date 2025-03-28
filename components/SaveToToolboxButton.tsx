@@ -1,17 +1,23 @@
 import { Construction } from '@mui/icons-material';
-import {
-  IconButton, Tooltip,
-} from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import { debounce } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
-import { AnalysisResult, analyze } from '../src/python-analyzer/python_analyzer';
+import {
+  AnalysisResult,
+  analyze,
+} from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
 import CustomSnackbar from './CustomSnackbar';
 import SaveToToolboxDialog from './SaveToToolboxDialog';
 
-export default function SaveToToolboxButton({ sources, originalActivity } :
-{ sources: string[], originalActivity: ActivityVariant }) {
+export default function SaveToToolboxButton({
+  sources,
+  originalActivity,
+}: {
+  sources: string[];
+  originalActivity: ActivityVariant;
+}) {
   const [open, setOpen] = useState(false);
   const [available, setAvailable] = useState(false);
   const [savingSuccess, setSavingSuccess] = useState(false);
@@ -22,7 +28,7 @@ export default function SaveToToolboxButton({ sources, originalActivity } :
 
   const debouncedFindFunctionsDefinitions = useMemo(() => {
     const findFunctionDefinitions = async (currentCellSource: string) => {
-      const analysisResult : AnalysisResult = await analyze(currentCellSource);
+      const analysisResult: AnalysisResult = await analyze(currentCellSource);
       const newFunctions = analysisResult.defined_functions;
       const atLeastOneFunction = newFunctions.length > 0;
       const noErrors = analysisResult.parse_errors.length === 0;
@@ -41,10 +47,10 @@ export default function SaveToToolboxButton({ sources, originalActivity } :
   }
   return (
     <>
-      <Tooltip arrow title="Save a function to toolbox">
+      <Tooltip arrow title='Save a function to toolbox'>
         <IconButton
           onClick={() => setOpen(true)}
-          className="save-to-toolbox-dialog-button"
+          className='save-to-toolbox-dialog-button'
         >
           <Construction />
         </IconButton>
@@ -60,14 +66,14 @@ export default function SaveToToolboxButton({ sources, originalActivity } :
       <CustomSnackbar
         visible={savingSuccess}
         setVisible={setSavingSuccess}
-        severity="success"
-        message="Function successfully saved to the toolbox!"
+        severity='success'
+        message='Function successfully saved to the toolbox!'
       />
       <CustomSnackbar
         visible={savingError}
         setVisible={setSavingError}
-        severity="error"
-        message="Saving failed: this name already exists in the toolbox!"
+        severity='error'
+        message='Saving failed: this name already exists in the toolbox!'
       />
     </>
   );

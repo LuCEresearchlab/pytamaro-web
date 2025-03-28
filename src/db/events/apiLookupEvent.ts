@@ -26,11 +26,16 @@ export default async function saveAPILookupEvent(
   module: string,
   name: string,
   activity_variant: ActivityVariant,
-) : Promise<boolean> {
+): Promise<boolean> {
   try {
     await conn.begin(async (sql) => {
       const pActivityId = storeActivity(sql, activity_variant);
-      const pEventId = storeEvent(sql, user_uuid, experiment_key, EventName.APILookup);
+      const pEventId = storeEvent(
+        sql,
+        user_uuid,
+        experiment_key,
+        EventName.APILookup,
+      );
       await storeEventAPILookup(
         sql,
         await pEventId,

@@ -20,7 +20,10 @@ export function isPlayground(
   version: string,
 ) {
   const variant = {
-    authorSlug, activitySlug, language, version,
+    authorSlug,
+    activitySlug,
+    language,
+    version,
   };
   return isEqual(variant, playgroundActivityVariant);
 }

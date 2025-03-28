@@ -44,16 +44,23 @@ const navItems = [
   },
 ];
 
-function ScrollAppBarChanges({ enabled = false, children }:
-{ enabled: boolean, children: React.ReactElement }) {
+function ScrollAppBarChanges({
+  enabled = false,
+  children,
+}: {
+  enabled: boolean;
+  children: React.ReactElement;
+}) {
   const [scrollThreshold, setScrollThreshold] = useState(100);
 
   useEffect(() => {
     const element = document.getElementById('homepage-landscape');
     const elementAppBar = document.getElementById('app-bar');
-    setScrollThreshold((element && elementAppBar)
-      ? element.offsetTop + element.offsetHeight - elementAppBar.offsetHeight
-      : 100);
+    setScrollThreshold(
+      element && elementAppBar
+        ? element.offsetTop + element.offsetHeight - elementAppBar.offsetHeight
+        : 100,
+    );
   }, []);
 
   const scrolled = useScrollTrigger({
@@ -75,15 +82,15 @@ function ScrollAppBarChanges({ enabled = false, children }:
 function PyTamaroHomeLogo() {
   return (
     <IconButton
-      href="/"
+      href='/'
       style={{
         borderRadius: 0,
       }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        alt="PyTamaro"
-        src="/logo-navbar.png"
+        alt='PyTamaro'
+        src='/logo-navbar.png'
         style={{
           height: '1.3rem',
         }}
@@ -92,8 +99,13 @@ function PyTamaroHomeLogo() {
   );
 }
 
-export default function NavigationBar({ home = false, children = null }:
-{ home?: boolean, children?: React.ReactNode }) {
+export default function NavigationBar({
+  home = false,
+  children = null,
+}: {
+  home?: boolean;
+  children?: React.ReactNode;
+}) {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -108,28 +120,29 @@ export default function NavigationBar({ home = false, children = null }:
   return (
     <ScrollAppBarChanges enabled={home === true}>
       <AppBar
-        id="app-bar"
-        position="sticky"
+        id='app-bar'
+        position='sticky'
         elevation={0}
         sx={{
           background: theme.palette.secondary.main,
         }}
       >
         <Toolbar>
-          <Box sx={{
-            flexGrow: 1,
-            display: {
-              lg: 'none',
-              xs: 'flex',
-            },
-          }}
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: {
+                lg: 'none',
+                xs: 'flex',
+              },
+            }}
           >
             <IconButton
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              aria-label="Menu"
+              aria-controls='menu-appbar'
+              aria-haspopup='true'
+              aria-label='Menu'
               onClick={handleOpenNavMenu}
-              size="large"
+              size='large'
               sx={{
                 color: theme.palette.text.primary,
               }}
@@ -137,7 +150,7 @@ export default function NavigationBar({ home = false, children = null }:
               <MenuIcon />
             </IconButton>
             <Drawer
-              anchor="left"
+              anchor='left'
               onClose={handleCloseNavMenu}
               open={Boolean(anchorElNav)}
               sx={{
@@ -150,14 +163,10 @@ export default function NavigationBar({ home = false, children = null }:
               }}
             >
               <Box m={1}>
-                <Stack direction="column">
+                <Stack direction='column'>
                   <PyTamaroHomeLogo />
                   {navItems.map((item) => (
-                    <MenuItem
-                      component="a"
-                      key={item.url}
-                      href={item.url}
-                    >
+                    <MenuItem component='a' key={item.url} href={item.url}>
                       {t(item.name)}
                     </MenuItem>
                   ))}
@@ -169,18 +178,14 @@ export default function NavigationBar({ home = false, children = null }:
           </Box>
 
           <Stack
-            direction="row"
+            direction='row'
             display={{
               lg: 'flex',
               xs: 'none',
             }}
-            divider={(
-              <Divider
-                flexItem
-                orientation="vertical"
-                variant="middle"
-              />
-            )}
+            divider={
+              <Divider flexItem orientation='vertical' variant='middle' />
+            }
             useFlexGap
             spacing={1}
             sx={{
@@ -205,7 +210,7 @@ export default function NavigationBar({ home = false, children = null }:
           </Stack>
 
           <Stack
-            direction="row"
+            direction='row'
             spacing={1}
             sx={{
               marginLeft: 'auto',
@@ -213,11 +218,11 @@ export default function NavigationBar({ home = false, children = null }:
           >
             {children}
             {!home && (
-            <>
-              <FeedbackDialog />
-              <NotificationsButton />
-              <PlatformLanguageButton />
-            </>
+              <>
+                <FeedbackDialog />
+                <NotificationsButton />
+                <PlatformLanguageButton />
+              </>
             )}
           </Stack>
         </Toolbar>

@@ -4,7 +4,15 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Avatar, Container, Divider, Link, List, ListItem, ListItemAvatar, ListItemButton, ListItemText,
+  Avatar,
+  Container,
+  Divider,
+  Link,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -16,9 +24,14 @@ import PageTitle from '../../../components/PageTitle';
 import CentralContent from '../../../components/sidebar/CentralContent';
 import Sidebar from '../../../components/sidebar/Sidebar';
 import { allKinds } from '../../../src/documentation';
-import allDocumentationModules, { readDocumentation } from '../../../src/fs-content/documentation';
+import allDocumentationModules, {
+  readDocumentation,
+} from '../../../src/fs-content/documentation';
 import useLocalTranslation from '../../../src/localStorage/useLocalTranslation';
-import { JudiciousElement, JudiciousModule } from '../../../src/schemas/documentation';
+import {
+  JudiciousElement,
+  JudiciousModule,
+} from '../../../src/schemas/documentation';
 import { translationProps } from '../../../src/serverSideTranslationProps';
 import { documentationElementPathname } from '../../../src/urlUtils';
 
@@ -30,7 +43,11 @@ export function sortElements(elements: JudiciousElement[]) {
   );
 }
 
-export default function DocumentationModule({ moduleData }: { moduleData: JudiciousModule }) {
+export default function DocumentationModule({
+  moduleData,
+}: {
+  moduleData: JudiciousModule;
+}) {
   const { t } = useLocalTranslation();
   const title = `Python ${t('documentation')} ${t('library')} ${moduleData.module}`;
   const icons = {
@@ -46,27 +63,23 @@ export default function DocumentationModule({ moduleData }: { moduleData: Judici
       </Head>
       <NavigationBar />
       <Grid container>
-        <Sidebar side="left" />
+        <Sidebar side='left' />
         <CentralContent>
-          <PageTitle>
-            {t('documentation')}
-          </PageTitle>
-          <Container maxWidth="md">
-            <DocBreadcrumbs
-              module={moduleData.module}
-            />
-            <Typography mb={4} textAlign="center">
+          <PageTitle>{t('documentation')}</PageTitle>
+          <Container maxWidth='md'>
+            <DocBreadcrumbs module={moduleData.module} />
+            <Typography mb={4} textAlign='center'>
               {moduleData.summary}
             </Typography>
             <div>
               {sortBy(Object.keys(sections)).map((section) => (
                 <Accordion key={section}>
                   {section !== 'undefined' && (
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography variant="h6" fontWeight="normal">
-                      {section}
-                    </Typography>
-                  </AccordionSummary>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                      <Typography variant='h6' fontWeight='normal'>
+                        {section}
+                      </Typography>
+                    </AccordionSummary>
                   )}
                   <AccordionDetails sx={{ p: 0 }}>
                     <List sx={{ bgcolor: 'background.paper' }}>
@@ -74,12 +87,13 @@ export default function DocumentationModule({ moduleData }: { moduleData: Judici
                         <div key={element.name}>
                           <ListItem>
                             <ListItemButton
-                              href={documentationElementPathname(moduleData.module, element.name)}
+                              href={documentationElementPathname(
+                                moduleData.module,
+                                element.name,
+                              )}
                             >
                               <ListItemAvatar>
-                                <Avatar>
-                                  {icons[element.kind]}
-                                </Avatar>
+                                <Avatar>{icons[element.kind]}</Avatar>
                               </ListItemAvatar>
                               <ListItemText
                                 primary={element.name}
@@ -98,7 +112,9 @@ export default function DocumentationModule({ moduleData }: { moduleData: Judici
                               />
                             </ListItemButton>
                           </ListItem>
-                          {index === sections[section].length - 1 ? null : <Divider variant="middle" component="li" />}
+                          {index === sections[section].length - 1 ? null : (
+                            <Divider variant='middle' component='li' />
+                          )}
                         </div>
                       ))}
                     </List>
@@ -107,30 +123,29 @@ export default function DocumentationModule({ moduleData }: { moduleData: Judici
               ))}
             </div>
             {moduleData.officialBaseUrl && (
-              <Typography mt={10} textAlign="center">
-                See also the
-                {' '}
+              <Typography mt={10} textAlign='center'>
+                See also the{' '}
                 <Link href={moduleData.officialBaseUrl}>
-                  official documentation of the
-                  {' '}
-                  {moduleData.module}
-                  {' '}
-                  module
+                  official documentation of the {moduleData.module} module
                 </Link>
               </Typography>
             )}
           </Container>
         </CentralContent>
-        <Sidebar side="right" />
+        <Sidebar side='right' />
       </Grid>
     </div>
   );
 }
 
-export async function getStaticProps({ params } : { params: { module: string } }) {
+export async function getStaticProps({
+  params,
+}: {
+  params: { module: string };
+}) {
   return {
     props: {
-      ...await translationProps(),
+      ...(await translationProps()),
       moduleData: await readDocumentation(params.module),
     },
   };
@@ -138,7 +153,9 @@ export async function getStaticProps({ params } : { params: { module: string } }
 
 export async function getStaticPaths() {
   return {
-    paths: (await allDocumentationModules()).map((module) => ({ params: { module } })),
+    paths: (await allDocumentationModules()).map((module) => ({
+      params: { module },
+    })),
     fallback: false,
   };
 }

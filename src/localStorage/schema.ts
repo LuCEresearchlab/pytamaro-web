@@ -9,51 +9,51 @@ export interface Metadata {
   dataModelVersion: string;
   userUuid: string;
   experimentKey: string;
-  allowSharingAnonData: 'yes' | 'no' | 'unknown'
-  activities: ActivityVariantMetadata[],
-  toolbox: ToolboxFunction[],
-  curricula: CurriculumMetadata[],
-  platformLocale: string | null, // null means not explicitly chosen
-  docs: DocsMetadata,
-  lastNotificationSeen: number,
+  allowSharingAnonData: 'yes' | 'no' | 'unknown';
+  activities: ActivityVariantMetadata[];
+  toolbox: ToolboxFunction[];
+  curricula: CurriculumMetadata[];
+  platformLocale: string | null; // null means not explicitly chosen
+  docs: DocsMetadata;
+  lastNotificationSeen: number;
 }
 
 export interface DocsMetadata {
-  showOptional: boolean,
-  showDiagram: boolean,
-  showTypes: boolean,
+  showOptional: boolean;
+  showDiagram: boolean;
+  showTypes: boolean;
 }
 
 export interface ToolboxFunction {
-  name: string,
-  description: string,
-  source: string,
-  usage: string,
-  args: PythonFunctionArgument[],
-  returnTypeUnparsed: string,
-  originalActivity: ActivityVariant
+  name: string;
+  description: string;
+  source: string;
+  usage: string;
+  args: PythonFunctionArgument[];
+  returnTypeUnparsed: string;
+  originalActivity: ActivityVariant;
 }
 
 export interface PythonFunctionArgument {
-  name: string,
-  typeUnparsed: string,
+  name: string;
+  typeUnparsed: string;
 }
 
 export interface DoNowMetadata {
-  id: string,
-  answer: string,
+  id: string;
+  answer: string;
 }
 
 export interface ActivityVariantMetadata {
-  id: string,
-  codeCellsKey: string,
-  cellsModified: boolean,
-  completed: boolean,
-  doNowCompleted: DoNowMetadata[],
+  id: string;
+  codeCellsKey: string;
+  cellsModified: boolean;
+  completed: boolean;
+  doNowCompleted: DoNowMetadata[];
 }
 
 export interface CurriculumMetadata {
-  id: string,
+  id: string;
 }
 
 export interface CodeCellState {
@@ -78,8 +78,9 @@ export function getActivityVariantCodeCellsKey(activityVariantId: string) {
 
 /* Default values */
 
-export function getDefaultActivityVariantMetadata(activityVariantId: string)
-  : ActivityVariantMetadata {
+export function getDefaultActivityVariantMetadata(
+  activityVariantId: string,
+): ActivityVariantMetadata {
   return {
     id: activityVariantId,
     codeCellsKey: getActivityVariantCodeCellsKey(activityVariantId),
@@ -89,7 +90,7 @@ export function getDefaultActivityVariantMetadata(activityVariantId: string)
   };
 }
 
-export function defaultDocsMetadata() : DocsMetadata {
+export function defaultDocsMetadata(): DocsMetadata {
   return {
     showOptional: false,
     showDiagram: true,
@@ -97,7 +98,7 @@ export function defaultDocsMetadata() : DocsMetadata {
   };
 }
 
-export function getDefaultMetadata() : Metadata {
+export function getDefaultMetadata(): Metadata {
   return {
     dataModelVersion: CURRENT_VERSION,
     userUuid: uuidv4(),

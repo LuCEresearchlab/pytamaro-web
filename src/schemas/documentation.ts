@@ -5,7 +5,10 @@ export type JudiciousModule = {
   elements: JudiciousElement[];
 };
 
-export type JudiciousElement = JudiciousFunction | JudiciousType | JudiciousConstant;
+export type JudiciousElement =
+  | JudiciousFunction
+  | JudiciousType
+  | JudiciousConstant;
 
 type JudiciousElementCommon = {
   examples?: JudiciousExample[];
@@ -43,12 +46,14 @@ export type JudiciousParameter = {
 
 export type JudiciousType = {
   kind: 'type';
-} & JudiciousSimpleElement & JudiciousElementCommon;
+} & JudiciousSimpleElement &
+  JudiciousElementCommon;
 
 export type JudiciousConstant = {
   kind: 'constant';
   type: string;
-} & JudiciousSimpleElement & JudiciousElementCommon;
+} & JudiciousSimpleElement &
+  JudiciousElementCommon;
 
 export type JudiciousSimpleElement = {
   name: string;

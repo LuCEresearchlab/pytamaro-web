@@ -3,38 +3,52 @@ import { ActivityVariant } from './schemas/activitySchema';
 import { Curriculum, CurriculumUnit } from './schemas/curriculumSchema';
 
 export function allActivities(curriculum: Curriculum) {
-  return curriculum.units.flatMap(
-    (unit) => unit.steps.flatMap((step) => step.activities),
+  return curriculum.units.flatMap((unit) =>
+    unit.steps.flatMap((step) => step.activities),
   );
 }
 
-export default function visibleCurricula(curricula: Curriculum[]) : Curriculum[] {
+export default function visibleCurricula(
+  curricula: Curriculum[],
+): Curriculum[] {
   return curricula.filter((curriculum) => curriculum.visibility !== 'hidden');
 }
 
-export function findIncludingCurricula(curricula: Curriculum[], activityVariant: ActivityVariant) {
-  return curricula.filter(
-    (curriculum) => allActivities(curriculum).some(
-      (activity) => isEqual(activity.variant, activityVariant),
+export function findIncludingCurricula(
+  curricula: Curriculum[],
+  activityVariant: ActivityVariant,
+) {
+  return curricula.filter((curriculum) =>
+    allActivities(curriculum).some((activity) =>
+      isEqual(activity.variant, activityVariant),
     ),
   );
 }
 
-export function findStepIdx(unit: CurriculumUnit, activityVariant: ActivityVariant) {
-  return unit.steps.findIndex(
-    (step) => step.activities.some(
-      (activity) => isEqual(activity.variant, activityVariant),
+export function findStepIdx(
+  unit: CurriculumUnit,
+  activityVariant: ActivityVariant,
+) {
+  return unit.steps.findIndex((step) =>
+    step.activities.some((activity) =>
+      isEqual(activity.variant, activityVariant),
     ),
   );
 }
 
-export function findUnitIdx(curriculum: Curriculum, activityVariant: ActivityVariant) {
+export function findUnitIdx(
+  curriculum: Curriculum,
+  activityVariant: ActivityVariant,
+) {
   return curriculum.units.findIndex(
     (unit) => findStepIdx(unit, activityVariant) !== -1,
   );
 }
 
-export function findUnit(curriculum: Curriculum, activityVariant: ActivityVariant) {
+export function findUnit(
+  curriculum: Curriculum,
+  activityVariant: ActivityVariant,
+) {
   const maybeIdx = findUnitIdx(curriculum, activityVariant);
   return maybeIdx === -1 ? undefined : curriculum.units[maybeIdx];
 }
@@ -63,10 +77,18 @@ export function nextOrPreviousObviousActivity(
   return targetStep.activities[0];
 }
 
-export function anchorName(unitIdx: number, stepIdx?: number, activityIdx?: number) : string {
+export function anchorName(
+  unitIdx: number,
+  stepIdx?: number,
+  activityIdx?: number,
+): string {
   let name = `unit-${unitIdx}`;
-  if (stepIdx !== undefined) { name += `-step-${stepIdx}`; }
-  if (activityIdx !== undefined) { name += `-activity-${activityIdx}`; }
+  if (stepIdx !== undefined) {
+    name += `-step-${stepIdx}`;
+  }
+  if (activityIdx !== undefined) {
+    name += `-activity-${activityIdx}`;
+  }
   return name;
 }
 
@@ -95,11 +117,14 @@ export function anchorNameNextOrPreviousStep(
   return anchorName(targetUnitIdx, targetStepIdx, 0);
 }
 
-export function findInCurriculum(curriculum: Curriculum, activityVariant: ActivityVariant) {
+export function findInCurriculum(
+  curriculum: Curriculum,
+  activityVariant: ActivityVariant,
+) {
   const unitIdx = findUnitIdx(curriculum, activityVariant);
   const stepIdx = findStepIdx(curriculum.units[unitIdx], activityVariant);
-  const activityIdx = curriculum.units[unitIdx].steps[stepIdx].activities.findIndex(
-    (a) => isEqual(a.variant, activityVariant),
-  );
+  const activityIdx = curriculum.units[unitIdx].steps[
+    stepIdx
+  ].activities.findIndex((a) => isEqual(a.variant, activityVariant));
   return { unitIdx, stepIdx, activityIdx };
 }

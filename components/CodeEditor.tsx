@@ -1,49 +1,72 @@
 import Editor from '@monaco-editor/react';
 import { debounce } from 'lodash';
 import { type editor as EditorNamespace } from 'monaco-editor';
-import {
-  useCallback, useEffect, useRef, useState,
-} from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ExecutionResponse } from '../src/codeExecution';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import {
-  moduleImportCompletionProvider, pytamaroImportCompletionProvider, toolboxImportCompletionProvider,
+  moduleImportCompletionProvider,
+  pytamaroImportCompletionProvider,
+  toolboxImportCompletionProvider,
 } from '../src/monacoSuggestions';
 import { analyze, ParseError } from '../src/python-analyzer/python_analyzer';
 import { addMarkers } from '../src/pythonTraceback';
 import scrollToAnchor from '../src/scrollToAnchor';
 import theme from '../src/theme';
-import { registerCustomPythonLanguage, STRICT_PYTHON3_LANG_ID } from './editor/strictPython3';
 import {
-  colorizeElements, configureEditor, luceTheme, RUN_CODE_CONDITION_KEY, themeName,
+  registerCustomPythonLanguage,
+  STRICT_PYTHON3_LANG_ID,
+} from './editor/strictPython3';
+import {
+  colorizeElements,
+  configureEditor,
+  luceTheme,
+  RUN_CODE_CONDITION_KEY,
+  themeName,
 } from './editor/utils';
 
 configureEditor();
 
 export default function CodeEditor({
-  initialSource, currentSource, executionResponse = undefined, onChange = () => {},
+  initialSource,
+  currentSource,
+  executionResponse = undefined,
+  onChange = () => {},
   onExecutionRequested = undefined,
-  executionAllowed = false, executionFinished = false, firstLineNumber = 1, readOnly = false,
-  collapsedErrorMarkers = false, resetCounter = 0,
-} :
-{ initialSource: string, currentSource: string, executionResponse?: ExecutionResponse,
-  onChange?: (source: string) => void, onExecutionRequested? : () => void,
-  executionAllowed?: boolean, executionFinished?: boolean, firstLineNumber?: number,
-  readOnly?: boolean, collapsedErrorMarkers?: boolean, resetCounter?: number }) {
+  executionAllowed = false,
+  executionFinished = false,
+  firstLineNumber = 1,
+  readOnly = false,
+  collapsedErrorMarkers = false,
+  resetCounter = 0,
+}: {
+  initialSource: string;
+  currentSource: string;
+  executionResponse?: ExecutionResponse;
+  onChange?: (source: string) => void;
+  onExecutionRequested?: () => void;
+  executionAllowed?: boolean;
+  executionFinished?: boolean;
+  firstLineNumber?: number;
+  readOnly?: boolean;
+  collapsedErrorMarkers?: boolean;
+  resetCounter?: number;
+}) {
   const { list } = useLocalToolbox();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const monacoRef = useRef<any>(null);
   const editorRef = useRef<EditorNamespace.IStandaloneCodeEditor | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const monacoInstance = monacoRef.current;
   const editorInstance = editorRef.current;
-  const [
-    executionAllowedCondition,
-    setExecutionAllowedCondition] = useState<EditorNamespace.IContextKey<boolean> | null>(null);
+  const [executionAllowedCondition, setExecutionAllowedCondition] =
+    useState<EditorNamespace.IContextKey<boolean> | null>(null);
   const toolboxFunctions = list();
 
   const handleEditorMount = (
     editor: EditorNamespace.IStandaloneCodeEditor,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     monaco: any,
   ) => {
     monacoRef.current = monaco;
@@ -54,10 +77,9 @@ export default function CodeEditor({
     monaco.editor.defineTheme(themeName, luceTheme);
     monaco.editor.setTheme(themeName);
 
-    setExecutionAllowedCondition(editor.createContextKey(
-      RUN_CODE_CONDITION_KEY,
-      executionAllowed,
-    ));
+    setExecutionAllowedCondition(
+      editor.createContextKey(RUN_CODE_CONDITION_KEY, executionAllowed),
+    );
 
     let firstHeightUpdate = true;
     const updateHeight = (event: EditorNamespace.IContentSizeChangedEvent) => {
@@ -65,7 +87,10 @@ export default function CodeEditor({
         if (containerRef.current !== null) {
           containerRef.current.style.height = `${event.contentHeight}px`;
         }
-        editor.layout({ width: editor.getLayoutInfo().width, height: event.contentHeight });
+        editor.layout({
+          width: editor.getLayoutInfo().width,
+          height: event.contentHeight,
+        });
         if (firstHeightUpdate) {
           // After the editor has been loaded and its height has been updated for the first time,
           // (re-)scroll the anchor element into view.
@@ -93,11 +118,18 @@ export default function CodeEditor({
   const clearMarkers = useCallback(() => {
     if (monacoInstance && editorInstance) {
       // Delete all the markers
-      monacoInstance.editor.setModelMarkers(editorInstance.getModel(), 'owner', []);
+      monacoInstance.editor.setModelMarkers(
+        editorInstance.getModel(),
+        'owner',
+        [],
+      );
       // Close any open markers
       // We do this using MarkerController directly to explicitly avoid focusing the editor,
       // as another editor might have the focus and should not lose it.
-      const markerController: any = editorInstance.getContribution('editor.contrib.markerController');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const markerController: any = editorInstance.getContribution(
+        'editor.contrib.markerController',
+      );
       if (markerController?.close) {
         markerController.close(false); // false: do not focus
       }
@@ -136,15 +168,20 @@ export default function CodeEditor({
 
   // Effect to register the completion providers.
   useEffect(() => {
-    if (monacoInstance && !monacoInstance.pytamaroCompletionProvidersRegistered) {
+    if (
+      monacoInstance &&
+      !monacoInstance.pytamaroCompletionProvidersRegistered
+    ) {
       const providers = [
         toolboxImportCompletionProvider(monacoInstance, toolboxFunctions),
         moduleImportCompletionProvider(monacoInstance),
         pytamaroImportCompletionProvider(monacoInstance),
       ];
-      const disposers = providers.map(
-        (provider) => monacoInstance.languages
-          .registerCompletionItemProvider(STRICT_PYTHON3_LANG_ID, provider),
+      const disposers = providers.map((provider) =>
+        monacoInstance.languages.registerCompletionItemProvider(
+          STRICT_PYTHON3_LANG_ID,
+          provider,
+        ),
       );
       monacoInstance.pytamaroCompletionProvidersRegistered = true;
       return () => {
@@ -165,24 +202,28 @@ export default function CodeEditor({
   }, [monacoInstance]);
 
   // Effect to react to changes in the execution response.
-  useEffect(
-    () => {
-      if (monacoInstance && editorInstance) {
-        clearMarkers();
-        if (executionResponse?.type === 'error' && executionFinished) {
-          addMarkers(
-            monacoInstance,
-            editorInstance,
-            executionResponse,
-            firstLineNumber,
-            collapsedErrorMarkers,
-          );
-        }
+  useEffect(() => {
+    if (monacoInstance && editorInstance) {
+      clearMarkers();
+      if (executionResponse?.type === 'error' && executionFinished) {
+        addMarkers(
+          monacoInstance,
+          editorInstance,
+          executionResponse,
+          firstLineNumber,
+          collapsedErrorMarkers,
+        );
       }
-    },
-    [executionResponse, editorInstance, monacoInstance, clearMarkers, executionFinished,
-      firstLineNumber, collapsedErrorMarkers],
-  );
+    }
+  }, [
+    executionResponse,
+    editorInstance,
+    monacoInstance,
+    clearMarkers,
+    executionFinished,
+    firstLineNumber,
+    collapsedErrorMarkers,
+  ]);
 
   // Effect to reset the editor when resetCounter changes.
   useEffect(() => {
@@ -202,14 +243,14 @@ export default function CodeEditor({
           parseErrors.map((error) => {
             const startPosition = model.getPositionAt(error.location[0]);
             const endPosition = model.getPositionAt(error.location[1]);
-            return ({
+            return {
               startLineNumber: startPosition.lineNumber,
               startColumn: startPosition.column,
               endLineNumber: endPosition.lineNumber,
               endColumn: endPosition.column,
               message: error.message,
               severity: monacoInstance.MarkerSeverity.Error,
-            });
+            };
           }),
         );
       }
@@ -220,19 +261,22 @@ export default function CodeEditor({
     addParseErrorMarkers(analyze(source).parse_errors);
   }, 500);
 
-  const debouncedHandleSourceChanged = debounce((newSource: string | undefined) => {
-    if (newSource !== undefined) {
-      onChange(newSource);
-      clearMarkers();
-      debouncedAddParseErrorMarkers(newSource);
-    }
-  }, 100);
+  const debouncedHandleSourceChanged = debounce(
+    (newSource: string | undefined) => {
+      if (newSource !== undefined) {
+        onChange(newSource);
+        clearMarkers();
+        debouncedAddParseErrorMarkers(newSource);
+      }
+    },
+    100,
+  );
 
   return (
-    <div ref={containerRef} translate="no">
+    <div ref={containerRef} translate='no'>
       <Editor
         language={STRICT_PYTHON3_LANG_ID}
-        theme="luce"
+        theme='luce'
         defaultValue={currentSource}
         onMount={handleEditorMount}
         onChange={debouncedHandleSourceChanged}

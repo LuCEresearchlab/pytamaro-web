@@ -1,7 +1,10 @@
 import { readFile, readdir } from 'fs/promises';
 import path from 'path';
 import {
-  CURRENT_CELL_FILE, DRIVER_FILE, PREVIOUS_CELLS_FILE, TOOLBOX_FILE,
+  CURRENT_CELL_FILE,
+  DRIVER_FILE,
+  PREVIOUS_CELLS_FILE,
+  TOOLBOX_FILE,
 } from '../codeExecution';
 import {
   Activity,
@@ -23,23 +26,44 @@ async function readPythonFiles(files: PythonFileInfo[], authorDir: string) {
     throw new Error('Non-unique destination path in extraPythonFiles');
   }
   // Ensure that destination paths are not reserved
-  const reservedFilenames = [DRIVER_FILE, PREVIOUS_CELLS_FILE, CURRENT_CELL_FILE, TOOLBOX_FILE];
+  const reservedFilenames = [
+    DRIVER_FILE,
+    PREVIOUS_CELLS_FILE,
+    CURRENT_CELL_FILE,
+    TOOLBOX_FILE,
+  ];
   const reservedPaths = reservedFilenames.map((filename) => `${filename}.py`);
-  if (reservedPaths.some((reservedPath) => destinationPaths.includes(reservedPath))) {
-    throw new Error('Reserved path used as destination path in extraPythonFiles');
+  if (
+    reservedPaths.some((reservedPath) =>
+      destinationPaths.includes(reservedPath),
+    )
+  ) {
+    throw new Error(
+      'Reserved path used as destination path in extraPythonFiles',
+    );
   }
   // Read content
-  return Promise.all(files.map(async (file) => ({
-    name: file.destinationPath,
-    content: await readFile(path.join(authorDir, PYTHON_FILES_DIR, file.sourcePath), 'utf-8'),
-  })));
+  return Promise.all(
+    files.map(async (file) => ({
+      name: file.destinationPath,
+      content: await readFile(
+        path.join(authorDir, PYTHON_FILES_DIR, file.sourcePath),
+        'utf-8',
+      ),
+    })),
+  );
 }
 
-async function readActivityFromFS(authorSlug: string, activitySlug: string)
-  : Promise<Activity> {
+async function readActivityFromFS(
+  authorSlug: string,
+  activitySlug: string,
+): Promise<Activity> {
   const authorDir = path.join(DATA_DIR, authorSlug);
-  const content = await readFile(path.join(authorDir, ACTIVITIES_DIR, activitySlug, ACTIVITY_INFO_FILE), 'utf-8');
-  const rawActivity : RawActivity = JSON.parse(content);
+  const content = await readFile(
+    path.join(authorDir, ACTIVITIES_DIR, activitySlug, ACTIVITY_INFO_FILE),
+    'utf-8',
+  );
+  const rawActivity: RawActivity = JSON.parse(content);
   const notebooks = await notebookFileNames(authorSlug, activitySlug);
   const notebooksVariants = notebooks.flatMap((filename) => {
     const separator = '-';
@@ -50,7 +74,9 @@ async function readActivityFromFS(authorSlug: string, activitySlug: string)
     if (activity !== activitySlug || !language || !version) {
       // Show a warning but do not throw (this allows us to have extra notebooks in the directory)
       // eslint-disable-next-line no-console
-      console.warn(`Ignoring notebook with filename ${filename} in activity ${authorSlug}/${activitySlug}`);
+      console.warn(
+        `Ignoring notebook with filename ${filename} in activity ${authorSlug}/${activitySlug}`,
+      );
       return [];
     }
     return {
@@ -60,7 +86,9 @@ async function readActivityFromFS(authorSlug: string, activitySlug: string)
   });
   // An activity must have at least one notebook, however.
   if (notebooksVariants.length === 0) {
-    throw new Error(`No notebooks found for activity ${authorSlug}/${activitySlug}`);
+    throw new Error(
+      `No notebooks found for activity ${authorSlug}/${activitySlug}`,
+    );
   }
   return {
     authorSlug,
@@ -77,9 +105,16 @@ async function readActivityFromFS(authorSlug: string, activitySlug: string)
       version: variant.version,
     })),
     languagesInfo: rawActivity.variants.map(
-      ({ title, language, latestVersion }) => ({ title, language, latestVersion }),
+      ({ title, language, latestVersion }) => ({
+        title,
+        language,
+        latestVersion,
+      }),
     ),
-    extraPythonFiles: await readPythonFiles(rawActivity.extraPythonFiles || [], authorDir),
+    extraPythonFiles: await readPythonFiles(
+      rawActivity.extraPythonFiles || [],
+      authorDir,
+    ),
     platformConfig: platformConfigWithDefaults(rawActivity.platformConfig),
     concepts: rawActivity.concepts || [],
   };
@@ -87,42 +122,58 @@ async function readActivityFromFS(authorSlug: string, activitySlug: string)
 
 const activitiesCache = new DataCache<Activity>();
 
-export async function readActivity(authorSlug: string, activitySlug: string) : Promise<Activity> {
-  return activitiesCache.get(`${authorSlug}/${activitySlug}`, () => readActivityFromFS(authorSlug, activitySlug));
+export async function readActivity(
+  authorSlug: string,
+  activitySlug: string,
+): Promise<Activity> {
+  return activitiesCache.get(`${authorSlug}/${activitySlug}`, () =>
+    readActivityFromFS(authorSlug, activitySlug),
+  );
 }
 
-export async function findVersions(authorSlug: string, activitySlug: string, language: string)
-  : Promise<string[]> {
+export async function findVersions(
+  authorSlug: string,
+  activitySlug: string,
+  language: string,
+): Promise<string[]> {
   const prefix = `${activitySlug}-${language}-`;
   return (await notebookFileNames(authorSlug, activitySlug))
     .filter((filename) => filename.startsWith(prefix))
     .map((filename) => filename.replace(prefix, ''));
 }
 
-export async function listActivities(authorSlug: string) : Promise<Activity[]> {
-  const activitySlugs = (await readdir(
-    path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR),
-    { withFileTypes: true },
-  ))
+export async function listActivities(authorSlug: string): Promise<Activity[]> {
+  const activitySlugs = (
+    await readdir(path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR), {
+      withFileTypes: true,
+    })
+  )
     .filter((item) => item.isDirectory())
     .map((dir) => dir.name)
     .filter((name) => !/^\./.test(name)); // skip hidden directories starting with a '.', such as '.DS_Store'
 
-  return Promise.all(activitySlugs.map(
-    (activitySlug) => readActivity(authorSlug, activitySlug),
-  ));
+  return Promise.all(
+    activitySlugs.map((activitySlug) => readActivity(authorSlug, activitySlug)),
+  );
 }
 
-export async function listVisibleActivities(authorSlug: string) : Promise<Activity[]> {
+export async function listVisibleActivities(
+  authorSlug: string,
+): Promise<Activity[]> {
   const activities = await listActivities(authorSlug);
-  return activities.filter((activity) => activity.visibility === 'featured' || activity.visibility === 'visible');
+  return activities.filter(
+    (activity) =>
+      activity.visibility === 'featured' || activity.visibility === 'visible',
+  );
 }
 
-export function visibleActivities(activities: BasicActivity[]) : BasicActivity[] {
+export function visibleActivities(
+  activities: BasicActivity[],
+): BasicActivity[] {
   return activities.filter((activity) => activity.visibility !== 'hidden');
 }
 
-export function basicActivity(activity: Activity) : BasicActivity {
+export function basicActivity(activity: Activity): BasicActivity {
   return {
     slug: activity.slug,
     previewImage: activity.previewImage,
@@ -134,6 +185,6 @@ export function basicActivity(activity: Activity) : BasicActivity {
   };
 }
 
-export function basicActivities(activities: Activity[]) : BasicActivity[] {
+export function basicActivities(activities: Activity[]): BasicActivity[] {
   return activities.map(basicActivity);
 }

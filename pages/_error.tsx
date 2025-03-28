@@ -20,7 +20,8 @@ import * as Sentry from '@sentry/nextjs';
 import { NextPageContext } from 'next';
 import NextErrorComponent from 'next/error';
 
-function CustomErrorComponent(props: { statusCode: any; }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function CustomErrorComponent(props: { statusCode: any }) {
   // If you're using a Nextjs version prior to 12.2.1, uncomment this to
   // compensate for https://github.com/vercel/next.js/issues/8592
   // Sentry.captureUnderscoreErrorException(props);

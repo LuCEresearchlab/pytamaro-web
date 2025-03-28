@@ -5,14 +5,14 @@ declare module '@mui/material/styles' {
   interface Theme {
     pytamaro: {
       monospaceFontFamily: string;
-      redColor: string,
+      redColor: string;
     };
   }
   // allow configuration using `createTheme`
   interface ThemeOptions {
     pytamaro?: {
       monospaceFontFamily?: string;
-      redColor?: string,
+      redColor?: string;
     };
   }
 
@@ -48,25 +48,28 @@ declare module '@mui/material/Button' {
 }
 
 // Create a theme instance.
-const theme = responsiveFontSizes(createTheme({
-  palette: {
-    primary: {
-      main: '#008BCB',
+const theme = responsiveFontSizes(
+  createTheme({
+    palette: {
+      primary: {
+        main: '#008BCB',
+      },
+      secondary: {
+        main: '#E1F5FD',
+      },
+      error: {
+        main: red.A400,
+      },
     },
-    secondary: {
-      main: '#E1F5FD',
+    pytamaro: {
+      monospaceFontFamily: "'Fira Code Variable', monospace",
+      redColor: '#D2071D',
     },
-    error: {
-      main: red.A400,
+    typography: {
+      fontFamily: "'Fira Sans', sans-serif",
     },
-  },
-  pytamaro: {
-    monospaceFontFamily: "'Fira Code Variable', monospace",
-    redColor: '#D2071D',
-  },
-  typography: {
-    fontFamily: "'Fira Sans', sans-serif",
-  },
-}), { factor: 1.5 });
+  }),
+  { factor: 1.5 },
+);
 
 export default theme;

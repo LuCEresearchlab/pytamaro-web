@@ -1,6 +1,4 @@
-import {
-  Box, Container, Divider, Typography,
-} from '@mui/material';
+import { Box, Container, Divider, Typography } from '@mui/material';
 import Head from 'next/head';
 import ActivitiesGallery from '../../components/ActivitiesGallery';
 import NavigationBar from '../../components/NavigationBar';
@@ -11,8 +9,13 @@ import { BasicActivity } from '../../src/schemas/activitySchema';
 import { translationProps } from '../../src/serverSideTranslationProps';
 import { conceptPathname } from '../../src/urlUtils';
 
-export default function ConceptPage({ concept, activities }:
-{ concept: Concept, activities: BasicActivity[] }) {
+export default function ConceptPage({
+  concept,
+  activities,
+}: {
+  concept: Concept;
+  activities: BasicActivity[];
+}) {
   const pageTitle = `${concept.title} - PyTamaro`;
 
   return (
@@ -24,15 +27,15 @@ export default function ConceptPage({ concept, activities }:
       <Box>
         <NavigationBar />
         <Container>
-          <Typography variant="h3" marginY={3}>
+          <Typography variant='h3' marginY={3}>
             {concept.title}
           </Typography>
-          <Typography variant="h6" marginY={3}>
+          <Typography variant='h6' marginY={3}>
             {concept.description}
           </Typography>
           <Divider sx={{ my: 3 }} />
         </Container>
-        <Container maxWidth="xl">
+        <Container maxWidth='xl'>
           <ActivitiesGallery activities={activities} />
         </Container>
       </Box>
@@ -40,18 +43,15 @@ export default function ConceptPage({ concept, activities }:
   );
 }
 
-export async function getStaticProps(
-  context: { params: { id: string } },
-) {
-  const {
-    id,
-  } = context.params;
+export async function getStaticProps(context: { params: { id: string } }) {
+  const { id } = context.params;
   return {
     props: {
       concept: knownConcepts[id],
-      activities: visibleActivities(await listActivitiesAllAuthors())
-        .filter((activity) => activity.concepts.includes(id)),
-      ...await translationProps(),
+      activities: visibleActivities(await listActivitiesAllAuthors()).filter(
+        (activity) => activity.concepts.includes(id),
+      ),
+      ...(await translationProps()),
     },
   };
 }

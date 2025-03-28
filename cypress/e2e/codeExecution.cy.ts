@@ -1,6 +1,9 @@
-import { activityVariantPathnameFromParts, playgroundPathname } from '../../src/urlUtils';
+import {
+  activityVariantPathnameFromParts,
+  playgroundPathname,
+} from '../../src/urlUtils';
 
-export { };
+export {};
 
 function dismissDataCollectionModal() {
   cy.contains('OK').click();
@@ -19,11 +22,15 @@ describe('Code Execution', () => {
   });
 
   it('should keep state over multiple cells', () => {
-    cy.visit(activityVariantPathnameFromParts('luce', 'swiss-flag', 'en', 'v1'));
+    cy.visit(
+      activityVariantPathnameFromParts('luce', 'swiss-flag', 'en', 'v1'),
+    );
     dismissDataCollectionModal();
     waitForMonacoEditor();
     cy.get('.monaco-editor').first().type('{selectall}{backspace}');
-    cy.get('.monaco-editor').first().type('from pytamaro import *{enter}r = rectangle(10, 5, red)');
+    cy.get('.monaco-editor')
+      .first()
+      .type('from pytamaro import *{enter}r = rectangle(10, 5, red)');
     cy.get('.monaco-editor').eq(1).type('{selectall}{backspace}');
     cy.get('.monaco-editor').eq(1).type('show_graphic(r)');
     cy.get('.run-button').eq(1).click();
@@ -32,7 +39,9 @@ describe('Code Execution', () => {
 
   it('should save and import a toolbox function', () => {
     // Save function 'f' to the toolbox
-    cy.visit(activityVariantPathnameFromParts('luce', 'swiss-flag', 'en', 'v1'));
+    cy.visit(
+      activityVariantPathnameFromParts('luce', 'swiss-flag', 'en', 'v1'),
+    );
     dismissDataCollectionModal();
     waitForMonacoEditor();
     cy.get('.monaco-editor').first().type('{selectall}{backspace}');
@@ -46,7 +55,9 @@ describe('Code Execution', () => {
     cy.get('.save-to-toolbox-button').click();
 
     // Use the toolbox function in another activity
-    cy.visit(activityVariantPathnameFromParts('luce', 'swiss-flag', 'en', 'v2'));
+    cy.visit(
+      activityVariantPathnameFromParts('luce', 'swiss-flag', 'en', 'v2'),
+    );
     waitForMonacoEditor();
     cy.get('.monaco-editor').first().type('{selectall}{backspace}');
     cy.get('.monaco-editor').first().type('from toolbox import f; f()');

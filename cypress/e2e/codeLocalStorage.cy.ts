@@ -1,6 +1,6 @@
 import { activityVariantPathnameFromParts } from '../../src/urlUtils';
 
-export { };
+export {};
 
 function dismissDataCollectionModal() {
   cy.contains('OK').click();
@@ -12,7 +12,9 @@ function waitForMonacoEditor() {
 
 describe('Code Local Storage', () => {
   it('should persist state after refresh', () => {
-    cy.visit(activityVariantPathnameFromParts('luce', 'swiss-flag', 'en', 'v1'));
+    cy.visit(
+      activityVariantPathnameFromParts('luce', 'swiss-flag', 'en', 'v1'),
+    );
     dismissDataCollectionModal();
     waitForMonacoEditor();
     const source = 'dummy_source = 42';

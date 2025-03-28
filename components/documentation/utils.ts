@@ -1,6 +1,13 @@
 import { ToolboxFunction } from '../../src/localStorage/schema';
-import { PythonConstant, PythonFunction } from '../../src/python-analyzer/python_analyzer';
-import { JudiciousConstant, JudiciousFunction, JudiciousParameter } from '../../src/schemas/documentation';
+import {
+  PythonConstant,
+  PythonFunction,
+} from '../../src/python-analyzer/python_analyzer';
+import {
+  JudiciousConstant,
+  JudiciousFunction,
+  JudiciousParameter,
+} from '../../src/schemas/documentation';
 
 export const HOVER_COLOR = '#c2ecff';
 export const DARK_HOVER_COLOR = '#0eb4ff';
@@ -52,11 +59,16 @@ export function sentence(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-export function visibleParameters(params: JudiciousParameter[], showOptional: boolean) {
+export function visibleParameters(
+  params: JudiciousParameter[],
+  showOptional: boolean,
+) {
   return params.filter((param) => param.default === undefined || showOptional);
 }
 
-export function definedFnToJudiciousFunction(fn: PythonFunction): JudiciousFunction {
+export function definedFnToJudiciousFunction(
+  fn: PythonFunction,
+): JudiciousFunction {
   return {
     kind: 'function',
     name: fn.name,
@@ -70,16 +82,18 @@ export function definedFnToJudiciousFunction(fn: PythonFunction): JudiciousFunct
       default: arg.default,
       variableLength: arg.variable_length,
     })),
-    ...(fn.return_type_str !== '' || fn.explicit_return) && {
+    ...((fn.return_type_str !== '' || fn.explicit_return) && {
       returnValue: {
         type: fn.return_type_str,
         description: '',
       },
-    },
+    }),
   };
 }
 
-export function toolboxToJudiciousFunction(fn: ToolboxFunction): JudiciousFunction {
+export function toolboxToJudiciousFunction(
+  fn: ToolboxFunction,
+): JudiciousFunction {
   return {
     kind: 'function',
     name: fn.name,
@@ -91,16 +105,18 @@ export function toolboxToJudiciousFunction(fn: ToolboxFunction): JudiciousFuncti
       type: arg.typeUnparsed,
       description: '',
     })),
-    ...(fn.returnTypeUnparsed !== '') && {
+    ...(fn.returnTypeUnparsed !== '' && {
       returnValue: {
         type: fn.returnTypeUnparsed,
         description: '',
       },
-    },
+    }),
   };
 }
 
-export function definedConstantToJudiciousConstant(constant: PythonConstant): JudiciousConstant {
+export function definedConstantToJudiciousConstant(
+  constant: PythonConstant,
+): JudiciousConstant {
   return {
     kind: 'constant',
     name: constant.name,

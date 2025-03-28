@@ -8,12 +8,16 @@ export enum AnalyticsEventName {
   DoNowCompleted = 'DoNowCompleted',
 }
 
-export default function logAnalyticsEvent(eventName: AnalyticsEventName, props: any) {
+export default function logAnalyticsEvent(
+  eventName: AnalyticsEventName,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  props: any,
+) {
   // Log for analytics (`plausible` is added globally in the browser by `plausible-next`
   // in a production environment)
-  // @ts-ignore
+  // @ts-expect-error check if `plausible` is defined
   if (typeof plausible !== 'undefined') {
-    // @ts-ignore
+    // @ts-expect-error `plausible` is defined by `plausible-next`
     plausible(eventName, { props });
   }
 }

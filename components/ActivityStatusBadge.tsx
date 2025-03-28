@@ -1,13 +1,12 @@
 import styled from '@emotion/styled';
-import {
-  EmojiEvents, Lock, Timeline,
-} from '@mui/icons-material';
-import {
-  Badge, BadgeProps, Icon, Tooltip,
-} from '@mui/material';
+import { EmojiEvents, Lock, Timeline } from '@mui/icons-material';
+import { Badge, BadgeProps, Icon, Tooltip } from '@mui/material';
 import { ActivityVariantMetadata } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import { ActivityVariant, activityVariantId } from '../src/schemas/activitySchema';
+import {
+  ActivityVariant,
+  activityVariantId,
+} from '../src/schemas/activitySchema';
 import theme from '../src/theme';
 
 export type ActivityStatus = 'initial' | 'in-progress' | 'completed';
@@ -19,7 +18,10 @@ const StatusBadge = styled(Badge)<BadgeProps>(() => ({
   width: '100%',
 }));
 
-function determineStatus(activities: ActivityVariantMetadata[], id: string) : ActivityStatus {
+function determineStatus(
+  activities: ActivityVariantMetadata[],
+  id: string,
+): ActivityStatus {
   const activity = activities.find((a) => a.id === id);
   if (!activity) {
     return 'initial';
@@ -34,12 +36,14 @@ export function activityVariantStatus(
   activities: ActivityVariantMetadata[],
   variant: ActivityVariant,
   fallbackIds?: string[],
-) : ActivityStatus {
+): ActivityStatus {
   const variantStatus = determineStatus(activities, activityVariantId(variant));
   if (variantStatus !== 'initial') {
     return variantStatus;
   }
-  const fallbackStatuses = (fallbackIds || []).map((id) => determineStatus(activities, id));
+  const fallbackStatuses = (fallbackIds || []).map((id) =>
+    determineStatus(activities, id),
+  );
   if (fallbackStatuses.includes('completed')) {
     return 'completed';
   }
@@ -47,12 +51,23 @@ export function activityVariantStatus(
 }
 
 export default function ActivityStatusBadge({
-  children, status, locked = false, small = false, noInProgress = false,
-} :
-{ children: JSX.Element, status: ActivityStatus, locked ?: boolean,
-  small ?: boolean, noInProgress ?: boolean }) {
+  children,
+  status,
+  locked = false,
+  small = false,
+  noInProgress = false,
+}: {
+  children: JSX.Element;
+  status: ActivityStatus;
+  locked?: boolean;
+  small?: boolean;
+  noInProgress?: boolean;
+}) {
   const { t } = useLocalTranslation();
-  if (!locked && (status === 'initial' || (noInProgress && status === 'in-progress'))) {
+  if (
+    !locked &&
+    (status === 'initial' || (noInProgress && status === 'in-progress'))
+  ) {
     return children;
   }
 
@@ -81,7 +96,15 @@ export default function ActivityStatusBadge({
           fontSize: theme.typography[small ? 'h4' : 'h3'].fontSize,
         },
       }}
-      badgeContent={<Tooltip arrow title={tooltipTitle}><Icon component={badgeIcon} fontSize="inherit" sx={{ filter: 'drop-shadow(0 0 .05em)' }} /></Tooltip>}
+      badgeContent={
+        <Tooltip arrow title={tooltipTitle}>
+          <Icon
+            component={badgeIcon}
+            fontSize='inherit'
+            sx={{ filter: 'drop-shadow(0 0 .05em)' }}
+          />
+        </Tooltip>
+      }
     >
       {children}
     </StatusBadge>

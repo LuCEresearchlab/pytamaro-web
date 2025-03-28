@@ -1,10 +1,12 @@
 import { activityVariantPathnameFromParts } from '../../src/urlUtils';
 
-export { };
+export {};
 
 describe('Activity Page', () => {
   it('should hide teacher-only cells', () => {
-    cy.visit(activityVariantPathnameFromParts('luce', 'color-flower', 'en', 'v2'));
+    cy.visit(
+      activityVariantPathnameFromParts('luce', 'color-flower', 'en', 'v2'),
+    );
 
     // only 2 visible cells
     cy.get('.monaco-editor', { timeout: 20000 }).should('have.length', 2);

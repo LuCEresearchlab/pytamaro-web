@@ -4,12 +4,18 @@ import { ActivityNodeData } from './utils';
 
 export default function ActivityNode({ data }: NodeProps<ActivityNodeData>) {
   const {
-    curriculumActivity, curriculum, status, isUnlocked, width, height, id,
+    curriculumActivity,
+    curriculum,
+    status,
+    isUnlocked,
+    width,
+    height,
+    id,
   } = data;
 
   return (
     <>
-      <Handle type="target" position={Position.Top} isConnectable={false} />
+      <Handle type='target' position={Position.Top} isConnectable={false} />
       <ActivityCard
         id={id}
         curriculumActivity={curriculumActivity}
@@ -19,7 +25,7 @@ export default function ActivityNode({ data }: NodeProps<ActivityNodeData>) {
         width={width}
         height={height}
       />
-      <Handle type="source" position={Position.Bottom} isConnectable={false} />
+      <Handle type='source' position={Position.Bottom} isConnectable={false} />
     </>
   );
 }

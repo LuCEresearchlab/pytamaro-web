@@ -1,13 +1,21 @@
 import {
   Box,
   Link,
-  Paper, Table,
+  Paper,
+  Table,
   TableBody,
-  TableCell, TableContainer, TableHead, TableRow, styled,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  styled,
 } from '@mui/material';
 import { allActivities } from '../src/curricula';
 import { competencyColor } from '../src/curriculumCompetencies';
-import { activityVariantId, getVariantTitle } from '../src/schemas/activitySchema';
+import {
+  activityVariantId,
+  getVariantTitle,
+} from '../src/schemas/activitySchema';
 import { Curriculum } from '../src/schemas/curriculumSchema';
 import theme from '../src/theme';
 import { activityVariantPathname } from '../src/urlUtils';
@@ -27,12 +35,16 @@ const HeaderCell = styled(CustomCell)(() => ({
   rotate: '180deg',
 }));
 
-export default function ActivitiesCompetenciesMatrix({ curriculum }: { curriculum: Curriculum }) {
+export default function ActivitiesCompetenciesMatrix({
+  curriculum,
+}: {
+  curriculum: Curriculum;
+}) {
   const activities = allActivities(curriculum);
   return (
     <TableContainer component={Paper}>
       <Table
-        size="small"
+        size='small'
         sx={{
           'td:last-child, th:last-child': { borderRight: 0 },
           'tbody > tr:nth-of-type(odd)': {
@@ -45,7 +57,13 @@ export default function ActivitiesCompetenciesMatrix({ curriculum }: { curriculu
             <CustomCell />
             {curriculum.competencies.map((competency) => (
               <HeaderCell key={competency.id}>
-                <Link underline="hover" color={competencyColor(competency)} href={`#${competencyAnchor(competency)}`}>{competency.name}</Link>
+                <Link
+                  underline='hover'
+                  color={competencyColor(competency)}
+                  href={`#${competencyAnchor(competency)}`}
+                >
+                  {competency.name}
+                </Link>
               </HeaderCell>
             ))}
           </TableRow>
@@ -56,17 +74,26 @@ export default function ActivitiesCompetenciesMatrix({ curriculum }: { curriculu
               key={activityVariantId(activity.variant)}
               sx={{ '&:last-child td, &:last-child th': { borderBottom: 0 } }}
             >
-              <CustomCell component="th" scope="row">
-                <Link underline="hover" color="inherit" href={activityVariantPathname(activity.variant)}>
+              <CustomCell component='th' scope='row'>
+                <Link
+                  underline='hover'
+                  color='inherit'
+                  href={activityVariantPathname(activity.variant)}
+                >
                   {getVariantTitle(activity.activity, activity.variant)}
                 </Link>
               </CustomCell>
               {curriculum.competencies.map((competency) => (
-                <CustomCell key={competency.id} style={{ padding: theme.spacing(1) }}>
+                <CustomCell
+                  key={competency.id}
+                  style={{ padding: theme.spacing(1) }}
+                >
                   {activity.learningObjectives.includes(competency.id) ? (
-                    <Box sx={{
-                      display: 'flex', justifyContent: 'center',
-                    }}
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                      }}
                     >
                       <CompetencyAvatar competency={competency} />
                     </Box>

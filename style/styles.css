@@ -1,87 +1,96 @@
 .yin-yang-animation {
-    position: absolute;
+  position: absolute;
 }
 
 .player-wrapper {
-    position: relative;
-    padding-top: 56.25%; /* 720 / 1280 = 0.5625 */
+  position: relative;
+  padding-top: 56.25%; /* 720 / 1280 = 0.5625 */
 }
 
 .react-player {
-    position: absolute;
-    top: 0;
-    left: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
-code, pre {
-    font-family: 'Fira Code Variable', monospace;
-    font-variant-ligatures: none;
+code,
+pre {
+  font-family: 'Fira Code Variable', monospace;
+  font-variant-ligatures: none;
 }
 
 /* React flow styles */
 
 .react-flow {
-    overflow-x: auto !important;
+  overflow-x: auto !important;
 }
 
 .react-flow__controls {
-    position: fixed !important;
+  position: fixed !important;
 }
 
 .react-flow__handle {
-    opacity: 0;
+  opacity: 0;
 }
 
 .react-flow__pane {
-    cursor: default !important;
+  cursor: default !important;
 }
 
-h1, h2, h3, h4, h5, h6, .curriculum-unit, .anchor {
-    scroll-margin-top: calc(64px + 0.5vh);
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.curriculum-unit,
+.anchor {
+  scroll-margin-top: calc(64px + 0.5vh);
 }
 
 .anchor {
-    overflow: visible;
+  overflow: visible;
 }
 
 .blurred {
-    filter: blur(1rem);
-    pointer-events: none;
-    user-select: none;
-    -webkit-user-select: none;
+  filter: blur(1rem);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 pre:has(code) {
-    background-color: white;
-    overflow-x: auto;
-    padding: 8px;
+  background-color: white;
+  overflow-x: auto;
+  padding: 8px;
 }
 
 .monaco-editor .iPadShowKeyboard {
-    display: none;
-} 
+  display: none;
+}
 
 .peekview-title > .filename {
-    display: none;
+  display: none;
 }
 
 .peekview-widget .message > div {
-    font-weight: bold;
+  font-weight: bold;
 }
 
-.peekview-actions li:has(.codicon-marker-navigation-next, .codicon-marker-navigation-previous) {
-    display: none;
+.peekview-actions
+  li:has(.codicon-marker-navigation-next, .codicon-marker-navigation-previous) {
+  display: none;
 }
 
 /* Nicer Markdown tables, partially inspired by https://github.com/micromark/micromark-extension-gfm-table#css */
 
 .activity-content table {
-    border-spacing: 0;
-    border-collapse: collapse;
-    max-width: 100%;
-    overflow: auto;
-  }
-  
+  border-spacing: 0;
+  border-collapse: collapse;
+  max-width: 100%;
+  overflow: auto;
+}
+
 .activity-content tr {
   border-top: 1px solid hsla(210, 18%, 87%, 1);
 }

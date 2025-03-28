@@ -1,7 +1,17 @@
 /* eslint-disable max-len */
 /* eslint-disable react/jsx-one-expression-per-line */
 import {
-  Avatar, Box, Container, Divider, Link, List, ListItem, ListItemAvatar, ListItemText, TablePagination, Typography,
+  Avatar,
+  Box,
+  Container,
+  Divider,
+  Link,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  TablePagination,
+  Typography,
 } from '@mui/material';
 import { MDXRemote } from 'next-mdx-remote';
 import Head from 'next/head';
@@ -17,34 +27,43 @@ const collaborators = [
   {
     firstname: 'Alen',
     lastname: 'Sugimoto',
-    contribution: 'Design and implementation of curricula as graphs of activities',
-    title: 'Bachelor student in the Faculty of Informatics at the Università della Svizzera italiana (USI) - Bachelor thesis',
+    contribution:
+      'Design and implementation of curricula as graphs of activities',
+    title:
+      'Bachelor student in the Faculty of Informatics at the Università della Svizzera italiana (USI) - Bachelor thesis',
   },
   {
     firstname: 'Luca',
     lastname: 'Chiodini',
-    contribution: 'PyTamaro library, initial design of the platform, management and contributions throughout',
-    title: 'PhD student at the Software Institute, Università della Svizzera italiana (USI)',
+    contribution:
+      'PyTamaro library, initial design of the platform, management and contributions throughout',
+    title:
+      'PhD student at the Software Institute, Università della Svizzera italiana (USI)',
     avatar: 'LucaChiodini.jpg',
   },
   {
     firstname: 'Matthias',
     lastname: 'Hauswirth',
     contribution: 'Management and contributions throughout',
-    title: 'Professor at the Software Institute, Università della Svizzera italiana (USI)',
+    title:
+      'Professor at the Software Institute, Università della Svizzera italiana (USI)',
     avatar: 'MatthiasHauswirth.jpg',
   },
 ];
 
-export function Body2Typography({ children = null } : { children?: React.ReactNode }) {
-  return (
-    <Typography variant="body2">
-      {children}
-    </Typography>
-  );
+export function Body2Typography({
+  children = null,
+}: {
+  children?: React.ReactNode;
+}) {
+  return <Typography variant='body2'>{children}</Typography>;
 }
 
-export default function AboutPage({ authorsProfiles } : { authorsProfiles: AuthorProfile[] }) {
+export default function AboutPage({
+  authorsProfiles,
+}: {
+  authorsProfiles: AuthorProfile[];
+}) {
   const [changelogPage, setChangelogPage] = useState(0);
   const entriesPerPage = 5;
   return (
@@ -54,19 +73,28 @@ export default function AboutPage({ authorsProfiles } : { authorsProfiles: Autho
       </Head>
       <Box>
         <NavigationBar />
-        <Container maxWidth="md">
-          <Typography sx={{ mt: 3, mb: 5 }} variant="h3" align="center" color="textPrimary">
+        <Container maxWidth='md'>
+          <Typography
+            sx={{ mt: 3, mb: 5 }}
+            variant='h3'
+            align='center'
+            color='textPrimary'
+          >
             About PyTamaro Web
           </Typography>
-          <Typography variant="h4" color="textPrimary" paragraph>
+          <Typography variant='h4' color='textPrimary' paragraph>
             ✨ What is new on the platform?
           </Typography>
-          <Typography variant="body1" paragraph>
-            We constantly improve our platform. These are the highlights of our updates:
+          <Typography variant='body1' paragraph>
+            We constantly improve our platform. These are the highlights of our
+            updates:
           </Typography>
-          <ChangelogList start={entriesPerPage * changelogPage} end={entriesPerPage * (changelogPage + 1)} />
+          <ChangelogList
+            start={entriesPerPage * changelogPage}
+            end={entriesPerPage * (changelogPage + 1)}
+          />
           <TablePagination
-            component="div"
+            component='div'
             count={changelogEntries.length}
             page={changelogPage}
             rowsPerPageOptions={[]}
@@ -81,32 +109,25 @@ export default function AboutPage({ authorsProfiles } : { authorsProfiles: Autho
               justifyContent: 'center',
             }}
           />
-          <Typography id="who" variant="h4" gutterBottom>🧑‍🤝‍🧑 Who?</Typography>
-          <Typography variant="body1" paragraph>
-            This web platform for PyTamaro has been developed at
-            the
-            {' '}
-            <a href="https://luce.si.usi.ch/">Lugano Computing Education research lab</a>
-            {' '}
-            (LuCE)
-            at the
-            {' '}
-            <a href="https://si.usi.ch/">Software Institute</a>
-            {' '}
-            of
-            the
-            {' '}
-            <a href="https://usi.ch/en">Università della Svizzera italiana</a>
-            {' '}
-            (USI)
-            in Lugano, Switzerland.
+          <Typography id='who' variant='h4' gutterBottom>
+            🧑‍🤝‍🧑 Who?
           </Typography>
-          <Typography variant="body1">
-            Contributors to the platform:
+          <Typography variant='body1' paragraph>
+            This web platform for PyTamaro has been developed at the{' '}
+            <a href='https://luce.si.usi.ch/'>
+              Lugano Computing Education research lab
+            </a>{' '}
+            (LuCE) at the <a href='https://si.usi.ch/'>Software Institute</a> of
+            the{' '}
+            <a href='https://usi.ch/en'>Università della Svizzera italiana</a>{' '}
+            (USI) in Lugano, Switzerland.
           </Typography>
+          <Typography variant='body1'>Contributors to the platform:</Typography>
           <List>
             {collaborators.map((person) => (
-              <ListItem key={`collaborator_${person.firstname}_${person.lastname}`}>
+              <ListItem
+                key={`collaborator_${person.firstname}_${person.lastname}`}
+              >
                 <ListItemAvatar>
                   <Avatar
                     alt={`${person.firstname} ${person.lastname}`}
@@ -116,58 +137,48 @@ export default function AboutPage({ authorsProfiles } : { authorsProfiles: Autho
                 </ListItemAvatar>
                 <ListItemText
                   disableTypography
-                  primary={(
-                    <Typography
-                      variant="h6"
-                    >
+                  primary={
+                    <Typography variant='h6'>
                       {`${person.firstname} ${person.lastname}`}
                     </Typography>
-                )}
-                  secondary={(
+                  }
+                  secondary={
                     <>
-                      <Typography
-                        variant="subtitle1"
-                      >
+                      <Typography variant='subtitle1'>
                         {person.contribution}
                       </Typography>
-                      <Typography
-                        variant="body2"
-                      >
-                        {person.title}
-                      </Typography>
+                      <Typography variant='body2'>{person.title}</Typography>
                     </>
-                )}
+                  }
                 />
               </ListItem>
             ))}
           </List>
           <Divider sx={{ mb: 2 }} />
-          <Typography variant="body1">
-            The content of the platform (activities and curricula) has been developed by
-            multiple authors:
+          <Typography variant='body1'>
+            The content of the platform (activities and curricula) has been
+            developed by multiple authors:
           </Typography>
           <List>
             {authorsProfiles.map((authorProfile) => (
               <ListItem key={`author_${authorProfile.slug}`}>
                 <ListItemAvatar>
-                  <Avatar
-                    sx={{ width: '2.5rem', height: '2.5rem' }}
-                  >
+                  <Avatar sx={{ width: '2.5rem', height: '2.5rem' }}>
                     {authorProfile.name[0]}
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText
                   disableTypography
-                  primary={(
+                  primary={
                     <Link
                       href={authorPathname(authorProfile.slug)}
-                      underline="none"
-                      variant="h6"
+                      underline='none'
+                      variant='h6'
                     >
                       {authorProfile.name}
                     </Link>
-                )}
-                  secondary={(
+                  }
+                  secondary={
                     <MDXRemote
                       // eslint-disable-next-line react/jsx-props-no-spreading
                       {...authorProfile.description}
@@ -175,18 +186,20 @@ export default function AboutPage({ authorsProfiles } : { authorsProfiles: Autho
                         p: Body2Typography,
                       }}
                     />
-                )}
+                  }
                 />
               </ListItem>
             ))}
           </List>
-          <Typography variant="h4" sx={{ mt: 4 }} gutterBottom>🧑‍💻 Why?</Typography>
-          <Typography variant="body1" paragraph>
-            Graphics can be an excellent domain to learn programming.
-            We developed PyTamaro exactly with this goal in mind,
-            and we have been using it in several courses: students loved it!
-            This web platform provides a way to use PyTamaro in a browser
-            and several activities that can inspire you.
+          <Typography variant='h4' sx={{ mt: 4 }} gutterBottom>
+            🧑‍💻 Why?
+          </Typography>
+          <Typography variant='body1' paragraph>
+            Graphics can be an excellent domain to learn programming. We
+            developed PyTamaro exactly with this goal in mind, and we have been
+            using it in several courses: students loved it! This web platform
+            provides a way to use PyTamaro in a browser and several activities
+            that can inspire you.
           </Typography>
         </Container>
       </Box>
@@ -198,7 +211,7 @@ export async function getStaticProps() {
   return {
     props: {
       authorsProfiles: await listAuthorsProfiles(),
-      ...await translationProps(),
+      ...(await translationProps()),
     },
   };
 }

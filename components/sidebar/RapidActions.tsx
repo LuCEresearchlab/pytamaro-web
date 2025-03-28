@@ -9,15 +9,15 @@ export default function RapidActions() {
   const { t } = useLocalTranslation(['common']);
   return (
     <SidebarItem title={t('atMyFingertips')}>
-      <Stack direction="column" spacing={1}>
+      <Stack direction='column' spacing={1}>
         <SidebarPlayground />
         <Link
-          variant="body2"
-          underline="none"
+          variant='body2'
+          underline='none'
           href={documentationPathname()}
-          display="flex"
+          display='flex'
         >
-          <MenuBook fontSize="small" sx={{ mr: '.7ch' }} />
+          <MenuBook fontSize='small' sx={{ mr: '.7ch' }} />
           {t('documentation')}
         </Link>
       </Stack>

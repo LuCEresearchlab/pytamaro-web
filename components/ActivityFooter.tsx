@@ -1,6 +1,4 @@
-import {
-  Container, Divider, Stack,
-} from '@mui/material';
+import { Container, Divider, Stack } from '@mui/material';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import { Activity, ActivityVariant } from '../src/schemas/activitySchema';
@@ -12,47 +10,64 @@ import FinishHourOfCodeButton from './FinishHourOfCodeButton';
 import NavigateToActivity from './NavigateToActivityButton';
 
 export default function ActivityFooter({
-  activityVariant, initialCodeCells, author, activity, curriculum,
-} : {
-  activityVariant: ActivityVariant,
-  initialCodeCells: CodeCellState[],
-  author: AuthorProfile,
-  activity: Activity,
-  curriculum: Curriculum | undefined,
+  activityVariant,
+  initialCodeCells,
+  author,
+  activity,
+  curriculum,
+}: {
+  activityVariant: ActivityVariant;
+  initialCodeCells: CodeCellState[];
+  author: AuthorProfile;
+  activity: Activity;
+  curriculum: Curriculum | undefined;
 }) {
-  const {
-    codeCells, completed,
-  } = useLocalActivity(initialCodeCells, activityVariant);
+  const { codeCells, completed } = useLocalActivity(
+    initialCodeCells,
+    activityVariant,
+  );
 
   return (
     <>
-      <Stack mt={12} mb={6} direction={{ xs: 'column', sm: 'row' }} justifyContent="space-around" spacing={4} alignItems="center">
+      <Stack
+        mt={12}
+        mb={6}
+        direction={{ xs: 'column', sm: 'row' }}
+        justifyContent='space-around'
+        spacing={4}
+        alignItems='center'
+      >
         {curriculum && (
           <NavigateToActivity
             activityVariant={activityVariant}
             curriculum={curriculum}
-            direction="previous"
+            direction='previous'
             completed={completed}
           />
         )}
         {codeCells.length > 0 && (
-          <CodeDownloadButton codeCells={codeCells} extraPythonFiles={activity.extraPythonFiles} />
+          <CodeDownloadButton
+            codeCells={codeCells}
+            extraPythonFiles={activity.extraPythonFiles}
+          />
         )}
         {curriculum && (
           <NavigateToActivity
             activityVariant={activityVariant}
             curriculum={curriculum}
-            direction="next"
+            direction='next'
             completed={completed}
           />
         )}
       </Stack>
-      { curriculum?.hourOfCode && (
-        <FinishHourOfCodeButton />
-      )}
+      {curriculum?.hourOfCode && <FinishHourOfCodeButton />}
       <Divider sx={{ mb: 3 }} />
-      <Container maxWidth="md" sx={{ textAlign: 'center' }}>
-        <AttributionInfo type="activity" author={author} derivedFrom={activity.derivedFrom} />
+      <Container maxWidth='md' sx={{ textAlign: 'center' }}>
+        <AttributionInfo
+          type='activity'
+          author={author}
+          derivedFrom={activity.derivedFrom}
+        />
       </Container>
     </>
   );

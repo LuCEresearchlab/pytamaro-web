@@ -1,7 +1,7 @@
 import { isEqual } from 'lodash';
 import { ActivityVariant } from './schemas/activitySchema';
 
-export const toolboxActivityVariant = (functionName : string) => ({
+export const toolboxActivityVariant = (functionName: string) => ({
   authorSlug: 'luce',
   activitySlug: `$toolbox-${functionName}`,
   language: 'en',
@@ -52,10 +52,12 @@ export const multipleLanguagesActivityVariant = {
 
 export function isToolboxActivity(variant: ActivityVariant) {
   const reference = toolboxActivityVariant('');
-  return variant.authorSlug === reference.authorSlug
-    && variant.activitySlug.startsWith(reference.activitySlug)
-    && variant.language === reference.language
-    && variant.version === reference.version;
+  return (
+    variant.authorSlug === reference.authorSlug &&
+    variant.activitySlug.startsWith(reference.activitySlug) &&
+    variant.language === reference.language &&
+    variant.version === reference.version
+  );
 }
 
 export function isSpecialActivity(variant: ActivityVariant) {
@@ -66,5 +68,8 @@ export function isSpecialActivity(variant: ActivityVariant) {
     tamaroCardsPageActivityVariant,
     mathematicalFoundationsActivityVariant,
   ];
-  return isToolboxActivity(variant) || otherSpecialActivities.some((a) => isEqual(a, variant));
+  return (
+    isToolboxActivity(variant) ||
+    otherSpecialActivities.some((a) => isEqual(a, variant))
+  );
 }

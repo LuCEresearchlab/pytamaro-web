@@ -28,10 +28,15 @@ export default async function saveUserFeedbackEvent(
   email: string,
   message: string,
   pathname: string,
-) : Promise<boolean> {
+): Promise<boolean> {
   try {
     await conn.begin(async (sql) => {
-      const pEventId = storeEvent(sql, user_uuid, experiment_key, EventName.UserFeedback);
+      const pEventId = storeEvent(
+        sql,
+        user_uuid,
+        experiment_key,
+        EventName.UserFeedback,
+      );
       await storeEventUserFeedback(
         sql,
         await pEventId,

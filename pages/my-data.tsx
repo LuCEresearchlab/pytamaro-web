@@ -6,7 +6,12 @@ import {
   AccordionSummary,
   Box,
   Button,
-  Container, Link, Paper, Stack, TextField, Typography,
+  Container,
+  Link,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
 } from '@mui/material';
 import { produce } from 'immer';
 import { useConfirm } from 'material-ui-confirm';
@@ -17,7 +22,10 @@ import ExportLocalStorageButton from '../components/ExportLocalStorageButton';
 import ImportLocalStorageButton from '../components/ImportLocalStorageButton';
 import NavigationBar from '../components/NavigationBar';
 import PageTitle from '../components/PageTitle';
-import getEntireLocalStorage, { clearEntireLocalStorage, replaceEntireLocalStorage } from '../src/localStorage/entireLocalStorage';
+import getEntireLocalStorage, {
+  clearEntireLocalStorage,
+  replaceEntireLocalStorage,
+} from '../src/localStorage/entireLocalStorage';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
@@ -31,24 +39,31 @@ export default function MyData() {
   const currentSharingPreference = metadata.allowSharingAnonData;
 
   const changeExperimentKey = (newKey: string) => {
-    setMetadata((currentMetadata) => produce(currentMetadata, (draft) => {
-      draft.experimentKey = newKey;
-    }));
+    setMetadata((currentMetadata) =>
+      produce(currentMetadata, (draft) => {
+        draft.experimentKey = newKey;
+      }),
+    );
   };
 
   const updateDataSharingPreference = (newPreference: 'yes' | 'no') => {
-    setMetadata((currentMetadata) => produce(currentMetadata, (draft) => {
-      draft.allowSharingAnonData = newPreference;
-    }));
+    setMetadata((currentMetadata) =>
+      produce(currentMetadata, (draft) => {
+        draft.allowSharingAnonData = newPreference;
+      }),
+    );
   };
 
   const handleGlobalReset = () => {
-    confirm({ description: 'You are about to delete ALL the data. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete everything' })
-      .then(() => {
-        clearEntireLocalStorage();
-        sessionStorage.clear();
-        setLocalStorageChanged(localStorageChanged + 1);
-      });
+    confirm({
+      description:
+        'You are about to delete ALL the data. This action cannot be undone! ⚠️',
+      confirmationText: 'Ok, delete everything',
+    }).then(() => {
+      clearEntireLocalStorage();
+      sessionStorage.clear();
+      setLocalStorageChanged(localStorageChanged + 1);
+    });
   };
 
   const dataSharingOptIn = () => updateDataSharingPreference('yes');
@@ -66,89 +81,115 @@ export default function MyData() {
       </Head>
       <Box>
         <NavigationBar />
-        <Container maxWidth="md">
+        <Container maxWidth='md'>
           <PageTitle>My Data</PageTitle>
-          <Typography variant="body1" marginY={3}>
-            Your data is stored in your browser&apos;s local storage.
-            On this page you can see what is stored there,
-            and you can import and export all your data if you wish.
-            You also can configure your privacy settings,
-            which influence what data gets sent to our server.
+          <Typography variant='body1' marginY={3}>
+            Your data is stored in your browser&apos;s local storage. On this
+            page you can see what is stored there, and you can import and export
+            all your data if you wish. You also can configure your privacy
+            settings, which influence what data gets sent to our server.
           </Typography>
-          <Typography variant="h4" align="center" marginY={3}>Export and Import</Typography>
-          <Typography variant="body1" marginY={3}>
-            The data (e.g., source code) you enter in PyTamaro Web is stored in your browser,
-            inside its local storage.
-            You may want to export the data into a file
-            you can carry around (e.g., if you work at home and in school),
-            you can backup (e.g., if someone might clear your browser&apos;s local storage),
-            or you can send to your teacher.
+          <Typography variant='h4' align='center' marginY={3}>
+            Export and Import
           </Typography>
-          <Stack direction="row" alignItems="center" justifyContent="center" spacing={10}>
-            <ExportLocalStorageButton
-              getData={getEntireLocalStorage}
-            />
-            <ImportLocalStorageButton onClick={
-                (data) => {
-                  replaceEntireLocalStorage(data);
-                  setLocalStorageChanged(localStorageChanged + 1);
-                }
-              }
+          <Typography variant='body1' marginY={3}>
+            The data (e.g., source code) you enter in PyTamaro Web is stored in
+            your browser, inside its local storage. You may want to export the
+            data into a file you can carry around (e.g., if you work at home and
+            in school), you can backup (e.g., if someone might clear your
+            browser&apos;s local storage), or you can send to your teacher.
+          </Typography>
+          <Stack
+            direction='row'
+            alignItems='center'
+            justifyContent='center'
+            spacing={10}
+          >
+            <ExportLocalStorageButton getData={getEntireLocalStorage} />
+            <ImportLocalStorageButton
+              onClick={(data) => {
+                replaceEntireLocalStorage(data);
+                setLocalStorageChanged(localStorageChanged + 1);
+              }}
             />
           </Stack>
-          <Typography id="privacy-settings" variant="h4" align="center" marginY={3}>Privacy Settings</Typography>
-          <Typography variant="body1" marginY={3}>
-            PyTamaro Web is run by
-            {' '}
-            <Link href="https://luce.si.usi.ch/">Luce</Link>
-            , the computing education research group at USI in Lugano, Switzerland.
-            We run PyTamaro Web on servers at USI.
-            We can do this because our job is to conduct research on how people (like you)
-            learn to program.
-            We are not a company, and we do not sell your data to anyone.
-            However, for our research, we need to understand the kind of programs learners write,
-            and which learning trajectories they take through the activities.
-            This is why we would like to anonymously store this data.
+          <Typography
+            id='privacy-settings'
+            variant='h4'
+            align='center'
+            marginY={3}
+          >
+            Privacy Settings
+          </Typography>
+          <Typography variant='body1' marginY={3}>
+            PyTamaro Web is run by{' '}
+            <Link href='https://luce.si.usi.ch/'>Luce</Link>, the computing
+            education research group at USI in Lugano, Switzerland. We run
+            PyTamaro Web on servers at USI. We can do this because our job is to
+            conduct research on how people (like you) learn to program. We are
+            not a company, and we do not sell your data to anyone. However, for
+            our research, we need to understand the kind of programs learners
+            write, and which learning trajectories they take through the
+            activities. This is why we would like to anonymously store this
+            data.
           </Typography>
           <Paper sx={{ padding: '2rem' }}>
-            <Typography variant="h5" marginBottom={3}>
+            <Typography variant='h5' marginBottom={3}>
               Anonymous data sharing for research
             </Typography>
-            <Typography variant="body1" marginBottom={3}>
+            <Typography variant='body1' marginBottom={3}>
               {`Current preference: ${currentSharingPreferenceDesc}.`}
             </Typography>
-            <Stack direction="row" spacing={2}>
-              <Button variant="contained" color="success" disabled={currentSharingPreference === 'yes'} onClick={dataSharingOptIn}>Enable</Button>
-              <Button variant="contained" color="error" disabled={currentSharingPreference === 'no'} onClick={dataSharingOptOut}>Disable</Button>
+            <Stack direction='row' spacing={2}>
+              <Button
+                variant='contained'
+                color='success'
+                disabled={currentSharingPreference === 'yes'}
+                onClick={dataSharingOptIn}
+              >
+                Enable
+              </Button>
+              <Button
+                variant='contained'
+                color='error'
+                disabled={currentSharingPreference === 'no'}
+                onClick={dataSharingOptOut}
+              >
+                Disable
+              </Button>
             </Stack>
-            <Typography variant="body1" marginTop={3}>
+            <Typography variant='body1' marginTop={3}>
               Please select whether you consent to anonymously use your data.
             </Typography>
           </Paper>
-          <Typography variant="body1" marginY={3}>
-            Even if you allow sharing data for research purposes,
-            we do not collect any personally-identifiable data.
-            You remain completely anonymous.
-            We will not know who you are, we will not know where you are.
-            We describe this fully in our
-            {' '}
-            <Link component={NextLink} href="/privacy">Privacy Policy</Link>
+          <Typography variant='body1' marginY={3}>
+            Even if you allow sharing data for research purposes, we do not
+            collect any personally-identifiable data. You remain completely
+            anonymous. We will not know who you are, we will not know where you
+            are. We describe this fully in our{' '}
+            <Link component={NextLink} href='/privacy'>
+              Privacy Policy
+            </Link>
             .
           </Typography>
           <Accordion sx={{ mt: 6 }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="body1">Do you want to delete/reset ALL the data PyTamaro Web stores on your computer?</Typography>
+              <Typography variant='body1'>
+                Do you want to delete/reset ALL the data PyTamaro Web stores on
+                your computer?
+              </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Typography variant="body2">
-                The button below will delete all the data this web application stores in your browser&apos;s local storage
-                (i.e., deleting the code you have written in ALL activities
-                and resetting the entire web application to its initial state).
+              <Typography variant='body2'>
+                The button below will delete all the data this web application
+                stores in your browser&apos;s local storage (i.e., deleting the
+                code you have written in ALL activities and resetting the entire
+                web application to its initial state).
               </Typography>
               <Button
                 sx={{ mt: 2 }}
-                variant="contained"
-                color="error"
+                variant='contained'
+                color='error'
                 onClick={handleGlobalReset}
               >
                 ⚠️ Delete Everything ⚠️
@@ -157,17 +198,16 @@ export default function MyData() {
           </Accordion>
           <Accordion sx={{ mt: 6 }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="body1">Are you part of a research experiment?</Typography>
+              <Typography variant='body1'>
+                Are you part of a research experiment?
+              </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Typography variant="body2">
-                If you are part of a research experiment,
-                specify here the
-                {' '}
-                <i>experiment key</i>
-                {' '}
-                you received from the researcher.
-                This will allow us to associate the anonymous data with the experiment.
+              <Typography variant='body2'>
+                If you are part of a research experiment, specify here the{' '}
+                <i>experiment key</i> you received from the researcher. This
+                will allow us to associate the anonymous data with the
+                experiment.
               </Typography>
               <TextField
                 sx={{ mt: 2 }}
@@ -176,7 +216,7 @@ export default function MyData() {
                   maxLength: 100,
                 }}
                 fullWidth
-                label="Experiment key"
+                label='Experiment key'
                 value={metadata.experimentKey}
                 onChange={(e) => changeExperimentKey(e.target.value)}
               />
@@ -191,7 +231,7 @@ export default function MyData() {
 export async function getStaticProps() {
   return {
     props: {
-      ...await translationProps(),
+      ...(await translationProps()),
     },
   };
 }

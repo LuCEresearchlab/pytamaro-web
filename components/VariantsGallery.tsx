@@ -1,18 +1,22 @@
 import Grid from '@mui/material/Unstable_Grid2';
 import {
-  Activity, ActivityVariant, activityVariantId,
+  Activity,
+  ActivityVariant,
+  activityVariantId,
 } from '../src/schemas/activitySchema';
 import VariantCard from './VariantCard';
 
 export default function VariantsGallery({
-  activitiesWithVariants, noVariantInfo = false, noInProgress = false,
-} :
-{ activitiesWithVariants : {
-  activity: Activity,
-  variant: ActivityVariant,
-}[],
-noVariantInfo?: boolean,
-noInProgress?: boolean,
+  activitiesWithVariants,
+  noVariantInfo = false,
+  noInProgress = false,
+}: {
+  activitiesWithVariants: {
+    activity: Activity;
+    variant: ActivityVariant;
+  }[];
+  noVariantInfo?: boolean;
+  noInProgress?: boolean;
 }) {
   return (
     <Grid container spacing={2} rowSpacing={4}>

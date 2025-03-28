@@ -1,6 +1,6 @@
 # How to Create an Activity
 
-Inside your `data/<author-slug>` folder, activities are stored in the `activities` folder. 
+Inside your `data/<author-slug>` folder, activities are stored in the `activities` folder.
 
 The name of the folder should use hyphens and determines the _slug_ of the activity,
 which uniquely identifies it.
@@ -13,6 +13,7 @@ All the meta-information about an activity is specified in an `info.json` file.
 See the documentation for [how to structure the file](activity-json.md).
 See `data/luce/activities/swiss-flag/info.json` for an example.
 Each variant is described by an object containing:
+
 - the localized `title`,
 - the natural language `language` in the ISO 639-1 format,
 - the `latestVersion`.
@@ -30,6 +31,7 @@ should be created in a new version.
 Note that user edits are persisted in the browser's local storage only with respect to a specific version.
 
 Additionally, the object describing an activity contains the following fields:
+
 - `previewImage`: an object containing the `filename` of a preview image and its `backgroundColor`, to be used in the gallery
 - `visibility`: one of `"featured"` (shown first in the gallery with a special mark), `"visible"` (shown with normal priority in the gallery), `"draft"` (shown with a special "Coming soon" label in the gallery and only accessible using a direct link), or `"hidden"` (the activity is not shown at all in the gallery).
 - `concepts`: an array of strings with the ids of concepts covered by the activity. See [the schema for concepts](../src/schemas/activityConcepts.ts) for the list of supported ids and their descriptions.
@@ -41,14 +43,15 @@ Additionally, the object describing an activity contains the following fields:
   - `showVariantSelector`: a boolean that determines whether the variant selector (other languages / versions) should be shown (default: `true` -- note that `false` only hides the selector and does not delete other variants from the platform).
 
 When an activity requires some extra Python files to be included for the execution (e.g., a small library, or a dataset):
+
 - Store the files somewhere inside a folder named `python-files` inside your author's folder
 - Refer to such files in the `info.json` for an activity under the key `extraPythonFiles`. It requires an array of objects specifying the source path of the file (relative to the `python-files` base folder) and the destination path (potentially just a filename) that the user will need to import from.
-    The `warming-stripes` activity by `luce` contains an example of how to achieve this:
-    ```json
-      "extraPythonFiles": [
-        {
-          "sourcePath": "warming_stripes/southern_switzerland_data.py",
-          "destinationPath": "data.py"
-        }
-      ]
-    ``` 
+  The `warming-stripes` activity by `luce` contains an example of how to achieve this:
+  ```json
+    "extraPythonFiles": [
+      {
+        "sourcePath": "warming_stripes/southern_switzerland_data.py",
+        "destinationPath": "data.py"
+      }
+    ]
+  ```

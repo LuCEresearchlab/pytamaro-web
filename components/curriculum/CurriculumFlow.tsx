@@ -1,6 +1,4 @@
-import {
-  Box,
-} from '@mui/material';
+import { Box } from '@mui/material';
 import produce from 'immer';
 import { NextRouter, useRouter } from 'next/router';
 import { Dispatch, SetStateAction, useEffect } from 'react';
@@ -12,7 +10,9 @@ import ReactFlow, {
   useNodesInitialized,
 } from 'reactflow';
 import {
-  Curriculum, CurriculumActivity, CurriculumUnit,
+  Curriculum,
+  CurriculumActivity,
+  CurriculumUnit,
   curriculumToId,
 } from '../../src/schemas/curriculumSchema';
 import ActivityNode from './ActivityNode';
@@ -64,7 +64,7 @@ function incomingEdges(
   sourceNodeIds: string[],
   targetNodeId: string,
   highlighted: boolean,
-) : Edge[] {
+): Edge[] {
   return sourceNodeIds.map((sourceNodeId, idx) => ({
     ...edgeOptions,
     id: `${targetNodeId}-in-edge-${idx}`,
@@ -87,7 +87,7 @@ function addActivitiesStatuses(
   metadata: Metadata,
   previousStepIsCompleted: boolean,
   allUnlocked: boolean,
-  { width, height }: { width: number, height: number },
+  { width, height }: { width: number; height: number },
 ) {
   return activities.map((activity) => {
     const status = activityVariantStatus(
@@ -109,16 +109,17 @@ function addActivitiesStatuses(
 }
 
 function graphWidth(
-  titleWidth : number,
-  activityWidth : number,
+  titleWidth: number,
+  activityWidth: number,
   units: CurriculumUnit[],
   layerSpacing: number,
 ) {
   const maxNumActivitiesInStep = Math.max(
     ...units.flatMap((u) => u.steps.flatMap((s) => s.activities.length)),
   );
-  const maxStepWidth = maxNumActivitiesInStep * activityWidth
-    + (maxNumActivitiesInStep - 1) * layerSpacing;
+  const maxStepWidth =
+    maxNumActivitiesInStep * activityWidth +
+    (maxNumActivitiesInStep - 1) * layerSpacing;
   return Math.max(maxStepWidth, titleWidth);
 }
 
@@ -129,10 +130,11 @@ function getFlowElements(
   router: NextRouter,
   availableWidth: number,
 ) {
-  const size = (perc: number, minValue: number, maxValue: number) => Math.max(
-    minValue,
-    Math.min(availableWidth * perc, Math.min(availableWidth, maxValue)),
-  );
+  const size = (perc: number, minValue: number, maxValue: number) =>
+    Math.max(
+      minValue,
+      Math.min(availableWidth * perc, Math.min(availableWidth, maxValue)),
+    );
   const nodeTypeDimensions = {
     activity: {
       width: size(0.28, 150, 350),
@@ -164,17 +166,20 @@ function getFlowElements(
   );
 
   let bottom = 0;
-  let nodesToBeConnected : string[] = [];
-  const existingCurriculum = metadata.curricula.find((c) => c.id === curriculumToId(curriculum));
+  let nodesToBeConnected: string[] = [];
+  const existingCurriculum = metadata.curricula.find(
+    (c) => c.id === curriculumToId(curriculum),
+  );
   const alreadyStarted = existingCurriculum !== undefined;
   const allUnlocked = alreadyStarted && curriculum.allActivitiesUnlocked;
   let previousStepIsCompleted = alreadyStarted;
-  const nodes : Node[] = [];
-  const edges : Edge[] = [];
+  const nodes: Node[] = [];
+  const edges: Edge[] = [];
 
   const addNode = (
     id: string,
     type: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any,
     selectable: boolean,
     xPos: number,
@@ -204,12 +209,15 @@ function getFlowElements(
   };
 
   const addIncomingEdges = (id: string) => {
-    edges.push(...incomingEdges(nodesToBeConnected, id, previousStepIsCompleted));
+    edges.push(
+      ...incomingEdges(nodesToBeConnected, id, previousStepIsCompleted),
+    );
   };
 
   const addSingleNode = (
     id: string,
     type: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any,
     selectable = false,
   ) => {
@@ -250,11 +258,13 @@ function getFlowElements(
   };
 
   const handleCurriculumStart = () => {
-    setMetadata((currentMetadata) => produce(currentMetadata, (draft) => {
-      draft.curricula.push({
-        id: curriculumToId(curriculum),
-      });
-    }));
+    setMetadata((currentMetadata) =>
+      produce(currentMetadata, (draft) => {
+        draft.curricula.push({
+          id: curriculumToId(curriculum),
+        });
+      }),
+    );
   };
 
   const handleCurriculumEnd = () => {
@@ -263,13 +273,26 @@ function getFlowElements(
 
   // The curriculum graph contains:
   // - a start node
-  addSingleNode('start', 'startend', {
-    type: 'start', text: 'Start', unlocked: true, onStartClick: handleCurriculumStart, started: alreadyStarted,
-  }, !alreadyStarted);
+  addSingleNode(
+    'start',
+    'startend',
+    {
+      type: 'start',
+      text: 'Start',
+      unlocked: true,
+      onStartClick: handleCurriculumStart,
+      started: alreadyStarted,
+    },
+    !alreadyStarted,
+  );
   // - a sequence of units
   curriculum.units.forEach((unit, unitIdx) => {
     // Each unit has a title
-    addSingleNode(anchorName(unitIdx), 'title', { type: 'unit', text: unit.title, unlocked: allUnlocked || previousStepIsCompleted });
+    addSingleNode(anchorName(unitIdx), 'title', {
+      type: 'unit',
+      text: unit.title,
+      unlocked: allUnlocked || previousStepIsCompleted,
+    });
     // and contains a sequence of steps
     unit.steps.forEach((step, stepIdx) => {
       const activitiesInfo = addActivitiesStatuses(
@@ -280,16 +303,31 @@ function getFlowElements(
         allUnlocked,
         nodeTypeDimensions.activity,
       );
-      const currentStepIsCompleted = activitiesInfo.some((a) => a.isUnlocked && a.status === 'completed');
+      const currentStepIsCompleted = activitiesInfo.some(
+        (a) => a.isUnlocked && a.status === 'completed',
+      );
       const stepId = anchorName(unitIdx, stepIdx);
       // A step may be optional (shown as a single collapsed node)
       if (step.isOptional) {
-        addSingleNode(stepId, 'optional', { activityInfo: activitiesInfo, unlocked: allUnlocked || previousStepIsCompleted }, true);
+        addSingleNode(
+          stepId,
+          'optional',
+          {
+            activityInfo: activitiesInfo,
+            unlocked: allUnlocked || previousStepIsCompleted,
+          },
+          true,
+        );
       } else {
         // or it consists of a set of alternative activities...
         // (which may be preceded by a "join" node when coming from a set of >1 alternatives)
         if (nodesToBeConnected.length > 1) {
-          addSingleNode(stepId, 'join', { unlocked: allUnlocked || previousStepIsCompleted }, true);
+          addSingleNode(
+            stepId,
+            'join',
+            { unlocked: allUnlocked || previousStepIsCompleted },
+            true,
+          );
         }
         // ...shown in a single row
         addActivitiesNodes(unitIdx, stepIdx, activitiesInfo);
@@ -298,9 +336,17 @@ function getFlowElements(
     });
   });
   // - an end node
-  addSingleNode('end', 'startend', {
-    type: 'end', text: curriculum.finishLabel, unlocked: allUnlocked || previousStepIsCompleted, onEndClick: handleCurriculumEnd,
-  }, allUnlocked || previousStepIsCompleted);
+  addSingleNode(
+    'end',
+    'startend',
+    {
+      type: 'end',
+      text: curriculum.finishLabel,
+      unlocked: allUnlocked || previousStepIsCompleted,
+      onEndClick: handleCurriculumEnd,
+    },
+    allUnlocked || previousStepIsCompleted,
+  );
 
   return {
     nodes,
@@ -310,8 +356,15 @@ function getFlowElements(
   };
 }
 
-function Flow({ nodes, edges, setNodesInitialized }:
-{ nodes: Node[], edges: Edge[], setNodesInitialized: (initialized: boolean) => void }) {
+function Flow({
+  nodes,
+  edges,
+  setNodesInitialized,
+}: {
+  nodes: Node[];
+  edges: Edge[];
+  setNodesInitialized: (initialized: boolean) => void;
+}) {
   // Separate component, so we can use the hook
   const nodesInitialized = useNodesInitialized();
   useEffect(() => {
@@ -335,21 +388,27 @@ function Flow({ nodes, edges, setNodesInitialized }:
   );
 }
 
-export default function CurriculumFlow(
-  {
-    curriculum, metadata, setMetadata, setNodesInitialized, availableWidth,
-  }
-  : { curriculum : Curriculum,
-    metadata : Metadata,
-    setMetadata: Dispatch<SetStateAction<Metadata>>,
-    setNodesInitialized: (initialized: boolean) => void,
-    availableWidth: number
-  },
-) {
+export default function CurriculumFlow({
+  curriculum,
+  metadata,
+  setMetadata,
+  setNodesInitialized,
+  availableWidth,
+}: {
+  curriculum: Curriculum;
+  metadata: Metadata;
+  setMetadata: Dispatch<SetStateAction<Metadata>>;
+  setNodesInitialized: (initialized: boolean) => void;
+  availableWidth: number;
+}) {
   const router = useRouter();
-  const {
-    nodes, edges, width, height,
-  } = getFlowElements(curriculum, metadata, setMetadata, router, availableWidth);
+  const { nodes, edges, width, height } = getFlowElements(
+    curriculum,
+    metadata,
+    setMetadata,
+    router,
+    availableWidth,
+  );
 
   return (
     <Box
@@ -359,7 +418,11 @@ export default function CurriculumFlow(
       }}
     >
       <ReactFlowProvider>
-        <Flow nodes={nodes} edges={edges} setNodesInitialized={setNodesInitialized} />
+        <Flow
+          nodes={nodes}
+          edges={edges}
+          setNodesInitialized={setNodesInitialized}
+        />
       </ReactFlowProvider>
     </Box>
   );

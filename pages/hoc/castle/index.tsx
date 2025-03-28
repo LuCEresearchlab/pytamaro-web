@@ -94,8 +94,8 @@ export default function HocCastlePage() {
     const now = new Date();
     const yearInt = parseInt(yearOfBirth, 10);
     const monthInt = parseInt(monthOfBirth, 10);
-    const age = (now.getFullYear() * 12 + (now.getMonth() + 1))
-      - (yearInt * 12 + monthInt);
+    const age =
+      now.getFullYear() * 12 + (now.getMonth() + 1) - (yearInt * 12 + monthInt);
     setDataSharingAllowed(
       !(yobError || mobError) && age >= MIN_AGE_MONTHS_DATA_COLLECTION,
     );
@@ -123,21 +123,17 @@ export default function HocCastlePage() {
 
       <Box>
         <NavigationBar />
-        <Container maxWidth="md">
-
+        <Container maxWidth='md'>
           <Grid
             container
-            justifyContent="center"
+            justifyContent='center'
             spacing={2}
             sx={{ mt: '2rem', mb: '2rem' }}
           >
-            <Grid
-              xs={4}
-              item
-            >
+            <Grid xs={4} item>
               <Image
                 src={PyTamaroLogoImage}
-                alt="PyTamaro Logo"
+                alt='PyTamaro Logo'
                 style={{
                   display: 'block',
                   margin: 'auto',
@@ -146,13 +142,10 @@ export default function HocCastlePage() {
                 }}
               />
             </Grid>
-            <Grid
-              xs={4}
-              item
-            >
+            <Grid xs={4} item>
               <Image
                 src={HourOfCodeLogoImage}
-                alt="Hour Of Code Logo"
+                alt='Hour Of Code Logo'
                 style={{
                   display: 'block',
                   margin: 'auto',
@@ -161,13 +154,10 @@ export default function HocCastlePage() {
                 }}
               />
             </Grid>
-            <Grid
-              xs={4}
-              item
-            >
+            <Grid xs={4} item>
               <Image
                 src={USIInfLogoImage}
-                alt="USI Logo"
+                alt='USI Logo'
                 style={{
                   display: 'block',
                   margin: 'auto',
@@ -178,10 +168,10 @@ export default function HocCastlePage() {
             </Grid>
           </Grid>
 
-          <Container maxWidth="sm">
+          <Container maxWidth='sm'>
             <Image
               src={MarketingImage}
-              alt="Photo of Castle"
+              alt='Photo of Castle'
               style={{
                 display: 'block',
                 margin: 'auto',
@@ -191,37 +181,28 @@ export default function HocCastlePage() {
             />
           </Container>
 
-          <Grid
-            container
-            justifyContent="center"
-            spacing={2}
-          >
+          <Grid container justifyContent='center' spacing={2}>
             {['en', 'it', 'de'].map((lang) => {
               const langT = i18n.getFixedT(lang, 'hourofcode');
               return (
-                <Grid
-                  key={`lang_selector_${lang}`}
-                  xs={6}
-                  md={4}
-                  item
-                >
+                <Grid key={`lang_selector_${lang}`} xs={6} md={4} item>
                   <Card elevation={1}>
                     <CardActionArea onClick={() => handleLangSelection(lang)}>
                       <CardContent>
                         <Typography
                           sx={{ fontSize: '2rem' }}
-                          color="text.secondary"
+                          color='text.secondary'
                           gutterBottom
                         >
                           {langT('locale.flag')}
                         </Typography>
-                        <Typography variant="h5" component="div">
+                        <Typography variant='h5' component='div'>
                           {langT('locale.name')}
                         </Typography>
-                        <Typography variant="caption">
+                        <Typography variant='caption'>
                           {langT('intro.hoc')}
                         </Typography>
-                        <Typography variant="body2">
+                        <Typography variant='body2'>
                           {langT('intro.goal')}
                         </Typography>
                       </CardContent>
@@ -234,17 +215,10 @@ export default function HocCastlePage() {
 
           {/* Age dialog */}
           <Dialog open={step === Steps.AGE}>
-            <DialogTitle>
-              {t('age.title')}
-            </DialogTitle>
+            <DialogTitle>{t('age.title')}</DialogTitle>
 
             <DialogContent>
-              <Grid
-                container
-                justifyContent="center"
-                spacing={2}
-                marginY={2}
-              >
+              <Grid container justifyContent='center' spacing={2} marginY={2}>
                 <Grid item xs={5}>
                   <TextField
                     label={t('age.year')}
@@ -252,7 +226,7 @@ export default function HocCastlePage() {
                     onChange={onYearOfBirthChange}
                     error={yobError}
                     helperText={yobError ? t('age.error.year') : undefined}
-                    type="number"
+                    type='number'
                   />
                 </Grid>
                 <Grid item xs={5}>
@@ -270,8 +244,10 @@ export default function HocCastlePage() {
                         key={`month_${month}`}
                         value={(month + 1).toString()}
                       >
-                        {new Date(today.getFullYear(), month)
-                          .toLocaleString(chosenLanguage, { month: 'long' })}
+                        {new Date(today.getFullYear(), month).toLocaleString(
+                          chosenLanguage,
+                          { month: 'long' },
+                        )}
                       </MenuItem>
                     ))}
                   </TextField>
@@ -301,7 +277,7 @@ export default function HocCastlePage() {
 export async function getStaticProps() {
   return {
     props: {
-      ...await translationProps(['hourofcode']),
+      ...(await translationProps(['hourofcode'])),
     },
   };
 }

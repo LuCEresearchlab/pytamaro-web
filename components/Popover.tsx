@@ -38,7 +38,7 @@ export function usePopover({
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(initialOpen);
   const [labelId, setLabelId] = React.useState<string | undefined>();
   const [descriptionId, setDescriptionId] = React.useState<
-  string | undefined
+    string | undefined
   >();
 
   const open = controlledOpen ?? uncontrolledOpen;
@@ -86,17 +86,26 @@ export function usePopover({
       setDescriptionId,
       arrowRef,
     }),
-    [open, setOpen, interactions, data, modal, labelId, descriptionId, arrowRef],
+    [
+      open,
+      setOpen,
+      interactions,
+      data,
+      modal,
+      labelId,
+      descriptionId,
+      arrowRef,
+    ],
   );
 }
 
 type ContextType =
   | (ReturnType<typeof usePopover> & {
-    setLabelId: React.Dispatch<React.SetStateAction<string | undefined>>;
-    setDescriptionId: React.Dispatch<
-    React.SetStateAction<string | undefined>
-    >;
-  })
+      setLabelId: React.Dispatch<React.SetStateAction<string | undefined>>;
+      setDescriptionId: React.Dispatch<
+        React.SetStateAction<string | undefined>
+      >;
+    })
   | null;
 
 const PopoverContext = React.createContext<ContextType>(null);
@@ -135,10 +144,11 @@ interface PopoverTriggerProps {
 }
 
 export const PopoverTrigger = React.forwardRef<
-HTMLElement,
-React.HTMLProps<HTMLElement> & PopoverTriggerProps
+  HTMLElement,
+  React.HTMLProps<HTMLElement> & PopoverTriggerProps
 >(({ children, asChild = false, ...props }, propRef) => {
   const context = usePopoverContext();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const childrenRef = (children as any).ref;
   const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef]);
 
@@ -168,10 +178,14 @@ React.HTMLProps<HTMLElement> & PopoverTriggerProps
 });
 
 export const PopoverContent = React.forwardRef<
-HTMLDivElement,
-React.HTMLProps<HTMLDivElement>
+  HTMLDivElement,
+  React.HTMLProps<HTMLDivElement>
 >(({ style, ...props }, propRef) => {
-  const { context: floatingContext, arrowRef, ...context } = usePopoverContext();
+  const {
+    context: floatingContext,
+    arrowRef,
+    ...context
+  } = usePopoverContext();
   const ref = useMergeRefs([context.refs.setFloating, propRef]);
 
   if (!floatingContext.open) return null;

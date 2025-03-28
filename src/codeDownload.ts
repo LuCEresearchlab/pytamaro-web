@@ -22,13 +22,15 @@ export default async function downloadSourceCode(
   // download the source as a single Python file. Otherwise, download a zip file
   // containing the main source and all the files needed.
   if (toolboxFunctions.length + extraPythonFiles.length === 0) {
-    const blob = new Blob([mainFile.content], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([mainFile.content], {
+      type: 'text/plain;charset=utf-8',
+    });
     saveAs(blob, mainFile.name);
   } else {
     const files = [
       mainFile,
       // Do not include the toolbox file if it is empty
-      ...await toolboxFiles(toolboxFunctions, true),
+      ...(await toolboxFiles(toolboxFunctions, true)),
       ...extraPythonFiles,
     ];
     const zip = new JSZip();

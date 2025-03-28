@@ -4,7 +4,10 @@ import { EventName } from '../../storeDbEvent';
 import conn from '../dbConnection';
 import { storeRow } from '../dbUtils';
 import {
-  eventTableName, storeActivity, storeEvent, storeSource,
+  eventTableName,
+  storeActivity,
+  storeEvent,
+  storeSource,
 } from './event';
 
 async function storeEventAddToolboxFunction(
@@ -30,10 +33,15 @@ export default async function saveAddToolboxFunctionEvent(
   user_uuid: string,
   experiment_key: string,
   fn: ToolboxFunction,
-) : Promise<boolean> {
+): Promise<boolean> {
   try {
     await conn.begin(async (sql) => {
-      const pEventId = storeEvent(sql, user_uuid, experiment_key, EventName.AddToolboxFunction);
+      const pEventId = storeEvent(
+        sql,
+        user_uuid,
+        experiment_key,
+        EventName.AddToolboxFunction,
+      );
       const pSourceId = storeSource(sql, fn.source);
       const pUsageSourceId = storeSource(sql, fn.usage);
       const pOriginalActivityId = storeActivity(sql, fn.originalActivity);

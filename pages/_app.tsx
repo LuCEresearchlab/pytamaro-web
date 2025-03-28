@@ -38,7 +38,7 @@ function MyApp(props: MyAppProps) {
     <CacheProvider value={emotionCache}>
       <Head>
         <title>PyTamaro</title>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
+        <meta name='viewport' content='initial-scale=1, width=device-width' />
       </Head>
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
@@ -49,9 +49,13 @@ function MyApp(props: MyAppProps) {
           selfHosted
         >
           <ConfirmProvider>
-            <Box sx={{
-              display: 'flex', flexDirection: 'column', minHeight: '100vh', justifyContent: 'flex-start',
-            }}
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: '100vh',
+                justifyContent: 'flex-start',
+              }}
             >
               <QueryClientProvider client={queryClient}>
                 <Component // eslint-disable-next-line react/jsx-props-no-spreading

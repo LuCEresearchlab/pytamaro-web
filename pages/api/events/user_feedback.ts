@@ -5,9 +5,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const {
-    uuid, experimentKey, name, email, message, pathname,
-  } = req.body;
+  const { uuid, experimentKey, name, email, message, pathname } = req.body;
   const saved = await saveUserFeedbackEvent(
     uuid,
     experimentKey,

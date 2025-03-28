@@ -5,10 +5,14 @@ import theme from '../src/theme';
 import GenericMuiIcon from './GenericMuiIcon';
 
 export default function CompetencyAvatar({
-  competency, size = 24,
+  competency,
+  size = 24,
   fontSize = theme.typography.pxToRem(16),
-}:
-{ competency: CurriculumCompetency, size?: number, fontSize?: string }) {
+}: {
+  competency: CurriculumCompetency;
+  size?: number;
+  fontSize?: string;
+}) {
   return (
     <Avatar
       sx={{
@@ -17,10 +21,7 @@ export default function CompetencyAvatar({
         height: size,
       }}
     >
-      <GenericMuiIcon
-        iconName={competency.icon}
-        fontSize={fontSize}
-      />
+      <GenericMuiIcon iconName={competency.icon} fontSize={fontSize} />
     </Avatar>
   );
 }

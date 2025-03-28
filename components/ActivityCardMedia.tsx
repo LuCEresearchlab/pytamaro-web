@@ -3,19 +3,30 @@ import { ActivityVariant, BasicActivity } from '../src/schemas/activitySchema';
 import { activityAssetPathname } from '../src/urlUtils';
 
 export default function ActivityCardMedia({
-  activity, variant, height = '100rem', padding = 0.3,
-}:
-{ activity: BasicActivity, variant: ActivityVariant, height?: string, padding?: number }) {
+  activity,
+  variant,
+  height = '100rem',
+  padding = 0.3,
+}: {
+  activity: BasicActivity;
+  variant: ActivityVariant;
+  height?: string;
+  padding?: number;
+}) {
   return (
     <CardMedia
-      component="img"
+      component='img'
       height={height}
       image={activityAssetPathname(
         variant.authorSlug,
         variant.activitySlug,
         activity.previewImage.filename,
       )}
-      sx={{ padding, objectFit: 'contain', backgroundColor: activity.previewImage.backgroundColor }}
+      sx={{
+        padding,
+        objectFit: 'contain',
+        backgroundColor: activity.previewImage.backgroundColor,
+      }}
     />
   );
 }

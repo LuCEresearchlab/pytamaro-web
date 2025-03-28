@@ -11,9 +11,10 @@ export default async function allDocumentationModules() {
 
 const documentationCache = new DataCache<JudiciousModule>();
 
-export async function readDocumentation(module: string) : Promise<JudiciousModule> {
-  return documentationCache.get(
-    module,
-    async () => JSON.parse(await readFile(`${DOCS_DIR}/${module}.json`, 'utf8')),
+export async function readDocumentation(
+  module: string,
+): Promise<JudiciousModule> {
+  return documentationCache.get(module, async () =>
+    JSON.parse(await readFile(`${DOCS_DIR}/${module}.json`, 'utf8')),
   );
 }
