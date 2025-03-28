@@ -1,5 +1,5 @@
 import { Box, Stack } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import theme from '../../src/theme';
 import RapidActions from './RapidActions';
 
@@ -15,7 +15,7 @@ export default function Sidebar({
 }) {
   return (
     <Grid
-      lg={2}
+      size={2}
       sx={{
         display: {
           xs: 'none',

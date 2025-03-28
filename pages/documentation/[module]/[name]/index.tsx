@@ -1,5 +1,5 @@
 import { Container, Link, Typography } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import Head from 'next/head';
 import DocBreadcrumbs from '../../../../components/documentation/DocBreadcrumbs';
 import DocElementCard from '../../../../components/documentation/DocElementCard';

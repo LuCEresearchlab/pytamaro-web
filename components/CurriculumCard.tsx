@@ -5,7 +5,7 @@ import {
   CardContent,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import { concat, shuffle } from 'lodash';
 import { MDXRemote } from 'next-mdx-remote';
 import { useEffect, useState } from 'react';
@@ -86,7 +86,7 @@ export default function CurriculumCard({
         href={curriculumPathname(curriculum.authorSlug, curriculum.slug)}
       >
         <Grid container>
-          <Grid xs={9}>
+          <Grid size={9}>
             <CardContent>
               <Typography component='div' variant='h5' gutterBottom>
                 {curriculum.title}
@@ -109,7 +109,7 @@ export default function CurriculumCard({
             </CardContent>
           </Grid>
           <Grid
-            xs={3}
+            size={3}
             display='flex'
             alignItems='center'
             justifyContent='center'
@@ -118,7 +118,7 @@ export default function CurriculumCard({
             <div>
               <Grid container justifyContent='center'>
                 {previewActivities.slice(0, 4).map((activity) => (
-                  <Grid xs={12} md={6} key={activity.id}>
+                  <Grid size={{ xs: 12, md: 6 }} key={activity.id}>
                     <ActivityCardMedia
                       activity={activity.activity}
                       variant={activity.variant}

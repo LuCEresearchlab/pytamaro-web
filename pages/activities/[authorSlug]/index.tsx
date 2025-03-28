@@ -8,7 +8,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import { countBy, orderBy } from 'lodash';
 import { useEffect, useState } from 'react';
 import ActivitiesGallery, {
@@ -135,8 +135,8 @@ export default function ActivitiesPage({
           </IconButton>
         </Tooltip>
       </NavigationBar>
-      <Grid container spacing={2}>
-        <Grid xs={12} lg={6}>
+      <Grid container spacing={2} sx={{ padding: 1 }}>
+        <Grid size={{ xs: 12, lg: 6 }}>
           <SelectAll
             key={Object.keys(initialConcepts).join()}
             title='Concepts'
@@ -147,7 +147,7 @@ export default function ActivitiesPage({
             maxTagsShown={5}
           />
         </Grid>
-        <Grid xs={12} lg={3}>
+        <Grid size={{ xs: 12, lg: 3 }}>
           <SelectAll
             title='Authors'
             placeholder='Author'
@@ -159,7 +159,7 @@ export default function ActivitiesPage({
             maxTagsShown={2}
           />
         </Grid>
-        <Grid xs={12} lg={3}>
+        <Grid size={{ xs: 12, lg: 3 }}>
           <SelectAll
             title='Languages'
             placeholder='Language'

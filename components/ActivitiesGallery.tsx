@@ -10,7 +10,7 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import { countBy, orderBy, sortBy } from 'lodash';
 import Link from 'next/link';
 import {
@@ -60,7 +60,11 @@ export default function ActivitiesGallery({
   const compact = compactView !== 'normal';
 
   return (
-    <Grid container spacing={compactView === 'no-cards' ? 0.2 : 2}>
+    <Grid
+      container
+      spacing={compactView === 'no-cards' ? 0.2 : 2}
+      sx={{ padding: 1 }}
+    >
       {sortedActivities.map((activity) => {
         // Get available canonical variants for this activity,
         // trying to match the preferred language first.
@@ -84,10 +88,12 @@ export default function ActivitiesGallery({
         const isDraft = activity.visibility === 'draft';
         return (
           <Grid
-            xs={12}
-            sm={6}
-            md={compact ? 3 : 4}
-            lg={compact ? 2 : 3}
+            size={{
+              xs: 12,
+              sm: 6,
+              md: compact ? 3 : 4,
+              lg: compact ? 2 : 3,
+            }}
             key={activityVariantId(seletectedVariant)}
           >
             {compactView === 'no-cards' ? (

@@ -16,7 +16,7 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { activityVariantStatus } from '../components/ActivityStatusBadge';
@@ -85,7 +85,7 @@ export default function MyProgress({
         <Container maxWidth='lg'>
           <PageTitle>My Progress</PageTitle>
           <Grid container spacing={2} sx={{ mb: 6 }}>
-            <Grid xs={12} lg={4}>
+            <Grid size={{ xs: 12, lg: 4 }}>
               <ResourceCard>
                 <CardIcon>
                   <Route sx={{ fontSize: th.typography.h3.fontSize }} />
@@ -114,7 +114,7 @@ export default function MyProgress({
                 </CardActions>
               </ResourceCard>
             </Grid>
-            <Grid xs={12} lg={4}>
+            <Grid size={{ xs: 12, lg: 4 }}>
               <ResourceCard>
                 <CardIcon>
                   <Assignment sx={{ fontSize: th.typography.h3.fontSize }} />
@@ -149,7 +149,7 @@ export default function MyProgress({
                 </CardActions>
               </ResourceCard>
             </Grid>
-            <Grid xs={12} lg={4}>
+            <Grid size={{ xs: 12, lg: 4 }}>
               <ResourceCard>
                 <CardIcon>
                   <Construction sx={{ fontSize: th.typography.h3.fontSize }} />

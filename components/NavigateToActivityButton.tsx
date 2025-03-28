@@ -1,6 +1,5 @@
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
-import { Tooltip } from '@mui/material';
+import { Button, Tooltip } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
@@ -103,7 +102,7 @@ export default function NavigateToActivity({
   return (
     <Tooltip arrow title={enabled ? undefined : t('availableAfterCompleting')}>
       <span>
-        <LoadingButton
+        <Button
           loading={loading}
           disabled={!enabled}
           variant='contained'
@@ -113,7 +112,7 @@ export default function NavigateToActivity({
           onClick={handleClick}
         >
           <span>{message}</span>
-        </LoadingButton>
+        </Button>
       </span>
     </Tooltip>
   );

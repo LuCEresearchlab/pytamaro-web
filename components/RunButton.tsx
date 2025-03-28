@@ -1,6 +1,5 @@
 import { Done, ErrorOutline, PlayCircleFilled } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
-import { Stack, Tooltip } from '@mui/material';
+import { Button, Stack, Tooltip } from '@mui/material';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 
 export default function RunButton({
@@ -29,7 +28,7 @@ export default function RunButton({
     <Stack direction='row' spacing={2} alignItems='center'>
       <Tooltip arrow title={buttonTooltip} placement='left'>
         <span>
-          <LoadingButton
+          <Button
             onClick={onExecutionRequested}
             endIcon={showPlayIcon && <PlayCircleFilled />}
             loading={executing}
@@ -40,7 +39,7 @@ export default function RunButton({
             className='run-button'
           >
             <span>{buttonMessage}</span>
-          </LoadingButton>
+          </Button>
         </span>
       </Tooltip>
       {executionFinished &&

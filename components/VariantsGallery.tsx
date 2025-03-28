@@ -1,4 +1,4 @@
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import {
   Activity,
   ActivityVariant,
@@ -22,9 +22,7 @@ export default function VariantsGallery({
     <Grid container spacing={2} rowSpacing={4}>
       {activitiesWithVariants.map((activityWithVariant) => (
         <Grid
-          xs={12}
-          sm={6}
-          lg={4}
+          size={{ xs: 12, sm: 6, lg: 4 }}
           key={activityVariantId(activityWithVariant.variant)}
         >
           <VariantCard

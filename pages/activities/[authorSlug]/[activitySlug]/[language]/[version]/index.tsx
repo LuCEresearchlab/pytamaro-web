@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import Container from '@mui/material/Container';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import GithubSlugger from 'github-slugger';
 import Head from 'next/head';
 import { useEffect, useRef, useState } from 'react';

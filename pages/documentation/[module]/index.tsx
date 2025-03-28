@@ -15,7 +15,7 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import { groupBy, sortBy } from 'lodash';
 import Head from 'next/head';
 import DocBreadcrumbs from '../../../components/documentation/DocBreadcrumbs';

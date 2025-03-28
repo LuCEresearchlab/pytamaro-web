@@ -12,7 +12,7 @@ import {
   Typography,
 } from '@mui/material';
 import { createFilterOptions } from '@mui/material/Autocomplete';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import { sortBy } from 'lodash';
 import Head from 'next/head';
 import { iconPath } from '../../components/documentation/utils';

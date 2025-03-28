@@ -22,7 +22,7 @@ import {
   styled,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import anime from 'animejs';
 import { shuffle } from 'lodash';
 import Head from 'next/head';
@@ -303,13 +303,13 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
           Start Simple By Calling Functions
         </Typography>
         <Grid container spacing={2}>
-          <Grid xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <PythonCodeCard
               lines={['root = sqrt(2)', 'print(root)']}
               stdout='1.4142135623730951'
             />
           </Grid>
-          <Grid xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <PythonCodeCard
               pytamaro
               lines={[
@@ -328,13 +328,13 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
           Define Functions
         </Typography>
         <Grid container spacing={2}>
-          <Grid xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <PythonCodeCard
               lines={['def add(a, b):', '    return a + b', 'print(add(2, 3))']}
               stdout='5'
             />
           </Grid>
-          <Grid xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <PythonCodeCard
               pytamaro
               lines={[
@@ -354,7 +354,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
           Use Selection and Repetition
         </Typography>
         <Grid container spacing={2}>
-          <Grid xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <PythonCodeCard
               lines={[
                 'numbers = [52, -4, 17, 34, 50, 24, -17, 60, 47]',
@@ -367,7 +367,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
               stdout='24.0'
             />
           </Grid>
-          <Grid xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <PythonCodeCard
               pytamaro
               lines={[
@@ -396,7 +396,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
           Learn with PyTamaro
         </Typography>
         <Grid container spacing={2}>
-          <Grid xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card sx={{ height: '100%' }}>
               <CardActionArea
                 href={activitiesByAuthorPathname('luce')}
@@ -439,7 +439,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
               </CardActionArea>
             </Card>
           </Grid>
-          <Grid xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card sx={{ height: '100%' }}>
               <CardActionArea
                 href={curriculaPathname()}
@@ -479,7 +479,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
           Teach with PyTamaro
         </Typography>
         <Grid container spacing={2}>
-          <Grid xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Card sx={{ height: '100%' }}>
               <CardActionArea
                 href={teachingResourcesPathname()}
@@ -507,7 +507,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
               </CardActionArea>
             </Card>
           </Grid>
-          <Grid xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Card sx={{ height: '100%' }}>
               <CardActionArea href='/research' sx={{ height: '100%' }}>
                 <CardHeader
@@ -532,7 +532,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
               </CardActionArea>
             </Card>
           </Grid>
-          <Grid xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Card sx={{ height: '100%' }}>
               <CardActionArea href='/install' sx={{ height: '100%' }}>
                 <CardHeader
