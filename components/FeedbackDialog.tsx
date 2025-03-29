@@ -48,11 +48,11 @@ export default function FeedbackDialog() {
       return;
     }
     const eventId = Sentry.captureMessage('User Feedback');
-    Sentry.captureUserFeedback({
-      event_id: eventId,
+    Sentry.captureFeedback({
+      associatedEventId: eventId,
       name,
       email,
-      comments: message,
+      message,
     });
     const success = await alwaysStoreDbEvent(EventName.UserFeedback, metadata, {
       name,
