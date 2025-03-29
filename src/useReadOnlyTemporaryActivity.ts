@@ -6,10 +6,5 @@ export default function useReadOnlyTemporaryActivity(
   codeCells: CodeCellState[],
   activityVariant: ActivityVariant,
 ) {
-  return useTemporaryActivity(
-    codeCells,
-    codeCells,
-    () => {},
-    activityVariant,
-  );
+  return useTemporaryActivity(codeCells, codeCells, () => {}, activityVariant);
 }

@@ -1,28 +1,47 @@
 {
   "extends": [
-    "airbnb",
-    "airbnb/hooks",
-    "airbnb-typescript",
     "next/core-web-vitals",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
     "plugin:cypress/recommended"
   ],
-  "parserOptions": {
-    "project": "./tsconfig.json"
+  "plugins": ["@typescript-eslint", "cypress"],
+  "env": {
+    "browser": true,
+    "node": true,
+    "cypress/globals": true
   },
-  "ignorePatterns": ["src/python-analyzer/**"],
   "rules": {
+    "prettier/prettier": ["error"],
     "no-param-reassign": [
       "error",
       {
         "props": true,
-        "ignorePropertyModificationsFor": [
-          "draft"
-        ]
+        "ignorePropertyModificationsFor": ["draft"]
       }
     ],
-    "react/require-default-props": [2, {
-      "functions": "defaultArguments"
-    }],
+    "react/require-default-props": [
+      2,
+      {
+        "functions": "defaultArguments"
+      }
+    ],
     "import/no-relative-packages": "off"
+  },
+  "overrides": [
+    {
+      "files": [
+        "cypress/**/*.ts",
+        "cypress/**/*.tsx",
+        "cypress/**/*.js",
+        "cypress/**/*.jsx"
+      ],
+      "extends": ["plugin:cypress/recommended"]
+    }
+  ],
+  "ignorePatterns": ["src/python-analyzer/**"],
+  "parserOptions": {
+    "project": "./tsconfig.json"
   }
 }

@@ -11,8 +11,10 @@ export default function useTemporaryActivity(
   setCodeCells: Dispatch<SetStateAction<CodeCellState[]>>,
   activityVariant: ActivityVariant,
   preExecute: () => ToolboxFunction | undefined = () => undefined,
-  postExecuteSingleCell:
-  (idx: number, response: ExecutionResponse | undefined) => void = () => undefined,
+  postExecuteSingleCell: (
+    idx: number,
+    response: ExecutionResponse | undefined,
+  ) => void = () => undefined,
 ) {
   const { metadata } = useLocalProfile();
   const [temporaryMetadata, setTemporaryMetadata] = useState(metadata);

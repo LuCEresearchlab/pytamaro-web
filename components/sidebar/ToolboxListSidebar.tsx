@@ -1,8 +1,4 @@
-import {
-  Card,
-  Chip,
-  Stack, TablePagination,
-} from '@mui/material';
+import { Card, Chip, Stack, TablePagination } from '@mui/material';
 import { useState } from 'react';
 import { ToolboxFunction } from '../../src/localStorage/schema';
 import useLocalToolbox from '../../src/localStorage/useLocalToolbox';
@@ -15,15 +11,21 @@ import ToolboxFunctionCardContent from '../ToolboxFunctionCardContent';
 import { SIDEBAR_CHIPS_FONT_SIZE, SIDEBAR_CHIPS_WIDTH } from './Sidebar';
 import SidebarItem from './SidebarItem';
 
-function SidebarToolboxFunction({ fn, skipPopup }: { fn: ToolboxFunction, skipPopup: boolean }) {
+function SidebarToolboxFunction({
+  fn,
+  skipPopup,
+}: {
+  fn: ToolboxFunction;
+  skipPopup: boolean;
+}) {
   const handleClick = () => {
     if (skipPopup) window.open(toolboxFunctionPathname(fn.name));
   };
   const element = (
     <Chip
       label={fn.name}
-      size="small"
-      variant="filled"
+      size='small'
+      variant='filled'
       sx={{
         width: SIDEBAR_CHIPS_WIDTH,
         fontFamily: theme.pytamaro.monospaceFontFamily,
@@ -38,10 +40,8 @@ function SidebarToolboxFunction({ fn, skipPopup }: { fn: ToolboxFunction, skipPo
     return element;
   }
   return (
-    <Popover placement="right">
-      <PopoverTrigger>
-        {element}
-      </PopoverTrigger>
+    <Popover placement='right'>
+      <PopoverTrigger>{element}</PopoverTrigger>
       <PopoverContent>
         <Card>
           <ToolboxFunctionCardContent fn={fn} summary />
@@ -51,7 +51,11 @@ function SidebarToolboxFunction({ fn, skipPopup }: { fn: ToolboxFunction, skipPo
   );
 }
 
-export default function ToolboxListSidebar({ skipPopup = false } : { skipPopup?: boolean }) {
+export default function ToolboxListSidebar({
+  skipPopup = false,
+}: {
+  skipPopup?: boolean;
+}) {
   const { list } = useLocalToolbox();
   const { height } = useWindowSize();
   const { t } = useLocalTranslation();
@@ -63,16 +67,20 @@ export default function ToolboxListSidebar({ skipPopup = false } : { skipPopup?:
   const toolboxFunctions = list();
   return toolboxFunctions.length > 0 ? (
     <SidebarItem title={t('myToolbox')}>
-      <Stack
-        spacing={1}
-      >
-        {toolboxFunctions.slice(fnsPerPage * page, fnsPerPage * (page + 1)).map((fn) => (
-          <SidebarToolboxFunction key={fn.name} fn={fn} skipPopup={skipPopup} />
-        ))}
+      <Stack spacing={1}>
+        {toolboxFunctions
+          .slice(fnsPerPage * page, fnsPerPage * (page + 1))
+          .map((fn) => (
+            <SidebarToolboxFunction
+              key={fn.name}
+              fn={fn}
+              skipPopup={skipPopup}
+            />
+          ))}
       </Stack>
       {toolboxFunctions.length > fnsPerPage ? (
         <TablePagination
-          component="div"
+          component='div'
           count={toolboxFunctions.length}
           page={page}
           rowsPerPageOptions={[]}

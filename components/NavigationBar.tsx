@@ -1,26 +1,31 @@
 import MenuIcon from '@mui/icons-material/Menu';
 import {
-  AppBar, Box, Button, Divider, Drawer, IconButton,
-  MenuItem, Stack, Toolbar,
+  AppBar,
+  Box,
+  Button,
+  Divider,
+  Drawer,
+  IconButton,
+  MenuItem,
+  Stack,
+  Toolbar,
+  useScrollTrigger,
 } from '@mui/material';
-import { useState } from 'react';
+import React, { cloneElement, useEffect, useState } from 'react';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
+import theme from '../src/theme';
 import {
   aboutPathname,
-  activitiesByAuthorPathname, curriculaPathname, documentationPathname, myProgressPathname,
-  playgroundPathname,
+  activitiesByAuthorPathname,
+  curriculaPathname,
+  myProgressPathname,
 } from '../src/urlUtils';
 import FeedbackDialog from './FeedbackDialog';
 import NotificationsButton from './NotificationsButton';
 import PlatformLanguageButton from './PlatformLanguageButton';
-import SidebarItem from './sidebar/SidebarItem';
 import ToolboxListSidebar from './sidebar/ToolboxListSidebar';
 
 const navItems = [
-  {
-    name: 'home',
-    url: '/',
-  },
   {
     name: 'activities',
     url: activitiesByAuthorPathname('luce'),
@@ -39,21 +44,68 @@ const navItems = [
   },
 ];
 
-const smallScreensNavItems = [
-  ...navItems,
-  {
-    name: 'documentation',
-    url: documentationPathname(),
-  },
-  {
-    name: 'playground',
-    url: playgroundPathname(),
-  },
-];
+function ScrollAppBarChanges({
+  enabled = false,
+  children,
+}: {
+  enabled: boolean;
+  children: React.ReactElement;
+}) {
+  const [scrollThreshold, setScrollThreshold] = useState(100);
 
-// eslint-disable-next-line react/require-default-props
-export default function NavigationBar(props: { children?: React.ReactNode }) {
-  const { children } = props;
+  useEffect(() => {
+    const element = document.getElementById('homepage-landscape');
+    const elementAppBar = document.getElementById('app-bar');
+    setScrollThreshold(
+      element && elementAppBar
+        ? element.offsetTop + element.offsetHeight - elementAppBar.offsetHeight
+        : 100,
+    );
+  }, []);
+
+  const scrolled = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: scrollThreshold,
+  });
+
+  if (!enabled) {
+    return children;
+  }
+
+  return cloneElement(children, {
+    sx: {
+      background: scrolled ? theme.palette.secondary.main : '#ffffff80',
+    },
+  });
+}
+
+function PyTamaroHomeLogo() {
+  return (
+    <IconButton
+      href='/'
+      style={{
+        borderRadius: 0,
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        alt='PyTamaro'
+        src='/logo-navbar.png'
+        style={{
+          height: '1.3rem',
+        }}
+      />
+    </IconButton>
+  );
+}
+
+export default function NavigationBar({
+  home = false,
+  children = null,
+}: {
+  home?: boolean;
+  children?: React.ReactNode;
+}) {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -66,60 +118,115 @@ export default function NavigationBar(props: { children?: React.ReactNode }) {
   const { t } = useLocalTranslation();
 
   return (
-    <AppBar position="sticky">
-      <Toolbar>
-        <Box sx={{ flexGrow: 1, display: { xs: 'flex', lg: 'none' } }}>
-          <IconButton
-            size="large"
-            aria-label="Menu"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            onClick={handleOpenNavMenu}
-            color="inherit"
-          >
-            <MenuIcon />
-          </IconButton>
-          <Drawer
-            anchor="left"
-            open={Boolean(anchorElNav)}
-            onClose={handleCloseNavMenu}
+    <ScrollAppBarChanges enabled={home === true}>
+      <AppBar
+        id='app-bar'
+        position='sticky'
+        elevation={0}
+        sx={{
+          background: theme.palette.secondary.main,
+        }}
+      >
+        <Toolbar>
+          <Box
             sx={{
-              display: { xs: 'block', lg: 'none' },
+              flexGrow: 1,
+              display: {
+                lg: 'none',
+                xs: 'flex',
+              },
             }}
           >
-            <Box m={1}>
-              <SidebarItem title="Menu">
-                <Stack direction="column">
-                  {smallScreensNavItems.map((item) => (
-                    <MenuItem key={item.url} component="a" href={item.url}>
+            <IconButton
+              aria-controls='menu-appbar'
+              aria-haspopup='true'
+              aria-label='Menu'
+              onClick={handleOpenNavMenu}
+              size='large'
+              sx={{
+                color: theme.palette.text.primary,
+              }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Drawer
+              anchor='left'
+              onClose={handleCloseNavMenu}
+              open={Boolean(anchorElNav)}
+              sx={{
+                display: { xs: 'block', lg: 'none' },
+              }}
+              PaperProps={{
+                style: {
+                  backgroundColor: theme.palette.secondary.main,
+                },
+              }}
+            >
+              <Box m={1}>
+                <Stack direction='column'>
+                  <PyTamaroHomeLogo />
+                  {navItems.map((item) => (
+                    <MenuItem component='a' key={item.url} href={item.url}>
                       {t(item.name)}
                     </MenuItem>
                   ))}
                 </Stack>
-              </SidebarItem>
-              <Divider sx={{ m: 1 }} />
-              <ToolboxListSidebar skipPopup />
-            </Box>
-          </Drawer>
-        </Box>
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{ flexGrow: 1 }}
-          divider={<Divider light orientation="vertical" flexItem />}
-          display={{ xs: 'none', lg: 'flex' }}
-        >
-          {navItems.map((item) => (
-            <Button key={item.url} href={item.url} sx={{ color: '#fff' }}>
-              {t(item.name)}
-            </Button>
-          ))}
-        </Stack>
-        {children}
-        <FeedbackDialog />
-        <NotificationsButton />
-        <PlatformLanguageButton />
-      </Toolbar>
-    </AppBar>
+                <Divider sx={{ m: 1 }} />
+                <ToolboxListSidebar skipPopup />
+              </Box>
+            </Drawer>
+          </Box>
+
+          <Stack
+            direction='row'
+            display={{
+              lg: 'flex',
+              xs: 'none',
+            }}
+            divider={
+              <Divider flexItem orientation='vertical' variant='middle' />
+            }
+            useFlexGap
+            spacing={1}
+            sx={{
+              flexGrow: 1,
+            }}
+          >
+            <PyTamaroHomeLogo />
+            {navItems.map((item) => (
+              <Button
+                href={item.url}
+                key={item.url}
+                style={{
+                  textTransform: 'none',
+                }}
+                sx={{
+                  color: theme.palette.text.primary,
+                }}
+              >
+                {t(item.name)}
+              </Button>
+            ))}
+          </Stack>
+
+          <Stack
+            direction='row'
+            spacing={1}
+            sx={{
+              marginLeft: 'auto',
+            }}
+          >
+            {children}
+            {!home && (
+              <>
+                <FeedbackDialog />
+                <NotificationsButton />
+                <PlatformLanguageButton />
+              </>
+            )}
+          </Stack>
+        </Toolbar>
+      </AppBar>
+    </ScrollAppBarChanges>
   );
 }

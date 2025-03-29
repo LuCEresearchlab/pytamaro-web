@@ -11,10 +11,7 @@ export function activitiesByAuthorPathname(authorSlug: string) {
   return contentTypeByAuthorPathname('activities', authorSlug);
 }
 
-export function activityPathname(
-  authorSlug: string,
-  activitySlug: string,
-) {
+export function activityPathname(authorSlug: string, activitySlug: string) {
   return `${activitiesByAuthorPathname(authorSlug)}/${activitySlug}`;
 }
 
@@ -27,9 +24,7 @@ export function activityVariantPathnameFromParts(
   return `${activityPathname(authorSlug, activitySlug)}/${language}/${version}`;
 }
 
-export function activityVariantPathname(
-  variant: ActivityVariant,
-) {
+export function activityVariantPathname(variant: ActivityVariant) {
   return activityVariantPathnameFromParts(
     variant.authorSlug,
     variant.activitySlug,
@@ -38,7 +33,11 @@ export function activityVariantPathname(
   );
 }
 
-export function activityAssetPathname(authorSlug: string, activitySlug: string, asset: string) {
+export function activityAssetPathname(
+  authorSlug: string,
+  activitySlug: string,
+  asset: string,
+) {
   return `${activityPathname(authorSlug, activitySlug)}/${asset}`;
 }
 
@@ -74,11 +73,17 @@ export function curriculumWithAnchor(
   return `${curriculumPathname(authorSlug, curriculumSlug)}?${query.toString()}#${anchor}`;
 }
 
-export function curriculumInfoPathname(authorSlug: string, curriculumSlug: string) {
+export function curriculumInfoPathname(
+  authorSlug: string,
+  curriculumSlug: string,
+) {
   return `${curriculumPathname(authorSlug, curriculumSlug)}/info`;
 }
 
-export function curriculumFinishPathname(authorSlug: string, curriculumSlug: string) {
+export function curriculumFinishPathname(
+  authorSlug: string,
+  curriculumSlug: string,
+) {
   return `${curriculumPathname(authorSlug, curriculumSlug)}/finish`;
 }
 

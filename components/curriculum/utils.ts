@@ -1,4 +1,7 @@
-import { Curriculum, CurriculumActivity } from '../../src/schemas/curriculumSchema';
+import {
+  Curriculum,
+  CurriculumActivity,
+} from '../../src/schemas/curriculumSchema';
 import theme from '../../src/theme';
 import { ActivityStatus } from '../ActivityStatusBadge';
 
@@ -8,8 +11,8 @@ export type ActivityNodeData = {
   curriculum: Curriculum;
   status: ActivityStatus;
   isUnlocked: boolean;
-  width: number,
-  height: number,
+  width: number;
+  height: number;
 };
 
 export function color(highlighted: boolean) {

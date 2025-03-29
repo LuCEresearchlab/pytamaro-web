@@ -1,8 +1,7 @@
-import {
-  Assignment,
-  Construction,
-  Route, TipsAndUpdates,
-} from '@mui/icons-material';
+import Assignment from '@mui/icons-material/Assignment';
+import Construction from '@mui/icons-material/Construction';
+import Route from '@mui/icons-material/Route';
+import TipsAndUpdates from '@mui/icons-material/TipsAndUpdates';
 import {
   Alert,
   Box,
@@ -15,13 +14,16 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { activityVariantStatus } from '../components/ActivityStatusBadge';
 import NavigationBar from '../components/NavigationBar';
 import PageTitle from '../components/PageTitle';
-import { listActivitiesAllAuthors, listCurriculaAllAuthors } from '../src/fs-content/authors';
+import {
+  listActivitiesAllAuthors,
+  listCurriculaAllAuthors,
+} from '../src/fs-content/authors';
 import { format } from '../src/internationalization';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import { findStartedCurricula, findUserActivities } from '../src/progress';
@@ -52,14 +54,24 @@ const CardIcon = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(1),
 }));
 
-export default function MyProgress({ activities, curricula } :
-{ activities: Activity[],
-  curricula: Curriculum[] }) {
+export default function MyProgress({
+  activities,
+  curricula,
+}: {
+  activities: Activity[];
+  curricula: Curriculum[];
+}) {
   const { metadata } = useLocalProfile();
   const startedCurricula = findStartedCurricula(metadata.curricula, curricula);
   const userActivities = findUserActivities(metadata.activities, activities);
-  const inProgressActivities = userActivities.filter(({ variant }) => activityVariantStatus(metadata.activities, variant) === 'in-progress');
-  const completedActivities = userActivities.filter(({ variant }) => activityVariantStatus(metadata.activities, variant) === 'completed');
+  const inProgressActivities = userActivities.filter(
+    ({ variant }) =>
+      activityVariantStatus(metadata.activities, variant) === 'in-progress',
+  );
+  const completedActivities = userActivities.filter(
+    ({ variant }) =>
+      activityVariantStatus(metadata.activities, variant) === 'completed',
+  );
   const router = useRouter();
   return (
     <div>
@@ -68,21 +80,23 @@ export default function MyProgress({ activities, curricula } :
       </Head>
       <Box>
         <NavigationBar />
-        <Container maxWidth="lg">
+        <Container maxWidth='lg'>
           <PageTitle>My Progress</PageTitle>
           <Grid container spacing={2} sx={{ mb: 6 }}>
-            <Grid xs={12} lg={4}>
+            <Grid size={{ xs: 12, lg: 4 }}>
               <ResourceCard>
                 <CardIcon>
                   <Route sx={{ fontSize: th.typography.h3.fontSize }} />
                 </CardIcon>
                 <CardHeader
-                  title="My Curricula"
+                  title='My Curricula'
                   titleTypographyProps={{ align: 'center' }}
                 />
                 <CardContent>
                   <Typography>
-                    {startedCurricula.length === 0 ? 'No curriculum started so far.' : `${format(startedCurricula.length, 'curriculum', 'curricula')} started.`}
+                    {startedCurricula.length === 0
+                      ? 'No curriculum started so far.'
+                      : `${format(startedCurricula.length, 'curriculum', 'curricula')} started.`}
                   </Typography>
                 </CardContent>
                 <CardActions sx={{ marginTop: 'auto' }}>
@@ -98,46 +112,55 @@ export default function MyProgress({ activities, curricula } :
                 </CardActions>
               </ResourceCard>
             </Grid>
-            <Grid xs={12} lg={4}>
+            <Grid size={{ xs: 12, lg: 4 }}>
               <ResourceCard>
                 <CardIcon>
                   <Assignment sx={{ fontSize: th.typography.h3.fontSize }} />
                 </CardIcon>
                 <CardHeader
-                  title="My Activities"
+                  title='My Activities'
                   titleTypographyProps={{ align: 'center' }}
                 />
                 <CardContent>
                   <Typography>
-                    {(inProgressActivities.length === 0 && completedActivities.length === 0) ? 'No activity started so far.'
+                    {inProgressActivities.length === 0 &&
+                    completedActivities.length === 0
+                      ? 'No activity started so far.'
                       : `${format(inProgressActivities.length, 'activity', 'activities')} started and ${format(completedActivities.length, 'activity', 'activities')} completed.`}
                   </Typography>
                 </CardContent>
                 <CardActions sx={{ marginTop: 'auto' }}>
-                  {inProgressActivities.length > 0 || completedActivities.length > 0 ? (
+                  {inProgressActivities.length > 0 ||
+                  completedActivities.length > 0 ? (
                     <Button onClick={() => router.push(myActivitiesPathname())}>
                       See My Activities
                     </Button>
                   ) : (
-                    <Button onClick={() => router.push(activitiesByAuthorPathname('luce'))}>
+                    <Button
+                      onClick={() =>
+                        router.push(activitiesByAuthorPathname('luce'))
+                      }
+                    >
                       Explore Activities
                     </Button>
                   )}
                 </CardActions>
               </ResourceCard>
             </Grid>
-            <Grid xs={12} lg={4}>
+            <Grid size={{ xs: 12, lg: 4 }}>
               <ResourceCard>
                 <CardIcon>
                   <Construction sx={{ fontSize: th.typography.h3.fontSize }} />
                 </CardIcon>
                 <CardHeader
-                  title="My Toolbox"
+                  title='My Toolbox'
                   titleTypographyProps={{ align: 'center' }}
                 />
                 <CardContent>
                   <Typography>
-                    {metadata.toolbox.length === 0 ? 'Toolbox still empty.' : `${format(metadata.toolbox.length, 'function', 'functions')} in the toolbox.`}
+                    {metadata.toolbox.length === 0
+                      ? 'Toolbox still empty.'
+                      : `${format(metadata.toolbox.length, 'function', 'functions')} in the toolbox.`}
                   </Typography>
                 </CardContent>
                 <CardActions sx={{ marginTop: 'auto' }}>
@@ -147,9 +170,11 @@ export default function MyProgress({ activities, curricula } :
                     </Button>
                   ) : (
                     <Button
-                      onClick={() => router.push(
-                        activityVariantPathname(toolboxDemoActivityVariant),
-                      )}
+                      onClick={() =>
+                        router.push(
+                          activityVariantPathname(toolboxDemoActivityVariant),
+                        )
+                      }
                     >
                       Learn How to Use the Toolbox
                     </Button>
@@ -160,23 +185,22 @@ export default function MyProgress({ activities, curricula } :
           </Grid>
           <Alert
             iconMapping={{
-              success: <TipsAndUpdates fontSize="inherit" />,
+              success: <TipsAndUpdates fontSize='inherit' />,
             }}
             sx={{ my: 3, display: 'flex', '.MuiAlert-message': { pt: 0.5 } }}
           >
-            <Typography component="span" mr={2}>
-              Do you want to export or import all your data? Review or change your privacy settings?
+            <Typography component='span' mr={2}>
+              Do you want to export or import all your data? Review or change
+              your privacy settings?
             </Typography>
             <Button
-              color="success"
-              variant="outlined"
-              size="small"
+              color='success'
+              variant='outlined'
+              size='small'
               href={myDataPathname()}
               sx={{ whiteSpace: 'pre-wrap' }}
             >
-              Go To
-              {' '}
-              <span style={{ fontWeight: 'bold' }}>My Data</span>
+              Go To <span style={{ fontWeight: 'bold' }}>My Data</span>
             </Button>
           </Alert>
         </Container>
@@ -192,7 +216,7 @@ export async function getStaticProps() {
     props: {
       activities,
       curricula,
-      ...await translationProps(),
+      ...(await translationProps()),
     },
   };
 }

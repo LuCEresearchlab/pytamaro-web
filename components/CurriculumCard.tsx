@@ -1,30 +1,43 @@
 import {
   Box,
-  Card, CardActionArea, CardContent,
+  Card,
+  CardActionArea,
+  CardContent,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid';
 import { concat, shuffle } from 'lodash';
 import { MDXRemote } from 'next-mdx-remote';
 import { useEffect, useState } from 'react';
 import { allActivities } from '../src/curricula';
 import { findUserCompetencies } from '../src/curriculumCompetencies';
 import { ActivityVariantMetadata } from '../src/localStorage/schema';
-import { Curriculum, CurriculumActivity } from '../src/schemas/curriculumSchema';
+import {
+  Curriculum,
+  CurriculumActivity,
+} from '../src/schemas/curriculumSchema';
 import theme from '../src/theme';
 import { curriculumPathname } from '../src/urlUtils';
 import ActivityCardMedia from './ActivityCardMedia';
 import UserCompetenciesStack from './UserCompetenciesStack';
 
-function CurriculumDescriptionTypography({ children = null }: { children?: React.ReactNode }) {
+function CurriculumDescriptionTypography({
+  children = null,
+}: {
+  children?: React.ReactNode;
+}) {
   return (
-    <Typography variant="subtitle1" color="text.secondary" component="div">
+    <Typography variant='subtitle1' color='text.secondary' component='div'>
       {children}
     </Typography>
   );
 }
 
-function CurriculumDescriptionListItem({ children = null }: { children?: React.ReactNode }) {
+function CurriculumDescriptionListItem({
+  children = null,
+}: {
+  children?: React.ReactNode;
+}) {
   return (
     <li>
       <CurriculumDescriptionTypography>
@@ -35,23 +48,37 @@ function CurriculumDescriptionListItem({ children = null }: { children?: React.R
 }
 
 export default function CurriculumCard({
-  curriculum, userActivities = undefined,
+  curriculum,
+  userActivities = undefined,
   alwaysClickable = false,
-} : { curriculum: Curriculum, userActivities?: ActivityVariantMetadata[],
-  alwaysClickable?: boolean }) {
-  const [previewActivities, setPreviewActivities] = useState<CurriculumActivity[]>([]);
+}: {
+  curriculum: Curriculum;
+  userActivities?: ActivityVariantMetadata[];
+  alwaysClickable?: boolean;
+}) {
+  const [previewActivities, setPreviewActivities] = useState<
+    CurriculumActivity[]
+  >([]);
   useEffect(() => {
     const activities = allActivities(curriculum);
-    const fixedActivities = curriculum.activitiesPreviewImage.map(
-      (activityId) => activities.find((a) => a.id === activityId),
-    ).filter((a) => a !== undefined) as CurriculumActivity[];
-    const otherActivities = shuffle(allActivities(curriculum).filter(
-      (a) => !curriculum.activitiesPreviewImage.includes(a.id),
-    ));
+    const fixedActivities = curriculum.activitiesPreviewImage
+      .map((activityId) => activities.find((a) => a.id === activityId))
+      .filter((a) => a !== undefined) as CurriculumActivity[];
+    const otherActivities = shuffle(
+      allActivities(curriculum).filter(
+        (a) => !curriculum.activitiesPreviewImage.includes(a.id),
+      ),
+    );
     setPreviewActivities(concat(fixedActivities, otherActivities));
   }, [curriculum]);
-  const userCompetencies = findUserCompetencies(curriculum, userActivities || []);
-  const clickable = alwaysClickable || curriculum.visibility === 'featured' || curriculum.visibility === 'visible';
+  const userCompetencies = findUserCompetencies(
+    curriculum,
+    userActivities || [],
+  );
+  const clickable =
+    alwaysClickable ||
+    curriculum.visibility === 'featured' ||
+    curriculum.visibility === 'visible';
   return (
     <Card>
       <CardActionArea
@@ -59,9 +86,9 @@ export default function CurriculumCard({
         href={curriculumPathname(curriculum.authorSlug, curriculum.slug)}
       >
         <Grid container>
-          <Grid xs={9}>
+          <Grid size={9}>
             <CardContent>
-              <Typography component="div" variant="h5" gutterBottom>
+              <Typography component='div' variant='h5' gutterBottom>
                 {curriculum.title}
               </Typography>
               <Box
@@ -71,7 +98,7 @@ export default function CurriculumCard({
                 }}
               >
                 <MDXRemote
-                // eslint-disable-next-line react/jsx-props-no-spreading
+                  // eslint-disable-next-line react/jsx-props-no-spreading
                   {...curriculum.description}
                   components={{
                     p: CurriculumDescriptionTypography,
@@ -81,16 +108,17 @@ export default function CurriculumCard({
               </Box>
             </CardContent>
           </Grid>
-          <Grid xs={3} display="flex" alignItems="center" justifyContent="center">
+          <Grid
+            size={3}
+            display='flex'
+            alignItems='center'
+            justifyContent='center'
+          >
             {/* <div> needed so that the inner Grid does not inherit from the outer one */}
             <div>
-              <Grid container justifyContent="center">
+              <Grid container justifyContent='center'>
                 {previewActivities.slice(0, 4).map((activity) => (
-                  <Grid
-                    xs={12}
-                    md={6}
-                    key={activity.id}
-                  >
+                  <Grid size={{ xs: 12, md: 6 }} key={activity.id}>
                     <ActivityCardMedia
                       activity={activity.activity}
                       variant={activity.variant}
@@ -107,7 +135,7 @@ export default function CurriculumCard({
           <UserCompetenciesStack
             curriculum={curriculum}
             userCompetencies={userCompetencies}
-            direction="row"
+            direction='row'
           />
         </CardContent>
       )}

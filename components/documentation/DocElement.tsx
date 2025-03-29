@@ -1,10 +1,10 @@
 /* eslint-disable react/no-danger */
 /* eslint-disable @next/next/no-img-element */
-import {
-  Typography,
-} from '@mui/material';
+import { Typography } from '@mui/material';
 import { useState } from 'react';
-import logAnalyticsEvent, { AnalyticsEventName } from '../../src/analyticsEvent';
+import logAnalyticsEvent, {
+  AnalyticsEventName,
+} from '../../src/analyticsEvent';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';
 import { ActivityVariant } from '../../src/schemas/activitySchema';
 import { JudiciousElement } from '../../src/schemas/documentation';
@@ -15,21 +15,31 @@ import DocElementCard from './DocElementCard';
 import { iconPath } from './utils';
 
 export default function DocElement({
-  module, element, activityVariant, smallerFont,
-} :
-{ module: string, element: JudiciousElement,
-  activityVariant: ActivityVariant, smallerFont: boolean }) {
+  module,
+  element,
+  activityVariant,
+  smallerFont,
+}: {
+  module: string;
+  element: JudiciousElement;
+  activityVariant: ActivityVariant;
+  smallerFont: boolean;
+}) {
   const [hover, setHover] = useState(false);
   const { metadata } = useLocalProfile();
 
   const handleClick = () => {
-    logAnalyticsEvent(AnalyticsEventName.APIDocsPopover, { name: `${module}.${element.name}` });
+    logAnalyticsEvent(AnalyticsEventName.APIDocsPopover, {
+      name: `${module}.${element.name}`,
+    });
     storeDbEvent(EventName.APILookup, metadata, {
-      activityVariant, name: element.name, module,
+      activityVariant,
+      name: element.name,
+      module,
     });
   };
 
-  return (element ? (
+  return element ? (
     <div
       style={{
         display: 'inline-flex',
@@ -41,32 +51,39 @@ export default function DocElement({
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      <Popover placement="right">
+      <Popover placement='right'>
         <PopoverTrigger onClick={handleClick}>
           <img
             src={iconPath(module)}
             style={{
-              height: smallerFont ? '0.8em' : '1em', width: 'auto', display: 'inline-block', transform: `translateY(.${smallerFont ? '1' : '2'}em)`, marginRight: '0.1em',
+              height: smallerFont ? '0.8em' : '1em',
+              width: 'auto',
+              display: 'inline-block',
+              transform: `translateY(.${smallerFont ? '1' : '2'}em)`,
+              marginRight: '0.1em',
             }}
-            alt="Module logo"
+            alt='Module logo'
           />
           <Typography
-            component="span"
+            component='span'
             style={{
               color: theme.pytamaro.redColor,
               fontSize: smallerFont ? '0.8em' : '1em',
               fontFamily: theme.pytamaro.monospaceFontFamily,
             }}
-            translate="no"
+            translate='no'
           >
             {element.name}
           </Typography>
         </PopoverTrigger>
         <PopoverContent>
-          <DocElementCard module={module} element={element} sx={{ maxHeight: '95vh', overflowY: 'auto' }} />
+          <DocElementCard
+            module={module}
+            element={element}
+            sx={{ maxHeight: '95vh', overflowY: 'auto' }}
+          />
         </PopoverContent>
       </Popover>
     </div>
-  ) : null
-  );
+  ) : null;
 }

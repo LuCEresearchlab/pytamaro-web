@@ -1,14 +1,18 @@
 import { activityVariantStatus } from '../components/ActivityStatusBadge';
 import { allActivities } from './curricula';
 import { ActivityVariantMetadata } from './localStorage/schema';
-import { Curriculum, CurriculumActivity, CurriculumCompetency } from './schemas/curriculumSchema';
+import {
+  Curriculum,
+  CurriculumActivity,
+  CurriculumCompetency,
+} from './schemas/curriculumSchema';
 
 export function allActivitiesForCompetency(
   curriculum: Curriculum,
   competency: CurriculumCompetency,
 ) {
-  return allActivities(curriculum).filter(
-    (activity) => activity.learningObjectives.includes(competency.id),
+  return allActivities(curriculum).filter((activity) =>
+    activity.learningObjectives.includes(competency.id),
   );
 }
 
@@ -17,7 +21,12 @@ export function completedActivitiesForCompetency(
   userActivities: ActivityVariantMetadata[],
 ) {
   return activities.filter(
-    (activity) => activityVariantStatus(userActivities, activity.variant, activity.fallbackIds) === 'completed',
+    (activity) =>
+      activityVariantStatus(
+        userActivities,
+        activity.variant,
+        activity.fallbackIds,
+      ) === 'completed',
   );
 }
 
@@ -32,7 +41,10 @@ export function findUserCompetencies(
   const competenciesWithActivities = curriculum.competencies.map(
     (competency) => {
       const activities = allActivitiesForCompetency(curriculum, competency);
-      const completedActivities = completedActivitiesForCompetency(activities, userActivities);
+      const completedActivities = completedActivitiesForCompetency(
+        activities,
+        userActivities,
+      );
       return {
         competency,
         allActivities: activities,

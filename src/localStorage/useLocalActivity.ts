@@ -1,10 +1,11 @@
 import useLocalStorageState from 'use-local-storage-state';
-import { ActivityVariant, PythonFile, activityVariantId } from '../schemas/activitySchema';
-import { useActivity } from '../useActivity';
 import {
-  CodeCellState,
-  getActivityVariantCodeCellsKey,
-} from './schema';
+  ActivityVariant,
+  PythonFile,
+  activityVariantId,
+} from '../schemas/activitySchema';
+import { useActivity } from '../useActivity';
+import { CodeCellState, getActivityVariantCodeCellsKey } from './schema';
 import useLocalProfile from './useLocalProfile';
 
 export default function useLocalActivity(
@@ -28,8 +29,9 @@ export default function useLocalActivity(
     activityVariant,
     extraPythonFiles,
   );
-  const localCodeCellsWrongLength = codeCells.length !== initialCodeCells.length
-    || activity.codeExecutionStates.length !== codeCells.length;
+  const localCodeCellsWrongLength =
+    codeCells.length !== initialCodeCells.length ||
+    activity.codeExecutionStates.length !== codeCells.length;
   return {
     ...activity,
     localCodeCellsWrongLength,

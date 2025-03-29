@@ -1,22 +1,23 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/no-array-index-key */
-import { Construction, Fullscreen } from '@mui/icons-material';
+import Construction from '@mui/icons-material/Construction';
+import Fullscreen from '@mui/icons-material/Fullscreen';
 import {
   Alert,
-  Box, Button, Card,
+  Box,
+  Button,
+  Card,
   Collapse,
   Dialog,
   ToggleButton,
 } from '@mui/material';
 import { isEmpty, negate } from 'lodash';
-import {
-  CSSProperties,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { CSSProperties, useEffect, useRef, useState } from 'react';
 import { CompletedExecutionResponse } from '../src/codeExecution';
-import { isErrorInvolvingToolbox, processTraceback } from '../src/pythonTraceback';
+import {
+  isErrorInvolvingToolbox,
+  processTraceback,
+} from '../src/pythonTraceback';
 import { joinLines, splitLines } from '../src/sourceUtils';
 import theme from '../src/theme';
 
@@ -38,7 +39,7 @@ const CHECKERED_PATTERN = {
   },
 };
 
-function ImgElement({ dataURI } : { dataURI: string }) {
+function ImgElement({ dataURI }: { dataURI: string }) {
   const [availableSize, setAvailableSize] = useState([0, 0]);
   const [wantedSize, setWantedSize] = useState([0, 0]);
 
@@ -50,7 +51,10 @@ function ImgElement({ dataURI } : { dataURI: string }) {
     if (!boxRef.current) return () => {};
     const observer = new ResizeObserver(() => {
       if (boxRef.current) {
-        setAvailableSize([boxRef.current.clientWidth, boxRef.current.clientHeight]);
+        setAvailableSize([
+          boxRef.current.clientWidth,
+          boxRef.current.clientHeight,
+        ]);
       }
     });
     observer.observe(boxRef.current);
@@ -58,14 +62,15 @@ function ImgElement({ dataURI } : { dataURI: string }) {
       observer.disconnect();
     };
   }, []);
-  const showFullScreenButton = wantedSize[0] > availableSize[0] || wantedSize[1] > availableSize[1];
+  const showFullScreenButton =
+    wantedSize[0] > availableSize[0] || wantedSize[1] > availableSize[1];
 
   const [fullScreenOpen, setFullScreenOpen] = useState(false);
   const imgTag = (mainImage: boolean) => {
     const baseStyle = {
       display: 'block',
       maxWidth: '100%',
-      objectFit: 'scale-down',
+      objectFit: 'scale-down' as const,
     };
     const dialogStyle = {
       ...baseStyle,
@@ -81,10 +86,9 @@ function ImgElement({ dataURI } : { dataURI: string }) {
             setWantedSize([img.naturalWidth, img.naturalHeight]);
           }
         }}
-        // @ts-ignore
         style={mainImage ? baseStyle : dialogStyle}
         src={dataURI}
-        alt="Graphical output from execution result"
+        alt='Graphical output from execution result'
       />
     );
   };
@@ -110,7 +114,7 @@ function ImgElement({ dataURI } : { dataURI: string }) {
             maxWidth={false}
           >
             <Card
-              variant="outlined"
+              variant='outlined'
               sx={{
                 backgroundColor: BACKGROUND_COLOR,
                 padding: theme.spacing(1),
@@ -122,8 +126,8 @@ function ImgElement({ dataURI } : { dataURI: string }) {
           </Dialog>
           <Button
             onClick={() => setFullScreenOpen(true)}
-            variant="contained"
-            size="small"
+            variant='contained'
+            size='small'
             sx={{ position: 'absolute', right: 0, top: 0 }}
           >
             <Fullscreen />
@@ -135,18 +139,23 @@ function ImgElement({ dataURI } : { dataURI: string }) {
   );
 }
 
-function SinglePreElement({ style = {}, lines } : { style?: CSSProperties, lines: string[] }) {
+function SinglePreElement({
+  style = {},
+  lines,
+}: {
+  style?: CSSProperties;
+  lines: string[];
+}) {
   return (
     <pre style={{ ...OUTPUT_ELEMENT_STYLE, ...style }}>{joinLines(lines)}</pre>
   );
 }
 
-function CodeElement({ content } : { content : string }) {
+function CodeElement({ content }: { content: string }) {
   const [showAllStackFrames, setShowAllStackFrames] = useState(false);
 
-  const {
-    errorLines, userTracebackLines, libraryTracebackLines, collapsed,
-  } = processTraceback(content);
+  const { errorLines, userTracebackLines, libraryTracebackLines, collapsed } =
+    processTraceback(content);
 
   return (
     <div>
@@ -154,14 +163,14 @@ function CodeElement({ content } : { content : string }) {
       {collapsed && (
         <div>
           <ToggleButton
-            value="check"
+            value='check'
             selected={showAllStackFrames}
             onChange={() => setShowAllStackFrames(!showAllStackFrames)}
             sx={{ paddingY: 0.5, marginLeft: '2ch' }}
           >
             {`${showAllStackFrames ? 'Hide' : 'Show All '} Stack Frames`}
           </ToggleButton>
-          <Collapse in={showAllStackFrames} timeout="auto" unmountOnExit>
+          <Collapse in={showAllStackFrames} timeout='auto' unmountOnExit>
             <SinglePreElement lines={libraryTracebackLines} />
           </Collapse>
         </div>
@@ -171,39 +180,61 @@ function CodeElement({ content } : { content : string }) {
   );
 }
 
-export function OutputArea({ data, sx = {}, preStyle = {} } :
-{ data : string, sx?: CSSProperties, preStyle?: CSSProperties }) {
-  const pytamaroDataUriRegex = /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
+export function OutputArea({
+  data,
+  sx = {},
+  preStyle = {},
+}: {
+  data: string;
+  sx?: CSSProperties;
+  preStyle?: CSSProperties;
+}) {
+  const pytamaroDataUriRegex =
+    /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
   return (
-    <div className="output-area" translate="no" style={sx}>
-      {data.split(pytamaroDataUriRegex).filter(negate(isEmpty)).map((chunk, idx) => (
-        chunk.startsWith(dataURIPrefix('image/png')) || chunk.startsWith(dataURIPrefix('image/gif'))
-          ? <ImgElement key={idx} dataURI={chunk} />
-          : <SinglePreElement key={idx} lines={splitLines(chunk)} style={preStyle} />
-      ))}
+    <div className='output-area' translate='no' style={sx}>
+      {data
+        .split(pytamaroDataUriRegex)
+        .filter(negate(isEmpty))
+        .map((chunk, idx) =>
+          chunk.startsWith(dataURIPrefix('image/png')) ||
+          chunk.startsWith(dataURIPrefix('image/gif')) ? (
+            <ImgElement key={idx} dataURI={chunk} />
+          ) : (
+            <SinglePreElement
+              key={idx}
+              lines={splitLines(chunk)}
+              style={preStyle}
+            />
+          ),
+        )}
     </div>
   );
 }
 
 function ToolboxErrorAlert() {
   return (
-    <Alert severity="warning" color="error" icon={<Construction />}>
+    <Alert severity='warning' color='error' icon={<Construction />}>
       This error involves a function from the toolbox.
     </Alert>
   );
 }
 
-export default function ExecutionOutputArea(
-  {
-    executionError, executionResponse, dimmed = false, sx = {},
-  } :
-  { executionError: boolean, executionResponse: CompletedExecutionResponse,
-    dimmed?: boolean, sx?: CSSProperties },
-) {
+export default function ExecutionOutputArea({
+  executionError,
+  executionResponse,
+  dimmed = false,
+  sx = {},
+}: {
+  executionError: boolean;
+  executionResponse: CompletedExecutionResponse;
+  dimmed?: boolean;
+  sx?: CSSProperties;
+}) {
   const { stdout, stderr } = executionResponse;
   return (
     <Card
-      variant="outlined"
+      variant='outlined'
       sx={{
         backgroundColor: BACKGROUND_COLOR,
         position: 'relative',
@@ -214,8 +245,7 @@ export default function ExecutionOutputArea(
         ...sx,
       }}
     >
-
-      {isErrorInvolvingToolbox(stderr) && <ToolboxErrorAlert /> }
+      {isErrorInvolvingToolbox(stderr) && <ToolboxErrorAlert />}
       <Box sx={{ px: 2 }}>
         <OutputArea data={stdout} />
         {stderr && <CodeElement content={stderr} />}

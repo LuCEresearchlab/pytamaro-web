@@ -6,7 +6,7 @@ export type Concept = {
   description: string;
 };
 
-export const knownConcepts : Dictionary<Concept> = {
+export const knownConcepts: Dictionary<Concept> = {
   basic_comp: {
     // All the primitive shapes and the basic composition
     // operations (beside, above, overlay), and rotate (when the pinning position
@@ -47,7 +47,8 @@ export const knownConcepts : Dictionary<Concept> = {
   cond: {
     title: 'Conditional',
     category: 'programming',
-    description: 'Using conditional computation (if/else statement or expression)',
+    description:
+      'Using conditional computation (if/else statement or expression)',
   },
   loop: {
     title: 'Loop',

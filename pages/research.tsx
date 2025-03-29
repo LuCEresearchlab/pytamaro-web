@@ -1,6 +1,8 @@
-import {
-  Description, Home, OndemandVideo, People, PictureAsPdf,
-} from '@mui/icons-material';
+import Description from '@mui/icons-material/Description';
+import Home from '@mui/icons-material/Home';
+import OndemandVideo from '@mui/icons-material/OndemandVideo';
+import People from '@mui/icons-material/People';
+import PictureAsPdf from '@mui/icons-material/PictureAsPdf';
 import {
   Box,
   Button,
@@ -18,10 +20,20 @@ import PageTitle from '../components/PageTitle';
 import { translationProps } from '../src/serverSideTranslationProps';
 
 function ResearchCard({
-  title, abstract, pdf, video = undefined, authors, conference,
-}:
-{ title: string; abstract: string; pdf: string, video?: string,
-  authors: string, conference: string }) {
+  title,
+  abstract,
+  pdf,
+  video = undefined,
+  authors,
+  conference,
+}: {
+  title: string;
+  abstract: string;
+  pdf: string;
+  video?: string;
+  authors: string;
+  conference: string;
+}) {
   return (
     <Card sx={{ height: '100%' }}>
       <CardHeader
@@ -32,16 +44,16 @@ function ResearchCard({
           fontWeight: 'bold',
         }}
         sx={{ pb: 0 }}
-        avatar={<Description color="primary" />}
+        avatar={<Description color='primary' />}
       />
       <CardContent>
-        <Stack direction="row" spacing={1} mb={2}>
-          <Chip label={conference} size="small" icon={<Home />} />
-          <Chip label={authors} size="small" icon={<People />} />
+        <Stack direction='row' spacing={1} mb={2}>
+          <Chip label={conference} size='small' icon={<Home />} />
+          <Chip label={authors} size='small' icon={<People />} />
         </Stack>
         <Typography
-          variant="body2"
-          color="textSecondary"
+          variant='body2'
+          color='textSecondary'
           sx={{
             overflow: 'hidden',
             lineClamp: 5,
@@ -52,26 +64,26 @@ function ResearchCard({
         >
           {abstract}
         </Typography>
-        <Stack direction="row" spacing={2} mt={2}>
+        <Stack direction='row' spacing={2} mt={2}>
           <Button
             href={pdf}
-            size="small"
-            variant="contained"
-            color="success"
+            size='small'
+            variant='contained'
+            color='success'
             startIcon={<PictureAsPdf />}
           >
             Read Full Paper
           </Button>
           {video && (
-          <Button
-            href={video}
-            size="small"
-            variant="contained"
-            color="success"
-            startIcon={<OndemandVideo />}
-          >
-            Watch Presentation
-          </Button>
+            <Button
+              href={video}
+              size='small'
+              variant='contained'
+              color='success'
+              startIcon={<OndemandVideo />}
+            >
+              Watch Presentation
+            </Button>
           )}
         </Stack>
       </CardContent>
@@ -87,16 +99,16 @@ export default function Research() {
       </Head>
       <Box>
         <NavigationBar />
-        <Container maxWidth="md">
+        <Container maxWidth='md'>
           <PageTitle>Research Behind PyTamaro</PageTitle>
-          <Typography variant="h6" gutterBottom fontWeight="normal">
+          <Typography variant='h6' gutterBottom fontWeight='normal'>
             These research papers describe and evaluate the design of the
             PyTamaro library and its pedagogical approach:
           </Typography>
-          <Stack direction="column" spacing={2}>
+          <Stack direction='column' spacing={2}>
             <ResearchCard
-              title="Teaching Programming with Graphics: Pitfalls and a Solution"
-              abstract="Many introductory programming courses employ graphics
+              title='Teaching Programming with Graphics: Pitfalls and a Solution'
+              abstract='Many introductory programming courses employ graphics
               libraries that promote engagement and enable fun visuals. However,
               student excitement over graphical outputs is not a guarantee of
               conceptual understanding of programming, and graphics may even
@@ -115,16 +127,16 @@ export default function Research() {
               strengths and deliberate limitations. We briefly discuss
               PyTamaro’s trade-offs in comparison to coordinate-based libraries.
               The work reported here paves the way for future empirical
-              evaluations of PyTamaro and associated teaching practices."
-              pdf="https://www.chiodini.org/publications/splashe23-pytamaro.pdf"
-              video="https://www.youtube.com/watch?v=T0QjwGNYz7A"
-              conference="SPLASH-E 2023"
-              authors="Luca Chiodini, Juha Sorva, Matthias Hauswirth"
+              evaluations of PyTamaro and associated teaching practices.'
+              pdf='https://www.chiodini.org/publications/splashe23-pytamaro.pdf'
+              video='https://www.youtube.com/watch?v=T0QjwGNYz7A'
+              conference='SPLASH-E 2023'
+              authors='Luca Chiodini, Juha Sorva, Matthias Hauswirth'
             />
             <ResearchCard
-              title="Two Approaches for Programming Education in the Domain of
-Graphics: An Experiment"
-              abstract="Context Graphics is a popular domain for teaching
+              title='Two Approaches for Programming Education in the Domain of
+Graphics: An Experiment'
+              abstract='Context Graphics is a popular domain for teaching
               introductory programming in a motivating way, even in text-based
               programming languages. Over the last few decades, a large number
               of libraries using different approaches have been developed for
@@ -162,20 +174,20 @@ Graphics: An Experiment"
               of the test can still not be enough to achieve better transfer.
               This challenges programming educators and researchers to
               investigate further which graphics-based approaches work best and
-              how to facilitate transfer"
-              pdf="https://chiodini.org/publications/programming25-pytamaro-turtle.pdf"
-              conference="‹Programming› 2025"
-              authors="Luca Chiodini, Juha Sorva, Arto Hellas, Otto Seppälä, Matthias Hauswirth"
+              how to facilitate transfer'
+              pdf='https://chiodini.org/publications/programming25-pytamaro-turtle.pdf'
+              conference='‹Programming› 2025'
+              authors='Luca Chiodini, Juha Sorva, Arto Hellas, Otto Seppälä, Matthias Hauswirth'
             />
           </Stack>
-          <Typography variant="h6" gutterBottom fontWeight="normal" mt={4}>
-            These research papers explain the design of the pedagogical aspects of
-            this web platform:
+          <Typography variant='h6' gutterBottom fontWeight='normal' mt={4}>
+            These research papers explain the design of the pedagogical aspects
+            of this web platform:
           </Typography>
-          <Stack direction="column" spacing={2}>
+          <Stack direction='column' spacing={2}>
             <ResearchCard
-              title="Judicious: API Documentation for Novices"
-              abstract="Programmers frequently consult API documentation to
+              title='Judicious: API Documentation for Novices'
+              abstract='Programmers frequently consult API documentation to
               learn how to use libraries, both those included with a programming
               language and those offered by third parties. Beginner programmers
               also have this need but struggle to browse professional
@@ -197,15 +209,15 @@ Graphics: An Experiment"
               clear distinction between functions and constants, and the
               pinpointing of side effects aim to address known novice
               misconceptions. The system is integrated into a code editor and is
-              publicly available as a web platform."
-              pdf="https://chiodini.org/publications/splashe24-judicious.pdf"
-              video="https://www.youtube.com/watch?v=O-A3Anz0Tfw"
-              conference="SPLASH-E 2024"
-              authors="Luca Chiodini, Simone Piatti, Matthias Hauswirth"
+              publicly available as a web platform.'
+              pdf='https://chiodini.org/publications/splashe24-judicious.pdf'
+              video='https://www.youtube.com/watch?v=O-A3Anz0Tfw'
+              conference='SPLASH-E 2024'
+              authors='Luca Chiodini, Simone Piatti, Matthias Hauswirth'
             />
             <ResearchCard
-              title="The Toolbox of Functions: Teaching Code Reuse in Schools"
-              abstract="Large programs often contain duplicate parts, known as
+              title='The Toolbox of Functions: Teaching Code Reuse in Schools'
+              abstract='Large programs often contain duplicate parts, known as
               code clones.  Programs riddled with code clones become difficult
               to reason about and modify. To avoid code clones and enable code
               reuse, programmers introduce abstractions such as functions and
@@ -226,10 +238,10 @@ Graphics: An Experiment"
               Over the course of a year, more than 800 users executed over 30
               000 programs that use the Toolbox of Functions. This initial
               experience suggests the potential of the approach to instill the
-              principle of code reuse effectively."
-              pdf="https://www.chiodini.org/publications/ecsee25-pytamaro-toolbox.pdf"
-              conference="ECSEE 2025"
-              authors="Luca Chiodini, Joey Bevilacqua, Matthias Hauswirth"
+              principle of code reuse effectively.'
+              pdf='https://www.chiodini.org/publications/ecsee25-pytamaro-toolbox.pdf'
+              conference='ECSEE 2025'
+              authors='Luca Chiodini, Joey Bevilacqua, Matthias Hauswirth'
             />
           </Stack>
         </Container>

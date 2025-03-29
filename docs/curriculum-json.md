@@ -3,7 +3,7 @@
 ```javascript
 {
   title: string,
-  description: string, // markdown supported 
+  description: string, // markdown supported
   visibility: 'visible' | 'hidden',
   activitiesPreviewImage?: activityId[],
   orderingKey?: string,
@@ -46,4 +46,3 @@
   derivedFrom: curriculumId[], // string (<author-slug>/<curriculum-slug>)
 }
 ```
-

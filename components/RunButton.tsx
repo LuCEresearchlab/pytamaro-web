@@ -1,13 +1,21 @@
-import { Done, ErrorOutline, PlayCircleFilled } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
-import { Stack, Tooltip } from '@mui/material';
+import Done from '@mui/icons-material/Done';
+import ErrorOutline from '@mui/icons-material/ErrorOutline';
+import PlayCircleFilled from '@mui/icons-material/PlayCircleFilled';
+import { Button, Stack, Tooltip } from '@mui/material';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 
 export default function RunButton({
-  onExecutionRequested, executing, executionFinished, executionError,
-} :
-{ onExecutionRequested: () => Promise<any>, executing: boolean, executionFinished: boolean,
-  executionError: boolean }) {
+  onExecutionRequested,
+  executing,
+  executionFinished,
+  executionError,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onExecutionRequested: () => Promise<any>;
+  executing: boolean;
+  executionFinished: boolean;
+  executionError: boolean;
+}) {
   const { t } = useLocalTranslation(['common']);
   let buttonMessage = t('runCode');
   let buttonTooltip = ''; // Empty tooltips are not displayed
@@ -19,27 +27,41 @@ export default function RunButton({
   }
   const showPlayIcon = !executing && !executionFinished;
   return (
-    <Stack direction="row" spacing={2} alignItems="center">
-      <Tooltip arrow title={buttonTooltip} placement="left">
+    <Stack direction='row' spacing={2} alignItems='center'>
+      <Tooltip arrow title={buttonTooltip} placement='left'>
         <span>
-          <LoadingButton
+          <Button
             onClick={onExecutionRequested}
             endIcon={showPlayIcon && <PlayCircleFilled />}
             loading={executing}
             loadingPosition={showPlayIcon || executing ? 'end' : undefined}
-            variant="contained"
+            variant='contained'
             sx={{ minWidth: '10rem' }}
             disabled={executing || executionFinished}
-            className="run-button"
+            className='run-button'
           >
             <span>{buttonMessage}</span>
-          </LoadingButton>
+          </Button>
         </span>
       </Tooltip>
-      {executionFinished
-      && (executionError
-        ? <Tooltip arrow title={t('executionCompletedWithErrors')} placement="right"><ErrorOutline color="error" /></Tooltip>
-        : <Tooltip arrow title={t('executionCompletedSuccessfully')} placement="right"><Done color="success" /></Tooltip>)}
+      {executionFinished &&
+        (executionError ? (
+          <Tooltip
+            arrow
+            title={t('executionCompletedWithErrors')}
+            placement='right'
+          >
+            <ErrorOutline color='error' />
+          </Tooltip>
+        ) : (
+          <Tooltip
+            arrow
+            title={t('executionCompletedSuccessfully')}
+            placement='right'
+          >
+            <Done color='success' />
+          </Tooltip>
+        ))}
     </Stack>
   );
 }

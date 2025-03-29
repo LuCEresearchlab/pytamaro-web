@@ -2,7 +2,11 @@ import SyncProblemIcon from '@mui/icons-material/SyncProblem';
 import {
   Badge,
   BadgeProps,
-  Card, CardActions, CardContent, Collapse, Paper,
+  Card,
+  CardActions,
+  CardContent,
+  Collapse,
+  Paper,
   Stack,
   Tooltip,
 } from '@mui/material';
@@ -11,8 +15,14 @@ import { useEffect, useState } from 'react';
 import { ExecutionResponse, isExecutionCompleted } from '../src/codeExecution';
 import { CodeCellExecutionState } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import { AnalysisResult, analyze } from '../src/python-analyzer/python_analyzer';
-import { ActivityVariant, PlatformConfiguration } from '../src/schemas/activitySchema';
+import {
+  AnalysisResult,
+  analyze,
+} from '../src/python-analyzer/python_analyzer';
+import {
+  ActivityVariant,
+  PlatformConfiguration,
+} from '../src/schemas/activitySchema';
 import { JudiciousElement } from '../src/schemas/documentation';
 import { joinLines } from '../src/sourceUtils';
 import { EllipsisTip, InputTip, NoOutputTip } from './CodeCellTips';
@@ -35,39 +45,52 @@ export function isExecutionError(response: ExecutionResponse | undefined) {
 }
 
 export default function CodeCell({
-  initialSource, currentSource, codeCellExecutionState, onSourceChanged, onExecutionRequested,
-  firstLineNumber, activityVariant, sourcesUpTo, platformConfig, resetCounter,
-  extraDocumentation = [], extraActions = null, readOnly = false,
-} :
-{ initialSource: string,
-  currentSource: string,
-  codeCellExecutionState: CodeCellExecutionState,
-  onSourceChanged: (newSource: string) => void,
-  onExecutionRequested: () => Promise<any>,
-  firstLineNumber : number,
-  activityVariant: ActivityVariant,
-  sourcesUpTo: string[],
-  platformConfig: PlatformConfiguration,
-  resetCounter: number,
-  extraDocumentation?: { module: string, elements: JudiciousElement[] }[],
-  extraActions?: React.ReactNode
-  readOnly?: boolean
+  initialSource,
+  currentSource,
+  codeCellExecutionState,
+  onSourceChanged,
+  onExecutionRequested,
+  firstLineNumber,
+  activityVariant,
+  sourcesUpTo,
+  platformConfig,
+  resetCounter,
+  extraDocumentation = [],
+  extraActions = null,
+  readOnly = false,
+}: {
+  initialSource: string;
+  currentSource: string;
+  codeCellExecutionState: CodeCellExecutionState;
+  onSourceChanged: (newSource: string) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onExecutionRequested: () => Promise<any>;
+  firstLineNumber: number;
+  activityVariant: ActivityVariant;
+  sourcesUpTo: string[];
+  platformConfig: PlatformConfiguration;
+  resetCounter: number;
+  extraDocumentation?: { module: string; elements: JudiciousElement[] }[];
+  extraActions?: React.ReactNode;
+  readOnly?: boolean;
 }) {
   const { t } = useLocalTranslation(['common']);
   const { executionResponse } = codeCellExecutionState;
   const executionError = isExecutionError(executionResponse);
   const executing = codeCellExecutionState.executionInProgress;
   const executionFinished = codeCellExecutionState.outputSynced;
-  const noOutput = executionFinished
-    && executionResponse && isExecutionCompleted(executionResponse)
-    && (executionResponse.stdout + executionResponse.stderr).length === 0;
+  const noOutput =
+    executionFinished &&
+    executionResponse &&
+    isExecutionCompleted(executionResponse) &&
+    (executionResponse.stdout + executionResponse.stderr).length === 0;
   const [inputFunctionCalled, setInputFunctionCalled] = useState(false);
   const [ellipsis, setEllipsis] = useState(false);
   const outputHidden = noOutput || inputFunctionCalled;
 
   useEffect(() => {
     const analyzeSource = async () => {
-      const analysisResult : AnalysisResult = await analyze(currentSource);
+      const analysisResult: AnalysisResult = await analyze(currentSource);
       setInputFunctionCalled(analysisResult.called_names.includes('input'));
       setEllipsis(analysisResult.has_ellipsis);
     };
@@ -76,14 +99,13 @@ export default function CodeCell({
 
   return (
     <Paper elevation={readOnly ? 0 : 4}>
-      {!readOnly
-        && (
+      {!readOnly && (
         <DocumentationStripe
           sources={sourcesUpTo}
           activityVariant={activityVariant}
           extraDocumentation={extraDocumentation}
         />
-        )}
+      )}
       <Card>
         <CardContent>
           <CodeEditor
@@ -107,33 +129,44 @@ export default function CodeCell({
             executionFinished={executionFinished}
             executionError={executionError}
           />
-          <Stack direction="row" sx={{ marginLeft: 'auto' }}>
+          <Stack direction='row' sx={{ marginLeft: 'auto' }}>
             {extraActions}
           </Stack>
         </CardActions>
         {noOutput && platformConfig.showNoOutputTip && (
-          <NoOutputTip importedNames={analyze(joinLines(sourcesUpTo)).imported_names} />
+          <NoOutputTip
+            importedNames={analyze(joinLines(sourcesUpTo)).imported_names}
+          />
         )}
         {inputFunctionCalled && <InputTip />}
         {ellipsis && <EllipsisTip />}
         {!outputHidden && (
-        <Collapse in={codeCellExecutionState.outputAreaVisible} timeout="auto" unmountOnExit>
-          <CardContent>
-            <StaleOutputBadge
-              badgeContent={<Tooltip arrow title={t('staleOutput')}><SyncProblemIcon /></Tooltip>}
-              color="error"
-              invisible={codeCellExecutionState.outputSynced}
-            >
-              {executionResponse && isExecutionCompleted(executionResponse) && (
-              <ExecutionOutputArea
-                executionError={executionError}
-                executionResponse={executionResponse}
-                dimmed={!codeCellExecutionState.outputSynced}
-              />
-              )}
-            </StaleOutputBadge>
-          </CardContent>
-        </Collapse>
+          <Collapse
+            in={codeCellExecutionState.outputAreaVisible}
+            timeout='auto'
+            unmountOnExit
+          >
+            <CardContent>
+              <StaleOutputBadge
+                badgeContent={
+                  <Tooltip arrow title={t('staleOutput')}>
+                    <SyncProblemIcon />
+                  </Tooltip>
+                }
+                color='error'
+                invisible={codeCellExecutionState.outputSynced}
+              >
+                {executionResponse &&
+                  isExecutionCompleted(executionResponse) && (
+                    <ExecutionOutputArea
+                      executionError={executionError}
+                      executionResponse={executionResponse}
+                      dimmed={!codeCellExecutionState.outputSynced}
+                    />
+                  )}
+              </StaleOutputBadge>
+            </CardContent>
+          </Collapse>
         )}
       </Card>
     </Paper>

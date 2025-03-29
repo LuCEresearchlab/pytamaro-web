@@ -6,8 +6,14 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   const {
-    uuid, experimentKey, sources, initialSources, requestedCellSequenceNumber, activityVariant,
-    toolboxFunctions, extraPythonFiles,
+    uuid,
+    experimentKey,
+    sources,
+    initialSources,
+    requestedCellSequenceNumber,
+    activityVariant,
+    toolboxFunctions,
+    extraPythonFiles,
   } = req.body;
   const image = process.env.GLOT_IMAGE_TAG;
   if (image === undefined) {

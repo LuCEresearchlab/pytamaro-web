@@ -4,9 +4,11 @@ import {
   AlertProps,
   AlertTitle,
   Box,
-  Container, Typography, styled,
+  Container,
+  Typography,
+  styled,
 } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid';
 import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -19,18 +21,25 @@ import MoreOptionsButton from '../components/MoreOptionsButton';
 import NavigationBar from '../components/NavigationBar';
 import ResetButton from '../components/ResetButton';
 import SaveToToolboxButton from '../components/SaveToToolboxButton';
-import SolitaryCodeCell, { initialStateSingleCell } from '../components/SolitaryCodeCell';
+import SolitaryCodeCell, {
+  initialStateSingleCell,
+} from '../components/SolitaryCodeCell';
 import CentralContent from '../components/sidebar/CentralContent';
 import Sidebar from '../components/sidebar/Sidebar';
 import ToolboxListSidebar from '../components/sidebar/ToolboxListSidebar';
-import getActivitiesWithAPIs, { ActivityVariantWithNames } from '../src/activitiesAPIs';
+import getActivitiesWithAPIs, {
+  ActivityVariantWithNames,
+} from '../src/activitiesAPIs';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
-import { playgroundActivityVariant, playgroundInitialSource } from '../src/playground';
+import {
+  playgroundActivityVariant,
+  playgroundInitialSource,
+} from '../src/playground';
 import { PythonName, analyze } from '../src/python-analyzer/python_analyzer';
 import { translationProps } from '../src/serverSideTranslationProps';
 import useReset from '../src/useReset';
 
-function uniqueNames(names : PythonName[]) : Set<string> {
+function uniqueNames(names: PythonName[]): Set<string> {
   return new Set(names.map(({ module, name }) => `${module}.${name}`));
 }
 
@@ -40,8 +49,11 @@ const FullWidthAlert = styled(Alert)<AlertProps>(() => ({
   },
 }));
 
-export default function Playground({ activitiesWithNames } :
-{ activitiesWithNames : ActivityVariantWithNames[] }) {
+export default function Playground({
+  activitiesWithNames,
+}: {
+  activitiesWithNames: ActivityVariantWithNames[];
+}) {
   const [initialSource, setInitialSource] = useState(playgroundInitialSource);
 
   const localActivity = useLocalActivity(
@@ -50,26 +62,37 @@ export default function Playground({ activitiesWithNames } :
   );
 
   const {
-    codeCells, codeExecutionStates, cellsModified, executionFailed, sourcesUpTo,
-    handleResetAllCellsNoConfirm, handleToggleOutputArea, handleResetSingleCell,
+    codeCells,
+    codeExecutionStates,
+    cellsModified,
+    executionFailed,
+    sourcesUpTo,
+    handleResetAllCellsNoConfirm,
+    handleToggleOutputArea,
+    handleResetSingleCell,
   } = localActivity;
   const { outputSynced } = codeExecutionStates[0];
 
-  const [recommendedActivities,
-    setRecommendedActivities] = useState<ActivityVariantWithNames[]>([]);
+  const [recommendedActivities, setRecommendedActivities] = useState<
+    ActivityVariantWithNames[]
+  >([]);
 
-  const [showRecommendedActivities, setShowRecommendedActivities] = useState(false);
+  const [showRecommendedActivities, setShowRecommendedActivities] =
+    useState(false);
 
   const confirm = useConfirm();
 
   const { resetCounter, newReset } = useReset();
 
   const handleReset = () => {
-    confirm({ description: 'You are about to reset the playground to its initial state: this will delete all the code you have written. This action cannot be undone! ⚠️', confirmationText: 'Ok, delete my code' })
-      .then(() => {
-        handleResetAllCellsNoConfirm();
-        newReset();
-      });
+    confirm({
+      description:
+        'You are about to reset the playground to its initial state: this will delete all the code you have written. This action cannot be undone! ⚠️',
+      confirmationText: 'Ok, delete my code',
+    }).then(() => {
+      handleResetAllCellsNoConfirm();
+      newReset();
+    });
   };
 
   const { query } = useRouter();
@@ -82,16 +105,21 @@ export default function Playground({ activitiesWithNames } :
         newReset();
       };
       if (typeof codeFromQuery === 'string') {
-        const queryCode = Buffer.from(codeFromQuery, 'base64').toString('utf-8');
+        const queryCode = Buffer.from(codeFromQuery, 'base64').toString(
+          'utf-8',
+        );
         const userCode = codeCells[0].source;
         if (userCode !== queryCode) {
           if (userCode === playgroundInitialSource) {
             replaceCode(queryCode);
           } else {
-            confirm({ description: 'You are about to replace the code in your playground with new code!', confirmationText: 'Ok, replace my code' })
-              .then(() => {
-                replaceCode(queryCode);
-              });
+            confirm({
+              description:
+                'You are about to replace the code in your playground with new code!',
+              confirmationText: 'Ok, replace my code',
+            }).then(() => {
+              replaceCode(queryCode);
+            });
           }
         }
       }
@@ -106,26 +134,32 @@ export default function Playground({ activitiesWithNames } :
   useEffect(() => {
     const recommendActivities = () => {
       try {
-        const currentlyImported = uniqueNames(analyze(codeCells[0].source).imported_names);
-        const scores = activitiesWithNames.map((activityWithName: ActivityVariantWithNames) => {
-          const { importedNames } = activityWithName;
-          // Simple scoring algorithm:
-          // for each name imported in the activity
-          // +1 if also the user has imported it
-          // -0.5 if the user has not imported it
-          let score = 0;
-          uniqueNames(importedNames).forEach((name) => {
-            score += currentlyImported.has(name) ? 1 : -0.5;
-          });
-          return score;
-        });
+        const currentlyImported = uniqueNames(
+          analyze(codeCells[0].source).imported_names,
+        );
+        const scores = activitiesWithNames.map(
+          (activityWithName: ActivityVariantWithNames) => {
+            const { importedNames } = activityWithName;
+            // Simple scoring algorithm:
+            // for each name imported in the activity
+            // +1 if also the user has imported it
+            // -0.5 if the user has not imported it
+            let score = 0;
+            uniqueNames(importedNames).forEach((name) => {
+              score += currentlyImported.has(name) ? 1 : -0.5;
+            });
+            return score;
+          },
+        );
         const sortedActivities = activitiesWithNames
           .map((activity, index) => ({ activity, score: scores[index] }))
           .sort((a, b) => b.score - a.score);
-        setRecommendedActivities(sortedActivities.map((wrapper) => wrapper.activity));
+        setRecommendedActivities(
+          sortedActivities.map((wrapper) => wrapper.activity),
+        );
         setShowRecommendedActivities(sortedActivities.length > 0);
-      } catch (e) {
-      // Could not parse, do not update recommendations.
+      } catch {
+        // Could not parse, do not update recommendations.
       }
     };
     if (outputSynced) {
@@ -140,22 +174,28 @@ export default function Playground({ activitiesWithNames } :
       </Head>
       <Box>
         <NavigationBar>
-          <ResetButton enabled={cellsModified} onReset={handleReset} tooltip="Reset Playground" />
+          <ResetButton
+            enabled={cellsModified}
+            onReset={handleReset}
+            tooltip='Reset Playground'
+          />
         </NavigationBar>
         {executionFailed && <FailedExecutionSnackbar res={executionFailed} />}
         <DataSharingPreferenceDialog />
         <Grid container>
-          <Sidebar side="left">
+          <Sidebar side='left'>
             <ToolboxListSidebar />
           </Sidebar>
           <CentralContent>
-            <Typography variant="h2" align="center" marginY={3}>Playground</Typography>
+            <Typography variant='h2' align='center' marginY={3}>
+              Playground
+            </Typography>
             <Container maxWidth={fullWidthCell ? false : 'md'}>
               <SolitaryCodeCell
                 resetCounter={resetCounter}
                 activity={localActivity}
                 activityVariant={playgroundActivityVariant}
-                extraActions={(
+                extraActions={
                   <>
                     <SaveToToolboxButton
                       sources={sourcesUpTo(0)}
@@ -170,29 +210,32 @@ export default function Playground({ activitiesWithNames } :
                       onFullWidthToggle={() => setFullWidthCell(!fullWidthCell)}
                     />
                   </>
-                )}
+                }
               />
             </Container>
-            <Container maxWidth="md">
-              <Box sx={{ display: 'flex', my: 4 }} justifyContent="center">
+            <Container maxWidth='md'>
+              <Box sx={{ display: 'flex', my: 4 }} justifyContent='center'>
                 <DownloadCodeButton codeCells={codeCells} />
               </Box>
-              { showRecommendedActivities && (
-              <FullWidthAlert
-                icon={<TipsAndUpdatesIcon fontSize="inherit" />}
-                onClose={() => { setShowRecommendedActivities(false); }}
-                severity="success"
-              >
-                <AlertTitle>Try out these activities!</AlertTitle>
-                <Typography variant="body1" gutterBottom>
-                  Based on your code, these are recommended activites you can try to do next:
-                </Typography>
-                <ActivitiesStripe activities={recommendedActivities} />
-              </FullWidthAlert>
+              {showRecommendedActivities && (
+                <FullWidthAlert
+                  icon={<TipsAndUpdatesIcon fontSize='inherit' />}
+                  onClose={() => {
+                    setShowRecommendedActivities(false);
+                  }}
+                  severity='success'
+                >
+                  <AlertTitle>Try out these activities!</AlertTitle>
+                  <Typography variant='body1' gutterBottom>
+                    Based on your code, these are recommended activites you can
+                    try to do next:
+                  </Typography>
+                  <ActivitiesStripe activities={recommendedActivities} />
+                </FullWidthAlert>
               )}
             </Container>
           </CentralContent>
-          <Sidebar side="right" />
+          <Sidebar side='right' />
         </Grid>
       </Box>
     </div>
@@ -202,8 +245,10 @@ export default function Playground({ activitiesWithNames } :
 export async function getStaticProps() {
   return {
     props: {
-      activitiesWithNames: await getActivitiesWithAPIs(playgroundActivityVariant.authorSlug),
-      ...await translationProps(['activityfooter']),
+      activitiesWithNames: await getActivitiesWithAPIs(
+        playgroundActivityVariant.authorSlug,
+      ),
+      ...(await translationProps(['activityfooter'])),
     },
   };
 }

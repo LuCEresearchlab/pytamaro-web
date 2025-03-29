@@ -7,11 +7,14 @@ export default function useJudiciousDocData(modules: string[]) {
   const results = useQueries({
     queries: modules.map((module) => ({
       queryKey: [module],
-      queryFn: (): Promise<JudiciousModule> => axios.get(judiciousDocPathname(module))
-        .then((response) => response.data),
+      queryFn: (): Promise<JudiciousModule> =>
+        axios
+          .get(judiciousDocPathname(module))
+          .then((response) => response.data),
     })),
   });
-  return results.map((result) => result.data)
+  return results
+    .map((result) => result.data)
     .filter((data) => data !== undefined);
 }
 

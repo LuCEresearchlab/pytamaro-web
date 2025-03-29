@@ -10,21 +10,35 @@ import { sourceFromCell } from '../src/useActivity';
 
 function formatCells(codeCells: CodeCellState[]) {
   const sources = codeCells.map(sourceFromCell);
-  const formattedSources = sources.flatMap((source, idx) => [`# === Code Cell ${idx + 1} ===`, source, '']);
+  const formattedSources = sources.flatMap((source, idx) => [
+    `# === Code Cell ${idx + 1} ===`,
+    source,
+    '',
+  ]);
   return joinLines(formattedSources);
 }
 
-export default function DownloadCodeButton({ codeCells, extraPythonFiles = [] }:
-{ codeCells: CodeCellState[],
-  extraPythonFiles?: PythonFile[] }) {
+export default function DownloadCodeButton({
+  codeCells,
+  extraPythonFiles = [],
+}: {
+  codeCells: CodeCellState[];
+  extraPythonFiles?: PythonFile[];
+}) {
   const { getFunction } = useLocalToolbox();
   const { t } = useTranslation('activityfooter');
   return (
     <Button
-      variant="contained"
-      color="primary"
+      variant='contained'
+      color='primary'
       startIcon={<DownloadIcon />}
-      onClick={() => downloadSourceCode(formatCells(codeCells), extraPythonFiles, getFunction)}
+      onClick={() =>
+        downloadSourceCode(
+          formatCells(codeCells),
+          extraPythonFiles,
+          getFunction,
+        )
+      }
     >
       {t('downloadPythonSource')}
     </Button>

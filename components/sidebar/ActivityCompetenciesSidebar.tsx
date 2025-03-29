@@ -1,12 +1,15 @@
-import {
-  Avatar, Box, Card,
-  Stack,
-} from '@mui/material';
+import { Avatar, Box, Card, Stack } from '@mui/material';
 import { allActivities } from '../../src/curricula';
 import { competencyColor } from '../../src/curriculumCompetencies';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
-import { ActivityVariant, activityVariantId } from '../../src/schemas/activitySchema';
-import { Curriculum, CurriculumCompetency } from '../../src/schemas/curriculumSchema';
+import {
+  ActivityVariant,
+  activityVariantId,
+} from '../../src/schemas/activitySchema';
+import {
+  Curriculum,
+  CurriculumCompetency,
+} from '../../src/schemas/curriculumSchema';
 import theme from '../../src/theme';
 import CompetencyCardContent from '../CompetencyCardContent';
 import GenericMuiIcon from '../GenericMuiIcon';
@@ -16,8 +19,13 @@ import SidebarTitle from './SidebarTitle';
 
 const AVATAR_SIZE = 24;
 
-function CompetencyAvatar({ curriculum, competency } :
-{ curriculum: Curriculum, competency: CurriculumCompetency }) {
+function CompetencyAvatar({
+  curriculum,
+  competency,
+}: {
+  curriculum: Curriculum;
+  competency: CurriculumCompetency;
+}) {
   const highlightCorrespondingMyCompetency = (brigheter: boolean) => {
     const element = document.getElementById(myCompetencyChipId(competency));
     if (element) {
@@ -26,7 +34,7 @@ function CompetencyAvatar({ curriculum, competency } :
   };
 
   return (
-    <Popover placement="left">
+    <Popover placement='left'>
       <PopoverTrigger>
         <Avatar
           sx={{
@@ -38,26 +46,34 @@ function CompetencyAvatar({ curriculum, competency } :
           onMouseEnter={() => highlightCorrespondingMyCompetency(true)}
           onMouseLeave={() => highlightCorrespondingMyCompetency(false)}
         >
-          <GenericMuiIcon
-            iconName={competency.icon}
-            fontSize="large"
-          />
+          <GenericMuiIcon iconName={competency.icon} fontSize='large' />
         </Avatar>
       </PopoverTrigger>
       <PopoverContent>
         <Card elevation={0}>
-          <CompetencyCardContent curriculum={curriculum} competency={competency} noActivities />
+          <CompetencyCardContent
+            curriculum={curriculum}
+            competency={competency}
+            noActivities
+          />
         </Card>
       </PopoverContent>
     </Popover>
   );
 }
 
-export default function ActivityCompetenciesSidebar({ curriculum, activityVariant } :
-{ curriculum: Curriculum, activityVariant: ActivityVariant }) {
+export default function ActivityCompetenciesSidebar({
+  curriculum,
+  activityVariant,
+}: {
+  curriculum: Curriculum;
+  activityVariant: ActivityVariant;
+}) {
   const { t } = useLocalTranslation(['curriculum']);
   const activities = allActivities(curriculum);
-  const curriculumActivity = activities.find((a) => a.id === activityVariantId(activityVariant));
+  const curriculumActivity = activities.find(
+    (a) => a.id === activityVariantId(activityVariant),
+  );
 
   if (!curriculumActivity) {
     return null;
@@ -69,12 +85,10 @@ export default function ActivityCompetenciesSidebar({ curriculum, activityVarian
 
   return competencies.length > 0 ? (
     <Box>
-      <SidebarTitle>
-        {t('competencies')}
-      </SidebarTitle>
+      <SidebarTitle>{t('competencies')}</SidebarTitle>
       <Stack
-        direction="row"
-        flexWrap="wrap"
+        direction='row'
+        flexWrap='wrap'
         useFlexGap
         spacing={1}
         sx={{

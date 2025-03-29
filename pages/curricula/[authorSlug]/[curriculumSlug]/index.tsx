@@ -1,10 +1,5 @@
-import {
-  Container,
-  Divider,
-  Stack,
-  Typography,
-} from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import { Container, Divider, Stack, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { delay } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import { MDXRemote } from 'next-mdx-remote';
@@ -22,7 +17,10 @@ import CurriculumCompetenciesSidebar from '../../../../components/sidebar/Curric
 import Sidebar from '../../../../components/sidebar/Sidebar';
 import TableOfContents from '../../../../components/sidebar/TableOfContents';
 import ToolboxListSidebar from '../../../../components/sidebar/ToolboxListSidebar';
-import { getAuthorProfile, listAuthorsWithContent } from '../../../../src/fs-content/authors';
+import {
+  getAuthorProfile,
+  listAuthorsWithContent,
+} from '../../../../src/fs-content/authors';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
 import useLocalProfile from '../../../../src/localStorage/useLocalProfile';
 import { AuthorProfile } from '../../../../src/schemas/authorSchema';
@@ -30,11 +28,15 @@ import { Curriculum } from '../../../../src/schemas/curriculumSchema';
 import { translationProps } from '../../../../src/serverSideTranslationProps';
 import { curriculumPathname } from '../../../../src/urlUtils';
 
-export default function CurriculumPage({ curriculum, author }:
-{ curriculum : Curriculum, author: AuthorProfile }) {
-  const {
-    metadata, setMetadata, findCurriculum, removeCurriculum,
-  } = useLocalProfile();
+export default function CurriculumPage({
+  curriculum,
+  author,
+}: {
+  curriculum: Curriculum;
+  author: AuthorProfile;
+}) {
+  const { metadata, setMetadata, findCurriculum, removeCurriculum } =
+    useLocalProfile();
   const router = useRouter();
   const curriculumFlowRef = useRef<HTMLDivElement>(null);
   const [nodesInitialized, setNodesInitialized] = useState(false);
@@ -46,10 +48,13 @@ export default function CurriculumPage({ curriculum, author }:
   const confirm = useConfirm();
 
   const handleReset = () => {
-    confirm({ description: 'You are about to reset the status of this curriculum. This will NOT affect the activities.', confirmationText: 'Ok, reset the curriculum' })
-      .then(() => {
-        removeCurriculum(curriculum);
-      });
+    confirm({
+      description:
+        'You are about to reset the status of this curriculum. This will NOT affect the activities.',
+      confirmationText: 'Ok, reset the curriculum',
+    }).then(() => {
+      removeCurriculum(curriculum);
+    });
   };
 
   useEffect(() => {
@@ -68,19 +73,29 @@ export default function CurriculumPage({ curriculum, author }:
       </Head>
 
       <NavigationBar>
-        <ResetButton enabled={curriculumStarted} onReset={handleReset} tooltip="Reset Curriculum" />
-        <InfoButton type="curriculum" authorSlug={curriculum.authorSlug} slug={curriculum.slug} />
+        <ResetButton
+          enabled={curriculumStarted}
+          onReset={handleReset}
+          tooltip='Reset Curriculum'
+        />
+        <InfoButton
+          type='curriculum'
+          authorSlug={curriculum.authorSlug}
+          slug={curriculum.slug}
+        />
       </NavigationBar>
       <Grid container>
-        <Sidebar side="left">
+        <Sidebar side='left'>
           <ToolboxListSidebar />
           <CurriculumCompetenciesSidebar curriculum={curriculum} />
         </Sidebar>
         <CentralContent>
-          <Stack spacing={2} alignItems="center" ref={mainContentRef}>
-            <Container maxWidth="md">
-              <Typography variant="h3" marginY={3}>{curriculum.title}</Typography>
-              <Typography variant="subtitle1" marginY={3}>
+          <Stack spacing={2} alignItems='center' ref={mainContentRef}>
+            <Container maxWidth='md'>
+              <Typography variant='h3' marginY={3}>
+                {curriculum.title}
+              </Typography>
+              <Typography variant='subtitle1' marginY={3}>
                 {/* eslint-disable-next-line react/jsx-props-no-spreading */}
                 <MDXRemote {...curriculum.description} />
               </Typography>
@@ -88,7 +103,10 @@ export default function CurriculumPage({ curriculum, author }:
             <div
               ref={curriculumFlowRef}
               style={{
-                width: '100%', display: 'flex', justifyContent: 'center', overflowX: 'auto',
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                overflowX: 'auto',
               }}
             >
               <CurriculumFlow
@@ -100,45 +118,53 @@ export default function CurriculumPage({ curriculum, author }:
               />
             </div>
             <Divider sx={{ mb: 3 }} />
-            <Container maxWidth="md" sx={{ textAlign: 'center' }}>
-              <AttributionInfo type="curriculum" author={author} derivedFrom={curriculum.derivedFrom} />
+            <Container maxWidth='md' sx={{ textAlign: 'center' }}>
+              <AttributionInfo
+                type='curriculum'
+                author={author}
+                derivedFrom={curriculum.derivedFrom}
+              />
             </Container>
           </Stack>
         </CentralContent>
-        <Sidebar side="right">
-          <TableOfContents elementRef={curriculumFlowRef} initialized={nodesInitialized} selector=".curriculum-unit[id]" titleKey="curriculum:inThisCurriculum" />
+        <Sidebar side='right'>
+          <TableOfContents
+            elementRef={curriculumFlowRef}
+            initialized={nodesInitialized}
+            selector='.curriculum-unit[id]'
+            titleKey='curriculum:inThisCurriculum'
+          />
         </Sidebar>
       </Grid>
     </>
   );
 }
 
-export async function getStaticProps(
-  context: { params: {
-    authorSlug: string,
-    curriculumSlug: string,
-  } },
-) {
-  const {
-    authorSlug, curriculumSlug,
-  } = context.params;
+export async function getStaticProps(context: {
+  params: {
+    authorSlug: string;
+    curriculumSlug: string;
+  };
+}) {
+  const { authorSlug, curriculumSlug } = context.params;
   const author = await getAuthorProfile(authorSlug);
   const curriculum = await getCurriculum(authorSlug, curriculumSlug);
   return {
     props: {
       author,
       curriculum,
-      ...await translationProps(['curriculum']),
+      ...(await translationProps(['curriculum'])),
     },
   };
 }
 
 export async function getStaticPaths() {
   const authors = await listAuthorsWithContent();
-  const paths = authors
-    .flatMap((author) => author.curricula.map(
-      (curriculum) => curriculumPathname(author.slug, curriculum.slug),
-    ));
+  const paths = authors.flatMap((author) =>
+    author.curricula.map((curriculum) =>
+      curriculumPathname(author.slug, curriculum.slug),
+    ),
+  );
   return {
     paths,
     fallback: false,

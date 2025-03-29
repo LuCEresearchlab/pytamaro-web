@@ -5,7 +5,10 @@ import { EventName } from '../../storeDbEvent';
 import conn from '../dbConnection';
 import { storeRow } from '../dbUtils';
 import {
-  eventTableName, storeActivity, storeCurriculum, storeEvent,
+  eventTableName,
+  storeActivity,
+  storeCurriculum,
+  storeEvent,
 } from './event';
 
 async function storeEventCurriculumNavigation(
@@ -29,12 +32,17 @@ export default async function saveCurriculumNavigationEvent(
   activity_variant: ActivityVariant,
   curriculum: Curriculum,
   navigation_type: string,
-) : Promise<boolean> {
+): Promise<boolean> {
   try {
     await conn.begin(async (sql) => {
       const pActivityId = storeActivity(sql, activity_variant);
       const pCurriculumId = storeCurriculum(sql, curriculum);
-      const pEventId = storeEvent(sql, user_uuid, experiment_key, EventName.CurriculumNavigation);
+      const pEventId = storeEvent(
+        sql,
+        user_uuid,
+        experiment_key,
+        EventName.CurriculumNavigation,
+      );
       await storeEventCurriculumNavigation(
         sql,
         await pEventId,

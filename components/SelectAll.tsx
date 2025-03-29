@@ -14,10 +14,20 @@ type Option = {
 };
 
 export default function SelectAll({
-  title, placeholder, options, maxTagsShown, initialSelection = options, onSelectionChange,
-} :
-{ title: string, placeholder: string, options: Option[], maxTagsShown: number,
-  initialSelection?: Option[], onSelectionChange: (selectedIds: string[]) => void }) {
+  title,
+  placeholder,
+  options,
+  maxTagsShown,
+  initialSelection = options,
+  onSelectionChange,
+}: {
+  title: string;
+  placeholder: string;
+  options: Option[];
+  maxTagsShown: number;
+  initialSelection?: Option[];
+  onSelectionChange: (selectedIds: string[]) => void;
+}) {
   const [selectedOptions, setSelectedOptions] = useState(initialSelection);
   const router = useRouter();
   const { t } = useLocalTranslation();
@@ -28,31 +38,47 @@ export default function SelectAll({
       filterOptions={(opts, params) => {
         const filter = createFilterOptions<Option>();
         const filtered = filter(opts, params);
-        return [{
-          label: t('selectAll'), id: '__ALL__', url: '', all: true,
-        }, ...filtered];
+        return [
+          {
+            label: t('selectAll'),
+            id: '__ALL__',
+            url: '',
+            all: true,
+          },
+          ...filtered,
+        ];
       }}
       limitTags={maxTagsShown}
-      renderTags={(value, getConceptProps) => value.map((option, index) => {
-        const { key, ...customConceptProps } = getConceptProps({ index });
-        return (
-          <Chip
-            key={key}
-            label={option.label}
-            onClick={(e) => { if (option.url) { e.stopPropagation(); router.push(option.url); } }}
-            size="medium"
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...customConceptProps}
-          />
-        );
-      })}
+      renderTags={(value, getConceptProps) =>
+        value.map((option, index) => {
+          const { key, ...customConceptProps } = getConceptProps({ index });
+          return (
+            <Chip
+              key={key}
+              label={option.label}
+              onClick={(e) => {
+                if (option.url) {
+                  e.stopPropagation();
+                  router.push(option.url);
+                }
+              }}
+              size='medium'
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              {...customConceptProps}
+            />
+          );
+        })
+      }
       onChange={(_event, newSelectedOptions) => {
         let selectedConsideringAll = newSelectedOptions;
         if (newSelectedOptions.find((option) => option.all)) {
-          selectedConsideringAll = selectedOptions.length === options.length ? [] : options;
+          selectedConsideringAll =
+            selectedOptions.length === options.length ? [] : options;
         }
         setSelectedOptions(selectedConsideringAll);
-        onSelectionChange(selectedConsideringAll.filter((v) => !v.all).map((v) => v.id));
+        onSelectionChange(
+          selectedConsideringAll.filter((v) => !v.all).map((v) => v.id),
+        );
       }}
       options={options}
       disableCloseOnSelect
@@ -62,9 +88,16 @@ export default function SelectAll({
           {/* eslint-disable-next-line react/jsx-props-no-spreading */}
           <li {...props}>
             <Checkbox
-              checked={option.all ? !!(selectedOptions.length === options.length) : selected}
-              indeterminate={option.all && selectedOptions.length > 0
-                                        && selectedOptions.length < options.length}
+              checked={
+                option.all
+                  ? !!(selectedOptions.length === options.length)
+                  : selected
+              }
+              indeterminate={
+                option.all &&
+                selectedOptions.length > 0 &&
+                selectedOptions.length < options.length
+              }
             />
             {option.label}
           </li>

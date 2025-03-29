@@ -28,7 +28,11 @@ export async function alwaysStoreDbEvent(
   }
 }
 
-export function storeDbEvent(event_name: EventName, metadata: Metadata, payload: object) {
+export function storeDbEvent(
+  event_name: EventName,
+  metadata: Metadata,
+  payload: object,
+) {
   if (metadata.allowSharingAnonData) {
     alwaysStoreDbEvent(event_name, metadata, payload);
   }

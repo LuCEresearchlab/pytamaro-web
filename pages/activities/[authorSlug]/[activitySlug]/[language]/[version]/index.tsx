@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import Container from '@mui/material/Container';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid';
 import GithubSlugger from 'github-slugger';
 import Head from 'next/head';
 import { useEffect, useRef, useState } from 'react';
@@ -22,18 +22,30 @@ import Sidebar from '../../../../../../components/sidebar/Sidebar';
 import TableOfContents from '../../../../../../components/sidebar/TableOfContents';
 import ToolboxListSidebar from '../../../../../../components/sidebar/ToolboxListSidebar';
 import { findIncludingCurricula } from '../../../../../../src/curricula';
-import { findVersions, readActivity } from '../../../../../../src/fs-content/activities';
-import { getAuthorProfile, listAuthorsWithContent, listCurriculaAllAuthors } from '../../../../../../src/fs-content/authors';
+import {
+  findVersions,
+  readActivity,
+} from '../../../../../../src/fs-content/activities';
+import {
+  getAuthorProfile,
+  listAuthorsWithContent,
+  listCurriculaAllAuthors,
+} from '../../../../../../src/fs-content/authors';
 import { CodeCellState } from '../../../../../../src/localStorage/schema';
 import getNotebookContent from '../../../../../../src/notebook';
 import {
   Activity,
-  ActivityVariant, MarkdownCell, NotebookCell,
+  ActivityVariant,
+  MarkdownCell,
+  NotebookCell,
   activityVariantId,
   getVariantTitle,
 } from '../../../../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../../../../src/schemas/authorSchema';
-import { Curriculum, curriculumToId } from '../../../../../../src/schemas/curriculumSchema';
+import {
+  Curriculum,
+  curriculumToId,
+} from '../../../../../../src/schemas/curriculumSchema';
 import { translationProps } from '../../../../../../src/serverSideTranslationProps';
 import { isSpecialActivity } from '../../../../../../src/specialActivities';
 import { activityVariantPathnameFromParts } from '../../../../../../src/urlUtils';
@@ -44,16 +56,29 @@ import useReset from '../../../../../../src/useReset';
 const userType = 'student';
 
 export default function NotebookPage({
-  activity, author, activityVariant, cells, curricula,
-}:
-{ activity : Activity, author: AuthorProfile,
-  activityVariant: ActivityVariant, cells: NotebookCell[], curricula: Curriculum[] }) {
-  const initialCodeCells : CodeCellState[] = cells
+  activity,
+  author,
+  activityVariant,
+  cells,
+  curricula,
+}: {
+  activity: Activity;
+  author: AuthorProfile;
+  activityVariant: ActivityVariant;
+  cells: NotebookCell[];
+  curricula: Curriculum[];
+}) {
+  const initialCodeCells: CodeCellState[] = cells
     .map((cell, idx) => ({ cell, idx }))
     .filter(({ cell }) => cell.cell_type === 'code')
-    .map(({ cell, idx: originalIdx }) => ({ source: cell.source, originalIndex: originalIdx }));
+    .map(({ cell, idx: originalIdx }) => ({
+      source: cell.source,
+      originalIndex: originalIdx,
+    }));
   const originalIdxToCodeCellIdx = new Map<number, number>();
-  initialCodeCells.forEach((cell, idx) => originalIdxToCodeCellIdx.set(cell.originalIndex, idx));
+  initialCodeCells.forEach((cell, idx) =>
+    originalIdxToCodeCellIdx.set(cell.originalIndex, idx),
+  );
 
   const cellsRef = useRef<HTMLDivElement>(null);
 
@@ -72,7 +97,9 @@ export default function NotebookPage({
   useEffect(() => {
     if (isMounted) {
       const slugger = new GithubSlugger();
-      const headings = cellsRef.current?.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      const headings = cellsRef.current?.querySelectorAll(
+        'h1, h2, h3, h4, h5, h6',
+      );
       headings?.forEach((heading) => {
         // eslint-disable-next-line no-param-reassign
         heading.id = slugger.slug(heading.textContent || '');
@@ -102,34 +129,42 @@ export default function NotebookPage({
             newReset={newReset}
           />
           {!isSpecialActivity(activityVariant) && (
-          <InfoButton type="activity" authorSlug={activity.authorSlug} slug={activity.slug} />
+            <InfoButton
+              type='activity'
+              authorSlug={activity.authorSlug}
+              slug={activity.slug}
+            />
           )}
         </NavigationBar>
         <DataSharingPreferenceDialog />
         <Grid container>
-          <Sidebar side="left">
+          <Sidebar side='left'>
             <ToolboxListSidebar />
             {curriculum && (
-            <CurriculumCompetenciesSidebar curriculum={curriculum} />
+              <CurriculumCompetenciesSidebar curriculum={curriculum} />
             )}
           </Sidebar>
           <CentralContent>
-            <Container maxWidth="md">
-              <Typography variant="h3" marginY={3}>{title}</Typography>
+            <Container maxWidth='md'>
+              <Typography variant='h3' marginY={3}>
+                {title}
+              </Typography>
               {!curriculum && <GoToCurriculaBanner curricula={curricula} />}
             </Container>
-            <Box ref={cellsRef} className="activity-content">
-              {cells.map((cell: NotebookCell, idx) => (cell.cell_type === 'markdown'
-                ? (
-                  <Container maxWidth="md" key={cell.id}>
+            <Box ref={cellsRef} className='activity-content'>
+              {cells.map((cell: NotebookCell, idx) =>
+                cell.cell_type === 'markdown' ? (
+                  <Container maxWidth='md' key={cell.id}>
                     <MarkdownCellComponent
                       cell={cell as MarkdownCell}
                       activityVariant={activityVariant}
                     />
                   </Container>
-                )
-                : (
-                  <Container maxWidth={fullWidthCell ? false : 'md'} key={cell.id}>
+                ) : (
+                  <Container
+                    maxWidth={fullWidthCell ? false : 'md'}
+                    key={cell.id}
+                  >
                     <ActivityCodeCell
                       activityVariant={activityVariant}
                       initialCodeCells={initialCodeCells}
@@ -141,26 +176,39 @@ export default function NotebookPage({
                       activityResetCounter={resetCounter}
                     />
                   </Container>
-                )))}
+                ),
+              )}
             </Box>
-            <Container maxWidth="md">
+            <Container maxWidth='md'>
               {!isSpecialActivity(activityVariant) && (
-              <ActivityFooter
-                activityVariant={activityVariant}
-                initialCodeCells={initialCodeCells}
-                author={author}
-                activity={activity}
-                curriculum={curriculum}
-              />
+                <ActivityFooter
+                  activityVariant={activityVariant}
+                  initialCodeCells={initialCodeCells}
+                  author={author}
+                  activity={activity}
+                  curriculum={curriculum}
+                />
               )}
             </Container>
           </CentralContent>
-          <Sidebar side="right">
-            <ActivityImage activity={activity} variant={activityVariant} title={title} />
+          <Sidebar side='right'>
+            <ActivityImage
+              activity={activity}
+              variant={activityVariant}
+              title={title}
+            />
             {curriculum && (
-              <CurriculumUnitSidebar curriculum={curriculum} activityVariant={activityVariant} />
+              <CurriculumUnitSidebar
+                curriculum={curriculum}
+                activityVariant={activityVariant}
+              />
             )}
-            <TableOfContents initialized={headingsReady} elementRef={cellsRef} selector="h2[id], h3[id]" titleKey="contents" />
+            <TableOfContents
+              initialized={headingsReady}
+              elementRef={cellsRef}
+              selector='h2[id], h3[id]'
+              titleKey='contents'
+            />
             {curriculum && (
               <ActivityCompetenciesSidebar
                 curriculum={curriculum}
@@ -174,46 +222,61 @@ export default function NotebookPage({
   );
 }
 
-export async function getStaticProps(
-  context: { params: {
-    authorSlug: string,
-    activitySlug: string,
-    language: string,
-    version: string,
-  }, defaultLocale: string, locales: string[] },
-) {
-  const {
-    authorSlug, activitySlug, language, version,
-  } = context.params;
+export async function getStaticProps(context: {
+  params: {
+    authorSlug: string;
+    activitySlug: string;
+    language: string;
+    version: string;
+  };
+  defaultLocale: string;
+  locales: string[];
+}) {
+  const { authorSlug, activitySlug, language, version } = context.params;
   const activityVariant = {
-    authorSlug, activitySlug, language, version,
+    authorSlug,
+    activitySlug,
+    language,
+    version,
   };
   return {
     props: {
       author: await getAuthorProfile(authorSlug),
       activity: await readActivity(authorSlug, activitySlug),
       activityVariant,
-      cells: await getNotebookContent(authorSlug, activitySlug, language, version, userType),
-      curricula: findIncludingCurricula(await listCurriculaAllAuthors(), activityVariant),
-      ...await translationProps(['activityfooter', 'curriculum']),
+      cells: await getNotebookContent(
+        authorSlug,
+        activitySlug,
+        language,
+        version,
+        userType,
+      ),
+      curricula: findIncludingCurricula(
+        await listCurriculaAllAuthors(),
+        activityVariant,
+      ),
+      ...(await translationProps(['activityfooter', 'curriculum'])),
     },
   };
 }
 
 export async function getStaticPaths() {
   const authors = await listAuthorsWithContent();
-  const paths = authors
-    .flatMap((author) => author.activities
-      .flatMap((activity) => activity.variants
-        .flatMap(
-          async (notebook) => (await findVersions(author.slug, activity.slug, notebook.language))
-            .map((v) => activityVariantPathnameFromParts(
+  const paths = authors.flatMap((author) =>
+    author.activities.flatMap((activity) =>
+      activity.variants.flatMap(async (notebook) =>
+        (await findVersions(author.slug, activity.slug, notebook.language)).map(
+          (v) =>
+            activityVariantPathnameFromParts(
               author.slug,
               activity.slug,
               notebook.language,
               v,
-            )),
-        )));
+            ),
+        ),
+      ),
+    ),
+  );
   return {
     paths: (await Promise.all(paths)).flat(),
     fallback: false,

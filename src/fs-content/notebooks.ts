@@ -10,16 +10,25 @@ export async function readNotebookContent(
   activitySlug: string,
   language: string,
   version: string,
-) : Promise<JupyterCell[]> {
-  const notebookPath = path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR, activitySlug, `${activitySlug}-${language}-${version}.ipynb`);
+): Promise<JupyterCell[]> {
+  const notebookPath = path.join(
+    DATA_DIR,
+    authorSlug,
+    ACTIVITIES_DIR,
+    activitySlug,
+    `${activitySlug}-${language}-${version}.ipynb`,
+  );
   const contentBuffer = await readFile(notebookPath);
   return JSON.parse(contentBuffer.toString()).cells;
 }
 
-export async function notebookFileNames(authorSlug: string, activitySlug: string)
-  : Promise<string[]> {
+export async function notebookFileNames(
+  authorSlug: string,
+  activitySlug: string,
+): Promise<string[]> {
   const suffix = '.ipynb';
-  const notebooks = (await readdir(path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR, activitySlug)))
-    .filter((file) => file.endsWith(suffix));
+  const notebooks = (
+    await readdir(path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR, activitySlug))
+  ).filter((file) => file.endsWith(suffix));
   return notebooks.map((filename) => filename.replace(suffix, ''));
 }

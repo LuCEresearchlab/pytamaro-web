@@ -6,10 +6,7 @@ import { JupyterCell, NotebookCell } from './schemas/activitySchema';
 const TEACHER_ONLY_CELL_PREFIX = '#teacher-only';
 const STUDENT_TEACHER_CELL_PREFIX = '#student-teacher';
 
-const KNOWN_PREFIXES = [
-  TEACHER_ONLY_CELL_PREFIX,
-  STUDENT_TEACHER_CELL_PREFIX,
-];
+const KNOWN_PREFIXES = [TEACHER_ONLY_CELL_PREFIX, STUDENT_TEACHER_CELL_PREFIX];
 
 export type User = 'teacher' | 'student';
 
@@ -21,10 +18,7 @@ export function isMarkdownCell(cell: JupyterCell) {
   return cell.cell_type === 'markdown';
 }
 
-export function cellsVisibleToUser(
-  cells: JupyterCell[],
-  user: User,
-) {
+export function cellsVisibleToUser(cells: JupyterCell[], user: User) {
   return cells.filter((cell) => {
     if (!isCodeCell(cell)) {
       // Only code cells can be hidden
@@ -35,7 +29,10 @@ export function cellsVisibleToUser(
       return specialTag !== TEACHER_ONLY_CELL_PREFIX;
     }
     // teacher
-    return specialTag === TEACHER_ONLY_CELL_PREFIX || specialTag === STUDENT_TEACHER_CELL_PREFIX;
+    return (
+      specialTag === TEACHER_ONLY_CELL_PREFIX ||
+      specialTag === STUDENT_TEACHER_CELL_PREFIX
+    );
   });
 }
 
@@ -52,19 +49,28 @@ export default async function getNotebookContent(
   language: string,
   version: string,
   user: User,
-) : Promise<NotebookCell[]> {
-  const cells = await readNotebookContent(authorSlug, activitySlug, language, version);
-  return Promise.all(cellsVisibleToUser(cells, user).map(async (cell, idx) => {
-    const source = cleanCellSource(cell.source);
-    return {
-      ...cell,
-      source,
-      id: idx.toString(),
-      mdxSource: isMarkdownCell(cell) ? await serialize(source, {
-        mdxOptions: {
-          remarkPlugins: [remarkGfm],
-        },
-      }) : null,
-    };
-  }));
+): Promise<NotebookCell[]> {
+  const cells = await readNotebookContent(
+    authorSlug,
+    activitySlug,
+    language,
+    version,
+  );
+  return Promise.all(
+    cellsVisibleToUser(cells, user).map(async (cell, idx) => {
+      const source = cleanCellSource(cell.source);
+      return {
+        ...cell,
+        source,
+        id: idx.toString(),
+        mdxSource: isMarkdownCell(cell)
+          ? await serialize(source, {
+              mdxOptions: {
+                remarkPlugins: [remarkGfm],
+              },
+            })
+          : null,
+      };
+    }),
+  );
 }

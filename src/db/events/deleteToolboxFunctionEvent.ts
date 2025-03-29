@@ -19,15 +19,16 @@ export default async function saveDeleteToolboxFunctionEvent(
   user_uuid: string,
   experiment_key: string,
   name: string,
-) : Promise<boolean> {
+): Promise<boolean> {
   try {
     await conn.begin(async (sql) => {
-      const pEventId = storeEvent(sql, user_uuid, experiment_key, EventName.DeleteToolboxFunction);
-      await storeEventDeleteToolboxFunction(
+      const pEventId = storeEvent(
         sql,
-        await pEventId,
-        name,
+        user_uuid,
+        experiment_key,
+        EventName.DeleteToolboxFunction,
       );
+      await storeEventDeleteToolboxFunction(sql, await pEventId, name);
     });
     return true;
   } catch (e) {

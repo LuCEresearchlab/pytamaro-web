@@ -4,8 +4,11 @@ import { useRef, useState } from 'react';
 import UploadIcon from '@mui/icons-material/Upload';
 import CustomSnackbar from './CustomSnackbar';
 
-export default function ImportLocalStorageButton({ onClick }
-: { onClick: (jsonString: string) => void }) {
+export default function ImportLocalStorageButton({
+  onClick,
+}: {
+  onClick: (jsonString: string) => void;
+}) {
   const hiddenFileInput = useRef<HTMLInputElement>(null);
   const [importSuccessfulVisible, setImportSuccessfulVisible] = useState(false);
   const [importErrorVisible, setImportErrorVisible] = useState(false);
@@ -44,13 +47,28 @@ export default function ImportLocalStorageButton({ onClick }
   };
 
   return (
-    <Box textAlign="center" sx={{ m: 4 }} onClick={handleClick}>
-      <Button variant="contained" color="primary" startIcon={<UploadIcon />}>
+    <Box textAlign='center' sx={{ m: 4 }} onClick={handleClick}>
+      <Button variant='contained' color='primary' startIcon={<UploadIcon />}>
         Import
       </Button>
-      <input type="file" ref={hiddenFileInput} onChangeCapture={handleChange} style={{ display: 'none' }} />
-      <CustomSnackbar visible={importSuccessfulVisible} setVisible={setImportSuccessfulVisible} severity="success" message="Data successfully restored!" />
-      <CustomSnackbar visible={importErrorVisible} setVisible={setImportErrorVisible} severity="error" message="Error while importing your data" />
+      <input
+        type='file'
+        ref={hiddenFileInput}
+        onChangeCapture={handleChange}
+        style={{ display: 'none' }}
+      />
+      <CustomSnackbar
+        visible={importSuccessfulVisible}
+        setVisible={setImportSuccessfulVisible}
+        severity='success'
+        message='Data successfully restored!'
+      />
+      <CustomSnackbar
+        visible={importErrorVisible}
+        setVisible={setImportErrorVisible}
+        severity='error'
+        message='Error while importing your data'
+      />
     </Box>
   );
 }

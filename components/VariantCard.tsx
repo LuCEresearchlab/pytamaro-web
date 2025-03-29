@@ -1,6 +1,7 @@
 import {
   Box,
-  Card, CardActionArea,
+  Card,
+  CardActionArea,
   CardContent,
   Typography,
 } from '@mui/material';
@@ -13,18 +14,23 @@ import {
 } from '../src/schemas/activitySchema';
 import { activityVariantPathname } from '../src/urlUtils';
 import ActivityCardMedia from './ActivityCardMedia';
-import ActivityStatusBadge, { activityVariantStatus } from './ActivityStatusBadge';
+import ActivityStatusBadge, {
+  activityVariantStatus,
+} from './ActivityStatusBadge';
 
 export default function VariantCard({
-  activityWithVariant, noVariantInfo = false, noInProgress = false, width = '100%',
-} :
-{ activityWithVariant : {
-  activity: BasicActivity,
-  variant: ActivityVariant,
-},
-noVariantInfo?: boolean,
-noInProgress?: boolean,
-width?: string,
+  activityWithVariant,
+  noVariantInfo = false,
+  noInProgress = false,
+  width = '100%',
+}: {
+  activityWithVariant: {
+    activity: BasicActivity;
+    variant: ActivityVariant;
+  };
+  noVariantInfo?: boolean;
+  noInProgress?: boolean;
+  width?: string;
 }) {
   const { metadata } = useLocalProfile();
   const { activity, variant } = activityWithVariant;
@@ -32,27 +38,28 @@ width?: string,
   const status = activityVariantStatus(metadata.activities, variant);
   return (
     <Box sx={{ width }}>
-      <ActivityStatusBadge
-        status={status}
-        small
-        noInProgress={noInProgress}
-      >
+      <ActivityStatusBadge status={status} small noInProgress={noInProgress}>
         <Card
           sx={{
-            width, height: '100%',
+            width,
+            height: '100%',
           }}
         >
-          <CardActionArea disabled={status === 'initial'} href={activityVariantPathname(variant)} sx={{ height: '100%' }}>
+          <CardActionArea
+            disabled={status === 'initial'}
+            href={activityVariantPathname(variant)}
+            sx={{ height: '100%' }}
+          >
             <>
               <ActivityCardMedia activity={activity} variant={variant} />
               <CardContent sx={{ height: '100%' }}>
-                <Typography gutterBottom variant="h6">
+                <Typography gutterBottom variant='h6'>
                   {langInfo.title}
                 </Typography>
                 {!noVariantInfo && (
-                <Typography variant="body2" color="text.secondary">
-                  {`${getLanguageDisplayName(variant.language)} - ${variant.version}`}
-                </Typography>
+                  <Typography variant='body2' color='text.secondary'>
+                    {`${getLanguageDisplayName(variant.language)} - ${variant.version}`}
+                  </Typography>
                 )}
               </CardContent>
             </>

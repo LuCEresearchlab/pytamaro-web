@@ -3,7 +3,7 @@ import { useTranslation } from 'next-i18next';
 import { useEffect } from 'react';
 import useLocalProfile from './useLocalProfile';
 
-const config = require('../../next-i18next.config');
+import config from '../../next-i18next.config';
 
 const { defaultLocale, locales } = config.i18n;
 
@@ -15,9 +15,10 @@ export default function useLocalTranslation(namespaces: string[] = []) {
   useEffect(() => {
     // Use locale from localStorage if it is set and available, otherwise
     // figure out the best match based on the browser's locale.
-    const platformLocale = setLocale !== null && locales.includes(setLocale)
-      ? setLocale
-      : match(navigator.languages, locales, defaultLocale);
+    const platformLocale =
+      setLocale !== null && locales.includes(setLocale)
+        ? setLocale
+        : match(navigator.languages, locales, defaultLocale);
     // Manually set the locale in next-i18next.
     if (i18n.language !== platformLocale) {
       i18n.changeLanguage(platformLocale);

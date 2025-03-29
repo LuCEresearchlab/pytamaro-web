@@ -1,7 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, Link, Stack } from '@mui/material';
 import { MDXRemote } from 'next-mdx-remote';
 import { ReactNode } from 'react';
-import { ActivityVariant, MarkdownCell, NotebookCell } from '../src/schemas/activitySchema';
+import {
+  ActivityVariant,
+  MarkdownCell,
+  NotebookCell,
+} from '../src/schemas/activitySchema';
 import { activityAssetPathname } from '../src/urlUtils';
 import InlineAPI from './documentation/InlineAPI';
 import { STRICT_PYTHON3_LANG_ID } from './editor/strictPython3';
@@ -32,7 +37,12 @@ function imgSourceTransformer(
   }
 }
 
-function imgComponent(props: any, cell: NotebookCell, authorSlug: string, activitySlug: string) {
+function imgComponent(
+  props: any,
+  cell: NotebookCell,
+  authorSlug: string,
+  activitySlug: string,
+) {
   const imgStyle = {
     ...props.style,
     // For mobile devices
@@ -41,14 +51,14 @@ function imgComponent(props: any, cell: NotebookCell, authorSlug: string, activi
 
   return (
     <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      component="span"
+      display='flex'
+      justifyContent='center'
+      alignItems='center'
+      component='span'
     >
       <picture>
         <img
-        // eslint-disable-next-line react/jsx-props-no-spreading
+          // eslint-disable-next-line react/jsx-props-no-spreading
           {...props}
           alt={props.alt}
           src={imgSourceTransformer(props.src, cell, authorSlug, activitySlug)}
@@ -66,12 +76,17 @@ function InlineAPIComponent(
   module?: string,
 ) {
   return (
-    <InlineAPI name={name} activityVariant={activityVariant} language={lang} module={module} />
+    <InlineAPI
+      name={name}
+      activityVariant={activityVariant}
+      language={lang}
+      module={module}
+    />
   );
 }
 
 function codeComponent(props: any) {
-  const codeProps : Record<string, string> = {};
+  const codeProps: Record<string, string> = {};
   if (props.className === 'language-python') {
     codeProps['data-lang'] = STRICT_PYTHON3_LANG_ID;
     codeProps.className = COLORIZE_CLASSNAME;
@@ -82,16 +97,14 @@ function codeComponent(props: any) {
   }
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    <code {...codeProps}>
-      {source}
-    </code>
+    <code {...codeProps}>{source}</code>
   );
 }
 
 function linkComponent(props: any) {
   return (
     <Link
-      target="_blank"
+      target='_blank'
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
     >
@@ -100,34 +113,55 @@ function linkComponent(props: any) {
   );
 }
 
-export default function MarkdownCellComponent({ cell, activityVariant } :
-{ cell: MarkdownCell, activityVariant: ActivityVariant }) {
+export default function MarkdownCellComponent({
+  cell,
+  activityVariant,
+}: {
+  cell: MarkdownCell;
+  activityVariant: ActivityVariant;
+}) {
   const adHocComponents = {
-    img: (props: any) => (
-      imgComponent(props, cell, activityVariant.authorSlug, activityVariant.activitySlug)
-    ),
+    img: (props: any) =>
+      imgComponent(
+        props,
+        cell,
+        activityVariant.authorSlug,
+        activityVariant.activitySlug,
+      ),
     a: linkComponent,
     code: codeComponent,
     ReactPlayer: ResponsiveReactPlayer,
     Stack,
-    API: ({ lang, module, children: name } :
-    { lang?: string, module?: string, children: string }) => (
-      InlineAPIComponent(name, activityVariant, lang, module)
-    ),
+    API: ({
+      lang,
+      module,
+      children: name,
+    }: {
+      lang?: string;
+      module?: string;
+      children: string;
+    }) => InlineAPIComponent(name, activityVariant, lang, module),
     Activity: ActivityLink,
-    DoNow: ({ id, requireAnswer = false, children } :
-    { id: string, requireAnswer?: boolean, children: ReactNode }) => (
+    DoNow: ({
+      id,
+      requireAnswer = false,
+      children,
+    }: {
+      id: string;
+      requireAnswer?: boolean;
+      children: ReactNode;
+    }) =>
       DoNowBox({
-        id, requireAnswer, children, activityVariant,
-      })
-    ),
-    Task: ({ children }: { children: ReactNode }) => (
-      TaskBox({ children })
-    ),
+        id,
+        requireAnswer,
+        children,
+        activityVariant,
+      }),
+    Task: ({ children }: { children: ReactNode }) => TaskBox({ children }),
   };
   return (
     <MDXRemote
-    // eslint-disable-next-line react/jsx-props-no-spreading
+      // eslint-disable-next-line react/jsx-props-no-spreading
       {...cell.mdxSource}
       key={cell.id}
       components={adHocComponents}

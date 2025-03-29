@@ -6,10 +6,16 @@ import { EventName } from '../../storeDbEvent';
 import conn from '../dbConnection';
 import { storeOrRetrieveRow, storeRow, storeRowWithoutId } from '../dbUtils';
 import {
-  eventTableName, storeActivity, storeEvent, storeSource,
+  eventTableName,
+  storeActivity,
+  storeEvent,
+  storeSource,
 } from './event';
 
-async function storeDockerImageTag(sql: postgres.TransactionSql, docker_image: string) {
+async function storeDockerImageTag(
+  sql: postgres.TransactionSql,
+  docker_image: string,
+) {
   return storeOrRetrieveRow(sql, 'docker_images', { tag: docker_image });
 }
 
@@ -74,12 +80,17 @@ export default async function saveCodeExecutionEvent(
   requested_cell_seq_number: number,
   toolboxFunctions: ToolboxFunction[],
   extraPythonFiles: PythonFile[],
-) : Promise<boolean> {
+): Promise<boolean> {
   try {
     await conn.begin(async (sql) => {
       const pDockerImageId = storeDockerImageTag(sql, docker_image);
       const pActivityId = storeActivity(sql, activity_variant);
-      const pEventId = storeEvent(sql, user_uuid, experiment_key, EventName.CodeExecution);
+      const pEventId = storeEvent(
+        sql,
+        user_uuid,
+        experiment_key,
+        EventName.CodeExecution,
+      );
       await storeEventCodeExecution(
         sql,
         await pEventId,
@@ -87,29 +98,31 @@ export default async function saveCodeExecutionEvent(
         await pActivityId,
         requested_cell_seq_number,
       );
-      await Promise.all([
-        sources.map(async (source, idx) => storeCell(
-          sql,
-          await pEventId,
-          source,
-          initial_sources[idx],
-          idx,
-        )),
-        toolboxFunctions.map(async (fn) => storeFile(
-          sql,
-          await pEventId,
-          TOOLBOX_FUNCTIONS_TABLE,
-          fn.name,
-          fn.source,
-        )),
-        extraPythonFiles.map(async (file) => storeFile(
-          sql,
-          await pEventId,
-          EXTRA_PYTHON_FILES_TABLE,
-          file.name,
-          file.content,
-        )),
-      ].flat());
+      await Promise.all(
+        [
+          sources.map(async (source, idx) =>
+            storeCell(sql, await pEventId, source, initial_sources[idx], idx),
+          ),
+          toolboxFunctions.map(async (fn) =>
+            storeFile(
+              sql,
+              await pEventId,
+              TOOLBOX_FUNCTIONS_TABLE,
+              fn.name,
+              fn.source,
+            ),
+          ),
+          extraPythonFiles.map(async (file) =>
+            storeFile(
+              sql,
+              await pEventId,
+              EXTRA_PYTHON_FILES_TABLE,
+              file.name,
+              file.content,
+            ),
+          ),
+        ].flat(),
+      );
     });
     return true;
   } catch (e) {

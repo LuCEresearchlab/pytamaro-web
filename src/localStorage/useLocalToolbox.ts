@@ -5,7 +5,8 @@ import useLocalProfile from './useLocalProfile';
 export default function useLocalToolbox() {
   const { metadata, setMetadata } = useLocalProfile();
 
-  const getFunction = (name: string) => metadata.toolbox.find((t) => t.name === name);
+  const getFunction = (name: string) =>
+    metadata.toolbox.find((t) => t.name === name);
 
   const exists = (name: string) => Boolean(getFunction(name));
 
@@ -13,8 +14,8 @@ export default function useLocalToolbox() {
     if (getFunction(fn.name)) {
       return false;
     }
-    setMetadata(
-      (currentMetadata) => produce(currentMetadata, (draft) => {
+    setMetadata((currentMetadata) =>
+      produce(currentMetadata, (draft) => {
         draft.toolbox.push(fn);
       }),
     );
@@ -26,8 +27,8 @@ export default function useLocalToolbox() {
     if (idx === -1) {
       return false;
     }
-    setMetadata(
-      (currentMetadata) => produce(currentMetadata, (draft) => {
+    setMetadata((currentMetadata) =>
+      produce(currentMetadata, (draft) => {
         draft.toolbox[idx] = fn;
       }),
     );
@@ -35,8 +36,8 @@ export default function useLocalToolbox() {
   };
 
   const deleteFunction = (fn: ToolboxFunction) => {
-    setMetadata(
-      (currentMetadata) => produce(currentMetadata, (draft) => {
+    setMetadata((currentMetadata) =>
+      produce(currentMetadata, (draft) => {
         draft.toolbox = draft.toolbox.filter((t) => t.name !== fn.name);
       }),
     );

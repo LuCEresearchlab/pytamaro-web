@@ -1,8 +1,4 @@
-import {
-  Box,
-  Container,
-  TextField,
-} from '@mui/material';
+import { Box, Container, TextField } from '@mui/material';
 import { debounce } from 'lodash';
 import Head from 'next/head';
 import { useState } from 'react';
@@ -23,12 +19,12 @@ export default function MyToolbox() {
       </Head>
       <Box>
         <NavigationBar />
-        <Container maxWidth="md">
+        <Container maxWidth='md'>
           <PageTitle>My Toolbox</PageTitle>
           <TextField
             fullWidth
-            label="Search by function name or description"
-            variant="outlined"
+            label='Search by function name or description'
+            variant='outlined'
             onChange={debounce(handleNewFilter, 100)}
             sx={{ mb: 3 }}
           />
@@ -42,7 +38,7 @@ export default function MyToolbox() {
 export async function getStaticProps() {
   return {
     props: {
-      ...await translationProps(),
+      ...(await translationProps()),
     },
   };
 }

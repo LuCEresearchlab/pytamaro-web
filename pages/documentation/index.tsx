@@ -12,7 +12,7 @@ import {
   Typography,
 } from '@mui/material';
 import { createFilterOptions } from '@mui/material/Autocomplete';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid';
 import { sortBy } from 'lodash';
 import Head from 'next/head';
 import { iconPath } from '../../components/documentation/utils';
@@ -20,13 +20,23 @@ import NavigationBar from '../../components/NavigationBar';
 import PageTitle from '../../components/PageTitle';
 import CentralContent from '../../components/sidebar/CentralContent';
 import Sidebar from '../../components/sidebar/Sidebar';
-import allDocumentationModules, { readDocumentation } from '../../src/fs-content/documentation';
+import allDocumentationModules, {
+  readDocumentation,
+} from '../../src/fs-content/documentation';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { JudiciousModule } from '../../src/schemas/documentation';
 import { translationProps } from '../../src/serverSideTranslationProps';
-import { documentationElementPathname, documentationModulePathname, pytamaroDocsUrl } from '../../src/urlUtils';
+import {
+  documentationElementPathname,
+  documentationModulePathname,
+  pytamaroDocsUrl,
+} from '../../src/urlUtils';
 
-export default function Documentation({ modulesData } : { modulesData: JudiciousModule[] }) {
+export default function Documentation({
+  modulesData,
+}: {
+  modulesData: JudiciousModule[];
+}) {
   const { t } = useLocalTranslation();
 
   const sortedModules = sortBy(modulesData, (module) => [
@@ -37,33 +47,41 @@ export default function Documentation({ modulesData } : { modulesData: Judicious
   return (
     <div>
       <Head>
-        <title>
-          {`Python ${t('documentation')}`}
-        </title>
+        <title>{`Python ${t('documentation')}`}</title>
       </Head>
       <NavigationBar />
       <Grid container>
-        <Sidebar side="left" />
+        <Sidebar side='left' />
         <CentralContent>
           <PageTitle>{t('documentation')}</PageTitle>
-          <Container maxWidth="md">
-            <Typography my={4} textAlign="center">
+          <Container maxWidth='md'>
+            <Typography my={4} textAlign='center'>
               {t('selectToSeeDoc')}
             </Typography>
             <Autocomplete
-              options={sortedModules.flatMap((module) => module.elements.map((element) => ({
-                ...element,
-                module: module.module,
-              })))}
+              options={sortedModules.flatMap((module) =>
+                module.elements.map((element) => ({
+                  ...element,
+                  module: module.module,
+                })),
+              )}
               renderOption={(_props, option) => (
                 <ListItemButton
-                  href={documentationElementPathname(option.module, option.name)}
+                  href={documentationElementPathname(
+                    option.module,
+                    option.name,
+                  )}
                 >
-                  <ListItemText primary={option.name} secondary={option.description.p[0]} />
+                  <ListItemText
+                    primary={option.name}
+                    secondary={option.description.p[0]}
+                  />
                 </ListItemButton>
               )}
               // eslint-disable-next-line react/jsx-props-no-spreading
-              renderInput={(params) => <TextField {...params} label={t('findName')} />}
+              renderInput={(params) => (
+                <TextField {...params} label={t('findName')} />
+              )}
               filterOptions={createFilterOptions({
                 limit: 10,
                 stringify: (option) => option.name + option.description.p[0],
@@ -83,7 +101,7 @@ export default function Documentation({ modulesData } : { modulesData: Judicious
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={iconPath(data.module)}
-                          alt="Library logo"
+                          alt='Library logo'
                           height={32}
                         />
                       </ListItemAvatar>
@@ -101,22 +119,23 @@ export default function Documentation({ modulesData } : { modulesData: Judicious
                       />
                     </ListItemButton>
                   </ListItem>
-                  {index === sortedModules.length - 1 ? null : <Divider variant="middle" component="li" />}
+                  {index === sortedModules.length - 1 ? null : (
+                    <Divider variant='middle' component='li' />
+                  )}
                 </div>
               ))}
             </List>
-            <Typography mt={10} textAlign="center">
-              See also the official documentation of
-              {' '}
-              <Link href="https://docs.python.org/3/library/index.html">The Python Standard Library</Link>
-              {' '}
-              and of
-              {' '}
+            <Typography mt={10} textAlign='center'>
+              See also the official documentation of{' '}
+              <Link href='https://docs.python.org/3/library/index.html'>
+                The Python Standard Library
+              </Link>{' '}
+              and of{' '}
               <Link href={pytamaroDocsUrl()}>PyTamaro on ReadTheDocs</Link>
             </Typography>
           </Container>
         </CentralContent>
-        <Sidebar side="right" />
+        <Sidebar side='right' />
       </Grid>
     </div>
   );
@@ -125,8 +144,10 @@ export default function Documentation({ modulesData } : { modulesData: Judicious
 export async function getStaticProps() {
   return {
     props: {
-      ...await translationProps(),
-      modulesData: await Promise.all((await allDocumentationModules()).map(readDocumentation)),
+      ...(await translationProps()),
+      modulesData: await Promise.all(
+        (await allDocumentationModules()).map(readDocumentation),
+      ),
     },
   };
 }

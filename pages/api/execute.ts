@@ -2,11 +2,15 @@ import axios from 'axios';
 import crypto from 'crypto';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from 'redis';
-import { CODE_EXECUTION_CELLS_TO_FILES_VERSION, ExecutionResponse, cellsToFiles } from '../../src/codeExecution';
+import {
+  CODE_EXECUTION_CELLS_TO_FILES_VERSION,
+  ExecutionResponse,
+  cellsToFiles,
+} from '../../src/codeExecution';
 import { ToolboxFunction } from '../../src/localStorage/schema';
 import { PythonFile } from '../../src/schemas/activitySchema';
 
-const dummySuccessfulResponse : ExecutionResponse = {
+const dummySuccessfulResponse: ExecutionResponse = {
   type: 'success',
   stdout: 'Hello, world!',
   stderr: '(Demo output - Only shown in development mode)',
@@ -55,8 +59,13 @@ async function doExecution(
   idx: number,
   toolboxFunctions: ToolboxFunction[],
   extraPythonFiles: PythonFile[],
-) : Promise<ExecutionResponse> {
-  const files = await cellsToFiles(sources, idx, toolboxFunctions, extraPythonFiles);
+): Promise<ExecutionResponse> {
+  const files = await cellsToFiles(
+    sources,
+    idx,
+    toolboxFunctions,
+    extraPythonFiles,
+  );
   const data = {
     image: process.env.GLOT_IMAGE_TAG,
     payload: {
@@ -65,17 +74,14 @@ async function doExecution(
     },
   };
   try {
-    const glotResponse = (await axios.post(
-      `${process.env.GLOT_RUNNER_URL}/run`,
-      data,
-      {
-        headers:
-          {
-            'X-Access-Token': process.env.GLOT_SECRET_TOKEN,
-            'Content-Type': 'application/json',
-          },
-      },
-    )).data;
+    const glotResponse = (
+      await axios.post(`${process.env.GLOT_RUNNER_URL}/run`, data, {
+        headers: {
+          'X-Access-Token': process.env.GLOT_SECRET_TOKEN,
+          'Content-Type': 'application/json',
+        },
+      })
+    ).data;
     return {
       type: glotResponse.error.length > 0 ? 'error' : 'success',
       stdout: glotResponse.stdout,
@@ -85,8 +91,10 @@ async function doExecution(
     if (axios.isAxiosError(err)) {
       const errorData = err.response?.data;
       if (errorData) {
-        if (errorData.error === 'limits.execution_time') return { type: 'time-limit-exceeded' };
-        if (errorData.error === 'limits.read.size') return { type: 'output-limit-exceeded' };
+        if (errorData.error === 'limits.execution_time')
+          return { type: 'time-limit-exceeded' };
+        if (errorData.error === 'limits.read.size')
+          return { type: 'output-limit-exceeded' };
       }
     }
     // No better information available, just return a generic network error
@@ -116,19 +124,30 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ExecutionResponse>,
 ) {
-  const {
-    sources, idx, toolboxFunctions, extraPythonFiles,
-  } = req.body;
-  const key = await computeKey(dataForKey({
-    sources, idx, toolboxFunctions, extraPythonFiles,
-  }));
+  const { sources, idx, toolboxFunctions, extraPythonFiles } = req.body;
+  const key = await computeKey(
+    dataForKey({
+      sources,
+      idx,
+      toolboxFunctions,
+      extraPythonFiles,
+    }),
+  );
   const cacheResult = await retrieveFromCache(key);
   let response;
   if (cacheResult) {
     response = JSON.parse(cacheResult);
   } else {
-    response = await doExecution(sources, idx, toolboxFunctions, extraPythonFiles);
-    if (response.type === 'network-error' && process.env.NODE_ENV === 'development') {
+    response = await doExecution(
+      sources,
+      idx,
+      toolboxFunctions,
+      extraPythonFiles,
+    );
+    if (
+      response.type === 'network-error' &&
+      process.env.NODE_ENV === 'development'
+    ) {
       response = dummySuccessfulResponse;
     }
     if (response.type !== 'network-error') {

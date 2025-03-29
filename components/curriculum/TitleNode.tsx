@@ -1,33 +1,40 @@
-import { AssignmentTurnedIn, PlayCircle } from '@mui/icons-material';
-import {
-  Box, Button, Tooltip, Typography,
-} from '@mui/material';
+import AssignmentTurnedIn from '@mui/icons-material/AssignmentTurnedIn';
+import PlayCircle from '@mui/icons-material/PlayCircle';
+import { Box, Button, Tooltip, Typography } from '@mui/material';
+import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import { slug } from 'github-slugger';
-import { Handle, NodeProps, Position } from 'reactflow';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 
 type NodeData = {
-  type: 'unit' | 'start' | 'end',
-  text: string,
-  width: number,
-  height: number,
-  unlocked: boolean,
-  id: string,
-  started?: boolean,
-  onStartClick?: () => void,
-  onEndClick?: () => void,
+  type: 'unit' | 'start' | 'end';
+  text: string;
+  width: number;
+  height: number;
+  unlocked: boolean;
+  id: string;
+  started?: boolean;
+  onStartClick?: () => void;
+  onEndClick?: () => void;
 };
 
-export default function TitleNode({ data }: NodeProps<NodeData>) {
+export default function TitleNode({ data }: NodeProps<Node<NodeData>>) {
   const {
-    type, text, width, height, unlocked, started, onStartClick, onEndClick, id,
+    type,
+    text,
+    width,
+    height,
+    unlocked,
+    started,
+    onStartClick,
+    onEndClick,
+    id,
   } = data;
   const showStartingButton = type === 'start' && !started;
   const showFinishButton = type === 'end' && unlocked;
   const { t } = useLocalTranslation(['curriculum']);
   return (
     <Box id={id} sx={{ opacity: unlocked ? 1 : 0.38 }}>
-      <Handle type="target" position={Position.Top} isConnectable={false} />
+      <Handle type='target' position={Position.Top} isConnectable={false} />
       <Box
         sx={{
           display: 'flex',
@@ -44,23 +51,39 @@ export default function TitleNode({ data }: NodeProps<NodeData>) {
       >
         {/* eslint-disable-next-line no-nested-ternary */}
         {showStartingButton || showFinishButton ? (
-          <Tooltip arrow title={t(`clickTo${showStartingButton ? 'Start' : 'Finish'}`)} placement="top">
+          <Tooltip
+            arrow
+            title={t(`clickTo${showStartingButton ? 'Start' : 'Finish'}`)}
+            placement='top'
+          >
             <Button
-              variant="contained"
-              color="success"
+              variant='contained'
+              color='success'
               onClick={showStartingButton ? onStartClick : onEndClick}
-              startIcon={showStartingButton ? <PlayCircle /> : <AssignmentTurnedIn />}
+              startIcon={
+                showStartingButton ? <PlayCircle /> : <AssignmentTurnedIn />
+              }
             >
               {t(text.toLowerCase())}
             </Button>
           </Tooltip>
+        ) : type === 'unit' ? (
+          <Typography variant='h5' textAlign='center' noWrap>
+            {text}
+          </Typography>
         ) : (
-          type === 'unit'
-            ? <Typography variant="h5" textAlign="center" noWrap>{text}</Typography>
-            : <Typography variant="h6" textTransform="uppercase" letterSpacing=".08rem" textAlign="center" noWrap>{t(text.toLowerCase())}</Typography>
+          <Typography
+            variant='h6'
+            textTransform='uppercase'
+            letterSpacing='.08rem'
+            textAlign='center'
+            noWrap
+          >
+            {t(text.toLowerCase())}
+          </Typography>
         )}
       </Box>
-      <Handle type="source" position={Position.Bottom} isConnectable={false} />
+      <Handle type='source' position={Position.Bottom} isConnectable={false} />
     </Box>
   );
 }

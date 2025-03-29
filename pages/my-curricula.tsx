@@ -1,9 +1,4 @@
-import {
-  Box,
-  Container,
-  Link,
-  Typography,
-} from '@mui/material';
+import { Box, Container, Link, Typography } from '@mui/material';
 import Head from 'next/head';
 import CurriculaList from '../components/CurriculaList';
 import NavigationBar from '../components/NavigationBar';
@@ -15,8 +10,11 @@ import { Curriculum } from '../src/schemas/curriculumSchema';
 import { translationProps } from '../src/serverSideTranslationProps';
 import { curriculaPathname } from '../src/urlUtils';
 
-export default function MyCurricula({ curricula } :
-{ curricula: Curriculum[] }) {
+export default function MyCurricula({
+  curricula,
+}: {
+  curricula: Curriculum[];
+}) {
   const { metadata } = useLocalProfile();
   const startedCurricula = findStartedCurricula(metadata.curricula, curricula);
   return (
@@ -26,23 +24,20 @@ export default function MyCurricula({ curricula } :
       </Head>
       <Box>
         <NavigationBar />
-        <Container maxWidth="lg">
+        <Container maxWidth='lg'>
           <PageTitle>My Curricula</PageTitle>
-          {startedCurricula.length > 0
-            ? (
-              <CurriculaList
-                curricula={startedCurricula}
-                userActivities={metadata.activities}
-                alwaysClickable
-              />
-            )
-            : (
-              <Typography>
-                No curriculum started so far.
-                {' '}
-                <Link href={curriculaPathname()}>Explore our curricula!</Link>
-              </Typography>
-            )}
+          {startedCurricula.length > 0 ? (
+            <CurriculaList
+              curricula={startedCurricula}
+              userActivities={metadata.activities}
+              alwaysClickable
+            />
+          ) : (
+            <Typography>
+              No curriculum started so far.{' '}
+              <Link href={curriculaPathname()}>Explore our curricula!</Link>
+            </Typography>
+          )}
         </Container>
       </Box>
     </div>
@@ -53,7 +48,7 @@ export async function getStaticProps() {
   return {
     props: {
       curricula: await listCurriculaAllAuthors(),
-      ...await translationProps(),
+      ...(await translationProps()),
     },
   };
 }

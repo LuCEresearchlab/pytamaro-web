@@ -1,7 +1,4 @@
-import {
-  Box,
-  Container, Typography,
-} from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 import Head from 'next/head';
 import NavigationBar from '../components/NavigationBar';
 import { translationProps } from '../src/serverSideTranslationProps';
@@ -14,11 +11,11 @@ export default function TermsOfService() {
       </Head>
       <Box>
         <NavigationBar />
-        <Container maxWidth="md">
-          <Typography variant="h3" align="center" marginY={3}>Terms of Service</Typography>
-          <Typography variant="h6">
-            .
+        <Container maxWidth='md'>
+          <Typography variant='h3' align='center' marginY={3}>
+            Terms of Service
           </Typography>
+          <Typography variant='h6'>.</Typography>
         </Container>
       </Box>
     </div>
@@ -28,7 +25,7 @@ export default function TermsOfService() {
 export async function getStaticProps() {
   return {
     props: {
-      ...await translationProps(),
+      ...(await translationProps()),
     },
   };
 }

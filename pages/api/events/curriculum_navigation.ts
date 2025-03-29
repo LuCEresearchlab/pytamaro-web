@@ -5,9 +5,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const {
-    uuid, experimentKey, activityVariant, curriculum, navigationType,
-  } = req.body;
+  const { uuid, experimentKey, activityVariant, curriculum, navigationType } =
+    req.body;
   const saved = await saveCurriculumNavigationEvent(
     uuid,
     experimentKey,
