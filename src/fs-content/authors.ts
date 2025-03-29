@@ -6,6 +6,7 @@ import { BasicActivity } from '../schemas/activitySchema';
 import { Author, AuthorProfile } from '../schemas/authorSchema';
 import { Curriculum } from '../schemas/curriculumSchema';
 import { listActivities } from './activities';
+import DataCache from './cache';
 import { listCurricula } from './curricula';
 import { DATA_DIR } from './notebooks';
 
@@ -21,7 +22,9 @@ export async function getAuthorContent(authorSlug: string): Promise<Author> {
   };
 }
 
-export async function getAuthorProfile(
+const authorProfilesCache = new DataCache<AuthorProfile>();
+
+async function readAuthorProfileFromFS(
   authorSlug: string,
 ): Promise<AuthorProfile> {
   const { name, description } = JSON.parse(
@@ -32,6 +35,14 @@ export async function getAuthorProfile(
     name,
     description: await serialize(description),
   };
+}
+
+export async function getAuthorProfile(
+  authorSlug: string,
+): Promise<AuthorProfile> {
+  return authorProfilesCache.get(authorSlug, () =>
+    readAuthorProfileFromFS(authorSlug),
+  );
 }
 
 export async function listAuthorsProfiles(): Promise<AuthorProfile[]> {

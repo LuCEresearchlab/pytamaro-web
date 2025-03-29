@@ -142,7 +142,9 @@ export async function findVersions(
     .map((filename) => filename.replace(prefix, ''));
 }
 
-export async function listActivities(authorSlug: string): Promise<Activity[]> {
+const activityListCache = new DataCache<Activity[]>();
+
+async function listActivitiesFromFS(authorSlug: string): Promise<Activity[]> {
   const activitySlugs = (
     await readdir(path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR), {
       withFileTypes: true,
@@ -154,6 +156,12 @@ export async function listActivities(authorSlug: string): Promise<Activity[]> {
 
   return Promise.all(
     activitySlugs.map((activitySlug) => readActivity(authorSlug, activitySlug)),
+  );
+}
+
+export async function listActivities(authorSlug: string): Promise<Activity[]> {
+  return activityListCache.get(authorSlug, () =>
+    listActivitiesFromFS(authorSlug),
   );
 }
 

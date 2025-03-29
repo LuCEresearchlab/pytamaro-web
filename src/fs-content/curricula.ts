@@ -97,7 +97,9 @@ export async function readCurriculum(
   );
 }
 
-export async function listCurricula(authorSlug: string): Promise<Curriculum[]> {
+const curriculaListCache = new DataCache<Curriculum[]>();
+
+async function listCurriculaFromFS(authorSlug: string): Promise<Curriculum[]> {
   const curriculumSlugs = (
     await readdir(path.join(DATA_DIR, authorSlug, CURRICULA_DIR), {
       withFileTypes: true,
@@ -111,6 +113,12 @@ export async function listCurricula(authorSlug: string): Promise<Curriculum[]> {
     curriculumSlugs.map((curriculumSlug) =>
       readCurriculum(authorSlug, curriculumSlug),
     ),
+  );
+}
+
+export async function listCurricula(authorSlug: string): Promise<Curriculum[]> {
+  return curriculaListCache.get(authorSlug, () =>
+    listCurriculaFromFS(authorSlug),
   );
 }
 
