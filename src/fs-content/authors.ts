@@ -5,7 +5,7 @@ import path from 'path';
 import { BasicActivity } from '../schemas/activitySchema';
 import { Author, AuthorProfile } from '../schemas/authorSchema';
 import { Curriculum } from '../schemas/curriculumSchema';
-import { listActivities } from './activities';
+import { basicActivities, listActivities } from './activities';
 import DataCache from './cache';
 import { listCurricula } from './curricula';
 import { DATA_DIR } from './notebooks';
