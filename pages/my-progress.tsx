@@ -1,9 +1,7 @@
-import {
-  Assignment,
-  Construction,
-  Route,
-  TipsAndUpdates,
-} from '@mui/icons-material';
+import Assignment from '@mui/icons-material/Assignment';
+import Construction from '@mui/icons-material/Construction';
+import Route from '@mui/icons-material/Route';
+import TipsAndUpdates from '@mui/icons-material/TipsAndUpdates';
 import {
   Alert,
   Box,
@@ -16,7 +14,7 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { activityVariantStatus } from '../components/ActivityStatusBadge';

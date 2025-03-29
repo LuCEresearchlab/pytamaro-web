@@ -1,4 +1,4 @@
-import { Construction } from '@mui/icons-material';
+import Construction from '@mui/icons-material/Construction';
 import { IconButton, Tooltip } from '@mui/material';
 import { debounce } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';

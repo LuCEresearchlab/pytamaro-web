@@ -1,5 +1,6 @@
-import { HourglassBottom, Verified } from '@mui/icons-material';
+import HourglassBottom from '@mui/icons-material/HourglassBottom';
 import InfoIcon from '@mui/icons-material/Info';
+import Verified from '@mui/icons-material/Verified';
 import {
   Box,
   Card,
@@ -10,7 +11,7 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { countBy, orderBy, sortBy } from 'lodash';
 import Link from 'next/link';
 import {

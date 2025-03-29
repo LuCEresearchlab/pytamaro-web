@@ -9,20 +9,20 @@ import {
   CardContent,
   CardHeader,
   Container,
-  Grid,
+  GridLegacy as Grid,
   Link,
   Typography,
 } from '@mui/material';
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import SILogo from '../../components/SILogo';
 import NavigationBar from '../../components/NavigationBar';
+import SILogo from '../../components/SILogo';
 import SA23_ColorImage from '../../public/events/2023-SA-Colors.jpg';
 import SA23_FoppaImage from '../../public/events/2023-SA-Foppa.jpg';
+import HeroImage from '../../public/events/2023-SA-HeroImage.jpg';
 import SA23_TableImage from '../../public/events/2023-SA-Table.jpg';
 import SA23_TableImage2 from '../../public/events/2023-SA-Table2.jpg';
-import HeroImage from '../../public/events/2023-SA-HeroImage.jpg';
 import { translationProps } from '../../src/serverSideTranslationProps';
 
 export default function Academy() {

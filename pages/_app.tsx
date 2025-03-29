@@ -1,4 +1,4 @@
-import { CacheProvider, EmotionCache } from '@emotion/react';
+import { AppCacheProvider } from '@mui/material-nextjs/v14-pagesRouter';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
@@ -9,7 +9,6 @@ import PlausibleProvider from 'next-plausible';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import PageFooter from '../components/PageFooter';
-import createEmotionCache from '../src/createEmotionCache';
 import theme from '../src/theme';
 import '../style/styles.css';
 
@@ -22,20 +21,11 @@ import '@fontsource/fira-sans/700.css';
 // Icon font
 import '@fontsource/material-icons';
 
-// Client-side cache, shared for the whole session of the user in the browser.
-const clientSideEmotionCache = createEmotionCache();
-
-interface MyAppProps extends AppProps {
-  // eslint-disable-next-line react/require-default-props
-  emotionCache?: EmotionCache;
-}
-
-// eslint-disable-next-line react/require-default-props
-function MyApp(props: MyAppProps) {
-  const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+function MyApp(props: AppProps) {
+  const { Component, pageProps } = props;
   const queryClient = new QueryClient();
   return (
-    <CacheProvider value={emotionCache}>
+    <AppCacheProvider {...props}>
       <Head>
         <title>PyTamaro</title>
         <meta name='viewport' content='initial-scale=1, width=device-width' />
@@ -67,7 +57,7 @@ function MyApp(props: MyAppProps) {
           </ConfirmProvider>
         </PlausibleProvider>
       </ThemeProvider>
-    </CacheProvider>
+    </AppCacheProvider>
   );
 }
 

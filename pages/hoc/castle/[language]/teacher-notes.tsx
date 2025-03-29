@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardMedia,
   Container,
-  Grid,
+  GridLegacy as Grid,
   List,
   ListItem,
   ListItemAvatar,

@@ -1,4 +1,4 @@
-import { Code } from '@mui/icons-material';
+import Code from '@mui/icons-material/Code';
 import { Paper, Typography } from '@mui/material';
 import { useState } from 'react';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';

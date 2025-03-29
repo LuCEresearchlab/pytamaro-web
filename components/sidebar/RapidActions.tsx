@@ -1,4 +1,4 @@
-import { MenuBook } from '@mui/icons-material';
+import MenuBook from '@mui/icons-material/MenuBook';
 import { Link, Stack } from '@mui/material';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { documentationPathname } from '../../src/urlUtils';

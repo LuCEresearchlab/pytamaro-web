@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardMedia,
   Container,
-  Grid,
+  GridLegacy as Grid,
   Link,
   List,
   ListItem,

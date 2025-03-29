@@ -9,7 +9,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Grid,
+  GridLegacy as Grid,
   MenuItem,
   TextField,
   Typography,

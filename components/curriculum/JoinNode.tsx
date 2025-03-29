@@ -1,4 +1,4 @@
-import { Circle } from '@mui/icons-material';
+import Circle from '@mui/icons-material/Circle';
 import { Box, Tooltip } from '@mui/material';
 import { Handle, NodeProps, Position } from 'reactflow';
 import { color } from './utils';

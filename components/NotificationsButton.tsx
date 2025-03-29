@@ -1,4 +1,4 @@
-import { Notifications } from '@mui/icons-material';
+import Notifications from '@mui/icons-material/Notifications';
 import { Badge, Button, Card, CardActions, IconButton } from '@mui/material';
 import produce from 'immer';
 import { useState } from 'react';

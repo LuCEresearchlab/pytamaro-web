@@ -1,4 +1,4 @@
-import { Route } from '@mui/icons-material';
+import Route from '@mui/icons-material/Route';
 import { Alert, AlertTitle, Typography } from '@mui/material';
 import visibleCurricula from '../src/curricula';
 import { Curriculum } from '../src/schemas/curriculumSchema';

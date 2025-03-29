@@ -1,10 +1,10 @@
-import { TipsAndUpdates } from '@mui/icons-material';
+import TipsAndUpdates from '@mui/icons-material/TipsAndUpdates';
 import { Alert, Box } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 import { CodeCellState } from '../src/localStorage/schema';
 import { rapidPlaygroundActivityVariant } from '../src/specialActivities';
-import SolitaryCodeCell from './SolitaryCodeCell';
 import useTemporaryActivity from '../src/useTemporaryActivity';
+import SolitaryCodeCell from './SolitaryCodeCell';
 
 export default function RapidPlayground({
   initialCodeCells,

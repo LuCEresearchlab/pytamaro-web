@@ -1,4 +1,5 @@
-import { ArrowBack, ArrowForward } from '@mui/icons-material';
+import ArrowBack from '@mui/icons-material/ArrowBack';
+import ArrowForward from '@mui/icons-material/ArrowForward';
 import { Button, Tooltip } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';

@@ -6,17 +6,17 @@ import {
   CardContent,
   CardHeader,
   Container,
-  Grid,
+  GridLegacy as Grid,
   Link,
   Typography,
 } from '@mui/material';
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import SILogo from '../../components/SILogo';
 import NavigationBar from '../../components/NavigationBar';
-import HeroImage from '../../public/events/2024-SA-HeroImage.jpg';
+import SILogo from '../../components/SILogo';
 import Collage from '../../public/events/2024-SA-Collage.jpg';
+import HeroImage from '../../public/events/2024-SA-HeroImage.jpg';
 import { translationProps } from '../../src/serverSideTranslationProps';
 
 export default function Academy() {

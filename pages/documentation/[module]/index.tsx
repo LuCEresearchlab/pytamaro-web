@@ -1,5 +1,7 @@
-import { Category, Functions, Numbers } from '@mui/icons-material';
+import Category from '@mui/icons-material/Category';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Functions from '@mui/icons-material/Functions';
+import Numbers from '@mui/icons-material/Numbers';
 import {
   Accordion,
   AccordionDetails,
@@ -15,7 +17,7 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { groupBy, sortBy } from 'lodash';
 import Head from 'next/head';
 import DocBreadcrumbs from '../../../components/documentation/DocBreadcrumbs';

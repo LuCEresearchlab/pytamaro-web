@@ -5,7 +5,7 @@ import {
   CardContent,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { concat, shuffle } from 'lodash';
 import { MDXRemote } from 'next-mdx-remote';
 import { useEffect, useState } from 'react';

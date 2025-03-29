@@ -1,4 +1,4 @@
-import { List } from '@mui/icons-material';
+import List from '@mui/icons-material/List';
 import { Card, IconButton, Stack, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import MenuItem from '@mui/material/MenuItem';

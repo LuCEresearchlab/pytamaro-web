@@ -1,4 +1,6 @@
-import { Category, Schema, Tune } from '@mui/icons-material';
+import Category from '@mui/icons-material/Category';
+import Schema from '@mui/icons-material/Schema';
+import Tune from '@mui/icons-material/Tune';
 import { ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
 import { useEffect, useState } from 'react';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';

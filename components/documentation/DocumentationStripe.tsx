@@ -1,4 +1,4 @@
-import { ExpandMore } from '@mui/icons-material';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import { Box, Chip, Stack, Typography } from '@mui/material';
 import { flatten, isEqual, reverse, slice, uniqWith } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';

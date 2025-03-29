@@ -1,4 +1,4 @@
-import { AccessAlarm } from '@mui/icons-material';
+import AccessAlarm from '@mui/icons-material/AccessAlarm';
 import {
   Alert,
   AlertTitle,

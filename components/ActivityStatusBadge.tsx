@@ -1,5 +1,7 @@
 import styled from '@emotion/styled';
-import { EmojiEvents, Lock, Timeline } from '@mui/icons-material';
+import EmojiEvents from '@mui/icons-material/EmojiEvents';
+import Lock from '@mui/icons-material/Lock';
+import Timeline from '@mui/icons-material/Timeline';
 import { Badge, BadgeProps, Icon, Tooltip } from '@mui/material';
 import { ActivityVariantMetadata } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';

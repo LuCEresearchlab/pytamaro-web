@@ -1,4 +1,4 @@
-import { NavigateNext } from '@mui/icons-material';
+import NavigateNext from '@mui/icons-material/NavigateNext';
 import { Breadcrumbs, Link } from '@mui/material';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import {

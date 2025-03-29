@@ -1,13 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 import { useMonaco } from '@monaco-editor/react';
-import {
-  Download,
-  PlayCircle,
-  Route,
-  School,
-  Science,
-  TipsAndUpdates,
-} from '@mui/icons-material';
+import Download from '@mui/icons-material/Download';
+import PlayCircle from '@mui/icons-material/PlayCircle';
+import Route from '@mui/icons-material/Route';
+import School from '@mui/icons-material/School';
+import Science from '@mui/icons-material/Science';
+import TipsAndUpdates from '@mui/icons-material/TipsAndUpdates';
 import {
   Badge,
   BadgeProps,
@@ -22,7 +20,7 @@ import {
   styled,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import anime from 'animejs';
 import { shuffle } from 'lodash';
 import Head from 'next/head';

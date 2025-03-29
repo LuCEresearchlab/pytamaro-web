@@ -1,4 +1,4 @@
-import { HourglassEmpty } from '@mui/icons-material';
+import HourglassEmpty from '@mui/icons-material/HourglassEmpty';
 import { Box, Button } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
 import { useRouter } from 'next/router';

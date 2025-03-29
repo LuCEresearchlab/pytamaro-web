@@ -1,4 +1,4 @@
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { ActivityVariantWithNames } from '../src/activitiesAPIs';
 import { activityVariantId } from '../src/schemas/activitySchema';
 import CompactActivityVariantCard from './CompactActivityVariantCard';

@@ -1,10 +1,8 @@
-import {
-  Description,
-  Home,
-  OndemandVideo,
-  People,
-  PictureAsPdf,
-} from '@mui/icons-material';
+import Description from '@mui/icons-material/Description';
+import Home from '@mui/icons-material/Home';
+import OndemandVideo from '@mui/icons-material/OndemandVideo';
+import People from '@mui/icons-material/People';
+import PictureAsPdf from '@mui/icons-material/PictureAsPdf';
 import {
   Box,
   Button,

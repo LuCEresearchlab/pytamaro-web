@@ -4,7 +4,7 @@ import {
   CardActionArea,
   CardContent,
   Container,
-  Grid,
+  GridLegacy as Grid,
   Typography,
 } from '@mui/material';
 import Head from 'next/head';

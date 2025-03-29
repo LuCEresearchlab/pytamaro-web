@@ -1,12 +1,10 @@
-import {
-  CloseFullscreen,
-  ContentCopy,
-  MoreVert,
-  OpenInFull,
-  RestartAlt,
-  Visibility,
-  VisibilityOff,
-} from '@mui/icons-material';
+import CloseFullscreen from '@mui/icons-material/CloseFullscreen';
+import ContentCopy from '@mui/icons-material/ContentCopy';
+import MoreVert from '@mui/icons-material/MoreVert';
+import OpenInFull from '@mui/icons-material/OpenInFull';
+import RestartAlt from '@mui/icons-material/RestartAlt';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { IconButton, ListItemIcon, Menu, MenuItem } from '@mui/material';
 import { useState } from 'react';
 import {

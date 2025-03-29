@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import { useMonaco } from '@monaco-editor/react';
-import { Keyboard } from '@mui/icons-material';
+import Keyboard from '@mui/icons-material/Keyboard';
 import { Badge, Box, Card, CardContent, Tooltip } from '@mui/material';
 import { useEffect } from 'react';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';

@@ -1,4 +1,4 @@
-import { Route } from '@mui/icons-material';
+import Route from '@mui/icons-material/Route';
 import { Box, Link, Stack, Typography } from '@mui/material';
 import { anchorName, findInCurriculum } from '../../src/curricula';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';

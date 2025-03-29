@@ -1,4 +1,6 @@
-import { Done, ErrorOutline, PlayCircleFilled } from '@mui/icons-material';
+import Done from '@mui/icons-material/Done';
+import ErrorOutline from '@mui/icons-material/ErrorOutline';
+import PlayCircleFilled from '@mui/icons-material/PlayCircleFilled';
 import { Button, Stack, Tooltip } from '@mui/material';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 

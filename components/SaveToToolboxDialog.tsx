@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import { Close } from '@mui/icons-material';
+import Close from '@mui/icons-material/Close';
 import {
   Alert,
   Box,

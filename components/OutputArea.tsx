@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/no-array-index-key */
-import { Construction, Fullscreen } from '@mui/icons-material';
+import Construction from '@mui/icons-material/Construction';
+import Fullscreen from '@mui/icons-material/Fullscreen';
 import {
   Alert,
   Box,

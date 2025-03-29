@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable jsx-a11y/anchor-has-content */
-import { PlayArrow } from '@mui/icons-material';
+import PlayArrow from '@mui/icons-material/PlayArrow';
 import { Box, Button, Container, Typography } from '@mui/material';
 import { Trans } from 'next-i18next';
 import Head from 'next/head';

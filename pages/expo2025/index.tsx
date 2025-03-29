@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardMedia,
   Container,
-  Grid,
+  GridLegacy as Grid,
   Link,
   List,
   ListItem,
@@ -22,21 +22,21 @@ import Image from 'next/image';
 import NextLink from 'next/link';
 import NavigationBar from '../../components/NavigationBar';
 import PyTamaroLogo from '../../public/PyTamaroLogo.png';
-import HeroImage from '../../public/expo/PyTamaro-Expo-2025-Banner.png';
-import PyTamaroLogoExplained from '../../public/expo/PyTamaroLogoExplained.png';
-import WarmingStripes from '../../public/expo/WarmingStripes.png';
-import RotatingSnakes from '../../public/expo/serpenti.png';
-import SwissFlagTask from '../../public/expo/SwissFlagTask.png';
-import SwissFlagDecomposition from '../../public/expo/SwissFlagDecomposition.png';
-import TamaroCardsExample from '../../public/expo/TamaroCardsExample.png';
-import Info1010 from '../../public/expo/Info1010.png';
-import Info1010Exhibit from '../../public/expo/Info1010Exhibit.png';
-import GymInfLogo from '../../public/expo/gyminf_logo.png';
 import SA23_ColorImage from '../../public/events/2023-SA-Colors.jpg';
 import SA23_FoppaImage from '../../public/events/2023-SA-Foppa.jpg';
 import SA23_TableImage from '../../public/events/2023-SA-Table.jpg';
 import SA23_TableImage2 from '../../public/events/2023-SA-Table2.jpg';
 import HOC from '../../public/expo/HOC.png';
+import Info1010 from '../../public/expo/Info1010.png';
+import Info1010Exhibit from '../../public/expo/Info1010Exhibit.png';
+import HeroImage from '../../public/expo/PyTamaro-Expo-2025-Banner.png';
+import PyTamaroLogoExplained from '../../public/expo/PyTamaroLogoExplained.png';
+import SwissFlagDecomposition from '../../public/expo/SwissFlagDecomposition.png';
+import SwissFlagTask from '../../public/expo/SwissFlagTask.png';
+import TamaroCardsExample from '../../public/expo/TamaroCardsExample.png';
+import WarmingStripes from '../../public/expo/WarmingStripes.png';
+import GymInfLogo from '../../public/expo/gyminf_logo.png';
+import RotatingSnakes from '../../public/expo/serpenti.png';
 import { translationProps } from '../../src/serverSideTranslationProps';
 
 function activityGraphic(

@@ -1,5 +1,5 @@
-import { TipsAndUpdates } from '@mui/icons-material';
 import Assignment from '@mui/icons-material/Assignment';
+import TipsAndUpdates from '@mui/icons-material/TipsAndUpdates';
 import { Alert, AlertTitle } from '@mui/material';
 import { Trans } from 'react-i18next';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';

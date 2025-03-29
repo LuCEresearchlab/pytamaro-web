@@ -1,11 +1,9 @@
 /* eslint-disable react/no-unescaped-entities */
-import {
-  Hiking,
-  AccountBalance,
-  Print,
-  School,
-  Translate,
-} from '@mui/icons-material';
+import AccountBalance from '@mui/icons-material/AccountBalance';
+import Hiking from '@mui/icons-material/Hiking';
+import Print from '@mui/icons-material/Print';
+import School from '@mui/icons-material/School';
+import Translate from '@mui/icons-material/Translate';
 import {
   Box,
   Button,
@@ -14,7 +12,7 @@ import {
   CardContent,
   CardHeader,
   Container,
-  Grid,
+  GridLegacy as Grid,
   Stack,
   Typography,
 } from '@mui/material';
@@ -24,9 +22,9 @@ import NavigationBar from '../components/NavigationBar';
 import PageTitle from '../components/PageTitle';
 import { translationProps } from '../src/serverSideTranslationProps';
 import {
-  printableGraphicActivityVariant,
   mathematicalFoundationsActivityVariant,
   multipleLanguagesActivityVariant,
+  printableGraphicActivityVariant,
 } from '../src/specialActivities';
 import theme from '../src/theme';
 import { activityVariantPathname } from '../src/urlUtils';

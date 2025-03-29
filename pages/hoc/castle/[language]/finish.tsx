@@ -7,7 +7,7 @@ import {
   CardContent,
   CardMedia,
   Container,
-  Grid,
+  GridLegacy as Grid,
   Typography,
 } from '@mui/material';
 import { Trans } from 'next-i18next';

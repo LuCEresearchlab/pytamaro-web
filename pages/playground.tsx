@@ -8,7 +8,7 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
 import { useRouter } from 'next/router';

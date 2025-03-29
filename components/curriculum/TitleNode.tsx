@@ -1,4 +1,5 @@
-import { AssignmentTurnedIn, PlayCircle } from '@mui/icons-material';
+import AssignmentTurnedIn from '@mui/icons-material/AssignmentTurnedIn';
+import PlayCircle from '@mui/icons-material/PlayCircle';
 import { Box, Button, Tooltip, Typography } from '@mui/material';
 import { slug } from 'github-slugger';
 import { Handle, NodeProps, Position } from 'reactflow';

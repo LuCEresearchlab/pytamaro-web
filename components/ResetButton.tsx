@@ -1,4 +1,4 @@
-import { RestartAlt } from '@mui/icons-material';
+import RestartAlt from '@mui/icons-material/RestartAlt';
 import { IconButton, Tooltip } from '@mui/material';
 import theme from '../src/theme';
 

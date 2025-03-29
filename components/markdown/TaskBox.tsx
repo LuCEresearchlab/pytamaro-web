@@ -1,4 +1,4 @@
-import { Engineering } from '@mui/icons-material';
+import Engineering from '@mui/icons-material/Engineering';
 import { Alert, Box } from '@mui/material';
 import theme from '../../src/theme';
 
