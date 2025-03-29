@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Box, Stack } from '@mui/material';
+import { Box, Link, Stack } from '@mui/material';
 import { MDXRemote } from 'next-mdx-remote';
 import { ReactNode } from 'react';
 import {
@@ -101,6 +101,18 @@ function codeComponent(props: any) {
   );
 }
 
+function linkComponent(props: any) {
+  return (
+    <Link
+      target='_blank'
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...props}
+    >
+      {props.children}
+    </Link>
+  );
+}
+
 export default function MarkdownCellComponent({
   cell,
   activityVariant,
@@ -116,6 +128,7 @@ export default function MarkdownCellComponent({
         activityVariant.authorSlug,
         activityVariant.activitySlug,
       ),
+    a: linkComponent,
     code: codeComponent,
     ReactPlayer: ResponsiveReactPlayer,
     Stack,
