@@ -93,8 +93,11 @@ export default function CurriculumCard({
               </Typography>
               <Box
                 sx={{
-                  maxHeight: '20em',
-                  overflowY: 'auto',
+                  overflow: 'hidden',
+                  lineClamp: 10,
+                  WebkitLineClamp: 10,
+                  WebkitBoxOrient: 'vertical',
+                  display: '-webkit-box',
                 }}
               >
                 <MDXRemote
