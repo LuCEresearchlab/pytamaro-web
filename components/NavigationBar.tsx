@@ -74,7 +74,7 @@ function ScrollAppBarChanges({
 
   return cloneElement(children, {
     sx: {
-      background: scrolled ? theme.palette.secondary.main : '#ffffff80',
+      background: scrolled ? theme.pytamaro.backgroundColor : '#ffffff80',
     },
   });
 }
@@ -124,7 +124,7 @@ export default function NavigationBar({
         position='sticky'
         elevation={0}
         sx={{
-          background: theme.palette.secondary.main,
+          background: theme.pytamaro.backgroundColor,
         }}
       >
         <Toolbar>
@@ -158,7 +158,7 @@ export default function NavigationBar({
               }}
               PaperProps={{
                 style: {
-                  backgroundColor: theme.palette.secondary.main,
+                  backgroundColor: theme.pytamaro.backgroundColor,
                 },
               }}
             >

@@ -6,6 +6,7 @@ declare module '@mui/material/styles' {
     pytamaro: {
       monospaceFontFamily: string;
       redColor: string;
+      backgroundColor: string;
     };
   }
   // allow configuration using `createTheme`
@@ -13,41 +14,11 @@ declare module '@mui/material/styles' {
     pytamaro?: {
       monospaceFontFamily?: string;
       redColor?: string;
+      backgroundColor?: string;
     };
   }
-
-  interface Palette {
-    neutral: Palette['primary'];
-  }
-
-  // allow configuration using `createTheme`
-  interface PaletteOptions {
-    neutral?: PaletteOptions['primary'];
-  }
 }
 
-declare module '@mui/material/CircularProgress' {
-  interface CircularProgressPropsColorOverrides {
-    neutral: true;
-  }
-}
-declare module '@mui/material/ToggleButton' {
-  interface ToggleButtonPropsColorOverrides {
-    neutral: true;
-  }
-}
-declare module '@mui/material/IconButton' {
-  interface IconButtonPropsColorOverrides {
-    neutral: true;
-  }
-}
-declare module '@mui/material/Button' {
-  interface ButtonPropsColorOverrides {
-    neutral: true;
-  }
-}
-
-// Create a theme instance.
 const theme = responsiveFontSizes(
   createTheme({
     palette: {
@@ -55,7 +26,7 @@ const theme = responsiveFontSizes(
         main: '#008BCB',
       },
       secondary: {
-        main: '#E1F5FD',
+        main: '#19857B',
       },
       error: {
         main: red.A400,
@@ -64,6 +35,7 @@ const theme = responsiveFontSizes(
     pytamaro: {
       monospaceFontFamily: "'Fira Code Variable', monospace",
       redColor: '#D2071D',
+      backgroundColor: '#E1F5FD',
     },
     typography: {
       fontFamily: "'Fira Sans', sans-serif",

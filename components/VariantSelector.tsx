@@ -65,7 +65,7 @@ export default function VariantSelector({
             <Stack direction='row' justifyContent='space-around' spacing={2}>
               {(activityVariant.version !== selectedVersion ||
                 activityVariant.language !== selectedLanguage) && (
-                <CircularProgress color='neutral' size='2rem' />
+                <CircularProgress color='primary' size='2rem' />
               )}
               <Select
                 value={selectedLanguage}
