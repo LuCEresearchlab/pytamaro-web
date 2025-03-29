@@ -17,7 +17,7 @@ export function authorInfoPath(authorSlug: string) {
 export async function getAuthorContent(authorSlug: string): Promise<Author> {
   return {
     slug: authorSlug,
-    activities: await listActivities(authorSlug),
+    activities: basicActivities(await listActivities(authorSlug)),
     curricula: await listCurricula(authorSlug),
   };
 }
