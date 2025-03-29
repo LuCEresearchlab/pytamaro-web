@@ -1,8 +1,8 @@
 import AssignmentTurnedIn from '@mui/icons-material/AssignmentTurnedIn';
 import PlayCircle from '@mui/icons-material/PlayCircle';
 import { Box, Button, Tooltip, Typography } from '@mui/material';
+import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import { slug } from 'github-slugger';
-import { Handle, NodeProps, Position } from 'reactflow';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 
 type NodeData = {
@@ -17,7 +17,7 @@ type NodeData = {
   onEndClick?: () => void;
 };
 
-export default function TitleNode({ data }: NodeProps<NodeData>) {
+export default function TitleNode({ data }: NodeProps<Node<NodeData>>) {
   const {
     type,
     text,

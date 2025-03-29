@@ -1,8 +1,10 @@
-import { Handle, NodeProps, Position } from 'reactflow';
+import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import ActivityCard from './ActivityCard';
 import { ActivityNodeData } from './utils';
 
-export default function ActivityNode({ data }: NodeProps<ActivityNodeData>) {
+export default function ActivityNode({
+  data,
+}: NodeProps<Node<ActivityNodeData>>) {
   const {
     curriculumActivity,
     curriculum,

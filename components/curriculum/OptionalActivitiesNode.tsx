@@ -1,6 +1,6 @@
 import { Box, Button, Modal, Stack, Typography } from '@mui/material';
+import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import { useState } from 'react';
-import { Handle, NodeProps, Position } from 'reactflow';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { activityVariantId } from '../../src/schemas/activitySchema';
 import ActivityCard from './ActivityCard';
@@ -27,7 +27,9 @@ const style = {
   p: 4,
 };
 
-export default function OptionalActivitiesNode({ data }: NodeProps<NodeData>) {
+export default function OptionalActivitiesNode({
+  data,
+}: NodeProps<Node<NodeData>>) {
   const { t } = useLocalTranslation(['curriculum']);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);

@@ -1,14 +1,15 @@
 import { Box } from '@mui/material';
-import produce from 'immer';
-import { NextRouter, useRouter } from 'next/router';
-import { Dispatch, SetStateAction, useEffect } from 'react';
-import ReactFlow, {
+import {
   Edge,
   MarkerType,
   Node,
+  ReactFlow,
   ReactFlowProvider,
   useNodesInitialized,
-} from 'reactflow';
+} from '@xyflow/react';
+import produce from 'immer';
+import { NextRouter, useRouter } from 'next/router';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import {
   Curriculum,
   CurriculumActivity,
@@ -21,7 +22,7 @@ import OptionalActivitiesNode from './OptionalActivitiesNode';
 import TitleNode from './TitleNode';
 import { ActivityNodeData, color } from './utils';
 
-import 'reactflow/dist/style.css';
+import '@xyflow/react/dist/style.css';
 import { anchorName } from '../../src/curricula';
 import { Metadata } from '../../src/localStorage/schema';
 import scrollToAnchor from '../../src/scrollToAnchor';

@@ -1,6 +1,6 @@
 import Circle from '@mui/icons-material/Circle';
 import { Box, Tooltip } from '@mui/material';
-import { Handle, NodeProps, Position } from 'reactflow';
+import { Handle, Node, NodeProps, Position } from '@xyflow/react';
 import { color } from './utils';
 
 type NodeData = {
@@ -9,7 +9,7 @@ type NodeData = {
   unlocked: boolean;
 };
 
-export default function JoinNode({ data }: NodeProps<NodeData>) {
+export default function JoinNode({ data }: NodeProps<Node<NodeData>>) {
   const { width, height, unlocked } = data;
   return (
     <Tooltip
