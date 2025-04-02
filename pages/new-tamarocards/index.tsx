@@ -1,3 +1,4 @@
+/* eslint-disable react/function-component-definition */
 /* eslint-disable arrow-parens */
 /* eslint-disable react/jsx-wrap-multilines */
 /* eslint-disable operator-linebreak */
@@ -6,7 +7,7 @@
 /* eslint-disable @typescript-eslint/indent */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/quotes */
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -14,18 +15,16 @@ import {
   Container,
   FormControl,
   FormControlLabel,
-  IconButton,
   List,
   ListItem,
   ListItemIcon,
-  ListItemSecondaryAction,
   ListItemText,
   Paper,
   Typography,
 } from "@mui/material";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import CardsJson from "./pytamaro-function-data.json";
 import FunctionCard from "./function-card";
 import ValueCard from "./value-card";
@@ -43,6 +42,88 @@ interface Language {
   name: string;
   enabled: boolean;
 }
+
+interface DraggableLanguageItemProps {
+  language: Language;
+  index: number;
+  moveLanguage: (dragIndex: number, hoverIndex: number) => void;
+  toggleLanguage: (index: number) => void;
+}
+
+// Type for drag item
+interface DragItem {
+  index: number;
+  type: string;
+}
+
+// Draggable language item component
+const DraggableLanguageItem = ({
+  language,
+  index,
+  moveLanguage,
+  toggleLanguage,
+}: DraggableLanguageItemProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const [{ isDragging }, drag] = useDrag({
+    type: "LANGUAGE_ITEM",
+    item: { index } as DragItem,
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
+  const [, drop] = useDrop({
+    accept: "LANGUAGE_ITEM",
+    hover: (item: DragItem) => {
+      if (!ref.current) {
+        return;
+      }
+
+      const dragIndex = item.index;
+      const hoverIndex = index;
+
+      // Don't replace items with themselves
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+
+      // Move the item
+      moveLanguage(dragIndex, hoverIndex);
+
+      // Update the item's index for future interactions
+      const updatedItem = { ...item, index: hoverIndex };
+    },
+  });
+
+  drag(drop(ref));
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        opacity: isDragging ? 0.5 : 1,
+        cursor: "move",
+      }}
+    >
+      <ListItem dense>
+        <ListItemIcon>
+          <DragIndicatorIcon color="action" />
+        </ListItemIcon>
+        <ListItemIcon>
+          <Checkbox
+            edge="start"
+            checked={language.enabled}
+            onChange={() => toggleLanguage(index)}
+            tabIndex={-1}
+            disableRipple
+          />
+        </ListItemIcon>
+        <ListItemText primary={language.name} />
+      </ListItem>
+    </div>
+  );
+};
 
 export default function CardsRenderer() {
   const cards = Object.values(CardsJson) as Card[];
@@ -66,23 +147,16 @@ export default function CardsRenderer() {
     setLanguages(updatedLanguages);
   };
 
-  // Move language up in order
-  const moveLanguageUp = (index: number) => {
-    if (index === 0) return;
+  // Move language (for drag and drop)
+  const moveLanguage = (dragIndex: number, hoverIndex: number) => {
     const updatedLanguages = [...languages];
-    const temp = updatedLanguages[index];
-    updatedLanguages[index] = updatedLanguages[index - 1];
-    updatedLanguages[index - 1] = temp;
-    setLanguages(updatedLanguages);
-  };
+    const draggedLanguage = updatedLanguages[dragIndex];
 
-  // Move language down in order
-  const moveLanguageDown = (index: number) => {
-    if (index === languages.length - 1) return;
-    const updatedLanguages = [...languages];
-    const temp = updatedLanguages[index];
-    updatedLanguages[index] = updatedLanguages[index + 1];
-    updatedLanguages[index + 1] = temp;
+    // Remove the dragged item
+    updatedLanguages.splice(dragIndex, 1);
+    // Insert it at the new position
+    updatedLanguages.splice(hoverIndex, 0, draggedLanguage);
+
     setLanguages(updatedLanguages);
   };
 
@@ -134,56 +208,29 @@ export default function CardsRenderer() {
               Select and Order Languages:
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Check the languages you want to include and use the arrows to
-              change their order
+              Check the languages you want to include and drag them to change
+              their order
             </Typography>
 
-            <List
-              sx={{
-                bgcolor: "background.paper",
-                border: "1px solid #eee",
-                borderRadius: 1,
-              }}
-            >
-              {languages.map((language, index) => (
-                <ListItem key={language.code} dense>
-                  <ListItemIcon>
-                    <DragIndicatorIcon color="action" />
-                  </ListItemIcon>
-                  <ListItemIcon>
-                    <Checkbox
-                      edge="start"
-                      checked={language.enabled}
-                      onChange={() => toggleLanguage(index)}
-                      tabIndex={-1}
-                      disableRipple
-                    />
-                  </ListItemIcon>
-                  <ListItemText primary={language.name} />
-                  <ListItemSecondaryAction>
-                    <IconButton
-                      edge="end"
-                      aria-label="move up"
-                      onClick={() => moveLanguageUp(index)}
-                      disabled={index === 0}
-                      size="small"
-                    >
-                      <ArrowUpwardIcon />
-                    </IconButton>
-                    <IconButton
-                      edge="end"
-                      aria-label="move down"
-                      onClick={() => moveLanguageDown(index)}
-                      disabled={index === languages.length - 1}
-                      size="small"
-                      sx={{ ml: 1 }}
-                    >
-                      <ArrowDownwardIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-              ))}
-            </List>
+            <DndProvider backend={HTML5Backend}>
+              <List
+                sx={{
+                  bgcolor: "background.paper",
+                  border: "1px solid #eee",
+                  borderRadius: 1,
+                }}
+              >
+                {languages.map((language, index) => (
+                  <DraggableLanguageItem
+                    key={language.code}
+                    language={language}
+                    index={index}
+                    moveLanguage={moveLanguage}
+                    toggleLanguage={toggleLanguage}
+                  />
+                ))}
+              </List>
+            </DndProvider>
           </Box>
 
           <FormControl component="fieldset" sx={{ mb: 3 }}>
