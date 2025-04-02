@@ -56,37 +56,37 @@ function API({ name }: { name: string }) {
 export default function TamaroCardsPage() {
   const api = [
     {
-      name: 'Colors',
+      name: 'Library-PyTamaro-Colors',
       desc: 'Color constants, functions for RGB and HSV color spaces',
       img: DocLibraryPyTamaroColors,
     },
     {
-      name: 'Primitives',
+      name: 'Library-PyTamaro-Primitives',
       desc: 'Functions to create primitive graphics',
       img: DocLibraryPyTamaroPrimitives,
     },
     {
-      name: 'Combinators',
+      name: 'Library-PyTamaro-Combinators',
       desc: 'Functions to compose graphics',
       img: DocLibraryPyTamaroCombinators,
     },
     {
-      name: 'Pinning',
+      name: 'Library-PyTamaro-Pinning',
       desc: 'Functions for general composition using pinning',
       img: DocLibraryPyTamaroPinning,
     },
     {
-      name: 'Python Functions',
+      name: 'Library-Python-Functions',
       desc: 'Common Python Functions',
       img: DocLibraryPythonFunctions,
     },
     {
-      name: 'Python Operators',
+      name: 'Language-Python-Operators',
       desc: 'Common Python Operators',
       img: DocLanguagePythonOperators,
     },
     {
-      name: 'Output',
+      name: 'Library-PyTamaro-Output',
       desc: 'Function to show a graphic (output)',
       img: DocLibraryPyTamaroOutput,
     },
@@ -333,7 +333,7 @@ export default function TamaroCardsPage() {
                 <Card key={name}>
                   <CardActionArea
                     LinkComponent={NextLink}
-                    href={`tamarocards/v1/api/PyTamaro-Cards-API-${name}.pdf`}
+                    href={`tamarocards/v2/Doc/${name}.pdf`}
                   >
                     <CardMedia>
                       <div
