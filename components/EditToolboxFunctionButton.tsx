@@ -1,6 +1,7 @@
 import { Button } from '@mui/material';
 import { useState } from 'react';
 import { ToolboxFunction } from '../src/localStorage/schema';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import CustomSnackbar from './CustomSnackbar';
 import SaveToToolboxDialog from './SaveToToolboxDialog';
 
@@ -9,6 +10,7 @@ export default function EditToolboxFunctionButton({
 }: {
   toolboxFunction: ToolboxFunction;
 }) {
+  const { t } = useLocalTranslation();
   const [open, setOpen] = useState(false);
   const [savingSuccess, setSavingSuccess] = useState(false);
   const [savingError, setSavingError] = useState(false);
@@ -16,7 +18,7 @@ export default function EditToolboxFunctionButton({
   return (
     <>
       <Button color='warning' variant='contained' onClick={() => setOpen(true)}>
-        Edit Function
+        {t('toolbox.editFunction')}
       </Button>
       <SaveToToolboxDialog
         open={open}
@@ -34,13 +36,13 @@ export default function EditToolboxFunctionButton({
         visible={savingSuccess}
         setVisible={setSavingSuccess}
         severity='success'
-        message='Function successfully edited!'
+        message={t('toolbox.successfullyEdited')}
       />
       <CustomSnackbar
         visible={savingError}
         setVisible={setSavingError}
         severity='error'
-        message='Could not find the function to edit in your toolbox!'
+        message={t('toolbox.failedEditingNameExists')}
       />
     </>
   );

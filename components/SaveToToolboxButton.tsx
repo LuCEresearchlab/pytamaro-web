@@ -2,6 +2,7 @@ import Construction from '@mui/icons-material/Construction';
 import { IconButton, Tooltip } from '@mui/material';
 import { debounce } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import {
   AnalysisResult,
   analyze,
@@ -18,6 +19,7 @@ export default function SaveToToolboxButton({
   sources: string[];
   originalActivity: ActivityVariant;
 }) {
+  const { t } = useLocalTranslation();
   const [open, setOpen] = useState(false);
   const [available, setAvailable] = useState(false);
   const [savingSuccess, setSavingSuccess] = useState(false);
@@ -47,7 +49,7 @@ export default function SaveToToolboxButton({
   }
   return (
     <>
-      <Tooltip arrow title='Save a function to toolbox'>
+      <Tooltip arrow title={t('toolbox.saveToToolboxTooltip')}>
         <IconButton
           onClick={() => setOpen(true)}
           className='save-to-toolbox-dialog-button'
@@ -67,13 +69,13 @@ export default function SaveToToolboxButton({
         visible={savingSuccess}
         setVisible={setSavingSuccess}
         severity='success'
-        message='Function successfully saved to the toolbox!'
+        message={t('toolbox.successfullySaved')}
       />
       <CustomSnackbar
         visible={savingError}
         setVisible={setSavingError}
         severity='error'
-        message='Saving failed: this name already exists in the toolbox!'
+        message={t('toolbox.failedSavingNameExists')}
       />
     </>
   );

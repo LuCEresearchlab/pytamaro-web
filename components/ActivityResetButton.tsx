@@ -41,7 +41,7 @@ export default function ActivityResetButton({
       title: t('resetAreYouSure'),
       description: t('resetActivityWarning'),
       confirmationText: t('resetActivityConfirm'),
-      cancellationText: t('resetActivityCancel'),
+      cancellationText: t('confirmCancel'),
     }).then(() => {
       handleResetAllCellsNoConfirm();
       newReset();

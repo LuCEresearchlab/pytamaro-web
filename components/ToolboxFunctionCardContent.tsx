@@ -10,6 +10,7 @@ import {
 import Link from 'next/link';
 import { useState } from 'react';
 import { ToolboxFunction } from '../src/localStorage/schema';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { isPlaygroundVariant } from '../src/playground';
 import { toolboxActivityVariant } from '../src/specialActivities';
 import {
@@ -30,6 +31,7 @@ export default function ToolboxFunctionCardContent({
   fn: ToolboxFunction;
   summary?: boolean;
 }) {
+  const { t } = useLocalTranslation();
   const [showSource, setShowSource] = useState(false);
   const [showUsage, setShowUsage] = useState(summary);
   const toggleShowSource = () => setShowSource(!showSource);
@@ -61,13 +63,15 @@ export default function ToolboxFunctionCardContent({
           variant='outlined'
           size='small'
         >
-          {summary ? 'View Details' : 'View Original Activity'}
+          {summary
+            ? t('toolbox.viewDetails')
+            : t('toolbox.viewOriginalActivity')}
         </Button>
       </Box>
       {!summary && (
         <Box sx={{ my: 1 }}>
           <Typography color='text.secondary' fontWeight='bold' component='span'>
-            Implementation
+            {t('toolbox.implementation')}
           </Typography>
           <FormGroup sx={{ display: 'inline', marginLeft: 2 }}>
             <FormControlLabel
@@ -76,7 +80,7 @@ export default function ToolboxFunctionCardContent({
               }
               label={
                 <Typography color='text.secondary'>
-                  {showSource ? 'Hide' : 'Show'}
+                  {showSource ? t('toolbox.hide') : t('toolbox.show')}
                 </Typography>
               }
             />
@@ -96,7 +100,7 @@ export default function ToolboxFunctionCardContent({
         component='span'
         gutterBottom
       >
-        Usage
+        {t('toolbox.usage')}
       </Typography>
       {!summary && (
         <FormGroup sx={{ display: 'inline', marginLeft: 2 }}>
@@ -104,7 +108,7 @@ export default function ToolboxFunctionCardContent({
             control={<Switch checked={showUsage} onChange={toggleShowUsage} />}
             label={
               <Typography color='text.secondary'>
-                {showUsage ? 'Hide' : 'Show'}
+                {showUsage ? t('toolbox.hide') : t('toolbox.show')}
               </Typography>
             }
           />

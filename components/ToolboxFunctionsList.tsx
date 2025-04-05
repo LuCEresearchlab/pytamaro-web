@@ -1,10 +1,12 @@
 import { Button, Card, CardActions, Stack, Typography } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
+import { Trans } from 'next-i18next';
 import { useEffect, useState } from 'react';
 import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
 import { ToolboxFunction } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import scrollToAnchor from '../src/scrollToAnchor';
 import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import theme from '../src/theme';
@@ -17,6 +19,7 @@ export default function ToolboxFunctionsList({
 }: {
   filterNameDesc: string;
 }) {
+  const { t } = useLocalTranslation();
   const { metadata } = useLocalProfile();
   const { list, deleteFunction } = useLocalToolbox();
   const confirm = useConfirm();
@@ -44,28 +47,27 @@ export default function ToolboxFunctionsList({
       description: (
         <>
           <Typography gutterBottom>
-            Deleting the function{' '}
-            <Typography
-              fontFamily={theme.pytamaro.monospaceFontFamily}
-              component='span'
-            >
-              {fn.name}
-            </Typography>{' '}
-            will break every activity and every other toolbox function that
-            imports it.
+            <Trans
+              t={t}
+              i18nKey={'toolbox.deleteWarningBreak'}
+              values={{ name: fn.name }}
+              components={{
+                code: (
+                  <Typography
+                    fontFamily={theme.pytamaro.monospaceFontFamily}
+                    component='span'
+                  />
+                ),
+              }}
+            />
           </Typography>
-          <Typography gutterBottom>
-            If no activity and no other toolbox function uses this function,
-            then it is perfectly fine to delete it.
-          </Typography>
-          <Typography gutterBottom>
-            You can change all the details of this function (except for its
-            name) using the Edit button.
-          </Typography>
+          <Typography gutterBottom>{t('toolbox.deleteWarningFine')}</Typography>
+          <Typography gutterBottom>{t('toolbox.deleteWarningEdit')}</Typography>
         </>
       ),
-      title: 'Are you sure you want to delete this function?',
-      confirmationText: 'I understand, Delete',
+      title: t('toolbox.deleteAreYouSure'),
+      confirmationText: t('toolbox.deleteConfirm'),
+      cancellationText: t('confirmCancel'),
     }).then(() => {
       logAnalyticsEvent(AnalyticsEventName.DeleteToolboxFunction, {
         name: fn.name,
@@ -79,11 +81,11 @@ export default function ToolboxFunctionsList({
     // eslint-disable-next-line no-nested-ternary
     functions.length === 0 ? (
       <Typography variant='body1' marginY={3}>
-        The toolbox is still empty.
+        {t('toolbox.toolboxEmpty')}
       </Typography>
     ) : filteredFunctions.length === 0 ? (
       <Typography variant='body1' marginY={3}>
-        No function matches the search criteria.
+        {t('toolbox.noFunctionSearch')}
       </Typography>
     ) : (
       <Stack direction='column' spacing={3}>
@@ -102,7 +104,7 @@ export default function ToolboxFunctionsList({
                 color='error'
                 variant='contained'
               >
-                Delete Function
+                {t('toolbox.deleteFunction')}
               </Button>
             </CardActions>
           </Card>

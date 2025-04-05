@@ -5,9 +5,12 @@ import { useState } from 'react';
 import NavigationBar from '../components/NavigationBar';
 import PageTitle from '../components/PageTitle';
 import ToolboxFunctionsList from '../components/ToolboxFunctionsList';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { translationProps } from '../src/serverSideTranslationProps';
 
 export default function MyToolbox() {
+  const { t } = useLocalTranslation();
+  const pageTitle = t('myToolbox');
   const [filterNameDesc, setFilterNameDesc] = useState('');
   const handleNewFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilterNameDesc(e.target.value);
@@ -15,15 +18,15 @@ export default function MyToolbox() {
   return (
     <div>
       <Head>
-        <title>My Toolbox - PyTamaro</title>
+        <title>{`${pageTitle} - PyTamaro`}</title>
       </Head>
       <Box>
         <NavigationBar />
         <Container maxWidth='md'>
-          <PageTitle>My Toolbox</PageTitle>
+          <PageTitle>{pageTitle}</PageTitle>
           <TextField
             fullWidth
-            label='Search by function name or description'
+            label={t('toolbox.searchByNameOrDesc')}
             variant='outlined'
             onChange={debounce(handleNewFilter, 100)}
             sx={{ mb: 3 }}

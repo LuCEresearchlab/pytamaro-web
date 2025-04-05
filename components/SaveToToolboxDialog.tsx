@@ -18,12 +18,14 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { Trans } from 'next-i18next';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
 import { ExecutionResponse, TOOLBOX_FILE } from '../src/codeExecution';
 import { CodeCellState, ToolboxFunction } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import {
   analyze,
   PythonFunction,
@@ -54,6 +56,7 @@ function PermanentlySaveToToolboxButton({
   setSavingSuccess: Dispatch<SetStateAction<boolean>>;
   setSavingError: Dispatch<SetStateAction<boolean>>;
 }) {
+  const { t } = useLocalTranslation();
   const { metadata } = useLocalProfile();
   const { add, replaceFunction } = useLocalToolbox();
   const saveFunction = () => {
@@ -79,7 +82,7 @@ function PermanentlySaveToToolboxButton({
         sx={{ marginTop: 2, minWidth: '30ch' }}
         className='save-to-toolbox-button'
       >
-        {replace ? 'Save edited function' : 'Save to toolbox'}
+        {replace ? t('toolbox.saveButtonEdited') : t('toolbox.saveButton')}
       </Button>
     </Box>
   );
@@ -94,18 +97,19 @@ function SelectFunction({
   selectedFunction: string;
   setSelectedFunction: (fn: string) => void;
 }) {
+  const { t } = useLocalTranslation();
   const handleChange = (event: SelectChangeEvent) => {
     setSelectedFunction(event.target.value);
   };
 
   return (
     <FormControl sx={{ m: 1, minWidth: '15ch' }} size='small'>
-      <InputLabel id='select-function-label'>Function</InputLabel>
+      <InputLabel id='select-function-label'>{t('Function')}</InputLabel>
       <Select
         labelId='select-function-label'
         id='select-function'
         value={selectedFunction}
-        label='Function'
+        label={t('Function')}
         onChange={handleChange}
       >
         {functions.map((f) => (
@@ -162,6 +166,7 @@ export default function SaveToToolboxDialog({
   setSavingSuccess: Dispatch<SetStateAction<boolean>>;
   setSavingError: Dispatch<SetStateAction<boolean>>;
 }) {
+  const { t } = useLocalTranslation();
   const [implementation, setImplementation] = useState(externalImplementation);
   const [functions, setFunctions] = useState<PythonFunction[]>([]);
   const [selectedFunction, setSelectedFunction] = useState<string>(
@@ -275,8 +280,8 @@ export default function SaveToToolboxDialog({
     <Dialog onClose={() => onClose()} open={open} maxWidth='md' fullWidth>
       <DialogTitle>
         {replaceExistingFunction
-          ? 'Edit Toolbox Function'
-          : 'Save Function to Toolbox'}
+          ? t('toolbox.dialogTitleEdit')
+          : t('toolbox.dialogTitle')}
         <IconButton
           aria-label='close'
           onClick={onClose}
@@ -292,33 +297,29 @@ export default function SaveToToolboxDialog({
       </DialogTitle>
       <DialogContent>
         <Typography color='text.secondary' fontWeight='bold' marginBottom={2}>
-          Implementation
+          {t('toolbox.implementation')}
         </Typography>
         {!replaceExistingFunction && (
           <Alert severity='info' sx={{ mb: 2 }}>
-            Clean up your code before saving a function to the toolbox. Here are
-            some tips:
+            {t('toolbox.cleanUp')}
             <ul
               style={{
-                marginTop: theme.spacing(1),
+                marginTop: theme.spacing(0.5),
                 marginBottom: 0,
                 paddingInlineStart: theme.spacing(2),
               }}
             >
+              <li>{t('toolbox.removeSuperfluousCode')}</li>
               <li>
-                {' '}
-                Remove any code that is not needed by the function you want to
-                save{' '}
+                <Trans
+                  t={t}
+                  i18nKey='toolbox.removeOutputs'
+                  components={{
+                    code: <code />,
+                  }}
+                />
               </li>
-              <li>
-                {' '}
-                Remove calls that produce output (e.g., calls to{' '}
-                <code>print</code> or <code>show_graphic</code>){' '}
-              </li>
-              <li>
-                Remove unnecessary imports (move them all to the top, combine
-                them and get rid of unneeded ones)
-              </li>
+              <li>{t('toolbox.removeImports')}</li>
             </ul>
           </Alert>
         )}
@@ -341,7 +342,9 @@ export default function SaveToToolboxDialog({
                 minWidth='max-content'
                 fontWeight='bold'
               >
-                Function to {replaceExistingFunction ? 'edit' : 'save'}
+                {replaceExistingFunction
+                  ? t('toolbox.functionToEdit')
+                  : t('toolbox.functionToSave')}
               </Typography>
               {replaceExistingFunction ? (
                 <Typography
@@ -365,7 +368,7 @@ export default function SaveToToolboxDialog({
               <TextField
                 variant='filled'
                 size='small'
-                helperText='Document what this function does'
+                helperText={t('toolbox.documentationHelp')}
                 sx={{ '& .MuiInputBase-root': { pt: 0.5 } }}
                 FormHelperTextProps={{ sx: { textAlign: 'center' } }}
                 fullWidth
@@ -379,30 +382,27 @@ export default function SaveToToolboxDialog({
             </Stack>
             {alreadyExists && !replaceExistingFunction && (
               <Alert severity='error'>
-                The toolbox already contains this name. Refactor the code to
-                change its name or{' '}
-                <Link
-                  href={toolboxFunctionPathname(selectedFunction)}
-                  target='_blank'
-                >
-                  delete the existing one from the toolbox
-                </Link>
-                .
+                <Trans
+                  t={t}
+                  i18nKey='toolbox.nameAlreadyExists'
+                  components={{
+                    link: (
+                      <Link
+                        href={toolboxFunctionPathname(selectedFunction)}
+                        target='_blank'
+                      />
+                    ),
+                  }}
+                />
               </Alert>
             )}
             {replaceExistingFunction && !replacingFunctionFound && (
-              <Alert severity='error'>
-                The implementation above does not define anymore the function
-                you are trying to edit.
-              </Alert>
+              <Alert severity='error'>{t('toolbox.nameDisappeared')}</Alert>
             )}
             {selectedFunction &&
               (!alreadyExists || replaceExistingFunction) &&
               (!description ? (
-                <Alert severity='info'>
-                  Add a description so that you will remember what this function
-                  does
-                </Alert>
+                <Alert severity='info'>{t('toolbox.addDescription')}</Alert>
               ) : (
                 <div id='usage'>
                   <Typography
@@ -411,7 +411,7 @@ export default function SaveToToolboxDialog({
                     marginBottom={2}
                     fontWeight='bold'
                   >
-                    Example that uses this function
+                    {t('toolbox.usageExample')}
                   </Typography>
                   <SolitaryCodeCell
                     activity={activity}
@@ -433,8 +433,7 @@ export default function SaveToToolboxDialog({
                 <>
                   {!usageExecutedSuccessfully && (
                     <Alert sx={{ mt: 2 }} severity='info'>
-                      Run the usage example to make sure the function works as
-                      you expect. Don't forget to add all the necessary imports.
+                      {t('toolbox.runUsageExample')}
                     </Alert>
                   )}
                   <PermanentlySaveToToolboxButton
@@ -461,7 +460,7 @@ export default function SaveToToolboxDialog({
               )}
           </>
         ) : (
-          <Alert severity='error'>No function definitions found</Alert>
+          <Alert severity='error'>{t('toolbox.noFunctionDef')}</Alert>
         )}
       </DialogContent>
     </Dialog>
