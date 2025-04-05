@@ -4,24 +4,26 @@ import Tune from '@mui/icons-material/Tune';
 import { ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
 import { useEffect, useState } from 'react';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 
 export const SHOW_DIAGRAM_KEY = 'diagram';
 export const SHOW_OPTIONAL_KEY = 'optional';
 export const SHOW_TYPES_KEY = 'types';
 
-function tooltipMessage(key: string, active: boolean) {
-  const prefix = active ? 'Hide' : 'Show';
+function tooltipMessageI18n(key: string, active: boolean) {
+  const prefix = active ? 'hide' : 'show';
   // eslint-disable-next-line no-nested-ternary
   const suffix =
     key === SHOW_DIAGRAM_KEY
-      ? 'diagram'
+      ? 'Diagram'
       : key === SHOW_OPTIONAL_KEY
-        ? 'optional parameters'
-        : 'types';
-  return `${prefix} ${suffix}`;
+        ? 'OptionalParams'
+        : 'Types';
+  return `${prefix}${suffix}`;
 }
 
 export default function ConfigButtons({ available }: { available: string[] }) {
+  const { t } = useLocalTranslation();
   const { docsMetadata, setDocsMetadata } = useLocalProfile();
   const [optionsKeys, setOptionsKeys] = useState<string[]>([]);
   useEffect(() => {
@@ -64,7 +66,7 @@ export default function ConfigButtons({ available }: { available: string[] }) {
       {available.map((key) => (
         <Tooltip
           key={key}
-          title={tooltipMessage(key, optionsKeys.includes(key))}
+          title={t(tooltipMessageI18n(key, optionsKeys.includes(key)))}
           arrow
         >
           <ToggleButton value={key}>
