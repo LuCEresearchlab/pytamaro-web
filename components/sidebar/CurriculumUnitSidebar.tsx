@@ -35,7 +35,7 @@ export default function CurriculumUnitSidebar({
   return unit ? (
     <Box>
       <SidebarTitle>{t('myCurriculum')}</SidebarTitle>
-      <Stack spacing={1}>
+      <Stack spacing={0.5} useFlexGap>
         <Link
           variant='body2'
           underline='none'
@@ -49,8 +49,6 @@ export default function CurriculumUnitSidebar({
           <Route fontSize='small' />
           <span style={{ marginLeft: gap }}>{curriculum.title}</span>
         </Link>
-      </Stack>
-      <Stack spacing={1}>
         <Typography variant='body2' marginLeft={`calc(20px + ${gap})`}>
           {unit.title}
         </Typography>
