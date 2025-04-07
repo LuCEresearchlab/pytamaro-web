@@ -190,6 +190,7 @@ function getFlowElements(
       ...nodeOptions,
       id,
       type,
+      ...dim,
       data: {
         ...dim,
         ...data,
@@ -369,8 +370,10 @@ function Flow({
   // Separate component, so we can use the hook
   const nodesInitialized = useNodesInitialized();
   useEffect(() => {
+    if (nodesInitialized) {
+      scrollToAnchor();
+    }
     setNodesInitialized(nodesInitialized);
-    scrollToAnchor();
   }, [nodesInitialized, setNodesInitialized]);
   return (
     <ReactFlow
