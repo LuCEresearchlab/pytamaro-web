@@ -13,12 +13,6 @@
   left: 0;
 }
 
-code,
-pre {
-  font-family: 'Fira Code Variable', monospace;
-  font-variant-ligatures: none;
-}
-
 /* React flow styles */
 
 .react-flow {
