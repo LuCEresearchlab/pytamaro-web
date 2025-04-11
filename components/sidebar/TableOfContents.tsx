@@ -7,8 +7,11 @@ import throttle from 'lodash/throttle';
 import Link from 'next/link';
 import * as React from 'react';
 import { RefObject } from 'react';
+import useLocalProfile from '../../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
+import { ActivityVariant } from '../../src/schemas/activitySchema';
 import theme from '../../src/theme';
+import { blurredClassName } from '../markdown/DoNowBox';
 import SidebarItem from './SidebarItem';
 
 const NavList = styled(Typography)({
@@ -81,6 +84,7 @@ interface TOCItem {
   text: string;
   hash: string;
   indent: boolean;
+  blurred: boolean;
 }
 
 export default function TableOfContents({
@@ -88,14 +92,21 @@ export default function TableOfContents({
   selector,
   titleKey,
   initialized,
+  activityVariant = undefined,
 }: {
   elementRef: RefObject<HTMLElement>;
   selector: string;
   titleKey: string;
   initialized: boolean;
+  activityVariant?: ActivityVariant;
 }) {
   const { t } = useLocalTranslation();
   const [items, setItems] = React.useState<TOCItem[]>([]);
+  const { getActivityMetadata } = useLocalProfile();
+  const currentActivity =
+    activityVariant && getActivityMetadata(activityVariant);
+  const doNowStatus = JSON.stringify(currentActivity?.doNowCompleted);
+
   React.useEffect(() => {
     if (elementRef.current && initialized) {
       const elements = Array.from(
@@ -106,10 +117,11 @@ export default function TableOfContents({
         indent:
           element.dataset.tocIndent === 'true' ||
           (element.tagName[0] === 'H' && parseInt(element.tagName[1], 10) >= 3),
+        blurred: element.classList.contains(blurredClassName),
       }));
       setItems(elements);
     }
-  }, [elementRef, selector, initialized]);
+  }, [elementRef, selector, initialized, doNowStatus]);
 
   const [activeState, setActiveState] = React.useState<string | null>(null);
   const clickedRef = React.useRef(false);
@@ -185,9 +197,11 @@ export default function TableOfContents({
 
   return items.length > 0 ? (
     <SidebarItem title={t(titleKey)}>
-      <NavList>
+      <NavList id='toc-list'>
         {items.map((item) => (
-          <li key={item.text}>{itemLink(item)}</li>
+          <li className={item.blurred ? blurredClassName : ''} key={item.text}>
+            {itemLink(item)}
+          </li>
         ))}
       </NavList>
     </SidebarItem>

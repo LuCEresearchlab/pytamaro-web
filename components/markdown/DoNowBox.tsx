@@ -20,6 +20,8 @@ import {
 import { EventName, storeDbEvent } from '../../src/storeDbEvent';
 import theme from '../../src/theme';
 
+export const blurredClassName = 'blurred';
+
 const doNowBoxClassName = 'do-now-box';
 
 function domElementId(id: string) {
@@ -51,7 +53,6 @@ export default function DoNowBox({
   }, [answerFromLocalStorage]);
   const setBlurred = useCallback(
     (blurred: boolean) => {
-      const className = 'blurred';
       let nextDoNowEncountered = false;
       // We need to find (to blur) all the elements after the current Do Now box
       // in the same Markdown cell, as well as all the elements within the
@@ -72,9 +73,9 @@ export default function DoNowBox({
       allNextElements.forEach((element) => {
         if (!nextDoNowEncountered) {
           if (blurred) {
-            element.classList.add(className);
+            element.classList.add(blurredClassName);
           } else {
-            element.classList.remove(className);
+            element.classList.remove(blurredClassName);
           }
         }
         if (element.classList.contains(doNowBoxClassName)) {

@@ -59,6 +59,10 @@ h6,
   -webkit-user-select: none;
 }
 
+#toc-list .blurred {
+  filter: blur(0.3rem);
+}
+
 pre:has(code) {
   background-color: white;
   overflow-x: auto;

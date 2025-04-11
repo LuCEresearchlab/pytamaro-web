@@ -208,6 +208,7 @@ export default function NotebookPage({
               elementRef={cellsRef}
               selector='h2[id], h3[id]'
               titleKey='contents'
+              activityVariant={activityVariant}
             />
             {curriculum && (
               <ActivityCompetenciesSidebar
