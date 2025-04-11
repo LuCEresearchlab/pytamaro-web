@@ -301,6 +301,63 @@
             "urlSuffix": "#math.exp"
         },
         {
+            "kind": "function",
+            "name": "isclose",
+            "description": {
+                "p": ["Returns True if two values are approximately equal: close to each other within a tolerance.",
+                      "Two values are close if their absolute difference is not greater than the highest between the relative and absolute tolerances."]
+            },
+            "parameters": [
+                {
+                    "name": "a",
+                    "type": "float",
+                    "description": "first value to compare"
+                },
+                {
+                    "name": "b",
+                    "type": "float",
+                    "description": "second value to compare"
+                },
+                {
+                    "name": "rel_tol",
+                    "type": "float",
+                    "description": "relative tolerance: the maximum allowed difference as a fraction of the larger absolute value",
+                    "default": "1e-09"
+                },
+                {
+                    "name": "abs_tol",
+                    "type": "float",
+                    "description": "absolute tolerance: the maximum allowed difference between the two values", 
+                    "default": "0.0"
+                }
+            ],
+            "returnValue": {
+                "type": "bool",
+                "description": "True if the two values are close to each other, False otherwise"
+            },
+            "examples": [
+                {
+                    "code": "isclose(3.01, 3)",
+                    "result": "False"
+                },
+                {
+                    "code": "isclose(0.1 + 0.2, 0.3)",
+                    "result": "True"
+                },
+                {
+                    "code": "isclose(10, 11, rel_tol=0.1, abs_tol=0)",
+                    "result": "True",
+                    "usesOptional": true
+                },
+                {
+                    "code": "isclose(10, 11, rel_tol=0.01, abs_tol=1)",
+                    "result": "True",
+                    "usesOptional": true
+                }
+            ],
+            "urlSuffix": "#math.isclose"
+        },
+        {
             "kind": "constant",
             "name": "pi",
             "type": "float",
