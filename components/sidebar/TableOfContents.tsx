@@ -34,9 +34,10 @@ const NavItem = styled(Link, {
   };
   return [
     {
+      display: 'block',
       fontSize: theme.typography.pxToRem(13),
       padding: theme.spacing(0, 1, 0, indent ? 2.5 : 1),
-      margin: theme.spacing(0.5, 0, 1, 0),
+      margin: theme.spacing(1, 0, 0.5, 0),
       borderLeft: '1px solid transparent',
       boxSizing: 'border-box',
       fontWeight: 500,
