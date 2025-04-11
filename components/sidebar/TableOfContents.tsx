@@ -135,7 +135,7 @@ export default function TableOfContents({
     }
 
     let active;
-    for (let i = 0; i < items.length; i += 1) {
+    for (let i = items.length - 1; i >= 0; i -= 1) {
       // No hash if we're near the top of the page
       if (document.documentElement.scrollTop < 200) {
         active = { hash: null };
@@ -147,8 +147,9 @@ export default function TableOfContents({
 
       if (
         node &&
-        node.getBoundingClientRect().top >
-          -document.documentElement.clientHeight / 4
+        node.offsetTop <
+          document.documentElement.scrollTop +
+            document.documentElement.clientHeight / 4
       ) {
         active = item;
         break;
