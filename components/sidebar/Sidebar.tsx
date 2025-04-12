@@ -35,6 +35,7 @@ export default function Sidebar({
           paddingRight: theme.spacing(1.5),
           display: 'block',
           float: side,
+          minWidth: '12rem',
         }}
       >
         <Stack direction='column' spacing={4}>
