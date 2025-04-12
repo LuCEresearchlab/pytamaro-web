@@ -218,7 +218,10 @@ export default function CodeEditor({
         const someEditorFocused = document.activeElement?.classList.contains(
           'monaco-mouse-cursor-text',
         );
-        if (markersAdded && !collapsedErrorMarkers && !someEditorFocused) {
+        const otherEditorFocused =
+          someEditorFocused &&
+          !containerRef.current?.contains(document.activeElement);
+        if (markersAdded && !collapsedErrorMarkers && !otherEditorFocused) {
           editorInstance.trigger('', 'editor.action.marker.next', {});
         }
       }
