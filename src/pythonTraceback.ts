@@ -8,7 +8,6 @@ export function addMarkers(
   editor: EditorNamespace.IStandaloneCodeEditor,
   executionResponse: CompletedExecutionResponse,
   firstLineNumber: number,
-  collapsedErrorMarkers: boolean,
 ): boolean {
   const traceback = executionResponse.stderr;
   const tracebackLines = splitLines(traceback);
@@ -49,9 +48,6 @@ export function addMarkers(
       endColumn: caretEnd + 2,
     };
     monaco.editor.setModelMarkers(model, 'owner', [marker]);
-    if (!collapsedErrorMarkers) {
-      editor.trigger('', 'editor.action.marker.next', {});
-    }
     return true;
   }
   return false;

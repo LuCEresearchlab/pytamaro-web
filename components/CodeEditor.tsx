@@ -206,13 +206,21 @@ export default function CodeEditor({
     if (monacoInstance && editorInstance) {
       clearMarkers();
       if (executionResponse?.type === 'error' && executionFinished) {
-        addMarkers(
+        const markersAdded = addMarkers(
           monacoInstance,
           editorInstance,
           executionResponse,
           firstLineNumber,
-          collapsedErrorMarkers,
         );
+        // Some (other) editor could have the focus. Do not trigger the "go to
+        // next marker" action in that case, as it would steal the cursor from
+        // the other editor where the user is typing.
+        const someEditorFocused = document.activeElement?.classList.contains(
+          'monaco-mouse-cursor-text',
+        );
+        if (markersAdded && !collapsedErrorMarkers && !someEditorFocused) {
+          editorInstance.trigger('', 'editor.action.marker.next', {});
+        }
       }
     }
   }, [
