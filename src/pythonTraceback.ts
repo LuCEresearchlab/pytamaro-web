@@ -3,6 +3,17 @@ import { type editor as EditorNamespace } from 'monaco-editor';
 import { CompletedExecutionResponse } from './codeExecution';
 import { splitLines } from './sourceUtils';
 
+function lineNumOfErrorThisCell(traceback: string[]) {
+  const regex = / {2}File "\/home\/glot\/cell.py", line (\d+)/;
+  const idxTracebackLine = traceback.findLastIndex((line) => regex.test(line));
+  return idxTracebackLine !== -1
+    ? {
+        idxInTraceback: idxTracebackLine,
+        lineNum: parseInt(traceback[idxTracebackLine].match(regex)![1], 10),
+      }
+    : undefined;
+}
+
 export function addMarkers(
   monaco: Monaco,
   editor: EditorNamespace.IStandaloneCodeEditor,
@@ -11,23 +22,18 @@ export function addMarkers(
 ): boolean {
   const traceback = executionResponse.stderr;
   const tracebackLines = splitLines(traceback);
-  const regex = / {2}File "\/home\/glot\/cell.py", line (\d+)/;
-  const lineWithErrorLine = tracebackLines.findLastIndex((line) =>
-    regex.test(line),
-  );
+  const lineNumberInfo = lineNumOfErrorThisCell(tracebackLines);
   const model = editor.getModel();
-  if (model && lineWithErrorLine !== -1) {
+  if (model && lineNumberInfo !== undefined) {
     // Extract the relevant line number
-    const relevantLine = tracebackLines[lineWithErrorLine];
-    const lineNumber = parseInt(relevantLine.match(regex)![1], 10);
-    const currentCellLineIdx = lineNumber - firstLineNumber + 1;
+    const currentCellLineIdx = lineNumberInfo.lineNum - firstLineNumber + 1;
     // Find that line in the editor, count number of leading spaces
     const sourceLineContent = model.getLinesContent()[currentCellLineIdx - 1];
     const leadingSpaces =
       sourceLineContent.length - sourceLineContent.trimStart().length;
     // Extract the caret position from two lines after, if available
     const caretData =
-      tracebackLines[lineWithErrorLine + 2]?.match(/ {4}(.*)/)?.[1];
+      tracebackLines[lineNumberInfo.idxInTraceback + 2]?.match(/ {4}(.*)/)?.[1];
     const validCaret =
       caretData !== undefined &&
       Array.from(caretData).every((c) => c === ' ' || c === '^' || c === '~');
@@ -67,7 +73,7 @@ export function addMarkers(
             end + leadingSpaces + 1,
           ),
           options: {
-            className: 'squiggly-warning',
+            className: 'squiggly-warning traceback-tilde',
           },
         };
       },
@@ -116,4 +122,8 @@ export function processTraceback(content: string) {
 export function isErrorInvolvingToolbox(content: string) {
   const regex = / {2}File "\/home\/glot\/toolbox_(.*).py", line (\d+), in \1/;
   return splitLines(content).some((line) => regex.test(line));
+}
+
+export function isErrorPreviousCells(content: string) {
+  return lineNumOfErrorThisCell(splitLines(content)) === undefined;
 }

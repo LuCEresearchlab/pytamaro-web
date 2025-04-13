@@ -98,7 +98,10 @@ export default function CodeCell({
   }, [currentSource]);
 
   return (
-    <Paper elevation={readOnly ? 0 : 4}>
+    <Paper
+      elevation={readOnly ? 0 : 4}
+      className='pytamaro-web-code-cell anchor'
+    >
       {!readOnly && (
         <DocumentationStripe
           sources={sourcesUpTo}

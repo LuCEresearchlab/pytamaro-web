@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/no-array-index-key */
+import { KeyboardDoubleArrowUp, NearbyError } from '@mui/icons-material';
 import Construction from '@mui/icons-material/Construction';
 import Fullscreen from '@mui/icons-material/Fullscreen';
 import {
@@ -14,8 +15,10 @@ import {
 import { isEmpty, negate } from 'lodash';
 import { CSSProperties, useEffect, useRef, useState } from 'react';
 import { CompletedExecutionResponse } from '../src/codeExecution';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import {
   isErrorInvolvingToolbox,
+  isErrorPreviousCells,
   processTraceback,
 } from '../src/pythonTraceback';
 import { joinLines, splitLines } from '../src/sourceUtils';
@@ -218,9 +221,50 @@ export function OutputArea({
 }
 
 function ToolboxErrorAlert() {
+  const { t } = useLocalTranslation();
   return (
     <Alert severity='warning' color='error' icon={<Construction />}>
-      This error involves a function from the toolbox.
+      {t('errorInvolvesToolbox')}
+    </Alert>
+  );
+}
+
+function PreviousCellsErrorAlert({
+  buttonDisabled,
+}: {
+  buttonDisabled: boolean;
+}) {
+  const { t } = useLocalTranslation();
+  return (
+    <Alert
+      severity='warning'
+      color='error'
+      icon={<NearbyError />}
+      action={
+        <Button
+          endIcon={<KeyboardDoubleArrowUp />}
+          disabled={buttonDisabled}
+          color='error'
+          variant='contained'
+          size='small'
+          sx={{
+            whiteSpace: 'nowrap',
+          }}
+          onClick={() => {
+            document
+              .querySelector(
+                '.pytamaro-web-code-cell:has(.monaco-editor .zone-widget)',
+              )
+              ?.scrollIntoView({
+                behavior: 'smooth',
+              });
+          }}
+        >
+          {t('goToError')}
+        </Button>
+      }
+    >
+      {t('errorPreviousCell')}
     </Alert>
   );
 }
@@ -251,10 +295,14 @@ export default function ExecutionOutputArea({
       }}
     >
       {isErrorInvolvingToolbox(stderr) && <ToolboxErrorAlert />}
-      <Box sx={{ px: 2 }}>
-        <OutputArea data={stdout} />
-        {stderr && <CodeElement content={stderr} />}
-      </Box>
+      {stderr && isErrorPreviousCells(stderr) ? (
+        <PreviousCellsErrorAlert buttonDisabled={dimmed} />
+      ) : (
+        <Box sx={{ px: 2 }}>
+          <OutputArea data={stdout} />
+          {stderr && <CodeElement content={stderr} />}
+        </Box>
+      )}
     </Card>
   );
 }
