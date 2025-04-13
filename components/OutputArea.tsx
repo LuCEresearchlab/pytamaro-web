@@ -166,7 +166,12 @@ function CodeElement({ content }: { content: string }) {
             value='check'
             selected={showAllStackFrames}
             onChange={() => setShowAllStackFrames(!showAllStackFrames)}
-            sx={{ paddingY: 0.5, marginLeft: '2ch' }}
+            sx={{
+              paddingY: 0.5,
+              marginLeft: '2ch',
+              marginTop: theme.spacing(-1),
+            }}
+            size='small'
           >
             {`${showAllStackFrames ? 'Hide' : 'Show All '} Stack Frames`}
           </ToggleButton>
