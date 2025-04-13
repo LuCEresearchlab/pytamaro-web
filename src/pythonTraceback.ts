@@ -21,20 +21,27 @@ export function addMarkers(
     const relevantLine = tracebackLines[lineWithErrorLine];
     const lineNumber = parseInt(relevantLine.match(regex)![1], 10);
     const currentCellLineIdx = lineNumber - firstLineNumber + 1;
+    // Find that line in the editor, count number of leading spaces
+    const sourceLineContent = model.getLinesContent()[currentCellLineIdx - 1];
+    const leadingSpaces =
+      sourceLineContent.length - sourceLineContent.trimStart().length;
     // Extract the caret position from two lines after, if available
     const caretData =
       tracebackLines[lineWithErrorLine + 2]?.match(/ {4}(.*)/)?.[1];
-    const validCaret = Array.from(caretData || '').every(
-      (c) => c === ' ' || c === '^',
-    );
-    const defaultBegin = 0;
-    const defaultEnd = 1000;
-    const caretBegin = validCaret
-      ? caretData?.indexOf('^') || defaultBegin
-      : defaultBegin;
-    const caretEnd = validCaret
-      ? caretData?.lastIndexOf('^') || defaultEnd
-      : defaultEnd;
+    const validCaret =
+      caretData !== undefined &&
+      Array.from(caretData).every((c) => c === ' ' || c === '^' || c === '~');
+    // Create a marker for the ^^^ part
+    const firstCaret = validCaret ? caretData.indexOf('^') : undefined;
+    const lastCaret = validCaret ? caretData.lastIndexOf('^') : undefined;
+    const caretBegin =
+      firstCaret !== undefined && firstCaret != -1
+        ? firstCaret + leadingSpaces
+        : 0;
+    const caretEnd =
+      lastCaret !== undefined && lastCaret != -1
+        ? lastCaret + leadingSpaces
+        : sourceLineContent.length - 1;
     // Extract the error message
     const errorMessage = Array.from(
       traceback.matchAll(/ {2}.*\n(.*:.*)\n/g),
@@ -47,6 +54,25 @@ export function addMarkers(
       endLineNumber: currentCellLineIdx,
       endColumn: caretEnd + 2,
     };
+    // Create decorations for each possible ~~~ chunk.
+    const decorations = Array.from((caretData || '').matchAll(/~+/g)).map(
+      (match) => {
+        const begin = match.index;
+        const end = begin + match[0].length;
+        return {
+          range: new monaco.Range(
+            currentCellLineIdx,
+            begin + leadingSpaces + 1,
+            currentCellLineIdx,
+            end + leadingSpaces + 1,
+          ),
+          options: {
+            className: 'squiggly-warning',
+          },
+        };
+      },
+    );
+    editor.createDecorationsCollection(decorations);
     monaco.editor.setModelMarkers(model, 'owner', [marker]);
     return true;
   }

@@ -123,6 +123,12 @@ export default function CodeEditor({
         'owner',
         [],
       );
+      // Delete all the decorations
+      const entireRange = editorInstance.getModel()?.getFullModelRange();
+      const decorations = entireRange
+        ? editorInstance.getDecorationsInRange(entireRange)?.map((d) => d.id)
+        : [];
+      editorInstance.removeDecorations(decorations || []);
       // Close any open markers
       // We do this using MarkerController directly to explicitly avoid focusing the editor,
       // as another editor might have the focus and should not lose it.
