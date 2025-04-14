@@ -10,7 +10,10 @@ import {
   toolboxImportCompletionProvider,
 } from '../src/monacoSuggestions';
 import { analyze, ParseError } from '../src/python-analyzer/python_analyzer';
-import { addMarkers } from '../src/pythonTraceback';
+import {
+  addMarkers,
+  TRACEBACK_TIDLE_DECORATION_CLASSNAME,
+} from '../src/pythonTraceback';
 import scrollToAnchor from '../src/scrollToAnchor';
 import theme from '../src/theme';
 import {
@@ -126,7 +129,13 @@ export default function CodeEditor({
       // Delete all the decorations
       const entireRange = editorInstance.getModel()?.getFullModelRange();
       const decorations = entireRange
-        ? editorInstance.getDecorationsInRange(entireRange)?.map((d) => d.id)
+        ? editorInstance
+            .getDecorationsInRange(entireRange)
+            ?.filter(
+              (d) =>
+                d.options.className === TRACEBACK_TIDLE_DECORATION_CLASSNAME,
+            )
+            .map((d) => d.id)
         : [];
       editorInstance.removeDecorations(decorations || []);
       // Close any open markers

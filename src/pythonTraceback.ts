@@ -3,6 +3,9 @@ import { type editor as EditorNamespace } from 'monaco-editor';
 import { CompletedExecutionResponse } from './codeExecution';
 import { splitLines } from './sourceUtils';
 
+export const TRACEBACK_TIDLE_DECORATION_CLASSNAME =
+  'squiggly-warning traceback-tilde';
+
 function lineNumOfErrorThisCell(traceback: string[]) {
   const regex = / {2}File "\/home\/glot\/cell.py", line (\d+)/;
   const idxTracebackLine = traceback.findLastIndex((line) => regex.test(line));
@@ -73,7 +76,7 @@ export function addMarkers(
             end + leadingSpaces + 1,
           ),
           options: {
-            className: 'squiggly-warning traceback-tilde',
+            className: TRACEBACK_TIDLE_DECORATION_CLASSNAME,
           },
         };
       },
