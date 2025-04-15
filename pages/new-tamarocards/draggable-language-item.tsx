@@ -17,6 +17,7 @@ interface DraggableLanguageItemProps {
   index: number;
   moveLanguage: (dragIndex: number, hoverIndex: number) => void;
   toggleLanguage: (index: number) => void;
+  languages: Language[];
 }
 
 // Type for drag item
@@ -31,6 +32,7 @@ export default function DraggableLanguageItem({
   index,
   moveLanguage,
   toggleLanguage,
+  languages,
 }: DraggableLanguageItemProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -64,6 +66,10 @@ export default function DraggableLanguageItem({
 
   drag(drop(ref));
 
+  // Determine if checkbox should be disabled
+  const disableCheckbox =
+    !language.enabled && languages.filter((l) => l.enabled).length >= 4;
+
   return (
     <div
       ref={ref}
@@ -80,9 +86,13 @@ export default function DraggableLanguageItem({
             onChange={() => toggleLanguage(index)}
             tabIndex={-1}
             disableRipple
+            disabled={disableCheckbox}
           />
         </ListItemIcon>
-        <ListItemText primary={language.name} />
+        <ListItemText
+          primary={language.name}
+          secondary={disableCheckbox ? "Max 4 languages" : ""}
+        />
       </ListItem>
     </div>
   );

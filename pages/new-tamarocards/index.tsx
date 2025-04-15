@@ -47,13 +47,12 @@ export default function CardsRenderer() {
       }
     });
 
-    const parsedLanguages = Array.from(languageCodes)
-      .map((code, index) => ({
-        code,
-        name: code.toUpperCase(),
-        enabled: index === 0,
-      }))
-      .slice(0, 4);
+    // Create language objects from codes (default first language enabled)
+    const parsedLanguages = Array.from(languageCodes).map((code, index) => ({
+      code,
+      name: code.toUpperCase(),
+      enabled: index === 0,
+    }));
 
     setLanguages(parsedLanguages);
   }, []);
@@ -61,6 +60,13 @@ export default function CardsRenderer() {
   // Toggle language selection
   const toggleLanguage = (index: number) => {
     const updatedLanguages = [...languages];
+    // If trying to enable a language, check if we already have 4 enabled
+    if (
+      !updatedLanguages[index].enabled &&
+      updatedLanguages.filter((lang) => lang.enabled).length >= 4
+    ) {
+      return; // Don't allow more than 4 languages
+    }
     updatedLanguages[index].enabled = !updatedLanguages[index].enabled;
     setLanguages(updatedLanguages);
   };
@@ -120,8 +126,7 @@ export default function CardsRenderer() {
               Select and Order Languages:
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Check the languages you want to include and drag them to change
-              their order
+              Select up to 4 languages and drag them to change their order
             </Typography>
 
             <DndProvider backend={HTML5Backend}>
@@ -130,6 +135,8 @@ export default function CardsRenderer() {
                   bgcolor: "background.paper",
                   border: "1px solid #eee",
                   borderRadius: 1,
+                  maxHeight: "300px",
+                  overflow: "auto",
                 }}
               >
                 {languages.map((language, index) => (
@@ -139,6 +146,7 @@ export default function CardsRenderer() {
                     index={index}
                     moveLanguage={moveLanguage}
                     toggleLanguage={toggleLanguage}
+                    languages={languages}
                   />
                 ))}
               </List>
