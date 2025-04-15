@@ -15,19 +15,15 @@ import {
   Container,
   FormControl,
   FormControlLabel,
-  List,
   Paper,
   Typography,
 } from "@mui/material";
-// import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import CardsJson from "./pytamaro-function-data.json";
 import FunctionCard from "./function-card";
 import ValueCard from "./value-card";
 import ConstantCard from "./constant-card";
 import { Card, Language } from "./types";
-import DraggableLanguageItem from "./draggable-language-item";
+import LanguagePickerCard from "./language-picker-card";
 
 export default function CardsRenderer() {
   const cards = Object.values(CardsJson) as Card[];
@@ -35,6 +31,7 @@ export default function CardsRenderer() {
   const [showIcons, setShowIcons] = useState(true);
   const [showCards, setShowCards] = useState(false);
   const [languages, setLanguages] = useState<Language[]>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 
   useEffect(() => {
     const languageCodes = new Set<string>();
@@ -47,38 +44,59 @@ export default function CardsRenderer() {
       }
     });
 
-    // Create language objects from codes (default first language enabled)
-    const parsedLanguages = Array.from(languageCodes).map((code, index) => ({
+    // Create language objects from codes
+    const parsedLanguages = Array.from(languageCodes).map((code) => ({
       code,
       name: code.toUpperCase(),
-      enabled: index === 0,
+      enabled: false, // No longer using enabled flag
     }));
 
     setLanguages(parsedLanguages);
+
+    // Set first language as selected by default
+    if (parsedLanguages.length > 0) {
+      setSelectedLanguages([parsedLanguages[0].code]);
+    }
   }, []);
 
-  // Toggle language selection
-  const toggleLanguage = (index: number) => {
-    const updatedLanguages = [...languages];
-    // If trying to enable a language, check if we already have 4 enabled
-    if (
-      !updatedLanguages[index].enabled &&
-      updatedLanguages.filter((lang) => lang.enabled).length >= 4
-    ) {
-      return; // Don't allow more than 4 languages
+  // Handle language selection for a specific dropdown index
+  const handleLanguageSelect = (index: number, languageCode: string | null) => {
+    const updatedSelectedLanguages = [...selectedLanguages];
+
+    // If clearing a selection
+    if (!languageCode) {
+      // If trying to clear the only selection, don't allow it
+      if (
+        updatedSelectedLanguages.length === 1 &&
+        updatedSelectedLanguages[0] === updatedSelectedLanguages[index]
+      ) {
+        return;
+      }
+
+      // Remove the language from the array
+      if (index < updatedSelectedLanguages.length) {
+        updatedSelectedLanguages.splice(index, 1);
+      }
     }
-    updatedLanguages[index].enabled = !updatedLanguages[index].enabled;
-    setLanguages(updatedLanguages);
-  };
+    // Add or update language at the specified index
+    if (index < updatedSelectedLanguages.length) {
+      updatedSelectedLanguages[index] = languageCode ?? "";
+    } else {
+      // Fill any gaps with empty strings
+      while (updatedSelectedLanguages.length < index) {
+        updatedSelectedLanguages.push("");
+      }
+      if (languageCode !== null) {
+        updatedSelectedLanguages.push(languageCode);
+      }
+    }
 
-  // Move language (for drag and drop)
-  const moveLanguage = (dragIndex: number, hoverIndex: number) => {
-    const updatedLanguages = [...languages];
-    const draggedLanguage = updatedLanguages[dragIndex];
+    // Remove any empty strings (except where needed to maintain indices)
+    const cleanedSelections = updatedSelectedLanguages.filter(
+      (lang, i) => lang !== "" || i < updatedSelectedLanguages.length - 1
+    );
 
-    updatedLanguages.splice(dragIndex, 1);
-    updatedLanguages.splice(hoverIndex, 0, draggedLanguage);
-    setLanguages(updatedLanguages);
+    setSelectedLanguages(cleanedSelections);
   };
 
   // Generate cards based on selections
@@ -88,11 +106,10 @@ export default function CardsRenderer() {
 
   const filterCardLanguages = (localization: { [lang: string]: string }) => {
     const filteredLanguages: string[] = [];
-    const enabledLanguages = languages.filter((lang) => lang.enabled);
 
-    enabledLanguages.forEach((lang) => {
-      if (localization[lang.code]) {
-        filteredLanguages.push(localization[lang.code]);
+    selectedLanguages.forEach((languageCode) => {
+      if (languageCode && localization[languageCode]) {
+        filteredLanguages.push(localization[languageCode]);
       }
     });
 
@@ -116,41 +133,24 @@ export default function CardsRenderer() {
       </Typography>
 
       {!showCards ? (
-        <Paper elevation={3} sx={{ p: 3, maxWidth: 500, mx: "auto" }}>
+        <Paper elevation={3} sx={{ p: 3, maxWidth: 600, mx: "auto" }}>
           <Typography variant="h6" gutterBottom>
             Card Preferences
           </Typography>
 
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle1" sx={{ mb: 1 }}>
-              Select and Order Languages:
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Select up to 4 languages and drag them to change their order
-            </Typography>
-
-            <DndProvider backend={HTML5Backend}>
-              <List
-                sx={{
-                  bgcolor: "background.paper",
-                  border: "1px solid #eee",
-                  borderRadius: 1,
-                  maxHeight: "300px",
-                  overflow: "auto",
-                }}
-              >
-                {languages.map((language, index) => (
-                  <DraggableLanguageItem
-                    key={language.code}
-                    language={language}
-                    index={index}
-                    moveLanguage={moveLanguage}
-                    toggleLanguage={toggleLanguage}
-                    languages={languages}
-                  />
-                ))}
-              </List>
-            </DndProvider>
+          <Box
+            sx={{
+              mb: 3,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <LanguagePickerCard
+              languages={languages}
+              selectedLanguages={selectedLanguages}
+              onLanguageSelect={handleLanguageSelect}
+            />
           </Box>
 
           <FormControl component="fieldset" sx={{ mb: 3 }}>
@@ -171,6 +171,7 @@ export default function CardsRenderer() {
               color="primary"
               size="large"
               onClick={handleGenerateCards}
+              disabled={selectedLanguages.length === 0}
             >
               Generate Cards
             </Button>

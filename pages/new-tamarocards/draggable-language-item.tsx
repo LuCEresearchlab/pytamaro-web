@@ -9,6 +9,7 @@
 /* eslint-disable @typescript-eslint/quotes */
 import { useRef } from "react";
 import { ListItem, ListItemIcon, Checkbox, ListItemText } from "@mui/material";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import { useDrag, useDrop } from "react-dnd";
 import { Language } from "./types";
 
@@ -76,10 +77,19 @@ export default function DraggableLanguageItem({
       style={{
         opacity: isDragging ? 0.5 : 1,
         cursor: "move",
+        width: "100%",
+        backgroundColor: language.enabled
+          ? "rgba(255, 255, 255, 0.9)"
+          : "transparent",
+        margin: "2px 0",
+        borderRadius: "4px",
       }}
     >
       <ListItem dense>
-        <ListItemIcon>
+        <ListItemIcon sx={{ minWidth: "30px" }}>
+          <DragIndicatorIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemIcon sx={{ minWidth: "40px" }}>
           <Checkbox
             edge="start"
             checked={language.enabled}
@@ -87,11 +97,21 @@ export default function DraggableLanguageItem({
             tabIndex={-1}
             disableRipple
             disabled={disableCheckbox}
+            size="small"
           />
         </ListItemIcon>
         <ListItemText
           primary={language.name}
-          secondary={disableCheckbox ? "Max 4 languages" : ""}
+          primaryTypographyProps={{
+            variant: "body2",
+            fontWeight: language.enabled ? "bold" : "normal",
+            style: { fontSize: "14px" },
+          }}
+          secondary={disableCheckbox ? "Max 4" : ""}
+          secondaryTypographyProps={{
+            variant: "caption",
+            style: { fontSize: "10px" },
+          }}
         />
       </ListItem>
     </div>
