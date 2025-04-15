@@ -75,6 +75,7 @@ export default function DocumentationExample({
             sx={{
               fontFamily: theme.pytamaro.monospaceFontFamily,
               whiteSpace: 'pre',
+              overflowX: 'auto',
               fontVariantLigatures: 'none',
               display: 'inline-block',
               marginTop: theme.spacing(1),
