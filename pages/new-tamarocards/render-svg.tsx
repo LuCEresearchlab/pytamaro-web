@@ -18,7 +18,7 @@ export default function RenderSvg({ svg }: { svg: string }) {
     <div
       style={{
         width: "60%",
-        height: "auto",
+        height: "60%",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
