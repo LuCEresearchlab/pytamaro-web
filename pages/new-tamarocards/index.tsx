@@ -184,15 +184,6 @@ export default function CardsRenderer() {
             <Button variant="outlined" onClick={() => setShowCards(false)}>
               Back to Settings
             </Button>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={showIcons}
-                  onChange={() => setShowIcons(!showIcons)}
-                />
-              }
-              label="Show Parameter/Return Icons"
-            />
           </Box>
 
           <Box

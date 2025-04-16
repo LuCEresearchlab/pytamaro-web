@@ -128,7 +128,9 @@ export default function FunctionCard({
           }}
         >
           {/* PyTamaro svg symbol */}
-          <PyTamaroSymbol />
+          <div>
+            <PyTamaroSymbol />
+          </div>
           <div
             style={{
               display: "flex",

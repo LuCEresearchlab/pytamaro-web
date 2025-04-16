@@ -1,3 +1,5 @@
+/* eslint-disable operator-linebreak */
+/* eslint-disable react/jsx-curly-newline */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable object-curly-newline */
@@ -40,8 +42,7 @@ export default function LanguagePickerCard({
         <div
           ref={cardRef}
           style={{
-            width: "300px",
-            height: "400px",
+            width: "19em",
             border: "5px solid red",
             backgroundColor: "#FBE3E3",
             borderRadius: "30px",
@@ -53,7 +54,9 @@ export default function LanguagePickerCard({
           }}
         >
           {/* PyTamaro svg symbol */}
-          <PyTamaroSymbol />
+          <div>
+            <PyTamaroSymbol />
+          </div>
 
           <Typography variant="h6" align="center" sx={{ mb: 1 }}>
             Select Languages
