@@ -45,7 +45,6 @@ export default function CardsRenderer() {
       }
     });
 
-    // Create language objects from codes
     const parsedLanguages = Array.from(languageCodes).map((code) => ({
       code,
       name: code.toUpperCase(),
@@ -54,19 +53,15 @@ export default function CardsRenderer() {
 
     setLanguages(parsedLanguages);
 
-    // Set first language as selected by default
     if (parsedLanguages.length > 0) {
       setSelectedLanguages([parsedLanguages[0].code]);
     }
   }, []);
 
-  // Handle language selection for a specific dropdown index
   const handleLanguageSelect = (index: number, languageCode: string | null) => {
     const updatedSelectedLanguages = [...selectedLanguages];
 
-    // If clearing a selection
     if (!languageCode) {
-      // If trying to clear the only selection, don't allow it
       if (
         updatedSelectedLanguages.length === 1 &&
         updatedSelectedLanguages[0] === updatedSelectedLanguages[index]
@@ -74,16 +69,13 @@ export default function CardsRenderer() {
         return;
       }
 
-      // Remove the language from the array
       if (index < updatedSelectedLanguages.length) {
         updatedSelectedLanguages.splice(index, 1);
       }
     }
-    // Add or update language at the specified index
     if (index < updatedSelectedLanguages.length) {
       updatedSelectedLanguages[index] = languageCode ?? "";
     } else {
-      // Fill any gaps with empty strings
       while (updatedSelectedLanguages.length < index) {
         updatedSelectedLanguages.push("");
       }
@@ -92,7 +84,6 @@ export default function CardsRenderer() {
       }
     }
 
-    // Remove any empty strings (except where needed to maintain indices)
     const cleanedSelections = updatedSelectedLanguages.filter(
       (lang, i) => lang !== "" || i < updatedSelectedLanguages.length - 1
     );
@@ -100,7 +91,6 @@ export default function CardsRenderer() {
     setSelectedLanguages(cleanedSelections);
   };
 
-  // Generate cards based on selections
   const handleGenerateCards = () => {
     setShowCards(true);
   };
@@ -188,40 +178,82 @@ export default function CardsRenderer() {
 
           <Box
             sx={{
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "center",
-              gap: "20px",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+              gap: 0,
+              justifyItems: "center",
+              alignItems: "stretch",
+              width: "auto",
+              mb: 4,
             }}
           >
-            {cards.map((card, index) => (
-              <div key={index}>
-                <FunctionCard
-                  params={
-                    Array.isArray(card.parametersIcon)
-                      ? card.parametersIcon.map((icon: string, i: number) => ({
-                          name: `Param ${i + 1}`,
-                          type: "Icon",
-                        }))
-                      : []
-                  }
-                  svg={card.icon}
-                  returnValue={{
-                    type: "Icon",
-                    description: card.returnIcon || "",
+            {cards
+              .slice()
+              .sort((a, b) => {
+                // Sort logic: cards without icons first, then cards with icons
+                const aHasIcons =
+                  a.parametersIcon?.some(
+                    (icon) => icon && icon.trim() !== ""
+                  ) ||
+                  (a.returnIcon && a.returnIcon.trim() !== "");
+                const bHasIcons =
+                  b.parametersIcon?.some(
+                    (icon) => icon && icon.trim() !== ""
+                  ) ||
+                  (b.returnIcon && b.returnIcon.trim() !== "");
+
+                if (!aHasIcons && bHasIcons) return -1;
+                if (aHasIcons && !bHasIcons) return 1;
+                return 0;
+              })
+              .map((card, index) => (
+                <div
+                  key={index}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    border: "2px solid #444444",
+                    backgroundColor: "#FFFFFF",
                   }}
-                  languages={filterCardLanguages(card.localization)}
-                  parameterIcons={showIcons ? card.parametersIcon : undefined}
-                  returnIcon={showIcons ? card.returnIcon : ""}
-                  showIcons={showIcons}
-                />
-              </div>
-            ))}
+                >
+                  <FunctionCard
+                    params={
+                      Array.isArray(card.parametersIcon)
+                        ? card.parametersIcon.map(
+                            (icon: string, i: number) => ({
+                              name: `Param ${i + 1}`,
+                              type: "Icon",
+                            })
+                          )
+                        : []
+                    }
+                    svg={card.icon}
+                    returnValue={{
+                      type: "Icon",
+                      description: card.returnIcon || "",
+                    }}
+                    languages={filterCardLanguages(card.localization)}
+                    parameterIcons={showIcons ? card.parametersIcon : undefined}
+                    returnIcon={showIcons ? card.returnIcon : ""}
+                    showIcons={showIcons}
+                  />
+                </div>
+              ))}
           </Box>
-          <ValueCard value={250} />
-          <ValueCard value={50} />
-          <ValueCard value={0} />
-          <ConstantCard />
+
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(16em, 1fr))",
+              justifyItems: "center",
+            }}
+          >
+            <ValueCard value={250} />
+            <ValueCard value={50} />
+            <ValueCard value={0} />
+            <ConstantCard />
+          </Box>
         </>
       )}
     </Container>

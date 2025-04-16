@@ -30,7 +30,7 @@ export default function FunctionCard({
   parameterIcons = [],
   showIcons = true,
 }: BasicCardProps) {
-  const baseWidth = 9.375;
+  const baseWidth = 8; // Reduced from 9.375
   const cardRef = useRef<HTMLDivElement>(null);
   const symbolRef = useRef<HTMLDivElement>(null);
   const languagesRef = useRef<HTMLDivElement>(null);
@@ -75,23 +75,35 @@ export default function FunctionCard({
   }, [languages, showIcons, hasAnyIcons]);
 
   return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "center" }}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
+        width: "100%",
+        position: "relative",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          position: "relative",
+        }}
+      >
         <div
           style={{
+            position: "absolute",
+            left: "-2.7em",
+            height: "100%",
             display: "flex",
             flexDirection: "column",
-            alignContent: "right",
             justifyContent: "space-evenly",
-            position: "relative",
           }}
         >
-          {/* arrows to the left of the card */}
           {Array.from({ length: params?.length }).map((_, index) => (
-            <div
-              key={index}
-              style={{ position: "relative", marginBottom: "0.625em" }} // 10px ÷ 16
-            >
+            <div key={index} style={{ position: "relative" }}>
               {showIcons &&
                 parameterIcons &&
                 parameterIcons[index] &&
@@ -116,23 +128,23 @@ export default function FunctionCard({
             </div>
           ))}
         </div>
+
         <div
           ref={cardRef}
           style={{
             width: `${calculatedWidth}em`,
             height: calculatedHeight,
-            border: "0.3em solid red",
+            minHeight: "14em",
+            border: "0.2em solid red",
             backgroundColor: "#FBE3E3",
-            borderRadius: "2em",
+            borderRadius: "1.5em",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            padding: "1em",
-            boxSizing: "border-box",
-            justifyContent: "space-between",
+            padding: "0.8em 0.5em 0.5em",
+            zIndex: 1,
           }}
         >
-          {/* PyTamaro svg symbol */}
           <div ref={symbolRef}>
             <PyTamaroSymbol />
           </div>
@@ -145,17 +157,15 @@ export default function FunctionCard({
               justifyContent: "center",
               textAlign: "center",
               fontSize: "1.25em",
-              margin: "0.5em 0",
               width: "100%",
             }}
           >
-            {/* Maps list of languages to card */}
             {languages.map((lang, index) => (
               <p
                 key={index}
                 style={{
                   fontWeight: index === 0 ? "bold" : "normal",
-                  margin: "0.125em 0",
+                  margin: 0,
                 }}
               >
                 {lang}
@@ -168,26 +178,26 @@ export default function FunctionCard({
               style={{
                 display: "flex",
                 justifyContent: "center",
-                alignItems: "center",
                 width: "100%",
-                flex: "1 1 auto",
-                maxHeight: "35%",
-                overflow: "visible",
+                maxHeight: "50%",
+                alignItems: "center",
               }}
             >
               <RenderSvg svg={svg} />
             </div>
           )}
         </div>
+
         <div
           style={{
+            position: "absolute",
+            right: "-2.5em",
+            height: "100%",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
-            position: "relative",
           }}
         >
-          {/* Output arrows to the right of the card */}
           {Array.from({ length: returnValue ? 1 : 0 }).map((_, index) => (
             <div key={index} style={{ position: "relative" }}>
               {showIcons && returnIcon && returnIcon.trim() !== "" && (

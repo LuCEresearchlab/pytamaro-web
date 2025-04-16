@@ -23,7 +23,6 @@ export default function RenderSvg({ svg }: { svg: string }) {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        overflow: "hidden",
       }}
       dangerouslySetInnerHTML={{ __html: clientSvg }}
     />
