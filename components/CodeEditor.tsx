@@ -283,20 +283,13 @@ export default function CodeEditor({
     }
   };
 
-  const debouncedAddParseErrorMarkers = debounce((source: string) => {
-    addParseErrorMarkers(analyze(source).parse_errors);
-  }, 500);
-
-  const debouncedHandleSourceChanged = debounce(
-    (newSource: string | undefined) => {
-      if (newSource !== undefined) {
-        onChange(newSource);
-        clearMarkers();
-        debouncedAddParseErrorMarkers(newSource);
-      }
-    },
-    100,
-  );
+  const handleSourceChanged = debounce((newSource: string | undefined) => {
+    if (newSource !== undefined) {
+      onChange(newSource);
+      clearMarkers();
+      addParseErrorMarkers(analyze(newSource).parse_errors);
+    }
+  }, 50);
 
   return (
     <div ref={containerRef} translate='no'>
@@ -305,7 +298,7 @@ export default function CodeEditor({
         theme='luce'
         defaultValue={currentSource}
         onMount={handleEditorMount}
-        onChange={debouncedHandleSourceChanged}
+        onChange={handleSourceChanged}
         options={{
           fontFamily: theme.pytamaro.monospaceFontFamily,
           fontSize: theme.pytamaro.monospaceFontSize,
