@@ -2,16 +2,12 @@ import {
   activityVariantPathnameFromParts,
   playgroundPathname,
 } from '../../src/urlUtils';
+import {
+  dismissDataCollectionModal,
+  waitForMonacoEditor,
+} from '../support/utils';
 
 export {};
-
-function dismissDataCollectionModal() {
-  cy.contains('OK').click();
-}
-
-function waitForMonacoEditor() {
-  cy.contains('from pytamaro import').should('be.visible');
-}
 
 describe('Code Execution', () => {
   it('should execute initial playground code', () => {
