@@ -8,10 +8,12 @@ export default function CurriculaList({
   curricula,
   userActivities = undefined,
   alwaysClickable = false,
+  compact = false,
 }: {
   curricula: Curriculum[];
   userActivities?: ActivityVariantMetadata[];
   alwaysClickable?: boolean;
+  compact?: boolean;
 }) {
   return (
     <Stack spacing={2}>
@@ -22,6 +24,7 @@ export default function CurriculaList({
             curriculum={curriculum}
             userActivities={userActivities}
             alwaysClickable={alwaysClickable}
+            compact={compact}
           />
         ),
       )}

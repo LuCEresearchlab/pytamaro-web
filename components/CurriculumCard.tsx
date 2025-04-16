@@ -51,10 +51,12 @@ export default function CurriculumCard({
   curriculum,
   userActivities = undefined,
   alwaysClickable = false,
+  compact = false,
 }: {
   curriculum: Curriculum;
   userActivities?: ActivityVariantMetadata[];
   alwaysClickable?: boolean;
+  compact?: boolean;
 }) {
   const [previewActivities, setPreviewActivities] = useState<
     CurriculumActivity[]
@@ -94,8 +96,8 @@ export default function CurriculumCard({
               <Box
                 sx={{
                   overflow: 'hidden',
-                  lineClamp: 10,
-                  WebkitLineClamp: 10,
+                  lineClamp: compact ? 5 : 10,
+                  WebkitLineClamp: compact ? 5 : 10,
                   WebkitBoxOrient: 'vertical',
                   display: '-webkit-box',
                 }}

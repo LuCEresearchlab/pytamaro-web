@@ -21,7 +21,7 @@ export default function GoToCurriculaBanner({
         recommend you start a curriculum now to get an optimal learning
         experience.
       </Typography>
-      <CurriculaList curricula={visible} />
+      <CurriculaList curricula={visible} compact={true} />
     </Alert>
   );
 }
