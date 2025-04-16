@@ -66,6 +66,7 @@ export default function CodeEditor({
   const [executionAllowedCondition, setExecutionAllowedCondition] =
     useState<EditorNamespace.IContextKey<boolean> | null>(null);
   const toolboxFunctions = list();
+  const [executionMarkers, setExecutionMarkers] = useState(false);
 
   const handleEditorMount = (
     editor: EditorNamespace.IStandaloneCodeEditor,
@@ -119,7 +120,7 @@ export default function CodeEditor({
   };
 
   const clearMarkers = useCallback(() => {
-    if (monacoInstance && editorInstance) {
+    if (monacoInstance && editorInstance && executionMarkers) {
       // Delete all the markers
       monacoInstance.editor.setModelMarkers(
         editorInstance.getModel(),
@@ -148,8 +149,9 @@ export default function CodeEditor({
       if (markerController?.close) {
         markerController.close(false); // false: do not focus
       }
+      setExecutionMarkers(false);
     }
-  }, [monacoInstance, editorInstance]);
+  }, [monacoInstance, editorInstance, executionMarkers]);
 
   // Effect to update the condition that determines whether the code execution is allowed or not.
   useEffect(() => {
@@ -227,17 +229,20 @@ export default function CodeEditor({
           executionResponse,
           firstLineNumber,
         );
-        // Some (other) editor could have the focus. Do not trigger the "go to
-        // next marker" action in that case, as it would steal the cursor from
-        // the other editor where the user is typing.
-        const someEditorFocused = document.activeElement?.classList.contains(
-          'monaco-mouse-cursor-text',
-        );
-        const otherEditorFocused =
-          someEditorFocused &&
-          !containerRef.current?.contains(document.activeElement);
-        if (markersAdded && !collapsedErrorMarkers && !otherEditorFocused) {
-          editorInstance.trigger('', 'editor.action.marker.next', {});
+        if (markersAdded) {
+          setExecutionMarkers(true);
+          // Some (other) editor could have the focus. Do not trigger the "go to
+          // next marker" action in that case, as it would steal the cursor from
+          // the other editor where the user is typing.
+          const someEditorFocused = document.activeElement?.classList.contains(
+            'monaco-mouse-cursor-text',
+          );
+          const otherEditorFocused =
+            someEditorFocused &&
+            !containerRef.current?.contains(document.activeElement);
+          if (!collapsedErrorMarkers && !otherEditorFocused) {
+            editorInstance.trigger('', 'editor.action.marker.next', {});
+          }
         }
       }
     }
@@ -255,11 +260,10 @@ export default function CodeEditor({
   useEffect(() => {
     if (editorInstance && resetCounter > 0) {
       editorInstance.setValue(initialSource);
-      clearMarkers();
     }
-  }, [editorInstance, initialSource, clearMarkers, resetCounter]);
+  }, [editorInstance, initialSource, resetCounter]);
 
-  const addParseErrorMarkers = (parseErrors: ParseError[]) => {
+  const setParseErrorMarkers = (parseErrors: ParseError[]) => {
     if (monacoInstance && editorInstance) {
       const model = editorInstance.getModel();
       if (model) {
@@ -287,7 +291,7 @@ export default function CodeEditor({
     if (newSource !== undefined) {
       onChange(newSource);
       clearMarkers();
-      addParseErrorMarkers(analyze(newSource).parse_errors);
+      setParseErrorMarkers(analyze(newSource).parse_errors);
     }
   }, 50);
 
