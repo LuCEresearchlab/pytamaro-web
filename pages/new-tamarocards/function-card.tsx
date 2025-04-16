@@ -134,6 +134,8 @@ export default function FunctionCard({
           style={{
             width: `${calculatedWidth}em`,
             height: calculatedHeight,
+            maxHeight: "18em",
+
             minHeight: "14em",
             border: "0.2em solid red",
             backgroundColor: "#FBE3E3",
