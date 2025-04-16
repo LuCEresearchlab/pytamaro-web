@@ -43,7 +43,7 @@ export default function LanguagePickerCard({
           ref={cardRef}
           style={{
             width: "19em",
-            border: "5px solid red",
+            border: "0.3em solid red",
             backgroundColor: "#FBE3E3",
             borderRadius: "30px",
             display: "flex",

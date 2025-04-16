@@ -30,47 +30,49 @@ export default function FunctionCard({
   parameterIcons = [],
   showIcons = true,
 }: BasicCardProps) {
-  const baseHeight = 18.75; // Base height in em (300px ÷ 16)
-  const iconSpaceHeight = 3.75; // Extra space for icons in em (60px ÷ 16)
-  const baseWidth = 9.375; // Base width in em (150px ÷ 16)
+  const baseWidth = 9.375;
   const cardRef = useRef<HTMLDivElement>(null);
+  const symbolRef = useRef<HTMLDivElement>(null);
+  const languagesRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<HTMLDivElement>(null);
   const [calculatedWidth, setCalculatedWidth] = useState(baseWidth);
+  const [calculatedHeight, setCalculatedHeight] = useState("auto");
 
-  // Define consistent icon dimensions in em
-  const iconWidth = 3.125; // 50px ÷ 16
-  const iconHeight = 3.125; // 50px ÷ 16
-  const iconTopOffset = -1.875; // -30px ÷ 16
+  const iconWidth = 3.125;
+  const iconHeight = 3.125;
+  const iconTopOffset = -1.875;
 
-  // Check if there are any icons to display
   const hasParameterIcons =
     showIcons && parameterIcons.some((icon) => icon && icon.trim() !== "");
   const hasReturnIcon = showIcons && returnIcon && returnIcon.trim() !== "";
   const hasAnyIcons = hasParameterIcons || hasReturnIcon;
 
-  // Calculate dynamic height based on presence of icons
-  const totalHeight = hasAnyIcons
-    ? `${baseHeight}em`
-    : `${baseHeight - iconSpaceHeight}em`;
-
-  // Calculate card width when languages or icon visibility changes
   useEffect(() => {
-    // Start with base width to reset any previously calculated width
     setCalculatedWidth(baseWidth);
 
-    // Wait for next render to measure accurate width after reset
     setTimeout(() => {
       if (cardRef.current) {
-        const cardWidth = cardRef.current.scrollWidth / 16; // Convert to em
+        // Calculate width
+        const cardWidth = cardRef.current.scrollWidth / 16;
         const textWidth = Array.from(
           cardRef.current.querySelectorAll("p")
-        ).reduce((maxWidth, p) => Math.max(maxWidth, p.scrollWidth / 16), 0); // Convert to em
-        const newWidth = Math.max(cardWidth, textWidth) + 1.25; // Add some padding (20px ÷ 16)
+        ).reduce((maxWidth, p) => Math.max(maxWidth, p.scrollWidth / 16), 0);
+        const newWidth = Math.max(cardWidth, textWidth) + 1.25;
         if (newWidth > baseWidth) {
           setCalculatedWidth(newWidth);
         }
+
+        const symbolHeight = symbolRef.current?.offsetHeight || 0;
+        const languagesHeight = languagesRef.current?.offsetHeight || 0;
+        const svgHeight = svgRef.current?.offsetHeight || 0;
+
+        const totalContentHeight =
+          (symbolHeight + languagesHeight + svgHeight + 48) / 16;
+        const iconPadding = hasAnyIcons ? 2 : 0;
+        setCalculatedHeight(`${totalContentHeight + iconPadding}em`);
       }
     }, 0);
-  }, [languages, showIcons]);
+  }, [languages, showIcons, hasAnyIcons]);
 
   return (
     <div>
@@ -118,28 +120,33 @@ export default function FunctionCard({
           ref={cardRef}
           style={{
             width: `${calculatedWidth}em`,
-            height: totalHeight,
-            border: "0.3125em solid red", // 5px ÷ 16
+            height: calculatedHeight,
+            border: "0.3em solid red",
             backgroundColor: "#FBE3E3",
-            borderRadius: "1.875em", // 30px ÷ 16
+            borderRadius: "2em",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            padding: "1em",
+            boxSizing: "border-box",
+            justifyContent: "space-between",
           }}
         >
           {/* PyTamaro svg symbol */}
-          <div>
+          <div ref={symbolRef}>
             <PyTamaroSymbol />
           </div>
           <div
+            ref={languagesRef}
             style={{
               display: "flex",
               flexDirection: "column",
               gap: "0",
-              height: "50%",
               justifyContent: "center",
               textAlign: "center",
-              fontSize: "1.25em", // 20px ÷ 16
+              fontSize: "1.25em",
+              margin: "0.5em 0",
+              width: "100%",
             }}
           >
             {/* Maps list of languages to card */}
@@ -148,14 +155,29 @@ export default function FunctionCard({
                 key={index}
                 style={{
                   fontWeight: index === 0 ? "bold" : "normal",
-                  margin: "0.125em 0", // 2px ÷ 16
+                  margin: "0.125em 0",
                 }}
               >
                 {lang}
               </p>
             ))}
           </div>
-          {svg !== undefined && <RenderSvg svg={svg} />}
+          {svg !== undefined && (
+            <div
+              ref={svgRef}
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                flex: "1 1 auto",
+                maxHeight: "35%",
+                overflow: "visible",
+              }}
+            >
+              <RenderSvg svg={svg} />
+            </div>
+          )}
         </div>
         <div
           style={{

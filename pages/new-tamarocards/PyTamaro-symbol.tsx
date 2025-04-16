@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/quotes */
 export default function PyTamaroSymbol() {
   return (
     <svg
@@ -6,7 +7,7 @@ export default function PyTamaroSymbol() {
       viewBox="0 0 121 87"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ marginTop: "5px" }}
+      style={{ marginTop: "0.3em" }}
     >
       <path d="M23 65L3.08141 30.5L42.9186 30.5L23 65Z" fill="#7F99EF" />
       <path d="M23 65L3.08141 30.5L42.9186 30.5L23 65Z" fill="#7F99EF" />

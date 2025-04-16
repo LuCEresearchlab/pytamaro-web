@@ -9,7 +9,7 @@ export default function Arrow() {
     >
       <path
         d="M26 3L21 0.113249V5.88675L26 3ZM0 3.5L21.5 3.5V2.5L0 2.5L0 3.5Z"
-        fill="black"
+        fill="red"
       />
     </svg>
   );
