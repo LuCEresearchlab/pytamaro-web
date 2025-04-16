@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/comma-dangle */
 /* eslint-disable react/function-component-definition */
 /* eslint-disable arrow-parens */
 /* eslint-disable react/jsx-wrap-multilines */
@@ -205,7 +206,6 @@ export default function CardsRenderer() {
             {cards.map((card, index) => (
               <div key={index}>
                 <FunctionCard
-                  type="function"
                   params={
                     Array.isArray(card.parametersIcon)
                       ? card.parametersIcon.map((icon: string, i: number) => ({

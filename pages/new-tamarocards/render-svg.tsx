@@ -1,3 +1,4 @@
+/* eslint-disable react/no-danger */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable object-curly-newline */
 /* eslint-disable @typescript-eslint/indent */

@@ -12,7 +12,6 @@ import PyTamaroSymbol from "./PyTamaro-symbol";
 import RenderSvg from "./render-svg";
 
 interface BasicCardProps {
-  type: string;
   params: { name: string; type: string }[];
   svg: string;
   returnValue: { type: string; description: string };
@@ -23,7 +22,6 @@ interface BasicCardProps {
 }
 
 export default function FunctionCard({
-  type,
   params,
   svg,
   returnValue,
