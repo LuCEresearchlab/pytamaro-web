@@ -1,5 +1,6 @@
+import { MenuBookOutlined } from '@mui/icons-material';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { Box, Chip, Stack, Typography } from '@mui/material';
+import { Box, Chip, Stack, Tooltip } from '@mui/material';
 import { flatten, isEqual, reverse, slice, uniqWith } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
@@ -150,7 +151,15 @@ export default function DocumentationStripe({
         useFlexGap
         marginX={0.5}
       >
-        <Typography variant='body2'>Docs:</Typography>
+        <Tooltip arrow title={t('documentation')} placement='top'>
+          <MenuBookOutlined
+            sx={{
+              fontSize: '1em',
+              transform: 'translateY(0.15em)',
+            }}
+            color='action'
+          />
+        </Tooltip>
         <Stack
           direction='row'
           rowGap={0.1}
