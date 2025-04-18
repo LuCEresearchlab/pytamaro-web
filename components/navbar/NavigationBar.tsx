@@ -80,7 +80,7 @@ function ScrollAppBarChanges({
 
   return cloneElement(children, {
     sx: {
-      background: scrolled ? theme.pytamaro.backgroundColor : '#ffffff80',
+      background: scrolled ? theme.pytamaro.backgroundColor : '#ffffffb0',
     },
   });
 }
