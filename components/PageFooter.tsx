@@ -12,7 +12,7 @@ export default function PageFooter() {
           alt='Logo of PyTamaro'
           sizes='100vw'
           style={{
-            width: '2.5rem',
+            width: '2.25rem',
             height: 'auto',
           }}
         />
@@ -27,12 +27,7 @@ export default function PageFooter() {
         &nbsp;of&nbsp;
         <Link href='https://www.usi.ch/'>USI</Link>
       </Typography>
-      <Typography
-        variant='body2'
-        align='center'
-        color='grey'
-        sx={{ mt: '1rem' }}
-      >
+      <Typography variant='body2' align='center' color='grey' mt={1}>
         <Link component={NextLink} href='/privacy'>
           Privacy Policy
         </Link>
