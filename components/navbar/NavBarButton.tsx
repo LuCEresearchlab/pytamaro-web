@@ -1,4 +1,4 @@
-import { IconButton, Tooltip } from '@mui/material';
+import { IconButton, IconButtonProps, Tooltip } from '@mui/material';
 import theme from '../../src/theme';
 
 export default function NavBarButton({
@@ -9,7 +9,7 @@ export default function NavBarButton({
 }: {
   children: React.ReactNode;
   label: string;
-  onClick?: () => void;
+  onClick?: IconButtonProps['onClick'];
   disabled?: boolean;
 }) {
   // <div> and <span> are necessary for Tooltip to work properly in all cases

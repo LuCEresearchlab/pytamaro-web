@@ -1,5 +1,5 @@
-import List from '@mui/icons-material/List';
-import { Card, IconButton, Stack, Typography } from '@mui/material';
+import { AltRoute } from '@mui/icons-material';
+import { Card, Stack, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -8,9 +8,9 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { Activity, ActivityVariant } from '../src/schemas/activitySchema';
-import theme from '../src/theme';
 import { activityVariantPathnameFromParts } from '../src/urlUtils';
 import { Popover, PopoverContent, PopoverTrigger } from './Popover';
+import NavBarButton from './navbar/NavBarButton';
 
 export default function VariantSelector({
   activity,
@@ -50,13 +50,9 @@ export default function VariantSelector({
   return (
     <Popover placement='bottom'>
       <PopoverTrigger>
-        <IconButton
-          sx={{
-            color: theme.palette.text.primary,
-          }}
-        >
-          <List />
-        </IconButton>
+        <NavBarButton label='Select variant'>
+          <AltRoute />
+        </NavBarButton>
       </PopoverTrigger>
       <PopoverContent>
         <Card elevation={0}>

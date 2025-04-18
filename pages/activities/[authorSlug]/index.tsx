@@ -1,19 +1,13 @@
 import ViewCompactIcon from '@mui/icons-material/ViewCompact';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import {
-  Box,
-  Button,
-  IconButton,
-  Stack,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { countBy, orderBy } from 'lodash';
 import { useEffect, useState } from 'react';
 import ActivitiesGallery, {
   CompactMode,
 } from '../../../components/ActivitiesGallery';
+import NavBarButton from '../../../components/navbar/NavBarButton';
 import NavigationBar from '../../../components/navbar/NavigationBar';
 import SelectAll from '../../../components/SelectAll';
 import { visibleActivities } from '../../../src/fs-content/activities';
@@ -109,31 +103,23 @@ export default function ActivitiesPage({
   return (
     <Stack spacing={2}>
       <NavigationBar>
-        <Tooltip
-          arrow
-          title={`Switch to ${compactView === 'normal' ? 'compact' : 'normal'} view`}
+        <NavBarButton
+          label={`Switch to ${compactView === 'normal' ? 'compact' : 'normal'} view`}
+          onClick={(ev: React.MouseEvent<HTMLElement, MouseEvent>) => {
+            setCompactView((current) => {
+              if (current === 'normal') {
+                return ev.shiftKey ? 'no-cards' : 'compact';
+              }
+              return 'normal';
+            });
+          }}
         >
-          <IconButton
-            onClick={(ev: React.MouseEvent<HTMLElement, MouseEvent>) => {
-              setCompactView((current) => {
-                if (current === 'normal') {
-                  return ev.shiftKey ? 'no-cards' : 'compact';
-                }
-                return 'normal';
-              });
-            }}
-            style={{
-              border: 0,
-            }}
-            value='compact'
-          >
-            {compactView === 'normal' ? (
-              <ViewModuleIcon sx={{ color: theme.palette.text.primary }} />
-            ) : (
-              <ViewCompactIcon sx={{ color: theme.palette.text.primary }} />
-            )}
-          </IconButton>
-        </Tooltip>
+          {compactView === 'normal' ? (
+            <ViewModuleIcon sx={{ color: theme.palette.text.primary }} />
+          ) : (
+            <ViewCompactIcon sx={{ color: theme.palette.text.primary }} />
+          )}
+        </NavBarButton>
       </NavigationBar>
       <Grid container spacing={2} sx={{ padding: 1 }}>
         <Grid size={{ xs: 12, lg: 6 }}>

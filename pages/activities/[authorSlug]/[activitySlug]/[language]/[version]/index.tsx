@@ -9,8 +9,8 @@ import ActivityFooter from '../../../../../../components/ActivityFooter';
 import ActivityResetButton from '../../../../../../components/ActivityResetButton';
 import DataSharingPreferenceDialog from '../../../../../../components/DataSharingPreferenceDialog';
 import GoToCurriculaBanner from '../../../../../../components/GoToCurriculaBanner';
-import InfoButton from '../../../../../../components/InfoButton';
 import MarkdownCellComponent from '../../../../../../components/MarkdownCellComponent';
+import InfoButton from '../../../../../../components/navbar/InfoButton';
 import NavigationBar from '../../../../../../components/navbar/NavigationBar';
 import ActivityCompetenciesSidebar from '../../../../../../components/sidebar/ActivityCompetenciesSidebar';
 import ActivityImage from '../../../../../../components/sidebar/ActivityImage';
@@ -119,14 +119,14 @@ export default function NotebookPage({
 
       <Box>
         <NavigationBar>
-          <VariantSelector
-            activity={activity}
-            activityVariant={activityVariant}
-          />
           <ActivityResetButton
             initialCodeCells={initialCodeCells}
             activityVariant={activityVariant}
             newReset={newReset}
+          />
+          <VariantSelector
+            activity={activity}
+            activityVariant={activityVariant}
           />
           {!isSpecialActivity(activityVariant) && (
             <InfoButton

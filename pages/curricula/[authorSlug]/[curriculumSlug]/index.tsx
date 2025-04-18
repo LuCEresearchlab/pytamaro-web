@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import AttributionInfo from '../../../../components/AttributionInfo';
 import CurriculumFlow from '../../../../components/curriculum/CurriculumFlow';
-import InfoButton from '../../../../components/InfoButton';
+import InfoButton from '../../../../components/navbar/InfoButton';
 import NavigationBar from '../../../../components/navbar/NavigationBar';
 import ResetButton from '../../../../components/navbar/ResetButton';
 import CentralContent from '../../../../components/sidebar/CentralContent';
