@@ -223,7 +223,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
         style={{
           width: '100%',
           height: 'auto',
-          minHeight: '15vh',
+          minHeight: 'max(15vh, 200px)',
           maxHeight: 'min(20vh, 576px)',
           objectFit: 'cover',
           position: 'absolute',
