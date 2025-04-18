@@ -18,7 +18,7 @@ import { useRouter } from 'next/router';
 import Carousel from '../../../../components/Carousel';
 import HourOfCodeCastle from '../../../../components/HourOfCodeCastle';
 import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
-import NavigationBar from '../../../../components/NavigationBar';
+import NavigationBar from '../../../../components/navbar/NavigationBar';
 import DarkCastleImage from '../../../../public/hoc/castle/DarkCastle.jpg';
 import FortezzaBellinzonaImage from '../../../../public/hoc/fortezza-bellinzona-castello3.png';
 import CertificateImage from '../../../../public/hoc/hour_of_code_certificate.jpg';

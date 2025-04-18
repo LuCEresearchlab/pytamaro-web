@@ -10,7 +10,7 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import HourOfCodeFooter from '../../../components/HourOfCodeFooter';
-import NavigationBar from '../../../components/NavigationBar';
+import NavigationBar from '../../../components/navbar/NavigationBar';
 import MarketingImage from '../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
 import { translationProps } from '../../../src/serverSideTranslationProps';
 

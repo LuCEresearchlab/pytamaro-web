@@ -16,7 +16,7 @@ import Grid from '@mui/material/Grid';
 import { sortBy } from 'lodash';
 import Head from 'next/head';
 import { iconPath } from '../../components/documentation/utils';
-import NavigationBar from '../../components/NavigationBar';
+import NavigationBar from '../../components/navbar/NavigationBar';
 import PageTitle from '../../components/PageTitle';
 import CentralContent from '../../components/sidebar/CentralContent';
 import Sidebar from '../../components/sidebar/Sidebar';

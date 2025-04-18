@@ -1,29 +1,27 @@
 import Code from '@mui/icons-material/Code';
-import { Paper, Typography } from '@mui/material';
+import { IconButton, Paper, Tooltip } from '@mui/material';
 import { useState } from 'react';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
+import theme from '../../src/theme';
 import { Popover, PopoverContent, PopoverTrigger } from '../Popover';
 import RapidPlayground from '../RapidPlayground';
 import { emptySingleCell } from '../SolitaryCodeCell';
 
-export default function SidebarPlayground() {
+export default function RapidPlaygroundButton() {
   const { t } = useLocalTranslation(['common']);
   const initialCodeCells = emptySingleCell();
   const [codeCells, setCodeCells] = useState(initialCodeCells);
 
   return (
-    <Popover placement='right'>
+    <Popover placement='bottom'>
       <PopoverTrigger>
-        <Typography
-          width='fit-content'
-          variant='body2'
-          sx={{ cursor: 'pointer' }}
-          display='flex'
-          color='primary'
-        >
-          <Code fontSize='small' sx={{ mr: '.7ch' }} />
-          {t('rapidPlayground')}
-        </Typography>
+        <Tooltip arrow title={t('rapidPlayground')}>
+          <span>
+            <IconButton sx={{ color: theme.palette.text.primary }}>
+              <Code />
+            </IconButton>
+          </span>
+        </Tooltip>
       </PopoverTrigger>
       <PopoverContent>
         <Paper sx={{ minWidth: '80ch', maxWidth: '100ch' }} elevation={0}>

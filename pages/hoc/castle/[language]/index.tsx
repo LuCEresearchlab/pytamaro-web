@@ -9,7 +9,7 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import HOCTrackingPixel from '../../../../components/HOCTrackingPixel';
 import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
-import NavigationBar from '../../../../components/NavigationBar';
+import NavigationBar from '../../../../components/navbar/NavigationBar';
 import Valleys from '../../../../public/hoc/castle/BellinzonaAndValleysMap1862-sepia.gif';
 import MarketingImage from '../../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
 import useLocalTranslation from '../../../../src/localStorage/useLocalTranslation';

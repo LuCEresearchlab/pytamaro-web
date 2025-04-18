@@ -20,7 +20,7 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import NavigationBar from '../../components/NavigationBar';
+import NavigationBar from '../../components/navbar/NavigationBar';
 import PyTamaroLogo from '../../public/PyTamaroLogo.png';
 import SA23_ColorImage from '../../public/events/2023-SA-Colors.jpg';
 import SA23_FoppaImage from '../../public/events/2023-SA-Foppa.jpg';

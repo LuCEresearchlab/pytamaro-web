@@ -19,7 +19,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import HourOfCodeFooter from '../../../components/HourOfCodeFooter';
-import NavigationBar from '../../../components/NavigationBar';
+import NavigationBar from '../../../components/navbar/NavigationBar';
 import PyTamaroLogoImage from '../../../public/PyTamaro-horizontal.png';
 import USIInfLogoImage from '../../../public/USI_logo-statico_info-eng.png';
 import HourOfCodeLogoImage from '../../../public/hoc/HourOfCode_logo_RGB.png';

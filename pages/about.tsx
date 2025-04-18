@@ -17,7 +17,7 @@ import { MDXRemote } from 'next-mdx-remote';
 import Head from 'next/head';
 import { useState } from 'react';
 import ChangelogList, { changelogEntries } from '../components/ChangelogList';
-import NavigationBar from '../components/NavigationBar';
+import NavigationBar from '../components/navbar/NavigationBar';
 import { listAuthorsProfiles } from '../src/fs-content/authors';
 import { AuthorProfile } from '../src/schemas/authorSchema';
 import { translationProps } from '../src/serverSideTranslationProps';

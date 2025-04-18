@@ -13,7 +13,7 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import NavigationBar from '../../components/NavigationBar';
+import NavigationBar from '../../components/navbar/NavigationBar';
 import Collage from '../../public/events/2024-ZCU-Collage.jpg';
 import HeroImage from '../../public/events/HeroUniversity.jpg';
 import { translationProps } from '../../src/serverSideTranslationProps';

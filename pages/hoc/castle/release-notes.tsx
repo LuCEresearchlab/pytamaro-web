@@ -3,7 +3,7 @@ import { Box, Button, Container, Typography } from '@mui/material';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import HourOfCodeFooter from '../../../components/HourOfCodeFooter';
-import NavigationBar from '../../../components/NavigationBar';
+import NavigationBar from '../../../components/navbar/NavigationBar';
 import { translationProps } from '../../../src/serverSideTranslationProps';
 
 export default function ReleaseNotesPage() {

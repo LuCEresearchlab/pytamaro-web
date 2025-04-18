@@ -13,7 +13,7 @@ import Link from 'next/link';
 import ActivityConcepts from '../../../../components/ActivityConcepts';
 import ActivityAuthorInfo from '../../../../components/AttributionInfo';
 import CurriculaList from '../../../../components/CurriculaList';
-import NavigationBar from '../../../../components/NavigationBar';
+import NavigationBar from '../../../../components/navbar/NavigationBar';
 import visibleCurricula, { allActivities } from '../../../../src/curricula';
 import { readActivity } from '../../../../src/fs-content/activities';
 import {

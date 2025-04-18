@@ -2,7 +2,7 @@ import { Box, Container, Link, Stack, Typography } from '@mui/material';
 import { orderBy } from 'lodash';
 import Head from 'next/head';
 import CurriculaList from '../../components/CurriculaList';
-import NavigationBar from '../../components/NavigationBar';
+import NavigationBar from '../../components/navbar/NavigationBar';
 import visibleCurricula from '../../src/curricula';
 import { visibleActivities } from '../../src/fs-content/activities';
 import {

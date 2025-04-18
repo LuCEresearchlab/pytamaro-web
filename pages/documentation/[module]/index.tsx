@@ -21,7 +21,7 @@ import Grid from '@mui/material/Grid';
 import { groupBy, sortBy } from 'lodash';
 import Head from 'next/head';
 import DocBreadcrumbs from '../../../components/documentation/DocBreadcrumbs';
-import NavigationBar from '../../../components/NavigationBar';
+import NavigationBar from '../../../components/navbar/NavigationBar';
 import PageTitle from '../../../components/PageTitle';
 import CentralContent from '../../../components/sidebar/CentralContent';
 import Sidebar from '../../../components/sidebar/Sidebar';

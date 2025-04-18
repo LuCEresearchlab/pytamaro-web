@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import Head from 'next/head';
 import Image from 'next/image';
-import NavigationBar from '../components/NavigationBar';
+import NavigationBar from '../components/navbar/NavigationBar';
 import PageTitle from '../components/PageTitle';
 import { translationProps } from '../src/serverSideTranslationProps';
 import {

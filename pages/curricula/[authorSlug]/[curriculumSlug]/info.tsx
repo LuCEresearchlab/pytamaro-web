@@ -11,7 +11,7 @@ import ActivitiesCompetenciesMatrix from '../../../../components/ActivitiesCompe
 import AttributionInfo from '../../../../components/AttributionInfo';
 import CompetenciesList from '../../../../components/CompetenciesList';
 import CurriculumCard from '../../../../components/CurriculumCard';
-import NavigationBar from '../../../../components/NavigationBar';
+import NavigationBar from '../../../../components/navbar/NavigationBar';
 import PageTitle from '../../../../components/PageTitle';
 import {
   getAuthorProfile,

@@ -25,7 +25,7 @@ import Image from 'next/image';
 import NextLink from 'next/link';
 import { useEffect } from 'react';
 import Carousel from '../../components/Carousel';
-import NavigationBar from '../../components/NavigationBar';
+import NavigationBar from '../../components/navbar/NavigationBar';
 import Art from '../../public/alp-ancel-WKQt_X-SKFI-unsplash.jpg';
 import Theory from '../../public/artturi-jalli-gYrYa37fAKI-unsplash.jpg';
 import Summer2023CardImage from '../../public/events/2023-SA-CardImage.jpg';

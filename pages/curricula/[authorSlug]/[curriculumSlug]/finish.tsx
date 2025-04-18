@@ -2,7 +2,7 @@ import { Box, Container, Typography } from '@mui/material';
 import Head from 'next/head';
 import CompetenciesList from '../../../../components/CompetenciesList';
 import CurriculumCard from '../../../../components/CurriculumCard';
-import NavigationBar from '../../../../components/NavigationBar';
+import NavigationBar from '../../../../components/navbar/NavigationBar';
 import PageTitle from '../../../../components/PageTitle';
 import { listAuthorsWithContent } from '../../../../src/fs-content/authors';
 import { getCurriculum } from '../../../../src/fs-content/curricula';

@@ -6,9 +6,8 @@
     "about": "About",
     "selectPlatformLanguage": "Seleziona una lingua per la piattaforma:",
     "selectActivityVariant": "Seleziona una variante (lingua o versione) per questa attività:",
-    "atMyFingertips": "A portata di mano",
     "playground": "Playground",
-    "rapidPlayground": "Playground Rapido",
+    "rapidPlayground": "Playground rapido",
     "documentation": "Documentazione",
     "myToolbox": "La mia Toolbox",
     "runCode": "Esegui",
@@ -130,5 +129,8 @@
         "deleteWarningEdit": "Se hai bisogno di cambiare qualcosa in questa funzione (eccetto il suo nome), puoi invece modificarla.",
         "deleteAreYouSure": "Sei sicuro di voler eliminare questa funzione?",
         "deleteConfirm": "Ho capito, elimina"
-    }
+    },
+    "sendFeedback": "Invia feedback",
+    "notifications": "Notifiche",
+    "platformLanguage": "Lingua della piattaforma"
 }

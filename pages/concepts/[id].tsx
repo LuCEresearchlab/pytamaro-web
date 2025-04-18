@@ -1,7 +1,7 @@
 import { Box, Container, Divider, Typography } from '@mui/material';
 import Head from 'next/head';
 import ActivitiesGallery from '../../components/ActivitiesGallery';
-import NavigationBar from '../../components/NavigationBar';
+import NavigationBar from '../../components/navbar/NavigationBar';
 import { visibleActivities } from '../../src/fs-content/activities';
 import { listActivitiesAllAuthors } from '../../src/fs-content/authors';
 import { Concept, knownConcepts } from '../../src/schemas/activityConcepts';

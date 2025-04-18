@@ -1,7 +1,7 @@
 import { Box, Container, Link, Typography } from '@mui/material';
 import Head from 'next/head';
 import CurriculaList from '../components/CurriculaList';
-import NavigationBar from '../components/NavigationBar';
+import NavigationBar from '../components/navbar/NavigationBar';
 import PageTitle from '../components/PageTitle';
 import { listCurriculaAllAuthors } from '../src/fs-content/authors';
 import useLocalProfile from '../src/localStorage/useLocalProfile';

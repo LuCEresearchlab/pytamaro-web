@@ -20,7 +20,7 @@ import NextLink from 'next/link';
 import { useState } from 'react';
 import ExportLocalStorageButton from '../components/ExportLocalStorageButton';
 import ImportLocalStorageButton from '../components/ImportLocalStorageButton';
-import NavigationBar from '../components/NavigationBar';
+import NavigationBar from '../components/navbar/NavigationBar';
 import PageTitle from '../components/PageTitle';
 import getEntireLocalStorage, {
   clearEntireLocalStorage,

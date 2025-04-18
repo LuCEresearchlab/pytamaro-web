@@ -13,7 +13,7 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
-import NavigationBar from '../../components/NavigationBar';
+import NavigationBar from '../../components/navbar/NavigationBar';
 import SILogo from '../../components/SILogo';
 import Collage from '../../public/events/2024-SA-Collage.jpg';
 import HeroImage from '../../public/events/2024-SA-HeroImage.jpg';

@@ -24,7 +24,7 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import ActivitiesCompetenciesMatrix from '../../../../components/ActivitiesCompetenciesMatrix';
 import HourOfCodeFooter from '../../../../components/HourOfCodeFooter';
-import NavigationBar from '../../../../components/NavigationBar';
+import NavigationBar from '../../../../components/navbar/NavigationBar';
 import BattlementImage from '../../../../public/hoc/castle/Battlement.jpg';
 import CastleListImage from '../../../../public/hoc/castle/CastleList.png';
 import CurtainWallImage from '../../../../public/hoc/castle/CurtainWall.jpg';

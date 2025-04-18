@@ -2,7 +2,7 @@ import { Box, Container, TextField } from '@mui/material';
 import { debounce } from 'lodash';
 import Head from 'next/head';
 import { useState } from 'react';
-import NavigationBar from '../components/NavigationBar';
+import NavigationBar from '../components/navbar/NavigationBar';
 import PageTitle from '../components/PageTitle';
 import ToolboxFunctionsList from '../components/ToolboxFunctionsList';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';

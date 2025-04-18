@@ -1,16 +1,18 @@
-import Notifications from '@mui/icons-material/Notifications';
-import { Badge, Button, Card, CardActions, IconButton } from '@mui/material';
+import { NotificationsOutlined } from '@mui/icons-material';
+import { Badge, Button, Card, CardActions } from '@mui/material';
 import produce from 'immer';
 import { useState } from 'react';
-import useLocalProfile from '../src/localStorage/useLocalProfile';
-import theme from '../src/theme';
-import { aboutPathname } from '../src/urlUtils';
-import ChangelogList, { changelogEntries } from './ChangelogList';
-import { Popover, PopoverContent, PopoverTrigger } from './Popover';
+import useLocalProfile from '../../src/localStorage/useLocalProfile';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
+import { aboutPathname } from '../../src/urlUtils';
+import ChangelogList, { changelogEntries } from '../ChangelogList';
+import { Popover, PopoverContent, PopoverTrigger } from '../Popover';
+import NavBarButton from './NavBarButton';
 
 const DEFAULT_SHOW_COUNT = 3;
 
 export default function NotificationsButton() {
+  const { t } = useLocalTranslation();
   const { metadata, setMetadata } = useLocalProfile();
   const unreadCount =
     changelogEntries.length - 1 - metadata.lastNotificationSeen;
@@ -35,15 +37,11 @@ export default function NotificationsButton() {
   return (
     <Popover placement='bottom' open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger onClick={handleClick}>
-        <IconButton
-          sx={{
-            color: theme.palette.text.primary,
-          }}
-        >
+        <NavBarButton label={t('notifications')}>
           <Badge badgeContent={unreadCount} invisible={isOpen} color='error'>
-            <Notifications />
+            <NotificationsOutlined />
           </Badge>
-        </IconButton>
+        </NavBarButton>
       </PopoverTrigger>
       <PopoverContent>
         <Card elevation={0} sx={{ maxWidth: '60ch' }}>

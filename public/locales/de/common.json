@@ -6,7 +6,6 @@
     "about": "Impressum",
     "selectPlatformLanguage": "Wähle eine Sprache für die Plattform:",
     "selectActivityVariant": "Wähle eine Variante (Sprache oder Version) für diese Aktivität:", 
-    "atMyFingertips": "Auf einen Blick",
     "playground": "Playground",
     "rapidPlayground": "Rapid Playground",
     "documentation": "Dokumentation",
@@ -129,5 +128,8 @@
         "deleteWarningEdit": "Wenn Du etwas an dieser Funktion ändern musst (außer ihrem Namen), kannst Du sie stattdessen bearbeiten.",
         "deleteAreYouSure": "Bist Du sicher, dass Du diese Funktion löschen möchtest?",
         "deleteConfirm": "Ich verstehe, löschen"
-    }
+    },
+    "sendFeedback": "Feedback senden",
+    "notifications": "Benachrichtigungen",
+    "platformLanguage": "Plattformsprache"
 }

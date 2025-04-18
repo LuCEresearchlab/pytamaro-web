@@ -1,5 +1,5 @@
-import FeedbackIcon from '@mui/icons-material/Feedback';
-import { IconButton, Stack, Tooltip } from '@mui/material';
+import { FeedbackOutlined } from '@mui/icons-material';
+import { Stack } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -10,12 +10,13 @@ import TextField from '@mui/material/TextField';
 import * as Sentry from '@sentry/nextjs';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import useLocalProfile from '../src/localStorage/useLocalProfile';
-import { EventName, alwaysStoreDbEvent } from '../src/storeDbEvent';
-import theme from '../src/theme';
-import CustomSnackbar from './CustomSnackbar';
+import useLocalProfile from '../../src/localStorage/useLocalProfile';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
+import { EventName, alwaysStoreDbEvent } from '../../src/storeDbEvent';
+import CustomSnackbar from '../CustomSnackbar';
+import NavBarButton from './NavBarButton';
 
-export default function FeedbackDialog() {
+export default function FeedbackButton() {
   const [open, setOpen] = useState(false);
   const [errorMessageRequired, setErrorMessageRequired] = useState(false);
   const [feedbackReceivedVisibile, setFeedbackReceivedVisible] =
@@ -26,6 +27,7 @@ export default function FeedbackDialog() {
   const [message, setMessage] = useState('');
   const { pathname } = useRouter();
   const { metadata } = useLocalProfile();
+  const { t } = useLocalTranslation();
 
   const clearFeedback = () => {
     setName('');
@@ -71,17 +73,9 @@ export default function FeedbackDialog() {
 
   return (
     <div>
-      <Tooltip arrow title='Send Feedback'>
-        <IconButton
-          aria-label='feedback'
-          onClick={handleClickOpen}
-          sx={{
-            color: theme.palette.text.primary,
-          }}
-        >
-          <FeedbackIcon />
-        </IconButton>
-      </Tooltip>
+      <NavBarButton label={t('sendFeedback')} onClick={handleClickOpen}>
+        <FeedbackOutlined />
+      </NavBarButton>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Send Feedback</DialogTitle>
         <DialogContent>

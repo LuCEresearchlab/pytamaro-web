@@ -18,7 +18,7 @@ import Grid from '@mui/material/Grid';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { activityVariantStatus } from '../components/ActivityStatusBadge';
-import NavigationBar from '../components/NavigationBar';
+import NavigationBar from '../components/navbar/NavigationBar';
 import PageTitle from '../components/PageTitle';
 import {
   listActivitiesAllAuthors,

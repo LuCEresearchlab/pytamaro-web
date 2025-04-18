@@ -1,7 +1,6 @@
 import { Box, Stack } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import theme from '../../src/theme';
-import RapidActions from './RapidActions';
 
 export const SIDEBAR_CHIPS_WIDTH = '15em';
 export const SIDEBAR_CHIPS_FONT_SIZE = theme.typography.pxToRem(13);
@@ -39,7 +38,6 @@ export default function Sidebar({
         }}
       >
         <Stack direction='column' spacing={4}>
-          {side === 'left' && <RapidActions />}
           {children}
         </Stack>
       </Box>

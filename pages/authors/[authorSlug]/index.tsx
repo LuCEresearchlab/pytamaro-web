@@ -3,7 +3,7 @@ import { MDXRemote } from 'next-mdx-remote';
 import Head from 'next/head';
 import ActivitiesGallery from '../../../components/ActivitiesGallery';
 import CurriculaList from '../../../components/CurriculaList';
-import NavigationBar from '../../../components/NavigationBar';
+import NavigationBar from '../../../components/navbar/NavigationBar';
 import visibleCurricula from '../../../src/curricula';
 import { visibleActivities } from '../../../src/fs-content/activities';
 import {

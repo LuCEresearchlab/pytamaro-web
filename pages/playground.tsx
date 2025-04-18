@@ -18,15 +18,16 @@ import DownloadCodeButton from '../components/CodeDownloadButton';
 import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDialog';
 import FailedExecutionSnackbar from '../components/FailedExecutionSnackbar';
 import MoreOptionsButton from '../components/MoreOptionsButton';
-import NavigationBar from '../components/NavigationBar';
-import ResetButton from '../components/ResetButton';
+import NavigationBar from '../components/navbar/NavigationBar';
+import ResetButton from '../components/navbar/ResetButton';
+import PageTitle from '../components/PageTitle';
 import SaveToToolboxButton from '../components/SaveToToolboxButton';
-import SolitaryCodeCell, {
-  initialStateSingleCell,
-} from '../components/SolitaryCodeCell';
 import CentralContent from '../components/sidebar/CentralContent';
 import Sidebar from '../components/sidebar/Sidebar';
 import ToolboxListSidebar from '../components/sidebar/ToolboxListSidebar';
+import SolitaryCodeCell, {
+  initialStateSingleCell,
+} from '../components/SolitaryCodeCell';
 import getActivitiesWithAPIs, {
   ActivityVariantWithNames,
 } from '../src/activitiesAPIs';
@@ -78,7 +79,7 @@ export default function Playground({
   >([]);
 
   const [showRecommendedActivities, setShowRecommendedActivities] =
-    useState(false);
+    useState(true);
 
   const confirm = useConfirm();
 
@@ -132,38 +133,30 @@ export default function Playground({
   const [fullWidthCell, setFullWidthCell] = useState(false);
 
   useEffect(() => {
-    const recommendActivities = () => {
-      try {
-        const currentlyImported = uniqueNames(
-          analyze(codeCells[0].source).imported_names,
-        );
-        const scores = activitiesWithNames.map(
-          (activityWithName: ActivityVariantWithNames) => {
-            const { importedNames } = activityWithName;
-            // Simple scoring algorithm:
-            // for each name imported in the activity
-            // +1 if also the user has imported it
-            // -0.5 if the user has not imported it
-            let score = 0;
-            uniqueNames(importedNames).forEach((name) => {
-              score += currentlyImported.has(name) ? 1 : -0.5;
-            });
-            return score;
-          },
-        );
-        const sortedActivities = activitiesWithNames
-          .map((activity, index) => ({ activity, score: scores[index] }))
-          .sort((a, b) => b.score - a.score);
-        setRecommendedActivities(
-          sortedActivities.map((wrapper) => wrapper.activity),
-        );
-        setShowRecommendedActivities(sortedActivities.length > 0);
-      } catch {
-        // Could not parse, do not update recommendations.
-      }
-    };
     if (outputSynced) {
-      recommendActivities();
+      const currentlyImported = uniqueNames(
+        analyze(codeCells[0].source).imported_names,
+      );
+      const scores = activitiesWithNames.map(
+        (activityWithName: ActivityVariantWithNames) => {
+          const { importedNames } = activityWithName;
+          // Simple scoring algorithm:
+          // for each name imported in the activity
+          // +1 if also the user has imported it
+          // -0.5 if the user has not imported it
+          let score = 0;
+          uniqueNames(importedNames).forEach((name) => {
+            score += currentlyImported.has(name) ? 1 : -0.5;
+          });
+          return score;
+        },
+      );
+      const sortedActivities = activitiesWithNames
+        .map((activity, index) => ({ activity, score: scores[index] }))
+        .sort((a, b) => b.score - a.score);
+      setRecommendedActivities(
+        sortedActivities.map((wrapper) => wrapper.activity),
+      );
     }
   }, [outputSynced, activitiesWithNames, codeCells]);
 
@@ -187,9 +180,7 @@ export default function Playground({
             <ToolboxListSidebar />
           </Sidebar>
           <CentralContent>
-            <Typography variant='h2' align='center' marginY={3}>
-              Playground
-            </Typography>
+            <PageTitle>Playground</PageTitle>
             <Container maxWidth={fullWidthCell ? false : 'md'}>
               <SolitaryCodeCell
                 resetCounter={resetCounter}
@@ -214,25 +205,33 @@ export default function Playground({
               />
             </Container>
             <Container maxWidth='md'>
-              <Box sx={{ display: 'flex', my: 4 }} justifyContent='center'>
+              <Box
+                sx={{ display: 'flex', marginTop: 12 }}
+                justifyContent='center'
+              >
                 <DownloadCodeButton codeCells={codeCells} />
               </Box>
-              {showRecommendedActivities && (
-                <FullWidthAlert
-                  icon={<TipsAndUpdatesIcon fontSize='inherit' />}
-                  onClose={() => {
-                    setShowRecommendedActivities(false);
-                  }}
-                  severity='success'
-                >
-                  <AlertTitle>Try out these activities!</AlertTitle>
-                  <Typography variant='body1' gutterBottom>
-                    Based on your code, these are recommended activites you can
-                    try to do next:
-                  </Typography>
-                  <ActivitiesStripe activities={recommendedActivities} />
-                </FullWidthAlert>
-              )}
+              {showRecommendedActivities &&
+                recommendedActivities.length > 0 && (
+                  <FullWidthAlert
+                    icon={<TipsAndUpdatesIcon fontSize='inherit' />}
+                    onClose={() => {
+                      setShowRecommendedActivities(false);
+                    }}
+                    severity='info'
+                    sx={{
+                      marginTop: 8,
+                      backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                    }}
+                  >
+                    <AlertTitle>Try out these activities!</AlertTitle>
+                    <Typography variant='body1' gutterBottom>
+                      Based on your code, these are recommended activites you
+                      can try to do next:
+                    </Typography>
+                    <ActivitiesStripe activities={recommendedActivities} />
+                  </FullWidthAlert>
+                )}
             </Container>
           </CentralContent>
           <Sidebar side='right' />

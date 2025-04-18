@@ -28,8 +28,6 @@ import Image from 'next/image';
 import { useEffect } from 'react';
 import ActivityCardMedia from '../components/ActivityCardMedia';
 import Carousel from '../components/Carousel';
-import NavigationBar from '../components/NavigationBar';
-import ExecutionOutputArea from '../components/OutputArea';
 import {
   registerCustomPythonLanguage,
   STRICT_PYTHON3_LANG_ID,
@@ -39,6 +37,8 @@ import {
   colorizeElements,
   configureEditor,
 } from '../components/editor/utils';
+import NavigationBar from '../components/navbar/NavigationBar';
+import ExecutionOutputArea from '../components/OutputArea';
 import PanoramaAlpeFoppa from '../public/AlpeFoppa.jpg';
 import {
   basicActivities,

@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 import { Box, Container, Link, Typography } from '@mui/material';
 import Head from 'next/head';
-import NavigationBar from '../components/NavigationBar';
+import NavigationBar from '../components/navbar/NavigationBar';
 import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
 import { activityVariantPathnameFromParts } from '../src/urlUtils';

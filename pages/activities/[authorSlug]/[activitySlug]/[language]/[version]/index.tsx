@@ -11,8 +11,7 @@ import DataSharingPreferenceDialog from '../../../../../../components/DataSharin
 import GoToCurriculaBanner from '../../../../../../components/GoToCurriculaBanner';
 import InfoButton from '../../../../../../components/InfoButton';
 import MarkdownCellComponent from '../../../../../../components/MarkdownCellComponent';
-import NavigationBar from '../../../../../../components/NavigationBar';
-import VariantSelector from '../../../../../../components/VariantSelector';
+import NavigationBar from '../../../../../../components/navbar/NavigationBar';
 import ActivityCompetenciesSidebar from '../../../../../../components/sidebar/ActivityCompetenciesSidebar';
 import ActivityImage from '../../../../../../components/sidebar/ActivityImage';
 import CentralContent from '../../../../../../components/sidebar/CentralContent';
@@ -21,6 +20,7 @@ import CurriculumUnitSidebar from '../../../../../../components/sidebar/Curricul
 import Sidebar from '../../../../../../components/sidebar/Sidebar';
 import TableOfContents from '../../../../../../components/sidebar/TableOfContents';
 import ToolboxListSidebar from '../../../../../../components/sidebar/ToolboxListSidebar';
+import VariantSelector from '../../../../../../components/VariantSelector';
 import { findIncludingCurricula } from '../../../../../../src/curricula';
 import {
   findVersions,

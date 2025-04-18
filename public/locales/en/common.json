@@ -6,7 +6,6 @@
     "about": "About",
     "selectPlatformLanguage": "Select a language for the platform:",
     "selectActivityVariant": "Select a variant (language or version) for this activity:",
-    "atMyFingertips": "At My Fingertips",
     "playground": "Playground",
     "rapidPlayground": "Rapid Playground",
     "documentation": "Documentation",
@@ -130,5 +129,8 @@
         "deleteWarningEdit": "If you need to change something about this function (except its name), you can instead edit it.",
         "deleteAreYouSure": "Are you sure you want to delete this function?",
         "deleteConfirm": "I understand, delete"
-    }
+    },
+    "sendFeedback": "Send Feedback",
+    "notifications": "Notifications",
+    "platformLanguage": "Platform Language"
 }

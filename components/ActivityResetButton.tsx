@@ -11,7 +11,7 @@ import {
   ActivityVariant,
   activityVariantId,
 } from '../src/schemas/activitySchema';
-import ResetButton from './ResetButton';
+import ResetButton from './navbar/ResetButton';
 
 export default function ActivityResetButton({
   activityVariant,

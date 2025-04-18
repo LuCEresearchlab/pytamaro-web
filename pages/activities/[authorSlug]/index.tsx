@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 import ActivitiesGallery, {
   CompactMode,
 } from '../../../components/ActivitiesGallery';
-import NavigationBar from '../../../components/NavigationBar';
+import NavigationBar from '../../../components/navbar/NavigationBar';
 import SelectAll from '../../../components/SelectAll';
 import { visibleActivities } from '../../../src/fs-content/activities';
 import {

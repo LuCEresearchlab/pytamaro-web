@@ -23,7 +23,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';
 import InlineAPI from '../../components/documentation/InlineAPI';
-import NavigationBar from '../../components/NavigationBar';
+import NavigationBar from '../../components/navbar/NavigationBar';
 import SA23_TableImage from '../../public/events/2023-SA-Table.jpg';
 import SA23_TableImage2 from '../../public/events/2023-SA-Table2.jpg';
 import SA23_TableImage3 from '../../public/events/2023-SA-Table3.jpg';

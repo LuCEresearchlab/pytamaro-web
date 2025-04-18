@@ -12,18 +12,20 @@ import {
   useScrollTrigger,
 } from '@mui/material';
 import React, { cloneElement, useEffect, useState } from 'react';
-import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import theme from '../src/theme';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
+import theme from '../../src/theme';
 import {
   aboutPathname,
   activitiesByAuthorPathname,
   curriculaPathname,
+  documentationPathname,
   myProgressPathname,
-} from '../src/urlUtils';
-import FeedbackDialog from './FeedbackDialog';
+} from '../../src/urlUtils';
+import ToolboxListSidebar from '../sidebar/ToolboxListSidebar';
+import FeedbackButton from './FeedbackButton';
 import NotificationsButton from './NotificationsButton';
 import PlatformLanguageButton from './PlatformLanguageButton';
-import ToolboxListSidebar from './sidebar/ToolboxListSidebar';
+import RapidPlaygroundButton from './RapidPlaygroundButton';
 
 const navItems = [
   {
@@ -37,6 +39,10 @@ const navItems = [
   {
     name: 'my-progress',
     url: myProgressPathname(),
+  },
+  {
+    name: 'documentation',
+    url: documentationPathname(),
   },
   {
     name: 'about',
@@ -219,7 +225,8 @@ export default function NavigationBar({
             {children}
             {!home && (
               <>
-                <FeedbackDialog />
+                <RapidPlaygroundButton />
+                <FeedbackButton />
                 <NotificationsButton />
                 <PlatformLanguageButton />
               </>
