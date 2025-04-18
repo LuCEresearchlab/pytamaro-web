@@ -100,12 +100,16 @@ export default function DocumentationExample({
                     : 'output',
               )}
             </RotatedHeading>
-            <OutputArea
-              data={example.stdout || ''}
-              sx={{
-                display: 'inline-block',
-              }}
-            />
+            {example.stdout && (
+              <OutputArea
+                data={example.stdout}
+                sx={{
+                  display: 'inline-block',
+                  width: example.stdin ? 'auto' : '100%',
+                  marginRight: example.stdin ? 0 : theme.spacing(1),
+                }}
+              />
+            )}
             {example.stdin && (
               <Badge
                 badgeContent={
@@ -121,7 +125,7 @@ export default function DocumentationExample({
                 sx={{ display: 'inline-block' }}
               >
                 <OutputArea
-                  data={example.stdin || ''}
+                  data={example.stdin}
                   sx={{
                     paddingLeft: theme.spacing(0.25),
                     paddingRight: theme.spacing(0.25),

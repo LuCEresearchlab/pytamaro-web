@@ -89,6 +89,7 @@
     "codeTooltip": "Codice Python",
     "outputTooltip": "Output dell'esecuzione del codice",
     "resultTooltip": "Risultato della valutazione del codice",
+    "restartAnimation": "Riavvia animazione",
     "findName": "Trova un nome",
     "toolbox": {
         "saveToToolboxTooltip": "Salva una funzione nella tua toolbox",

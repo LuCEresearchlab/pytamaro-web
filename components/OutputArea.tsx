@@ -1,6 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/no-array-index-key */
-import { KeyboardDoubleArrowUp, NearbyError } from '@mui/icons-material';
+import {
+  KeyboardDoubleArrowUp,
+  NearbyError,
+  Replay,
+} from '@mui/icons-material';
 import Construction from '@mui/icons-material/Construction';
 import Fullscreen from '@mui/icons-material/Fullscreen';
 import {
@@ -10,7 +14,9 @@ import {
   Card,
   Collapse,
   Dialog,
+  IconButton,
   ToggleButton,
+  Tooltip,
 } from '@mui/material';
 import { isEmpty, negate } from 'lodash';
 import { CSSProperties, useEffect, useRef, useState } from 'react';
@@ -28,6 +34,14 @@ function dataURIPrefix(mime: string) {
   return `data:${mime};base64,`;
 }
 
+function isPngData(data: string) {
+  return data.startsWith(dataURIPrefix('image/png'));
+}
+
+function isGifData(data: string) {
+  return data.startsWith(dataURIPrefix('image/gif'));
+}
+
 const BACKGROUND_COLOR = theme.palette.grey[50];
 
 const OUTPUT_ELEMENT_STYLE = {
@@ -42,9 +56,19 @@ const CHECKERED_PATTERN = {
   },
 };
 
-function ImgElement({ dataURI }: { dataURI: string }) {
+function ImgElement({
+  dataURI,
+  disabled,
+}: {
+  dataURI: string;
+  disabled: boolean;
+}) {
+  const { t } = useLocalTranslation();
   const [availableSize, setAvailableSize] = useState([0, 0]);
   const [wantedSize, setWantedSize] = useState([0, 0]);
+  const [fullScreenOpen, setFullScreenOpen] = useState(false);
+  const showFullScreenButton =
+    wantedSize[0] > availableSize[0] || wantedSize[1] > availableSize[1];
 
   // Monitor the size of the box containing the image to determine if we need to show the
   // full screen button.
@@ -65,10 +89,14 @@ function ImgElement({ dataURI }: { dataURI: string }) {
       observer.disconnect();
     };
   }, []);
-  const showFullScreenButton =
-    wantedSize[0] > availableSize[0] || wantedSize[1] > availableSize[1];
 
-  const [fullScreenOpen, setFullScreenOpen] = useState(false);
+  const resetGif = () => {
+    const img = boxRef.current?.querySelector('img');
+    if (img) {
+      img.src = dataURI;
+    }
+  };
+
   const imgTag = (mainImage: boolean) => {
     const baseStyle = {
       display: 'block',
@@ -95,6 +123,7 @@ function ImgElement({ dataURI }: { dataURI: string }) {
       />
     );
   };
+
   return (
     <Box
       ref={boxRef}
@@ -132,10 +161,27 @@ function ImgElement({ dataURI }: { dataURI: string }) {
             variant='contained'
             size='small'
             sx={{ position: 'absolute', right: 0, top: 0 }}
+            disabled={disabled}
           >
             <Fullscreen />
           </Button>
         </>
+      )}
+      {isGifData(dataURI) && (
+        <Tooltip arrow title={t('restartAnimation')}>
+          <IconButton
+            sx={{
+              position: 'absolute',
+              bottom: 0,
+              right: 0,
+            }}
+            onClick={resetGif}
+            size='small'
+            disabled={disabled}
+          >
+            <Replay />
+          </IconButton>
+        </Tooltip>
       )}
       {imgTag(true)}
     </Box>
@@ -190,10 +236,12 @@ function CodeElement({ content }: { content: string }) {
 
 export function OutputArea({
   data,
+  disabled = false,
   sx = {},
   preStyle = {},
 }: {
   data: string;
+  disabled?: boolean;
   sx?: CSSProperties;
   preStyle?: CSSProperties;
 }) {
@@ -205,9 +253,8 @@ export function OutputArea({
         .split(pytamaroDataUriRegex)
         .filter(negate(isEmpty))
         .map((chunk, idx) =>
-          chunk.startsWith(dataURIPrefix('image/png')) ||
-          chunk.startsWith(dataURIPrefix('image/gif')) ? (
-            <ImgElement key={idx} dataURI={chunk} />
+          isPngData(chunk) || isGifData(chunk) ? (
+            <ImgElement key={idx} dataURI={chunk} disabled={disabled} />
           ) : (
             <SinglePreElement
               key={idx}
@@ -299,7 +346,7 @@ export default function ExecutionOutputArea({
         <PreviousCellsErrorAlert buttonDisabled={dimmed} />
       ) : (
         <Box sx={{ px: 2 }}>
-          <OutputArea data={stdout} />
+          <OutputArea data={stdout} disabled={dimmed} />
           {stderr && <CodeElement content={stderr} />}
         </Box>
       )}
