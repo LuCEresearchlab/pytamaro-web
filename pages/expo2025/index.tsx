@@ -864,9 +864,9 @@ export default function Expo2025() {
           <Typography paragraph style={{ marginBottom: '2rem' }}>
             To make our ideas available world-wide, we put together a{' '}
             <b>team of students</b> to co-create an{' '}
-            <a href='https://hourofcode.com/usicastle'>
+            <Link href='https://hourofcode.com/usicastle'>
               online programming tutorial
-            </a>{' '}
+            </Link>{' '}
             (and{' '}
             <Link component={NextLink} href='/hoc/castle/teacher-notes'>
               teacher notes
@@ -943,9 +943,9 @@ export default function Expo2025() {
         <Container maxWidth='lg'>
           <Typography align='center' marginY={3}>
             For more information contact&nbsp;
-            <a href='mailto:Matthias.Hauswirth@usi.ch'>
+            <Link href='mailto:Matthias.Hauswirth@usi.ch'>
               Matthias.Hauswirth@usi.ch
-            </a>
+            </Link>
             .
           </Typography>
         </Container>

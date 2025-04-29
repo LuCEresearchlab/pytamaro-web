@@ -150,8 +150,8 @@ export default function Academy() {
             how to teach programming in an engaging but deep way? Would you like
             to bring along a group of fellow teachers? For a day? Or two? Or an
             entire week?{' '}
-            <a href='mailto:Matthias.Hauswirth@usi.ch'>Contact us</a> to see
-            whether we can organize a PyTamaro Academy workshop for you!
+            <Link href='mailto:Matthias.Hauswirth@usi.ch'>Contact us</Link> to
+            see whether we can organize a PyTamaro Academy workshop for you!
           </Typography>
           <Typography
             variant='h4'
@@ -621,22 +621,28 @@ export default function Academy() {
           <p>
             Lugano is full of hotels, many of them within walking distance from
             USI. Some examples are&nbsp;
-            <a href='https://www.hotelcitylugano.ch/'>Hotel City</a>, right next
-            to campus,&nbsp;
-            <a href='https://www.hotellido-lugano.com/en/'>
+            <Link href='https://www.hotelcitylugano.ch/'>Hotel City</Link>,
+            right next to campus,&nbsp;
+            <Link href='https://www.hotellido-lugano.com/en/'>
               Hotel Lido Seegarten
-            </a>
+            </Link>
             , at the lake front, and&nbsp;
-            <a href='https://www.hotelzurigo.ch/'>Hotel Zurigo Downtown</a>
+            <Link href='https://www.hotelzurigo.ch/'>
+              Hotel Zurigo Downtown
+            </Link>
             &nbsp;and&nbsp;
-            <a href='https://www.pestalozzi-lugano.ch/en/'>Hotel Pestalozzi</a>,
-            in the city center. And the&nbsp;
-            <a href='https://www.youthhostel.ch/en/hostels/lugano'>
+            <Link href='https://www.pestalozzi-lugano.ch/en/'>
+              Hotel Pestalozzi
+            </Link>
+            , in the city center. And the&nbsp;
+            <Link href='https://www.youthhostel.ch/en/hostels/lugano'>
               Youth Hostel Lugano Savosa
-            </a>
+            </Link>
             &nbsp;has a swimming pool and palm trees, and includes breakfast!
             Like a hotel, but unlike AirBnBs, it also includes a&nbsp;
-            <a href='https://www.ticino.ch/en/ticket.html'>Ticino Ticket</a>
+            <Link href='https://www.ticino.ch/en/ticket.html'>
+              Ticino Ticket
+            </Link>
             &nbsp;for free public transportation within Ticino.
           </p>
         </Container>
@@ -644,14 +650,14 @@ export default function Academy() {
         <Container maxWidth='lg'>
           <Typography align='center' marginY={3}>
             The PyTamaro Academy is organized by the Lugano Computing Education
-            Research Lab (<a href='https://luce.si.usi.ch/'>LuCE</a>) at the
-            Software Institute of the Faculty of Informatics at USI.
+            Research Lab (<Link href='https://luce.si.usi.ch/'>LuCE</Link>) at
+            the Software Institute of the Faculty of Informatics at USI.
           </Typography>
           <Typography align='center' marginY={3}>
             For more information contact&nbsp;
-            <a href='mailto:Matthias.Hauswirth@usi.ch'>
+            <Link href='mailto:Matthias.Hauswirth@usi.ch'>
               Matthias.Hauswirth@usi.ch
-            </a>
+            </Link>
             .
           </Typography>
         </Container>

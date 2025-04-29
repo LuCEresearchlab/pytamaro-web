@@ -543,17 +543,17 @@ export default function TamaroCardsPage() {
             Teaching students to compose programs using TamaroCards, and
             translating TamaroCard expressions to Python code systematically,
             helps to combat known Python programming misconceptions, such as{' '}
-            <a href='https://progmiscon.org/misconceptions/Python/OutsideInFunctionNesting/'>
+            <Link href='https://progmiscon.org/misconceptions/Python/OutsideInFunctionNesting/'>
               OutsideInFunctionNesting
-            </a>
+            </Link>
             ,{' '}
-            <a href='https://progmiscon.org/misconceptions/Python/NoAtomicExpression/'>
+            <Link href='https://progmiscon.org/misconceptions/Python/NoAtomicExpression/'>
               NoAtomicExpression
-            </a>
+            </Link>
             , and{' '}
-            <a href='https://progmiscon.org/misconceptions/Python/ParenthesesOnlyIfArgument/'>
+            <Link href='https://progmiscon.org/misconceptions/Python/ParenthesesOnlyIfArgument/'>
               ParenthesesOnlyIfArgument
-            </a>
+            </Link>
             .
           </Typography>
 
@@ -562,13 +562,13 @@ export default function TamaroCardsPage() {
           </Typography>
           <Typography marginY={3}>
             The{' '}
-            <a href='https://notionalmachines.github.io/nms/ExpressionAsTree-1.html'>
+            <Link href='https://notionalmachines.github.io/nms/ExpressionAsTree-1.html'>
               "Expression as Tree" notional machine
-            </a>{' '}
+            </Link>{' '}
             visually represents expressions as trees.{' '}
-            <a href='https://expressiontutor.org/'>Expression Tutor</a> is an
-            online platform built around that notional machine. It's goal is to
-            help students understand the structure, evaluation, and typing of
+            <Link href='https://expressiontutor.org/'>Expression Tutor</Link> is
+            an online platform built around that notional machine. It's goal is
+            to help students understand the structure, evaluation, and typing of
             expressions. While the expression trees in Expression Tutor look
             different from TamaroCard expression trees, they are equivalent in
             many ways. TamaroCards are a specialized, unplugged, variant of the

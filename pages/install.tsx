@@ -53,6 +53,7 @@ export default function Install() {
             <pre
               style={{
                 textAlign: 'center',
+                fontSize: '1.2em',
                 fontWeight: 'bold',
                 color: theme.palette.primary.dark,
               }}
@@ -86,13 +87,15 @@ export default function Install() {
           </QuestionHeading>
           <QuestionBody>
             We execute your code in an enviroment with{' '}
-            <a
+            <Link
               href={`https://docs.python.org/3/whatsnew/${PYTHON_VERSION}.html`}
-            >{`Python ${PYTHON_VERSION}`}</a>{' '}
+            >{`Python ${PYTHON_VERSION}`}</Link>{' '}
             and <code>pytamaro</code> version{' '}
-            <a href={`https://pypi.org/project/pytamaro/${PYTAMARO_VERSION}/`}>
-              <code>{PYTAMARO_VERSION}</code>
-            </a>
+            <Link
+              href={`https://pypi.org/project/pytamaro/${PYTAMARO_VERSION}/`}
+            >
+              {`PyTamaro ${PYTAMARO_VERSION}`}
+            </Link>
             . For the text in your graphics, you can use these fonts:
             <ul>
               {[
@@ -116,9 +119,9 @@ export default function Install() {
                 'Jost',
               ].map((font) => (
                 <li key={font}>
-                  <a href={`https://fonts.google.com/specimen/${font}`}>
+                  <Link href={`https://fonts.google.com/specimen/${font}`}>
                     {font}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -150,15 +153,15 @@ export default function Install() {
             <br />
             The documentation for the older version of PyTamaro (years 2022 and
             before){' '}
-            <a href='https://pytamaro.readthedocs.io/en/version_2022/'>
+            <Link href='https://pytamaro.readthedocs.io/en/version_2022/'>
               is still available
-            </a>
+            </Link>
             .
             <br />
             For a detailed list of the changes, see{' '}
-            <a href='https://github.com/LuCEresearchlab/pytamaro/blob/main/CHANGELOG.md#040---2023-02-27'>
+            <Link href='https://github.com/LuCEresearchlab/pytamaro/blob/main/CHANGELOG.md#040---2023-02-27'>
               this changelog
-            </a>
+            </Link>
             .
           </QuestionBody>
         </Container>

@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable jsx-a11y/anchor-has-content */
 import PlayArrow from '@mui/icons-material/PlayArrow';
-import { Box, Button, Container, Typography } from '@mui/material';
+import { Box, Button, Container, Link, Typography } from '@mui/material';
 import { Trans } from 'next-i18next';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -130,7 +130,7 @@ export default function HocCastlePage() {
             <Trans
               t={t}
               i18nKey='start.unesco'
-              components={{ a: <a href={t('start.fortezzaURL')} /> }}
+              components={{ a: <Link href={t('start.fortezzaURL')} /> }}
             />
           </Typography>
           <HOCTrackingPixel />

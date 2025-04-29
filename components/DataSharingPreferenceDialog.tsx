@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Link,
 } from '@mui/material';
 import { Trans } from 'next-i18next';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
@@ -35,7 +36,7 @@ export default function DataSharingPreferenceDialog() {
           <Trans
             t={t}
             i18nKey='dataSharing.researchProject'
-            components={{ a: <a href='https://luce.si.usi.ch/' /> }}
+            components={{ a: <Link href='https://luce.si.usi.ch/' /> }}
           />
         </DialogContentText>
         <DialogContentText gutterBottom>

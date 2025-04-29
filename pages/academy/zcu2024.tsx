@@ -68,7 +68,9 @@ export default function Academy() {
           <Typography marginY={3}>
             On their study trip to Switzerland, the 16 pre-service and
             in-serivce informatics teachers and faculty of education from the{' '}
-            <a href='https://www.fpe.zcu.cz/en/'>University of West Bohemia</a>{' '}
+            <Link href='https://www.fpe.zcu.cz/en/'>
+              University of West Bohemia
+            </Link>{' '}
             stopped at USI to learn more about programming education. Our
             PyTamaro workshop included activities with{' '}
             <Link component={NextLink} href='/tamarocards'>
@@ -117,11 +119,11 @@ export default function Academy() {
         <Container maxWidth='lg'>
           <Typography align='center' marginY={3}>
             This PyTamaro Academy workshop was brought to you by the{' '}
-            <a href='https://luce.si.usi.ch/'>
+            <Link href='https://luce.si.usi.ch/'>
               Lugano Computing Education Research Lab
-            </a>{' '}
-            at the <a href='https://si.usi.ch/'>Software Institute</a> of{' '}
-            <a href='https://www.usi.ch/'>USI</a>.
+            </Link>{' '}
+            at the <Link href='https://si.usi.ch/'>Software Institute</Link> of{' '}
+            <Link href='https://www.usi.ch/'>USI</Link>.
           </Typography>
         </Container>
 
@@ -227,9 +229,9 @@ export default function Academy() {
         <Container maxWidth='lg'>
           <Typography align='center' marginY={3}>
             For more information contact&nbsp;
-            <a href='mailto:Matthias.Hauswirth@usi.ch'>
+            <Link href='mailto:Matthias.Hauswirth@usi.ch'>
               Matthias.Hauswirth@usi.ch
-            </a>
+            </Link>
             .
           </Typography>
         </Container>

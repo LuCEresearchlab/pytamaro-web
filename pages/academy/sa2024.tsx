@@ -119,11 +119,11 @@ export default function Academy() {
         <Container maxWidth='lg'>
           <Typography align='center' marginY={3}>
             The 2024 PyTamaro Summer Academy was organized by the{' '}
-            <a href='https://luce.si.usi.ch/'>
+            <Link href='https://luce.si.usi.ch/'>
               Lugano Computing Education Research Lab
-            </a>{' '}
-            at the <a href='https://si.usi.ch/'>Software Institute</a> of{' '}
-            <a href='https://www.usi.ch/'>USI</a>.
+            </Link>{' '}
+            at the <Link href='https://si.usi.ch/'>Software Institute</Link> of{' '}
+            <Link href='https://www.usi.ch/'>USI</Link>.
           </Typography>
         </Container>
 
@@ -322,9 +322,9 @@ export default function Academy() {
         <Container maxWidth='lg'>
           <Typography align='center' marginY={3}>
             For more information contact&nbsp;
-            <a href='mailto:Matthias.Hauswirth@usi.ch'>
+            <Link href='mailto:Matthias.Hauswirth@usi.ch'>
               Matthias.Hauswirth@usi.ch
-            </a>
+            </Link>
             .
           </Typography>
         </Container>

@@ -109,7 +109,7 @@ export default function FinishHocCastlePage({
                   i18nKey='finish.buzzaBiasca'
                   components={{
                     a: (
-                      <a href='https://hls-dhs-dss.ch/de/articles/028662/2004-11-04/' />
+                      <Link href='https://hls-dhs-dss.ch/de/articles/028662/2004-11-04/' />
                     ),
                   }}
                 />
@@ -121,7 +121,7 @@ export default function FinishHocCastlePage({
                   components={{
                     strong: <strong />,
                     a: (
-                      <a href='https://insubricahistorica.ch/blog/2021/09/22/la-buzza-di-biasca-del-1515/' />
+                      <Link href='https://insubricahistorica.ch/blog/2021/09/22/la-buzza-di-biasca-del-1515/' />
                     ),
                   }}
                 />
@@ -293,7 +293,9 @@ export default function FinishHocCastlePage({
                       t={t}
                       i18nKey='finish.learnPythonDesc3'
                       components={{
-                        a: <a href={curriculumPathname('luce', 'welcome')} />,
+                        a: (
+                          <Link href={curriculumPathname('luce', 'welcome')} />
+                        ),
                       }}
                     />
                   </Typography>
@@ -306,7 +308,7 @@ export default function FinishHocCastlePage({
                       t={t}
                       i18nKey='finish.learnPythonDesc4'
                       components={{
-                        a: <a href={activitiesByAuthorPathname('luce')} />,
+                        a: <Link href={activitiesByAuthorPathname('luce')} />,
                       }}
                     />
                   </Typography>
@@ -333,7 +335,7 @@ export default function FinishHocCastlePage({
                       t={t}
                       i18nKey='finish.visitFortezzaDesc1'
                       components={{
-                        a: <a href='https://fortezzabellinzona.ch/en/' />,
+                        a: <Link href='https://fortezzabellinzona.ch/en/' />,
                       }}
                     />
                   </Typography>

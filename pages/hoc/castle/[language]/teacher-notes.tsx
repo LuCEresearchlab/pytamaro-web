@@ -11,6 +11,7 @@ import {
   CardMedia,
   Container,
   GridLegacy as Grid,
+  Link,
   List,
   ListItem,
   ListItemAvatar,
@@ -199,7 +200,7 @@ export default function FinishHocCastlePage({
             <Trans
               t={t}
               i18nKey='notes.usi'
-              components={{ a: <a href='https://www.usi.ch' /> }}
+              components={{ a: <Link href='https://www.usi.ch' /> }}
             />
           </Typography>
           <Grid
@@ -237,7 +238,7 @@ export default function FinishHocCastlePage({
             <Trans
               t={t}
               i18nKey='notes.luce'
-              components={{ a: <a href='https://luce.si.usi.ch' /> }}
+              components={{ a: <Link href='https://luce.si.usi.ch' /> }}
             />
           </Typography>
 
@@ -273,14 +274,14 @@ export default function FinishHocCastlePage({
                     i18nKey='notes.misconceptions.desc'
                     components={{
                       selfCheck: (
-                        <a href='https://progmiscon.org/selfCheck?pl=Python' />
+                        <Link href='https://progmiscon.org/selfCheck?pl=Python' />
                       ),
-                      progmiscon: <a href='https://progmiscon.org' />,
+                      progmiscon: <Link href='https://progmiscon.org' />,
                       assignCompares: (
-                        <a href='https://progmiscon.org/misconceptions/Python/AssignCompares' />
+                        <Link href='https://progmiscon.org/misconceptions/Python/AssignCompares' />
                       ),
                       outsideInFunctionNesting: (
-                        <a href='https://progmiscon.org/misconceptions/Python/OutsideInFunctionNesting' />
+                        <Link href='https://progmiscon.org/misconceptions/Python/OutsideInFunctionNesting' />
                       ),
                     }}
                   />
@@ -349,7 +350,7 @@ export default function FinishHocCastlePage({
             <Trans
               t={t}
               i18nKey='notes.beyondDesc'
-              components={{ cards: <a href='/tamarocards' /> }}
+              components={{ cards: <Link href='/tamarocards' /> }}
             />
           </Typography>
 
@@ -577,7 +578,7 @@ export default function FinishHocCastlePage({
             <Trans
               t={t}
               i18nKey='notes.learnMoreFortezza'
-              components={{ a: <a href={t('start.fortezzaURL')} /> }}
+              components={{ a: <Link href={t('start.fortezzaURL')} /> }}
             />
           </Typography>
           <Typography
@@ -593,7 +594,7 @@ export default function FinishHocCastlePage({
             <Trans
               t={t}
               i18nKey='notes.glossaryCastleDesc'
-              components={{ a: <a href={t('start.fortezzaURL')} /> }}
+              components={{ a: <Link href={t('start.fortezzaURL')} /> }}
             />
           </Typography>
           <Grid container spacing={2}>
@@ -664,25 +665,25 @@ export default function FinishHocCastlePage({
           </Typography>
           <Typography marginY={3}>
             J. E. Kaufmann &amp; H. W. Kaufmann; Robert M. Jurga (Illustrator).{' '}
-            <a href='https://www.dacapopress.com/titles/j-e-kaufmann/the-medieval-fortress/9780306813580/'>
+            <Link href='https://www.dacapopress.com/titles/j-e-kaufmann/the-medieval-fortress/9780306813580/'>
               The Medieval Fortress: Castles, Forts, And Walled Cities Of The
               Middle Ages
-            </a>
+            </Link>
             . Da Capo Press, 2004. ISBN 978-0-306-81358-0.
           </Typography>
           <Typography marginY={3}>
             David Macaulay.{' '}
-            <a href='https://www.harpercollins.com/products/castle-david-macaulay'>
+            <Link href='https://www.harpercollins.com/products/castle-david-macaulay'>
               Castle
-            </a>
+            </Link>
             . Clarion Books, 2013. ISBN 978-0-544-10226-2.
           </Typography>
           <Typography marginY={3}>
             Horst Wolfgang Böhme, Reinhard Friedrich, Barbara Schock-Werner
             (Hrsg.){' '}
-            <a href='https://books.ub.uni-heidelberg.de/arthistoricum/catalog/book/535'>
+            <Link href='https://books.ub.uni-heidelberg.de/arthistoricum/catalog/book/535'>
               Wörterbuch der Burgen, Schlösser und Festungen
-            </a>
+            </Link>
             . Heidelberg: arthistoricum.net-ART-Books, 2020.
           </Typography>
 

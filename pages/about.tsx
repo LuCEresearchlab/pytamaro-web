@@ -114,12 +114,14 @@ export default function AboutPage({
           </Typography>
           <Typography variant='body1' paragraph>
             This web platform for PyTamaro has been developed at the{' '}
-            <a href='https://luce.si.usi.ch/'>
+            <Link href='https://luce.si.usi.ch/'>
               Lugano Computing Education research lab
-            </a>{' '}
-            (LuCE) at the <a href='https://si.usi.ch/'>Software Institute</a> of
-            the{' '}
-            <a href='https://usi.ch/en'>Università della Svizzera italiana</a>{' '}
+            </Link>{' '}
+            (LuCE) at the{' '}
+            <Link href='https://si.usi.ch/'>Software Institute</Link> of the{' '}
+            <Link href='https://usi.ch/en'>
+              Università della Svizzera italiana
+            </Link>{' '}
             (USI) in Lugano, Switzerland.
           </Typography>
           <Typography variant='body1'>Contributors to the platform:</Typography>
