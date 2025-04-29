@@ -5,6 +5,7 @@ import {
   CardActions,
   CardContent,
   Container,
+  Stack,
   Typography,
 } from '@mui/material';
 import Head from 'next/head';
@@ -154,9 +155,9 @@ export default function ActivityInfoPage({
               <Typography variant='body1' marginY={3}>
                 {`This activity has been used in ${format(uses.length, 'course', 'courses')}:`}
               </Typography>
-              {uses.map((use) => (
-                <Box sx={{ mY: 2 }} key={use.url}>
-                  <Card>
+              <Stack spacing={2}>
+                {uses.map((use, idx) => (
+                  <Card key={idx}>
                     <CardContent>
                       <Typography
                         sx={{ fontSize: 14 }}
@@ -172,9 +173,7 @@ export default function ActivityInfoPage({
                         {use.assignment}
                       </Typography>
                       <Typography variant='body2'>
-                        Instructors:
-                        <br />
-                        {use.instructors.join(', ')}
+                        Instructors: {use.instructors.join(', ')}
                       </Typography>
                     </CardContent>
                     <CardActions>
@@ -183,8 +182,8 @@ export default function ActivityInfoPage({
                       </Button>
                     </CardActions>
                   </Card>
-                </Box>
-              ))}
+                ))}
+              </Stack>
             </>
           )}
         </Container>
