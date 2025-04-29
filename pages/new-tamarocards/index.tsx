@@ -1,14 +1,17 @@
-/* eslint-disable @typescript-eslint/comma-dangle */
-/* eslint-disable react/function-component-definition */
-/* eslint-disable arrow-parens */
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/order */
+/* eslint-disable no-plusplus */
 /* eslint-disable react/jsx-wrap-multilines */
+/* eslint-disable no-nested-ternary */
+/* eslint-disable @typescript-eslint/comma-dangle */
+/* eslint-disable new-cap */
 /* eslint-disable operator-linebreak */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable object-curly-newline */
 /* eslint-disable @typescript-eslint/indent */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/quotes */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Box,
   Button,
@@ -21,10 +24,10 @@ import {
 } from "@mui/material";
 import CardsJson from "./pytamaro-function-data.json";
 import FunctionCard from "./function-card";
-import ValueCard from "./value-card";
-import ConstantCard from "./constant-card";
 import { Card, Language } from "./types";
 import LanguagePickerCard from "./language-picker-card";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 export default function CardsRenderer() {
   const cards = Object.values(CardsJson) as Card[];
@@ -111,8 +114,128 @@ export default function CardsRenderer() {
     return filteredLanguages;
   };
 
+  // testing with PDF download
+  const cardGridRef = useRef<HTMLDivElement>(null);
+
+  const handleDownloadPDF = async () => {
+    if (!cardGridRef.current) return;
+
+    // Show loading indicator or message
+
+    // First ensure the grid is visible and rendered with all cards
+    // const cardCount = cards.length;
+    // const rowsNeeded = Math.ceil(cardCount / numColumns);
+
+    // Calculate the scale factor needed to fit all on A4
+    // const targetHeight = 297; // A4 height in mm
+    // const targetWidth = 210; // A4 width in mm
+
+    // Create a portrait A4 PDF
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+
+    // Set up options to capture the full grid
+    const options = {
+      scale: 1,
+      useCORS: true,
+      allowTaint: true,
+      windowWidth: document.documentElement.offsetWidth,
+      windowHeight: document.documentElement.offsetHeight,
+      height: cardGridRef.current.scrollHeight,
+      width: cardGridRef.current.scrollWidth,
+    };
+
+    try {
+      const canvas = await html2canvas(cardGridRef.current, options);
+      const imgData = canvas.toDataURL("image/png");
+
+      // Calculate scale to fit all content on page
+      const canvasRatio = canvas.width / canvas.height;
+      let finalWidth;
+      let finalHeight;
+
+      // Determine which dimension is the limiting factor
+      if (canvasRatio > pdfWidth / pdfHeight) {
+        // Width limited
+        finalWidth = pdfWidth - 20; // Add 10mm margin on each side
+        finalHeight = finalWidth / canvasRatio;
+      } else {
+        // Height limited
+        finalHeight = pdfHeight - 20; // Add 10mm margin on top and bottom
+        finalWidth = finalHeight * canvasRatio;
+      }
+
+      // Center the image on the page
+      const xOffset = (pdfWidth - finalWidth) / 2;
+      const yOffset = (pdfHeight - finalHeight) / 2;
+
+      pdf.addImage(imgData, "PNG", xOffset, yOffset, finalWidth, finalHeight);
+      pdf.save(showIcons ? "function-cards.pdf" : "api-sheet.pdf");
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+      // Show error message to user
+    }
+  };
+
+  const organizeCards = () => {
+    const sortedCards = [...cards].sort((a, b) => {
+      // Sort logic: cards without icons first, then cards with icons
+      const aHasIcons =
+        a.parametersIcon?.some((icon) => icon && icon.trim() !== "") ||
+        (a.returnIcon && a.returnIcon.trim() !== "");
+      const bHasIcons =
+        b.parametersIcon?.some((icon) => icon && icon.trim() !== "") ||
+        (b.returnIcon && b.returnIcon.trim() !== "");
+
+      if (!aHasIcons && bHasIcons) return -1;
+      if (aHasIcons && !bHasIcons) return 1;
+      return 0;
+    });
+
+    // Generate cards in a fixed 3-column layout optimized for A4
+    return sortedCards.map((card, index) => (
+      <Box
+        key={`func-${index}`}
+        sx={{
+          width: "calc(33.33% - 3em)", // 3 columns with spacing for arrows
+          display: "inline-block",
+          padding: "0",
+          margin: "8px",
+          boxSizing: "border-box",
+          verticalAlign: "top",
+        }}
+      >
+        <FunctionCard
+          params={
+            Array.isArray(card.parametersIcon)
+              ? card.parametersIcon.map((icon: string, i: number) => ({
+                  name: `Param ${i + 1}`,
+                  type: "Icon",
+                }))
+              : []
+          }
+          svg={card.icon}
+          returnValue={{
+            type: "Icon",
+            description: card.returnIcon || "",
+          }}
+          languages={filterCardLanguages(card.localization)}
+          parameterIcons={showIcons ? card.parametersIcon : undefined}
+          returnIcon={showIcons ? card.returnIcon : ""}
+          showIcons={showIcons}
+        />
+      </Box>
+    ));
+  };
+
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth={showCards ? false : "lg"} sx={{ py: 4 }}>
       <Typography
         variant="h4"
         component="h1"
@@ -174,91 +297,34 @@ export default function CardsRenderer() {
             <Button variant="outlined" onClick={() => setShowCards(false)}>
               Back to Settings
             </Button>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleDownloadPDF}
+            >
+              Download PDF
+            </Button>
           </Box>
 
           <Box
+            ref={cardGridRef}
             sx={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-              gap: 0,
-              justifyItems: "center",
-              alignItems: "stretch",
-              width: "auto",
-              mb: 4,
+              width: "100%",
+              maxWidth: "800px", // Optimized for A4 width
+              backgroundColor: "#f5f5f5",
+              padding: "12px",
+              mx: "auto",
+              boxSizing: "border-box",
+              // Fixed aspect ratio close to A4 (210mm x 297mm)
+              aspectRatio: "210/297",
+              position: "relative",
+              display: "block", // Switch from grid to block layout
             }}
           >
-            {cards
-              .slice()
-              .sort((a, b) => {
-                // Sort logic: cards without icons first, then cards with icons
-                const aHasIcons =
-                  a.parametersIcon?.some(
-                    (icon) => icon && icon.trim() !== ""
-                  ) ||
-                  (a.returnIcon && a.returnIcon.trim() !== "");
-                const bHasIcons =
-                  b.parametersIcon?.some(
-                    (icon) => icon && icon.trim() !== ""
-                  ) ||
-                  (b.returnIcon && b.returnIcon.trim() !== "");
-
-                if (!aHasIcons && bHasIcons) return -1;
-                if (aHasIcons && !bHasIcons) return 1;
-                return 0;
-              })
-              .map((card, index) => (
-                <div
-                  key={index}
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "center",
-                    border: "2px solid #444444",
-                    backgroundColor: "#FFFFFF",
-                  }}
-                >
-                  <FunctionCard
-                    params={
-                      Array.isArray(card.parametersIcon)
-                        ? card.parametersIcon.map(
-                            (icon: string, i: number) => ({
-                              name: `Param ${i + 1}`,
-                              type: "Icon",
-                            })
-                          )
-                        : []
-                    }
-                    svg={card.icon}
-                    returnValue={{
-                      type: "Icon",
-                      description: card.returnIcon || "",
-                    }}
-                    languages={filterCardLanguages(card.localization)}
-                    parameterIcons={showIcons ? card.parametersIcon : undefined}
-                    returnIcon={showIcons ? card.returnIcon : ""}
-                    showIcons={showIcons}
-                  />
-                </div>
-              ))}
-          </Box>
-
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(16em, 1fr))",
-              justifyItems: "center",
-            }}
-          >
-            <ValueCard value={250} />
-            <ValueCard value={50} />
-            <ValueCard value={0} />
-            <ConstantCard />
+            {organizeCards()}
           </Box>
         </>
       )}
     </Container>
   );
 }
-
-// Localization from https://github.com/LuCEresearchlab/pytamaro/blob/main/pytamaro/localization.py
-// Card images from https://pytamaro.si.usi.ch/tamarocards
