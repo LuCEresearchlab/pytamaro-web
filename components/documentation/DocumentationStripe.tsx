@@ -82,10 +82,17 @@ export default function DocumentationStripe({
   const allImportedNames = reverseUniq(importedNamesPerCell);
   const allDefinedFunctions = reverseUniq(functionsPerCell);
 
+  const extraDocumentationModules = extraDocumentation.map(
+    (file) => file.module,
+  );
+
   const modulesToFetch = uniqWith(
     allImportedNames.map(({ module }) => module),
     isEqual,
-  ).filter((module) => module !== 'toolbox');
+  ).filter(
+    (module) =>
+      !(module === 'toolbox' || extraDocumentationModules.includes(module)),
+  );
 
   const toolboxFunctions = list();
 
