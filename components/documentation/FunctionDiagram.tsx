@@ -36,6 +36,10 @@ export default function FunctionDiagram({
       <svg width='100%' height={110 + 20 * params.length}>
         <defs>
           <polygon id='arrowhead' points='0,0 12,6 0,12' fill='#D2071D' />
+          <filter x='0' y='0' width='1' height='1' id='hoverBackground'>
+            <feFlood floodColor={HOVER_COLOR} />
+            <feComposite in='SourceGraphic' operator='over' />
+          </filter>
         </defs>
         <g>
           <rect
@@ -65,14 +69,6 @@ export default function FunctionDiagram({
             transform='translate(-10, 0)'
             {...hoverProps(moduleId(), hoverElement, setHoverElement)}
           />
-          <rect
-            x='40%'
-            y='50%'
-            width='20%'
-            height='20'
-            transform='translate(0, -12)'
-            fill={hoverElement === nameId() ? HOVER_COLOR : 'transparent'}
-          />
           <text
             x='50%'
             y='50%'
@@ -81,6 +77,7 @@ export default function FunctionDiagram({
             fontSize='1.1em'
             fontWeight='bold'
             fontFamily={theme.pytamaro.monospaceFontFamily}
+            filter={hoverElement === nameId() ? 'url(#hoverBackground)' : ''}
             {...hoverProps(nameId(), hoverElement, setHoverElement)}
           >
             {name}

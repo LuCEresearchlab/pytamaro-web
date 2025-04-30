@@ -39,6 +39,10 @@ export default function ConstantDiagram({
             points='0,0 12,6 0,12'
             fill={DARK_COLOR}
           />
+          <filter x='0' y='0' width='1' height='1' id='hoverBackground'>
+            <feFlood floodColor={DARK_HOVER_COLOR} />
+            <feComposite in='SourceGraphic' operator='over' />
+          </filter>
         </defs>
         <g>
           <rect
@@ -60,14 +64,6 @@ export default function ConstantDiagram({
               hoverElement === moduleId() ? DARK_HOVER_COLOR : 'transparent'
             }
           />
-          <rect
-            x='40%'
-            y='45%'
-            width='20%'
-            height='20'
-            transform='translate(0, -12)'
-            fill={hoverElement === nameId() ? DARK_HOVER_COLOR : 'transparent'}
-          />
           <image
             href={iconPath(module)}
             x='50%'
@@ -85,6 +81,7 @@ export default function ConstantDiagram({
             fontSize='1.1em'
             fontWeight='bold'
             fontFamily={theme.pytamaro.monospaceFontFamily}
+            filter={hoverElement === nameId() ? 'url(#hoverBackground)' : ''}
             {...hoverProps(nameId(), hoverElement, setHoverElement, true)}
           >
             {name}
