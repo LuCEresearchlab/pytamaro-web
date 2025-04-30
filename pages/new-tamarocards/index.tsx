@@ -36,6 +36,7 @@ export default function CardsRenderer() {
   const [showCards, setShowCards] = useState(false);
   const [languages, setLanguages] = useState<Language[]>([]);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [calculatingPdf, setCalculatingPdf] = useState(false);
 
   useEffect(() => {
     const languageCodes = new Set<string>();
@@ -120,66 +121,63 @@ export default function CardsRenderer() {
   const handleDownloadPDF = async () => {
     if (!cardGridRef.current) return;
 
-    // Show loading indicator or message
-
-    // First ensure the grid is visible and rendered with all cards
-    // const cardCount = cards.length;
-    // const rowsNeeded = Math.ceil(cardCount / numColumns);
-
-    // Calculate the scale factor needed to fit all on A4
-    // const targetHeight = 297; // A4 height in mm
-    // const targetWidth = 210; // A4 width in mm
-
-    // Create a portrait A4 PDF
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4",
-    });
-
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-
-    // Set up options to capture the full grid
-    const options = {
-      scale: 1,
-      useCORS: true,
-      allowTaint: true,
-      windowWidth: document.documentElement.offsetWidth,
-      windowHeight: document.documentElement.offsetHeight,
-      height: cardGridRef.current.scrollHeight,
-      width: cardGridRef.current.scrollWidth,
-    };
+    setCalculatingPdf(true);
 
     try {
+      // Create a portrait A4 PDF
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      // Calculate content width with margin
+      const margins = 10; // 10mm margins
+      const contentWidth = pdfWidth - margins * 2;
+      const contentHeight = pdfHeight - margins * 2;
+
+      // Set up options to capture the full grid
+      const options = {
+        scale: 2, // Higher scale for better quality
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "#ffffff",
+      };
+
       const canvas = await html2canvas(cardGridRef.current, options);
       const imgData = canvas.toDataURL("image/png");
 
-      // Calculate scale to fit all content on page
+      // Calculate scale to fit content on page
       const canvasRatio = canvas.width / canvas.height;
       let finalWidth;
       let finalHeight;
 
       // Determine which dimension is the limiting factor
-      if (canvasRatio > pdfWidth / pdfHeight) {
+      if (canvasRatio > contentWidth / contentHeight) {
         // Width limited
-        finalWidth = pdfWidth - 20; // Add 10mm margin on each side
+        finalWidth = contentWidth;
         finalHeight = finalWidth / canvasRatio;
       } else {
         // Height limited
-        finalHeight = pdfHeight - 20; // Add 10mm margin on top and bottom
+        finalHeight = contentHeight;
         finalWidth = finalHeight * canvasRatio;
       }
 
       // Center the image on the page
-      const xOffset = (pdfWidth - finalWidth) / 2;
-      const yOffset = (pdfHeight - finalHeight) / 2;
+      const xOffset = margins + (contentWidth - finalWidth) / 2;
+      const yOffset = margins + (contentHeight - finalHeight) / 2;
 
       pdf.addImage(imgData, "PNG", xOffset, yOffset, finalWidth, finalHeight);
-      pdf.save(showIcons ? "function-cards.pdf" : "api-sheet.pdf");
+      pdf.save(
+        showIcons ? "function-cards.pdf" : "pytamaro-reference-sheet.pdf"
+      );
     } catch (error) {
       console.error("PDF generation failed:", error);
-      // Show error message to user
+    } finally {
+      setCalculatingPdf(false);
     }
   };
 
@@ -198,40 +196,62 @@ export default function CardsRenderer() {
       return 0;
     });
 
-    // Generate cards in a fixed 3-column layout optimized for A4
-    return sortedCards.map((card, index) => (
-      <Box
-        key={`func-${index}`}
-        sx={{
-          width: "calc(33.33% - 3em)", // 3 columns with spacing for arrows
-          display: "inline-block",
-          padding: "0",
-          margin: "8px",
-          boxSizing: "border-box",
-          verticalAlign: "top",
-        }}
-      >
-        <FunctionCard
-          params={
-            Array.isArray(card.parametersIcon)
-              ? card.parametersIcon.map((icon: string, i: number) => ({
-                  name: `Param ${i + 1}`,
-                  type: "Icon",
-                }))
-              : []
-          }
-          svg={card.icon}
-          returnValue={{
-            type: "Icon",
-            description: card.returnIcon || "",
+    // Always use 4 columns
+    const columnsCount = 7;
+    const columnWidth = `calc(${100 / columnsCount}% - 16px)`;
+
+    return sortedCards.map((card, index) => {
+      // Calculate better vertical spacing based on params count
+      const paramsCount = Array.isArray(card.parametersIcon)
+        ? card.parametersIcon.length
+        : 0;
+      const hasMoreParams = paramsCount > 2;
+
+      return (
+        <Box
+          key={`func-${index}`}
+          sx={{
+            width: columnWidth,
+            display: "inline-block",
+            // Use padding for arrow space - this gives space without affecting the inner card width
+            padding: "0 3em",
+            margin: "8px",
+            boxSizing: "border-box",
+            verticalAlign: "top",
+            position: "relative",
+            marginBottom: hasMoreParams
+              ? showIcons
+                ? "3em"
+                : "2em"
+              : undefined,
+            height: "fit-content",
+            // Let container adapt to content
+            minWidth: "fit-content",
+            overflow: "visible",
           }}
-          languages={filterCardLanguages(card.localization)}
-          parameterIcons={showIcons ? card.parametersIcon : undefined}
-          returnIcon={showIcons ? card.returnIcon : ""}
-          showIcons={showIcons}
-        />
-      </Box>
-    ));
+        >
+          <FunctionCard
+            params={
+              Array.isArray(card.parametersIcon)
+                ? card.parametersIcon.map((icon: string, i: number) => ({
+                    name: `Param ${i + 1}`,
+                    type: "Icon",
+                  }))
+                : []
+            }
+            svg={card.icon}
+            returnValue={{
+              type: "Icon",
+              description: card.returnIcon || "",
+            }}
+            languages={filterCardLanguages(card.localization)}
+            parameterIcons={showIcons ? card.parametersIcon : undefined}
+            returnIcon={showIcons ? card.returnIcon : ""}
+            showIcons={showIcons}
+          />
+        </Box>
+      );
+    });
   };
 
   return (
@@ -301,8 +321,9 @@ export default function CardsRenderer() {
               variant="contained"
               color="success"
               onClick={handleDownloadPDF}
+              disabled={calculatingPdf}
             >
-              Download PDF
+              {calculatingPdf ? "Generating..." : "Download PDF"}
             </Button>
           </Box>
 
@@ -310,15 +331,21 @@ export default function CardsRenderer() {
             ref={cardGridRef}
             sx={{
               width: "100%",
-              maxWidth: "800px", // Optimized for A4 width
-              backgroundColor: "#f5f5f5",
-              padding: "12px",
+              // Sufficient width to fit the cards plus their arrows
+              maxWidth: showIcons ? "900px" : "230mm",
+              backgroundColor: "#ffffff",
+              padding: showIcons ? "12px 24px" : "10mm 20mm",
               mx: "auto",
               boxSizing: "border-box",
-              // Fixed aspect ratio close to A4 (210mm x 297mm)
               aspectRatio: "210/297",
               position: "relative",
-              display: "block", // Switch from grid to block layout
+              display: "block",
+              border: "1px solid #e0e0e0",
+              boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+              "& > div": {
+                marginBottom: showIcons ? "2.5em" : "1.8em",
+              },
+              overflowY: "visible",
             }}
           >
             {organizeCards()}

@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable operator-linebreak */
 /* eslint-disable @typescript-eslint/comma-dangle */
 /* eslint-disable react/no-array-index-key */
@@ -30,8 +31,8 @@ export default function FunctionCard({
   parameterIcons = [],
   showIcons = true,
 }: BasicCardProps) {
-  // Use dynamic width calculation based on content
-  const baseWidth = 7;
+  // Adjust base width based on whether icons are shown
+  const baseWidth = showIcons ? 7 : 5.5;
   const cardRef = useRef<HTMLDivElement>(null);
   const symbolRef = useRef<HTMLDivElement>(null);
   const languagesRef = useRef<HTMLDivElement>(null);
@@ -39,14 +40,11 @@ export default function FunctionCard({
   const [calculatedWidth, setCalculatedWidth] = useState(baseWidth);
   const [calculatedHeight, setCalculatedHeight] = useState("auto");
 
-  const arrowLeftPosition = "0"; // Changed to be at the immediate left of the card
-  const arrowRightPosition = "0"; // Changed to be at the immediate right of the card
-
   const iconWidth = 2.5;
   const iconHeight = 2.5;
   const iconTopOffset = -1.5;
 
-  const svgScale = 0.8;
+  const svgScale = showIcons ? 0.8 : 0.65; // Smaller SVG when no icons
 
   const hasParameterIcons =
     showIcons && parameterIcons.some((icon) => icon && icon.trim() !== "");
@@ -73,7 +71,8 @@ export default function FunctionCard({
           span.innerText = p.innerText;
           document.body.appendChild(span);
 
-          const width = span.offsetWidth / 16;
+          // Get the actual width of text content
+          const width = span.getBoundingClientRect().width / 16;
           if (width > maxTextWidth) maxTextWidth = width;
 
           document.body.removeChild(span);
@@ -82,11 +81,13 @@ export default function FunctionCard({
         const svgElement = svgRef.current?.querySelector("svg");
         const svgWidth = svgElement ? (svgElement.clientWidth / 16) * 0.85 : 0;
 
-        const textPadding = 2.5; // Increased padding for full text display
-        const extraPadding = languages.length > 1 ? 1.5 : 0.5;
+        // Increased padding to ensure text fits completely
+        const textPadding = showIcons ? 3 : 2.2;
+        const extraPadding = languages.length > 1 ? 1.8 : 0.8;
 
         const contentWidth = Math.max(maxTextWidth, svgWidth);
 
+        // Ensure the width is at least enough to fit the text content
         const newWidth = Math.max(
           baseWidth,
           contentWidth + textPadding + extraPadding
@@ -99,17 +100,31 @@ export default function FunctionCard({
         const languagesHeight = languagesRef.current?.offsetHeight || 0;
         const svgHeight = svgRef.current?.offsetHeight || 0;
 
-        const contentSpacing = languages.length > 1 ? 24 : 16;
+        const contentSpacing = showIcons
+          ? languages.length > 1
+            ? 24
+            : 16
+          : 12;
         const totalHeight =
           (symbolHeight + languagesHeight + svgHeight + contentSpacing) / 16;
 
         // Calculate minimum height based on number of parameters and return value
         const arrowCount = Math.max(params.length, returnValue ? 1 : 0);
-        const arrowSpacing = 2; // Space needed per arrow in em
-        const minArrowHeight = arrowCount * arrowSpacing;
+
+        // Increase arrow spacing to ensure arrows don't overlap
+        const arrowSpacing = showIcons ? 2.5 : 2; // Increased spacing for arrows
+
+        // Set a higher minimum for arrow height calculation
+        const minArrowHeight = Math.max(
+          arrowCount * arrowSpacing,
+          arrowCount + 2
+        );
 
         // Set a higher minimum height to accommodate arrows
-        const baseMinHeight = 12; // Increased from 9
+        // Ensure at least enough height for the arrows + spacing
+        const baseMinHeight = showIcons ? 12 : 9; // Increased minimum height
+
+        // Ensure minimum height accommodates all arrows with proper spacing
         const minHeight = Math.max(baseMinHeight, minArrowHeight);
 
         const iconSpace = hasAnyIcons ? 1 : 0;
@@ -117,7 +132,7 @@ export default function FunctionCard({
 
         setCalculatedHeight(`${finalHeight}em`);
       }
-    }, 100);
+    }, 200);
   }, [
     languages,
     showIcons,
@@ -134,8 +149,9 @@ export default function FunctionCard({
         width: "100%",
         position: "relative",
         boxSizing: "border-box",
-        overflow: "visible", // Ensure any overflow is visible and not scrolled
-        margin: "2em 0", // Add vertical margin to prevent cards from crowding
+        overflow: "visible",
+        // Center the entire component
+        margin: "0 auto",
       }}
     >
       <div
@@ -143,123 +159,41 @@ export default function FunctionCard({
           display: "flex",
           justifyContent: "center",
           position: "relative",
-          overflow: "visible", // Ensure container doesn't clip children
+          overflow: "visible",
+          width: "100%",
+          padding: "0",
         }}
       >
         <div
-          ref={cardRef}
           style={{
-            width: `${calculatedWidth}em`,
-            height: calculatedHeight,
-            minHeight: `${Math.max(12, params.length * 2)}em`,
-            border: "0.2em solid red",
-            backgroundColor: "#FBE3E3",
-            borderRadius: "1.5em",
+            position: "absolute",
+            left: "-2.8em",
+            top: 0,
+            height: "100%",
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-            padding: "0.6em 0.5em 1em",
-            zIndex: 1,
-            overflow: "visible", // Ensure anything outside the card is visible
-            boxSizing: "border-box",
-            justifyContent: "flex-start",
-            position: "relative",
-            boxShadow: "0 0 0 1px rgba(0,0,0,0.1)",
-            minWidth: `${baseWidth}em`, // Ensure minimum width
+            justifyContent: params.length > 2 ? "space-around" : "space-evenly",
+            zIndex: 2,
+            width: "2.5em",
           }}
         >
-          {/* Arrow divs positioned absolutely relative to the card */}
-          <div
-            style={{
-              position: "absolute",
-              left: arrowLeftPosition,
-              top: 0,
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-evenly",
-              transform: "translateX(-100%)",
-              // Add small offset to ensure arrow touches card border
-              marginRight: "-1px",
-              zIndex: 2, // Ensure arrows are above other elements
-            }}
-          >
-            {Array.from({ length: params?.length }).map((_, index) => (
-              <div
-                key={index}
-                style={{
-                  position: "relative",
-                  transformOrigin: "right center",
-                }}
-              >
-                {showIcons &&
-                  parameterIcons &&
-                  parameterIcons[index] &&
-                  parameterIcons[index].trim() !== "" && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: `${iconTopOffset}em`,
-                        right: "1em", // Position icon to the left of the arrow
-                        width: `${iconWidth}em`,
-                        height: `${iconHeight}em`,
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        backgroundColor: "#fff",
-                        borderRadius: "50%",
-                        border: "1px solid #ccc",
-                        overflow: "hidden",
-                        padding: "2px",
-                        zIndex: 2,
-                      }}
-                    >
-                      <div
-                        style={{
-                          transform: `scale(${svgScale})`,
-                          width: "100%",
-                          height: "100%",
-                        }}
-                      >
-                        <RenderSvg svg={parameterIcons[index]} />
-                      </div>
-                    </div>
-                  )}
-                <Arrow />
-              </div>
-            ))}
-          </div>
-
-          {/* Output arrows positioned at the right edge */}
-          <div
-            style={{
-              position: "absolute",
-              right: arrowRightPosition,
-              top: 0,
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              transform: "translateX(100%)",
-              // Add small offset to ensure arrow touches card border
-              marginLeft: "-1px",
-              zIndex: 2, // Ensure arrows are above other elements
-            }}
-          >
-            {Array.from({ length: returnValue ? 1 : 0 }).map((_, index) => (
-              <div
-                key={index}
-                style={{
-                  position: "relative",
-                  transformOrigin: "left center",
-                }}
-              >
-                {showIcons && returnIcon && returnIcon.trim() !== "" && (
+          {Array.from({ length: params?.length }).map((_, index) => (
+            <div
+              key={index}
+              style={{
+                position: "relative",
+                transformOrigin: "right center",
+              }}
+            >
+              {showIcons &&
+                parameterIcons &&
+                parameterIcons[index] &&
+                parameterIcons[index].trim() !== "" && (
                   <div
                     style={{
                       position: "absolute",
                       top: `${iconTopOffset}em`,
-                      left: "1em", // Position icon to the right of the arrow
+                      right: "1em",
                       width: `${iconWidth}em`,
                       height: `${iconHeight}em`,
                       display: "flex",
@@ -280,15 +214,100 @@ export default function FunctionCard({
                         height: "100%",
                       }}
                     >
-                      <RenderSvg svg={returnIcon} />
+                      <RenderSvg svg={parameterIcons[index]} />
                     </div>
                   </div>
                 )}
-                <Arrow />
-              </div>
-            ))}
-          </div>
+              <Arrow />
+            </div>
+          ))}
+        </div>
 
+        {/* Position arrows to the right of the card */}
+        <div
+          style={{
+            position: "absolute",
+            right: "-2.5em", // Fixed position outside the card
+            top: 0,
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            zIndex: 2,
+            width: "2.5em", // Width of arrow container
+          }}
+        >
+          {Array.from({ length: returnValue ? 1 : 0 }).map((_, index) => (
+            <div
+              key={index}
+              style={{
+                position: "relative",
+                transformOrigin: "left center",
+              }}
+            >
+              {showIcons && returnIcon && returnIcon.trim() !== "" && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: `${iconTopOffset}em`,
+                    left: "1em", // Position icon to the right of the arrow
+                    width: `${iconWidth}em`,
+                    height: `${iconHeight}em`,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "#fff",
+                    borderRadius: "50%",
+                    border: "1px solid #ccc",
+                    overflow: "hidden",
+                    padding: "2px",
+                    zIndex: 2,
+                  }}
+                >
+                  <div
+                    style={{
+                      transform: `scale(${svgScale})`,
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
+                    <RenderSvg svg={returnIcon} />
+                  </div>
+                </div>
+              )}
+              <Arrow />
+            </div>
+          ))}
+        </div>
+
+        {/* Main card - keeps its original width */}
+        <div
+          ref={cardRef}
+          style={{
+            width: `${calculatedWidth}em`,
+            height: calculatedHeight,
+            minHeight: `${Math.max(
+              showIcons ? 14 : 10,
+              (params.length + 1) * (showIcons ? 2.5 : 2)
+            )}em`,
+            border: "0.2em solid red",
+            backgroundColor: "#FBE3E3",
+            borderRadius: "1.5em",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            padding: showIcons ? "0.6em 0.5em 1em" : "0.4em 0.4em 0.6em",
+            zIndex: 1,
+            overflow: "visible",
+            boxSizing: "border-box",
+            justifyContent: "flex-start",
+            position: "relative",
+            boxShadow: "0 0 0 1px rgba(0,0,0,0.1)",
+            minWidth: `${baseWidth}em`,
+            // Remove any arrow-related positioning from the card itself
+            margin: "0 auto",
+          }}
+        >
           {/* PyTamaro symbol at the top */}
           <div
             ref={symbolRef}
@@ -299,7 +318,7 @@ export default function FunctionCard({
             <PyTamaroSymbol />
           </div>
 
-          <div style={{ flex: "1 0 auto" }} />
+          <div style={{ flex: showIcons ? "1 0 auto" : "0.5 0 auto" }} />
 
           {/* Languages in the middle */}
           <div
@@ -310,12 +329,12 @@ export default function FunctionCard({
               gap: "0",
               justifyContent: "center",
               textAlign: "center",
-              fontSize: "1.25em",
+              fontSize: showIcons ? "1.25em" : "1em",
               width: "100%",
               padding: "0.25em 0",
-              marginBottom: "0.4em", // Increased margin below languages
+              marginBottom: showIcons ? "0.4em" : "0.2em",
               overflow: "visible",
-              flex: "0 0 auto", // Don't grow or shrink
+              flex: "0 0 auto",
             }}
           >
             {languages.map((lang, index) => (
@@ -324,8 +343,11 @@ export default function FunctionCard({
                 style={{
                   fontWeight: index === 0 ? "bold" : "normal",
                   margin: 0,
+                  padding: "0 0.25em", // Add horizontal padding to ensure text doesn't touch edges
                   whiteSpace: "nowrap",
+                  overflow: "visible", // Ensure text doesn't get clipped
                   width: "100%",
+                  textAlign: "center",
                 }}
               >
                 {lang}
@@ -343,11 +365,11 @@ export default function FunctionCard({
                 alignItems: "center",
                 width: "100%",
                 flex: "1 0 auto",
-                minHeight: "45%", // Increased from 35%
-                maxHeight: "60%", // Increased from 45%
+                minHeight: showIcons ? "45%" : "35%",
+                maxHeight: showIcons ? "60%" : "50%",
                 position: "relative",
                 marginTop: "auto",
-                marginBottom: "0.8em", // Increased from 0.5em
+                marginBottom: showIcons ? "0.8em" : "0.5em",
               }}
             >
               <div
@@ -360,8 +382,10 @@ export default function FunctionCard({
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: "translate(-50%, -50%) scale(1.1)",
-                  paddingBottom: "0.8em", // Increased from 0.6em
+                  transform: `translate(-50%, -50%) scale(${
+                    showIcons ? 1.1 : 0.9
+                  })`,
+                  paddingBottom: showIcons ? "0.8em" : "0.4em",
                 }}
               >
                 <RenderSvg svg={svg} />
