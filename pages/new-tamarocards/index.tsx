@@ -196,9 +196,9 @@ export default function CardsRenderer() {
       return 0;
     });
 
-    // Always use 4 columns
-    const columnsCount = 7;
-    const columnWidth = `calc(${100 / columnsCount}% - 16px)`;
+    // Increase columns to fit more cards horizontally
+    const columnsCount = 9;
+    const columnWidth = `calc(${100 / columnsCount}% - 8px)`;
 
     return sortedCards.map((card, index) => {
       // Calculate better vertical spacing based on params count
@@ -213,21 +213,20 @@ export default function CardsRenderer() {
           sx={{
             width: columnWidth,
             display: "inline-block",
-            // Use padding for arrow space - this gives space without affecting the inner card width
-            padding: "0 3em",
-            margin: "8px",
+            padding: "0 1.8em",
+            margin: "6px",
             boxSizing: "border-box",
             verticalAlign: "top",
             position: "relative",
             marginBottom: hasMoreParams
               ? showIcons
-                ? "3em"
-                : "2em"
+                ? "2em"
+                : "1.2em"
               : undefined,
             height: "fit-content",
-            // Let container adapt to content
             minWidth: "fit-content",
             overflow: "visible",
+            // No scaling, keep card size untouched
           }}
         >
           <FunctionCard
@@ -331,8 +330,9 @@ export default function CardsRenderer() {
             ref={cardGridRef}
             sx={{
               width: "100%",
-              // Sufficient width to fit the cards plus their arrows
-              maxWidth: showIcons ? "900px" : "230mm",
+              // Make the outer box a little wider to fit more cards horizontally
+              maxWidth: showIcons ? "1300px" : "270mm",
+              border: "1px dotted rgb(175, 175, 175)",
               backgroundColor: "#ffffff",
               padding: showIcons ? "12px 24px" : "10mm 20mm",
               mx: "auto",
@@ -340,7 +340,6 @@ export default function CardsRenderer() {
               aspectRatio: "210/297",
               position: "relative",
               display: "block",
-              border: "1px solid #e0e0e0",
               boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
               "& > div": {
                 marginBottom: showIcons ? "2.5em" : "1.8em",
