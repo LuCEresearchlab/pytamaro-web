@@ -174,8 +174,6 @@ export default function CardsRenderer() {
       pdf.save(
         showIcons ? "function-cards.pdf" : "pytamaro-reference-sheet.pdf"
       );
-    } catch (error) {
-      console.error("PDF generation failed:", error);
     } finally {
       setCalculatingPdf(false);
     }
@@ -208,12 +206,12 @@ export default function CardsRenderer() {
       const hasMoreParams = paramsCount > 2;
 
       return (
-        <Box
+        <div
           key={`func-${index}`}
-          sx={{
+          style={{
             width: columnWidth,
             display: "inline-block",
-            padding: "0 1.8em",
+            padding: "0 2.7em",
             margin: "6px",
             boxSizing: "border-box",
             verticalAlign: "top",
@@ -226,7 +224,6 @@ export default function CardsRenderer() {
             height: "fit-content",
             minWidth: "fit-content",
             overflow: "visible",
-            // No scaling, keep card size untouched
           }}
         >
           <FunctionCard
@@ -248,7 +245,7 @@ export default function CardsRenderer() {
             returnIcon={showIcons ? card.returnIcon : ""}
             showIcons={showIcons}
           />
-        </Box>
+        </div>
       );
     });
   };
@@ -331,7 +328,7 @@ export default function CardsRenderer() {
             sx={{
               width: "100%",
               // Make the outer box a little wider to fit more cards horizontally
-              maxWidth: showIcons ? "1300px" : "270mm",
+              maxWidth: showIcons ? "2000px" : "90em",
               border: "1px dotted rgb(175, 175, 175)",
               backgroundColor: "#ffffff",
               padding: showIcons ? "12px 24px" : "10mm 20mm",
