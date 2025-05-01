@@ -138,7 +138,7 @@ export default function FunctionCard({
         overflow: "visible",
         margin: "0 auto",
         borderRadius: "2em",
-        padding: "0.5em", // Reduced padding
+        padding: "0.5em",
         width: "100%",
         height: "100%",
       }}
@@ -151,68 +151,10 @@ export default function FunctionCard({
           overflow: "visible",
           width: "100%",
           padding: "0",
+          height: "100%",
         }}
       >
-        <div
-          style={{
-            position: "relative",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: params.length > 2 ? "space-around" : "space-evenly",
-            zIndex: 2,
-            height: "100%",
-            alignSelf: "stretch",
-          }}
-        >
-          {Array.from({ length: params?.length }).map((_, index) => (
-            <div
-              key={index}
-              style={{
-                position: "relative",
-                transformOrigin: "right center",
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              {showIcons &&
-                parameterIcons &&
-                parameterIcons[index] &&
-                parameterIcons[index].trim() !== "" && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: `${iconTopOffset}em`,
-                      left: "-0.5em",
-                      width: `${iconWidth}em`,
-                      height: `${iconHeight}em`,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      backgroundColor: "#fff",
-                      borderRadius: "50%",
-                      border: "1px solid #ccc",
-                      overflow: "hidden",
-                      padding: "2px",
-                      zIndex: 2,
-                    }}
-                  >
-                    <div
-                      style={{
-                        transform: `scale(${svgScale})`,
-                        width: "100%",
-                        height: "100%",
-                      }}
-                    >
-                      <RenderSvg svg={parameterIcons[index]} />
-                    </div>
-                  </div>
-                )}
-              <Arrow />
-            </div>
-          ))}
-        </div>
-
+        {/* Main card */}
         <div
           ref={cardRef}
           style={{
@@ -239,6 +181,7 @@ export default function FunctionCard({
             margin: "0",
           }}
         >
+          {/* PyTamaro symbol at the top */}
           <div
             ref={symbolRef}
             style={{
@@ -250,6 +193,7 @@ export default function FunctionCard({
 
           <div style={{ flex: showIcons ? "1 0 auto" : "0.5 0 auto" }} />
 
+          {/* Languages in the middle */}
           <div
             ref={languagesRef}
             style={{
@@ -284,6 +228,7 @@ export default function FunctionCard({
             ))}
           </div>
 
+          {/* Optional SVG icon at the bottom */}
           {svg !== undefined && (
             <div
               ref={svgRef}
@@ -321,64 +266,129 @@ export default function FunctionCard({
             </div>
           )}
 
+          {/* Add another spacer at the bottom for balance when no SVG */}
           {svg === undefined && <div style={{ flex: "1 0 auto" }} />}
-        </div>
 
-        <div
-          style={{
-            position: "relative",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            zIndex: 2,
-            height: "100%",
-            alignSelf: "stretch",
-          }}
-        >
-          {Array.from({ length: returnValue ? 1 : 0 }).map((_, index) => (
-            <div
-              key={index}
-              style={{
-                position: "relative",
-                transformOrigin: "left center",
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              {showIcons && returnIcon && returnIcon.trim() !== "" && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: `${iconTopOffset}em`,
-                    right: "-0.5em",
-                    width: `${iconWidth}em`,
-                    height: `${iconHeight}em`,
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: "#fff",
-                    borderRadius: "50%",
-                    border: "1px solid #ccc",
-                    overflow: "hidden",
-                    padding: "2px",
-                    zIndex: 2,
-                  }}
-                >
+          {/* Left-side arrows positioned absolutely */}
+          <div
+            style={{
+              position: "absolute",
+              left: "-3em",
+              top: 0,
+              bottom: 0,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: params.length === 1 ? "center" : "space-around",
+              zIndex: 2,
+              height: "100%",
+            }}
+          >
+            {Array.from({ length: params?.length }).map((_, index) => (
+              <div
+                key={index}
+                style={{
+                  position: "relative",
+                  transformOrigin: "right center",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                {showIcons &&
+                  parameterIcons &&
+                  parameterIcons[index] &&
+                  parameterIcons[index].trim() !== "" && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: `${iconTopOffset}em`,
+                        left: "-1.5em",
+                        width: `${iconWidth}em`,
+                        height: `${iconHeight}em`,
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: "#fff",
+                        borderRadius: "50%",
+                        border: "1px solid #ccc",
+                        overflow: "hidden",
+                        padding: "2px",
+                        zIndex: 2,
+                      }}
+                    >
+                      <div
+                        style={{
+                          transform: `scale(${svgScale})`,
+                          width: "100%",
+                          height: "100%",
+                        }}
+                      >
+                        <RenderSvg svg={parameterIcons[index]} />
+                      </div>
+                    </div>
+                  )}
+                <Arrow />
+              </div>
+            ))}
+          </div>
+
+          {/* Right-side arrow positioned absolutely */}
+          <div
+            style={{
+              position: "absolute",
+              right: "-3em",
+              top: 0,
+              bottom: 0,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center", // Always center the return arrow
+              zIndex: 2,
+              height: "100%",
+            }}
+          >
+            {Array.from({ length: returnValue ? 1 : 0 }).map((_, index) => (
+              <div
+                key={index}
+                style={{
+                  position: "relative",
+                  transformOrigin: "left center",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                {showIcons && returnIcon && returnIcon.trim() !== "" && (
                   <div
                     style={{
-                      transform: `scale(${svgScale})`,
-                      width: "100%",
-                      height: "100%",
+                      position: "absolute",
+                      top: `${iconTopOffset}em`,
+                      right: "-1.5em",
+                      width: `${iconWidth}em`,
+                      height: `${iconHeight}em`,
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: "#fff",
+                      borderRadius: "50%",
+                      border: "1px solid #ccc",
+                      overflow: "hidden",
+                      padding: "2px",
+                      zIndex: 2,
                     }}
                   >
-                    <RenderSvg svg={returnIcon} />
+                    <div
+                      style={{
+                        transform: `scale(${svgScale})`,
+                        width: "100%",
+                        height: "100%",
+                      }}
+                    >
+                      <RenderSvg svg={returnIcon} />
+                    </div>
                   </div>
-                </div>
-              )}
-              <Arrow />
-            </div>
-          ))}
+                )}
+                <Arrow />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
