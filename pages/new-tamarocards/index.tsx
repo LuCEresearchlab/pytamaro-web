@@ -21,6 +21,7 @@ import {
   FormControlLabel,
   Paper,
   Typography,
+  Grid,
 } from "@mui/material";
 import CardsJson from "./pytamaro-function-data.json";
 import FunctionCard from "./function-card";
@@ -181,7 +182,6 @@ export default function CardsRenderer() {
 
   const organizeCards = () => {
     const sortedCards = [...cards].sort((a, b) => {
-      // Sort logic: cards without icons first, then cards with icons
       const aHasIcons =
         a.parametersIcon?.some((icon) => icon && icon.trim() !== "") ||
         (a.returnIcon && a.returnIcon.trim() !== "");
@@ -194,60 +194,47 @@ export default function CardsRenderer() {
       return 0;
     });
 
-    // Increase columns to fit more cards horizontally
-    const columnsCount = 9;
-    const columnWidth = `calc(${100 / columnsCount}% - 8px)`;
-
-    return sortedCards.map((card, index) => {
-      // Calculate better vertical spacing based on params count
-      const paramsCount = Array.isArray(card.parametersIcon)
-        ? card.parametersIcon.length
-        : 0;
-      const hasMoreParams = paramsCount > 2;
-
-      return (
-        <div
-          key={`func-${index}`}
-          style={{
-            width: columnWidth,
-            display: "inline-block",
-            padding: "0 2.7em",
-            margin: "6px",
-            boxSizing: "border-box",
-            verticalAlign: "top",
-            position: "relative",
-            marginBottom: hasMoreParams
-              ? showIcons
-                ? "2em"
-                : "1.2em"
-              : undefined,
-            height: "fit-content",
-            minWidth: "fit-content",
-            overflow: "visible",
-          }}
-        >
-          <FunctionCard
-            params={
-              Array.isArray(card.parametersIcon)
-                ? card.parametersIcon.map((icon: string, i: number) => ({
-                    name: `Param ${i + 1}`,
-                    type: "Icon",
-                  }))
-                : []
-            }
-            svg={card.icon}
-            returnValue={{
-              type: "Icon",
-              description: card.returnIcon || "",
-            }}
-            languages={filterCardLanguages(card.localization)}
-            parameterIcons={showIcons ? card.parametersIcon : undefined}
-            returnIcon={showIcons ? card.returnIcon : ""}
-            showIcons={showIcons}
-          />
-        </div>
-      );
-    });
+    return (
+      <Grid container spacing={0}>
+        {sortedCards.map((card, index) => (
+          <Grid item xs={12 / 5} key={`func-${index}`}>
+            <Box
+              sx={{
+                border: "1px dotted #666",
+                borderRadius: "0px", // Remove border radius for flush edges
+                padding: "4px", // Minimal padding
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                boxSizing: "border-box",
+                m: 0, // No margin
+              }}
+            >
+              <FunctionCard
+                params={
+                  Array.isArray(card.parametersIcon)
+                    ? card.parametersIcon.map((icon: string, i: number) => ({
+                        name: `Param ${i + 1}`,
+                        type: "Icon",
+                      }))
+                    : []
+                }
+                svg={card.icon}
+                returnValue={{
+                  type: "Icon",
+                  description: card.returnIcon || "",
+                }}
+                languages={filterCardLanguages(card.localization)}
+                parameterIcons={showIcons ? card.parametersIcon : undefined}
+                returnIcon={showIcons ? card.returnIcon : ""}
+                showIcons={showIcons}
+              />
+            </Box>
+          </Grid>
+        ))}
+      </Grid>
+    );
   };
 
   return (
@@ -327,21 +314,14 @@ export default function CardsRenderer() {
             ref={cardGridRef}
             sx={{
               width: "100%",
-              // Make the outer box a little wider to fit more cards horizontally
-              maxWidth: showIcons ? "2000px" : "90em",
-              border: "1px dotted rgb(175, 175, 175)",
+              maxWidth: showIcons ? "1800px" : "1600px",
               backgroundColor: "#ffffff",
-              padding: showIcons ? "12px 24px" : "10mm 20mm",
+              padding: "8px", // Reduced outer padding
               mx: "auto",
               boxSizing: "border-box",
-              aspectRatio: "210/297",
               position: "relative",
               display: "block",
               boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-              "& > div": {
-                marginBottom: showIcons ? "2.5em" : "1.8em",
-              },
-              overflowY: "visible",
             }}
           >
             {organizeCards()}
