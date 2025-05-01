@@ -125,9 +125,9 @@ export default function CardsRenderer() {
     setCalculatingPdf(true);
 
     try {
-      // Create a portrait A4 PDF
+      // Create a landscape A4 PDF
       const pdf = new jsPDF({
-        orientation: "portrait",
+        orientation: "landscape", // Changed to landscape
         unit: "mm",
         format: "a4",
       });
@@ -135,28 +135,31 @@ export default function CardsRenderer() {
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
 
-      // Calculate content width with margin
-      const margins = 10; // 10mm margins
-      const contentWidth = pdfWidth - margins * 2;
-      const contentHeight = pdfHeight - margins * 2;
-
-      // Set up options to capture the full grid
+      // Improved options for capturing the full card grid
       const options = {
-        scale: 2, // Higher scale for better quality
+        scale: 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: "#ffffff",
+        windowWidth: cardGridRef.current.scrollWidth,
+        windowHeight: cardGridRef.current.scrollHeight,
       };
 
       const canvas = await html2canvas(cardGridRef.current, options);
       const imgData = canvas.toDataURL("image/png");
 
-      // Calculate scale to fit content on page
+      // Calculate scale to fit content on landscape page
       const canvasRatio = canvas.width / canvas.height;
+
+      // For landscape, we have more width than height
+      const margins = 5;
+      const contentWidth = pdfWidth - margins * 2;
+      const contentHeight = pdfHeight - margins * 2;
+
+      // Determine if width or height is the limiting factor
       let finalWidth;
       let finalHeight;
 
-      // Determine which dimension is the limiting factor
       if (canvasRatio > contentWidth / contentHeight) {
         // Width limited
         finalWidth = contentWidth;
@@ -172,8 +175,34 @@ export default function CardsRenderer() {
       const yOffset = margins + (contentHeight - finalHeight) / 2;
 
       pdf.addImage(imgData, "PNG", xOffset, yOffset, finalWidth, finalHeight);
+
+      // Add multiple pages if needed
+      if (canvasRatio < 1 && finalHeight === contentHeight) {
+        // Very tall content that might need multiple pages
+        const totalPages = Math.ceil(
+          canvas.height / (canvas.width / contentWidth)
+        );
+
+        // For each additional page (only if needed)
+        for (let page = 1; page < totalPages; page++) {
+          pdf.addPage("landscape"); // Ensure landscape orientation
+
+          // Calculate vertical position for this segment
+          pdf.addImage(
+            imgData,
+            "PNG",
+            xOffset,
+            yOffset - page * contentHeight,
+            finalWidth,
+            finalHeight
+          );
+        }
+      }
+
       pdf.save(
-        showIcons ? "function-cards.pdf" : "pytamaro-reference-sheet.pdf"
+        showIcons
+          ? "function-cards-landscape.pdf"
+          : "pytamaro-reference-sheet-landscape.pdf"
       );
     } finally {
       setCalculatingPdf(false);
