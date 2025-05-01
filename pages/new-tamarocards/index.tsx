@@ -201,8 +201,8 @@ export default function CardsRenderer() {
 
       pdf.save(
         showIcons
-          ? "function-cards-landscape.pdf"
-          : "pytamaro-reference-sheet-landscape.pdf"
+          ? "pytamaro-reference-sheet-landscape.pdf"
+          : "function-cards-landscape.pdf"
       );
     } finally {
       setCalculatingPdf(false);
