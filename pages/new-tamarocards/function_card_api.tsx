@@ -13,11 +13,13 @@
 /* eslint-disable @typescript-eslint/indent */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/quotes */
-import React from "react";
-import { Box, Grid, Typography, Container } from "@mui/material";
+import React, { useRef, useState } from "react";
+import { Box, Grid, Typography, Container, Button } from "@mui/material";
 import FunctionCard from "./function-card";
 import { Card } from "./types";
 import PyTamaroSymbol from "./PyTamaro-symbol";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const sheet1 = [
   "rectangle",
@@ -43,6 +45,11 @@ export default function FunctionCardApiSheet({
   showIcons: boolean;
   selectedLanguages: string[];
 }) {
+  const primitivesRef = useRef<HTMLDivElement>(null);
+  const combinatorsRef = useRef<HTMLDivElement>(null);
+  const [calculatingPrimitives, setCalculatingPrimitives] = useState(false);
+  const [calculatingCombinators, setCalculatingCombinators] = useState(false);
+
   const primitivesCards = cards.filter((card) => {
     const functionName = card.localization.en;
     return sheet1.includes(functionName);
@@ -69,10 +76,92 @@ export default function FunctionCardApiSheet({
     return filteredLanguages;
   };
 
+  const handleDownloadSheet = async (
+    sheetRef: React.RefObject<HTMLDivElement>,
+    setCalculating: React.Dispatch<React.SetStateAction<boolean>>,
+    filename: string
+  ) => {
+    if (!sheetRef.current) return;
+
+    setCalculating(true);
+
+    try {
+      // Create a landscape A4 PDF
+      const pdf = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      // Improved options for capturing the full card grid
+      const options = {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "#ffffff",
+        windowWidth: sheetRef.current.offsetWidth,
+        windowHeight: sheetRef.current.offsetHeight,
+      };
+
+      const canvas = await html2canvas(sheetRef.current, options);
+      const imgData = canvas.toDataURL("image/png");
+
+      // Scale to fit the PDF page with margins
+      const margins = 5;
+      const contentWidth = pdfWidth - margins * 2;
+      const contentHeight = pdfHeight - margins * 2;
+
+      // Calculate scale to maintain aspect ratio
+      const canvasRatio = canvas.width / canvas.height;
+      let finalWidth, finalHeight;
+
+      if (canvasRatio > contentWidth / contentHeight) {
+        // Width constrained
+        finalWidth = contentWidth;
+        finalHeight = finalWidth / canvasRatio;
+      } else {
+        // Height constrained
+        finalHeight = contentHeight;
+        finalWidth = finalHeight * canvasRatio;
+      }
+
+      // Center the image on the page
+      const xOffset = margins + (contentWidth - finalWidth) / 2;
+      const yOffset = margins + (contentHeight - finalHeight) / 2;
+
+      pdf.addImage(imgData, "PNG", xOffset, yOffset, finalWidth, finalHeight);
+      pdf.save(filename);
+    } finally {
+      setCalculating(false);
+    }
+  };
+
   return (
     <Container maxWidth={false}>
       {/* Primitives Section - A4 Landscape Sheet */}
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+        <Button
+          variant="contained"
+          color="success"
+          onClick={() =>
+            handleDownloadSheet(
+              primitivesRef,
+              setCalculatingPrimitives,
+              "pytamaro-primitives.pdf"
+            )
+          }
+          disabled={calculatingPrimitives}
+          sx={{ mr: 2 }}
+        >
+          {calculatingPrimitives ? "Generating..." : "Download Primitives PDF"}
+        </Button>
+      </Box>
+
       <Box
+        ref={primitivesRef}
         sx={{
           width: A4_WIDTH,
           height: A4_HEIGHT,
@@ -156,7 +245,27 @@ export default function FunctionCardApiSheet({
       </Box>
 
       {/* Combinators Section - A4 Landscape Sheet */}
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+        <Button
+          variant="contained"
+          color="success"
+          onClick={() =>
+            handleDownloadSheet(
+              combinatorsRef,
+              setCalculatingCombinators,
+              "pytamaro-combinators.pdf"
+            )
+          }
+          disabled={calculatingCombinators}
+        >
+          {calculatingCombinators
+            ? "Generating..."
+            : "Download Combinators PDF"}
+        </Button>
+      </Box>
+
       <Box
+        ref={combinatorsRef}
         sx={{
           width: A4_WIDTH,
           height: A4_HEIGHT,

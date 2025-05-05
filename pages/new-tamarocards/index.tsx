@@ -11,7 +11,7 @@
 /* eslint-disable @typescript-eslint/indent */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/quotes */
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -26,8 +26,6 @@ import CardsJson from "./pytamaro-function-data.json";
 import { Card, Language } from "./types";
 import FunctionCardSheet from "./function_card_sheet";
 import LanguagePickerCard from "./language-picker-card";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 import FunctionCardApiSheet from "./function_card_api";
 
 export default function CardsRenderer() {
@@ -37,7 +35,6 @@ export default function CardsRenderer() {
   const [showCards, setShowCards] = useState(false);
   const [languages, setLanguages] = useState<Language[]>([]);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
-  const [calculatingPdf, setCalculatingPdf] = useState(false);
 
   useEffect(() => {
     const languageCodes = new Set<string>();
@@ -100,97 +97,6 @@ export default function CardsRenderer() {
     setShowCards(true);
   };
 
-  // testing with PDF download
-  const cardGridRef = useRef<HTMLDivElement>(null);
-
-  const handleDownloadPDF = async () => {
-    if (!cardGridRef.current) return;
-
-    setCalculatingPdf(true);
-
-    try {
-      // Create a landscape A4 PDF
-      const pdf = new jsPDF({
-        orientation: "landscape", // Changed to landscape
-        unit: "mm",
-        format: "a4",
-      });
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-
-      // Improved options for capturing the full card grid
-      const options = {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#ffffff",
-        windowWidth: cardGridRef.current.scrollWidth,
-        windowHeight: cardGridRef.current.scrollHeight,
-      };
-
-      const canvas = await html2canvas(cardGridRef.current, options);
-      const imgData = canvas.toDataURL("image/png");
-
-      // Calculate scale to fit content on landscape page
-      const canvasRatio = canvas.width / canvas.height;
-
-      // For landscape, we have more width than height
-      const margins = 5;
-      const contentWidth = pdfWidth - margins * 2;
-      const contentHeight = pdfHeight - margins * 2;
-
-      // Determine if width or height is the limiting factor
-      let finalWidth;
-      let finalHeight;
-
-      if (canvasRatio > contentWidth / contentHeight) {
-        // Width limited
-        finalWidth = contentWidth;
-        finalHeight = finalWidth / canvasRatio;
-      } else {
-        // Height limited
-        finalHeight = contentHeight;
-        finalWidth = finalHeight * canvasRatio;
-      }
-
-      // Center the image on the page
-      const xOffset = margins + (contentWidth - finalWidth) / 2;
-      const yOffset = margins + (contentHeight - finalHeight) / 2;
-
-      pdf.addImage(imgData, "PNG", xOffset, yOffset, finalWidth, finalHeight);
-
-      // Add multiple pages if needed
-      if (canvasRatio < 1 && finalHeight === contentHeight) {
-        // Very tall content that might need multiple pages
-        const totalPages = Math.ceil(
-          canvas.height / (canvas.width / contentWidth)
-        );
-
-        // For each additional page (only if needed)
-        for (let page = 1; page < totalPages; page++) {
-          pdf.addPage("landscape"); // Ensure landscape orientation
-
-          // Calculate vertical position for this segment
-          pdf.addImage(
-            imgData,
-            "PNG",
-            xOffset,
-            yOffset - page * contentHeight,
-            finalWidth,
-            finalHeight
-          );
-        }
-      }
-
-      pdf.save(
-        showIcons ? "pytamaro-reference-sheet.pdf" : "function-cards.pdf"
-      );
-    } finally {
-      setCalculatingPdf(false);
-    }
-  };
-
   return (
     <Container maxWidth={showCards ? false : "lg"} sx={{ py: 4 }}>
       <Typography
@@ -250,17 +156,9 @@ export default function CardsRenderer() {
         </Paper>
       ) : (
         <>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4 }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 4 }}>
             <Button variant="outlined" onClick={() => setShowCards(false)}>
               Back to Settings
-            </Button>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={handleDownloadPDF}
-              disabled={calculatingPdf}
-            >
-              {calculatingPdf ? "Generating..." : "Download PDF"}
             </Button>
           </Box>
 
@@ -275,7 +173,6 @@ export default function CardsRenderer() {
               cards={cards}
               showIcons={showIcons}
               selectedLanguages={selectedLanguages}
-              cardGridRef={cardGridRef}
             />
           )}
         </>
