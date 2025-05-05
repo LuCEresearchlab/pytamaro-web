@@ -33,9 +33,8 @@ const sheet1 = [
 
 const sheet2 = ["above", "beside", "overlay", "rotate"];
 
-// A4 landscape dimensions in pixels (assuming 96 DPI)
-const A4_WIDTH = 1123; // 11.7 inches * 96 DPI
-const A4_HEIGHT = 794; // 8.3 inches * 96 DPI
+const A4_WIDTH = 1123;
+const A4_HEIGHT = 794;
 
 export default function FunctionCardApiSheet({
   cards,
@@ -97,7 +96,6 @@ export default function FunctionCardApiSheet({
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
 
-      // Improved options for capturing the full card grid
       const options = {
         scale: 2,
         useCORS: true,
@@ -110,27 +108,22 @@ export default function FunctionCardApiSheet({
       const canvas = await html2canvas(sheetRef.current, options);
       const imgData = canvas.toDataURL("image/png");
 
-      // Scale to fit the PDF page with margins
       const margins = 5;
       const contentWidth = pdfWidth - margins * 2;
       const contentHeight = pdfHeight - margins * 2;
 
-      // Calculate scale to maintain aspect ratio
       const canvasRatio = canvas.width / canvas.height;
       let finalWidth;
       let finalHeight;
 
       if (canvasRatio > contentWidth / contentHeight) {
-        // Width constrained
         finalWidth = contentWidth;
         finalHeight = finalWidth / canvasRatio;
       } else {
-        // Height constrained
         finalHeight = contentHeight;
         finalWidth = finalHeight * canvasRatio;
       }
 
-      // Center the image on the page
       const xOffset = margins + (contentWidth - finalWidth) / 2;
       const yOffset = margins + (contentHeight - finalHeight) / 2;
 
@@ -202,7 +195,7 @@ export default function FunctionCardApiSheet({
         </Box>
         <Grid
           container
-          spacing={3}
+          spacing={2} // Reduced spacing
           sx={{
             flexGrow: 1,
             display: "flex",
@@ -220,27 +213,46 @@ export default function FunctionCardApiSheet({
               sx={{
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "center",
+                // Apply scaling to fit within container
+                transform: "scale(0.85)",
+                height: "auto",
               }}
             >
-              <FunctionCard
-                params={
-                  Array.isArray(card.parametersIcon)
-                    ? card.parametersIcon.map((icon: string, i: number) => ({
-                        name: `Param ${i + 1}`,
-                        type: "Icon",
-                      }))
-                    : []
-                }
-                svg={card.icon}
-                returnValue={{
-                  type: "Icon",
-                  description: card.returnIcon || "",
+              <Box
+                sx={{
+                  // Make sure arrows are above icons with z-index
+                  "& .parameter-arrow, & svg[data-arrow='true']": {
+                    position: "relative",
+                    zIndex: 10,
+                  },
+                  // Make sure icons stay below arrows
+                  "& .parameter-icon": {
+                    position: "relative",
+                    zIndex: 5,
+                  },
                 }}
-                languages={filterCardLanguages(card.localization)}
-                parameterIcons={showIcons ? card.parametersIcon : undefined}
-                returnIcon={showIcons ? card.returnIcon : ""}
-                showIcons={showIcons}
-              />
+              >
+                <FunctionCard
+                  params={
+                    Array.isArray(card.parametersIcon)
+                      ? card.parametersIcon.map((icon: string, i: number) => ({
+                          name: `Param ${i + 1}`,
+                          type: "Icon",
+                        }))
+                      : []
+                  }
+                  svg={card.icon}
+                  returnValue={{
+                    type: "Icon",
+                    description: card.returnIcon || "",
+                  }}
+                  languages={filterCardLanguages(card.localization)}
+                  parameterIcons={showIcons ? card.parametersIcon : undefined}
+                  returnIcon={showIcons ? card.returnIcon : ""}
+                  showIcons={showIcons}
+                />
+              </Box>
             </Grid>
           ))}
         </Grid>
@@ -305,7 +317,7 @@ export default function FunctionCardApiSheet({
         </Box>
         <Grid
           container
-          spacing={3}
+          spacing={2} // Reduced spacing
           sx={{
             flexGrow: 1,
             display: "flex",
@@ -323,27 +335,46 @@ export default function FunctionCardApiSheet({
               sx={{
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "center",
+                // Scale down slightly to fit
+                transform: "scale(0.9)",
+                height: "auto",
               }}
             >
-              <FunctionCard
-                params={
-                  Array.isArray(card.parametersIcon)
-                    ? card.parametersIcon.map((icon: string, i: number) => ({
-                        name: `Param ${i + 1}`,
-                        type: "Icon",
-                      }))
-                    : []
-                }
-                svg={card.icon}
-                returnValue={{
-                  type: "Icon",
-                  description: card.returnIcon || "",
+              <Box
+                sx={{
+                  // Make sure arrows are above icons with z-index
+                  "& .parameter-arrow, & svg[data-arrow='true']": {
+                    position: "relative",
+                    zIndex: 10,
+                  },
+                  // Make sure icons stay below arrows
+                  "& .parameter-icon": {
+                    position: "relative",
+                    zIndex: 5,
+                  },
                 }}
-                languages={filterCardLanguages(card.localization)}
-                parameterIcons={showIcons ? card.parametersIcon : undefined}
-                returnIcon={showIcons ? card.returnIcon : ""}
-                showIcons={showIcons}
-              />
+              >
+                <FunctionCard
+                  params={
+                    Array.isArray(card.parametersIcon)
+                      ? card.parametersIcon.map((icon: string, i: number) => ({
+                          name: `Param ${i + 1}`,
+                          type: "Icon",
+                        }))
+                      : []
+                  }
+                  svg={card.icon}
+                  returnValue={{
+                    type: "Icon",
+                    description: card.returnIcon || "",
+                  }}
+                  languages={filterCardLanguages(card.localization)}
+                  parameterIcons={showIcons ? card.parametersIcon : undefined}
+                  returnIcon={showIcons ? card.returnIcon : ""}
+                  showIcons={showIcons}
+                />
+              </Box>
             </Grid>
           ))}
         </Grid>
