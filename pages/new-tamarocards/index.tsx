@@ -21,11 +21,10 @@ import {
   FormControlLabel,
   Paper,
   Typography,
-  Grid,
 } from "@mui/material";
 import CardsJson from "./pytamaro-function-data.json";
-import FunctionCard from "./function-card";
 import { Card, Language } from "./types";
+import FunctionCardSheet from "./function_card_sheet";
 import LanguagePickerCard from "./language-picker-card";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -98,22 +97,6 @@ export default function CardsRenderer() {
 
   const handleGenerateCards = () => {
     setShowCards(true);
-  };
-
-  const filterCardLanguages = (localization: { [lang: string]: string }) => {
-    const filteredLanguages: string[] = [];
-
-    selectedLanguages.forEach((languageCode) => {
-      if (languageCode && localization[languageCode]) {
-        filteredLanguages.push(localization[languageCode]);
-      }
-    });
-
-    if (filteredLanguages.length === 0) {
-      return Object.values(localization);
-    }
-
-    return filteredLanguages;
   };
 
   // testing with PDF download
@@ -200,70 +183,11 @@ export default function CardsRenderer() {
       }
 
       pdf.save(
-        showIcons
-          ? "pytamaro-reference-sheet-landscape.pdf"
-          : "function-cards-landscape.pdf"
+        showIcons ? "pytamaro-reference-sheet.pdf" : "function-cards.pdf"
       );
     } finally {
       setCalculatingPdf(false);
     }
-  };
-
-  const organizeCards = () => {
-    const sortedCards = [...cards].sort((a, b) => {
-      const aHasIcons =
-        a.parametersIcon?.some((icon) => icon && icon.trim() !== "") ||
-        (a.returnIcon && a.returnIcon.trim() !== "");
-      const bHasIcons =
-        b.parametersIcon?.some((icon) => icon && icon.trim() !== "") ||
-        (b.returnIcon && b.returnIcon.trim() !== "");
-
-      if (!aHasIcons && bHasIcons) return -1;
-      if (aHasIcons && !bHasIcons) return 1;
-      return 0;
-    });
-
-    return (
-      <Grid container spacing={0}>
-        {sortedCards.map((card, index) => (
-          <Grid item xs={12 / 5} key={`func-${index}`}>
-            <Box
-              sx={{
-                border: "1px dotted #666",
-                borderRadius: "0px", // Remove border radius for flush edges
-                padding: "4px", // Minimal padding
-                height: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                boxSizing: "border-box",
-                m: 0, // No margin
-              }}
-            >
-              <FunctionCard
-                params={
-                  Array.isArray(card.parametersIcon)
-                    ? card.parametersIcon.map((icon: string, i: number) => ({
-                        name: `Param ${i + 1}`,
-                        type: "Icon",
-                      }))
-                    : []
-                }
-                svg={card.icon}
-                returnValue={{
-                  type: "Icon",
-                  description: card.returnIcon || "",
-                }}
-                languages={filterCardLanguages(card.localization)}
-                parameterIcons={showIcons ? card.parametersIcon : undefined}
-                returnIcon={showIcons ? card.returnIcon : ""}
-                showIcons={showIcons}
-              />
-            </Box>
-          </Grid>
-        ))}
-      </Grid>
-    );
   };
 
   return (
@@ -353,7 +277,11 @@ export default function CardsRenderer() {
               boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
             }}
           >
-            {organizeCards()}
+            <FunctionCardSheet
+              cards={cards}
+              showIcons={showIcons}
+              selectedLanguages={selectedLanguages}
+            />
           </Box>
         </>
       )}
