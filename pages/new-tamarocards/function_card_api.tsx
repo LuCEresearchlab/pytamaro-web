@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-curly-newline */
 /* eslint-disable function-paren-newline */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable import/no-extraneous-dependencies */
@@ -116,7 +117,8 @@ export default function FunctionCardApiSheet({
 
       // Calculate scale to maintain aspect ratio
       const canvasRatio = canvas.width / canvas.height;
-      let finalWidth, finalHeight;
+      let finalWidth;
+      let finalHeight;
 
       if (canvasRatio > contentWidth / contentHeight) {
         // Width constrained
