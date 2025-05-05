@@ -41,7 +41,6 @@ export default function FunctionCard({
 
   const iconWidth = 2.5;
   const iconHeight = 2.5;
-  const iconTopOffset = -1.5;
 
   const svgScale = showIcons ? 0.8 : 0.65;
 
@@ -300,24 +299,16 @@ export default function FunctionCard({
                     <div
                       style={{
                         position: "absolute",
-                        top: `${iconTopOffset}em`,
-                        left: "-1.5em",
+                        top: "-1em",
                         width: `${iconWidth}em`,
                         height: `${iconHeight}em`,
                         display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
                         backgroundColor: "#fff",
-                        borderRadius: "50%",
-                        border: "1px solid #ccc",
-                        overflow: "hidden",
-                        padding: "2px",
-                        zIndex: 2,
+                        zIndex: 1,
                       }}
                     >
                       <div
                         style={{
-                          transform: `scale(${svgScale})`,
                           width: "100%",
                           height: "100%",
                         }}
@@ -326,7 +317,13 @@ export default function FunctionCard({
                       </div>
                     </div>
                   )}
-                <Arrow />
+                <div
+                  style={{
+                    zIndex: 1,
+                  }}
+                >
+                  <Arrow />
+                </div>
               </div>
             ))}
           </div>
@@ -340,7 +337,7 @@ export default function FunctionCard({
               bottom: 0,
               display: "flex",
               flexDirection: "column",
-              justifyContent: "center", // Always center the return arrow
+              justifyContent: "center",
               zIndex: 2,
               height: "100%",
             }}
@@ -359,24 +356,16 @@ export default function FunctionCard({
                   <div
                     style={{
                       position: "absolute",
-                      top: `${iconTopOffset}em`,
-                      right: "-1.5em",
+                      top: `-1em`,
                       width: `${iconWidth}em`,
                       height: `${iconHeight}em`,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      backgroundColor: "#fff",
-                      borderRadius: "50%",
-                      border: "1px solid #ccc",
-                      overflow: "hidden",
-                      padding: "2px",
+                      right: "-0.3em",
+                      alignSelf: "center",
                       zIndex: 2,
                     }}
                   >
                     <div
                       style={{
-                        transform: `scale(${svgScale})`,
                         width: "100%",
                         height: "100%",
                       }}
@@ -385,7 +374,13 @@ export default function FunctionCard({
                     </div>
                   </div>
                 )}
-                <Arrow />
+                <div
+                  style={{
+                    zIndex: 1,
+                  }}
+                >
+                  <Arrow />
+                </div>
               </div>
             ))}
           </div>
