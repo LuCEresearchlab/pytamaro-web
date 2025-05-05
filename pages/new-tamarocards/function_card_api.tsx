@@ -14,7 +14,7 @@
 /* eslint-disable @typescript-eslint/indent */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/quotes */
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Box, Grid, Typography, Container, Button } from "@mui/material";
 import FunctionCard from "./function-card";
 import { Card } from "./types";
@@ -60,6 +60,19 @@ export default function FunctionCardApiSheet({
     return sheet2.includes(functionName);
   });
 
+  // Use effect to stabilize layout after component mounts
+  useEffect(() => {
+    // Force a repaint to ensure the layout is stable
+    if (primitivesRef.current) {
+      const width = primitivesRef.current.offsetWidth;
+      primitivesRef.current.style.width = `${width}px`;
+    }
+    if (combinatorsRef.current) {
+      const width = combinatorsRef.current.offsetWidth;
+      combinatorsRef.current.style.width = `${width}px`;
+    }
+  }, []);
+
   const filterCardLanguages = (localization: { [lang: string]: string }) => {
     const filteredLanguages: string[] = [];
 
@@ -86,6 +99,14 @@ export default function FunctionCardApiSheet({
     setCalculating(true);
 
     try {
+      // Clone the sheet to avoid modifying the original DOM
+      const clonedSheet = sheetRef.current.cloneNode(true) as HTMLElement;
+
+      // Temporarily add to body with absolute positioning to avoid layout impact
+      clonedSheet.style.position = "absolute";
+      clonedSheet.style.left = "-9999px";
+      document.body.appendChild(clonedSheet);
+
       // Create a landscape A4 PDF
       const pdf = new jsPDF({
         orientation: "landscape",
@@ -105,7 +126,11 @@ export default function FunctionCardApiSheet({
         windowHeight: sheetRef.current.offsetHeight,
       };
 
-      const canvas = await html2canvas(sheetRef.current, options);
+      const canvas = await html2canvas(clonedSheet, options);
+
+      // Clean up the cloned element after capturing
+      document.body.removeChild(clonedSheet);
+
       const imgData = canvas.toDataURL("image/png");
 
       const margins = 5;
@@ -165,10 +190,11 @@ export default function FunctionCardApiSheet({
           mx: "auto",
           backgroundColor: "#fff",
           boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-          overflow: "hidden",
+          overflow: "hidden", // Keep this to prevent overflow
           padding: 3,
           display: "flex",
           flexDirection: "column",
+          position: "relative", // Add this for stable positioning
         }}
       >
         <Box
@@ -180,6 +206,7 @@ export default function FunctionCardApiSheet({
             padding: "1.5em",
             borderRadius: "4px",
             mb: 2,
+            flexShrink: 0, // Prevent header from shrinking
           }}
         >
           <Typography variant="h6">Library doc</Typography>
@@ -195,12 +222,14 @@ export default function FunctionCardApiSheet({
         </Box>
         <Grid
           container
-          spacing={2} // Reduced spacing
+          spacing={1} // Further reduced spacing
           sx={{
             flexGrow: 1,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            height: "calc(100% - 80px)", // Reserve space for header
+            overflow: "hidden", // Add this to prevent container overflow
           }}
         >
           {primitivesCards.map((card, idx) => (
@@ -214,9 +243,10 @@ export default function FunctionCardApiSheet({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                // Apply scaling to fit within container
-                transform: "scale(0.85)",
-                height: "auto",
+                // Use both transform and width/height constraints
+                transform: "scale(0.75)",
+                transformOrigin: "center center", // Add this for stable scaling
+                height: "33%", // Set fixed height to prevent reflow
               }}
             >
               <Box
@@ -291,6 +321,7 @@ export default function FunctionCardApiSheet({
           padding: 3,
           display: "flex",
           flexDirection: "column",
+          position: "relative", // Add this for stable positioning
         }}
       >
         <Box
@@ -302,6 +333,7 @@ export default function FunctionCardApiSheet({
             padding: "1.5em",
             borderRadius: "4px",
             mb: 2,
+            flexShrink: 0, // Prevent header from shrinking
           }}
         >
           <Typography variant="h6">Library doc</Typography>
@@ -317,12 +349,14 @@ export default function FunctionCardApiSheet({
         </Box>
         <Grid
           container
-          spacing={2} // Reduced spacing
+          spacing={1} // Further reduced spacing
           sx={{
             flexGrow: 1,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            height: "calc(100% - 80px)", // Reserve space for header
+            overflow: "hidden", // Add this to prevent container overflow
           }}
         >
           {combinatorsCards.map((card, idx) => (
@@ -336,9 +370,9 @@ export default function FunctionCardApiSheet({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                // Scale down slightly to fit
-                transform: "scale(0.9)",
-                height: "auto",
+                transform: "scale(0.8)",
+                transformOrigin: "center center", // Add this for stable scaling
+                height: "50%", // Set fixed height to prevent reflow
               }}
             >
               <Box
