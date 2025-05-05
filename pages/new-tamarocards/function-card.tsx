@@ -299,12 +299,12 @@ export default function FunctionCard({
                     <div
                       style={{
                         position: "absolute",
-                        top: "-1em",
+                        top: `-1em`,
                         width: `${iconWidth}em`,
                         height: `${iconHeight}em`,
-                        display: "flex",
-                        backgroundColor: "#fff",
-                        zIndex: 1,
+                        right: "-0.3em",
+                        alignSelf: "center",
+                        zIndex: 2,
                       }}
                     >
                       <div
