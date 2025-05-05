@@ -28,6 +28,7 @@ import FunctionCardSheet from "./function_card_sheet";
 import LanguagePickerCard from "./language-picker-card";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import FunctionCardApiSheet from "./function_card_api";
 
 export default function CardsRenderer() {
   const cards = Object.values(CardsJson) as Card[];
@@ -263,26 +264,20 @@ export default function CardsRenderer() {
             </Button>
           </Box>
 
-          <Box
-            ref={cardGridRef}
-            sx={{
-              width: "100%",
-              maxWidth: showIcons ? "1800px" : "1600px",
-              backgroundColor: "#ffffff",
-              padding: "8px", // Reduced outer padding
-              mx: "auto",
-              boxSizing: "border-box",
-              position: "relative",
-              display: "block",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-            }}
-          >
-            <FunctionCardSheet
+          {showIcons ? (
+            <FunctionCardApiSheet
               cards={cards}
               showIcons={showIcons}
               selectedLanguages={selectedLanguages}
             />
-          </Box>
+          ) : (
+            <FunctionCardSheet
+              cards={cards}
+              showIcons={showIcons}
+              selectedLanguages={selectedLanguages}
+              cardGridRef={cardGridRef}
+            />
+          )}
         </>
       )}
     </Container>

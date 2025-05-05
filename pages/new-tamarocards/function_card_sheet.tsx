@@ -19,10 +19,12 @@ export default function FunctionCardSheet({
   cards,
   showIcons,
   selectedLanguages,
+  cardGridRef,
 }: {
   cards: Card[];
   showIcons: boolean;
   selectedLanguages: string[];
+  cardGridRef: React.RefObject<HTMLDivElement>;
 }) {
   const sortedCards = [...cards].sort((a, b) => {
     const aHasIcons =
@@ -54,44 +56,59 @@ export default function FunctionCardSheet({
   };
 
   return (
-    <Grid container spacing={0}>
-      {sortedCards.map((card, index) => (
-        <Grid item xs={12 / 5} key={`func-${index}`}>
-          <Box
-            sx={{
-              border: "1px dotted #666",
-              borderRadius: "0px",
-              padding: "4px",
-              height: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              boxSizing: "border-box",
-              m: 0,
-            }}
-          >
-            <FunctionCard
-              params={
-                Array.isArray(card.parametersIcon)
-                  ? card.parametersIcon.map((icon: string, i: number) => ({
-                      name: `Param ${i + 1}`,
-                      type: "Icon",
-                    }))
-                  : []
-              }
-              svg={card.icon}
-              returnValue={{
-                type: "Icon",
-                description: card.returnIcon || "",
+    <Box
+      ref={cardGridRef}
+      sx={{
+        width: "100%",
+        maxWidth: showIcons ? "1800px" : "1600px",
+        backgroundColor: "#ffffff",
+        padding: "8px", // Reduced outer padding
+        mx: "auto",
+        boxSizing: "border-box",
+        position: "relative",
+        display: "block",
+        boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+      }}
+    >
+      <Grid container spacing={0}>
+        {sortedCards.map((card, index) => (
+          <Grid item xs={12 / 5} key={`func-${index}`}>
+            <Box
+              sx={{
+                border: "1px dotted #666",
+                borderRadius: "0px",
+                padding: "4px",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                boxSizing: "border-box",
+                m: 0,
               }}
-              languages={filterCardLanguages(card.localization)}
-              parameterIcons={showIcons ? card.parametersIcon : undefined}
-              returnIcon={showIcons ? card.returnIcon : ""}
-              showIcons={showIcons}
-            />
-          </Box>
-        </Grid>
-      ))}
-    </Grid>
+            >
+              <FunctionCard
+                params={
+                  Array.isArray(card.parametersIcon)
+                    ? card.parametersIcon.map((icon: string, i: number) => ({
+                        name: `Param ${i + 1}`,
+                        type: "Icon",
+                      }))
+                    : []
+                }
+                svg={card.icon}
+                returnValue={{
+                  type: "Icon",
+                  description: card.returnIcon || "",
+                }}
+                languages={filterCardLanguages(card.localization)}
+                parameterIcons={showIcons ? card.parametersIcon : undefined}
+                returnIcon={showIcons ? card.returnIcon : ""}
+                showIcons={showIcons}
+              />
+            </Box>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
   );
 }
