@@ -771,7 +771,9 @@
             "description": {
                 "p": [
                     "A graphic (image) with a position for pinning.",
-                    "The pinning position is used in the following operations:"
+                    "The pinning position is used in the following operations:",
+                    "- rotation (to determine the center of rotation)",
+                    "- graphic composition (two graphics get composed aligning their pinning position)."
                 ]
             }
         },

@@ -39,7 +39,7 @@
                 }
             ],
             "returnValue": {
-                "type": "Color",
+                "type": "Couleur",
                 "description": "une couleur avec les composantes HSLA donn\u00e9es."
             },
             "examples": [
@@ -95,7 +95,7 @@
                 }
             ],
             "returnValue": {
-                "type": "Color",
+                "type": "Couleur",
                 "description": "une couleur avec le composantes HSVA donn\u00e9es"
             },
             "examples": [
@@ -151,7 +151,7 @@
                 }
             ],
             "returnValue": {
-                "type": "Color",
+                "type": "Couleur",
                 "description": "une couleur avec les composantes RGBA donn\u00e9es"
             },
             "examples": [
@@ -189,7 +189,7 @@
             "section": "Couleurs",
             "kind": "constant",
             "name": "blanc",
-            "type": "Color",
+            "type": "Couleur",
             "description": {
                 "p": [
                     "Couleur blanche"
@@ -206,7 +206,7 @@
             "section": "Couleurs",
             "kind": "constant",
             "name": "bleu",
-            "type": "Color",
+            "type": "Couleur",
             "description": {
                 "p": [
                     "Couleur bleue"
@@ -223,7 +223,7 @@
             "section": "Couleurs",
             "kind": "constant",
             "name": "cyan",
-            "type": "Color",
+            "type": "Couleur",
             "description": {
                 "p": [
                     "Couleur cyan"
@@ -240,7 +240,7 @@
             "section": "Couleurs",
             "kind": "constant",
             "name": "jaune",
-            "type": "Color",
+            "type": "Couleur",
             "description": {
                 "p": [
                     "Couleur jaune"
@@ -257,7 +257,7 @@
             "section": "Couleurs",
             "kind": "constant",
             "name": "magenta",
-            "type": "Color",
+            "type": "Couleur",
             "description": {
                 "p": [
                     "Couleur magenta"
@@ -274,7 +274,7 @@
             "section": "Couleurs",
             "kind": "constant",
             "name": "noir",
-            "type": "Color",
+            "type": "Couleur",
             "description": {
                 "p": [
                     "Couleur noire"
@@ -291,7 +291,7 @@
             "section": "Couleurs",
             "kind": "constant",
             "name": "rouge",
-            "type": "Color",
+            "type": "Couleur",
             "description": {
                 "p": [
                     "Couleur rouge"
@@ -308,7 +308,7 @@
             "section": "Couleurs",
             "kind": "constant",
             "name": "transparent",
-            "type": "Color",
+            "type": "Couleur",
             "description": {
                 "p": [
                     "Couleur compl\u00e8tement transparente"
@@ -325,7 +325,7 @@
             "section": "Couleurs",
             "kind": "constant",
             "name": "vert",
-            "type": "Color",
+            "type": "Couleur",
             "description": {
                 "p": [
                     "Couleur verte"
@@ -351,7 +351,7 @@
             "parameters": [
                 {
                     "name": "graphiques",
-                    "type": "list[Graphic]",
+                    "type": "list[Graphique]",
                     "description": "la liste des graphiques \u00e0 sauvegarder en tant qu\u2019animation."
                 },
                 {
@@ -393,7 +393,7 @@
             "parameters": [
                 {
                     "name": "graphique",
-                    "type": "Graphic",
+                    "type": "Graphique",
                     "description": "le graphique \u00e0 montrer"
                 },
                 {
@@ -434,7 +434,7 @@
                 },
                 {
                     "name": "graphiques",
-                    "type": "list[Graphic]",
+                    "type": "list[Graphique]",
                     "description": "la liste des graphiques \u00e0 sauvegarder en tant qu\u2019animation."
                 },
                 {
@@ -482,7 +482,7 @@
                 },
                 {
                     "name": "graphique",
-                    "type": "Graphic",
+                    "type": "Graphique",
                     "description": "le graphique \u00e0 sauvegarder"
                 },
                 {
@@ -528,12 +528,12 @@
                 },
                 {
                     "name": "couleur",
-                    "type": "Color",
+                    "type": "Couleur",
                     "description": "couleur \u00e0 utiliser pour remplir l\u2019ellipse"
                 }
             ],
             "returnValue": {
-                "type": "Graphic",
+                "type": "Graphique",
                 "description": "un graphique avec l\u2019ellipse sp\u00e9cifi\u00e9e"
             },
             "examples": [
@@ -558,7 +558,7 @@
             },
             "parameters": [],
             "returnValue": {
-                "type": "Graphic",
+                "type": "Graphique",
                 "description": "un graphique vide (largeur et hauteur 0)"
             },
             "examples": [
@@ -594,12 +594,12 @@
                 },
                 {
                     "name": "couleur",
-                    "type": "Color",
+                    "type": "Couleur",
                     "description": "couleur qui remplira le rectangle"
                 }
             ],
             "returnValue": {
-                "type": "Graphic",
+                "type": "Graphique",
                 "description": "un graphique avec le rectangle sp\u00e9cifi\u00e9"
             },
             "examples": [
@@ -637,12 +637,12 @@
                 },
                 {
                     "name": "couleur",
-                    "type": "Color",
+                    "type": "Couleur",
                     "description": "couleur \u00e0 utiliser pour remplir le secteur circulaire"
                 }
             ],
             "returnValue": {
-                "type": "Graphic",
+                "type": "Graphique",
                 "description": "un graphique avec le secteur circulaire sp\u00e9cifi\u00e9"
             },
             "examples": [
@@ -690,12 +690,12 @@
                 },
                 {
                     "name": "couleur",
-                    "type": "Color",
+                    "type": "Couleur",
                     "description": "la couleur \u00e0 utiliser pour le rendu du texte"
                 }
             ],
             "returnValue": {
-                "type": "Graphic",
+                "type": "Graphique",
                 "description": "le texte sp\u00e9cifi\u00e9 sous forme de graphique"
             },
             "examples": [
@@ -739,12 +739,12 @@
                 },
                 {
                     "name": "couleur",
-                    "type": "Color",
+                    "type": "Couleur",
                     "description": "couleur \u00e0 utiliser pour remplir le secteur circulaire"
                 }
             ],
             "returnValue": {
-                "type": "Graphic",
+                "type": "Graphique",
                 "description": "un graphique avec le triangle sp\u00e9cifi\u00e9"
             },
             "examples": [
@@ -771,7 +771,9 @@
             "description": {
                 "p": [
                     "Un graphique (image) avec un point d\u2019ancrage.",
-                    "Le point d\u2019ancrage est utilis\u00e9 pour les op\u00e9rations suivantes:"
+                    "Le point d\u2019ancrage est utilis\u00e9 pour les op\u00e9rations suivantes:",
+                    "- rotation (pour d\u00e9terminer le centre de rotation)",
+                    "- composition de graphiques (deux graphiques sont compos\u00e9s en alignant leur point d\u2019ancrage)."
                 ]
             }
         },
@@ -957,12 +959,12 @@
                 },
                 {
                     "name": "graphique",
-                    "type": "Graphic",
+                    "type": "Graphique",
                     "description": "le graphique originel"
                 }
             ],
             "returnValue": {
-                "type": "Graphic",
+                "type": "Graphique",
                 "description": "un nouveau graphique avec le nouveau point d\u2019ancrage"
             },
             "examples": [
@@ -986,17 +988,17 @@
             "parameters": [
                 {
                     "name": "graphique_haut",
-                    "type": "Graphic",
+                    "type": "Graphique",
                     "description": "le graphique \u00e0 placer au dessus"
                 },
                 {
                     "name": "graphique_bas",
-                    "type": "Graphic",
+                    "type": "Graphique",
                     "description": "le graphique \u00e0 placer en dessous"
                 }
             ],
             "returnValue": {
-                "type": "Graphic",
+                "type": "Graphique",
                 "description": "le graphique r\u00e9sultant apr\u00e8s avoir plac\u00e9 les deux graphiques l\u2019un au-dessus de l\u2019autre"
             },
             "examples": [
@@ -1019,17 +1021,17 @@
             "parameters": [
                 {
                     "name": "graphique_premier_plan",
-                    "type": "Graphic",
+                    "type": "Graphique",
                     "description": "le graphique au premier plan"
                 },
                 {
                     "name": "graphique_arriere_plan",
-                    "type": "Graphic",
+                    "type": "Graphique",
                     "description": null
                 }
             ],
             "returnValue": {
-                "type": "Graphic",
+                "type": "Graphique",
                 "description": "le graphique qui r\u00e9sulte de la composition"
             },
             "examples": [
@@ -1052,17 +1054,17 @@
             "parameters": [
                 {
                     "name": "graphique_gauche",
-                    "type": "Graphic",
+                    "type": "Graphique",
                     "description": "le graphique \u00e0 placer \u00e0 gauche"
                 },
                 {
                     "name": "graphique_droite",
-                    "type": "Graphic",
+                    "type": "Graphique",
                     "description": "le graphique \u00e0 placer \u00e0 droite"
                 }
             ],
             "returnValue": {
-                "type": "Graphic",
+                "type": "Graphique",
                 "description": "le graphique r\u00e9sultant apr\u00e8s avoir plac\u00e9 les deux graphiques l\u2019un \u00e0 c\u00f4t\u00e9 de l\u2019autre"
             },
             "examples": [
@@ -1084,7 +1086,7 @@
             "parameters": [
                 {
                     "name": "graphique",
-                    "type": "Graphic",
+                    "type": "Graphique",
                     "description": "graphique duquel calculer la hauteur"
                 }
             ],
@@ -1112,7 +1114,7 @@
             "parameters": [
                 {
                     "name": "graphique",
-                    "type": "Graphic",
+                    "type": "Graphique",
                     "description": "graphique duquel calculer la largeur"
                 }
             ],
@@ -1145,12 +1147,12 @@
                 },
                 {
                     "name": "graphique",
-                    "type": "Graphic",
+                    "type": "Graphique",
                     "description": "le graphique \u00e0 pivoter"
                 }
             ],
             "returnValue": {
-                "type": "Graphic",
+                "type": "Graphique",
                 "description": "un nouveau graphique pivot\u00e9"
             },
             "examples": [
@@ -1177,17 +1179,17 @@
             "parameters": [
                 {
                     "name": "graphique_premier_plan",
-                    "type": "Graphic",
+                    "type": "Graphique",
                     "description": "le graphique au premier plan"
                 },
                 {
                     "name": "graphique_arriere_plan",
-                    "type": "Graphic",
+                    "type": "Graphique",
                     "description": "le graphique en arri\u00e8re plan"
                 }
             ],
             "returnValue": {
-                "type": "Graphic",
+                "type": "Graphique",
                 "description": "le graphique r\u00e9sultant de la superposition des deux graphiques fournis"
             },
             "examples": [
