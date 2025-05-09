@@ -9,7 +9,7 @@
     "check-donow": "cross-env NODE_OPTIONS=--experimental-wasm-modules node --no-warnings --loader ts-node/esm tools/checkNotebookDoNow.mts",
     "check-python-sources": "cross-env NODE_OPTIONS=--experimental-wasm-modules node --no-warnings --loader ts-node/esm tools/checkNotebookSourceCode.mts",
     "create-assets": "cross-env NODE_OPTIONS=--experimental-wasm-modules node --no-warnings --loader ts-node/esm tools/createNotebookAssets.mts",
-    "build": "NODE_OPTIONS=\"--max-old-space-size=8192\" next build",
+    "build": "cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" next build",
     "start": "next start",
     "lint": "next lint",
     "cypress": "cypress open",
