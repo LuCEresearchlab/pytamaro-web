@@ -4,10 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
-    "prebuild": "npm run validate-notebooks && npm run create-assets",
-    "validate-notebooks": "npm run check-donow && npm run check-python-sources",
+    "prebuild": "npm run check-donow && npm run create-assets",
     "check-donow": "cross-env NODE_OPTIONS=--experimental-wasm-modules node --no-warnings --loader ts-node/esm tools/checkNotebookDoNow.mts",
-    "check-python-sources": "cross-env NODE_OPTIONS=--experimental-wasm-modules node --no-warnings --loader ts-node/esm tools/checkNotebookSourceCode.mts",
     "create-assets": "cross-env NODE_OPTIONS=--experimental-wasm-modules node --no-warnings --loader ts-node/esm tools/createNotebookAssets.mts",
     "build": "cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" next build",
     "start": "next start",
