@@ -254,13 +254,16 @@ export default function FunctionCard({
                   position: "absolute",
                   top: "50%",
                   left: "50%",
-                  transform: `translate(-50%, -50%) scale(${
-                    showIcons ? 1.1 : 0.9
-                  })`,
+                  transform: `translate(-50%, -50%) scale(1.1)`,
                   paddingBottom: showIcons ? "0.8em" : "0.4em",
                 }}
               >
-                <RenderSvg svg={svg} />
+                <RenderSvg
+                  svg={svg}
+                  padding="0.5em"
+                  maxWidth="90%"
+                  maxHeight="90%"
+                />
               </div>
             </div>
           )}
@@ -299,10 +302,10 @@ export default function FunctionCard({
                     <div
                       style={{
                         position: "absolute",
-                        top: `-1em`,
+                        top: `-1.5em`,
                         width: `${iconWidth}em`,
                         height: `${iconHeight}em`,
-                        right: "-0.3em",
+                        right: "0.5em",
                         alignSelf: "center",
                         zIndex: 2,
                       }}
@@ -313,7 +316,11 @@ export default function FunctionCard({
                           height: "100%",
                         }}
                       >
-                        <RenderSvg svg={parameterIcons[index]} />
+                        <RenderSvg
+                          svg={parameterIcons[index]}
+                          maxWidth="90%"
+                          maxHeight="90%"
+                        />
                       </div>
                     </div>
                   )}
@@ -356,10 +363,10 @@ export default function FunctionCard({
                   <div
                     style={{
                       position: "absolute",
-                      top: `-1em`,
+                      top: `-1.5em`,
                       width: `${iconWidth}em`,
                       height: `${iconHeight}em`,
-                      right: "-0.3em",
+                      right: "0",
                       alignSelf: "center",
                       zIndex: 2,
                     }}
@@ -370,7 +377,11 @@ export default function FunctionCard({
                         height: "100%",
                       }}
                     >
-                      <RenderSvg svg={returnIcon} />
+                      <RenderSvg
+                        svg={returnIcon}
+                        maxWidth="90%"
+                        maxHeight="90%"
+                      />
                     </div>
                   </div>
                 )}

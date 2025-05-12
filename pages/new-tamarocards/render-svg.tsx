@@ -5,7 +5,17 @@
 /* eslint-disable @typescript-eslint/quotes */
 import { useEffect, useState } from "react";
 
-export default function RenderSvg({ svg }: { svg: string }) {
+export default function RenderSvg({
+  svg,
+  maxWidth = "100%",
+  maxHeight = "100%",
+  padding = 0,
+}: {
+  svg: string;
+  maxWidth?: string | number;
+  maxHeight?: string | number;
+  padding?: string | number;
+}) {
   const [svgUrl, setSvgUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -27,14 +37,16 @@ export default function RenderSvg({ svg }: { svg: string }) {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        padding,
+        boxSizing: "border-box",
       }}
     >
       <img
         src={svgUrl}
         alt="Function icon"
         style={{
-          maxWidth: "100%",
-          maxHeight: "100%",
+          maxWidth,
+          maxHeight,
           objectFit: "contain",
         }}
       />
