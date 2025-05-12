@@ -33,19 +33,19 @@
             "returnValue": {
                 "type": "A",
                 "description": "The accumulated value"
-            }
+            },
+            "examples": [
+                {
+                    "code": "reduce(lambda acc, s: acc + ' ' + s, ['PyTamaro', 'is', 'cool'])",
+                    "result": "'PyTamaro is cool'"
+                },
+                {
+                    "code": "reduce(lambda acc, s: acc + ' ' + s, [], '')",
+                    "result": "''",
+                    "usesOptional": true
+                }
+            ],
+            "urlSuffix": "#functools.reduce"
         }
-    ],
-    "examples": [
-        {
-            "code": "reduce(lambda acc, s: acc + ' ' + s, ['Many', 'strings', 'folded', 'together'])",
-            "result": "Many strings folded together"
-        },
-        {
-            "code": "reduce(lambda acc, s: acc + ' ' + s, [], '')",
-            "result": "",
-            "usesOptional": true
-        }
-    ],
-    "urlSuffix": "#functools.reduce"
+    ]
 }
