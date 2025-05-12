@@ -5,7 +5,7 @@ declare module '@mui/material/styles' {
   interface Theme {
     pytamaro: {
       monospaceFontFamily: string;
-      monospaceFontSize: number;
+      monospaceFontSizeRatio: number;
       redColor: string;
       backgroundColor: string;
     };
@@ -14,7 +14,7 @@ declare module '@mui/material/styles' {
   interface ThemeOptions {
     pytamaro?: {
       monospaceFontFamily?: string;
-      monospaceFontSize?: number;
+      monospaceFontSizeRatio: number;
       redColor?: string;
       backgroundColor?: string;
     };
@@ -36,7 +36,7 @@ const theme = responsiveFontSizes(
     },
     pytamaro: {
       monospaceFontFamily: "'Fira Code Variable', monospace",
-      monospaceFontSize: 0.95 * 16,
+      monospaceFontSizeRatio: 0.95,
       redColor: '#D2071D',
       backgroundColor: '#E1F5FD',
     },
@@ -47,7 +47,7 @@ const theme = responsiveFontSizes(
       MuiCssBaseline: {
         styleOverrides: (themeParam) => `
           code, pre {
-            font-size: ${themeParam.pytamaro.monospaceFontSize}px;
+            font-size: ${themeParam.pytamaro.monospaceFontSizeRatio}em;
             font-family: ${themeParam.pytamaro.monospaceFontFamily};
             font-variant-ligatures: none;
           }

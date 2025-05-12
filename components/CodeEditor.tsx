@@ -305,7 +305,7 @@ export default function CodeEditor({
         onChange={handleSourceChanged}
         options={{
           fontFamily: theme.pytamaro.monospaceFontFamily,
-          fontSize: theme.pytamaro.monospaceFontSize,
+          fontSize: theme.pytamaro.monospaceFontSizeRatio * 16,
           lineNumbers: (n) => (n + firstLineNumber - 1).toString(10),
           lineNumbersMinChars: 2,
           minimap: { enabled: false },
