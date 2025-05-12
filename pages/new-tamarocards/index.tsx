@@ -41,7 +41,7 @@ export default function CardsRenderer({
   const [showIcons, setShowIcons] = useState(true);
   const [showCards, setShowCards] = useState(false);
   const [languages, setLanguages] = useState<Language[]>([]);
-  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(["en"]);
 
   // Debug cards data in browser console
   useEffect(() => {
@@ -53,12 +53,16 @@ export default function CardsRenderer({
     const parsedLanguages = availableLanguages.map((code) => ({
       code,
       name: code.toUpperCase(),
-      enabled: false,
+      enabled: code === "en", // Enable English by default
     }));
 
     setLanguages(parsedLanguages);
 
-    if (parsedLanguages.length > 0) {
+    // Always set English as the first selected language if available
+    if (availableLanguages.includes("en")) {
+      setSelectedLanguages(["en"]);
+    } else if (parsedLanguages.length > 0) {
+      // Fallback if English is not available
       setSelectedLanguages([parsedLanguages[0].code]);
     }
   }, [availableLanguages]);
@@ -66,32 +70,35 @@ export default function CardsRenderer({
   const handleLanguageSelect = (index: number, languageCode: string | null) => {
     const updatedSelectedLanguages = [...selectedLanguages];
 
-    if (!languageCode) {
-      if (
-        updatedSelectedLanguages.length === 1 &&
-        updatedSelectedLanguages[0] === updatedSelectedLanguages[index]
-      ) {
-        return;
-      }
+    // Ensure the first language is always selected (can't be removed)
+    if (index === 0 && !languageCode) {
+      return; // Don't allow removing the first language
+    }
 
+    if (!languageCode) {
       if (index < updatedSelectedLanguages.length) {
         updatedSelectedLanguages.splice(index, 1);
       }
-    }
-    if (index < updatedSelectedLanguages.length) {
-      updatedSelectedLanguages[index] = languageCode ?? "";
+    } else if (index < updatedSelectedLanguages.length) {
+      updatedSelectedLanguages[index] = languageCode;
     } else {
       while (updatedSelectedLanguages.length < index) {
         updatedSelectedLanguages.push("");
       }
-      if (languageCode !== null) {
-        updatedSelectedLanguages.push(languageCode);
-      }
+      updatedSelectedLanguages.push(languageCode);
     }
 
     const cleanedSelections = updatedSelectedLanguages.filter(
       (lang, i) => lang !== "" || i < updatedSelectedLanguages.length - 1
     );
+
+    // Ensure 'en' is the first language if it exists in the available languages
+    if (
+      availableLanguages.includes("en") &&
+      !cleanedSelections.includes("en")
+    ) {
+      cleanedSelections.unshift("en");
+    }
 
     setSelectedLanguages(cleanedSelections);
   };
@@ -226,6 +233,16 @@ export async function getStaticProps() {
         }
       }
     });
+
+    // Ensure English is first in the available languages array
+    if (availableLanguages.includes("en")) {
+      // Remove 'en' from its current position
+      const englishIndex = availableLanguages.indexOf("en");
+      availableLanguages.splice(englishIndex, 1);
+
+      // Add it back at the beginning
+      availableLanguages.unshift("en");
+    }
 
     // Create a map to track which functions have been processed
     const processedFunctions = new Map<string, boolean>();
