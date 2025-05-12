@@ -140,7 +140,7 @@ export function processTraceback(content: string) {
 }
 
 export function isErrorInvolvingToolbox(content: string) {
-  const regex = / {2}File "toolbox_(.*).py", line (\d+), in \1/;
+  const regex = / {2}File "toolbox_(.*).py", line (\d+)/;
   console.log('stderrLines(content)', stderrLines(content));
   console.log('regex', regex);
   console.log(
