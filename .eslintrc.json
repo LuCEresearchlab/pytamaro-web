@@ -27,7 +27,8 @@
         "functions": "defaultArguments"
       }
     ],
-    "import/no-relative-packages": "off"
+    "import/no-relative-packages": "off",
+    "no-console": "error"
   },
   "overrides": [
     {
