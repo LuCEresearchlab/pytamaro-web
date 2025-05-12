@@ -6,8 +6,27 @@ import { splitLines } from './sourceUtils';
 export const TRACEBACK_TIDLE_DECORATION_CLASSNAME =
   'squiggly-warning traceback-tilde';
 
+function nicerTraceback(traceback: string) {
+  // Hide the "driver" file.
+  const hideDriver = (s: string) =>
+    s.replace(
+      /\n {2}File "\/home\/glot\/driver.py", line \d+, in <module>\n.*\n/g,
+      '\n',
+    );
+
+  // Hide 'glot' in source paths
+  const hideGlot = (s: string) => s.replace(/File "\/home\/glot\//g, 'File "');
+
+  // Replace the word ellipsis within backticks or quotes with three dots,
+  // to avoid confusion with the ellipse function and to match the source code.
+  const replaceEllipsis = (s: string) =>
+    s.replace(/`ellipsis`/g, '`...`').replace(/'ellipsis'/g, "'...'");
+
+  return replaceEllipsis(hideGlot(hideDriver(traceback)));
+}
+
 function lineNumOfErrorThisCell(traceback: string[]) {
-  const regex = / {2}File "\/home\/glot\/cell.py", line (\d+)/;
+  const regex = / {2}File "cell.py", line (\d+)/;
   const idxTracebackLine = traceback.findLastIndex((line) => regex.test(line));
   return idxTracebackLine !== -1
     ? {
@@ -23,7 +42,7 @@ export function addMarkers(
   executionResponse: CompletedExecutionResponse,
   firstLineNumber: number,
 ): boolean {
-  const traceback = executionResponse.stderr;
+  const traceback = nicerTraceback(executionResponse.stderr);
   const tracebackLines = splitLines(traceback);
   const lineNumberInfo = lineNumOfErrorThisCell(tracebackLines);
   const model = editor.getModel();
@@ -88,14 +107,12 @@ export function addMarkers(
   return false;
 }
 
+function stderrLines(content: string) {
+  return splitLines(nicerTraceback(content));
+}
+
 export function processTraceback(content: string) {
-  // Hide the "driver" file.
-  const hideDriver = (s: string) =>
-    s.replace(
-      /\n {2}File "\/home\/glot\/driver.py", line \d+, in <module>\n.*\n/g,
-      '\n',
-    );
-  const contentLines = splitLines(hideDriver(content));
+  const contentLines = stderrLines(content);
   // Find the last part in the traceback, after the indented stack frames, that
   // contains the error.
   const startErrorLine = contentLines.findLastIndex(
@@ -123,10 +140,16 @@ export function processTraceback(content: string) {
 }
 
 export function isErrorInvolvingToolbox(content: string) {
-  const regex = / {2}File "\/home\/glot\/toolbox_(.*).py", line (\d+), in \1/;
-  return splitLines(content).some((line) => regex.test(line));
+  const regex = / {2}File "toolbox_(.*).py", line (\d+), in \1/;
+  console.log('stderrLines(content)', stderrLines(content));
+  console.log('regex', regex);
+  console.log(
+    'stderrLines(content).some((line) => regex.test(line))',
+    stderrLines(content).some((line) => regex.test(line)),
+  );
+  return stderrLines(content).some((line) => regex.test(line));
 }
 
 export function isErrorPreviousCells(content: string) {
-  return lineNumOfErrorThisCell(splitLines(content)) === undefined;
+  return lineNumOfErrorThisCell(stderrLines(content)) === undefined;
 }
