@@ -1,0 +1,23 @@
+{
+    "rgb_color": "rgb_color",
+    "compose": "compose",
+    "pin": "pin",
+    "overlay": "overlay",
+    "beside": "beside",
+    "above": "above",
+    "rotate": "rotate",
+    "rectangle": "rectangle",
+    "empty_graphic": "empty_graphic",
+    "ellipse": "ellipse",
+    "text": "text",
+    "circular_sector": "circular_sector",
+    "triangle": "triangle",
+    "show_graphic": "show_graphic",
+    "save_graphic": "save_graphic",
+    "save_animation": "save_animation",
+    "show_animation": "show_animation",
+    "hsv_color": "hsv_color",
+    "hsl_color": "hsl_color",
+    "graphic_height": "graphic_height",
+    "graphic_width": "graphic_width"
+}

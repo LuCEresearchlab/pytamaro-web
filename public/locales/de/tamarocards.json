@@ -1,0 +1,23 @@
+{
+    "rgb_color":        "rgb_farbe",
+    "compose":          "kombiniere",
+    "pin":              "fixiere",
+    "overlay":          "ueberlagere",
+    "beside":           "neben",
+    "above":            "ueber",
+    "rotate":           "drehe",
+    "rectangle":        "rechteck",
+    "empty_graphic":    "leere_grafik",
+    "ellipse":          "ellipse",
+    "text":             "text",
+    "circular_sector":  "kreis_sektor",
+    "triangle":         "dreieck",
+    "show_graphic":     "zeige_grafik", 
+    "save_graphic":     "speichere_grafik",
+    "save_animation":   "speichere_animation",
+    "show_animation":   "zeige_animation",
+    "hsv_color":        "hsv_farbe",
+    "hsl_color":        "hsl_farbe",
+    "graphic_height":   "grafik_hoehe",
+    "graphic_width":    "grafik_breite"
+}

@@ -22,35 +22,37 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import CardsJson from "./pytamaro-function-data.json";
 import { Card, Language } from "./types";
 import FunctionCardSheet from "./function_card_sheet";
 import LanguagePickerCard from "./language-picker-card";
 import FunctionCardApiSheet from "./function_card_api";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import fs from "fs";
+import path from "path";
 
-export default function CardsRenderer() {
-  const cards = Object.values(CardsJson) as Card[];
-
+export default function CardsRenderer({
+  cards,
+  availableLanguages,
+}: {
+  cards: Card[];
+  availableLanguages: string[];
+}) {
   const [showIcons, setShowIcons] = useState(true);
   const [showCards, setShowCards] = useState(false);
   const [languages, setLanguages] = useState<Language[]>([]);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 
+  // Debug cards data in browser console
   useEffect(() => {
-    const languageCodes = new Set<string>();
+    console.log("Cards data:", cards);
+  }, [cards]);
 
-    Object.values(CardsJson).forEach((card) => {
-      if (card.localization) {
-        Object.keys(card.localization).forEach((code) => {
-          languageCodes.add(code);
-        });
-      }
-    });
-
-    const parsedLanguages = Array.from(languageCodes).map((code) => ({
+  useEffect(() => {
+    // Convert available languages from getStaticProps to Language objects
+    const parsedLanguages = availableLanguages.map((code) => ({
       code,
       name: code.toUpperCase(),
-      enabled: false, // No longer using enabled flag
+      enabled: false,
     }));
 
     setLanguages(parsedLanguages);
@@ -58,7 +60,7 @@ export default function CardsRenderer() {
     if (parsedLanguages.length > 0) {
       setSelectedLanguages([parsedLanguages[0].code]);
     }
-  }, []);
+  }, [availableLanguages]);
 
   const handleLanguageSelect = (index: number, languageCode: string | null) => {
     const updatedSelectedLanguages = [...selectedLanguages];
@@ -179,4 +181,121 @@ export default function CardsRenderer() {
       )}
     </Container>
   );
+}
+
+export async function getStaticProps() {
+  // Get all language folders from public/locales
+  const localesPath = path.join(process.cwd(), "public/locales");
+  // Get SVG folders from public/function_svgs
+  const svgsPath = path.join(process.cwd(), "public/function_svgs");
+  const availableLanguages: string[] = [];
+  const cards: Card[] = [];
+
+  try {
+    // 1. Find all language folders with tamarocards.json
+    const languageFolders = fs.readdirSync(localesPath);
+    const languageTranslations: Record<string, Record<string, string>> = {};
+
+    // Load all translations from each language
+    languageFolders.forEach((folder) => {
+      const tamarocardsPath = path.join(
+        localesPath,
+        folder,
+        "tamarocards.json"
+      );
+      if (fs.existsSync(tamarocardsPath)) {
+        availableLanguages.push(folder);
+        const translationContent = fs.readFileSync(tamarocardsPath, "utf8");
+        try {
+          languageTranslations[folder] = JSON.parse(translationContent);
+        } catch (e) {
+          console.error(`Error parsing JSON for ${folder}:`, e);
+        }
+      }
+    });
+
+    // 2. Get all function folders from function_svgs directory
+    if (fs.existsSync(svgsPath)) {
+      const functionFolders = fs.readdirSync(svgsPath);
+      console.log(`Found ${functionFolders.length} function folders`);
+
+      // Process each function folder
+      functionFolders.forEach((functionName) => {
+        const functionPath = path.join(svgsPath, functionName);
+
+        // Skip if not a directory
+        if (!fs.statSync(functionPath).isDirectory()) return;
+
+        // Build card localization based on translations
+        const localization: Record<string, string> = { en: functionName };
+
+        // Add translations for each available language
+        availableLanguages.forEach((lang) => {
+          if (
+            lang !== "en" &&
+            languageTranslations[lang] &&
+            languageTranslations[lang][functionName]
+          ) {
+            localization[lang] = languageTranslations[lang][functionName];
+          }
+        });
+
+        // Find icon SVGs
+        const svgFiles = fs.readdirSync(functionPath);
+
+        // Main function icon - now looking for function_icon.svg
+        const iconFile = svgFiles.find((f) => f === `${functionName}_icon.svg`);
+        const icon = iconFile
+          ? `/function_svgs/${functionName}/${iconFile}`
+          : "";
+
+        // Return icon - now looking for any file with _out.svg
+        const returnIconFile = svgFiles.find((f) => f.includes("_out.svg"));
+        const returnIcon = returnIconFile
+          ? `/function_svgs/${functionName}/${returnIconFile}`
+          : "";
+
+        // Parameter icons - now looking for files with _in_N.svg
+        const parameterFiles = svgFiles
+          .filter((f) => f.includes("_in_"))
+          .sort((a, b) => {
+            // Sort by parameter number
+            const numA = parseInt(a.match(/_in_(\d+)\.svg/)?.[1] || "0", 10);
+            const numB = parseInt(b.match(/_in_(\d+)\.svg/)?.[1] || "0", 10);
+            return numA - numB;
+          });
+
+        const parameterIcons = parameterFiles.map(
+          (file) => `/function_svgs/${functionName}/${file}`
+        );
+
+        // Create card object
+        cards.push({
+          localization,
+          icon,
+          returnIcon,
+          parametersIcon: parameterIcons,
+        });
+      });
+
+      console.log(`Successfully processed ${cards.length} cards`);
+    } else {
+      console.error("SVG path does not exist:", svgsPath);
+    }
+  } catch (error) {
+    console.error("Error processing card data:", error);
+  }
+
+  return {
+    props: {
+      cards,
+      availableLanguages,
+      ...(await serverSideTranslations(
+        "en",
+        ["tamarocards"],
+        null,
+        availableLanguages
+      )),
+    },
+  };
 }

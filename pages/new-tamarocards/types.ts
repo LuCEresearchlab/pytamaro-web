@@ -10,3 +10,9 @@ export type Card = {
   parametersIcon?: string[];
   returnIcon?: string;
 };
+
+export type CardIcons = {
+  icon: string;
+  parametersIcon?: string[];
+  returnIcon?: string;
+};
