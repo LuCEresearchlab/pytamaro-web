@@ -191,6 +191,9 @@ export async function getStaticProps() {
   const availableLanguages: string[] = [];
   const cards: Card[] = [];
 
+  // Track all function names from translations to ensure we include functions without SVGs
+  const allFunctionNames = new Set<string>();
+
   try {
     // 1. Find all language folders with tamarocards.json
     const languageFolders = fs.readdirSync(localesPath);
@@ -207,12 +210,24 @@ export async function getStaticProps() {
         availableLanguages.push(folder);
         const translationContent = fs.readFileSync(tamarocardsPath, "utf8");
         try {
-          languageTranslations[folder] = JSON.parse(translationContent);
+          const translations = JSON.parse(translationContent);
+          languageTranslations[folder] = translations;
+
+          // Collect all function names from translation keys
+          if (folder === "en") {
+            // Use English as the reference
+            Object.keys(translations).forEach((key) => {
+              allFunctionNames.add(key);
+            });
+          }
         } catch (e) {
           console.error(`Error parsing JSON for ${folder}:`, e);
         }
       }
     });
+
+    // Create a map to track which functions have been processed
+    const processedFunctions = new Map<string, boolean>();
 
     // 2. Get all function folders from function_svgs directory
     if (fs.existsSync(svgsPath)) {
@@ -225,6 +240,9 @@ export async function getStaticProps() {
 
         // Skip if not a directory
         if (!fs.statSync(functionPath).isDirectory()) return;
+
+        // Mark this function as processed
+        processedFunctions.set(functionName, true);
 
         // Build card localization based on translations
         const localization: Record<string, string> = { en: functionName };
@@ -278,10 +296,42 @@ export async function getStaticProps() {
         });
       });
 
-      console.log(`Successfully processed ${cards.length} cards`);
+      console.log(`Successfully processed ${cards.length} cards with SVGs`);
     } else {
-      console.error("SVG path does not exist:", svgsPath);
+      console.warn("SVG path does not exist:", svgsPath);
     }
+
+    // 3. Add functions that don't have SVG folders but are in translations
+    allFunctionNames.forEach((functionName) => {
+      // Skip already processed functions
+      if (processedFunctions.has(functionName)) return;
+
+      console.log(`Adding function without SVGs: ${functionName}`);
+
+      // Build card localization based on translations
+      const localization: Record<string, string> = { en: functionName };
+
+      // Add translations for each available language
+      availableLanguages.forEach((lang) => {
+        if (
+          lang !== "en" &&
+          languageTranslations[lang] &&
+          languageTranslations[lang][functionName]
+        ) {
+          localization[lang] = languageTranslations[lang][functionName];
+        }
+      });
+
+      // Create card object with empty icon paths
+      cards.push({
+        localization,
+        icon: "",
+        returnIcon: "",
+        parametersIcon: [],
+      });
+    });
+
+    console.log(`Total cards processed: ${cards.length}`);
   } catch (error) {
     console.error("Error processing card data:", error);
   }
