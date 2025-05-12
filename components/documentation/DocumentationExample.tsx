@@ -81,6 +81,7 @@ export default function DocumentationExample({
               marginTop: theme.spacing(1),
               marginBottom: theme.spacing(1),
             }}
+            translate='no'
           >
             {example.code}
           </Box>

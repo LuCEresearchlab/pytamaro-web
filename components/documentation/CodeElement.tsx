@@ -20,6 +20,7 @@ export default function CodeElement({
       }
       fontWeight={bold ? 'bold' : 'normal'}
       fontStyle={type ? 'italic' : 'normal'}
+      translate='no'
     >
       {children}
     </Typography>
