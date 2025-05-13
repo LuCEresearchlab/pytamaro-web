@@ -1,0 +1,20 @@
+{
+    "black":        "noir",
+    "red":          "rouge",
+    "green":        "vert",
+    "blue":         "bleu",
+    "white":        "blanc",
+    "yellow":       "jaune",
+    "magenta":      "magenta",
+    "cyan":         "cyan",
+    "transparent":  "transparent",
+    "top_left":     "haut_gauche",
+    "top_right":    "haut_droit",
+    "bottom_left":  "bas_gauche",
+    "bottom_right": "bas_droit",
+    "center":       "centre",
+    "top_center":   "haut_centre",
+    "bottom_center":"bas_centre",
+    "center_left":  "centre_gauche",
+    "center_right": "centre_droit"
+}

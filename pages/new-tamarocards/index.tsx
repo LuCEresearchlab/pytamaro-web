@@ -25,6 +25,7 @@ import {
 } from "@mui/material";
 import { Card, Language } from "./types";
 import FunctionCardSheet from "./function_card_sheet";
+import ConstantCardSheet from "./constant_card_sheet";
 import LanguagePickerCard from "./language-picker-card";
 import FunctionCardApiSheet from "./function_card_api";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
@@ -32,10 +33,12 @@ import fs from "fs";
 import path from "path";
 
 export default function CardsRenderer({
-  cards,
+  functionCards,
+  constantCards,
   availableLanguages,
 }: {
-  cards: Card[];
+  functionCards: Card[];
+  constantCards: Card[];
   availableLanguages: string[];
 }) {
   const [showIcons, setShowIcons] = useState(true);
@@ -44,8 +47,9 @@ export default function CardsRenderer({
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(["en"]);
 
   useEffect(() => {
-    console.log("Cards data:", cards);
-  }, [cards]);
+    console.log("Function cards data:", functionCards);
+    console.log("Constant cards data:", constantCards);
+  }, [functionCards, constantCards]);
 
   useEffect(() => {
     const parsedLanguages = availableLanguages.map((code) => ({
@@ -167,19 +171,45 @@ export default function CardsRenderer({
             </Button>
           </Box>
 
+          {/* Function Card Sheet */}
+          <Typography
+            variant="h5"
+            component="h2"
+            gutterBottom
+            sx={{ mt: 4, mb: 2 }}
+          >
+            Function Cards
+          </Typography>
           {showIcons ? (
             <FunctionCardApiSheet
-              cards={cards}
+              cards={functionCards}
               showIcons={showIcons}
               selectedLanguages={selectedLanguages}
             />
           ) : (
-            <FunctionCardSheet
-              cards={cards}
-              showIcons={showIcons}
-              selectedLanguages={selectedLanguages}
-            />
+            <>
+              <FunctionCardSheet
+                cards={functionCards}
+                showIcons={showIcons}
+                selectedLanguages={selectedLanguages}
+              />
+              <Typography
+                variant="h5"
+                component="h2"
+                gutterBottom
+                sx={{ mt: 6, mb: 2 }}
+              >
+                Constant Cards
+              </Typography>
+              <ConstantCardSheet
+                cards={constantCards}
+                showIcons={showIcons}
+                selectedLanguages={selectedLanguages}
+              />
+            </>
           )}
+
+          {/* Constant Card Sheet - Always show this regardless of showIcons */}
         </>
       )}
     </Container>
@@ -189,29 +219,46 @@ export default function CardsRenderer({
 export async function getStaticProps() {
   // Get all language folders from public/locales
   const localesPath = path.join(process.cwd(), "public/locales");
-  // Get SVG folders from public/function_svgs
-  const svgsPath = path.join(process.cwd(), "public/function_svgs");
+  // Get SVG folders from public paths
+  const functionSvgsPath = path.join(process.cwd(), "public/function_svgs");
+  const constantSvgsPath = path.join(process.cwd(), "public/constant_svgs");
   const availableLanguages: string[] = [];
-  const cards: Card[] = [];
+  const functionCards: Card[] = [];
+  const constantCards: Card[] = [];
 
   const allFunctionNames = new Set<string>();
+  const allConstantNames = new Set<string>();
 
   try {
     const languageFolders = fs.readdirSync(localesPath);
-    const languageTranslations: Record<string, Record<string, string>> = {};
+    const functionTranslations: Record<string, Record<string, string>> = {};
+    const constantTranslations: Record<string, Record<string, string>> = {};
 
+    // Process all language folders to extract translations
     languageFolders.forEach((folder) => {
-      const tamarocardsPath = path.join(
+      // Process function cards translations
+      const functionCardsPath = path.join(
         localesPath,
         folder,
-        "tamarocards.json"
+        "functioncards.json"
       );
-      if (fs.existsSync(tamarocardsPath)) {
-        availableLanguages.push(folder);
-        const translationContent = fs.readFileSync(tamarocardsPath, "utf8");
+
+      // Process constant cards translations
+      const constantCardsPath = path.join(
+        localesPath,
+        folder,
+        "constantcards.json"
+      );
+
+      // Add language to available languages if either file exists
+      let shouldAddLanguage = false;
+
+      if (fs.existsSync(functionCardsPath)) {
+        shouldAddLanguage = true;
+        const translationContent = fs.readFileSync(functionCardsPath, "utf8");
         try {
           const translations = JSON.parse(translationContent);
-          languageTranslations[folder] = translations;
+          functionTranslations[folder] = translations;
 
           if (folder === "en") {
             Object.keys(translations).forEach((key) => {
@@ -219,26 +266,47 @@ export async function getStaticProps() {
             });
           }
         } catch (e) {
-          console.error(`Error parsing JSON for ${folder}:`, e);
+          console.error(`Error parsing function JSON for ${folder}:`, e);
         }
+      }
+
+      if (fs.existsSync(constantCardsPath)) {
+        shouldAddLanguage = true;
+        const translationContent = fs.readFileSync(constantCardsPath, "utf8");
+        try {
+          const translations = JSON.parse(translationContent);
+          constantTranslations[folder] = translations;
+
+          if (folder === "en") {
+            Object.keys(translations).forEach((key) => {
+              allConstantNames.add(key);
+            });
+          }
+        } catch (e) {
+          console.error(`Error parsing constant JSON for ${folder}:`, e);
+        }
+      }
+
+      if (shouldAddLanguage && !availableLanguages.includes(folder)) {
+        availableLanguages.push(folder);
       }
     });
 
+    // Make sure "en" is first in the list if available
     if (availableLanguages.includes("en")) {
       const englishIndex = availableLanguages.indexOf("en");
       availableLanguages.splice(englishIndex, 1);
-
       availableLanguages.unshift("en");
     }
 
+    // Process Function Cards with SVGs
     const processedFunctions = new Map<string, boolean>();
-
-    if (fs.existsSync(svgsPath)) {
-      const functionFolders = fs.readdirSync(svgsPath);
+    if (fs.existsSync(functionSvgsPath)) {
+      const functionFolders = fs.readdirSync(functionSvgsPath);
       console.log(`Found ${functionFolders.length} function folders`);
 
       functionFolders.forEach((functionName) => {
-        const functionPath = path.join(svgsPath, functionName);
+        const functionPath = path.join(functionSvgsPath, functionName);
 
         if (!fs.statSync(functionPath).isDirectory()) return;
 
@@ -249,10 +317,10 @@ export async function getStaticProps() {
         availableLanguages.forEach((lang) => {
           if (
             lang !== "en" &&
-            languageTranslations[lang] &&
-            languageTranslations[lang][functionName]
+            functionTranslations[lang] &&
+            functionTranslations[lang][functionName]
           ) {
-            localization[lang] = languageTranslations[lang][functionName];
+            localization[lang] = functionTranslations[lang][functionName];
           }
         });
 
@@ -281,7 +349,7 @@ export async function getStaticProps() {
           (file) => `/function_svgs/${functionName}/${file}`
         );
 
-        cards.push({
+        functionCards.push({
           localization,
           icon,
           returnIcon,
@@ -289,11 +357,14 @@ export async function getStaticProps() {
         });
       });
 
-      console.log(`Successfully processed ${cards.length} cards with SVGs`);
+      console.log(
+        `Successfully processed ${functionCards.length} function cards with SVGs`
+      );
     } else {
-      console.warn("SVG path does not exist:", svgsPath);
+      console.warn("Function SVG path does not exist:", functionSvgsPath);
     }
 
+    // Process function names without SVGs
     allFunctionNames.forEach((functionName) => {
       if (processedFunctions.has(functionName)) return;
 
@@ -304,14 +375,14 @@ export async function getStaticProps() {
       availableLanguages.forEach((lang) => {
         if (
           lang !== "en" &&
-          languageTranslations[lang] &&
-          languageTranslations[lang][functionName]
+          functionTranslations[lang] &&
+          functionTranslations[lang][functionName]
         ) {
-          localization[lang] = languageTranslations[lang][functionName];
+          localization[lang] = functionTranslations[lang][functionName];
         }
       });
 
-      cards.push({
+      functionCards.push({
         localization,
         icon: "",
         returnIcon: "",
@@ -319,18 +390,97 @@ export async function getStaticProps() {
       });
     });
 
-    console.log(`Total cards processed: ${cards.length}`);
+    // Process Constant Cards with SVGs
+    const processedConstants = new Map<string, boolean>();
+    if (fs.existsSync(constantSvgsPath)) {
+      const constantFolders = fs.readdirSync(constantSvgsPath);
+      console.log(`Found ${constantFolders.length} constant folders`);
+
+      constantFolders.forEach((constantName) => {
+        const constantPath = path.join(constantSvgsPath, constantName);
+
+        if (!fs.statSync(constantPath).isDirectory()) return;
+
+        processedConstants.set(constantName, true);
+
+        const localization: Record<string, string> = { en: constantName };
+
+        availableLanguages.forEach((lang) => {
+          if (
+            lang !== "en" &&
+            constantTranslations[lang] &&
+            constantTranslations[lang][constantName]
+          ) {
+            localization[lang] = constantTranslations[lang][constantName];
+          }
+        });
+
+        // Find icon SVGs for constants
+        const svgFiles = fs.readdirSync(constantPath);
+
+        const iconFile = svgFiles.find(
+          (f) => f === `${constantName}.svg` || f === `${constantName}_icon.svg`
+        );
+        const icon = iconFile
+          ? `/constant_svgs/${constantName}/${iconFile}`
+          : "";
+
+        constantCards.push({
+          localization,
+          icon,
+          returnIcon: "", // Constants don't have return icons
+          parametersIcon: [], // Constants don't have parameter icons
+        });
+      });
+
+      console.log(
+        `Successfully processed ${constantCards.length} constant cards with SVGs`
+      );
+    } else {
+      console.warn("Constant SVG path does not exist:", constantSvgsPath);
+    }
+
+    // Process constant names without SVGs
+    allConstantNames.forEach((constantName) => {
+      if (processedConstants.has(constantName)) return;
+
+      console.log(`Adding constant without SVGs: ${constantName}`);
+
+      const localization: Record<string, string> = { en: constantName };
+
+      availableLanguages.forEach((lang) => {
+        if (
+          lang !== "en" &&
+          constantTranslations[lang] &&
+          constantTranslations[lang][constantName]
+        ) {
+          localization[lang] = constantTranslations[lang][constantName];
+        }
+      });
+
+      constantCards.push({
+        localization,
+        icon: "",
+        returnIcon: "",
+        parametersIcon: [],
+      });
+    });
+
+    console.log(
+      `Total cards processed: ${functionCards.length} functions, ${constantCards.length} constants`
+    );
   } catch (error) {
     console.error("Error processing card data:", error);
   }
 
   return {
     props: {
-      cards,
+      functionCards,
+      constantCards,
       availableLanguages,
       ...(await serverSideTranslations(
         "en",
-        ["tamarocards"],
+        ["functioncards", "constantcards"],
         null,
         availableLanguages
       )),
