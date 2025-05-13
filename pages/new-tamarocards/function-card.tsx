@@ -29,7 +29,7 @@ export default function FunctionCard({
   languages,
   returnIcon = "",
   parameterIcons = [],
-  showIcons = true,
+  showIcons = false,
 }: BasicCardProps) {
   const baseWidth = showIcons ? 7 : 5.5;
   const cardRef = useRef<HTMLDivElement>(null);
@@ -41,8 +41,6 @@ export default function FunctionCard({
 
   const iconWidth = 2.5;
   const iconHeight = 2.5;
-
-  const svgScale = showIcons ? 0.8 : 0.65;
 
   const hasParameterIcons =
     showIcons && parameterIcons.some((icon) => icon && icon.trim() !== "");
@@ -184,7 +182,7 @@ export default function FunctionCard({
           <div
             ref={symbolRef}
             style={{
-              transform: `scale(${svgScale})`,
+              transform: `scale(0.8)`,
             }}
           >
             <PyTamaroSymbol />

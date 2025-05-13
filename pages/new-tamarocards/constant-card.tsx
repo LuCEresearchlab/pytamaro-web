@@ -5,8 +5,17 @@
 /* eslint-disable @typescript-eslint/quotes */
 import { useEffect, useRef, useState } from "react";
 import PyTamaroSymbol from "./PyTamaro-symbol";
+import RenderSvg from "./render-svg";
 
-export default function ConstantCard({ languages }: { languages: string[] }) {
+export default function ConstantCard({
+  languages,
+  svg,
+  showIcons = false,
+}: {
+  languages: string[];
+  svg: string;
+  showIcons?: boolean;
+}) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [calculatedWidth, setCalculatedWidth] = useState(12.5);
   const baseWidth = 12.5;
@@ -50,72 +59,92 @@ export default function ConstantCard({ languages }: { languages: string[] }) {
 
   return (
     <div
-      ref={cardRef}
       style={{
-        position: "relative",
-        width: `${calculatedWidth}em`,
-        height: "12.5em",
-        backgroundColor: "#E6F5FD",
-        border: "0.4em solid #118BCA",
-        borderRadius: "0.4em",
         display: "flex",
+        flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        fontWeight: "bold",
-        color: "black",
-        minWidth: `${baseWidth}em`,
-        boxSizing: "border-box",
+        gap: "2em",
       }}
     >
       <div
+        ref={cardRef}
         style={{
-          position: "absolute",
-          top: "0.5em",
-          left: "50%",
-          transform: "translateX(-50%)",
-          marginBottom: "0.5em",
-        }}
-      >
-        <PyTamaroSymbol />
-      </div>
-      <span
-        style={{
-          fontSize: "1.5em",
-          zIndex: 1,
-          whiteSpace: "nowrap",
-          padding: "0 1em",
-        }}
-      >
-        {languages.map((lang, index) => (
-          <p
-            key={index}
-            style={{
-              fontWeight: index === 0 ? "bold" : "normal",
-              margin: 0,
-              padding: "0 0.25em",
-              whiteSpace: "nowrap",
-              overflow: "visible",
-              width: "100%",
-              textAlign: "center",
-            }}
-          >
-            {lang}
-          </p>
-        ))}
-      </span>
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          right: "-1.35em",
-          width: "2.25em",
-          height: "2.25em",
+          position: "relative",
+          width: `${calculatedWidth}em`,
+          height: "12.5em",
           backgroundColor: "#E6F5FD",
-          borderTop: "0.4em solid #118BCA",
-          borderRight: "0.4em solid #118BCA",
-          transform: "translateY(-50%) rotate(45deg)",
+          border: "0.4em solid #118BCA",
+          borderRadius: "0.4em",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          fontWeight: "bold",
+          color: "black",
+          minWidth: `${baseWidth}em`,
+          boxSizing: "border-box",
         }}
-      />
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: "0.5em",
+            left: "50%",
+            transform: "translateX(-50%)",
+            marginBottom: "0.5em",
+          }}
+        >
+          <PyTamaroSymbol />
+        </div>
+        <span
+          style={{
+            fontSize: "1.5em",
+            zIndex: 1,
+            whiteSpace: "nowrap",
+            padding: "0 1em",
+          }}
+        >
+          {languages.map((lang, index) => (
+            <p
+              key={index}
+              style={{
+                fontWeight: index === 0 ? "bold" : "normal",
+                margin: 0,
+                padding: "0 0.25em",
+                whiteSpace: "nowrap",
+                overflow: "visible",
+                width: "100%",
+                textAlign: "center",
+              }}
+            >
+              {lang}
+            </p>
+          ))}
+        </span>
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            right: "-1.35em",
+            width: "2.25em",
+            height: "2.25em",
+            backgroundColor: "#E6F5FD",
+            borderTop: "0.4em solid #118BCA",
+            borderRight: "0.4em solid #118BCA",
+            transform: "translateY(-50%) rotate(45deg)",
+          }}
+        />
+      </div>
+      {showIcons && (
+        <div
+          style={{
+            width: "3em",
+            height: "3em",
+          }}
+        >
+          <RenderSvg svg={svg} padding="0" maxWidth="90%" maxHeight="90%" />
+        </div>
+      )}
     </div>
   );
 }
