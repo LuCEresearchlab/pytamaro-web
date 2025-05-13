@@ -101,6 +101,7 @@ export default function ConstantCard({
             zIndex: 1,
             whiteSpace: "nowrap",
             padding: "0 1em",
+            gap: "0",
           }}
         >
           {languages.map((lang, index) => (
@@ -109,7 +110,7 @@ export default function ConstantCard({
               style={{
                 fontWeight: index === 0 ? "bold" : "normal",
                 margin: 0,
-                padding: "0 0.25em",
+                marginTop: index === 0 ? "1em" : "0",
                 whiteSpace: "nowrap",
                 overflow: "visible",
                 width: "100%",
