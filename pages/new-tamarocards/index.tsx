@@ -28,6 +28,7 @@ import FunctionCardSheet from "./function_card_sheet";
 import ConstantCardSheet from "./constant_card_sheet";
 import LanguagePickerCard from "./language-picker-card";
 import FunctionCardApiSheet from "./function_card_api";
+import ConstantCardApiSheet from "./constant_card_api";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import fs from "fs";
 import path from "path";
@@ -166,28 +167,57 @@ export default function CardsRenderer({
             </Button>
           </Box>
 
-          {/* Function Card Sheet */}
-          <Typography
-            variant="h5"
-            component="h2"
-            gutterBottom
-            sx={{ mt: 4, mb: 2 }}
-          >
-            Function Cards
-          </Typography>
           {showIcons ? (
-            <FunctionCardApiSheet
-              cards={functionCards}
-              showIcons={showIcons}
-              selectedLanguages={selectedLanguages}
-            />
+            <>
+              {/* Function API Sheets */}
+              <Typography
+                variant="h5"
+                component="h2"
+                gutterBottom
+                sx={{ mt: 4, mb: 2 }}
+              >
+                Function API Sheets
+              </Typography>
+              <FunctionCardApiSheet
+                cards={functionCards}
+                showIcons={showIcons}
+                selectedLanguages={selectedLanguages}
+              />
+
+              {/* Constant API Sheets */}
+              <Typography
+                variant="h5"
+                component="h2"
+                gutterBottom
+                sx={{ mt: 6, mb: 2 }}
+              >
+                Constant API Sheets
+              </Typography>
+              <ConstantCardApiSheet
+                cards={constantCards}
+                functionCards={functionCards}
+                showIcons={showIcons}
+                selectedLanguages={selectedLanguages}
+              />
+            </>
           ) : (
             <>
+              {/* Regular function cards */}
+              <Typography
+                variant="h5"
+                component="h2"
+                gutterBottom
+                sx={{ mt: 4, mb: 2 }}
+              >
+                Function Cards
+              </Typography>
               <FunctionCardSheet
                 cards={functionCards}
                 showIcons={showIcons}
                 selectedLanguages={selectedLanguages}
               />
+
+              {/* Regular constant cards */}
               <Typography
                 variant="h5"
                 component="h2"
@@ -203,8 +233,6 @@ export default function CardsRenderer({
               />
             </>
           )}
-
-          {/* Constant Card Sheet - Always show this regardless of showIcons */}
         </>
       )}
     </Container>
