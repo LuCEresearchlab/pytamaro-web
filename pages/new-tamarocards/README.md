@@ -13,7 +13,11 @@ To add a function, add the translation for it in `public/locales`, once every la
 
 This format is necessary for correct reading of folders and paths in `index.tsx`
 
+#### Adding a constant
+
+To add a constant, add the translation for it in `public/locales`, once every language has its own translation of the constant, it will already appear when rendering. To add the icon for the constant card, simply add an svg called `{constant_name}_icon.svg` (i.e. `black_icon.svg`)
+
 #### Adding a language
 
 To add a new language to the translation system, add a new folder under `public/locales` with the abbreviation of the chosen language (i.e. 'pt' for 'Portugese');
-in this folder, add a new file called `tamarocards.json` and add a translation for all the present functions (format: `{ "english_function_name": "translated_function_name", ...}`)
+in this folder, add two new files called `functioncard.json` and `constantcards.json`; add a translation for all the present functions and constants (format: `{ "english_name": "translated_name", ...}`)
