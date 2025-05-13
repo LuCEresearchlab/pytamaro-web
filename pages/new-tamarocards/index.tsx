@@ -47,11 +47,6 @@ export default function CardsRenderer({
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(["en"]);
 
   useEffect(() => {
-    console.log("Function cards data:", functionCards);
-    console.log("Constant cards data:", constantCards);
-  }, [functionCards, constantCards]);
-
-  useEffect(() => {
     const parsedLanguages = availableLanguages.map((code) => ({
       code,
       name: code.toUpperCase(),
@@ -303,7 +298,6 @@ export async function getStaticProps() {
     const processedFunctions = new Map<string, boolean>();
     if (fs.existsSync(functionSvgsPath)) {
       const functionFolders = fs.readdirSync(functionSvgsPath);
-      console.log(`Found ${functionFolders.length} function folders`);
 
       functionFolders.forEach((functionName) => {
         const functionPath = path.join(functionSvgsPath, functionName);
@@ -356,10 +350,6 @@ export async function getStaticProps() {
           parametersIcon: parameterIcons,
         });
       });
-
-      console.log(
-        `Successfully processed ${functionCards.length} function cards with SVGs`
-      );
     } else {
       console.warn("Function SVG path does not exist:", functionSvgsPath);
     }
@@ -367,8 +357,6 @@ export async function getStaticProps() {
     // Process function names without SVGs
     allFunctionNames.forEach((functionName) => {
       if (processedFunctions.has(functionName)) return;
-
-      console.log(`Adding function without SVGs: ${functionName}`);
 
       const localization: Record<string, string> = { en: functionName };
 
@@ -394,7 +382,6 @@ export async function getStaticProps() {
     const processedConstants = new Map<string, boolean>();
     if (fs.existsSync(constantSvgsPath)) {
       const constantFolders = fs.readdirSync(constantSvgsPath);
-      console.log(`Found ${constantFolders.length} constant folders`);
 
       constantFolders.forEach((constantName) => {
         const constantPath = path.join(constantSvgsPath, constantName);
@@ -432,10 +419,6 @@ export async function getStaticProps() {
           parametersIcon: [], // Constants don't have parameter icons
         });
       });
-
-      console.log(
-        `Successfully processed ${constantCards.length} constant cards with SVGs`
-      );
     } else {
       console.warn("Constant SVG path does not exist:", constantSvgsPath);
     }
@@ -465,10 +448,6 @@ export async function getStaticProps() {
         parametersIcon: [],
       });
     });
-
-    console.log(
-      `Total cards processed: ${functionCards.length} functions, ${constantCards.length} constants`
-    );
   } catch (error) {
     console.error("Error processing card data:", error);
   }
