@@ -15,7 +15,7 @@ This format is necessary for correct reading of folders and paths in `index.tsx`
 
 #### Adding a constant
 
-To add a constant, add the translation for it in `public/locales`, once every language has its own translation of the constant, it will already appear when rendering. To add the icon for the constant card, simply add an svg called `{constant_name}_icon.svg` (i.e. `black_icon.svg`)
+To add a constant, add the translation for it in `public/locales`, once every language has its own translation of the constant, it will already appear when rendering. To add the icon for the constant card, simply add an svg called `{constant_name}.svg` (i.e. `black.svg`)
 
 #### Adding a language
 

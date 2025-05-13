@@ -21,7 +21,6 @@ export default function ConstantCard({
   const baseWidth = 12.5;
 
   useEffect(() => {
-    // Reset to base width first
     setCalculatedWidth(baseWidth);
 
     // Calculate proper width after component renders

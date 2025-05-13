@@ -409,12 +409,15 @@ export async function getStaticProps() {
     // Process Constant Cards with SVGs
     const processedConstants = new Map<string, boolean>();
     if (fs.existsSync(constantSvgsPath)) {
-      const constantFolders = fs.readdirSync(constantSvgsPath);
+      // Get all SVG files in the constant_svgs directory
+      const constantSvgFiles = fs.readdirSync(constantSvgsPath);
 
-      constantFolders.forEach((constantName) => {
-        const constantPath = path.join(constantSvgsPath, constantName);
+      constantSvgFiles.forEach((svgFile) => {
+        // Skip if not an SVG file
+        if (!svgFile.endsWith(".svg")) return;
 
-        if (!fs.statSync(constantPath).isDirectory()) return;
+        // Extract constant name from the filename (remove .svg extension)
+        const constantName = svgFile.replace(".svg", "");
 
         processedConstants.set(constantName, true);
 
@@ -430,21 +433,12 @@ export async function getStaticProps() {
           }
         });
 
-        // Find icon SVGs for constants
-        const svgFiles = fs.readdirSync(constantPath);
-
-        const iconFile = svgFiles.find(
-          (f) => f === `${constantName}.svg` || f === `${constantName}_icon.svg`
-        );
-        const icon = iconFile
-          ? `/constant_svgs/${constantName}/${iconFile}`
-          : "";
+        const icon = `/constant_svgs/${svgFile}`;
 
         constantCards.push({
           localization,
           icon,
-          returnIcon: "", // Constants don't have return icons
-          parametersIcon: [], // Constants don't have parameter icons
+          parametersIcon: [], // Keep the same structure as function cards
         });
       });
     } else {
@@ -454,8 +448,6 @@ export async function getStaticProps() {
     // Process constant names without SVGs
     allConstantNames.forEach((constantName) => {
       if (processedConstants.has(constantName)) return;
-
-      console.log(`Adding constant without SVGs: ${constantName}`);
 
       const localization: Record<string, string> = { en: constantName };
 
@@ -472,7 +464,6 @@ export async function getStaticProps() {
       constantCards.push({
         localization,
         icon: "",
-        returnIcon: "",
         parametersIcon: [],
       });
     });

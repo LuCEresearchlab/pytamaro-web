@@ -264,7 +264,7 @@ export default function ConstantCardApiSheet({
         >
           <Grid
             container
-            spacing={1}
+            spacing={2} // Increased spacing between grid items
             sx={{
               aspectRatio: "1/1",
               maxHeight: "100%",
@@ -281,12 +281,12 @@ export default function ConstantCardApiSheet({
                   alignItems: "center",
                   justifyContent: "center",
                   aspectRatio: "1/1",
-                  padding: "0.5rem",
+                  padding: "0.2rem", // Reduced internal padding to allow more space for content
                 }}
               >
                 <Box
                   sx={{
-                    transform: "scale(0.8)",
+                    transform: "scale(0.7)", // Reduced scale to prevent overlapping
                     transformOrigin: "center center",
                     width: "100%",
                     height: "100%",
@@ -295,7 +295,9 @@ export default function ConstantCardApiSheet({
                     justifyContent: "center",
                   }}
                 >
-                  <div style={{ transform: "scale(0.8)" }}>
+                  <div style={{ transform: "scale(0.7)" }}>
+                    {" "}
+                    {/* Reduced inner scale as well */}
                     <ConstantCard
                       languages={filterCardLanguages(card.localization)}
                       svg={card.icon}
@@ -351,27 +353,31 @@ export default function ConstantCardApiSheet({
                   },
                 }}
               >
-                <FunctionCard
-                  params={
-                    Array.isArray(card.parametersIcon)
-                      ? card.parametersIcon.map((icon: string, i: number) => ({
-                          name: `Param ${i + 1}`,
-                          type: "Icon",
-                        }))
-                      : []
-                  }
-                  svg={card.icon}
-                  returnValue={{
-                    type: card.localization.en?.includes("color")
-                      ? "Color"
-                      : "Pin",
-                    description: card.localization.en || "",
-                  }}
-                  languages={filterCardLanguages(card.localization)}
-                  parameterIcons={showIcons ? card.parametersIcon : undefined}
-                  returnIcon={showIcons ? card.returnIcon : ""}
-                  showIcons={showIcons}
-                />
+                <div style={{ transform: "scale(0.8)" }}>
+                  <FunctionCard
+                    params={
+                      Array.isArray(card.parametersIcon)
+                        ? card.parametersIcon.map(
+                            (icon: string, i: number) => ({
+                              name: `Param ${i + 1}`,
+                              type: "Icon",
+                            })
+                          )
+                        : []
+                    }
+                    svg={card.icon}
+                    returnValue={{
+                      type: card.localization.en?.includes("color")
+                        ? "Color"
+                        : "Pin",
+                      description: card.localization.en || "",
+                    }}
+                    languages={filterCardLanguages(card.localization)}
+                    parameterIcons={showIcons ? card.parametersIcon : undefined}
+                    returnIcon={showIcons ? card.returnIcon : ""}
+                    showIcons={showIcons}
+                  />
+                </div>
               </Box>
             </Box>
           ))}
