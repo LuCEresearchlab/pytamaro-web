@@ -43,22 +43,19 @@ export default function CardsRenderer({
   const [languages, setLanguages] = useState<Language[]>([]);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(["en"]);
 
-  // Debug cards data in browser console
   useEffect(() => {
     console.log("Cards data:", cards);
   }, [cards]);
 
   useEffect(() => {
-    // Convert available languages from getStaticProps to Language objects
     const parsedLanguages = availableLanguages.map((code) => ({
       code,
       name: code.toUpperCase(),
-      enabled: code === "en", // Enable English by default
+      enabled: code === "en",
     }));
 
     setLanguages(parsedLanguages);
 
-    // Always set English as the first selected language if available
     if (availableLanguages.includes("en")) {
       setSelectedLanguages(["en"]);
     } else if (parsedLanguages.length > 0) {
@@ -70,9 +67,8 @@ export default function CardsRenderer({
   const handleLanguageSelect = (index: number, languageCode: string | null) => {
     const updatedSelectedLanguages = [...selectedLanguages];
 
-    // Ensure the first language is always selected (can't be removed)
     if (index === 0 && !languageCode) {
-      return; // Don't allow removing the first language
+      return;
     }
 
     if (!languageCode) {
@@ -92,7 +88,6 @@ export default function CardsRenderer({
       (lang, i) => lang !== "" || i < updatedSelectedLanguages.length - 1
     );
 
-    // Ensure 'en' is the first language if it exists in the available languages
     if (
       availableLanguages.includes("en") &&
       !cleanedSelections.includes("en")
@@ -199,15 +194,12 @@ export async function getStaticProps() {
   const availableLanguages: string[] = [];
   const cards: Card[] = [];
 
-  // Track all function names from translations to ensure we include functions without SVGs
   const allFunctionNames = new Set<string>();
 
   try {
-    // 1. Find all language folders with tamarocards.json
     const languageFolders = fs.readdirSync(localesPath);
     const languageTranslations: Record<string, Record<string, string>> = {};
 
-    // Load all translations from each language
     languageFolders.forEach((folder) => {
       const tamarocardsPath = path.join(
         localesPath,
@@ -221,9 +213,7 @@ export async function getStaticProps() {
           const translations = JSON.parse(translationContent);
           languageTranslations[folder] = translations;
 
-          // Collect all function names from translation keys
           if (folder === "en") {
-            // Use English as the reference
             Object.keys(translations).forEach((key) => {
               allFunctionNames.add(key);
             });
@@ -234,38 +224,28 @@ export async function getStaticProps() {
       }
     });
 
-    // Ensure English is first in the available languages array
     if (availableLanguages.includes("en")) {
-      // Remove 'en' from its current position
       const englishIndex = availableLanguages.indexOf("en");
       availableLanguages.splice(englishIndex, 1);
 
-      // Add it back at the beginning
       availableLanguages.unshift("en");
     }
 
-    // Create a map to track which functions have been processed
     const processedFunctions = new Map<string, boolean>();
 
-    // 2. Get all function folders from function_svgs directory
     if (fs.existsSync(svgsPath)) {
       const functionFolders = fs.readdirSync(svgsPath);
       console.log(`Found ${functionFolders.length} function folders`);
 
-      // Process each function folder
       functionFolders.forEach((functionName) => {
         const functionPath = path.join(svgsPath, functionName);
 
-        // Skip if not a directory
         if (!fs.statSync(functionPath).isDirectory()) return;
 
-        // Mark this function as processed
         processedFunctions.set(functionName, true);
 
-        // Build card localization based on translations
         const localization: Record<string, string> = { en: functionName };
 
-        // Add translations for each available language
         availableLanguages.forEach((lang) => {
           if (
             lang !== "en" &&
@@ -279,23 +259,19 @@ export async function getStaticProps() {
         // Find icon SVGs
         const svgFiles = fs.readdirSync(functionPath);
 
-        // Main function icon - now looking for function_icon.svg
         const iconFile = svgFiles.find((f) => f === `${functionName}_icon.svg`);
         const icon = iconFile
           ? `/function_svgs/${functionName}/${iconFile}`
           : "";
 
-        // Return icon - now looking for any file with _out.svg
         const returnIconFile = svgFiles.find((f) => f.includes("_out.svg"));
         const returnIcon = returnIconFile
           ? `/function_svgs/${functionName}/${returnIconFile}`
           : "";
 
-        // Parameter icons - now looking for files with _in_N.svg
         const parameterFiles = svgFiles
           .filter((f) => f.includes("_in_"))
           .sort((a, b) => {
-            // Sort by parameter number
             const numA = parseInt(a.match(/_in_(\d+)\.svg/)?.[1] || "0", 10);
             const numB = parseInt(b.match(/_in_(\d+)\.svg/)?.[1] || "0", 10);
             return numA - numB;
@@ -305,7 +281,6 @@ export async function getStaticProps() {
           (file) => `/function_svgs/${functionName}/${file}`
         );
 
-        // Create card object
         cards.push({
           localization,
           icon,
@@ -319,17 +294,13 @@ export async function getStaticProps() {
       console.warn("SVG path does not exist:", svgsPath);
     }
 
-    // 3. Add functions that don't have SVG folders but are in translations
     allFunctionNames.forEach((functionName) => {
-      // Skip already processed functions
       if (processedFunctions.has(functionName)) return;
 
       console.log(`Adding function without SVGs: ${functionName}`);
 
-      // Build card localization based on translations
       const localization: Record<string, string> = { en: functionName };
 
-      // Add translations for each available language
       availableLanguages.forEach((lang) => {
         if (
           lang !== "en" &&
@@ -340,7 +311,6 @@ export async function getStaticProps() {
         }
       });
 
-      // Create card object with empty icon paths
       cards.push({
         localization,
         icon: "",
