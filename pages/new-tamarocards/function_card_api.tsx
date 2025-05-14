@@ -14,22 +14,31 @@
 /* eslint-disable @typescript-eslint/indent */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/quotes */
-import React, { useRef, useState, useEffect } from "react";
-import { Box, Grid, Typography, Container, Button } from "@mui/material";
-import FunctionCard from "./function-card";
-import { Card } from "./types";
-import PyTamaroSymbol from "./PyTamaro-symbol";
+import { Box, Button, Container, Grid, Typography } from "@mui/material";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import React, { useEffect, useRef, useState } from "react";
+import FunctionCard from "./function-card";
+import PyTamaroSymbol from "./PyTamaro-symbol";
+import { Card } from "./types";
 
-const sheet1 = [
-  "rectangle",
-  "ellipse",
-  "circular_sector",
-  "triangle",
-  "text",
-  "empty_graphic",
-];
+interface DocumentationSheet {
+  titleKey: string;
+  elementsKeys: string[];
+}
+
+const sheet1: DocumentationSheet = {
+  titleKey: "primitives",
+  elementsKeys: [
+    "rectangle",
+    "ellipse",
+    "circular_sector",
+    "triangle",
+    "text",
+    "empty_graphic",
+  ],
+}
+
 
 const sheet2 = ["above", "beside", "overlay", "rotate"];
 

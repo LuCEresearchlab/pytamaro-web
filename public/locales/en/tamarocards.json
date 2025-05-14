@@ -1,0 +1,11 @@
+{
+    "functions": {
+        "rectangle": "rettangolo"
+    },
+    "constants": {
+        "yellow": "giallo",
+    },
+    "documentationTitles": {
+        "primitives": "Primitive"
+    }
+}
