@@ -72,6 +72,7 @@ export default function DocumentationExample({
           <Box
             className={COLORIZE_CLASSNAME}
             data-lang={STRICT_PYTHON3_LANG_ID}
+            component={'code'}
             sx={{
               fontFamily: theme.pytamaro.monospaceFontFamily,
               whiteSpace: 'pre',

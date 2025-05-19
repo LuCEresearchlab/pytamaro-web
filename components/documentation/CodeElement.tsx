@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import theme from '../../src/theme';
 
 export default function CodeElement({
@@ -11,18 +11,17 @@ export default function CodeElement({
   bold?: boolean;
 }) {
   const isSpace = children.trim().length === 0;
+  const noMonospace = type || isSpace;
   return (
-    <Typography
-      component='span'
+    <Box
+      component={noMonospace ? 'span' : 'code'}
       sx={{ display: 'inline-block' }}
-      fontFamily={
-        type || isSpace ? undefined : theme.pytamaro.monospaceFontFamily
-      }
+      fontFamily={noMonospace ? undefined : theme.pytamaro.monospaceFontFamily}
       fontWeight={bold ? 'bold' : 'normal'}
       fontStyle={type ? 'italic' : 'normal'}
       translate='no'
     >
       {children}
-    </Typography>
+    </Box>
   );
 }

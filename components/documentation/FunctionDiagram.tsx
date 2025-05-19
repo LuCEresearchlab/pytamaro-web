@@ -74,9 +74,9 @@ export default function FunctionDiagram({
             y='50%'
             dominantBaseline='middle'
             textAnchor='middle'
-            fontSize='1.1em'
             fontWeight='bold'
             fontFamily={theme.pytamaro.monospaceFontFamily}
+            fontSize={`${theme.pytamaro.monospaceFontSizeRatio}em`}
             filter={hoverElement === nameId() ? 'url(#hoverBackground)' : ''}
             {...hoverProps(nameId(), hoverElement, setHoverElement)}
           >
@@ -140,6 +140,7 @@ export default function FunctionDiagram({
                 dominantBaseline='text-top'
                 textAnchor='end'
                 fontFamily={theme.pytamaro.monospaceFontFamily}
+                fontSize={`${theme.pytamaro.monospaceFontSizeRatio}em`}
               >
                 {param.name}
               </text>
@@ -178,6 +179,7 @@ export default function FunctionDiagram({
                 dominantBaseline='text-top'
                 textAnchor='start'
                 fontStyle='italic'
+                fontSize={`${theme.pytamaro.monospaceFontSizeRatio}em`}
               >
                 {returnValue.type}
               </text>

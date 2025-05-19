@@ -78,7 +78,7 @@ export default function ConstantDiagram({
             y='45%'
             dominantBaseline='middle'
             textAnchor='middle'
-            fontSize='1.1em'
+            fontSize={`${theme.pytamaro.monospaceFontSizeRatio}em`}
             fontWeight='bold'
             fontFamily={theme.pytamaro.monospaceFontFamily}
             filter={hoverElement === nameId() ? 'url(#hoverBackground)' : ''}
