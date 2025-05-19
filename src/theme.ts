@@ -36,7 +36,7 @@ const theme = responsiveFontSizes(
     },
     pytamaro: {
       monospaceFontFamily: "'Fira Code Variable', monospace",
-      monospaceFontSizeRatio: 0.95,
+      monospaceFontSizeRatio: 0.9625,
       redColor: '#D2071D',
       backgroundColor: '#E1F5FD',
     },
