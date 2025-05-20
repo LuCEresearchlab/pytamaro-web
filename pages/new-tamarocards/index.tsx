@@ -259,54 +259,45 @@ export async function getStaticProps() {
 
     // Process all language folders to extract translations
     languageFolders.forEach((folder) => {
-      // Process function cards translations
-      const functionCardsPath = path.join(
+      // Process tamarocards.json file
+      const tamaroCardsPath = path.join(
         localesPath,
         folder,
-        "functioncards.json"
+        "tamarocards.json"
       );
 
-      // Process constant cards translations
-      const constantCardsPath = path.join(
-        localesPath,
-        folder,
-        "constantcards.json"
-      );
-
-      // Add language to available languages if either file exists
+      // Add language to available languages if the file exists
       let shouldAddLanguage = false;
 
-      if (fs.existsSync(functionCardsPath)) {
+      if (fs.existsSync(tamaroCardsPath)) {
         shouldAddLanguage = true;
-        const translationContent = fs.readFileSync(functionCardsPath, "utf8");
+        const translationContent = fs.readFileSync(tamaroCardsPath, "utf8");
         try {
           const translations = JSON.parse(translationContent);
-          functionTranslations[folder] = translations;
 
-          if (folder === "en") {
-            Object.keys(translations).forEach((key) => {
-              allFunctionNames.add(key);
-            });
+          // Extract function card translations
+          if (translations.function_cards) {
+            functionTranslations[folder] = translations.function_cards;
+
+            if (folder === "en") {
+              Object.keys(translations.function_cards).forEach((key) => {
+                allFunctionNames.add(key);
+              });
+            }
+          }
+
+          // Extract constant card translations
+          if (translations.constant_cards) {
+            constantTranslations[folder] = translations.constant_cards;
+
+            if (folder === "en") {
+              Object.keys(translations.constant_cards).forEach((key) => {
+                allConstantNames.add(key);
+              });
+            }
           }
         } catch (e) {
-          console.error(`Error parsing function JSON for ${folder}:`, e);
-        }
-      }
-
-      if (fs.existsSync(constantCardsPath)) {
-        shouldAddLanguage = true;
-        const translationContent = fs.readFileSync(constantCardsPath, "utf8");
-        try {
-          const translations = JSON.parse(translationContent);
-          constantTranslations[folder] = translations;
-
-          if (folder === "en") {
-            Object.keys(translations).forEach((key) => {
-              allConstantNames.add(key);
-            });
-          }
-        } catch (e) {
-          console.error(`Error parsing constant JSON for ${folder}:`, e);
+          console.error(`Error parsing tamarocards JSON for ${folder}:`, e);
         }
       }
 
@@ -476,9 +467,10 @@ export async function getStaticProps() {
       functionCards,
       constantCards,
       availableLanguages,
+      // Update serverSideTranslations to use the new file
       ...(await serverSideTranslations(
         "en",
-        ["functioncards", "constantcards"],
+        ["tamarocards"],
         null,
         availableLanguages
       )),

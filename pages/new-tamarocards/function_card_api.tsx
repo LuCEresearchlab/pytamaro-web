@@ -21,6 +21,7 @@ import React, { useEffect, useRef, useState } from "react";
 import FunctionCard from "./function-card";
 import PyTamaroSymbol from "./PyTamaro-symbol";
 import { Card } from "./types";
+import { useTranslation } from "next-i18next";
 
 interface DocumentationSheet {
   titleKey: string;
@@ -37,10 +38,12 @@ const sheet1: DocumentationSheet = {
     "text",
     "empty_graphic",
   ],
-}
+};
 
-
-const sheet2 = ["above", "beside", "overlay", "rotate"];
+const sheet2: DocumentationSheet = {
+  titleKey: "combinators",
+  elementsKeys: ["above", "beside", "overlay", "rotate"],
+};
 
 const A4_WIDTH = 1123;
 const A4_HEIGHT = 794;
@@ -54,6 +57,7 @@ export default function FunctionCardApiSheet({
   showIcons: boolean;
   selectedLanguages: string[];
 }) {
+  const { t } = useTranslation("tamarocards");
   const primitivesRef = useRef<HTMLDivElement>(null);
   const combinatorsRef = useRef<HTMLDivElement>(null);
   const [calculatingPrimitives, setCalculatingPrimitives] = useState(false);
@@ -61,13 +65,33 @@ export default function FunctionCardApiSheet({
 
   const primitivesCards = cards.filter((card) => {
     const functionName = card.localization.en;
-    return sheet1.includes(functionName);
+    return sheet1.elementsKeys.includes(functionName);
   });
 
   const combinatorsCards = cards.filter((card) => {
     const functionName = card.localization.en;
-    return sheet2.includes(functionName);
+    return sheet2.elementsKeys.includes(functionName);
   });
+
+  // Get translated titles for each selected language
+  const getTranslatedTitles = (titleKey: string) => {
+    const titles: string[] = [];
+    selectedLanguages.forEach((lang) => {
+      const titlePath = `titles.${titleKey}`;
+      const translatedTitle = t(titlePath, { lng: lang });
+
+      if (translatedTitle && !titles.includes(translatedTitle)) {
+        titles.push(translatedTitle);
+      }
+    });
+
+    // If no translations were found, use English title with capitalization
+    if (titles.length === 0) {
+      titles.push(titleKey.charAt(0).toUpperCase() + titleKey.slice(1));
+    }
+
+    return titles.join(" · ");
+  };
 
   // Use effect to stabilize layout after component mounts
   useEffect(() => {
@@ -199,11 +223,11 @@ export default function FunctionCardApiSheet({
           mx: "auto",
           backgroundColor: "#fff",
           boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-          overflow: "hidden", // Keep this to prevent overflow
+          overflow: "hidden",
           padding: 3,
           display: "flex",
           flexDirection: "column",
-          position: "relative", // Add this for stable positioning
+          position: "relative",
         }}
       >
         <Box
@@ -215,12 +239,12 @@ export default function FunctionCardApiSheet({
             padding: "1.5em",
             borderRadius: "4px",
             mb: 2,
-            flexShrink: 0, // Prevent header from shrinking
+            flexShrink: 0,
           }}
         >
           <Typography variant="h6">Library doc</Typography>
           <Typography variant="h6" sx={{ textAlign: "center" }}>
-            Primitives · Primitiven · Primitive
+            {getTranslatedTitles(sheet1.titleKey)}
           </Typography>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <PyTamaroSymbol />
@@ -330,7 +354,7 @@ export default function FunctionCardApiSheet({
           padding: 3,
           display: "flex",
           flexDirection: "column",
-          position: "relative", // Add this for stable positioning
+          position: "relative",
         }}
       >
         <Box
@@ -342,12 +366,12 @@ export default function FunctionCardApiSheet({
             padding: "1.5em",
             borderRadius: "4px",
             mb: 2,
-            flexShrink: 0, // Prevent header from shrinking
+            flexShrink: 0,
           }}
         >
           <Typography variant="h6">Library doc</Typography>
           <Typography variant="h6" sx={{ textAlign: "center" }}>
-            Combinators · Kombinatoren · Combinatori
+            {getTranslatedTitles(sheet2.titleKey)}
           </Typography>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <PyTamaroSymbol />

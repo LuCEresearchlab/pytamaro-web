@@ -1,10 +1,10 @@
 {
     "titles" : {
-        "primitives" : "primitifs",       
-        "colors" : "couleurs",
-        "combinators" : "combinatoires",
-        "pinning" : "fixation",
-        "functions" : "fonctions"
+        "primitives" : "Primitifs",       
+        "colors" : "Couleurs",
+        "combinators" : "Combinatoires",
+        "pinning" : "Fixation",
+        "functions" : "Fonctions"
     },
     "constant_cards":{
         "black":        "noir",

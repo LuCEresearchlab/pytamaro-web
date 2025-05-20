@@ -22,6 +22,7 @@ import PyTamaroSymbol from "./PyTamaro-symbol";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import FunctionCard from "./function-card";
+import { useTranslation } from "next-i18next";
 
 const colorConstants = [
   "red",
@@ -65,6 +66,7 @@ export default function ConstantCardApiSheet({
   showIcons: boolean;
   selectedLanguages: string[];
 }) {
+  const { t } = useTranslation("tamarocards");
   const colorsRef = useRef<HTMLDivElement>(null);
   const pinsRef = useRef<HTMLDivElement>(null);
   const [calculatingColors, setCalculatingColors] = useState(false);
@@ -193,10 +195,32 @@ export default function ConstantCardApiSheet({
     }
   };
 
+  // Get translated titles for each selected language
+  const getTranslatedTitles = (titleKey: string) => {
+    const titles: string[] = [];
+    selectedLanguages.forEach((lang) => {
+      // Try to get translated title, fall back to English if not available
+      const titlePath = `titles.${titleKey}`;
+      const translatedTitle = t(titlePath, { lng: lang });
+
+      // Only add if it's not already in the array
+      if (translatedTitle && !titles.includes(translatedTitle)) {
+        titles.push(translatedTitle);
+      }
+    });
+
+    // If no translations were found, use English title with capitalization
+    if (titles.length === 0) {
+      titles.push(titleKey.charAt(0).toUpperCase() + titleKey.slice(1));
+    }
+
+    return titles.join(" · ");
+  };
+
   // Helper to render a sheet with consistent layout
   const renderSheet = (
     refObject: React.RefObject<HTMLDivElement>,
-    title: string,
+    titleKey: string,
     gridCards: Card[],
     featuredCards: Card[]
   ) => (
@@ -231,7 +255,7 @@ export default function ConstantCardApiSheet({
       >
         <Typography variant="h6">Library doc</Typography>
         <Typography variant="h6" sx={{ textAlign: "center" }}>
-          {title}
+          {getTranslatedTitles(titleKey)}
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <PyTamaroSymbol />
@@ -407,12 +431,7 @@ export default function ConstantCardApiSheet({
         </Button>
       </Box>
 
-      {renderSheet(
-        colorsRef,
-        "Colors · Farben · Colori",
-        colorCards,
-        colorFunctionCards
-      )}
+      {renderSheet(colorsRef, "colors", colorCards, colorFunctionCards)}
 
       {/* Pins Section */}
       <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
@@ -432,7 +451,7 @@ export default function ConstantCardApiSheet({
         </Button>
       </Box>
 
-      {renderSheet(pinsRef, "Pins · Pins · Perni", pinCards, pinFunctionCards)}
+      {renderSheet(pinsRef, "pinning", pinCards, pinFunctionCards)}
     </Container>
   );
 }
