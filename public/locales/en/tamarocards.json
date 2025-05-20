@@ -1,11 +1,52 @@
 {
-    "functions": {
-        "rectangle": "rettangolo"
+    "titles" : {
+        "primitives" :        "Primitives",
+        "colors" :            "Colors",
+        "combinators" :       "Combinators",
+        "pinning" :           "Pinning",
+        "functions" :         "Functions"
     },
-    "constants": {
-        "yellow": "giallo",
+    "constant_cards" : {
+        "black" :               "black",
+        "red"  :                "red",
+        "green":                "green",
+        "blue" :                "blue",
+        "white":                "white",
+        "yellow":               "yellow",
+        "magenta":              "magenta",
+        "cyan":                 "cyan",
+        "transparent":          "transparent",
+        "top_left":             "top-left",
+        "top_right":            "top-right",
+        "bottom_left":          "bottom-left",
+        "bottom_right":         "bottom-right",
+        "center":               "center",
+        "top_center":           "top_center",
+        "bottom_center":        "bottom_center",
+        "center_left":          "center-left",
+        "center_right":         "center-right"
     },
-    "documentationTitles": {
-        "primitives": "Primitive"
-    }
+    "function_cards" :    {
+            "rgb_color": "rgb_color",
+            "compose": "compose",
+            "pin": "pin",
+            "overlay": "overlay",
+            "beside": "beside",
+            "above": "above",
+            "rotate": "rotate",
+            "rectangle": "rectangle",
+            "empty_graphic": "empty_graphic",
+            "ellipse": "ellipse",
+            "text": "text",
+            "circular_sector": "circular_sector",
+            "triangle": "triangle",
+            "show_graphic": "show_graphic",
+            "save_graphic": "save_graphic",
+            "save_animation": "save_animation",
+            "show_animation": "show_animation",
+            "hsv_color": "hsv_color",
+            "hsl_color": "hsl_color",
+            "graphic_height": "graphic_height",
+            "graphic_width": "graphic_width"
+        }
 }

@@ -1,0 +1,52 @@
+{
+    "titles":{
+        "primitives": "Primitiven",
+        "colors": "Farben",
+        "combinators": "Kombinatoren",
+        "pinning": "Fixieren",
+        "functions": "Funktionen"
+    },
+    "constant_cards":{
+        "black": "schwarz",
+        "red": "rot",
+        "green": "grün",
+        "blue": "blau",
+        "white": "weiß",
+        "yellow": "gelb",
+        "magenta": "magenta",
+        "cyan": "cyan",
+        "transparent": "transparent",
+        "top_left": "oben_links",
+        "top_right": "oben_rechts",
+        "bottom_left": "unten_links",
+        "bottom_right": "unten_rechts",
+        "center": "mitte",
+        "top_center": "oben_mitte",
+        "bottom_center": "unten_mitte",
+        "center_left": "mitte_links",
+        "center_right": "mitte_rechts"
+    },
+    "function_cards":{
+        "rgb_color":        "rgb_farbe",
+        "compose":          "kombiniere",
+        "pin":              "fixiere",
+        "overlay":          "ueberlagere",
+        "beside":           "neben",
+        "above":            "ueber",
+        "rotate":           "drehe",
+        "rectangle":        "rechteck",
+        "empty_graphic":    "leere_grafik",
+        "ellipse":          "ellipse",
+        "text":             "text",
+        "circular_sector":  "kreis_sektor",
+        "triangle":         "dreieck",
+        "show_graphic":     "zeige_grafik", 
+        "save_graphic":     "speichere_grafik",
+        "save_animation":   "speichere_animation",
+        "show_animation":   "zeige_animation",
+        "hsv_color":        "hsv_farbe",
+        "hsl_color":        "hsl_farbe",
+        "graphic_height":   "grafik_hoehe",
+        "graphic_width":    "grafik_breite"
+    }
+}
