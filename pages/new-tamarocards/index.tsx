@@ -88,13 +88,6 @@ export default function CardsRenderer({
       (lang, i) => lang !== "" || i < updatedSelectedLanguages.length - 1
     );
 
-    if (
-      availableLanguages.includes("en") &&
-      !cleanedSelections.includes("en")
-    ) {
-      cleanedSelections.unshift("en");
-    }
-
     setSelectedLanguages(cleanedSelections);
   };
 
