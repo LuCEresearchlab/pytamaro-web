@@ -246,56 +246,40 @@ export async function getStaticProps() {
   const allConstantNames = new Set<string>();
 
   try {
+    // Get available languages from locales directory
     const languageFolders = fs.readdirSync(localesPath);
-    const functionTranslations: Record<string, Record<string, string>> = {};
-    const constantTranslations: Record<string, Record<string, string>> = {};
 
-    // Process all language folders to extract translations
     languageFolders.forEach((folder) => {
-      // Process tamarocards.json file
       const tamaroCardsPath = path.join(
         localesPath,
         folder,
         "tamarocards.json"
       );
 
-      // Add language to available languages if the file exists
-      let shouldAddLanguage = false;
-
       if (fs.existsSync(tamaroCardsPath)) {
-        shouldAddLanguage = true;
-        const translationContent = fs.readFileSync(tamaroCardsPath, "utf8");
-        try {
-          const translations = JSON.parse(translationContent);
+        availableLanguages.push(folder);
 
-          // Extract function card translations
-          if (translations.function_cards) {
-            functionTranslations[folder] = translations.function_cards;
+        // Only process English to get the function/constant names
+        if (folder === "en") {
+          try {
+            const translationContent = fs.readFileSync(tamaroCardsPath, "utf8");
+            const translations = JSON.parse(translationContent);
 
-            if (folder === "en") {
+            if (translations.function_cards) {
               Object.keys(translations.function_cards).forEach((key) => {
                 allFunctionNames.add(key);
               });
             }
-          }
 
-          // Extract constant card translations
-          if (translations.constant_cards) {
-            constantTranslations[folder] = translations.constant_cards;
-
-            if (folder === "en") {
+            if (translations.constant_cards) {
               Object.keys(translations.constant_cards).forEach((key) => {
                 allConstantNames.add(key);
               });
             }
+          } catch (e) {
+            console.error(`Error parsing tamarocards JSON for ${folder}:`, e);
           }
-        } catch (e) {
-          console.error(`Error parsing tamarocards JSON for ${folder}:`, e);
         }
-      }
-
-      if (shouldAddLanguage && !availableLanguages.includes(folder)) {
-        availableLanguages.push(folder);
       }
     });
 
@@ -318,17 +302,8 @@ export async function getStaticProps() {
 
         processedFunctions.set(functionName, true);
 
+        // Simple localization object with just English name
         const localization: Record<string, string> = { en: functionName };
-
-        availableLanguages.forEach((lang) => {
-          if (
-            lang !== "en" &&
-            functionTranslations[lang] &&
-            functionTranslations[lang][functionName]
-          ) {
-            localization[lang] = functionTranslations[lang][functionName];
-          }
-        });
 
         // Find icon SVGs
         const svgFiles = fs.readdirSync(functionPath);
@@ -362,8 +337,6 @@ export async function getStaticProps() {
           parametersIcon: parameterIcons,
         });
       });
-    } else {
-      console.warn("Function SVG path does not exist:", functionSvgsPath);
     }
 
     // Process function names without SVGs
@@ -371,16 +344,6 @@ export async function getStaticProps() {
       if (processedFunctions.has(functionName)) return;
 
       const localization: Record<string, string> = { en: functionName };
-
-      availableLanguages.forEach((lang) => {
-        if (
-          lang !== "en" &&
-          functionTranslations[lang] &&
-          functionTranslations[lang][functionName]
-        ) {
-          localization[lang] = functionTranslations[lang][functionName];
-        }
-      });
 
       functionCards.push({
         localization,
@@ -393,40 +356,24 @@ export async function getStaticProps() {
     // Process Constant Cards with SVGs
     const processedConstants = new Map<string, boolean>();
     if (fs.existsSync(constantSvgsPath)) {
-      // Get all SVG files in the constant_svgs directory
       const constantSvgFiles = fs.readdirSync(constantSvgsPath);
 
       constantSvgFiles.forEach((svgFile) => {
-        // Skip if not an SVG file
         if (!svgFile.endsWith(".svg")) return;
 
-        // Extract constant name from the filename (remove .svg extension)
         const constantName = svgFile.replace(".svg", "");
-
         processedConstants.set(constantName, true);
 
+        // Simple localization object with just English name
         const localization: Record<string, string> = { en: constantName };
-
-        availableLanguages.forEach((lang) => {
-          if (
-            lang !== "en" &&
-            constantTranslations[lang] &&
-            constantTranslations[lang][constantName]
-          ) {
-            localization[lang] = constantTranslations[lang][constantName];
-          }
-        });
-
         const icon = `/constant_svgs/${svgFile}`;
 
         constantCards.push({
           localization,
           icon,
-          parametersIcon: [], // Keep the same structure as function cards
+          parametersIcon: [],
         });
       });
-    } else {
-      console.warn("Constant SVG path does not exist:", constantSvgsPath);
     }
 
     // Process constant names without SVGs
@@ -434,16 +381,6 @@ export async function getStaticProps() {
       if (processedConstants.has(constantName)) return;
 
       const localization: Record<string, string> = { en: constantName };
-
-      availableLanguages.forEach((lang) => {
-        if (
-          lang !== "en" &&
-          constantTranslations[lang] &&
-          constantTranslations[lang][constantName]
-        ) {
-          localization[lang] = constantTranslations[lang][constantName];
-        }
-      });
 
       constantCards.push({
         localization,
@@ -460,7 +397,6 @@ export async function getStaticProps() {
       functionCards,
       constantCards,
       availableLanguages,
-      // Update serverSideTranslations to use the new file
       ...(await serverSideTranslations(
         "en",
         ["tamarocards"],

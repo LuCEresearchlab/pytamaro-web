@@ -73,7 +73,6 @@ export default function FunctionCardApiSheet({
     return sheet2.elementsKeys.includes(functionName);
   });
 
-  // Get translated titles for each selected language
   const getTranslatedTitles = (titleKey: string) => {
     const titles: string[] = [];
     selectedLanguages.forEach((lang) => {
@@ -85,7 +84,6 @@ export default function FunctionCardApiSheet({
       }
     });
 
-    // If no translations were found, use English title with capitalization
     if (titles.length === 0) {
       titles.push(titleKey.charAt(0).toUpperCase() + titleKey.slice(1));
     }
@@ -110,13 +108,28 @@ export default function FunctionCardApiSheet({
     const filteredLanguages: string[] = [];
 
     selectedLanguages.forEach((languageCode) => {
-      if (languageCode && localization[languageCode]) {
-        filteredLanguages.push(localization[languageCode]);
+      if (languageCode) {
+        const englishName = localization.en;
+        if (englishName) {
+          const translatedName = t(`function_cards.${englishName}`, {
+            lng: languageCode,
+          });
+
+          if (
+            translatedName &&
+            translatedName !== `function_cards.${englishName}`
+          ) {
+            filteredLanguages.push(translatedName);
+          } else if (localization[languageCode]) {
+            filteredLanguages.push(localization[languageCode]);
+          }
+        }
       }
     });
 
-    if (filteredLanguages.length === 0) {
-      return Object.values(localization);
+    // If no translations were found, return the English name
+    if (filteredLanguages.length === 0 && localization.en) {
+      return [localization.en];
     }
 
     return filteredLanguages;
@@ -276,7 +289,6 @@ export default function FunctionCardApiSheet({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                // Use both transform and width/height constraints
                 transform: "scale(0.75)",
                 transformOrigin: "center center", // Add this for stable scaling
                 height: "33%", // Set fixed height to prevent reflow
@@ -284,12 +296,10 @@ export default function FunctionCardApiSheet({
             >
               <Box
                 sx={{
-                  // Make sure arrows are above icons with z-index
                   "& .parameter-arrow, & svg[data-arrow='true']": {
                     position: "relative",
                     zIndex: 10,
                   },
-                  // Make sure icons stay below arrows
                   "& .parameter-icon": {
                     position: "relative",
                     zIndex: 5,
@@ -321,7 +331,6 @@ export default function FunctionCardApiSheet({
         </Grid>
       </Box>
 
-      {/* Combinators Section - A4 Landscape Sheet */}
       <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
         <Button
           variant="contained"
@@ -382,14 +391,14 @@ export default function FunctionCardApiSheet({
         </Box>
         <Grid
           container
-          spacing={1} // Further reduced spacing
+          spacing={1}
           sx={{
             flexGrow: 1,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            height: "calc(100% - 80px)", // Reserve space for header
-            overflow: "hidden", // Add this to prevent container overflow
+            height: "calc(100% - 80px)",
+            overflow: "hidden",
           }}
         >
           {combinatorsCards.map((card, idx) => (
@@ -404,18 +413,16 @@ export default function FunctionCardApiSheet({
                 alignItems: "center",
                 justifyContent: "center",
                 transform: "scale(0.8)",
-                transformOrigin: "center center", // Add this for stable scaling
-                height: "50%", // Set fixed height to prevent reflow
+                transformOrigin: "center center",
+                height: "50%",
               }}
             >
               <Box
                 sx={{
-                  // Make sure arrows are above icons with z-index
                   "& .parameter-arrow, & svg[data-arrow='true']": {
                     position: "relative",
                     zIndex: 10,
                   },
-                  // Make sure icons stay below arrows
                   "& .parameter-icon": {
                     position: "relative",
                     zIndex: 5,

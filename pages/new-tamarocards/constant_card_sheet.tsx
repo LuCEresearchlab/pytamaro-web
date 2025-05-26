@@ -17,6 +17,7 @@ import ConstantCard from "./constant-card";
 import { Card } from "./types";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { useTranslation } from "next-i18next";
 
 export default function ConstantCardSheet({
   cards,
@@ -27,6 +28,7 @@ export default function ConstantCardSheet({
   showIcons: boolean;
   selectedLanguages: string[];
 }) {
+  const { t } = useTranslation("tamarocards");
   const cardGridRef = useRef<HTMLDivElement>(null);
   const [calculatingPdf, setCalculatingPdf] = useState(false);
 
@@ -43,13 +45,32 @@ export default function ConstantCardSheet({
     const filteredLanguages: string[] = [];
 
     selectedLanguages.forEach((languageCode) => {
-      if (languageCode && localization[languageCode]) {
-        filteredLanguages.push(localization[languageCode]);
+      if (languageCode) {
+        // Get the English constant name as the key
+        const englishName = localization.en;
+        if (englishName) {
+          // Use the translation system to get the localized constant name
+          const translatedName = t(`constant_cards.${englishName}`, {
+            lng: languageCode,
+          });
+
+          // If translation exists and is different from the key, use it
+          if (
+            translatedName &&
+            translatedName !== `constant_cards.${englishName}`
+          ) {
+            filteredLanguages.push(translatedName);
+          } else if (localization[languageCode]) {
+            // Fallback to the original localization object
+            filteredLanguages.push(localization[languageCode]);
+          }
+        }
       }
     });
 
-    if (filteredLanguages.length === 0) {
-      return Object.values(localization);
+    // If no translations were found, return the English name
+    if (filteredLanguages.length === 0 && localization.en) {
+      return [localization.en];
     }
 
     return filteredLanguages;
