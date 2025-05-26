@@ -233,9 +233,7 @@ export default function CardsRenderer({
 }
 
 export async function getStaticProps() {
-  // Get all language folders from public/locales
   const localesPath = path.join(process.cwd(), "public/locales");
-  // Get SVG folders from public paths
   const functionSvgsPath = path.join(process.cwd(), "public/function_svgs");
   const constantSvgsPath = path.join(process.cwd(), "public/constant_svgs");
   const availableLanguages: string[] = [];
@@ -246,7 +244,6 @@ export async function getStaticProps() {
   const allConstantNames = new Set<string>();
 
   try {
-    // Get available languages from locales directory
     const languageFolders = fs.readdirSync(localesPath);
 
     languageFolders.forEach((folder) => {
@@ -255,22 +252,17 @@ export async function getStaticProps() {
         folder,
         "tamarocards.json"
       );
-
       if (fs.existsSync(tamaroCardsPath)) {
         availableLanguages.push(folder);
-
-        // Only process English to get the function/constant names
         if (folder === "en") {
           try {
             const translationContent = fs.readFileSync(tamaroCardsPath, "utf8");
             const translations = JSON.parse(translationContent);
-
             if (translations.function_cards) {
               Object.keys(translations.function_cards).forEach((key) => {
                 allFunctionNames.add(key);
               });
             }
-
             if (translations.constant_cards) {
               Object.keys(translations.constant_cards).forEach((key) => {
                 allConstantNames.add(key);
@@ -282,32 +274,20 @@ export async function getStaticProps() {
         }
       }
     });
-
-    // Make sure "en" is first in the list if available
     if (availableLanguages.includes("en")) {
       const englishIndex = availableLanguages.indexOf("en");
       availableLanguages.splice(englishIndex, 1);
       availableLanguages.unshift("en");
     }
-
-    // Process Function Cards with SVGs
     const processedFunctions = new Map<string, boolean>();
     if (fs.existsSync(functionSvgsPath)) {
       const functionFolders = fs.readdirSync(functionSvgsPath);
-
       functionFolders.forEach((functionName) => {
         const functionPath = path.join(functionSvgsPath, functionName);
-
         if (!fs.statSync(functionPath).isDirectory()) return;
-
         processedFunctions.set(functionName, true);
-
-        // Simple localization object with just English name
         const localization: Record<string, string> = { en: functionName };
-
-        // Find icon SVGs
         const svgFiles = fs.readdirSync(functionPath);
-
         const iconFile = svgFiles.find((f) => f === `${functionName}_icon.svg`);
         const icon = iconFile
           ? `/function_svgs/${functionName}/${iconFile}`
@@ -339,7 +319,6 @@ export async function getStaticProps() {
       });
     }
 
-    // Process function names without SVGs
     allFunctionNames.forEach((functionName) => {
       if (processedFunctions.has(functionName)) return;
 
@@ -353,7 +332,6 @@ export async function getStaticProps() {
       });
     });
 
-    // Process Constant Cards with SVGs
     const processedConstants = new Map<string, boolean>();
     if (fs.existsSync(constantSvgsPath)) {
       const constantSvgFiles = fs.readdirSync(constantSvgsPath);
@@ -364,7 +342,6 @@ export async function getStaticProps() {
         const constantName = svgFile.replace(".svg", "");
         processedConstants.set(constantName, true);
 
-        // Simple localization object with just English name
         const localization: Record<string, string> = { en: constantName };
         const icon = `/constant_svgs/${svgFile}`;
 
@@ -376,7 +353,6 @@ export async function getStaticProps() {
       });
     }
 
-    // Process constant names without SVGs
     allConstantNames.forEach((constantName) => {
       if (processedConstants.has(constantName)) return;
 
