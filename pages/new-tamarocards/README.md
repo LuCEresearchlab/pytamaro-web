@@ -20,4 +20,23 @@ To add a constant, add the translation for it in `public/locales`, once every la
 #### Adding a language
 
 To add a new language to the translation system, add a new folder under `public/locales` with the abbreviation of the chosen language (i.e. 'pt' for 'Portugese');
-in this folder, add two new files called `functioncard.json` and `constantcards.json`; add a translation for all the present functions and constants (format: `{ "english_name": "translated_name", ...}`)
+in this folder, add a new file called `tamarocards.json`; add a translation for all the present functions, constants and API titles (format: `{ "english_name": "translated_name", ...}`)
+
+The format of the document is as follows
+
+```
+{
+    "titles" : {
+        "english_name": "translation",
+        ...
+    },
+    "constant_cards":{
+        "english_name": "translation",
+        ...
+    },
+    "function_cards" : {
+        "english_name": "translation",
+        ...
+    }
+}
+```

@@ -40,3 +40,9 @@
 [submodule "pillonel"]
 	path = data/pillonel
 	url = git@github.com:LuCEresearchlab/pytamaro-web-pillonel.git
+[submodule "farner"]
+	path = data/farner
+	url = git@github.com:LuCEresearchlab/pytamaro-web-farner.git
+[submodule "schnider"]
+	path = data/schnider
+	url = git@github.com:LuCEresearchlab/pytamaro-web-schnider.git
