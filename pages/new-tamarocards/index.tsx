@@ -16,11 +16,11 @@ import { useState, useEffect } from "react";
 import {
   Box,
   Button,
-  Checkbox,
   Container,
   FormControl,
   FormControlLabel,
   Paper,
+  Switch,
   Typography,
 } from "@mui/material";
 import { Card, Language } from "./types";
@@ -129,15 +129,14 @@ export default function CardsRenderer({
           </Box>
 
           <FormControl component="fieldset" sx={{ mb: 3 }}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={showIcons}
-                  onChange={() => setShowIcons(!showIcons)}
-                />
-              }
-              label="Show Parameter/Return Icons"
-            />
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Typography variant="body1">Cuttable Sheets</Typography>
+              <Switch
+                checked={showIcons}
+                onChange={() => setShowIcons(!showIcons)}
+              />
+              <Typography variant="body1">API Sheets</Typography>
+            </Box>
           </FormControl>
 
           <Box sx={{ textAlign: "center" }}>
