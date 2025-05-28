@@ -18,7 +18,6 @@ import {
   Button,
   Container,
   FormControl,
-  FormControlLabel,
   Paper,
   Switch,
   Typography,
