@@ -109,24 +109,28 @@ export default function ConstantCardApiSheet({
     }
   }, []);
 
-  const filterCardLanguages = (localization: { [lang: string]: string }) => {
+  const filterCardLanguages = (
+    localization: { [lang: string]: string },
+    isFunction = false
+  ) => {
     const filteredLanguages: string[] = [];
 
     selectedLanguages.forEach((languageCode) => {
       if (languageCode) {
-        // Get the English constant name as the key
+        // Get the English name as the key
         const englishName = localization.en;
         if (englishName) {
-          // Use the translation system to get the localized constant name
-          const translatedName = t(`constant_cards.${englishName}`, {
+          // Use the appropriate translation namespace based on card type
+          const translationKey = isFunction
+            ? `function_cards.${englishName}`
+            : `constant_cards.${englishName}`;
+
+          const translatedName = t(translationKey, {
             lng: languageCode,
           });
 
           // If translation exists and is different from the key, use it
-          if (
-            translatedName &&
-            translatedName !== `constant_cards.${englishName}`
-          ) {
+          if (translatedName && translatedName !== translationKey) {
             filteredLanguages.push(translatedName);
           } else if (localization[languageCode]) {
             // Fallback to the original localization object
@@ -415,7 +419,7 @@ export default function ConstantCardApiSheet({
                         : "Pin",
                       description: card.localization.en || "",
                     }}
-                    languages={filterCardLanguages(card.localization)}
+                    languages={filterCardLanguages(card.localization, true)}
                     parameterIcons={showIcons ? card.parametersIcon : undefined}
                     returnIcon={showIcons ? card.returnIcon : ""}
                     showIcons={showIcons}
