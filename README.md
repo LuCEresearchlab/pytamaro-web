@@ -72,14 +72,14 @@ The entire process should take about 10 minutes.
 1. Start the Next.js server: `npm run dev`
 1. Browse at [http://localhost:3000](http://localhost:3000)
 
-> [!WARNING]  
+</details>
+
+> [!WARNING]
 > The platform currently uses [glot](https://github.com/glotcode/glot) to execute Python code in Docker containers.
 > (This will likely change in the future, once we move to client-side execution.)
 > Glot itself is also offered as a Docker image, but that version is known to have issues.
 > Thus, at the moment, there is no way to run the platform locally with the Python execution feature.
 > If you are at the LuCE lab, reach out to ask for details on how to connect to our server for the execution.
-
-</details>
 
 ## I am a content author. What do I need to know to create a new activity?
 
