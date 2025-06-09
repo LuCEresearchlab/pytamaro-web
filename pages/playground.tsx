@@ -9,10 +9,11 @@ import {
   styled,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
+import { debounce } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ActivitiesStripe from '../components/ActivitiesStripe';
 import DownloadCodeButton from '../components/CodeDownloadButton';
 import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDialog';
@@ -160,6 +161,20 @@ export default function Playground({
     }
   }, [outputSynced, activitiesWithNames, codeCells]);
 
+  const updateQueryString = useMemo(
+    () =>
+      debounce((newSource: string) => {
+        const newCode = Buffer.from(newSource, 'utf-8').toString('base64');
+        const newQuery = { ...query, code: newCode };
+        window.history.replaceState(
+          {},
+          '',
+          `?${new URLSearchParams(newQuery)}`,
+        );
+      }, 1000),
+    [query],
+  );
+
   return (
     <div>
       <Head>
@@ -186,6 +201,7 @@ export default function Playground({
                 resetCounter={resetCounter}
                 activity={localActivity}
                 activityVariant={playgroundActivityVariant}
+                postSourceChange={updateQueryString}
                 extraActions={
                   <>
                     <SaveToToolboxButton
