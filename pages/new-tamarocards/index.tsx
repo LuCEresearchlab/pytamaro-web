@@ -128,13 +128,25 @@ export default function CardsRenderer({
           </Box>
 
           <FormControl component="fieldset" sx={{ mb: 3 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <Typography variant="body1">Cuttable Sheets</Typography>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                width: "100%",
+              }}
+            >
+              <Typography variant="body1" sx={{ display: "flex" }}>
+                Cuttable Sheets
+              </Typography>
               <Switch
                 checked={showIcons}
                 onChange={() => setShowIcons(!showIcons)}
+                sx={{ display: "flex" }}
               />
-              <Typography variant="body1">API Sheets</Typography>
+              <Typography variant="body1" sx={{ display: "flex" }}>
+                API Sheets
+              </Typography>
             </Box>
           </FormControl>
 
