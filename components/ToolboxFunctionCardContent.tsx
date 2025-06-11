@@ -23,6 +23,7 @@ import CodeEditor from './CodeEditor';
 import SolitaryCodeCell, { initialStateSingleCell } from './SolitaryCodeCell';
 import FunctionCardContent from './documentation/FunctionDocumentation';
 import { toolboxToJudiciousFunction } from './documentation/utils';
+import TryItButton from './TryItButton';
 
 export default function ToolboxFunctionCardContent({
   fn,
@@ -118,6 +119,11 @@ export default function ToolboxFunctionCardContent({
         <SolitaryCodeCell
           activity={activity}
           activityVariant={activityVariant}
+          extraActions={
+            <>
+              <TryItButton code={activity.codeCells[0].source} />
+            </>
+          }
           readOnly
         />
       )}

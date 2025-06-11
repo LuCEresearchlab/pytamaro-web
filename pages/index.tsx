@@ -55,6 +55,7 @@ import {
   playgroundPathname,
   teachingResourcesPathname,
 } from '../src/urlUtils';
+import TryItButton from '../components/TryItButton';
 
 configureEditor();
 
@@ -119,17 +120,7 @@ function PythonCodeCard({
           >
             {joinLines(lines)}
           </Box>
-          {pytamaro && (
-            <Button
-              variant='outlined'
-              size='small'
-              href={playgroundPathname(joinLines([...preludeLines, ...lines]))}
-              sx={{ position: 'absolute', bottom: '.5rem', right: '.5rem' }}
-              endIcon={<PlayCircle />}
-            >
-              Try it!
-            </Button>
-          )}
+          {pytamaro && <TryItButton code={[...preludeLines, ...lines]} />}
         </CardContent>
       </PythonBadge>
       <ExecutionOutputArea
