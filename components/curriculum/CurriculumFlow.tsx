@@ -416,6 +416,7 @@ export default function CurriculumFlow({
 
   return (
     <Box
+      className='curriculum'
       style={{
         width,
         height,
