@@ -1,0 +1,155 @@
+.arrow {
+  height: 30px;
+  transform: translateY(-50%) translateY(5px);
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+  padding-bottom: 0px;
+}
+
+.arrow_text {
+  display: flex;
+  font-size: small;
+  flex-direction: row;
+  align-items: end;
+  flex-wrap: nowrap;
+  margin: 0px 4px;
+  padding: 0px 3px;
+  text-wrap: nowrap;
+}
+
+.arrow_text > * {
+  margin: 0px;
+}
+
+.arrow_label {
+}
+
+.arrow_label_type_separator {
+  margin: 0px 3px;
+  font-weight: lighter;
+  font-style: italic;
+}
+
+.arrow_type {
+  margin: 0px;
+  font-weight: lighter;
+  font-style: italic;
+}
+
+.arrow.opt_arrow {
+  border-bottom: 5px dashed #d2071d;
+}
+
+.arrow:not(.opt_arrow) {
+  border-bottom: 5px solid #d2071d;
+}
+
+.pane_container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0px;
+}
+
+.parameter_pane {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+
+  min-width: 50px;
+  gap: 15px;
+  margin: 30px 0px;
+}
+
+.card_pane {
+  position: relative;
+  border-radius: 30px;
+  border-width: 5px;
+  border-color: rgb(210, 7, 29);
+  border-style: solid;
+  background-color: rgb(254, 212, 217);
+  padding: 5px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0px 0px;
+}
+
+.output_pane {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.card_library {
+  position: absolute;
+}
+
+.card_name {
+  font-size: large;
+}
+
+.hide_labels .arrow_label_type_separator {
+  display: none;
+}
+
+.hide_types .arrow_label_type_separator {
+  display: none;
+}
+
+.extended_view.hide_types .arrow_type {
+  display: none;
+}
+
+.extended_view.hide_icons .arrow_icon {
+  visibility: hidden;
+}
+
+.extended_view.hide_labels .arrow_label {
+  visibility: hidden;
+}
+
+.hide_optionals .opt_parameter_pane {
+  display: none;
+}
+
+.compact_view.hide_types .arrow_type {
+  display: none;
+}
+
+.compact_view.hide_icons .arrow_icon {
+  display: none;
+}
+
+.compact_view.hide_labels .arrow_label {
+  display: none;
+}
+
+.req_parameter_pane:not(.hide_optionals .req_parameter_pane) {
+  display: none;
+}
+
+.extended_view .card_pane {
+  min-width: 200px;
+}
+
+.compact_view .card_pane {
+  width: fit-content;
+}
+
+.triangle_right {
+  width: 0;
+  height: 0;
+  border-top: 15px solid transparent;
+  border-bottom: 15px solid transparent;
+
+  border-left: 15px solid #d2071d;
+  display: inline-block;
+  position: absolute;
+  bottom: 0%;
+  transform: translateY(50%) translateY(2.5px);
+}
+
+.hovergroup_marker {
+  --hover-color: #c2ecff;
+}
