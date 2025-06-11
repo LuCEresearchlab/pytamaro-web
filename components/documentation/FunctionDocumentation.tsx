@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/no-array-index-key */
 import { Box, Chip, Divider, Stack, Typography } from '@mui/material';
-import { useState } from 'react';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { JudiciousFunction } from '../../src/schemas/documentation';
@@ -13,16 +12,8 @@ import ConfigButtons, {
   SHOW_TYPES_KEY,
 } from './ConfigButtons';
 import DocumentationExample from './DocumentationExample';
-import FunctionDiagram from './FunctionDiagram';
-import {
-  hoverProps,
-  moduleId,
-  nameId,
-  paramId,
-  returnId,
-  sentence,
-  visibleParameters,
-} from './utils';
+import { sentence, visibleParameters } from './utils';
+import { ProceduralHoverStyles, TamaroCard } from '../TamaroCard';
 
 export default function FunctionDocumentation({
   fn,
@@ -32,7 +23,6 @@ export default function FunctionDocumentation({
   module: string;
 }) {
   const { t } = useLocalTranslation();
-  const [hoverElement, setHoverElement] = useState<string>('');
   const { name, description, parameters, returnValue, examples } = fn;
   const { docsMetadata } = useLocalProfile();
   const params = visibleParameters(parameters, docsMetadata.showOptional);
@@ -60,7 +50,16 @@ export default function FunctionDocumentation({
     ) || [];
 
   return (
-    <>
+    <div
+      className={`extended_view
+        ${docsMetadata.showTypes ? '' : 'hide_types'}
+        ${docsMetadata.showOptional ? '' : 'hide_optionals'}`}
+    >
+      <ProceduralHoverStyles
+        groups={fn.parameters
+          .map((v) => `input_${v.name}`)
+          .concat('output', 'library', 'function')}
+      />
       <Box mb={1}>
         <Box sx={{ display: 'flex' }}>
           <span>
@@ -73,9 +72,10 @@ export default function FunctionDocumentation({
             </Typography>
             &nbsp;
             <Typography
+              className='hovergroup hovergroup_marker'
+              data-hovergroup={'library'}
               color='text.secondary'
               component='span'
-              {...hoverProps(moduleId(), hoverElement, setHoverElement)}
             >
               {module === '.'
                 ? t('fromYourCode')
@@ -94,14 +94,20 @@ export default function FunctionDocumentation({
           <ConfigButtons available={availableOptions} />
         </Box>
         <Typography>
-          <span {...hoverProps(nameId(), hoverElement, setHoverElement)}>
+          <span
+            data-hovergroup={'function'}
+            className='hovergroup hovergroup_marker'
+          >
             <CodeElement bold>{name}</CodeElement>
           </span>
           <CodeElement>(</CodeElement>
           {params.map((param, i) => (
             <span key={i}>
               {i > 0 && <CodeElement>,&nbsp;</CodeElement>}
-              <span {...hoverProps(paramId(i), hoverElement, setHoverElement)}>
+              <span
+                data-hovergroup={`input_${param.name}`}
+                className='hovergroup hovergroup_marker'
+              >
                 {param.variableLength && docsMetadata.showOptional && (
                   <CodeElement>*</CodeElement>
                 )}
@@ -128,7 +134,8 @@ export default function FunctionDocumentation({
           {returnValue && docsMetadata.showTypes && (
             <Box
               component='span'
-              {...hoverProps(returnId(), hoverElement, setHoverElement)}
+              data-hovergroup={`output`}
+              className='hovergroup hovergroup_marker'
             >
               <CodeElement>&nbsp;</CodeElement>
               <CodeElement type>→</CodeElement>
@@ -139,12 +146,12 @@ export default function FunctionDocumentation({
         </Typography>
       </Box>
       {docsMetadata.showDiagram && (
-        <FunctionDiagram
-          fn={fn}
-          module={module}
-          hoverElement={hoverElement}
-          setHoverElement={setHoverElement}
-        />
+        <Box
+          className=''
+          sx={{ display: 'flex', justifyContent: 'center', margin: '50px 0px' }}
+        >
+          <TamaroCard el={fn} module={module} />
+        </Box>
       )}
       <Box sx={{ mt: 2 }} />
       {description.p.map((p, idx) => (
@@ -180,7 +187,8 @@ export default function FunctionDocumentation({
               <Typography
                 gutterBottom
                 key={i}
-                {...hoverProps(paramId(i), hoverElement, setHoverElement)}
+                data-hovergroup={`input_${param.name}`}
+                className='hovergroup hovergroup_marker'
               >
                 <CodeElement>{param.name}</CodeElement>
                 <Typography color='text.secondary' component='span' ml='1ch'>
@@ -196,7 +204,8 @@ export default function FunctionDocumentation({
           <Typography
             color='text.secondary'
             component='span'
-            {...hoverProps(returnId(), hoverElement, setHoverElement)}
+            data-hovergroup={`output`}
+            className='hovergroup hovergroup_marker'
           >
             {sentence(returnValue.description)}
           </Typography>
@@ -212,6 +221,6 @@ export default function FunctionDocumentation({
           </Stack>
         </>
       )}
-    </>
+    </div>
   );
 }
