@@ -12,7 +12,11 @@ export default function GoToCurriculaBanner({
   const visible = visibleCurricula(curricula);
   const single = visible.length === 1;
   return visible.length === 0 ? null : (
-    <Alert icon={<Route />} severity='success' sx={{ my: 2 }}>
+    <Alert
+      icon={<Route />}
+      severity='info'
+      sx={{ my: 2, backgroundColor: 'rgba(255, 255, 255, 0.5)' }}
+    >
       <AlertTitle>
         {`This activity is part of ${single ? 'a curriculum' : 'multiple curricula'}.`}
       </AlertTitle>
