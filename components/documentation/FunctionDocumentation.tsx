@@ -147,7 +147,7 @@ export default function FunctionDocumentation({
       </Box>
       {docsMetadata.showDiagram && (
         <Box
-          className=''
+          className='hide_handles'
           sx={{ display: 'flex', justifyContent: 'center', margin: '50px 0px' }}
         >
           <TamaroCard el={fn} module={module} />

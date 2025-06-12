@@ -5,6 +5,7 @@ import '../style/tamaro_cards.css';
 
 import { JudiciousFunction } from '../src/schemas/documentation';
 import { Tooltip } from '@mui/material';
+import { Handle, Position } from '@xyflow/react';
 
 interface IArrow {
   parameter_index: number;
@@ -14,9 +15,22 @@ interface IArrow {
   icon: string;
   multiple: boolean;
   optional: boolean;
+
+  handle_start?: string;
+  handle_end?: string;
+  show_handles: boolean;
 }
 
-export function Arrow({ name, type, icon, multiple, optional }: IArrow) {
+export function Arrow({
+  name,
+  type,
+  icon,
+  multiple,
+  optional,
+  handle_start,
+  handle_end,
+  show_handles,
+}: IArrow) {
   return (
     <div className={`arrow ${optional ? 'opt_arrow' : ''}`}>
       <div className='arrow_text hovergroup_marker'>
@@ -52,6 +66,16 @@ export function Arrow({ name, type, icon, multiple, optional }: IArrow) {
           />
         );
       })}
+
+      <div className='arrow_handles'>
+        {handle_start && (
+          <Handle type='target' id={handle_start} position={Position.Left} />
+        )}
+
+        {handle_end && (
+          <Handle type='source' id={handle_end} position={Position.Right} />
+        )}
+      </div>
     </div>
   );
 }
@@ -59,9 +83,11 @@ export function Arrow({ name, type, icon, multiple, optional }: IArrow) {
 export function TamaroCard({
   el,
   module,
+  show_handles,
 }: {
   el: JudiciousFunction;
   module: string;
+  show_handles?: boolean;
 }) {
   const needed_parameters = el.parameters.filter((v) => v.default == null);
   const parameters = el.parameters;
@@ -85,33 +111,39 @@ export function TamaroCard({
                 optional={false}
                 multiple={v.variableLength == null ? false : v.variableLength}
                 icon={``}
+                handle_start={`input_${v.name}`}
+                show_handles={show_handles || false}
               />
             </div>
           );
         })}
       </div>
 
-      <div className='pane opt_parameter_pane parameter_pane'>
-        {parameters.map((v, i) => {
-          return (
-            <div
-              className='hovergroup'
-              data-hovergroup={`input_${v.name}`}
-              key={i}
-            >
-              <Arrow
-                parameter_index={i}
-                parameter_amount={parameters.length}
-                name={v.name}
-                type={v.type}
-                multiple={v.variableLength == null ? false : v.variableLength}
-                icon={``}
-                optional={v.default != null}
-              />
-            </div>
-          );
-        })}
-      </div>
+      {!show_handles && (
+        <div className='pane opt_parameter_pane parameter_pane'>
+          {parameters.map((v, i) => {
+            return (
+              <div
+                className='hovergroup'
+                data-hovergroup={`input_${v.name}`}
+                key={i}
+              >
+                <Arrow
+                  parameter_index={i}
+                  parameter_amount={parameters.length}
+                  name={v.name}
+                  type={v.type}
+                  multiple={v.variableLength == null ? false : v.variableLength}
+                  icon={``}
+                  optional={v.default != null}
+                  handle_start={`input_${v.name}`}
+                  show_handles={show_handles || false}
+                />
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       <div className='pane card_pane'>
         <Image
@@ -168,6 +200,8 @@ export function TamaroCard({
             type={el.returnValue!.type}
             icon={``}
             optional={false}
+            handle_end={`output`}
+            show_handles={show_handles || false}
           />
         )}
       </div>

@@ -18,8 +18,23 @@
   text-wrap: nowrap;
 }
 
+.arrow_handles {
+  position: absolute;
+  bottom: -2px;
+  width: 100%;
+}
+
+.compact_view .arrow_text {
+  margin-right: 15px;
+  margin-left: 0px;
+}
+
 .arrow_text > * {
   margin: 0px;
+}
+
+.hide_output .output_pane .arrow_label {
+  display: none;
 }
 
 .arrow_label {
@@ -45,10 +60,15 @@
   border-bottom: 5px solid #d2071d;
 }
 
-.pane_container {
+.extended_view .pane_container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0px;
+}
+
+.compact_view .pane_container {
+  display: flex;
+  flex-direction: row;
 }
 
 .parameter_pane {
@@ -62,7 +82,6 @@
 }
 
 .card_pane {
-  position: relative;
   border-radius: 30px;
   border-width: 5px;
   border-color: rgb(210, 7, 29);
@@ -79,6 +98,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  min-width: 40px;
 }
 
 .card_library {
