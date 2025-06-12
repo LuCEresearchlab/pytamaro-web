@@ -82,6 +82,7 @@
 }
 
 .tamaro_card.function_card {
+  position: relative;
   border-radius: 30px;
   border-width: 5px;
   border-color: rgb(210, 7, 29);

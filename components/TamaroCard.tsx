@@ -67,15 +67,17 @@ export function Arrow({
         );
       })}
 
-      <div className='arrow_handles'>
-        {handle_start && (
-          <Handle type='target' id={handle_start} position={Position.Left} />
-        )}
+      {show_handles && (
+        <div className='arrow_handles'>
+          {handle_start && (
+            <Handle type='target' id={handle_start} position={Position.Left} />
+          )}
 
-        {handle_end && (
-          <Handle type='source' id={handle_end} position={Position.Right} />
-        )}
-      </div>
+          {handle_end && (
+            <Handle type='source' id={handle_end} position={Position.Right} />
+          )}
+        </div>
+      )}
     </div>
   );
 }
