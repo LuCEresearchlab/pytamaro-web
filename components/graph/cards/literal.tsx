@@ -29,7 +29,7 @@ function FloatLiteralCard({
     data.wrap.obj = newValue;
   };
   return (
-    <Card sx={{ margin: '0px' }}>
+    <Card sx={{ margin: '0px' }} className='tamaro_card'>
       <Input
         sx={{ margin: '10px' }}
         onChange={(e) => {

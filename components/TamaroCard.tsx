@@ -145,7 +145,7 @@ export function TamaroCard({
         </div>
       )}
 
-      <div className='pane card_pane'>
+      <div className='pane tamaro_card function_card'>
         <Image
           className='card_library hovergroup hovergroup_marker'
           data-hovergroup={'library'}
