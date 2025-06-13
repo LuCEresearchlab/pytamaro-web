@@ -16,6 +16,7 @@ import {
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
+  useStoreApi,
 } from '@xyflow/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DnDProvider, useDnD } from './DnDContext';
@@ -93,6 +94,8 @@ function View() {
   const [edges, setEdges] = useState(initial_edges);
 
   const { getNodes, getEdges, screenToFlowPosition } = useReactFlow();
+
+  const store = useStoreApi();
 
   const [validState, setValidState] = useState(0);
   const [code, setCode] = useState('');
@@ -219,12 +222,25 @@ function View() {
         }}
         onDrop={onDrop}
         onDragOver={onDragOver}
-        // onPaneClick={onPaneClick}
         isValidConnection={isValidConnection}
-        // onReconnect={onReconnect}
-        // onNodeContextMenu={onNodeContextMenu}
-        // onReconnectStart={onReconnectStart}
-        // onReconnectEnd={onReconnectEnd}
+        onNodeDoubleClick={(e, node) => {
+          if (!node.selected) return;
+
+          const angle = Math.random() * Math.PI * 2;
+
+          const dx = Math.cos(angle) * 10;
+          const dy = Math.sin(angle) * 10;
+
+          const { addSelectedNodes } = store.getState();
+          const newNode = {
+            ...node,
+            id: `${node.data?.name || node.type || 'node'}-${Date.now()}`,
+            position: { x: node.position.x + dx, y: node.position.y + dy },
+          };
+          setNodes((eds) => eds.concat(newNode));
+
+          addSelectedNodes([newNode.id]);
+        }}
         fitView
         proOptions={{
           hideAttribution: true,
