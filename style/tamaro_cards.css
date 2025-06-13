@@ -53,11 +53,15 @@
 }
 
 .arrow.opt_arrow {
-  border-bottom: 5px dashed #d2071d;
+  border-bottom: var(--outline-width) dashed #d2071d;
 }
 
 .arrow:not(.opt_arrow) {
-  border-bottom: 5px solid #d2071d;
+  border-bottom: var(--outline-width) solid #d2071d;
+}
+
+.pane_container * {
+  --outline-width: 2px;
 }
 
 .extended_view .pane_container {
@@ -84,7 +88,7 @@
 .tamaro_card.function_card {
   position: relative;
   border-radius: 30px;
-  border-width: 5px;
+  border-width: var(--outline-width);
   border-color: rgb(210, 7, 29);
   border-style: solid;
   background-color: rgb(254, 212, 217);
@@ -93,6 +97,21 @@
   flex-direction: column;
   align-items: center;
   margin: 0px 0px;
+}
+
+.tamaro_card.constant_card {
+  position: relative;
+  border-radius: 0px;
+  border-width: var(--outline-width);
+  border-color: #008bcb;
+  border-style: solid;
+  background-color: #d1f0ff;
+  padding: 0px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 100px;
+  margin-right: 20px;
 }
 
 .output_pane {
@@ -158,19 +177,55 @@
   width: fit-content;
 }
 
-.triangle_right {
+.function_card_pane .triangle_right {
   width: 0;
   height: 0;
-  border-top: 15px solid transparent;
-  border-bottom: 15px solid transparent;
+  border-top: calc(5*var(--outline-width)) solid transparent;
+  border-bottom: calc(5*var(--outline-width)) solid transparent;
+  border-left: calc(5*var(--outline-width)) solid #d2071d;
 
-  border-left: 15px solid #d2071d;
   display: inline-block;
   position: absolute;
-  bottom: 0%;
-  transform: translateY(50%) translateY(2.5px);
+  bottom: calc(-5.5*var(--outline-width));
+}
+
+.constant_card_pane .triangle_right {
+  width: 0;
+  height: 0;
+  border-top: calc(5*var(--outline-width)) solid transparent;
+  border-bottom: calc(5*var(--outline-width)) solid transparent;
+  border-left: calc(5*var(--outline-width)) solid #008bcb;
+
+  display: inline-block;
+  position: absolute;
+  right: calc(-5*var(--outline-width));
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .hovergroup_marker {
   --hover-color: #c2ecff;
+}
+
+.pane_container .handle {
+  width: 20px;
+  height: 10px;
+  opacity: 0;
+}
+
+.arrow .arrow_handles .handle_mover {
+  bottom: calc(0.5 * var(--outline-width));
+}
+
+.arrow_handles .handle_mover {
+  --inner-handle: 15px;
+  position: relative;
+}
+
+.arrow_handles .handle_mover.right {
+  right: var(--inner-handle);
+}
+
+.arrow_handles .handle_mover.left {
+  left:  var(--inner-handle);
 }

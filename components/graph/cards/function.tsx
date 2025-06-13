@@ -1,6 +1,6 @@
 import { NodeProps } from '@xyflow/react';
-import { IImportedCardData, ITamaroCardData } from '.';
-import { TamaroCard } from '../../TamaroCard';
+import { IImportedCardData } from '.';
+import TamaroCard from '../../TamaroCard';
 import { JudiciousFunction } from '../../../src/schemas/documentation';
 import useJudiciousDocData from '../../../src/documentation';
 
@@ -31,7 +31,7 @@ export function TamaroFunctionCard({
   if (function_el) data.wrap.obj = function_el;
 
   return (
-    <div className='compact_view hide_types hide_icons hide_output hide_optionals'>
+    <div className='compact_view hide_types hide_icons hide_output hide_optionals hide_labels'>
       {function_el && (
         <TamaroCard el={function_el} module={data.module} show_handles />
       )}

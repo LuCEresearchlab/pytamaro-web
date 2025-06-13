@@ -13,7 +13,7 @@ import ConfigButtons, {
 } from './ConfigButtons';
 import DocumentationExample from './DocumentationExample';
 import { sentence, visibleParameters } from './utils';
-import { ProceduralHoverStyles, TamaroCard } from '../TamaroCard';
+import TamaroCard, { ProceduralHoverStyles } from '../TamaroCard';
 
 export default function FunctionDocumentation({
   fn,

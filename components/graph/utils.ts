@@ -5,7 +5,10 @@ import {
   getParameterName,
   ITamaroFunctionCardData,
 } from './cards/function';
-import { JudiciousFunction } from '../../src/schemas/documentation';
+import {
+  JudiciousConstant,
+  JudiciousFunction,
+} from '../../src/schemas/documentation';
 import { CardType, ITamaroCardData, node_types } from './cards';
 import { ITamaroLiteralCardData } from './cards/literal';
 
@@ -73,6 +76,13 @@ export function getHandleType(node: Node, handle: string) {
     case 'literal': {
       const data = node.data as any as ITamaroLiteralCardData;
       return data.literal_type;
+    }
+
+    case 'constant': {
+      const data = node.data as any as ITamaroLiteralCardData;
+      const cst = data.wrap.obj as JudiciousConstant;
+
+      return cst.type;
     }
   }
 }

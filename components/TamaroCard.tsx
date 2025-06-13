@@ -3,9 +3,14 @@ import Image from 'next/image';
 
 import '../style/tamaro_cards.css';
 
-import { JudiciousFunction } from '../src/schemas/documentation';
+import {
+  JudiciousConstant,
+  JudiciousElement,
+  JudiciousFunction,
+} from '../src/schemas/documentation';
 import { Tooltip } from '@mui/material';
 import { Handle, Position } from '@xyflow/react';
+import { match } from 'assert';
 
 interface IArrow {
   parameter_index: number;
@@ -70,11 +75,26 @@ export function Arrow({
       {show_handles && (
         <div className='arrow_handles'>
           {handle_start && (
-            <Handle type='target' id={handle_start} position={Position.Left} />
+            <div className='handle_mover left'>
+              <Handle
+                type='target'
+                id={handle_start}
+                position={Position.Left}
+                className='handle'
+              />
+            </div>
           )}
 
           {handle_end && (
-            <Handle type='source' id={handle_end} position={Position.Right} />
+            <div className='handle_mover right'>
+              <Handle
+                type='source'
+                id={handle_end}
+                position={Position.Right}
+                className='handle'
+                style={{}}
+              />
+            </div>
           )}
         </div>
       )}
@@ -82,7 +102,29 @@ export function Arrow({
   );
 }
 
-export function TamaroCard({
+export default function TamaroCard({
+  el,
+  module,
+  show_handles,
+}: {
+  el: JudiciousElement;
+  module: string;
+  show_handles?: boolean;
+}) {
+  switch (el.kind) {
+    case 'function':
+      return FunctionTamaroCard({ el, module, show_handles });
+    case 'constant':
+      return ConstantTamaroCard({
+        el: el as JudiciousConstant,
+        module,
+        show_handles,
+      });
+  }
+  return <div>Invalid Kind</div>;
+}
+
+export function FunctionTamaroCard({
   el,
   module,
   show_handles,
@@ -95,7 +137,7 @@ export function TamaroCard({
   const parameters = el.parameters;
 
   return (
-    <div className='pane_container'>
+    <div className='pane_container function_card_pane'>
       <div className='pane req_parameter_pane parameter_pane'>
         {needed_parameters.map((v, i) => {
           return (
@@ -152,7 +194,7 @@ export function TamaroCard({
           className='card_library hovergroup hovergroup_marker'
           data-hovergroup={'library'}
           src={iconPath(module)}
-          alt='Pytamaro logo'
+          alt='Library Icon'
           width={32}
           height={32}
         />
@@ -207,6 +249,64 @@ export function TamaroCard({
           />
         )}
       </div>
+    </div>
+  );
+}
+
+export function ConstantTamaroCard({
+  el,
+  module,
+  show_handles = false,
+}: {
+  el: JudiciousConstant;
+  module: string;
+  show_handles?: boolean;
+}) {
+  return (
+    <div className='pane_container constant_card_pane'>
+      <div className='pane'></div>
+      <div className='pane tamaro_card constant_card'>
+        <Image
+          className='card_library hovergroup hovergroup_marker'
+          data-hovergroup={'library'}
+          src={iconPath(module)}
+          alt='Library icon'
+          width={32}
+          height={32}
+        />
+
+        <div
+          style={{
+            alignSelf: 'center',
+            margin: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <h5
+            className='card_name hovergroup hovergroup_marker'
+            data-hovergroup={'constant'}
+          >
+            {el.name}
+          </h5>
+        </div>
+
+        <div className='triangle_right arrow_handles'>
+          {show_handles && (
+            <div className='handle_mover right'>
+              <Handle
+                type='source'
+                position={Position.Right}
+                id={'output'}
+                className='handle'
+              />
+            </div>
+          )}
+        </div>
+      </div>
+      <div className='pane'></div>
     </div>
   );
 }

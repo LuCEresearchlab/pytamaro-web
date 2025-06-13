@@ -14,9 +14,9 @@ import ConfigButtons, {
   SHOW_OPTIONAL_KEY,
   SHOW_TYPES_KEY,
 } from './ConfigButtons';
-import ConstantDiagram from './ConstantDiagram';
 import DocumentationExample from './DocumentationExample';
 import { hoverProps, moduleId, nameId, sentence } from './utils';
+import { ConstantTamaroCard, ProceduralHoverStyles } from '../TamaroCard';
 
 export default function TypeConstantDocumentation({
   element,
@@ -44,6 +44,7 @@ export default function TypeConstantDocumentation({
   }
   return (
     <>
+      <ProceduralHoverStyles groups={['output', 'library', 'constant']} />
       <Box mb={1}>
         <Box sx={{ display: 'flex' }}>
           <span>
@@ -54,7 +55,8 @@ export default function TypeConstantDocumentation({
             <Typography
               color='text.secondary'
               component='span'
-              {...hoverProps(moduleId(), hoverElement, setHoverElement)}
+              className='hovergroup hovergroup_marker'
+              data-hovergroup={'library'}
             >
               {module === '.'
                 ? t('fromYourCode')
@@ -64,7 +66,10 @@ export default function TypeConstantDocumentation({
           <ConfigButtons available={availableOptions} />
         </Box>
         <Typography>
-          <span {...hoverProps(nameId(), hoverElement, setHoverElement)}>
+          <span
+            data-hovergroup={'constant'}
+            className='hovergroup hovergroup_marker'
+          >
             <CodeElement bold>{name}</CodeElement>
           </span>
           {element.kind === 'constant' && docsMetadata.showTypes && (
@@ -77,12 +82,12 @@ export default function TypeConstantDocumentation({
         </Typography>
       </Box>
       {element.kind === 'constant' && docsMetadata.showDiagram && (
-        <ConstantDiagram
-          constant={element}
-          module={module}
-          hoverElement={hoverElement}
-          setHoverElement={setHoverElement}
-        />
+        <Box
+          className='hide_handles'
+          sx={{ display: 'flex', justifyContent: 'center', margin: '20px 0px' }}
+        >
+          <ConstantTamaroCard el={element} module={module} />
+        </Box>
       )}
       {description.p.map((p, idx) => (
         <Typography key={idx} color='text.secondary' gutterBottom>
