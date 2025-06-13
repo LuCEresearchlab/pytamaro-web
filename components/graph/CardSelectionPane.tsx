@@ -8,7 +8,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { useState } from 'react';
-import SelectionByGroup from './SelectionByGroup';
+import SelectionThroughList from './SelectionThroughList';
 
 export default function CardSelectionPane() {
   const [collapsed, setCollasped] = useState(false);
@@ -25,7 +25,7 @@ export default function CardSelectionPane() {
       />
       <Collapse in={collapsed} orientation='vertical'>
         <Collapse in={collapsed} unmountOnExit orientation='horizontal'>
-          <SelectionByGroup />
+          <SelectionThroughList />
         </Collapse>
       </Collapse>
     </Card>

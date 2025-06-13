@@ -5,21 +5,20 @@ import {
   Card,
   CardActions,
   CardContent,
-  CardHeader,
   IconButton,
   Input,
   InputLabel,
   MenuItem,
   Select,
 } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { node_types } from './cards';
 import useJudiciousDocData from '../../src/documentation';
 import {
   JudiciousElement,
   JudiciousFunction,
 } from '../../src/schemas/documentation';
-import { TamaroCard } from '../TamaroCard';
+import TamaroCard from '../TamaroCard';
 import { useDnD } from '../../pages/graph/DnDContext';
 
 const modules = [
@@ -33,7 +32,7 @@ const modules = [
 
 export default function SelectionByGroup() {
   const [refresh, setRefreshing] = useState(false);
-  const [nodeType, setNodeType] = useState(undefined);
+  const [nodeType, setNodeType] = useState(undefined as string | undefined);
   const [filter_input, setFilterInput] = useState('');
 
   const documentation = useJudiciousDocData(modules);
@@ -91,7 +90,7 @@ export default function SelectionByGroup() {
         }}
       >
         {filteredCache
-          .filter((el) => el.kind === 'function') // Supposed to be remove
+          .filter((el) => el.kind === 'function' || el.kind === 'constant')
           .toSorted((v1, v2) => v1.name.localeCompare(v2.name))
           .map((el) => (
             <div
@@ -115,6 +114,9 @@ export default function SelectionByGroup() {
             minWidth: '150px',
           }}
           value={nodeType}
+          onChange={(e) => {
+            return setNodeType(e.target.value);
+          }}
         >
           {card_type.map((v) => (
             <MenuItem value={v} key={v}>

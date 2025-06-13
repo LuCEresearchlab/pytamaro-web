@@ -1,8 +1,7 @@
-import { NodeProps, NodeTypes } from '@xyflow/react';
-import { JudiciousElement } from '../../../src/schemas/documentation';
+import { NodeProps } from '@xyflow/react';
 import { TamaroFunctionCard } from './function';
-import { TamaroCard } from '../../TamaroCard';
 import { TamaroLiteralCard } from './literal';
+import { TamaroConstantCard } from './card';
 
 export class Wrap<T> {
   obj: T | undefined;
@@ -24,6 +23,7 @@ export interface IImportedCardData extends ITamaroCardData {
 export const node_types = {
   function: (props: NodeProps) => TamaroFunctionCard(props as any),
   literal: (props: NodeProps) => TamaroLiteralCard(props as any),
+  constant: (props: NodeProps) => TamaroConstantCard(props as any),
 } as const;
 
 export type CardType = keyof typeof node_types;
