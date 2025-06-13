@@ -1,5 +1,12 @@
 import { Edge, Node } from '@xyflow/react';
-import { getChildren, getHandleType, getNode, getParents } from './utils';
+import {
+  getAmountOfExpectConnections,
+  getChildren,
+  getHandleType,
+  getNode,
+  getParents,
+  getRelative as getRelatives,
+} from './utils';
 
 export function check_edge_typing(
   nodes: Node[],
@@ -23,7 +30,7 @@ export function check_edge_looping(
   source: string,
   target: string,
 ) {
-  if (getChildren(nodes, edges, source).size != 0) return false;
+  if (getParents(nodes, edges, source).size != 0) return false;
   const visited: Set<string> = new Set();
   visited.add(source);
 
@@ -31,14 +38,32 @@ export function check_edge_looping(
 
   while (stack.length !== 0) {
     const el = stack.pop()!;
-    if (visited.has(el.id)) return false;
+    if (visited.has(el.id)) {
+      return false;
+    }
 
     const parents = getParents(nodes, edges, el);
-    if (parents.size > 1) return false;
+    if (parents.size > 1) {
+      return false;
+    }
 
     visited.add(el.id);
-    if (parents.size === 1) stack.push(parents.values().next().value!);
+    if (parents.size === 1) {
+      const val = parents.values().next().value!;
+      if (visited.has(val.id)) continue;
+      stack.push(val);
+    }
   }
 
   return true;
+}
+
+export function check_valid_graph(nodes: Node[], edges: Edge[]) {
+  return !nodes.find((node) => {
+    return (
+      getChildren(nodes, edges, node).size +
+        getParents(nodes, edges, node).size !==
+      getAmountOfExpectConnections(node)
+    );
+  });
 }

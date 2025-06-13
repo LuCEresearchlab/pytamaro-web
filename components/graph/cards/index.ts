@@ -1,7 +1,7 @@
 import { NodeProps } from '@xyflow/react';
 import { TamaroFunctionCard } from './function';
 import { TamaroLiteralCard } from './literal';
-import { TamaroConstantCard } from './card';
+import { TamaroConstantCard } from './constant';
 
 export class Wrap<T> {
   obj: T | undefined;
