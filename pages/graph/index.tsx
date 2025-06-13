@@ -158,7 +158,7 @@ function View() {
     event.dataTransfer!.dropEffect = 'move';
   }, []);
 
-  const [nodeData, setNodeData]: [JudiciousElement & { module: string }, any] =
+  const [nodeData, setNodeData]: [{ type: string; value: any }, any] =
     useDnD() as any;
 
   const onDrop = useCallback(
@@ -178,18 +178,31 @@ function View() {
         y: event.clientY,
       });
 
-      const newNode = {
-        id: `${nodeData.name}-${Date.now()}`,
-        type: nodeData.kind,
-        position,
-        data: {
-          module: nodeData.module,
-          name: nodeData.name,
-          wrap: new Wrap(nodeData),
-        },
-      };
+      if (nodeData.type === 'judicious') {
+        const newNode = {
+          id: `${nodeData.value.name}-${Date.now()}`,
+          type: nodeData.value.kind,
+          position,
+          data: {
+            module: nodeData.value.module,
+            name: nodeData.value.name,
+            wrap: new Wrap(nodeData.value),
+          },
+        };
 
-      setNodes((nds) => nds.concat(newNode));
+        setNodes((nds) => nds.concat(newNode));
+      } else if (nodeData.type === 'literal') {
+        const newNode = {
+          id: `literal-${Date.now()}`,
+          type: 'literal',
+          position,
+          data: {
+            literal_type: 'float',
+            wrap: new Wrap(nodeData.value),
+          },
+        };
+        setNodes((nds) => nds.concat(newNode));
+      }
     },
     [screenToFlowPosition, nodeData],
   );

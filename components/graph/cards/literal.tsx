@@ -8,7 +8,7 @@ export interface ITamaroLiteralCardData extends ITamaroCardData {
 }
 
 export function TamaroLiteralCard(
-  props: Node & { data: ITamaroLiteralCardData },
+  props: Node & { data: ITamaroLiteralCardData; hide_handles?: boolean },
 ) {
   switch (props.data.literal_type) {
     case 'float':
@@ -21,7 +21,11 @@ const MIN_VALUE = -1e10;
 
 function FloatLiteralCard({
   data,
-}: Node & { data: ITamaroLiteralCardData & { literal_type: 'float' } }) {
+  hide_handles,
+}: Node & {
+  data: ITamaroLiteralCardData & { literal_type: 'float' };
+  hide_handles?: boolean;
+}) {
   const [value, _setValue] = useState((data.wrap.obj as number) || 0);
 
   const setValue = (newValue: number) => {
@@ -57,13 +61,15 @@ function FloatLiteralCard({
         }}
         defaultValue={value}
       />
-      <Handle
-        type='source'
-        id='output'
-        position={Position.Right}
-        className='handle'
-        style={{ opacity: '1' }}
-      />
+      {hide_handles !== true && (
+        <Handle
+          type='source'
+          id='output'
+          position={Position.Right}
+          className='handle'
+          style={{ opacity: '1' }}
+        />
+      )}
     </Card>
   );
 }

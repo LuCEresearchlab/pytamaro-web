@@ -121,6 +121,7 @@ export default function TamaroCard({
         show_handles,
       });
   }
+  console.error('Kind', el.kind);
   return <div>Invalid Kind</div>;
 }
 

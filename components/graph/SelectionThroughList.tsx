@@ -12,7 +12,7 @@ import {
   Select,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { node_types } from './cards';
+import { node_types, Wrap } from './cards';
 import useJudiciousDocData from '../../src/documentation';
 import {
   JudiciousElement,
@@ -20,6 +20,7 @@ import {
 } from '../../src/schemas/documentation';
 import TamaroCard from '../TamaroCard';
 import { useDnD } from '../../pages/graph/DnDContext';
+import { TamaroLiteralCard } from './cards/literal';
 
 const modules = [
   'builtins',
@@ -70,11 +71,8 @@ export default function SelectionByGroup() {
   }, [filter_input, moduleFilter]);
 
   const [nodeData, setNodeData] = useDnD() as any;
-  const onDragStart = (
-    event: any,
-    el: JudiciousElement & { module: string },
-  ) => {
-    setNodeData(el);
+  const onDragStart = (event: any, type: string, value: any) => {
+    setNodeData({ type, value });
     event.dataTransfer!.effectAllowed = 'move';
   };
 
@@ -99,7 +97,7 @@ export default function SelectionByGroup() {
               className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
               style={{ userSelect: 'none' }}
               onDragStart={(e) => {
-                onDragStart(e, el);
+                onDragStart(e, 'judicious', el);
               }}
               draggable
               key={el.module + '$' + el.name}
@@ -107,6 +105,39 @@ export default function SelectionByGroup() {
               <TamaroCard el={el} module={el.module} show_handles={false} />
             </div>
           ))}
+
+        {(filter_input.trim() === '' ||
+          !isNaN(Number.parseFloat(filter_input.trim()))) && (
+          <div
+            className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
+            style={{ userSelect: 'none' }}
+            onDragStart={(e) => {
+              onDragStart(
+                e,
+                'literal',
+                filter_input.trim() === ''
+                  ? undefined
+                  : Number.parseFloat(filter_input.trim()),
+              );
+            }}
+            draggable
+          >
+            <TamaroLiteralCard
+              data={
+                {
+                  literal_type: 'float',
+                  wrap: new Wrap(
+                    filter_input.trim() === ''
+                      ? undefined
+                      : Number.parseFloat(filter_input.trim()),
+                  ),
+                } as any
+              }
+              hide_handles
+              {...({} as any)}
+            />
+          </div>
+        )}
       </CardContent>
       <CardActions sx={{ display: 'flex', flexGrow: '1', width: '100%' }}>
         <InputLabel id='node_type'>Node type : </InputLabel>
