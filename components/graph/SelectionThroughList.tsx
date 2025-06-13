@@ -32,13 +32,16 @@ const modules = [
 
 export default function SelectionByGroup() {
   const [refresh, setRefreshing] = useState(false);
-  const [nodeType, setNodeType] = useState(undefined as string | undefined);
+  const [moduleFilter, setModuleFilter] = useState('pytamaro');
   const [filter_input, setFilterInput] = useState('');
 
   const documentation = useJudiciousDocData(modules);
 
   function getUpdatedFilterCache() {
     return documentation
+      .filter((v) => {
+        return moduleFilter === undefined || v.module === moduleFilter;
+      })
       .map((mod) => mod.elements.map((v) => ({ ...v, module: mod.module })))
       .reduce((a, b) => a.concat(b))
       .filter((v) =>
@@ -46,8 +49,7 @@ export default function SelectionByGroup() {
           .toLowerCase()
           .replaceAll(/[\t ]/g, '')
           .includes(filter_input.toLowerCase().replaceAll(/[\t ]/g, '')),
-      )
-      .filter((v) => (nodeType ? v.kind === nodeType : true));
+      );
   }
 
   const [filteredCache, setFilteredCache] = useState(getUpdatedFilterCache());
@@ -65,7 +67,7 @@ export default function SelectionByGroup() {
   useEffect(() => {
     if (timeout) clearTimeout(timeout);
     timeout = setTimeout(() => setRefreshing(true), 400);
-  }, [filter_input, nodeType]);
+  }, [filter_input, moduleFilter]);
 
   const [nodeData, setNodeData] = useDnD() as any;
   const onDragStart = (
@@ -113,19 +115,16 @@ export default function SelectionByGroup() {
           sx={{
             minWidth: '150px',
           }}
-          value={nodeType}
+          value={moduleFilter}
           onChange={(e) => {
-            return setNodeType(e.target.value);
+            return setModuleFilter(e.target.value);
           }}
         >
-          {card_type.map((v) => (
+          {modules.map((v) => (
             <MenuItem value={v} key={v}>
               {v}
             </MenuItem>
           ))}
-          <MenuItem value={undefined}>
-            <span style={{ visibility: 'hidden' }}>Undefined</span>
-          </MenuItem>
         </Select>
 
         <InputLabel id='research' style={{ margin: '0px 15px' }}>
