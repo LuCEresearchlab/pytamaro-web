@@ -1,10 +1,12 @@
 import { NodeProps } from '@xyflow/react';
-import { IImportedCardData } from '.';
+import { IImportedCardData, Wrap } from '.';
 import TamaroCard from '../../TamaroCard';
 import { JudiciousFunction } from '../../../src/schemas/documentation';
 import useJudiciousDocData from '../../../src/documentation';
 
-export interface ITamaroFunctionCardData extends IImportedCardData {}
+export interface ITamaroFunctionCardData extends IImportedCardData {
+  wrap: Wrap<JudiciousFunction>;
+}
 
 export function getFunctionCardData(module: string, function_name: string) {
   const judicious_module = useJudiciousDocData([module])[0];
