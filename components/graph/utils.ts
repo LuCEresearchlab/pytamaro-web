@@ -24,13 +24,23 @@ export function getTarget(nodes: Node[], edge: Edge) {
   return getNode(nodes, edge.target);
 }
 
-export function getChildren(nodes: Node[], edges: Edge[], node: string | Node) {
+export function getParents(nodes: Node[], edges: Edge[], node: string | Node) {
   const node_id = typeof node === 'string' ? node : node.id;
 
   return new Map(
     edges
       .filter((v) => v.target === node_id)
-      .map((v) => [v.targetHandle, getNode(nodes, v.target)]),
+      .map((v) => [v.targetHandle || '', getNode(nodes, v.target)!]),
+  );
+}
+
+export function getChildren(nodes: Node[], edges: Edge[], node: string | Node) {
+  const node_id = typeof node === 'string' ? node : node.id;
+
+  return new Map(
+    edges
+      .filter((v) => v.source === node_id)
+      .map((v) => [v.sourceHandle || '', getNode(nodes, v.source)!]),
   );
 }
 
@@ -67,6 +77,7 @@ export function getHandleType(node: Node, handle: string) {
     case 'function': {
       const data = node.data as any as ITamaroFunctionCardData;
       const function_el = data.wrap.obj as JudiciousFunction | undefined;
+      if (handle === 'output') return function_el?.returnValue?.type || 'null';
       const arg_name = getParameterName(handle);
       return (
         function_el?.parameters.find((v) => v.name === arg_name)?.type ||
