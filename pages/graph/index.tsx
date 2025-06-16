@@ -10,67 +10,19 @@ import {
   useReactFlow,
   useStoreApi,
 } from '@xyflow/react';
-import {
-  DragEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { Button, Icon, IconButton, Paper } from '@mui/material';
+import { DragEvent, useCallback, useMemo, useRef, useState } from 'react';
+import { IconButton, Paper } from '@mui/material';
 import '@xyflow/react/dist/style.css';
 import '../../style/graph_view.css';
-import {
-  Clear,
-  Fullscreen,
-  FullscreenExit,
-  PlayCircle,
-  Refresh,
-} from '@mui/icons-material';
+import { Delete, Fullscreen, FullscreenExit } from '@mui/icons-material';
 import { node_types } from '../../components/graph/cards';
-import { reassignExpression } from '../../components/graph/utils';
 import CardSelectionPane from '../../components/graph/CardSelectionPane';
 import {
   check_edge_looping,
   check_edge_typing,
 } from '../../components/graph/interactivity';
-import { playgroundPathname } from '../../src/urlUtils';
 import { appWithTranslation } from 'next-i18next';
 import { I18nextProvider } from 'react-i18next';
-
-// const initial_edges: Edge[] = [];
-
-// const initial_nodes: Node[] = [
-//   {
-//     id: '1',
-//     data: { module: 'pytamaro', name: 'rectangle', wrap: new Wrap() },
-//     position: { x: 0, y: 0 },
-//     type: 'function',
-//   },
-//   {
-//     id: '2',
-//     data: {
-//       module: 'python',
-//       name: 'a',
-//       literal_type: 'float',
-//       wrap: new Wrap(),
-//     },
-//     position: { x: 10, y: 0 },
-//     type: 'literal',
-//   },
-//   {
-//     id: '3',
-//     data: {
-//       module: 'python',
-//       name: 'a',
-//       literal_type: 'float',
-//       wrap: new Wrap(),
-//     },
-//     position: { x: 20, y: 0 },
-//     type: 'literal',
-//   },
-// ];
 
 function View() {
   const [fullscreen, setFullscreen] = useState(true);
@@ -78,49 +30,6 @@ function View() {
   const { getNodes, getEdges, screenToFlowPosition } = useReactFlow();
 
   const store = useStoreApi();
-
-  const [validState, setValidState] = useState(0);
-  const [code] = useState('');
-
-  let validation_timeout: NodeJS.Timeout | undefined;
-  useEffect(() => {
-    if (validState === 0) {
-      if (validation_timeout) clearTimeout(validation_timeout);
-      setTimeout(() => {
-        const nodes = getNodes();
-        const edges = getEdges();
-
-        const cleared_nodes = nodes
-          .filter((v) => v.data.expression)
-          .map((v) => ({
-            ...v,
-            data: { ...v, expression: undefined },
-          }));
-
-        reassignExpression(cleared_nodes, edges);
-        // nodes
-        //   .filter((v) => v.type === 'function')
-        //   .map((v) => v.data)
-        //   .forEach((v: any) => {
-        //     v.expression =
-        //       'from pytamaro import *\nshow_graphic(rectangle(100, 20, red))';
-        //   });
-
-        setNodes(cleared_nodes);
-        setValidState(1);
-
-        // const new_state = check_valid_graph(nodes, edges) ? 1 : -1;
-        // if (new_state === 1) {
-        //   const root = nodes.find(
-        //     (v) => getParents(nodes, edges, v).size === 0,
-        //   )!;
-        //   const expr = turnTreeToCode(nodes, edges, root);
-        //   setCode(expr);
-        // }
-        // return setValidState(new_state);
-      }, 1000);
-    }
-  });
 
   const {
     edges,
@@ -130,6 +39,7 @@ function View() {
     onConnect,
     dragged,
     setNodes,
+    setEdges,
   } = useStore((state) => state);
 
   const isValidConnection = useCallback(
@@ -258,34 +168,23 @@ function View() {
           )}
         </IconButton>
 
-        <div
+        <IconButton
           style={{
-            position: 'absolute',
-            top: '0px',
-            right: '0px',
-            margin: '10px',
             zIndex: '100',
+            background: 'white',
+            borderRadius: '5px',
+            position: 'absolute',
+            bottom: '0',
+            left: '0',
+          }}
+          size='large'
+          onClick={() => {
+            setNodes([]);
+            setEdges([]);
           }}
         >
-          <Icon>
-            {validState === -1 ? (
-              <Clear color={'error'} />
-            ) : validState === 0 ? (
-              <Refresh />
-            ) : (
-              <Button
-                variant='outlined'
-                size='small'
-                href={playgroundPathname(code)}
-                target='_blank'
-                endIcon={<PlayCircle />}
-                sx={{ position: 'absolute', right: '0px' }}
-              >
-                Try it!
-              </Button>
-            )}
-          </Icon>
-        </div>
+          <Delete />
+        </IconButton>
 
         <div
           style={{
