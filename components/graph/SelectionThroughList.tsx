@@ -106,7 +106,9 @@ export default function SelectionByGroup() {
               draggable
               key={el.module + '$' + el.name}
             >
-              <TamaroCard el={el} module={el.module} show_handles={false} />
+              <div style={{ pointerEvents: 'none' }}>
+                <TamaroCard el={el} module={el.module} show_handles={false} />
+              </div>
             </div>
           ))}
 
