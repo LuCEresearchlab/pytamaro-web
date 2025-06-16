@@ -26,7 +26,8 @@ import { I18nextProvider } from 'react-i18next';
 function View() {
   const [fullscreen, setFullscreen] = useState(true);
 
-  const { getNodes, getEdges, screenToFlowPosition } = useReactFlow();
+  const { getNodes, getEdges, screenToFlowPosition, flowToScreenPosition } =
+    useReactFlow();
 
   const {
     edges,
@@ -94,8 +95,14 @@ function View() {
   );
 
   const nodeTypes = useMemo(() => node_types, []);
-  const ref = useRef(null);
   const clickedRef = useRef(-1);
+  const [isSelecting, setIsSelecting] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+    is_dragging: false,
+  });
 
   return (
     <Paper className={`${fullscreen ? 'fullscreen' : 'normal'} graph_view `}>
@@ -105,7 +112,6 @@ function View() {
           if (e.key === 'Escape') setFullscreen(false);
           if (e.key === 'F11') setFullscreen(true);
         }}
-        ref={ref}
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
@@ -123,6 +129,92 @@ function View() {
         onDrop={onDrop}
         onDragOver={onDragOver}
         isValidConnection={isValidConnection}
+        onMouseDown={(e) => {
+          if (e.ctrlKey) {
+            setIsSelecting({
+              is_dragging: true,
+              width: 0,
+              height: 0,
+              ...screenToFlowPosition({ x: e.clientX, y: e.clientY }),
+            });
+          }
+        }}
+        onMouseUp={() => {
+          const x_0 = Math.min(
+            isSelecting.x,
+            isSelecting.x + isSelecting.width,
+          );
+          const y_0 = Math.min(
+            isSelecting.y,
+            isSelecting.y + isSelecting.height,
+          );
+          const x_1 = x_0 + Math.abs(isSelecting.width);
+          const y_1 = y_0 + Math.abs(isSelecting.width);
+
+          setIsSelecting({
+            is_dragging: false,
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+          });
+
+          function rectanglesIntersect(
+            minBx: number,
+            minBy: number,
+            maxBx: number,
+            maxBy: number,
+          ) {
+            const aLeftOfB: boolean = x_0 + x_1 < minBx;
+            const aRightOfB: boolean = x_0 > maxBx;
+            const aAboveB: boolean = y_0 > maxBy;
+            const aBelowB: boolean = y_0 + y_1 < minBy;
+
+            return !(aLeftOfB || aRightOfB || aAboveB || aBelowB);
+          }
+
+          setTimeout(
+            () =>
+              setNodes(
+                getNodes().map((v) => {
+                  if (!v.measured) return v;
+                  const v_x = v.position.x;
+                  const v_y = v.position.y;
+                  const v2_x = v_x + v.measured.width!;
+                  const v2_y = v_y + v.measured.height!;
+
+                  const isInRectangle = rectanglesIntersect(
+                    v_x,
+                    v_y,
+                    v2_x,
+                    v2_y,
+                  );
+                  const newNode = {
+                    ...v,
+                    selected: v.selected || isInRectangle,
+                  };
+                  return newNode;
+                }),
+              ),
+            20,
+          );
+        }}
+        onMouseMove={(e) => {
+          if (isSelecting.is_dragging) {
+            const real_point = screenToFlowPosition({
+              x: e.clientX,
+              y: e.clientY,
+            });
+
+            setIsSelecting({
+              is_dragging: true,
+              x: isSelecting.x,
+              y: isSelecting.y,
+              width: real_point.x - isSelecting.x,
+              height: real_point.y - isSelecting.y,
+            });
+          }
+        }}
         onNodeClick={(e, n) => {
           if (!n.selected) clickedRef.current = new Date().getTime();
         }}
@@ -202,6 +294,35 @@ function View() {
         >
           <CardSelectionPane />
         </div>
+
+        {
+          <div
+            style={(() => {
+              const { x, y } = flowToScreenPosition({
+                x: isSelecting.x,
+                y: isSelecting.y,
+              });
+
+              const { x: x2, y: y2 } = flowToScreenPosition({
+                x: isSelecting.x + isSelecting.width,
+                y: isSelecting.y + isSelecting.height,
+              });
+
+              const width = x2 - x;
+              const height = y2 - y;
+
+              return {
+                position: 'absolute',
+                backgroundColor: 'lightblue',
+                left: x,
+                top: y,
+                width: width,
+                height: height,
+                opacity: '40%',
+              };
+            })()}
+          ></div>
+        }
         {/* {menu && <Menu onClick={onPaneClick} {...(menu as any)} />} */}
       </ReactFlow>
     </Paper>
