@@ -238,7 +238,8 @@ function View() {
           if (!n.selected) clickedRef.current = new Date().getTime();
         }}
         onNodeDoubleClick={(e, node) => {
-          if (!node.selected || new Date().getTime() - clickedRef.current < 100)
+          console.log(new Date().getTime() - clickedRef.current);
+          if (!node.selected || new Date().getTime() - clickedRef.current < 300)
             return;
 
           const angle = Math.random() * Math.PI * 2;
