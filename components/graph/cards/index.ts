@@ -3,10 +3,19 @@ import { TamaroFunctionCard } from './function';
 import { TamaroLiteralCard } from './literal';
 import { TamaroConstantCard } from './constant';
 
+export interface ImportReference {
+  module: string;
+  name: string;
+}
+
+export type CodeRepresentation = [string | undefined, ImportReference[]];
+
 export interface ITamaroCardData {
   value: unknown;
-  imports?: { module: string; name: string }[];
+  imports?: ImportReference[];
   expression?: string;
+  visualization_imports?: ImportReference[];
+  visualization_expression?: string;
 }
 
 export interface IImportedCardData extends ITamaroCardData {

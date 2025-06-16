@@ -9,7 +9,13 @@ import {
   JudiciousConstant,
   JudiciousFunction,
 } from '../../src/schemas/documentation';
-import { CardType, ITamaroCardData, node_types } from './cards';
+import {
+  CardType,
+  CodeRepresentation,
+  ImportReference,
+  ITamaroCardData,
+  node_types,
+} from './cards';
 import { ITamaroLiteralCardData } from './cards/literal';
 import { ITamaroConstantCardData } from './cards/constant';
 
@@ -122,16 +128,24 @@ export function getAmountOfExpectConnections(node: Node) {
   }
 }
 
-function turnTreeToExpressionRec(
+export const TRANSPARENT_IMPORT: ImportReference = {
+  module: 'pytamaro',
+  name: 'transparent',
+};
+
+export const TRANSPARENT_CODE: CodeRepresentation = [
+  'transparent',
+  [TRANSPARENT_IMPORT],
+];
+
+export function turnTreeToExpressionRec(
   nodes: Node[],
   edges: Edge[],
   visited: Set<string>,
   node: Node & { data: ITamaroCardData },
-): [string | undefined, { module: string; name: string }[]] {
+  transparent?: boolean,
+): CodeRepresentation {
   if (!node?.type) return [undefined, []];
-  if (visited.has(node.id)) {
-    return [node.data.expression!, node.data.imports || []];
-  }
   visited.add(node.id);
 
   const type = node.type;
@@ -143,6 +157,9 @@ function turnTreeToExpressionRec(
       const data = node.data as unknown as ITamaroFunctionCardData;
       const fn = data.value;
 
+      if (transparent && fn.returnValue && fn.returnValue.type === 'Color')
+        return TRANSPARENT_CODE;
+
       const params = fn.parameters
         .filter((v) => v.default == null)
         .map((v) =>
@@ -152,32 +169,87 @@ function turnTreeToExpressionRec(
             visited,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getFunctionParameterRelative(nodes, edges, node.id, v.name)! as any,
+            transparent,
           ),
         );
 
-      data.expression = params.find((v) => v[0] == null)
+      const expression = params.find((v) => v[0] == null)
         ? undefined
         : `${fn.name}(${params.map((v) => v[0]).join(',')})`;
 
-      data.imports = params.map((v) => v[1]).reduce((a, b) => a.concat(b), []);
+      const imports = params
+        .map((v) => v[1])
+        .reduce((a, b) => a.concat(b), [])
+        .concat({ module: data.module, name: data.name });
 
-      if (data.expression) {
-        data.imports.push({ module: data.module, name: data.name });
-      }
-
-      return [data.expression, data.imports];
+      return [expression, imports];
     }
     case 'literal': {
       const data = node.data as unknown as ITamaroLiteralCardData;
-      data.expression = String(data.value || 0);
-      return [data.expression, []];
+      const expression = String(data.value || 0);
+      return [expression, []];
     }
     case 'constant': {
       const data = node.data as unknown as ITamaroConstantCardData;
-      data.expression = data.name;
-      data.imports = [{ module: data.module, name: data.name }];
-      return [data.expression, [{ module: data.module, name: data.name }]];
+
+      if (transparent && data.value.type === 'Color') return TRANSPARENT_CODE;
+
+      const expression = data.name;
+      const imports = [{ module: data.module, name: data.name }];
+      return [expression, imports];
     }
+  }
+}
+
+export function growExpressionFromChildIgnoreColor(
+  nodes: Node[],
+  edges: Edge[],
+  visited: Set<string>,
+  child: Node,
+  child_code: CodeRepresentation,
+): CodeRepresentation {
+  const parent_edge = edges.find((v) => v.source === child.id);
+  if (!parent_edge) return child_code;
+
+  const parent = getNode(nodes, parent_edge.target)!;
+
+  switch (parent.type as CardType) {
+    case 'function': {
+      const data = parent.data as unknown as ITamaroFunctionCardData;
+      const fn = data.value;
+
+      const params = fn.parameters
+        .filter((v) => v.default == null)
+        .map(
+          (v) =>
+            getFunctionParameterRelative(
+              nodes,
+              edges,
+              parent.id,
+              v.name,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            )! as any,
+        )
+        .map((node) =>
+          node && node.id === child.id
+            ? child_code
+            : turnTreeToExpressionRec(nodes, edges, visited, node, true),
+        );
+
+      const expression = params.find((v) => v[0] == null)
+        ? undefined
+        : `${fn.name}(${params.map((v) => v[0]).join(',')})`;
+
+      const imports = params
+        .map((v) => v[1])
+        .reduce((a, b) => a.concat(b), [])
+        .concat({ module: data.module, name: data.name });
+
+      if (!expression) return child_code;
+      return [expression, imports];
+    }
+    default:
+      throw new Error('Should not happens, as only functions have children');
   }
 }
 
@@ -191,11 +263,8 @@ export function reassignExpression(nodes: Node[], edges: Edge[]) {
   });
 }
 
-export function createCode(
-  imports: { module: string; name: string }[],
-  expression: string,
-) {
-  const map: Map<string, string[]> = imports
+export function createCodeFromCodeRepresentation(code: CodeRepresentation) {
+  const map: Map<string, string[]> = code[1]
     .concat({ module: 'pytamaro', name: 'show_graphic' })
     .reduce((a: Map<string, string[]>, b) => {
       if (!a.has(b.module)) a.set(b.module, []);
@@ -210,7 +279,7 @@ export function createCode(
       .map((k) => `from ${k} import ${map.get(k)!.toSorted().join(', ')}`)
       .join('\n') + '\n\n';
 
-  return import_map + `show_graphic(${expression})`;
+  return import_map + `show_graphic(${code[0]})`;
 }
 
 export function turnTreeToCode(

@@ -2,7 +2,14 @@ import { NodeProps } from '@xyflow/react';
 import { IImportedCardData } from '.';
 import { FunctionTamaroCard } from '../../TamaroCard';
 import { JudiciousFunction } from '../../../src/schemas/documentation';
-import { createCode } from '../utils';
+import {
+  createCodeFromCodeRepresentation,
+  getNode,
+  growExpressionFromChildIgnoreColor,
+  turnTreeToExpressionRec,
+} from '../utils';
+import { useStore } from '../store';
+import { useEffect, useState } from 'react';
 
 export interface ITamaroFunctionCardData extends IImportedCardData {
   value: JudiciousFunction;
@@ -19,14 +26,32 @@ export function getParameterName(handle_name: string) {
 }
 
 export function TamaroFunctionCard({
+  id,
   data,
 }: NodeProps & { data: ITamaroFunctionCardData }) {
   const function_el = data.value;
 
-  const code = (() =>
-    data.expression
-      ? createCode(data.imports || [], data.expression)
-      : undefined)();
+  const { nodes, edges } = useStore();
+
+  const [code, setCode] = useState(undefined as string | undefined);
+
+  useEffect(() => {
+    const visited = new Set<string>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const node = getNode(nodes, id)! as any;
+    const value = turnTreeToExpressionRec(nodes, edges, visited, node);
+    const scaled_code = growExpressionFromChildIgnoreColor(
+      nodes,
+      edges,
+      visited,
+      node,
+      value,
+    );
+
+    setCode(createCodeFromCodeRepresentation(scaled_code));
+    console.log(code);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [edges]);
 
   return (
     <div className='compact_view hide_types hide_icons hide_output hide_optionals hide_labels'>
