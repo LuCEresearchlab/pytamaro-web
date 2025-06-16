@@ -73,10 +73,7 @@ function View() {
         return;
       }
 
-      // project was renamed to screenToFlowPosition
-      // and you don't need to subtract the reactFlowBounds.left/top anymore
-      // details: https://reactflow.dev/whats-new/2023-11-10
-      const position = screenToFlowPosition({
+      const topLeftPosition = screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
       });
@@ -84,12 +81,31 @@ function View() {
       const newNode = {
         id: `${dragged.type}-${Date.now()}`,
         type: dragged.type,
-        position,
+        position: topLeftPosition,
         data: dragged.data,
         dragHandle: '.drag-handle',
+        className: 'node_hidden',
       };
 
       setNodes(nodes.concat(newNode));
+
+      setTimeout(() => {
+        const newNodes = getNodes();
+        setNodes(
+          newNodes.map((v) =>
+            v.id === newNode.id
+              ? {
+                  ...v,
+                  position: {
+                    x: v.position.x - (v.measured?.width || 0) / 2,
+                    y: v.position.y - (v.measured?.height || 0) / 2,
+                  },
+                  className: '',
+                }
+              : v,
+          ),
+        );
+      });
     },
     [screenToFlowPosition, dragged, nodes, setNodes],
   );

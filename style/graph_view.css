@@ -25,3 +25,8 @@
 .react-flow__edge.selected path {
   stroke: blue !important;
 }
+
+.node_hidden {
+  visibility: hidden !important;
+  background-color: black;
+}
