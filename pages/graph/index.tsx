@@ -88,6 +88,7 @@ function View() {
         type: dragged.type,
         position,
         data: dragged.data,
+        dragHandle: '.drag-handle',
       };
 
       setNodes(nodes.concat(newNode));

@@ -55,7 +55,7 @@ export function TamaroFunctionCard({
   }, [edges]);
 
   return (
-    <div className='compact_view hide_types hide_icons hide_output hide_optionals hide_labels'>
+    <div className='drag-handle compact_view hide_types hide_icons hide_output hide_optionals hide_labels'>
       {function_el && (
         <FunctionTamaroCard
           el={function_el}

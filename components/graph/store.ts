@@ -68,12 +68,7 @@ export const useStore = create<GraphState>()(
       setEdges: (edges) => {
         set({ edges });
       },
-      updateNodeData: (
-        nodeId: string,
-        data:
-          | Record<string, unknown>
-          | ((data: Record<string, unknown>) => Record<string, unknown>),
-      ) => {
+      updateNodeData: (nodeId, data) => {
         const newData = typeof data === 'function' ? data : () => data;
 
         set({

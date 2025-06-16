@@ -36,9 +36,9 @@ function FloatLiteralCard({
     updateNodeData(id, { literal_type: 'float', value: newValue });
 
   return (
-    <Card sx={{ margin: '0px' }} className='tamaro_card pane_container'>
+    <Card className='literal_card tamaro_card pane_container draggable'>
       <Input
-        sx={{ margin: '10px' }}
+        sx={{ width: '70%' }}
         onChange={(e) => {
           e.preventDefault();
           if (e.currentTarget.value.trim().length === 0)
@@ -64,6 +64,7 @@ function FloatLiteralCard({
         }}
         defaultValue={value}
       />
+      <div style={{ width: '100%' }} className='drag-handle'></div>
       {hide_handles !== true && (
         <Handle
           type='source'
