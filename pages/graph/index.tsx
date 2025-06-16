@@ -127,6 +127,10 @@ function View() {
         onKeyDown={(e) => {
           if (e.key === 'Escape') setFullscreen(false);
           if (e.key === 'F11') setFullscreen(true);
+          if (e.ctrlKey && e.key === 'a') {
+            e.preventDefault();
+            setNodes(getNodes().map((v) => ({ ...v, selected: true })));
+          }
         }}
         nodes={nodes}
         edges={edges}
