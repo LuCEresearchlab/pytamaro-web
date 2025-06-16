@@ -156,16 +156,19 @@ function View() {
           }
         }}
         onMouseUp={() => {
-          const x_0 = Math.min(
-            isSelecting.x,
-            isSelecting.x + isSelecting.width,
-          );
-          const y_0 = Math.min(
-            isSelecting.y,
-            isSelecting.y + isSelecting.height,
-          );
-          const x_1 = x_0 + Math.abs(isSelecting.width);
-          const y_1 = y_0 + Math.abs(isSelecting.width);
+          const min_point = {
+            x: Math.min(isSelecting.x, isSelecting.x + isSelecting.width),
+            y: Math.min(isSelecting.y, isSelecting.y + isSelecting.height),
+          };
+          const max_point = {
+            x: Math.max(isSelecting.x, isSelecting.x + isSelecting.width),
+            y: Math.max(isSelecting.y, isSelecting.y + isSelecting.height),
+          };
+
+          const x_0 = min_point.x;
+          const y_0 = min_point.y;
+          const x_1 = max_point.x;
+          const y_1 = max_point.y;
 
           setIsSelecting({
             is_dragging: false,
@@ -181,10 +184,10 @@ function View() {
             maxBx: number,
             maxBy: number,
           ) {
-            const aLeftOfB: boolean = x_0 + x_1 < minBx;
+            const aLeftOfB: boolean = x_1 < minBx;
             const aRightOfB: boolean = x_0 > maxBx;
             const aAboveB: boolean = y_0 > maxBy;
-            const aBelowB: boolean = y_0 + y_1 < minBy;
+            const aBelowB: boolean = y_1 < minBy;
 
             return !(aLeftOfB || aRightOfB || aAboveB || aBelowB);
           }
@@ -324,14 +327,17 @@ function View() {
                 y: isSelecting.y + isSelecting.height,
               });
 
-              const width = x2 - x;
-              const height = y2 - y;
+              const min_point = { x: Math.min(x, x2), y: Math.min(y, y2) };
+              const max_point = { x: Math.max(x, x2), y: Math.max(y, y2) };
+
+              const width = Math.abs(max_point.x - min_point.x);
+              const height = Math.abs(max_point.y - min_point.y);
 
               return {
                 position: 'absolute',
                 backgroundColor: 'lightblue',
-                left: x,
-                top: y,
+                left: min_point.x,
+                top: min_point.y,
                 width: width,
                 height: height,
                 opacity: '40%',
