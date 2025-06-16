@@ -5,7 +5,6 @@ import {
   getHandleType,
   getNode,
   getParents,
-  getRelative as getRelatives,
 } from './utils';
 
 export function check_edge_typing(

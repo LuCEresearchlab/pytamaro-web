@@ -1,172 +1,167 @@
 'use client';
 
 import {
-  addEdge,
-  applyEdgeChanges,
-  applyNodeChanges,
   Background,
   BackgroundVariant,
   Connection,
   Edge,
-  EdgeChange,
-  Handle,
-  Node,
-  NodeChange,
-  Position,
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
   useStoreApi,
 } from '@xyflow/react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DnDProvider, useDnD } from './DnDContext';
+import {
+  DragEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Button, Icon, IconButton, Paper } from '@mui/material';
 import '@xyflow/react/dist/style.css';
 import '../../style/graph_view.css';
 import {
-  Check,
   Clear,
   Fullscreen,
   FullscreenExit,
   PlayCircle,
   Refresh,
 } from '@mui/icons-material';
-import { node_types, Wrap } from '../../components/graph/cards';
-import { getParents, turnTreeToCode } from '../../components/graph/utils';
+import { node_types } from '../../components/graph/cards';
+import { reassignExpression } from '../../components/graph/utils';
 import CardSelectionPane from '../../components/graph/CardSelectionPane';
-import { JudiciousElement } from '../../src/schemas/documentation';
 import {
   check_edge_looping,
   check_edge_typing,
-  check_valid_graph,
 } from '../../components/graph/interactivity';
-import RapidPlaygroundButton from '../../components/navbar/RapidPlaygroundButton';
 import { playgroundPathname } from '../../src/urlUtils';
+import { appWithTranslation } from 'next-i18next';
+import { I18nextProvider } from 'react-i18next';
 
-function DefaultNode() {
-  return (
-    <div>
-      <Handle position={Position.Top} type='source' />
-      AAAAAA
-      <Handle position={Position.Bottom} type='target' />
-    </div>
-  );
-}
+// const initial_edges: Edge[] = [];
 
-const initial_edges: Edge[] = [];
-
-const initial_nodes: Node[] = [
-  {
-    id: '1',
-    data: { module: 'pytamaro', name: 'rectangle', wrap: new Wrap() },
-    position: { x: 0, y: 0 },
-    type: 'function',
-  },
-  {
-    id: '2',
-    data: {
-      module: 'python',
-      name: 'a',
-      literal_type: 'float',
-      wrap: new Wrap(),
-    } as any,
-    position: { x: 10, y: 0 },
-    type: 'literal',
-  },
-  {
-    id: '3',
-    data: {
-      module: 'python',
-      name: 'a',
-      literal_type: 'float',
-      wrap: new Wrap(),
-    } as any,
-    position: { x: 20, y: 0 },
-    type: 'literal',
-  },
-];
+// const initial_nodes: Node[] = [
+//   {
+//     id: '1',
+//     data: { module: 'pytamaro', name: 'rectangle', wrap: new Wrap() },
+//     position: { x: 0, y: 0 },
+//     type: 'function',
+//   },
+//   {
+//     id: '2',
+//     data: {
+//       module: 'python',
+//       name: 'a',
+//       literal_type: 'float',
+//       wrap: new Wrap(),
+//     },
+//     position: { x: 10, y: 0 },
+//     type: 'literal',
+//   },
+//   {
+//     id: '3',
+//     data: {
+//       module: 'python',
+//       name: 'a',
+//       literal_type: 'float',
+//       wrap: new Wrap(),
+//     },
+//     position: { x: 20, y: 0 },
+//     type: 'literal',
+//   },
+// ];
 
 function View() {
-  const [idCounter, setIdCounter] = useState(0);
   const [fullscreen, setFullscreen] = useState(true);
-
-  const [nodes, setNodes] = useState(initial_nodes);
-  const [edges, setEdges] = useState(initial_edges);
 
   const { getNodes, getEdges, screenToFlowPosition } = useReactFlow();
 
   const store = useStoreApi();
 
   const [validState, setValidState] = useState(0);
-  const [code, setCode] = useState('');
+  const [code] = useState('');
 
-  let validation_timeout: any;
+  let validation_timeout: NodeJS.Timeout | undefined;
   useEffect(() => {
     if (validState === 0) {
       if (validation_timeout) clearTimeout(validation_timeout);
       setTimeout(() => {
         const nodes = getNodes();
         const edges = getEdges();
-        const new_state = check_valid_graph(nodes, edges) ? 1 : -1;
-        if (new_state === 1) {
-          const root = nodes.find(
-            (v) => getParents(nodes, edges, v).size === 0,
-          )!;
-          const expr = turnTreeToCode(nodes, edges, root);
-          setCode(expr);
-        }
-        return setValidState(new_state);
+
+        const cleared_nodes = nodes
+          .filter((v) => v.data.expression)
+          .map((v) => ({
+            ...v,
+            data: { ...v, expression: undefined },
+          }));
+
+        reassignExpression(cleared_nodes, edges);
+        // nodes
+        //   .filter((v) => v.type === 'function')
+        //   .map((v) => v.data)
+        //   .forEach((v: any) => {
+        //     v.expression =
+        //       'from pytamaro import *\nshow_graphic(rectangle(100, 20, red))';
+        //   });
+
+        setNodes(cleared_nodes);
+        setValidState(1);
+
+        // const new_state = check_valid_graph(nodes, edges) ? 1 : -1;
+        // if (new_state === 1) {
+        //   const root = nodes.find(
+        //     (v) => getParents(nodes, edges, v).size === 0,
+        //   )!;
+        //   const expr = turnTreeToCode(nodes, edges, root);
+        //   setCode(expr);
+        // }
+        // return setValidState(new_state);
       }, 1000);
     }
   });
 
-  const onNodesChange = useCallback((changes: NodeChange<any>[]) => {
-    if (changes.find((v) => v.type !== 'select' && v.type !== 'position'))
-      setValidState(0);
-    return setNodes((nds) => applyNodeChanges(changes, nds));
-  }, []);
-  const onEdgesChange = useCallback((changes: EdgeChange<any>[]) => {
-    if (changes.find((v) => v.type !== 'select')) setValidState(0);
-    return setEdges((eds) => applyEdgeChanges(changes, eds));
-  }, []);
+  const {
+    edges,
+    nodes,
+    onNodesChange,
+    onEdgesChange,
+    onConnect,
+    dragged,
+    setNodes,
+  } = useStore((state) => state);
 
-  const onConnect = useCallback(
-    (params: any) => {
-      setValidState(0);
-      return setEdges((els) => addEdge(params, els));
+  const isValidConnection = useCallback(
+    (params: Edge | Connection) => {
+      if (typeof window === 'undefined') return false;
+      const nodes = getNodes();
+      const edges = getEdges();
+      const source = params.source;
+      const sourceHandle = params.sourceHandle || '';
+      const target = params.target;
+      const targetHandle = params.targetHandle || '';
+
+      return (
+        check_edge_typing(nodes, source, sourceHandle, target, targetHandle) &&
+        check_edge_looping(nodes, edges, source, target)
+      );
     },
-    [setEdges],
+    [getNodes, getEdges],
   );
 
-  const isValidConnection = useCallback((params: Edge | Connection) => {
-    if (typeof window === 'undefined') return false;
-    const nodes = getNodes();
-    const edges = getEdges();
-    const source = params.source;
-    const sourceHandle = params.sourceHandle || '';
-    const target = params.target;
-    const targetHandle = params.targetHandle || '';
-
-    return (
-      check_edge_typing(nodes, source, sourceHandle, target, targetHandle) &&
-      check_edge_looping(nodes, edges, source, target)
-    );
-  }, []);
-
-  const onDragOver = useCallback((event: any) => {
+  const onDragOver = useCallback((event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
+    // eslint-disable-next-line no-param-reassign
     event.dataTransfer!.dropEffect = 'move';
   }, []);
 
-  const [nodeData, setNodeData]: [{ type: string; value: any }, any] =
-    useDnD() as any;
-
   const onDrop = useCallback(
-    (event: any) => {
+    (event: DragEvent<HTMLDivElement>) => {
       event.preventDefault();
 
       // check if the dropped element is valid
-      if (!nodeData) {
+      if (!dragged) {
         return;
       }
 
@@ -178,33 +173,16 @@ function View() {
         y: event.clientY,
       });
 
-      if (nodeData.type === 'judicious') {
-        const newNode = {
-          id: `${nodeData.value.name}-${Date.now()}`,
-          type: nodeData.value.kind,
-          position,
-          data: {
-            module: nodeData.value.module,
-            name: nodeData.value.name,
-            wrap: new Wrap(nodeData.value),
-          },
-        };
+      const newNode = {
+        id: `${dragged.type}-${Date.now()}`,
+        type: dragged.type,
+        position,
+        data: dragged.data,
+      };
 
-        setNodes((nds) => nds.concat(newNode));
-      } else if (nodeData.type === 'literal') {
-        const newNode = {
-          id: `literal-${Date.now()}`,
-          type: 'literal',
-          position,
-          data: {
-            literal_type: 'float',
-            wrap: new Wrap(nodeData.value),
-          },
-        };
-        setNodes((nds) => nds.concat(newNode));
-      }
+      setNodes(nodes.concat(newNode));
     },
-    [screenToFlowPosition, nodeData],
+    [screenToFlowPosition, dragged, nodes, setNodes],
   );
 
   const nodeTypes = useMemo(() => node_types, []);
@@ -246,11 +224,12 @@ function View() {
 
           const { addSelectedNodes } = store.getState();
           const newNode = {
-            ...node,
+            type: node.type,
+            data: { ...node.data, expression: undefined },
             id: `${node.data?.name || node.type || 'node'}-${Date.now()}`,
             position: { x: node.position.x + dx, y: node.position.y + dy },
           };
-          setNodes((eds) => eds.concat(newNode));
+          setNodes(nodes.concat(newNode));
 
           addSelectedNodes([newNode.id]);
         }}
@@ -325,12 +304,17 @@ function View() {
   );
 }
 
-export default function Graph() {
+import i18next from 'i18next';
+import { useStore } from '../../components/graph/store';
+
+function Graph() {
   return (
-    <ReactFlowProvider>
-      <DnDProvider>
+    <I18nextProvider i18n={i18next}>
+      <ReactFlowProvider>
         <View />
-      </DnDProvider>
-    </ReactFlowProvider>
+      </ReactFlowProvider>
+    </I18nextProvider>
   );
 }
+
+export default appWithTranslation(Graph);

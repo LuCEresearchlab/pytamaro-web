@@ -11,6 +11,10 @@ import {
 import { Tooltip } from '@mui/material';
 import { Handle, Position } from '@xyflow/react';
 import { match } from 'assert';
+import { executeOnServer } from '../src/useActivity';
+import { useMemo, useState } from 'react';
+import { isEmpty, negate } from 'lodash';
+import { OutputArea } from './OutputArea';
 
 interface IArrow {
   parameter_index: number;
@@ -121,7 +125,6 @@ export default function TamaroCard({
         show_handles,
       });
   }
-  console.error('Kind', el.kind);
   return <div>Invalid Kind</div>;
 }
 
@@ -129,13 +132,37 @@ export function FunctionTamaroCard({
   el,
   module,
   show_handles,
+  returns_expression,
 }: {
   el: JudiciousFunction;
   module: string;
   show_handles?: boolean;
+  returns_expression?: string;
 }) {
   const needed_parameters = el.parameters.filter((v) => v.default == null);
   const parameters = el.parameters;
+
+  const show_display = el.returnValue && returns_expression != null;
+  const [imgData, setImgData] = useState(undefined as any);
+
+  const data = useMemo(
+    () =>
+      returns_expression
+        ? executeOnServer([returns_expression], 0, [], [])
+            .catch(() => undefined)
+            .then((v) => (v?.type === 'success' ? v.stdout : undefined))
+            .then((data) => {
+              if (!data) return undefined;
+              const pytamaroDataUriRegex =
+                /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
+              return data
+                .split(pytamaroDataUriRegex)
+                .filter(negate(isEmpty))[0];
+            })
+            .then(setImgData)
+        : undefined,
+    [returns_expression],
+  );
 
   return (
     <div className='pane_container function_card_pane'>
@@ -234,6 +261,15 @@ export function FunctionTamaroCard({
           </Tooltip>
         )}
       </div>
+
+      {show_display && (
+        <div
+          className='pane display_pane'
+          style={{ userSelect: 'none', pointerEvents: 'none' }}
+        >
+          {imgData && <img src={imgData} />}
+        </div>
+      )}
 
       <div className='pane output_pane hovergroup' data-hovergroup={'output'}>
         {el.returnValue && (

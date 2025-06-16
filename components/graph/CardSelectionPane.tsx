@@ -1,12 +1,5 @@
-import { Expand, ExpandMore } from '@mui/icons-material';
-import {
-  Card,
-  CardHeader,
-  Collapse,
-  IconButton,
-  Paper,
-  Tooltip,
-} from '@mui/material';
+import { ExpandMore } from '@mui/icons-material';
+import { Card, CardHeader, Collapse, IconButton } from '@mui/material';
 import { useState } from 'react';
 import SelectionThroughList from './SelectionThroughList';
 

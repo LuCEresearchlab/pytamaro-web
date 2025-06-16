@@ -1,10 +1,12 @@
+/* eslint-disable no-param-reassign */
 import { Handle, Node, Position } from '@xyflow/react';
 import { ITamaroCardData } from '.';
-import { useState } from 'react';
 import { Card, Input } from '@mui/material';
+import { useStore } from '../store';
 
 export interface ITamaroLiteralCardData extends ITamaroCardData {
   literal_type: 'float';
+  value: number;
 }
 
 export function TamaroLiteralCard(
@@ -20,18 +22,19 @@ const MAX_VALUE = 1e10;
 const MIN_VALUE = -1e10;
 
 function FloatLiteralCard({
+  id,
   data,
-  hide_handles,
+  hide_handles = false,
 }: Node & {
   data: ITamaroLiteralCardData & { literal_type: 'float' };
   hide_handles?: boolean;
 }) {
-  const [value, _setValue] = useState((data.wrap.obj as number) || 0);
+  const { updateNodeData } = useStore();
 
-  const setValue = (newValue: number) => {
-    _setValue(newValue);
-    data.wrap.obj = newValue;
-  };
+  const value = data.value;
+  const setValue = (newValue: number) =>
+    updateNodeData(id, { literal_type: 'float', value: newValue });
+
   return (
     <Card sx={{ margin: '0px' }} className='tamaro_card pane_container'>
       <Input

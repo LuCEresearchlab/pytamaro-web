@@ -11,16 +11,11 @@ import {
   MenuItem,
   Select,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { node_types, Wrap } from './cards';
+import { DragEvent, useCallback, useEffect, useState } from 'react';
 import useJudiciousDocData from '../../src/documentation';
-import {
-  JudiciousElement,
-  JudiciousFunction,
-} from '../../src/schemas/documentation';
 import TamaroCard from '../TamaroCard';
-import { useDnD } from '../../pages/graph/DnDContext';
 import { TamaroLiteralCard } from './cards/literal';
+import { useStore } from './store';
 
 const modules = [
   'builtins',
@@ -38,41 +33,46 @@ export default function SelectionByGroup() {
 
   const documentation = useJudiciousDocData(modules);
 
-  function getUpdatedFilterCache() {
+  const getUpdatedFilterCache = useCallback(() => {
     return documentation
       .filter((v) => {
         return moduleFilter === undefined || v.module === moduleFilter;
       })
       .map((mod) => mod.elements.map((v) => ({ ...v, module: mod.module })))
-      .reduce((a, b) => a.concat(b))
+      .reduce((a, b) => a.concat(b), [])
       .filter((v) =>
         v.name
           .toLowerCase()
           .replaceAll(/[\t ]/g, '')
           .includes(filter_input.toLowerCase().replaceAll(/[\t ]/g, '')),
       );
-  }
+  }, [documentation, filter_input, moduleFilter]);
 
   const [filteredCache, setFilteredCache] = useState(getUpdatedFilterCache());
-
-  const card_type = Object.keys(node_types);
+  const { setDragged } = useStore();
 
   useEffect(() => {
     if (refresh) {
       setFilteredCache(getUpdatedFilterCache());
       setTimeout(() => setRefreshing(false), 1000);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refresh]);
 
-  let timeout: any;
+  let timeout: NodeJS.Timeout;
   useEffect(() => {
     if (timeout) clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     timeout = setTimeout(() => setRefreshing(true), 400);
   }, [filter_input, moduleFilter]);
 
-  const [nodeData, setNodeData] = useDnD() as any;
-  const onDragStart = (event: any, type: string, value: any) => {
-    setNodeData({ type, value });
+  const onDragStart = (
+    event: DragEvent<HTMLDivElement>,
+    type: string,
+    data: Record<string, unknown>,
+  ) => {
+    setDragged({ type, data });
+    // eslint-disable-next-line no-param-reassign
     event.dataTransfer!.effectAllowed = 'move';
   };
 
@@ -97,7 +97,11 @@ export default function SelectionByGroup() {
               className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
               style={{ userSelect: 'none' }}
               onDragStart={(e) => {
-                onDragStart(e, 'judicious', el);
+                onDragStart(e, el.kind, {
+                  module: el.module,
+                  name: el.name,
+                  value: el,
+                } as Record<string, unknown>);
               }}
               draggable
               key={el.module + '$' + el.name}
@@ -112,13 +116,13 @@ export default function SelectionByGroup() {
             className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
             style={{ userSelect: 'none' }}
             onDragStart={(e) => {
-              onDragStart(
-                e,
-                'literal',
-                filter_input.trim() === ''
-                  ? undefined
-                  : Number.parseFloat(filter_input.trim()),
-              );
+              onDragStart(e, 'literal', {
+                literal_type: 'float',
+                value:
+                  filter_input.trim() === ''
+                    ? undefined
+                    : Number.parseFloat(filter_input.trim()),
+              });
             }}
             draggable
           >
@@ -126,14 +130,14 @@ export default function SelectionByGroup() {
               data={
                 {
                   literal_type: 'float',
-                  wrap: new Wrap(
+                  value:
                     filter_input.trim() === ''
-                      ? undefined
+                      ? 0
                       : Number.parseFloat(filter_input.trim()),
-                  ),
-                } as any
+                } as Record<string, unknown>
               }
               hide_handles
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               {...({} as any)}
             />
           </div>

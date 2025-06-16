@@ -72,7 +72,7 @@ export async function transitivelyImportedToolboxFunctions(
   return [...newlyImportedFunctions, ...importsOfImports.flat()];
 }
 
-async function executeOnServer(
+export async function executeOnServer(
   sources: string[],
   idx: number,
   toolboxFunctions: ToolboxFunction[],
