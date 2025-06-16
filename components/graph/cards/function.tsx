@@ -48,8 +48,9 @@ export function TamaroFunctionCard({
       value,
     );
 
-    setCode(createCodeFromCodeRepresentation(scaled_code));
-    console.log(code);
+    if (scaled_code[0] !== undefined)
+      setCode(createCodeFromCodeRepresentation(scaled_code));
+    else setCode(undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [edges]);
 
@@ -60,7 +61,7 @@ export function TamaroFunctionCard({
           el={function_el}
           module={data.module}
           show_handles
-          returns_expression={code || ''}
+          returns_expression={code ? code : undefined}
         />
       )}
     </div>

@@ -10,11 +10,9 @@ import {
 } from '../src/schemas/documentation';
 import { Tooltip } from '@mui/material';
 import { Handle, Position } from '@xyflow/react';
-import { match } from 'assert';
 import { executeOnServer } from '../src/useActivity';
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { isEmpty, negate } from 'lodash';
-import { OutputArea } from './OutputArea';
 
 interface IArrow {
   parameter_index: number;
@@ -36,8 +34,8 @@ export function Arrow({
   icon,
   multiple,
   optional,
-  handle_start,
-  handle_end,
+  handle_start = undefined,
+  handle_end = undefined,
   show_handles,
 }: IArrow) {
   return (
@@ -109,7 +107,7 @@ export function Arrow({
 export default function TamaroCard({
   el,
   module,
-  show_handles,
+  show_handles = false,
 }: {
   el: JudiciousElement;
   module: string;
@@ -131,8 +129,8 @@ export default function TamaroCard({
 export function FunctionTamaroCard({
   el,
   module,
-  show_handles,
-  returns_expression,
+  show_handles = false,
+  returns_expression = undefined,
 }: {
   el: JudiciousFunction;
   module: string;
@@ -143,26 +141,21 @@ export function FunctionTamaroCard({
   const parameters = el.parameters;
 
   const show_display = el.returnValue && returns_expression != null;
-  const [imgData, setImgData] = useState(undefined as any);
+  const [imgData, setImgData] = useState(undefined as string | undefined);
 
-  const data = useMemo(
-    () =>
-      returns_expression
-        ? executeOnServer([returns_expression], 0, [], [])
-            .catch(() => undefined)
-            .then((v) => (v?.type === 'success' ? v.stdout : undefined))
-            .then((data) => {
-              if (!data) return undefined;
-              const pytamaroDataUriRegex =
-                /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
-              return data
-                .split(pytamaroDataUriRegex)
-                .filter(negate(isEmpty))[0];
-            })
-            .then(setImgData)
-        : undefined,
-    [returns_expression],
-  );
+  useEffect(() => {
+    if (returns_expression)
+      executeOnServer([returns_expression], 0, [], [])
+        .catch(() => undefined)
+        .then((v) => (v?.type === 'success' ? v.stdout : undefined))
+        .then((data) => {
+          if (!data) return undefined;
+          const pytamaroDataUriRegex =
+            /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
+          return data.split(pytamaroDataUriRegex).filter(negate(isEmpty))[0];
+        })
+        .then(setImgData);
+  }, [returns_expression]);
 
   return (
     <div className='pane_container function_card_pane'>
@@ -262,16 +255,11 @@ export function FunctionTamaroCard({
         )}
       </div>
 
-      {show_display && (
-        <div
-          className='pane display_pane'
-          style={{ userSelect: 'none', pointerEvents: 'none' }}
-        >
-          {imgData && <img src={imgData} />}
-        </div>
-      )}
-
       <div className='pane output_pane hovergroup' data-hovergroup={'output'}>
+        {show_display && el.returnValue && imgData && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img className='img' alt='Expression Result' src={imgData} />
+        )}
         {el.returnValue && (
           <Arrow
             parameter_amount={1}
