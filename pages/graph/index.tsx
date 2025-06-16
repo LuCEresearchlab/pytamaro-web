@@ -8,7 +8,6 @@ import {
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
-  useStoreApi,
 } from '@xyflow/react';
 import { DragEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { IconButton, Paper } from '@mui/material';
@@ -28,8 +27,6 @@ function View() {
   const [fullscreen, setFullscreen] = useState(true);
 
   const { getNodes, getEdges, screenToFlowPosition } = useReactFlow();
-
-  const store = useStoreApi();
 
   const {
     edges,
@@ -98,6 +95,7 @@ function View() {
 
   const nodeTypes = useMemo(() => node_types, []);
   const ref = useRef(null);
+  const clickedRef = useRef(-1);
 
   return (
     <Paper className={`${fullscreen ? 'fullscreen' : 'normal'} graph_view `}>
@@ -125,24 +123,30 @@ function View() {
         onDrop={onDrop}
         onDragOver={onDragOver}
         isValidConnection={isValidConnection}
+        onNodeClick={(e, n) => {
+          if (!n.selected) clickedRef.current = new Date().getTime();
+        }}
         onNodeDoubleClick={(e, node) => {
-          if (!node.selected) return;
+          if (!node.selected || new Date().getTime() - clickedRef.current < 100)
+            return;
 
           const angle = Math.random() * Math.PI * 2;
 
           const dx = Math.cos(angle) * 10;
           const dy = Math.sin(angle) * 10;
 
-          const { addSelectedNodes } = store.getState();
           const newNode = {
             type: node.type,
             data: { ...node.data, expression: undefined },
             id: `${node.data?.name || node.type || 'node'}-${Date.now()}`,
             position: { x: node.position.x + dx, y: node.position.y + dy },
+            selected: true,
           };
-          setNodes(nodes.concat(newNode));
-
-          addSelectedNodes([newNode.id]);
+          setNodes(
+            nodes
+              .map((v) => (v.id === node.id ? { ...node, selected: false } : v))
+              .concat(newNode),
+          );
         }}
         fitView
         proOptions={{
