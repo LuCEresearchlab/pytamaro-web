@@ -17,7 +17,7 @@ export default function CardSelectionPane() {
         }
       />
       <Collapse in={collapsed} orientation='vertical'>
-        <Collapse in={collapsed} unmountOnExit orientation='horizontal'>
+        <Collapse in={collapsed} orientation='horizontal'>
           <SelectionThroughList />
         </Collapse>
       </Collapse>
