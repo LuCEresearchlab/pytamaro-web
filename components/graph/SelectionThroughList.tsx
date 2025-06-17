@@ -172,6 +172,7 @@ export default function SelectionByGroup() {
           aria-labelledby='research'
           defaultValue={filter_input}
           onChange={(e) => setFilterInput(e.currentTarget.value)}
+          onKeyDown={(e) => e.stopPropagation()}
         />
         <div style={{ flexGrow: '1' }}></div>
         <IconButton disabled={refresh} onClick={() => setRefreshing(true)}>
