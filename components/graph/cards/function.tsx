@@ -38,8 +38,9 @@ export function TamaroFunctionCard({
   useEffect(() => {
     const visited = new Set<string>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const node = getNode(nodes, id)! as any;
-    const value = turnTreeToExpressionRec(nodes, edges, visited, node);
+    const node = getNode(nodes, id);
+    if (!node) return;
+    const value = turnTreeToExpressionRec(nodes, edges, visited, node as any);
     const scaled_code = growExpressionFromChildIgnoreColor(
       nodes,
       edges,

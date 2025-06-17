@@ -5,6 +5,7 @@ import {
   BackgroundVariant,
   Connection,
   Edge,
+  Node,
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
@@ -140,10 +141,136 @@ function View() {
     }
   }, []);
 
+  interface FlowChartClipboardData {
+    nodes: Node[];
+    edges: Edge[];
+  }
+
+  const mousePosition = useRef({ x: 0, y: 0 });
+
+  const onCopyCatpure = useCallback((e: ClipboardEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.clipboardData?.clearData();
+
+    const selected = {
+      nodes: getNodes().filter((v) => v.selected),
+      edges: getEdges().filter((v) => v.selected),
+    };
+
+    e.clipboardData?.setData('flowchart:graph', JSON.stringify(selected));
+  }, []);
+
+  const onPasteCatpure = useCallback((e: ClipboardEvent) => {
+    const paste = e.clipboardData?.getData('flowchart:graph');
+
+    if (!paste) return;
+
+    const unsafe_data = JSON.parse(paste);
+
+    if (
+      !unsafe_data.nodes ||
+      !unsafe_data.edges ||
+      !(unsafe_data satisfies FlowChartClipboardData)
+    )
+      return;
+
+    const data = unsafe_data as unknown as FlowChartClipboardData;
+    const node_mapping: Map<string, string> = new Map();
+    const edge_mapping: Map<string, string> = new Map();
+
+    const randomId = () => {
+      let v;
+
+      do {
+        v = Math.random().toString(16).slice(2);
+      } while (node_mapping.has(v) || edge_mapping.has(v));
+
+      return `${new Date().getTime()}-${v}`;
+    };
+
+    const positions = data.nodes
+      .map((v) => v.position)
+      .concat(
+        data.nodes
+          .filter((v) => v.measured)
+          .map((v) => ({
+            x: v.position.x + (v.measured?.width || 0),
+            y: v.position.y + (v.measured?.height || 0),
+          })),
+      );
+
+    const x_min = Math.min(...positions.map((v) => v.x));
+    const x_max = Math.max(...positions.map((v) => v.x));
+    const y_min = Math.min(...positions.map((v) => v.y));
+    const y_max = Math.max(...positions.map((v) => v.y));
+
+    const centroid = { x: (x_min + x_max) / 2, y: (y_min + y_max) / 2 };
+
+    const diff = {
+      x: mousePosition.current.x - centroid.x,
+      y: mousePosition.current.y - centroid.y,
+    };
+
+    const newNodes = data.nodes.map((v) => {
+      const newId = randomId();
+
+      node_mapping.set(v.id, newId);
+      return {
+        ...v,
+        id: newId,
+        position: { x: v.position.x + diff.x, y: v.position.y + diff.y },
+        data: {
+          ...v.data,
+          imports: undefined,
+          expression: undefined,
+          visualization_imports: undefined,
+          visualization_expression: undefined,
+        },
+      };
+    });
+
+    const newEdges = data.edges
+      .map((v) => {
+        const newId = randomId();
+
+        edge_mapping.set(v.id, newId);
+
+        const idSource = node_mapping.get(v.source);
+        const idTarget = node_mapping.get(v.target);
+
+        if (!idSource || !idTarget) return undefined;
+
+        return {
+          ...v,
+          id: newId,
+          source: idSource,
+          target: idTarget,
+        };
+      })
+      .filter((v) => v)
+      .map((v) => v as Edge);
+
+    setNodes(
+      getNodes()
+        .map((v) => ({ ...v, selected: false }))
+        .concat(newNodes.map((v) => ({ ...v, selected: true }))),
+    );
+    setEdges(
+      getEdges()
+        .map((v) => ({ ...v, selected: false }))
+        .concat(newEdges.map((v) => ({ ...v, selected: true }))),
+    );
+  }, []);
+
   useEffect(() => {
     document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('copy', onCopyCatpure);
+    document.addEventListener('paste', onPasteCatpure);
     return () => {
       document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('copy', onCopyCatpure);
+      document.removeEventListener('paste', onPasteCatpure);
     };
   });
 
@@ -272,12 +399,13 @@ function View() {
           }, 20);
         }}
         onMouseMove={(e) => {
-          if (isSelecting.is_dragging) {
-            const real_point = screenToFlowPosition({
-              x: e.clientX,
-              y: e.clientY,
-            });
+          const real_point = screenToFlowPosition({
+            x: e.clientX,
+            y: e.clientY,
+          });
 
+          mousePosition.current = real_point;
+          if (isSelecting.is_dragging) {
             setIsSelecting({
               is_dragging: true,
               x: isSelecting.x,
@@ -406,6 +534,7 @@ function View() {
 
 import i18next from 'i18next';
 import { createGraphSlice, useStore } from '../../components/graph/store';
+import { getNode } from '../../components/graph/utils';
 
 function Graph() {
   return (
