@@ -9,7 +9,14 @@ import {
   ReactFlowProvider,
   useReactFlow,
 } from '@xyflow/react';
-import { DragEvent, useCallback, useMemo, useRef, useState } from 'react';
+import {
+  DragEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { IconButton, Paper } from '@mui/material';
 import '@xyflow/react/dist/style.css';
 import '../../style/graph_view.css';
@@ -38,6 +45,8 @@ function View() {
     dragged,
     setNodes,
     setEdges,
+    revertLastChange,
+    redoChange,
   } = useStore((state) => state);
 
   const isValidConnection = useCallback(
@@ -110,6 +119,34 @@ function View() {
     [screenToFlowPosition, dragged, nodes, setNodes],
   );
 
+  const onKeyDown = useCallback((e: KeyboardEvent) => {
+    {
+      if (e.key === 'Escape') setFullscreen(false);
+      if (e.key === 'F11') setFullscreen(true);
+      if (e.ctrlKey && e.key === 'a') {
+        e.preventDefault();
+        setNodes(getNodes().map((v) => ({ ...v, selected: true })));
+      }
+
+      if (e.ctrlKey && e.key === 'Z' && e.shiftKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        redoChange();
+      } else if (e.ctrlKey && e.key === 'z') {
+        e.preventDefault();
+        revertLastChange();
+        e.stopPropagation();
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  });
+
   const nodeTypes = useMemo(() => node_types, []);
   const clickedRef = useRef(-1);
   const [isSelecting, setIsSelecting] = useState({
@@ -124,14 +161,6 @@ function View() {
     <Paper className={`${fullscreen ? 'fullscreen' : 'normal'} graph_view `}>
       <ReactFlow
         tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'Escape') setFullscreen(false);
-          if (e.key === 'F11') setFullscreen(true);
-          if (e.ctrlKey && e.key === 'a') {
-            e.preventDefault();
-            setNodes(getNodes().map((v) => ({ ...v, selected: true })));
-          }
-        }}
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
@@ -242,7 +271,6 @@ function View() {
           if (!n.selected) clickedRef.current = new Date().getTime();
         }}
         onNodeDoubleClick={(e, node) => {
-          console.log(new Date().getTime() - clickedRef.current);
           if (!node.selected || new Date().getTime() - clickedRef.current < 300)
             return;
 
@@ -357,7 +385,7 @@ function View() {
 }
 
 import i18next from 'i18next';
-import { useStore } from '../../components/graph/store';
+import { createGraphSlice, useStore } from '../../components/graph/store';
 
 function Graph() {
   return (

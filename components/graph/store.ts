@@ -8,10 +8,11 @@ import {
   OnEdgesChange,
   OnNodesChange,
 } from '@xyflow/react';
-import { create } from 'zustand';
+import { create, StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { ChangeSliceState, createChangeSlice } from './changes';
 
-interface GraphState {
+export interface GraphStateSlice {
   dragged:
     | {
         type: string;
@@ -36,50 +37,113 @@ interface GraphState {
   ) => void;
 }
 
-export const useStore = create<GraphState>()(
-  persist(
-    (set, get) => ({
-      dragged: undefined,
-      nodes: [],
-      edges: [],
-      onNodesChange: (changes) => {
-        set({
-          nodes: applyNodeChanges(changes, get().nodes),
-        });
-      },
-      onEdgesChange: (changes) => {
-        set({
-          edges: applyEdgeChanges(changes, get().edges),
-        });
-      },
-      onConnect: (connection) => {
-        set({
-          edges: addEdge(connection, get().edges),
-        });
-      },
-      setDragged: (
-        dragged: { type: string; data: Record<string, unknown> } | undefined,
-      ) => {
-        set({ dragged });
-      },
-      setNodes: (nodes) => {
-        set({ nodes });
-      },
-      setEdges: (edges) => {
-        set({ edges });
-      },
-      updateNodeData: (nodeId, data) => {
-        const newData = typeof data === 'function' ? data : () => data;
+export const createGraphSlice: StateCreator<
+  GraphStateSlice & ChangeSliceState,
+  [],
+  [],
+  GraphStateSlice
+> = (set, get) => ({
+  dragged: undefined,
+  nodes: [],
+  edges: [],
+  onNodesChange: (changes) => {
+    const befores = get().nodes;
+    set({
+      nodes: applyNodeChanges(changes, befores),
+    });
 
-        set({
-          nodes: get().nodes.map((v) =>
-            v.id === nodeId ? { ...v, data: newData(v.data) } : v,
-          ),
+    const afters = get().nodes;
+
+    changes
+      .filter((v) => v.type != 'select')
+      .forEach((change) => {
+        get().newChange({
+          kind: 'node',
+          native: change,
+          before:
+            change.type === 'add'
+              ? undefined
+              : befores.find((v) => change.id === v.id),
+
+          after:
+            change.type === 'add'
+              ? undefined
+              : afters.find((v) => change.id === v.id),
         });
-      },
+      });
+  },
+  onEdgesChange: (changes) => {
+    const befores = get().edges;
+    set({
+      edges: applyEdgeChanges(changes, get().edges),
+    });
+    const afters = get().edges;
+
+    changes
+      .filter((v) => v.type != 'select')
+      .forEach((change) => {
+        get().newChange({
+          kind: 'edge',
+          native: change,
+          before:
+            change.type === 'add'
+              ? undefined
+              : befores.find((v) => change.id === v.id),
+          after:
+            change.type === 'add'
+              ? undefined
+              : afters.find((v) => change.id === v.id),
+        });
+      });
+  },
+  onConnect: (connection) => {
+    set({
+      edges: addEdge(connection, get().edges),
+    });
+    get().newChange({
+      kind: 'edge',
+      before: undefined,
+      after: get().edges.find(
+        (v) =>
+          v.source === connection.source &&
+          v.sourceHandle === connection.sourceHandle &&
+          v.target === connection.target &&
+          v.targetHandle === connection.targetHandle,
+      ),
+      native: {} as unknown as any,
+    });
+  },
+  setDragged: (
+    dragged: { type: string; data: Record<string, unknown> } | undefined,
+  ) => {
+    set({ dragged });
+  },
+  setNodes: (nodes) => {
+    set({ nodes });
+  },
+  setEdges: (edges) => {
+    set({ edges });
+  },
+  updateNodeData: (nodeId, data) => {
+    const newData = typeof data === 'function' ? data : () => data;
+
+    set({
+      nodes: get().nodes.map((v) =>
+        v.id === nodeId ? { ...v, data: newData(v.data) } : v,
+      ),
+    });
+  },
+});
+
+export const useStore = create<GraphStateSlice & ChangeSliceState>()(
+  persist(
+    (...a) => ({
+      ...createGraphSlice(...a),
+      ...createChangeSlice(...a),
     }),
     {
       name: 'playground_graph',
+      partialize: (state) => ({ nodes: state.nodes, edges: state.edges }),
     },
   ),
 );
