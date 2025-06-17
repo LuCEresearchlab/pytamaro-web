@@ -37,7 +37,6 @@ export default function SelectionByGroup() {
     isNaN(Number.parseFloat(filter_input.trim()))
       ? undefined
       : Number.parseFloat(filter_input.trim());
-  console.log(number_input);
 
   const documentation = useJudiciousDocData(modules);
 

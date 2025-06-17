@@ -11,6 +11,8 @@ import {
 import { create, StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ChangeSliceState, createChangeSlice } from './changes';
+import { createErrorSlice, ErrorState } from './errors';
+import { check_edge_typing } from './interactivity';
 
 export interface GraphStateSlice {
   dragged:
@@ -38,7 +40,7 @@ export interface GraphStateSlice {
 }
 
 export const createGraphSlice: StateCreator<
-  GraphStateSlice & ChangeSliceState,
+  GraphStateSlice & ChangeSliceState & ErrorState,
   [],
   [],
   GraphStateSlice
@@ -97,9 +99,10 @@ export const createGraphSlice: StateCreator<
       });
   },
   onConnect: (connection) => {
-    set({
-      edges: addEdge(connection, get().edges),
-    });
+    set((state) => ({
+      edges: addEdge(connection, state.edges),
+    }));
+
     get().newChange({
       kind: 'edge',
       before: undefined,
@@ -135,11 +138,14 @@ export const createGraphSlice: StateCreator<
   },
 });
 
-export const useStore = create<GraphStateSlice & ChangeSliceState>()(
+export const useStore = create<
+  GraphStateSlice & ChangeSliceState & ErrorState
+>()(
   persist(
     (...a) => ({
       ...createGraphSlice(...a),
       ...createChangeSlice(...a),
+      ...createErrorSlice(...a),
     }),
     {
       name: 'playground_graph',

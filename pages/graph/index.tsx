@@ -4,6 +4,7 @@ import {
   Background,
   BackgroundVariant,
   Connection,
+  Controls,
   Edge,
   Node,
   ReactFlow,
@@ -21,7 +22,14 @@ import {
 import { IconButton, Paper } from '@mui/material';
 import '@xyflow/react/dist/style.css';
 import '../../style/graph_view.css';
-import { Delete, Fullscreen, FullscreenExit } from '@mui/icons-material';
+import {
+  Delete,
+  Error,
+  Fullscreen,
+  FullscreenExit,
+  HorizontalSplit,
+  RemoveRedEye,
+} from '@mui/icons-material';
 import { node_types } from '../../components/graph/cards';
 import CardSelectionPane from '../../components/graph/CardSelectionPane';
 import {
@@ -33,9 +41,15 @@ import { I18nextProvider } from 'react-i18next';
 
 function View() {
   const [fullscreen, setFullscreen] = useState(true);
+  const [errorPane, setErrorPane] = useState(false);
 
-  const { getNodes, getEdges, screenToFlowPosition, flowToScreenPosition } =
-    useReactFlow();
+  const {
+    getNodes,
+    getEdges,
+    screenToFlowPosition,
+    flowToScreenPosition,
+    fitView,
+  } = useReactFlow();
 
   const {
     edges,
@@ -48,7 +62,12 @@ function View() {
     setEdges,
     revertLastChange,
     redoChange,
+    getErrors,
   } = useStore((state) => state);
+
+  useEffect(() => {
+    if (getErrors().length === 0) setErrorPane(false);
+  }, [edges, nodes]);
 
   const isValidConnection = useCallback(
     (params: Edge | Connection) => {
@@ -56,14 +75,9 @@ function View() {
       const nodes = getNodes();
       const edges = getEdges();
       const source = params.source;
-      const sourceHandle = params.sourceHandle || '';
       const target = params.target;
-      const targetHandle = params.targetHandle || '';
 
-      return (
-        check_edge_typing(nodes, source, sourceHandle, target, targetHandle) &&
-        check_edge_looping(nodes, edges, source, target)
-      );
+      return check_edge_looping(nodes, edges, source, target);
     },
     [getNodes, getEdges],
   );
@@ -445,25 +459,115 @@ function View() {
           hideAttribution: true,
         }}
       >
-        {/* <Controls position={'bottom-right'} /> */}
+        <Controls position={'bottom-right'} />
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-        <IconButton
+
+        <div
           style={{
-            zIndex: '100',
-            background: 'white',
             position: 'absolute',
-            bottom: '0',
-            right: '0',
-            fontSize: '40',
+            display: 'flex',
+            flexDirection: 'column',
+            right: '5px',
+            top: '5px',
+            background: 'white',
+            padding: '2px',
+            zIndex: '100',
           }}
-          onClick={() => setFullscreen(!fullscreen)}
         >
-          {fullscreen ? (
-            <FullscreenExit style={{ fontSize: '40px' }} />
-          ) : (
-            <Fullscreen style={{ fontSize: '40px' }} />
+          <IconButton
+            style={{
+              fontSize: '40',
+            }}
+            onClick={() => setFullscreen(!fullscreen)}
+          >
+            {fullscreen ? (
+              <FullscreenExit style={{ fontSize: '40px' }} />
+            ) : (
+              <Fullscreen style={{ fontSize: '40px' }} />
+            )}
+          </IconButton>
+
+          {getErrors().length !== 0 && (
+            <IconButton onClick={() => setErrorPane(!errorPane)}>
+              <Error color='error' />
+            </IconButton>
           )}
-        </IconButton>
+        </div>
+
+        {errorPane && getErrors().length !== 0 && (
+          <div
+            style={{
+              position: 'absolute',
+              right: '100px',
+              width: '400px',
+              border: '#ddd solid 2px',
+              padding: '5px',
+              borderRadius: '5px',
+              top: '20px',
+              background: 'white',
+              zIndex: '100',
+            }}
+          >
+            <h3 style={{ margin: '10px 5px' }}>Errors :</h3>
+
+            <div
+              style={{
+                position: 'relative',
+                borderTop: '#ddd solid 2px',
+                top: '-5px',
+                margin: '0px',
+              }}
+            ></div>
+
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'relative',
+                maxHeight: '300px',
+                width: '100%',
+                overflowY: 'scroll',
+                overflowX: 'hidden',
+                padding: '5px 5px',
+                gap: '5px',
+              }}
+            >
+              {getErrors().map((v) => (
+                <h5
+                  key={`${v.nodeId}_${v.handle || 'default'}`}
+                  style={{
+                    margin: '0px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    height: 'fit-content',
+                    marginRight: '30px',
+                    padding: '8px 10px',
+                    borderRadius: '5px',
+                    width: '100%',
+                    background: '#f99',
+                    userSelect: 'none',
+                  }}
+                >
+                  {v.type}
+
+                  <div style={{ flexGrow: 1 }} />
+
+                  <IconButton
+                    onClick={() =>
+                      fitView({
+                        nodes: [getNode(getNodes(), v.nodeId)!],
+                        duration: 2,
+                        padding: 1,
+                      })
+                    }
+                  >
+                    <RemoveRedEye />
+                  </IconButton>
+                </h5>
+              ))}
+            </div>
+          </div>
+        )}
 
         <IconButton
           style={{
@@ -495,45 +599,44 @@ function View() {
           <CardSelectionPane />
         </div>
 
-        {
-          <div
-            style={(() => {
-              const { x, y } = flowToScreenPosition({
-                x: isSelecting.x,
-                y: isSelecting.y,
-              });
+        {/* Selection rectangle */}
+        <div
+          style={(() => {
+            const { x, y } = flowToScreenPosition({
+              x: isSelecting.x,
+              y: isSelecting.y,
+            });
 
-              const { x: x2, y: y2 } = flowToScreenPosition({
-                x: isSelecting.x + isSelecting.width,
-                y: isSelecting.y + isSelecting.height,
-              });
+            const { x: x2, y: y2 } = flowToScreenPosition({
+              x: isSelecting.x + isSelecting.width,
+              y: isSelecting.y + isSelecting.height,
+            });
 
-              const min_point = { x: Math.min(x, x2), y: Math.min(y, y2) };
-              const max_point = { x: Math.max(x, x2), y: Math.max(y, y2) };
+            const min_point = { x: Math.min(x, x2), y: Math.min(y, y2) };
+            const max_point = { x: Math.max(x, x2), y: Math.max(y, y2) };
 
-              const width = Math.abs(max_point.x - min_point.x);
-              const height = Math.abs(max_point.y - min_point.y);
+            const width = Math.abs(max_point.x - min_point.x);
+            const height = Math.abs(max_point.y - min_point.y);
 
-              return {
-                position: 'absolute',
-                backgroundColor: 'lightblue',
-                left: min_point.x,
-                top: min_point.y,
-                width: width,
-                height: height,
-                opacity: '40%',
-              };
-            })()}
-          ></div>
-        }
-        {/* {menu && <Menu onClick={onPaneClick} {...(menu as any)} />} */}
+            return {
+              position: 'absolute',
+              backgroundColor: 'lightblue',
+              left: min_point.x,
+              top: min_point.y,
+              width: width,
+              height: height,
+              opacity: '40%',
+            };
+          })()}
+        />
       </ReactFlow>
     </Paper>
   );
 }
 
 import i18next from 'i18next';
-import { createGraphSlice, useStore } from '../../components/graph/store';
+import { useStore } from '../../components/graph/store';
+import { param } from 'cypress/types/jquery';
 import { getNode } from '../../components/graph/utils';
 
 function Graph() {

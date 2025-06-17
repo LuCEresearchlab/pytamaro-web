@@ -56,10 +56,21 @@ export function getRelative(
   edges: Edge[],
   id: string,
   handle: string,
+  unsafe_type: boolean = false,
 ) {
   const neighbour =
-    edges.find((v) => v.source === id && v.sourceHandle === handle)?.target ||
-    edges.find((v) => v.target === id && v.targetHandle === handle)?.source;
+    edges.find(
+      (v) =>
+        v.source === id &&
+        v.sourceHandle === handle &&
+        (unsafe_type || !(v.className || '').includes('invalid_type_edge')),
+    )?.target ||
+    edges.find(
+      (v) =>
+        v.target === id &&
+        v.targetHandle === handle &&
+        (unsafe_type || !(v.className || '').includes('invalid_type_edge')),
+    )?.source;
 
   return neighbour ? getNode(nodes, neighbour) : undefined;
 }
@@ -69,8 +80,9 @@ export function getFunctionParameterRelative(
   edges: Edge[],
   id: string,
   parameter: string,
+  unsafe_type: boolean = false,
 ) {
-  return getRelative(nodes, edges, id, getHandleName(parameter));
+  return getRelative(nodes, edges, id, getHandleName(parameter), unsafe_type);
 }
 
 export function getHandleType(node: Node, handle: string) {
@@ -103,6 +115,12 @@ export function getHandleType(node: Node, handle: string) {
       return cst.type;
     }
   }
+}
+
+export function getFunctionHandles(fn: JudiciousFunction) {
+  return fn.parameters
+    .filter((v) => v.default == null)
+    .map((v) => ({ name: v.name, type: v.type }));
 }
 
 export function getAmountOfExpectConnections(node: Node) {

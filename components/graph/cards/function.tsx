@@ -4,6 +4,9 @@ import { FunctionTamaroCard } from '../../TamaroCard';
 import { JudiciousFunction } from '../../../src/schemas/documentation';
 import {
   createCodeFromCodeRepresentation,
+  getFunctionHandles,
+  getFunctionParameterRelative,
+  getHandleType,
   getNode,
   growExpressionFromChildIgnoreColor,
   turnTreeToExpressionRec,
@@ -31,11 +34,49 @@ export function TamaroFunctionCard({
 }: NodeProps & { data: ITamaroFunctionCardData }) {
   const function_el = data.value;
 
-  const { nodes, edges } = useStore();
+  const { nodes, edges, setEdges, addError, clearErrors } = useStore();
 
   const [code, setCode] = useState(undefined as string | undefined);
 
   useEffect(() => {
+    clearErrors(id);
+
+    getFunctionHandles(function_el)
+      .map(({ name, type }) => {
+        const node = getFunctionParameterRelative(nodes, edges, id, name, true);
+        const node2 = getFunctionParameterRelative(
+          nodes,
+          edges,
+          id,
+          name,
+          false,
+        );
+        if (node != node2) return { name, message: 'type' };
+        if (!node) return { name, message: 'missing_parameter' };
+        const node_output_type = getHandleType(node, 'output');
+        const input_type = getHandleType(
+          getNode(nodes, id)!,
+          getHandleName(name),
+        );
+
+        if (input_type !== node_output_type) {
+          setEdges(
+            edges.map((v) =>
+              !(v.source === node.id && v.target === id)
+                ? v
+                : { ...v, className: 'invalid_type_edge' },
+            ),
+          );
+          return { name, message: 'type' };
+        }
+        return undefined;
+      })
+      .filter((v) => v)
+      .map((v) => v as { name: string; message: 'missing_parameter' | 'type' })
+      .forEach(({ name, message }) => {
+        addError(id, getHandleName(name), message);
+      });
+
     const visited = new Set<string>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const node = getNode(nodes, id);
@@ -50,7 +91,7 @@ export function TamaroFunctionCard({
     );
 
     if (scaled_code[0] !== undefined)
-      setCode(createCodeFromCodeRepresentation(scaled_code));
+      setCode(createCodeFromCodeRepresentation(value));
     else setCode(undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [edges]);
