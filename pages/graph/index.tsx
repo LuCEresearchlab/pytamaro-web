@@ -225,31 +225,51 @@ function View() {
             return !(aLeftOfB || aRightOfB || aAboveB || aBelowB);
           }
 
-          setTimeout(
-            () =>
-              setNodes(
-                getNodes().map((v) => {
-                  if (!v.measured) return v;
-                  const v_x = v.position.x;
-                  const v_y = v.position.y;
-                  const v2_x = v_x + v.measured.width!;
-                  const v2_y = v_y + v.measured.height!;
+          const selected_nodes = getNodes()
+            .filter((v) => {
+              if (!v.measured) return false;
+              const v_x = v.position.x;
+              const v_y = v.position.y;
+              const v2_x = v_x + v.measured.width!;
+              const v2_y = v_y + v.measured.height!;
 
-                  const isInRectangle = rectanglesIntersect(
-                    v_x,
-                    v_y,
-                    v2_x,
-                    v2_y,
-                  );
-                  const newNode = {
-                    ...v,
-                    selected: v.selected || isInRectangle,
-                  };
-                  return newNode;
-                }),
-              ),
-            20,
-          );
+              return rectanglesIntersect(v_x, v_y, v2_x, v2_y);
+            })
+            .map((v) => v.id);
+
+          const selected_edges = getEdges()
+            .filter(
+              (v) =>
+                selected_nodes.includes(v.target) &&
+                selected_nodes.includes(v.source),
+            )
+            .map((v) => v.id);
+
+          setTimeout(() => {
+            setNodes(
+              getNodes().map((v) => {
+                const isSelected = selected_nodes.includes(v.id);
+
+                if (!isSelected) return v;
+                return {
+                  ...v,
+                  selected: true,
+                };
+              }),
+            );
+
+            setEdges(
+              getEdges().map((v) => {
+                const isSelected = selected_edges.includes(v.id);
+
+                if (!isSelected) return v;
+                return {
+                  ...v,
+                  selected: true,
+                };
+              }),
+            );
+          }, 20);
         }}
         onMouseMove={(e) => {
           if (isSelecting.is_dragging) {
