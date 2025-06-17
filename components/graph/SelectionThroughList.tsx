@@ -31,6 +31,14 @@ export default function SelectionByGroup() {
   const [moduleFilter, setModuleFilter] = useState('pytamaro');
   const [filter_input, setFilterInput] = useState('');
 
+  const number_input =
+    filter_input.trim() === '' ||
+    filter_input.match(/[^0-9]/g) ||
+    isNaN(Number.parseFloat(filter_input.trim()))
+      ? undefined
+      : Number.parseFloat(filter_input.trim());
+  console.log(number_input);
+
   const documentation = useJudiciousDocData(modules);
 
   const getUpdatedFilterCache = useCallback(() => {
@@ -112,18 +120,14 @@ export default function SelectionByGroup() {
             </div>
           ))}
 
-        {(filter_input.trim() === '' ||
-          !isNaN(Number.parseFloat(filter_input.trim()))) && (
+        {number_input != null && (
           <div
             className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
             style={{ userSelect: 'none' }}
             onDragStart={(e) => {
               onDragStart(e, 'literal', {
                 literal_type: 'float',
-                value:
-                  filter_input.trim() === ''
-                    ? undefined
-                    : Number.parseFloat(filter_input.trim()),
+                value: number_input,
               });
             }}
             draggable
@@ -132,10 +136,7 @@ export default function SelectionByGroup() {
               data={
                 {
                   literal_type: 'float',
-                  value:
-                    filter_input.trim() === ''
-                      ? 0
-                      : Number.parseFloat(filter_input.trim()),
+                  value: number_input,
                 } as Record<string, unknown>
               }
               hide_handles

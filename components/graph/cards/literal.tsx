@@ -38,7 +38,13 @@ function FloatLiteralCard({
   return (
     <Card className='literal_card tamaro_card pane_container draggable'>
       <Input
-        sx={{ width: '70%' }}
+        sx={{
+          minWidth: '0px',
+          flexShrink: '1',
+          flexGrow: '0',
+          flexBasis: '100px',
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
         onChange={(e) => {
           e.preventDefault();
           if (e.currentTarget.value.trim().length === 0)
@@ -62,9 +68,12 @@ function FloatLiteralCard({
             target.value = String(new_value);
           }
         }}
-        defaultValue={value}
+        value={value}
       />
-      <div style={{ width: '100%' }} className='drag-handle'></div>
+      <div
+        style={{ flexGrow: '1', minWidth: '20px' }}
+        className='drag-handle'
+      ></div>
       {hide_handles !== true && (
         <Handle
           type='source'
