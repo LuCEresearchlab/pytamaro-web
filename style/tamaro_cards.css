@@ -96,7 +96,6 @@
   left: 8px;
   transform: translateY(-50%);
   position: absolute;
-  background-color: white;
   object-fit: contain;
   overflow: hidden;
 }

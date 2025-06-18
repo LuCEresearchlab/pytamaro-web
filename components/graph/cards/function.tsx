@@ -1,5 +1,5 @@
 import { NodeProps } from '@xyflow/react';
-import { IImportedCardData } from '.';
+import { CodeRepresentation, IImportedCardData } from '.';
 import { FunctionTamaroCard } from '../../TamaroCard';
 import { JudiciousFunction } from '../../../src/schemas/documentation';
 import {
@@ -8,7 +8,7 @@ import {
   getFunctionParameterRelative,
   getHandleType,
   getNode,
-  growExpressionFromChildIgnoreColor,
+  getScaled,
   turnTreeToExpressionRec,
 } from '../utils';
 import { useStore } from '../store';
@@ -16,6 +16,7 @@ import { useEffect, useState } from 'react';
 
 export interface ITamaroFunctionCardData extends IImportedCardData {
   value: JudiciousFunction;
+  size?: { width: number; height: number };
 }
 
 export function getHandleName(parameter_name: string) {
@@ -34,12 +35,21 @@ export function TamaroFunctionCard({
 }: NodeProps & { data: ITamaroFunctionCardData }) {
   const function_el = data.value;
 
-  const { nodes, edges, setEdges, addError, clearErrors, error_level } =
-    useStore();
+  const {
+    nodes,
+    edges,
+    setEdges,
+    addError,
+    clearErrors,
+    error_level,
+    local_scale,
+  } = useStore();
 
   const [code, setCode] = useState(undefined as string | undefined);
 
   useEffect(() => {
+    // eslint-disable-next-line no-param-reassign
+    data.representation = undefined;
     clearErrors(id);
 
     getFunctionHandles(function_el)
@@ -84,24 +94,49 @@ export function TamaroFunctionCard({
       });
 
     const visited = new Set<string>();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const node = getNode(nodes, id);
-    if (!node) return;
+    if (!node) {
+      setCode(undefined);
+      return;
+    }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const value = turnTreeToExpressionRec(nodes, edges, visited, node as any);
-    const scaled_code = growExpressionFromChildIgnoreColor(
-      nodes,
-      edges,
-      visited,
-      node,
-      value,
-    );
-
-    if (scaled_code[0] !== undefined)
-      setCode(createCodeFromCodeRepresentation(value));
-    else setCode(undefined);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [edges]);
+    const value = turnTreeToExpressionRec(nodes, edges, node as any, visited);
+    if (!value[0]) setCode(undefined);
+    else if (local_scale) {
+      const newCode: CodeRepresentation = [
+        `show_graphic(${value[0]})`,
+        value[1].concat({
+          module: 'pytamaro',
+          name: 'show_graphic',
+        }),
+      ];
+      setCode(createCodeFromCodeRepresentation(newCode));
+    } else {
+      getScaled(nodes, edges, node, value)
+        .then((value) => {
+          const newCode: CodeRepresentation = [
+            `show_graphic(${value[0]})`,
+            value[1].concat({
+              module: 'pytamaro',
+              name: 'show_graphic',
+            }),
+          ];
+          setCode(createCodeFromCodeRepresentation(newCode));
+        })
+        .catch(() => setCode(undefined));
+    }
+  }, [
+    addError,
+    clearErrors,
+    data,
+    edges,
+    error_level,
+    function_el,
+    id,
+    local_scale,
+    nodes,
+    setEdges,
+  ]);
 
   return (
     <div className='drag-handle compact_view hide_types hide_icons hide_output hide_optionals hide_labels'>

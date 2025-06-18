@@ -12,10 +12,8 @@ export type CodeRepresentation = [string | undefined, ImportReference[]];
 
 export interface ITamaroCardData {
   value: unknown;
-  imports?: ImportReference[];
-  expression?: string;
-  visualization_imports?: ImportReference[];
-  visualization_expression?: string;
+
+  representation?: CodeRepresentation;
 }
 
 export interface IImportedCardData extends ITamaroCardData {

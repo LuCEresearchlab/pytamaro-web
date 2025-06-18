@@ -18,6 +18,8 @@ import {
 } from './cards';
 import { ITamaroLiteralCardData } from './cards/literal';
 import { ITamaroConstantCardData } from './cards/constant';
+import { executeOnServer } from '../../src/useActivity';
+import { ExecutionResponse } from '../../src/codeExecution';
 
 export function getNode(nodes: Node[], id: string) {
   return nodes.find((v) => v.id === id);
@@ -37,7 +39,7 @@ export function getChildren(nodes: Node[], edges: Edge[], node: string | Node) {
   return new Map(
     edges
       .filter((v) => v.target === node_id)
-      .map((v) => [v.targetHandle || '', getNode(nodes, v.target)!]),
+      .map((v) => [v.targetHandle || '', getNode(nodes, v.source)!]),
   );
 }
 
@@ -47,7 +49,7 @@ export function getParents(nodes: Node[], edges: Edge[], node: string | Node) {
   return new Map(
     edges
       .filter((v) => v.source === node_id)
-      .map((v) => [v.sourceHandle || '', getNode(nodes, v.source)!]),
+      .map((v) => [v.sourceHandle || '', getNode(nodes, v.target)!]),
   );
 }
 
@@ -159,12 +161,11 @@ export const TRANSPARENT_CODE: CodeRepresentation = [
 export function turnTreeToExpressionRec(
   nodes: Node[],
   edges: Edge[],
-  visited: Set<string>,
   node: Node & { data: ITamaroCardData },
-  transparent?: boolean,
+  visited?: Set<string>,
 ): CodeRepresentation {
   if (!node?.type) return [undefined, []];
-  visited.add(node.id);
+  visited?.add(node.id);
 
   const type = node.type;
 
@@ -175,19 +176,15 @@ export function turnTreeToExpressionRec(
       const data = node.data as unknown as ITamaroFunctionCardData;
       const fn = data.value;
 
-      if (transparent && fn.returnValue && fn.returnValue.type === 'Color')
-        return TRANSPARENT_CODE;
-
       const params = fn.parameters
         .filter((v) => v.default == null)
         .map((v) =>
           turnTreeToExpressionRec(
             nodes,
             edges,
-            visited,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getFunctionParameterRelative(nodes, edges, node.id, v.name)! as any,
-            transparent,
+            visited,
           ),
         );
 
@@ -200,75 +197,120 @@ export function turnTreeToExpressionRec(
         .reduce((a, b) => a.concat(b), [])
         .concat({ module: data.module, name: data.name });
 
-      return [expression, imports];
+      // eslint-disable-next-line no-param-reassign
+      node.data.representation = [expression, imports];
+      break;
     }
     case 'literal': {
       const data = node.data as unknown as ITamaroLiteralCardData;
       const expression = String(data.value || 0);
-      return [expression, []];
+      // eslint-disable-next-line no-param-reassign
+      node.data.representation = [expression, []];
+      break;
     }
     case 'constant': {
       const data = node.data as unknown as ITamaroConstantCardData;
 
-      if (transparent && data.value.type === 'Color') return TRANSPARENT_CODE;
-
       const expression = data.name;
       const imports = [{ module: data.module, name: data.name }];
-      return [expression, imports];
+      // eslint-disable-next-line no-param-reassign
+      node.data.representation = [expression, imports];
+      break;
     }
   }
+
+  return node.data.representation!;
 }
 
-export function growExpressionFromChildIgnoreColor(
+export async function getNodeScale(code: CodeRepresentation) {
+  const newCode: CodeRepresentation = [
+    `value = ${code[0]}
+
+print(graphic_width(value))
+print(graphic_height(value))`,
+    code[1].concat(
+      { module: 'pytamaro', name: 'graphic_width' },
+      { module: 'pytamaro', name: 'graphic_height' },
+    ),
+  ];
+
+  let response: ExecutionResponse | undefined;
+  try {
+    response = await executeOnServer(
+      [createCodeFromCodeRepresentation(newCode)],
+      0,
+      [],
+      [],
+    );
+  } catch {
+    response = undefined;
+  }
+  const lines =
+    response?.type === 'success'
+      ? response.stdout
+          .trim()
+          .split('\n')
+          .map((v_1) => v_1.trim())
+      : undefined;
+  if (lines?.length === 2) {
+    return [Number.parseFloat(lines[0]), Number.parseFloat(lines[1])];
+  } else return undefined;
+}
+
+export function getRootFromChild(
   nodes: Node[],
   edges: Edge[],
-  visited: Set<string>,
-  child: Node,
-  child_code: CodeRepresentation,
-): CodeRepresentation {
-  const parent_edge = edges.find((v) => v.source === child.id);
-  if (!parent_edge) return child_code;
+  node: Node,
+  valid_code: boolean = true,
+) {
+  const parents = getParents(nodes, edges, node);
+  if (parents.size !== 1) return node;
 
-  const parent = getNode(nodes, parent_edge.target)!;
+  const parent = parents.values().next().value!;
+  const code = valid_code ? turnTreeToCode(nodes, edges, parent) : ['', []];
+  if (code[0] == null) return node;
+  return getRootFromChild(nodes, edges, parent, valid_code);
+}
 
-  switch (parent.type as CardType) {
-    case 'function': {
-      const data = parent.data as unknown as ITamaroFunctionCardData;
-      const fn = data.value;
+export function getScale(
+  nodes: Node[],
+  edges: Edge[],
+  node: Node,
+): Promise<number[] | undefined> {
+  const root = getRootFromChild(nodes, edges, node);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const root_code = turnTreeToExpressionRec(nodes, edges, root as any);
+  return getNodeScale(root_code);
+}
 
-      const params = fn.parameters
-        .filter((v) => v.default == null)
-        .map(
-          (v) =>
-            getFunctionParameterRelative(
-              nodes,
-              edges,
-              parent.id,
-              v.name,
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            )! as any,
-        )
-        .map((node) =>
-          node && node.id === child.id
-            ? child_code
-            : turnTreeToExpressionRec(nodes, edges, visited, node, true),
-        );
+export async function getScaled(
+  nodes: Node[],
+  edges: Edge[],
+  node: Node,
+  code: CodeRepresentation,
+): Promise<CodeRepresentation> {
+  const scale = await getScale(nodes, edges, node);
+  if (!scale) return code;
 
-      const expression = params.find((v) => v[0] == null)
-        ? undefined
-        : `${fn.name}(${params.map((v) => v[0]).join(',')})`;
+  const [width, height] = scale;
 
-      const imports = params
-        .map((v) => v[1])
-        .reduce((a, b) => a.concat(b), [])
-        .concat({ module: data.module, name: data.name });
-
-      if (!expression) return child_code;
-      return [expression, imports];
-    }
-    default:
-      throw new Error('Should not happens, as only functions have children');
-  }
+  return [
+    `overlay(${code[0]}, rectangle(${width}, ${height}, transparent))`,
+    code[1].concat(
+      {
+        module: 'pytamaro',
+        name: 'overlay',
+      },
+      {
+        module: 'pytamaro',
+        name: 'rectangle',
+      },
+      {
+        module: 'pytamaro',
+        name: 'transparent',
+      },
+    ),
+  ];
 }
 
 export function reassignExpression(nodes: Node[], edges: Edge[]) {
@@ -277,18 +319,19 @@ export function reassignExpression(nodes: Node[], edges: Edge[]) {
   nodes.forEach((v) => {
     if (visited.has(v.id)) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    turnTreeToExpressionRec(nodes, edges, visited, v as any);
+    turnTreeToExpressionRec(nodes, edges, v as any, visited);
   });
 }
 
 export function createCodeFromCodeRepresentation(code: CodeRepresentation) {
-  const map: Map<string, string[]> = code[1]
-    .concat({ module: 'pytamaro', name: 'show_graphic' })
-    .reduce((a: Map<string, string[]>, b) => {
+  const map: Map<string, string[]> = code[1].reduce(
+    (a: Map<string, string[]>, b) => {
       if (!a.has(b.module)) a.set(b.module, []);
       a.get(b.module)!.push(b.name);
       return a;
-    }, new Map<string, string[]>());
+    },
+    new Map<string, string[]>(),
+  );
 
   const import_map =
     map
@@ -297,7 +340,7 @@ export function createCodeFromCodeRepresentation(code: CodeRepresentation) {
       .map((k) => `from ${k} import ${map.get(k)!.toSorted().join(', ')}`)
       .join('\n') + '\n\n';
 
-  return import_map + `show_graphic(${code[0]})`;
+  return import_map + code[0];
 }
 
 export function turnTreeToCode(
@@ -307,7 +350,7 @@ export function turnTreeToCode(
 ): string {
   const visited = new Set<string>();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const result = turnTreeToExpressionRec(nodes, edges, visited, node as any);
+  const result = turnTreeToExpressionRec(nodes, edges, node as any, visited);
 
   const map: Map<string, string[]> = result[1].reduce(
     (a: Map<string, string[]>, b) => {
