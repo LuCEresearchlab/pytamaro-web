@@ -19,15 +19,17 @@ import {
   useRef,
   useState,
 } from 'react';
-import { IconButton, Paper } from '@mui/material';
+import { Button, IconButton, Input, Paper } from '@mui/material';
 import '@xyflow/react/dist/style.css';
 import '../../style/graph_view.css';
 import {
   Delete,
+  Download,
   Error,
   Fullscreen,
   FullscreenExit,
   RemoveRedEye,
+  Upload,
 } from '@mui/icons-material';
 import { node_types } from '../../components/graph/cards';
 import CardSelectionPane from '../../components/graph/CardSelectionPane';
@@ -314,6 +316,21 @@ function View() {
     is_dragging: false,
   });
 
+  const [download_file, setDownloadFile] = useState('');
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const url = URL.createObjectURL(
+      new Blob([JSON.stringify({ nodes: getNodes(), edges: getEdges() })], {
+        type: 'text/plain',
+      }),
+    );
+    setDownloadFile(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [getNodes, getEdges]);
+
   return (
     <Paper className={`${fullscreen ? 'fullscreen' : 'normal'} graph_view `}>
       <ReactFlow
@@ -592,7 +609,7 @@ function View() {
             </div>
           )}
 
-        <IconButton
+        <div
           style={{
             zIndex: '100',
             background: 'white',
@@ -601,14 +618,74 @@ function View() {
             bottom: '0',
             left: '0',
           }}
-          size='large'
-          onClick={() => {
-            setNodes([]);
-            setEdges([]);
-          }}
         >
-          <Delete />
-        </IconButton>
+          <IconButton
+            size='large'
+            onClick={() => {
+              setNodes([]);
+              setEdges([]);
+            }}
+          >
+            <Delete />
+          </IconButton>
+
+          <Button
+            style={{
+              borderRadius: '5px',
+              fontSize: '18px',
+            }}
+            size='large'
+            itemType='file'
+            component='label'
+            role={undefined}
+          >
+            Import <Upload />
+            <Input
+              type='file'
+              style={{
+                clip: 'rect(0 0 0 0)',
+                clipPath: 'inset(50%)',
+                height: 1,
+                overflow: 'hidden',
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                whiteSpace: 'nowrap',
+                width: 1,
+              }}
+              onChange={(e) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const file = (e.target as any).files[0] as File;
+
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const content = JSON.parse((e as any).target.result) as {
+                    nodes: Node[];
+                    edges: Edge[];
+                  };
+
+                  setNodes(content.nodes);
+                  setEdges(content.edges);
+                };
+                reader.readAsText(file);
+              }}
+            />
+          </Button>
+
+          <Button
+            style={{
+              borderRadius: '5px',
+              fontSize: '18px',
+            }}
+            size='large'
+            download={'tamaro_graph.json'}
+            href={download_file}
+          >
+            Download <Download />
+          </Button>
+        </div>
 
         <div
           style={{
