@@ -40,6 +40,7 @@ export default function SelectionByGroup() {
 
   const documentation = useJudiciousDocData(modules);
 
+  const { node_filter } = useStore();
   const getUpdatedFilterCache = useCallback(() => {
     return documentation
       .filter((v) => {
@@ -48,15 +49,26 @@ export default function SelectionByGroup() {
       .map((mod) => mod.elements.map((v) => ({ ...v, module: mod.module })))
       .reduce((a, b) => a.concat(b), [])
       .filter((v) =>
+        node_filter.find(
+          (filter) =>
+            filter.module === v.module &&
+            (filter.name === '*' || filter.name === v.name),
+        ),
+      )
+      .filter((v) =>
         v.name
           .toLowerCase()
           .replaceAll(/[\t ]/g, '')
           .includes(filter_input.toLowerCase().replaceAll(/[\t ]/g, '')),
       );
-  }, [documentation, filter_input, moduleFilter]);
+  }, [documentation, filter_input, moduleFilter, node_filter]);
 
   const [filteredCache, setFilteredCache] = useState(getUpdatedFilterCache());
   const { setDragged } = useStore();
+
+  const available_modules = filteredCache
+    .map((v) => v.module)
+    .reduce((a, b) => a.add(b), new Set<string>());
 
   useEffect(() => {
     if (refresh) {
@@ -146,23 +158,27 @@ export default function SelectionByGroup() {
         )}
       </CardContent>
       <CardActions sx={{ display: 'flex', flexGrow: '1', width: '100%' }}>
-        <InputLabel id='node_type'>Node type : </InputLabel>
-        <Select
-          labelId='node_type'
-          sx={{
-            minWidth: '150px',
-          }}
-          value={moduleFilter}
-          onChange={(e) => {
-            return setModuleFilter(e.target.value);
-          }}
-        >
-          {modules.map((v) => (
-            <MenuItem value={v} key={v}>
-              {v}
-            </MenuItem>
-          ))}
-        </Select>
+        {available_modules.size > 1 && (
+          <div>
+            <InputLabel id='node_type'>Node type : </InputLabel>
+            <Select
+              labelId='node_type'
+              sx={{
+                minWidth: '150px',
+              }}
+              value={moduleFilter}
+              onChange={(e) => {
+                return setModuleFilter(e.target.value);
+              }}
+            >
+              {Array.from(available_modules.entries()).map(([v]) => (
+                <MenuItem value={v} key={v}>
+                  {v}
+                </MenuItem>
+              ))}
+            </Select>
+          </div>
+        )}
 
         <InputLabel id='research' style={{ margin: '0px 15px' }}>
           Filter :{' '}

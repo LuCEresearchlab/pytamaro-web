@@ -337,7 +337,10 @@ export function createCodeFromCodeRepresentation(code: CodeRepresentation) {
     map
       .keys()
       .toArray()
-      .map((k) => `from ${k} import ${map.get(k)!.toSorted().join(', ')}`)
+      .map(
+        (k) =>
+          `from ${k} import ${map.get(k)?.includes('*') ? '*' : map.get(k)!.toSorted().join(', ')}`,
+      )
       .join('\n') + '\n\n';
 
   return import_map + code[0];
@@ -347,26 +350,9 @@ export function turnTreeToCode(
   nodes: Node[],
   edges: Edge[],
   node: Node,
-): string {
+): CodeRepresentation {
   const visited = new Set<string>();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result = turnTreeToExpressionRec(nodes, edges, node as any, visited);
-
-  const map: Map<string, string[]> = result[1].reduce(
-    (a: Map<string, string[]>, b) => {
-      if (!a.has(b.module)) a.set(b.module, []);
-      a.get(b.module)!.push(b.name);
-      return a;
-    },
-    new Map<string, string[]>(),
-  );
-
-  const import_map =
-    map
-      .keys()
-      .toArray()
-      .map((k) => `from ${k} import ${map.get(k)!.toSorted().join(', ')}`)
-      .join('\n') + '\n\n';
-
-  return import_map + result[0];
+  return result;
 }

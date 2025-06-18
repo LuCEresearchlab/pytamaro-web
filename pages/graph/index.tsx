@@ -656,13 +656,69 @@ function View() {
 import i18next from 'i18next';
 import { useStore } from '../../components/graph/store';
 import { getNode } from '../../components/graph/utils';
+import CodeEditor from '../../components/CodeEditor';
+import { executeOnServer } from '../../src/useActivity';
 
 function Graph() {
+  const [source] = useState('from pytamaro import *');
+
+  const { setConfiguration } = useStore();
+
+  const configuration_timeout = useRef(undefined as NodeJS.Timeout | undefined);
+
+  function extract_codes(configuration_code: string) {
+    if (configuration_timeout.current)
+      clearTimeout(configuration_timeout.current);
+    configuration_timeout.current = setTimeout(async () => {
+      const code = `from ast import parse, ImportFrom
+
+parsed = parse(
+    """${configuration_code}"""
+)
+imports = [b for b in parsed.body if b.__class__ == ImportFrom]
+[print("IMPORT", v.module, o.name) for v in imports for o in v.names]
+`;
+      configuration_timeout.current = undefined;
+      const results = await executeOnServer([code], 0, [], [])
+        .catch(() => undefined)
+        .then((v) => {
+          return v?.type === 'success' ? v.stdout : undefined;
+        })
+        .then((v) => {
+          if (!v) return [];
+
+          const lines = v.trim().split('\n');
+          const imports = lines
+            .map((v) => v.trim())
+            .filter((v) => v.startsWith('IMPORT'))
+            .map((v) => v.substring('IMPORT '.length));
+          return imports;
+        });
+
+      setConfiguration({
+        node_filter: results
+          .map((v) => v.split(' '))
+          .map((v) => ({ module: v[0], name: v[1] })),
+      });
+    }, 500);
+  }
+
   return (
     <I18nextProvider i18n={i18next}>
-      <ReactFlowProvider>
-        <View />
-      </ReactFlowProvider>
+      <div className='graph_page'>
+        <div className='editor'>
+          <CodeEditor
+            initialSource=''
+            currentSource={source}
+            onChange={async (v) => {
+              extract_codes(v);
+            }}
+          />
+        </div>
+        <ReactFlowProvider>
+          <View />
+        </ReactFlowProvider>
+      </div>
     </I18nextProvider>
   );
 }
