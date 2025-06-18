@@ -39,7 +39,7 @@ import { appWithTranslation } from 'next-i18next';
 import { I18nextProvider } from 'react-i18next';
 
 function View() {
-  const [fullscreen, setFullscreen] = useState(true);
+  const [fullscreen, setFullscreen] = useState(false);
   const [errorPane, setErrorPane] = useState(false);
 
   const {
@@ -336,12 +336,14 @@ function View() {
         onDragOver={onDragOver}
         isValidConnection={isValidConnection}
         onMouseDown={(e) => {
+          const div = e.target as HTMLDivElement;
+          const { x, y } = div.getBoundingClientRect();
           if (e.ctrlKey) {
             setIsSelecting({
               is_dragging: true,
               width: 0,
               height: 0,
-              ...screenToFlowPosition({ x: e.clientX, y: e.clientY }),
+              ...screenToFlowPosition({ x: e.clientX - x, y: e.clientY - y }),
             });
           }
         }}
@@ -429,9 +431,11 @@ function View() {
           }, 20);
         }}
         onMouseMove={(e) => {
+          const div = e.target as HTMLDivElement;
+          const { x, y } = div.getBoundingClientRect();
           const real_point = screenToFlowPosition({
-            x: e.clientX,
-            y: e.clientY,
+            x: e.clientX - x,
+            y: e.clientY - y,
           });
 
           mousePosition.current = real_point;
