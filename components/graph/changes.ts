@@ -1,4 +1,4 @@
-import { Edge, EdgeChange, Node, NodeChange } from '@xyflow/react';
+import { Connection, Edge, EdgeChange, Node, NodeChange } from '@xyflow/react';
 import { StateCreator } from 'zustand';
 import { GraphStateSlice } from './store';
 
@@ -13,7 +13,7 @@ interface NodeFlowChange {
 
 interface EdgeFlowChange {
   kind: 'edge';
-  native: EdgeChange;
+  native: EdgeChange | Connection;
   before?: Edge;
   after?: Edge;
 }
@@ -50,6 +50,7 @@ export const createChangeSlice: StateCreator<
         last.native.type === 'position' &&
         last.native.dragging
       ) {
+        // eslint-disable-next-line no-param-reassign
         change.before = last.before; // Fuse movement if still dragging
       } else if (last) redo_revert_stack.push(last);
     }

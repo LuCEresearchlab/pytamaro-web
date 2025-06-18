@@ -12,7 +12,7 @@ import { create, StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ChangeSliceState, createChangeSlice } from './changes';
 import { createErrorSlice, ErrorState } from './errors';
-import { check_edge_typing } from './interactivity';
+import { ConfigurationState, createConfigurationSlice } from './configuration';
 
 export interface GraphStateSlice {
   dragged:
@@ -40,7 +40,7 @@ export interface GraphStateSlice {
 }
 
 export const createGraphSlice: StateCreator<
-  GraphStateSlice & ChangeSliceState & ErrorState,
+  GraphStateSlice & ChangeSliceState & ErrorState & ConfigurationState,
   [],
   [],
   GraphStateSlice
@@ -113,7 +113,7 @@ export const createGraphSlice: StateCreator<
           v.target === connection.target &&
           v.targetHandle === connection.targetHandle,
       ),
-      native: {} as unknown as any,
+      native: connection,
     });
   },
   setDragged: (
@@ -139,13 +139,14 @@ export const createGraphSlice: StateCreator<
 });
 
 export const useStore = create<
-  GraphStateSlice & ChangeSliceState & ErrorState
+  GraphStateSlice & ChangeSliceState & ErrorState & ConfigurationState
 >()(
   persist(
     (...a) => ({
       ...createGraphSlice(...a),
       ...createChangeSlice(...a),
       ...createErrorSlice(...a),
+      ...createConfigurationSlice(...a),
     }),
     {
       name: 'playground_graph',

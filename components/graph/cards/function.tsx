@@ -34,7 +34,8 @@ export function TamaroFunctionCard({
 }: NodeProps & { data: ITamaroFunctionCardData }) {
   const function_el = data.value;
 
-  const { nodes, edges, setEdges, addError, clearErrors } = useStore();
+  const { nodes, edges, setEdges, addError, clearErrors, error_level } =
+    useStore();
 
   const [code, setCode] = useState(undefined as string | undefined);
 
@@ -42,7 +43,7 @@ export function TamaroFunctionCard({
     clearErrors(id);
 
     getFunctionHandles(function_el)
-      .map(({ name, type }) => {
+      .map(({ name }) => {
         const node = getFunctionParameterRelative(nodes, edges, id, name, true);
         const node2 = getFunctionParameterRelative(
           nodes,
@@ -64,7 +65,12 @@ export function TamaroFunctionCard({
             edges.map((v) =>
               !(v.source === node.id && v.target === id)
                 ? v
-                : { ...v, className: 'invalid_type_edge' },
+                : {
+                    ...v,
+                    className:
+                      'invalid_type_edge ' +
+                      (error_level === 'highlight' ? 'highlight_error' : ''),
+                  },
             ),
           );
           return { name, message: 'type' };
@@ -81,6 +87,7 @@ export function TamaroFunctionCard({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const node = getNode(nodes, id);
     if (!node) return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const value = turnTreeToExpressionRec(nodes, edges, visited, node as any);
     const scaled_code = growExpressionFromChildIgnoreColor(
       nodes,

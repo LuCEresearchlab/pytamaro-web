@@ -31,6 +31,6 @@
   background-color: black;
 }
 
-.invalid_type_edge *{
-  stroke: red !important;
+.invalid_type_edge.highlight_error *{
+  stroke: yellow !important;
 }

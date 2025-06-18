@@ -10,7 +10,6 @@ export interface ErrorMessage {
 
 export interface ErrorState {
   errors: ErrorMessage[];
-  level: number;
 
   addError: (
     nodeId: string,
@@ -24,9 +23,6 @@ export interface ErrorState {
   ) => void;
   clearErrors: (nodeId: string) => void;
 
-  getLevel: () => number;
-  setLevel: (level: number) => void;
-
   getErrors: () => ErrorMessage[];
   setErrors: (errrors: ErrorMessage[]) => void;
 }
@@ -36,7 +32,6 @@ export const createErrorSlice: StateCreator<ErrorState, [], [], ErrorState> = (
   get,
 ) => ({
   errors: [],
-  level: 1,
 
   addError: (nodeId, handle, type) => {
     set((state) => ({
@@ -64,9 +59,6 @@ export const createErrorSlice: StateCreator<ErrorState, [], [], ErrorState> = (
       errors: state.errors.filter((err) => err.nodeId !== nodeId),
     }));
   },
-
-  getLevel: () => get().level,
-  setLevel: (level) => set({ level }),
 
   getErrors: () => get().errors,
   setErrors: (errors) => {

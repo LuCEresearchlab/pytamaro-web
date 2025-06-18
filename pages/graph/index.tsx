@@ -27,7 +27,6 @@ import {
   Error,
   Fullscreen,
   FullscreenExit,
-  HorizontalSplit,
   RemoveRedEye,
 } from '@mui/icons-material';
 import { node_types } from '../../components/graph/cards';
@@ -63,11 +62,12 @@ function View() {
     revertLastChange,
     redoChange,
     getErrors,
+    error_level,
   } = useStore((state) => state);
 
   useEffect(() => {
     if (getErrors().length === 0) setErrorPane(false);
-  }, [edges, nodes]);
+  }, [edges, getErrors, nodes]);
 
   const isValidConnection = useCallback(
     (params: Edge | Connection) => {
@@ -77,9 +77,16 @@ function View() {
       const source = params.source;
       const target = params.target;
 
-      return check_edge_looping(nodes, edges, source, target);
+      const sourceHandle = params.sourceHandle || '';
+      const targetHandle = params.targetHandle || '';
+
+      return (
+        check_edge_looping(nodes, edges, source, target) &&
+        (error_level !== 'prevent' ||
+          check_edge_typing(nodes, source, sourceHandle, target, targetHandle))
+      );
     },
-    [getNodes, getEdges],
+    [getNodes, getEdges, error_level],
   );
 
   const onDragOver = useCallback((event: DragEvent<HTMLDivElement>) => {
@@ -131,29 +138,32 @@ function View() {
         );
       });
     },
-    [screenToFlowPosition, dragged, nodes, setNodes],
+    [dragged, screenToFlowPosition, setNodes, nodes, getNodes],
   );
 
-  const onKeyDown = useCallback((e: KeyboardEvent) => {
-    {
-      if (e.key === 'Escape') setFullscreen(false);
-      if (e.key === 'F11') setFullscreen(true);
-      if (e.ctrlKey && e.key === 'a') {
-        e.preventDefault();
-        setNodes(getNodes().map((v) => ({ ...v, selected: true })));
-      }
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      {
+        if (e.key === 'Escape') setFullscreen(false);
+        if (e.key === 'F11') setFullscreen(true);
+        if (e.ctrlKey && e.key === 'a') {
+          e.preventDefault();
+          setNodes(getNodes().map((v) => ({ ...v, selected: true })));
+        }
 
-      if (e.ctrlKey && e.key === 'Z' && e.shiftKey) {
-        e.preventDefault();
-        e.stopPropagation();
-        redoChange();
-      } else if (e.ctrlKey && e.key === 'z') {
-        e.preventDefault();
-        revertLastChange();
-        e.stopPropagation();
+        if (e.ctrlKey && e.key === 'Z' && e.shiftKey) {
+          e.preventDefault();
+          e.stopPropagation();
+          redoChange();
+        } else if (e.ctrlKey && e.key === 'z') {
+          e.preventDefault();
+          revertLastChange();
+          e.stopPropagation();
+        }
       }
-    }
-  }, []);
+    },
+    [getNodes, redoChange, revertLastChange, setNodes],
+  );
 
   interface FlowChartClipboardData {
     nodes: Node[];
@@ -162,120 +172,126 @@ function View() {
 
   const mousePosition = useRef({ x: 0, y: 0 });
 
-  const onCopyCatpure = useCallback((e: ClipboardEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    e.clipboardData?.clearData();
+  const onCopyCatpure = useCallback(
+    (e: ClipboardEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.clipboardData?.clearData();
 
-    const selected = {
-      nodes: getNodes().filter((v) => v.selected),
-      edges: getEdges().filter((v) => v.selected),
-    };
-
-    e.clipboardData?.setData('flowchart:graph', JSON.stringify(selected));
-  }, []);
-
-  const onPasteCatpure = useCallback((e: ClipboardEvent) => {
-    const paste = e.clipboardData?.getData('flowchart:graph');
-
-    if (!paste) return;
-
-    const unsafe_data = JSON.parse(paste);
-
-    if (
-      !unsafe_data.nodes ||
-      !unsafe_data.edges ||
-      !(unsafe_data satisfies FlowChartClipboardData)
-    )
-      return;
-
-    const data = unsafe_data as unknown as FlowChartClipboardData;
-    const node_mapping: Map<string, string> = new Map();
-    const edge_mapping: Map<string, string> = new Map();
-
-    const randomId = () => {
-      let v;
-
-      do {
-        v = Math.random().toString(16).slice(2);
-      } while (node_mapping.has(v) || edge_mapping.has(v));
-
-      return `${new Date().getTime()}-${v}`;
-    };
-
-    const positions = data.nodes
-      .map((v) => v.position)
-      .concat(
-        data.nodes
-          .filter((v) => v.measured)
-          .map((v) => ({
-            x: v.position.x + (v.measured?.width || 0),
-            y: v.position.y + (v.measured?.height || 0),
-          })),
-      );
-
-    const x_min = Math.min(...positions.map((v) => v.x));
-    const x_max = Math.max(...positions.map((v) => v.x));
-    const y_min = Math.min(...positions.map((v) => v.y));
-    const y_max = Math.max(...positions.map((v) => v.y));
-
-    const centroid = { x: (x_min + x_max) / 2, y: (y_min + y_max) / 2 };
-
-    const diff = {
-      x: mousePosition.current.x - centroid.x,
-      y: mousePosition.current.y - centroid.y,
-    };
-
-    const newNodes = data.nodes.map((v) => {
-      const newId = randomId();
-
-      node_mapping.set(v.id, newId);
-      return {
-        ...v,
-        id: newId,
-        position: { x: v.position.x + diff.x, y: v.position.y + diff.y },
-        data: {
-          ...v.data,
-          imports: undefined,
-          expression: undefined,
-          visualization_imports: undefined,
-          visualization_expression: undefined,
-        },
+      const selected = {
+        nodes: getNodes().filter((v) => v.selected),
+        edges: getEdges().filter((v) => v.selected),
       };
-    });
 
-    const newEdges = data.edges
-      .map((v) => {
+      e.clipboardData?.setData('flowchart:graph', JSON.stringify(selected));
+    },
+    [getEdges, getNodes],
+  );
+
+  const onPasteCatpure = useCallback(
+    (e: ClipboardEvent) => {
+      const paste = e.clipboardData?.getData('flowchart:graph');
+
+      if (!paste) return;
+
+      const unsafe_data = JSON.parse(paste);
+
+      if (
+        !unsafe_data.nodes ||
+        !unsafe_data.edges ||
+        !(unsafe_data satisfies FlowChartClipboardData)
+      )
+        return;
+
+      const data = unsafe_data as unknown as FlowChartClipboardData;
+      const node_mapping: Map<string, string> = new Map();
+      const edge_mapping: Map<string, string> = new Map();
+
+      const randomId = () => {
+        let v;
+
+        do {
+          v = Math.random().toString(16).slice(2);
+        } while (node_mapping.has(v) || edge_mapping.has(v));
+
+        return `${new Date().getTime()}-${v}`;
+      };
+
+      const positions = data.nodes
+        .map((v) => v.position)
+        .concat(
+          data.nodes
+            .filter((v) => v.measured)
+            .map((v) => ({
+              x: v.position.x + (v.measured?.width || 0),
+              y: v.position.y + (v.measured?.height || 0),
+            })),
+        );
+
+      const x_min = Math.min(...positions.map((v) => v.x));
+      const x_max = Math.max(...positions.map((v) => v.x));
+      const y_min = Math.min(...positions.map((v) => v.y));
+      const y_max = Math.max(...positions.map((v) => v.y));
+
+      const centroid = { x: (x_min + x_max) / 2, y: (y_min + y_max) / 2 };
+
+      const diff = {
+        x: mousePosition.current.x - centroid.x,
+        y: mousePosition.current.y - centroid.y,
+      };
+
+      const newNodes = data.nodes.map((v) => {
         const newId = randomId();
 
-        edge_mapping.set(v.id, newId);
-
-        const idSource = node_mapping.get(v.source);
-        const idTarget = node_mapping.get(v.target);
-
-        if (!idSource || !idTarget) return undefined;
-
+        node_mapping.set(v.id, newId);
         return {
           ...v,
           id: newId,
-          source: idSource,
-          target: idTarget,
+          position: { x: v.position.x + diff.x, y: v.position.y + diff.y },
+          data: {
+            ...v.data,
+            imports: undefined,
+            expression: undefined,
+            visualization_imports: undefined,
+            visualization_expression: undefined,
+          },
         };
-      })
-      .filter((v) => v)
-      .map((v) => v as Edge);
+      });
 
-    setNodes(
-      getNodes()
-        .map((v) => ({ ...v, selected: false }))
-        .concat(newNodes.map((v) => ({ ...v, selected: true }))),
-    );
-    setEdges(
-      getEdges()
-        .map((v) => ({ ...v, selected: false }))
-        .concat(newEdges.map((v) => ({ ...v, selected: true }))),
-    );
-  }, []);
+      const newEdges = data.edges
+        .map((v) => {
+          const newId = randomId();
+
+          edge_mapping.set(v.id, newId);
+
+          const idSource = node_mapping.get(v.source);
+          const idTarget = node_mapping.get(v.target);
+
+          if (!idSource || !idTarget) return undefined;
+
+          return {
+            ...v,
+            id: newId,
+            source: idSource,
+            target: idTarget,
+          };
+        })
+        .filter((v) => v)
+        .map((v) => v as Edge);
+
+      setNodes(
+        getNodes()
+          .map((v) => ({ ...v, selected: false }))
+          .concat(newNodes.map((v) => ({ ...v, selected: true }))),
+      );
+      setEdges(
+        getEdges()
+          .map((v) => ({ ...v, selected: false }))
+          .concat(newEdges.map((v) => ({ ...v, selected: true }))),
+      );
+    },
+    [getEdges, getNodes, setEdges, setNodes],
+  );
 
   useEffect(() => {
     document.addEventListener('keydown', onKeyDown);
@@ -487,87 +503,90 @@ function View() {
             )}
           </IconButton>
 
-          {getErrors().length !== 0 && (
-            <IconButton onClick={() => setErrorPane(!errorPane)}>
-              <Error color='error' />
-            </IconButton>
-          )}
+          {getErrors().length !== 0 &&
+            ['highlight', 'warning'].includes(error_level) && (
+              <IconButton onClick={() => setErrorPane(!errorPane)}>
+                <Error color='error' />
+              </IconButton>
+            )}
         </div>
 
-        {errorPane && getErrors().length !== 0 && (
-          <div
-            style={{
-              position: 'absolute',
-              right: '100px',
-              width: '400px',
-              border: '#ddd solid 2px',
-              padding: '5px',
-              borderRadius: '5px',
-              top: '20px',
-              background: 'white',
-              zIndex: '100',
-            }}
-          >
-            <h3 style={{ margin: '10px 5px' }}>Errors :</h3>
-
+        {errorPane &&
+          ['highlight', 'warning'].includes(error_level) &&
+          getErrors().length !== 0 && (
             <div
               style={{
-                position: 'relative',
-                borderTop: '#ddd solid 2px',
-                top: '-5px',
-                margin: '0px',
-              }}
-            ></div>
-
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                position: 'relative',
-                maxHeight: '300px',
-                width: '100%',
-                overflowY: 'scroll',
-                overflowX: 'hidden',
-                padding: '5px 5px',
-                gap: '5px',
+                position: 'absolute',
+                right: '100px',
+                width: '400px',
+                border: '#ddd solid 2px',
+                padding: '5px',
+                borderRadius: '5px',
+                top: '20px',
+                background: 'white',
+                zIndex: '100',
               }}
             >
-              {getErrors().map((v) => (
-                <h5
-                  key={`${v.nodeId}_${v.handle || 'default'}`}
-                  style={{
-                    margin: '0px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    height: 'fit-content',
-                    marginRight: '30px',
-                    padding: '8px 10px',
-                    borderRadius: '5px',
-                    width: '100%',
-                    background: '#f99',
-                    userSelect: 'none',
-                  }}
-                >
-                  {v.type}
+              <h3 style={{ margin: '10px 5px' }}>Errors :</h3>
 
-                  <div style={{ flexGrow: 1 }} />
+              <div
+                style={{
+                  position: 'relative',
+                  borderTop: '#ddd solid 2px',
+                  top: '-5px',
+                  margin: '0px',
+                }}
+              ></div>
 
-                  <IconButton
-                    onClick={() =>
-                      fitView({
-                        nodes: [getNode(getNodes(), v.nodeId)!],
-                        duration: 2,
-                        padding: 1,
-                      })
-                    }
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  position: 'relative',
+                  maxHeight: '300px',
+                  width: '100%',
+                  overflowY: 'scroll',
+                  overflowX: 'hidden',
+                  padding: '5px 5px',
+                  gap: '5px',
+                }}
+              >
+                {getErrors().map((v) => (
+                  <h5
+                    key={`${v.nodeId}_${v.handle || 'default'}`}
+                    style={{
+                      margin: '0px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      height: 'fit-content',
+                      marginRight: '30px',
+                      padding: '8px 10px',
+                      borderRadius: '5px',
+                      width: '100%',
+                      background: '#f99',
+                      userSelect: 'none',
+                    }}
                   >
-                    <RemoveRedEye />
-                  </IconButton>
-                </h5>
-              ))}
+                    {v.type}
+
+                    <div style={{ flexGrow: 1 }} />
+
+                    <IconButton
+                      onClick={() =>
+                        fitView({
+                          nodes: [getNode(getNodes(), v.nodeId)!],
+                          duration: 2,
+                          padding: 1,
+                        })
+                      }
+                    >
+                      <RemoveRedEye />
+                    </IconButton>
+                  </h5>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         <IconButton
           style={{
@@ -636,7 +655,6 @@ function View() {
 
 import i18next from 'i18next';
 import { useStore } from '../../components/graph/store';
-import { param } from 'cypress/types/jquery';
 import { getNode } from '../../components/graph/utils';
 
 function Graph() {
