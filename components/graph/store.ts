@@ -11,7 +11,7 @@ import {
 import { create, StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ChangeSliceState, createChangeSlice } from './changes';
-import { createErrorSlice, ErrorState } from './errors';
+import { createErrorSlice, ErrorStateSlice } from './errors';
 import { ConfigurationState, createConfigurationSlice } from './configuration';
 
 export interface GraphStateSlice {
@@ -40,7 +40,7 @@ export interface GraphStateSlice {
 }
 
 export const createGraphSlice: StateCreator<
-  GraphStateSlice & ChangeSliceState & ErrorState & ConfigurationState,
+  GraphStateSlice & ChangeSliceState & ErrorStateSlice & ConfigurationState,
   [],
   [],
   GraphStateSlice
@@ -139,7 +139,7 @@ export const createGraphSlice: StateCreator<
 });
 
 export const useStore = create<
-  GraphStateSlice & ChangeSliceState & ErrorState & ConfigurationState
+  GraphStateSlice & ChangeSliceState & ErrorStateSlice & ConfigurationState
 >()(
   persist(
     (...a) => ({
