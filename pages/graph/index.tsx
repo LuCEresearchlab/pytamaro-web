@@ -67,6 +67,14 @@ function View() {
     error_level,
   } = useStore((state) => state);
 
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  const [isSelecting, setIsSelecting] = useState({
+    x: 0,
+    y: 0,
+    is_dragging: false,
+  });
+
   useEffect(() => {
     if (getErrors().length === 0) setErrorPane(false);
   }, [edges, getErrors, nodes]);
@@ -172,8 +180,6 @@ function View() {
     edges: Edge[];
   }
 
-  const mousePosition = useRef({ x: 0, y: 0 });
-
   const onCopyCatpure = useCallback(
     (e: ClipboardEvent) => {
       e.preventDefault();
@@ -238,8 +244,8 @@ function View() {
       const centroid = { x: (x_min + x_max) / 2, y: (y_min + y_max) / 2 };
 
       const diff = {
-        x: mousePosition.current.x - centroid.x,
-        y: mousePosition.current.y - centroid.y,
+        x: mousePosition.x - centroid.x,
+        y: mousePosition.y - centroid.y,
       };
 
       const newNodes = data.nodes.map((v) => {
@@ -292,29 +298,36 @@ function View() {
           .concat(newEdges.map((v) => ({ ...v, selected: true }))),
       );
     },
-    [getEdges, getNodes, setEdges, setNodes],
+    [getEdges, getNodes, mousePosition.x, mousePosition.y, setEdges, setNodes],
+  );
+
+  const onMouseMove = useCallback(
+    (e: MouseEvent) => {
+      const real_point = screenToFlowPosition({
+        x: e.clientX,
+        y: e.clientY,
+      });
+
+      setMousePosition(real_point);
+    },
+    [screenToFlowPosition],
   );
 
   useEffect(() => {
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('copy', onCopyCatpure);
     document.addEventListener('paste', onPasteCatpure);
+    document.addEventListener('mousemove', onMouseMove);
     return () => {
       document.removeEventListener('keydown', onKeyDown);
       document.removeEventListener('copy', onCopyCatpure);
       document.removeEventListener('paste', onPasteCatpure);
+      document.removeEventListener('mousemove', onMouseMove);
     };
   });
 
   const nodeTypes = useMemo(() => node_types, []);
   const clickedRef = useRef(-1);
-  const [isSelecting, setIsSelecting] = useState({
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-    is_dragging: false,
-  });
 
   const [download_file, setDownloadFile] = useState('');
 
@@ -334,6 +347,7 @@ function View() {
   return (
     <Paper className={`${fullscreen ? 'fullscreen' : 'normal'} graph_view `}>
       <ReactFlow
+        id='graph_element'
         tabIndex={0}
         nodes={nodes}
         edges={edges}
@@ -353,25 +367,21 @@ function View() {
         onDragOver={onDragOver}
         isValidConnection={isValidConnection}
         onMouseDown={(e) => {
-          const div = e.target as HTMLDivElement;
-          const { x, y } = div.getBoundingClientRect();
           if (e.ctrlKey) {
             setIsSelecting({
               is_dragging: true,
-              width: 0,
-              height: 0,
-              ...screenToFlowPosition({ x: e.clientX - x, y: e.clientY - y }),
+              ...mousePosition,
             });
           }
         }}
         onMouseUp={() => {
           const min_point = {
-            x: Math.min(isSelecting.x, isSelecting.x + isSelecting.width),
-            y: Math.min(isSelecting.y, isSelecting.y + isSelecting.height),
+            x: Math.min(isSelecting.x, mousePosition.x),
+            y: Math.min(isSelecting.y, mousePosition.y),
           };
           const max_point = {
-            x: Math.max(isSelecting.x, isSelecting.x + isSelecting.width),
-            y: Math.max(isSelecting.y, isSelecting.y + isSelecting.height),
+            x: Math.max(isSelecting.x, mousePosition.x),
+            y: Math.max(isSelecting.y, mousePosition.y),
           };
 
           const x_0 = min_point.x;
@@ -381,10 +391,7 @@ function View() {
 
           setIsSelecting({
             is_dragging: false,
-            x: 0,
-            y: 0,
-            width: 0,
-            height: 0,
+            ...mousePosition,
           });
 
           function rectanglesIntersect(
@@ -446,25 +453,6 @@ function View() {
               }),
             );
           }, 20);
-        }}
-        onMouseMove={(e) => {
-          const div = e.target as HTMLDivElement;
-          const { x, y } = div.getBoundingClientRect();
-          const real_point = screenToFlowPosition({
-            x: e.clientX - x,
-            y: e.clientY - y,
-          });
-
-          mousePosition.current = real_point;
-          if (isSelecting.is_dragging) {
-            setIsSelecting({
-              is_dragging: true,
-              x: isSelecting.x,
-              y: isSelecting.y,
-              width: real_point.x - isSelecting.x,
-              height: real_point.y - isSelecting.y,
-            });
-          }
         }}
         onNodeClick={(e, n) => {
           if (!n.selected) clickedRef.current = new Date().getTime();
@@ -700,35 +688,41 @@ function View() {
         </div>
 
         {/* Selection rectangle */}
-        <div
-          style={(() => {
-            const { x, y } = flowToScreenPosition({
-              x: isSelecting.x,
-              y: isSelecting.y,
-            });
 
-            const { x: x2, y: y2 } = flowToScreenPosition({
-              x: isSelecting.x + isSelecting.width,
-              y: isSelecting.y + isSelecting.height,
-            });
+        {isSelecting.is_dragging && (
+          <div
+            style={(() => {
+              const { x, y } = flowToScreenPosition(isSelecting);
 
-            const min_point = { x: Math.min(x, x2), y: Math.min(y, y2) };
-            const max_point = { x: Math.max(x, x2), y: Math.max(y, y2) };
+              const { x: x2, y: y2 } = flowToScreenPosition(mousePosition);
 
-            const width = Math.abs(max_point.x - min_point.x);
-            const height = Math.abs(max_point.y - min_point.y);
+              const div = document.getElementById('graph_element')!;
 
-            return {
-              position: 'absolute',
-              backgroundColor: 'lightblue',
-              left: min_point.x,
-              top: min_point.y,
-              width: width,
-              height: height,
-              opacity: '40%',
-            };
-          })()}
-        />
+              const { x: shift_x, y: shift_y } = div.getBoundingClientRect();
+              const min_point = {
+                x: Math.min(x, x2) - shift_x,
+                y: Math.min(y, y2) - shift_y,
+              };
+              const max_point = {
+                x: Math.max(x, x2) - shift_x,
+                y: Math.max(y, y2) - shift_y,
+              };
+
+              const width = Math.abs(max_point.x - min_point.x);
+              const height = Math.abs(max_point.y - min_point.y);
+
+              return {
+                position: 'absolute',
+                backgroundColor: 'lightblue',
+                left: min_point.x,
+                top: min_point.y,
+                width: width,
+                height: height,
+                opacity: '40%',
+              };
+            })()}
+          />
+        )}
       </ReactFlow>
     </Paper>
   );
