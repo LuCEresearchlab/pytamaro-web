@@ -16,6 +16,7 @@ import useJudiciousDocData from '../../src/documentation';
 import TamaroCard from '../TamaroCard';
 import { TamaroLiteralCard } from './cards/literal';
 import { useStore } from './store';
+import { JudiciousElement } from '../../src/schemas/documentation';
 
 const modules = [
   'builtins',
@@ -42,33 +43,34 @@ export default function SelectionByGroup() {
 
   const { node_filter } = useStore();
   const getUpdatedFilterCache = useCallback(() => {
-    return documentation
-      .filter((v) => {
-        return moduleFilter === undefined || v.module === moduleFilter;
-      })
-      .map((mod) => mod.elements.map((v) => ({ ...v, module: mod.module })))
-      .reduce((a, b) => a.concat(b), [])
-      .filter((v) =>
-        node_filter.find(
-          (filter) =>
-            filter.module === v.module &&
-            (filter.name === '*' || filter.name === v.name),
-        ),
+    const module_name = moduleFilter || 'pytamaro';
+    const jud_module = documentation.find((doc) => doc.module === module_name);
+    if (!jud_module) return [];
+    const values = node_filter
+      .filter((v) => v.module === module_name)
+      .map((v) =>
+        v.name === '*' ? jud_module.elements.map((el) => el.name) : [v.name],
       )
-      .filter((v) =>
-        v.name
-          .toLowerCase()
-          .replaceAll(/[\t ]/g, '')
-          .includes(filter_input.toLowerCase().replaceAll(/[\t ]/g, '')),
-      );
+      .reduce((a, b) => a.concat(b), []);
+    const filtered_values = values.filter((v) => v.includes(filter_input));
+
+    return filtered_values
+      .map((v) => jud_module.elements.find((o) => o.name === v))
+      .filter((v) => v)
+      .map((v) => ({ ...(v as JudiciousElement), module: module_name }));
   }, [documentation, filter_input, moduleFilter, node_filter]);
 
   const [filteredCache, setFilteredCache] = useState(getUpdatedFilterCache());
   const { setDragged } = useStore();
 
-  const available_modules = filteredCache
+  const available_modules = node_filter
     .map((v) => v.module)
     .reduce((a, b) => a.add(b), new Set<string>());
+
+  useEffect(() => {
+    setFilteredCache(getUpdatedFilterCache());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [node_filter]);
 
   useEffect(() => {
     if (refresh) {
@@ -110,7 +112,6 @@ export default function SelectionByGroup() {
       >
         {filteredCache
           .filter((el) => el.kind === 'function' || el.kind === 'constant')
-          .toSorted((v1, v2) => v1.name.localeCompare(v2.name))
           .map((el) => (
             <div
               className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
