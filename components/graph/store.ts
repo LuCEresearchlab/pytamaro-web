@@ -14,13 +14,13 @@ import { ChangeSliceState, createChangeSlice } from './changes';
 import { createErrorSlice, ErrorStateSlice } from './errors';
 import { ConfigurationState, createConfigurationSlice } from './configuration';
 
+export interface DraggedElementData {
+  type: string;
+  data: Record<string, unknown>;
+}
+
 export interface GraphStateSlice {
-  dragged:
-    | {
-        type: string;
-        data: Record<string, unknown>;
-      }
-    | undefined;
+  dragged: DraggedElementData | undefined;
   nodes: Node[];
   edges: Edge[];
   onNodesChange: OnNodesChange<Node>;
@@ -28,6 +28,8 @@ export interface GraphStateSlice {
   onConnect: OnConnect;
   setNodes: (nodes: Node[]) => void;
   setEdges: (edges: Edge[]) => void;
+  getNodes: () => Node[];
+  getEdges: () => Edge[];
   setDragged: (
     dragged: { type: string; data: Record<string, unknown> } | undefined,
   ) => void;
@@ -124,9 +126,11 @@ export const createGraphSlice: StateCreator<
   setNodes: (nodes) => {
     set({ nodes });
   },
+  getNodes: () => get().nodes,
   setEdges: (edges) => {
     set({ edges });
   },
+  getEdges: () => get().edges,
   updateNodeData: (nodeId, data) => {
     const newData = typeof data === 'function' ? data : () => data;
 
@@ -138,9 +142,12 @@ export const createGraphSlice: StateCreator<
   },
 });
 
-export const useStore = create<
-  GraphStateSlice & ChangeSliceState & ErrorStateSlice & ConfigurationState
->()(
+export type StoreType = GraphStateSlice &
+  ChangeSliceState &
+  ErrorStateSlice &
+  ConfigurationState;
+
+export const useStore = create<StoreType>()(
   persist(
     (...a) => ({
       ...createGraphSlice(...a),

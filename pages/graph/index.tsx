@@ -3,7 +3,6 @@
 import {
   Background,
   BackgroundVariant,
-  Connection,
   Controls,
   Edge,
   Node,
@@ -11,14 +10,7 @@ import {
   ReactFlowProvider,
   useReactFlow,
 } from '@xyflow/react';
-import {
-  DragEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, IconButton, Input, Paper } from '@mui/material';
 import '@xyflow/react/dist/style.css';
 import '../../style/graph_view.css';
@@ -33,10 +25,6 @@ import {
 } from '@mui/icons-material';
 import { node_types } from '../../components/graph/cards';
 import CardSelectionPane from '../../components/graph/CardSelectionPane';
-import {
-  check_edge_looping,
-  check_edge_typing,
-} from '../../components/graph/interactivity';
 import { appWithTranslation } from 'next-i18next';
 import { I18nextProvider } from 'react-i18next';
 
@@ -52,20 +40,19 @@ function View() {
     fitView,
   } = useReactFlow();
 
+  const store = useStore();
+
   const {
     edges,
     nodes,
     onNodesChange,
     onEdgesChange,
     onConnect,
-    dragged,
     setNodes,
     setEdges,
-    revertLastChange,
-    redoChange,
     getErrors,
     error_level,
-  } = useStore((state) => state);
+  } = store;
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
@@ -75,260 +62,39 @@ function View() {
     is_dragging: false,
   });
 
+  const all_store = {
+    ...store,
+    screenToFlowPosition,
+    setFullscreen,
+    fullscreen,
+    mousePosition,
+    setMousePosition,
+    isSelecting,
+    setIsSelecting,
+  };
+
   useEffect(() => {
     if (getErrors().length === 0) setErrorPane(false);
   }, [edges, getErrors, nodes]);
 
-  const isValidConnection = useCallback(
-    (params: Edge | Connection) => {
-      if (typeof window === 'undefined') return false;
-      const nodes = getNodes();
-      const edges = getEdges();
-      const source = params.source;
-      const target = params.target;
-
-      const sourceHandle = params.sourceHandle || '';
-      const targetHandle = params.targetHandle || '';
-
-      return (
-        check_edge_looping(nodes, edges, source, target) &&
-        (error_level !== 'prevent' ||
-          check_edge_typing(nodes, source, sourceHandle, target, targetHandle))
-      );
-    },
-    [getNodes, getEdges, error_level],
-  );
-
-  const onDragOver = useCallback((event: DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    // eslint-disable-next-line no-param-reassign
-    event.dataTransfer!.dropEffect = 'move';
-  }, []);
-
-  const onDrop = useCallback(
-    (event: DragEvent<HTMLDivElement>) => {
-      event.preventDefault();
-
-      // check if the dropped element is valid
-      if (!dragged) {
-        return;
-      }
-
-      const topLeftPosition = screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
-
-      const newNode = {
-        id: `${dragged.type}-${Date.now()}`,
-        type: dragged.type,
-        position: topLeftPosition,
-        data: dragged.data,
-        dragHandle: '.drag-handle',
-        className: 'node_hidden',
-      };
-
-      setNodes(nodes.concat(newNode));
-
-      setTimeout(() => {
-        const newNodes = getNodes();
-        setNodes(
-          newNodes.map((v) =>
-            v.id === newNode.id
-              ? {
-                  ...v,
-                  position: {
-                    x: v.position.x - (v.measured?.width || 0) / 2,
-                    y: v.position.y - (v.measured?.height || 0) / 2,
-                  },
-                  className: '',
-                }
-              : v,
-          ),
-        );
-      });
-    },
-    [dragged, screenToFlowPosition, setNodes, nodes, getNodes],
-  );
-
-  const onKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      {
-        if (e.key === 'Escape') setFullscreen(false);
-        if (e.key === 'F11') setFullscreen(true);
-        if (e.ctrlKey && e.key === 'a') {
-          e.preventDefault();
-          setNodes(getNodes().map((v) => ({ ...v, selected: true })));
-        }
-
-        if (e.ctrlKey && e.key === 'Z' && e.shiftKey) {
-          e.preventDefault();
-          e.stopPropagation();
-          redoChange();
-        } else if (e.ctrlKey && e.key === 'z') {
-          e.preventDefault();
-          revertLastChange();
-          e.stopPropagation();
-        }
-      }
-    },
-    [getNodes, redoChange, revertLastChange, setNodes],
-  );
-
-  interface FlowChartClipboardData {
-    nodes: Node[];
-    edges: Edge[];
-  }
-
-  const onCopyCatpure = useCallback(
-    (e: ClipboardEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      e.clipboardData?.clearData();
-
-      const selected = {
-        nodes: getNodes().filter((v) => v.selected),
-        edges: getEdges().filter((v) => v.selected),
-      };
-
-      e.clipboardData?.setData('flowchart:graph', JSON.stringify(selected));
-    },
-    [getEdges, getNodes],
-  );
-
-  const onPasteCatpure = useCallback(
-    (e: ClipboardEvent) => {
-      const paste = e.clipboardData?.getData('flowchart:graph');
-
-      if (!paste) return;
-
-      const unsafe_data = JSON.parse(paste);
-
-      if (
-        !unsafe_data.nodes ||
-        !unsafe_data.edges ||
-        !(unsafe_data satisfies FlowChartClipboardData)
-      )
-        return;
-
-      const data = unsafe_data as unknown as FlowChartClipboardData;
-      const node_mapping: Map<string, string> = new Map();
-      const edge_mapping: Map<string, string> = new Map();
-
-      const randomId = () => {
-        let v;
-
-        do {
-          v = Math.random().toString(16).slice(2);
-        } while (node_mapping.has(v) || edge_mapping.has(v));
-
-        return `${new Date().getTime()}-${v}`;
-      };
-
-      const positions = data.nodes
-        .map((v) => v.position)
-        .concat(
-          data.nodes
-            .filter((v) => v.measured)
-            .map((v) => ({
-              x: v.position.x + (v.measured?.width || 0),
-              y: v.position.y + (v.measured?.height || 0),
-            })),
-        );
-
-      const x_min = Math.min(...positions.map((v) => v.x));
-      const x_max = Math.max(...positions.map((v) => v.x));
-      const y_min = Math.min(...positions.map((v) => v.y));
-      const y_max = Math.max(...positions.map((v) => v.y));
-
-      const centroid = { x: (x_min + x_max) / 2, y: (y_min + y_max) / 2 };
-
-      const diff = {
-        x: mousePosition.x - centroid.x,
-        y: mousePosition.y - centroid.y,
-      };
-
-      const newNodes = data.nodes.map((v) => {
-        const newId = randomId();
-
-        node_mapping.set(v.id, newId);
-        return {
-          ...v,
-          id: newId,
-          position: { x: v.position.x + diff.x, y: v.position.y + diff.y },
-          data: {
-            ...v.data,
-            imports: undefined,
-            expression: undefined,
-            visualization_imports: undefined,
-            visualization_expression: undefined,
-          },
-        };
-      });
-
-      const newEdges = data.edges
-        .map((v) => {
-          const newId = randomId();
-
-          edge_mapping.set(v.id, newId);
-
-          const idSource = node_mapping.get(v.source);
-          const idTarget = node_mapping.get(v.target);
-
-          if (!idSource || !idTarget) return undefined;
-
-          return {
-            ...v,
-            id: newId,
-            source: idSource,
-            target: idTarget,
-          };
-        })
-        .filter((v) => v)
-        .map((v) => v as Edge);
-
-      setNodes(
-        getNodes()
-          .map((v) => ({ ...v, selected: false }))
-          .concat(newNodes.map((v) => ({ ...v, selected: true }))),
-      );
-      setEdges(
-        getEdges()
-          .map((v) => ({ ...v, selected: false }))
-          .concat(newEdges.map((v) => ({ ...v, selected: true }))),
-      );
-    },
-    [getEdges, getNodes, mousePosition.x, mousePosition.y, setEdges, setNodes],
-  );
-
-  const onMouseMove = useCallback(
-    (e: MouseEvent) => {
-      const real_point = screenToFlowPosition({
-        x: e.clientX,
-        y: e.clientY,
-      });
-
-      setMousePosition(real_point);
-    },
-    [screenToFlowPosition],
-  );
-
   useEffect(() => {
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('copy', onCopyCatpure);
-    document.addEventListener('paste', onPasteCatpure);
-    document.addEventListener('mousemove', onMouseMove);
+    const _onKeyDown = (e: KeyboardEvent) => onDocumentKeyDown(all_store, e);
+    const _onCopy = (e: ClipboardEvent) => onDocumentCopyCatpure(all_store, e);
+    const _onPaste = (e: ClipboardEvent) =>
+      onDocumentPasteCatpure(all_store, e);
+    const _onMouseMove = (e: MouseEvent) => onDocumentMouseMove(all_store, e);
+
+    document.addEventListener('keydown', _onKeyDown);
+    document.addEventListener('copy', _onCopy);
+    document.addEventListener('paste', _onPaste);
+    document.addEventListener('mousemove', _onMouseMove);
     return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      document.removeEventListener('copy', onCopyCatpure);
-      document.removeEventListener('paste', onPasteCatpure);
-      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('keydown', _onKeyDown);
+      document.removeEventListener('copy', _onCopy);
+      document.removeEventListener('paste', _onPaste);
+      document.removeEventListener('mousemove', _onMouseMove);
     };
   });
-
-  const nodeTypes = useMemo(() => node_types, []);
-  const clickedRef = useRef(-1);
-
   const [download_file, setDownloadFile] = useState('');
 
   useEffect(() => {
@@ -351,7 +117,7 @@ function View() {
         tabIndex={0}
         nodes={nodes}
         edges={edges}
-        nodeTypes={nodeTypes}
+        nodeTypes={node_types}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
@@ -363,122 +129,11 @@ function View() {
             stroke: '#000',
           },
         }}
-        onDrop={onDrop}
-        onDragOver={onDragOver}
-        isValidConnection={isValidConnection}
-        onMouseDown={(e) => {
-          if (e.ctrlKey) {
-            setIsSelecting({
-              is_dragging: true,
-              ...mousePosition,
-            });
-          }
-        }}
-        onMouseUp={() => {
-          const min_point = {
-            x: Math.min(isSelecting.x, mousePosition.x),
-            y: Math.min(isSelecting.y, mousePosition.y),
-          };
-          const max_point = {
-            x: Math.max(isSelecting.x, mousePosition.x),
-            y: Math.max(isSelecting.y, mousePosition.y),
-          };
-
-          const x_0 = min_point.x;
-          const y_0 = min_point.y;
-          const x_1 = max_point.x;
-          const y_1 = max_point.y;
-
-          setIsSelecting({
-            is_dragging: false,
-            ...mousePosition,
-          });
-
-          function rectanglesIntersect(
-            minBx: number,
-            minBy: number,
-            maxBx: number,
-            maxBy: number,
-          ) {
-            const aLeftOfB: boolean = x_1 < minBx;
-            const aRightOfB: boolean = x_0 > maxBx;
-            const aAboveB: boolean = y_0 > maxBy;
-            const aBelowB: boolean = y_1 < minBy;
-
-            return !(aLeftOfB || aRightOfB || aAboveB || aBelowB);
-          }
-
-          const selected_nodes = getNodes()
-            .filter((v) => {
-              if (!v.measured) return false;
-              const v_x = v.position.x;
-              const v_y = v.position.y;
-              const v2_x = v_x + v.measured.width!;
-              const v2_y = v_y + v.measured.height!;
-
-              return rectanglesIntersect(v_x, v_y, v2_x, v2_y);
-            })
-            .map((v) => v.id);
-
-          const selected_edges = getEdges()
-            .filter(
-              (v) =>
-                selected_nodes.includes(v.target) &&
-                selected_nodes.includes(v.source),
-            )
-            .map((v) => v.id);
-
-          setTimeout(() => {
-            setNodes(
-              getNodes().map((v) => {
-                const isSelected = selected_nodes.includes(v.id);
-
-                if (!isSelected) return v;
-                return {
-                  ...v,
-                  selected: true,
-                };
-              }),
-            );
-
-            setEdges(
-              getEdges().map((v) => {
-                const isSelected = selected_edges.includes(v.id);
-
-                if (!isSelected) return v;
-                return {
-                  ...v,
-                  selected: true,
-                };
-              }),
-            );
-          }, 20);
-        }}
-        onNodeClick={(e, n) => {
-          if (!n.selected) clickedRef.current = new Date().getTime();
-        }}
-        onNodeDoubleClick={(e, node) => {
-          if (!node.selected || new Date().getTime() - clickedRef.current < 300)
-            return;
-
-          const angle = Math.random() * Math.PI * 2;
-
-          const dx = Math.cos(angle) * 10;
-          const dy = Math.sin(angle) * 10;
-
-          const newNode = {
-            type: node.type,
-            data: { ...node.data, expression: undefined },
-            id: `${node.data?.name || node.type || 'node'}-${Date.now()}`,
-            position: { x: node.position.x + dx, y: node.position.y + dy },
-            selected: true,
-          };
-          setNodes(
-            nodes
-              .map((v) => (v.id === node.id ? { ...node, selected: false } : v))
-              .concat(newNode),
-          );
-        }}
+        onDrop={(e) => onDrop(all_store, e)}
+        onDragOver={(e) => onDragOver(all_store, e)}
+        isValidConnection={(params) => isValidConnection(all_store, params)}
+        onMouseDown={(e) => onMouseDown(all_store, e)}
+        onMouseUp={(e) => onMouseUp(all_store, e)}
         fitView
         proOptions={{
           hideAttribution: true,
@@ -733,6 +388,17 @@ import { useStore } from '../../components/graph/store';
 import { getNode } from '../../components/graph/utils';
 import CodeEditor from '../../components/CodeEditor';
 import { executeOnServer } from '../../src/useActivity';
+import {
+  isValidConnection,
+  onDocumentCopyCatpure,
+  onDrop,
+  onDocumentKeyDown,
+  onDocumentMouseMove,
+  onDocumentPasteCatpure,
+  onDragOver,
+  onMouseUp,
+  onMouseDown,
+} from '../../components/graph/graph_toolbox';
 
 function Graph() {
   const [source] = useState('from pytamaro import *');
