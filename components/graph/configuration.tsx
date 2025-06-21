@@ -16,8 +16,8 @@ export const createConfigurationSlice: StateCreator<
   [],
   ConfigurationState
 > = (set) => ({
-  error_level: 'prevent',
-  local_scale: false,
+  error_level: 'highlight',
+  local_scale: true,
   node_filter: [
     {
       module: 'pytamaro',

@@ -2,17 +2,7 @@ import { NodeProps } from '@xyflow/react';
 import { CodeRepresentation, IImportedCardData } from '.';
 import { FunctionTamaroCard } from '../../TamaroCard';
 import { JudiciousFunction } from '../../../src/schemas/documentation';
-import {
-  createCodeFromCodeRepresentation,
-  getFunctionHandles,
-  getFunctionParameterRelative,
-  getHandleType,
-  getNode,
-  getScaled,
-  turnTreeToExpressionRec,
-} from '../utils';
-import { useStore } from '../store';
-import { useEffect, useState } from 'react';
+import { createCodeFromCodeRepresentation } from '../utils';
 
 export interface ITamaroFunctionCardData extends IImportedCardData {
   value: JudiciousFunction;
@@ -35,108 +25,73 @@ export function TamaroFunctionCard({
 }: NodeProps & { data: ITamaroFunctionCardData }) {
   const function_el = data.value;
 
-  const {
-    nodes,
-    edges,
-    setEdges,
-    addError,
-    clearErrors,
-    error_level,
-    local_scale,
-  } = useStore();
+  // useEffect(() => {
+  //   // eslint-disable-next-line no-param-reassign
+  //   data.representation = undefined;
+  //   clearErrors(id);
 
-  const [code, setCode] = useState(undefined as string | undefined);
+  //   getFunctionHandles(function_el)
+  //     .map(({ name }) => {
+  //       const node = getFunctionParameterRelative(nodes, edges, id, name, true);
+  //       const node2 = getFunctionParameterRelative(
+  //         nodes,
+  //         edges,
+  //         id,
+  //         name,
+  //         false,
+  //       );
+  //       if (node != node2) return { name, message: 'type' };
+  //       if (!node) return { name, message: 'missing_parameter' };
+  //       const node_output_type = getHandleType(node, 'output');
+  //       const input_type = getHandleType(
+  //         getNode(nodes, id)!,
+  //         getHandleName(name),
+  //       );
 
-  useEffect(() => {
-    // eslint-disable-next-line no-param-reassign
-    data.representation = undefined;
-    clearErrors(id);
+  //       if (input_type !== node_output_type) {
+  //         setEdges(
+  //           edges.map((v) =>
+  //             !(v.source === node.id && v.target === id)
+  //               ? v
+  //               : {
+  //                   ...v,
+  //                   className:
+  //                     'invalid_type_edge ' +
+  //                     (error_level === 'highlight' ? 'highlight_error' : ''),
+  //                 },
+  //           ),
+  //         );
+  //         return { name, message: 'type' };
+  //       }
+  //       return undefined;
+  //     })
+  //     .filter((v) => v)
+  //     .map((v) => v as { name: string; message: 'missing_parameter' | 'type' })
+  //     .forEach(({ name, message }) => {
+  //       addError(id, getHandleName(name), message);
+  //     });
+  // }, [
+  //   addError,
+  //   clearErrors,
+  //   data,
+  //   edges,
+  //   error_level,
+  //   function_el,
+  //   id,
+  //   local_scale,
+  //   nodes,
+  //   setEdges,
+  // ]);
 
-    getFunctionHandles(function_el)
-      .map(({ name }) => {
-        const node = getFunctionParameterRelative(nodes, edges, id, name, true);
-        const node2 = getFunctionParameterRelative(
-          nodes,
-          edges,
-          id,
-          name,
-          false,
-        );
-        if (node != node2) return { name, message: 'type' };
-        if (!node) return { name, message: 'missing_parameter' };
-        const node_output_type = getHandleType(node, 'output');
-        const input_type = getHandleType(
-          getNode(nodes, id)!,
-          getHandleName(name),
-        );
-
-        if (input_type !== node_output_type) {
-          setEdges(
-            edges.map((v) =>
-              !(v.source === node.id && v.target === id)
-                ? v
-                : {
-                    ...v,
-                    className:
-                      'invalid_type_edge ' +
-                      (error_level === 'highlight' ? 'highlight_error' : ''),
-                  },
-            ),
-          );
-          return { name, message: 'type' };
-        }
-        return undefined;
-      })
-      .filter((v) => v)
-      .map((v) => v as { name: string; message: 'missing_parameter' | 'type' })
-      .forEach(({ name, message }) => {
-        addError(id, getHandleName(name), message);
-      });
-
-    const visited = new Set<string>();
-    const node = getNode(nodes, id);
-    if (!node) {
-      setCode(undefined);
-      return;
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const value = turnTreeToExpressionRec(nodes, edges, node as any, visited);
-    if (!value[0]) setCode(undefined);
-    else if (local_scale) {
-      const newCode: CodeRepresentation = [
-        `show_graphic(${value[0]})`,
-        value[1].concat({
+  const code = data.representation
+    ? ({
+        expression: `show_graphic(${data.representation.expression})`,
+        imports: data.representation.imports.concat({
           module: 'pytamaro',
           name: 'show_graphic',
         }),
-      ];
-      setCode(createCodeFromCodeRepresentation(newCode));
-    } else {
-      getScaled(nodes, edges, node, value)
-        .then((value) => {
-          const newCode: CodeRepresentation = [
-            `show_graphic(${value[0]})`,
-            value[1].concat({
-              module: 'pytamaro',
-              name: 'show_graphic',
-            }),
-          ];
-          setCode(createCodeFromCodeRepresentation(newCode));
-        })
-        .catch(() => setCode(undefined));
-    }
-  }, [
-    addError,
-    clearErrors,
-    data,
-    edges,
-    error_level,
-    function_el,
-    id,
-    local_scale,
-    nodes,
-    setEdges,
-  ]);
+      } as CodeRepresentation)
+    : undefined;
 
   return (
     <div className='drag-handle compact_view hide_types hide_icons hide_output hide_optionals hide_labels'>
@@ -145,7 +100,9 @@ export function TamaroFunctionCard({
           el={function_el}
           module={data.module}
           show_handles
-          returns_expression={code ? code : undefined}
+          returns_expression={
+            code ? createCodeFromCodeRepresentation(code) : undefined
+          }
         />
       )}
     </div>

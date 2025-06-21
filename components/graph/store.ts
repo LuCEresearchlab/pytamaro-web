@@ -3,7 +3,10 @@ import {
   applyEdgeChanges,
   applyNodeChanges,
   Edge,
+  EdgeChange,
+  InternalNode,
   Node,
+  NodeChange,
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
@@ -13,6 +16,8 @@ import { persist } from 'zustand/middleware';
 import { ChangeSliceState, createChangeSlice } from './changes';
 import { createErrorSlice, ErrorStateSlice } from './errors';
 import { ConfigurationState, createConfigurationSlice } from './configuration';
+import { createImgStateSlice, ImgStateSlice } from './img_store';
+import { getElementsDiffChanges } from '@xyflow/react/dist/esm/utils/changes';
 
 export interface DraggedElementData {
   type: string;
@@ -42,7 +47,7 @@ export interface GraphStateSlice {
 }
 
 export const createGraphSlice: StateCreator<
-  GraphStateSlice & ChangeSliceState & ErrorStateSlice & ConfigurationState,
+  StoreType,
   [],
   [],
   GraphStateSlice
@@ -55,6 +60,11 @@ export const createGraphSlice: StateCreator<
     set({
       nodes: applyNodeChanges(changes, befores),
     });
+
+    changes
+      .filter((v) => v.type === 'dimensions')
+      .map((v) => v.id)
+      .map(get().invalidate_node);
 
     const afters = get().nodes;
 
@@ -78,9 +88,17 @@ export const createGraphSlice: StateCreator<
   },
   onEdgesChange: (changes) => {
     const befores = get().edges;
+
+    const changed_edges = changes
+      .filter((v) => v.type !== 'select')
+      .map((v) =>
+        v.type === 'remove' ? befores.find((o) => o.id === v.id)! : v.item,
+      );
+
     set({
       edges: applyEdgeChanges(changes, get().edges),
     });
+
     const afters = get().edges;
 
     changes
@@ -99,50 +117,107 @@ export const createGraphSlice: StateCreator<
               : afters.find((v) => change.id === v.id),
         });
       });
+
+    changed_edges.map((v) => v.target).forEach(get().invalidate_node);
   },
   onConnect: (connection) => {
-    set((state) => ({
-      edges: addEdge(connection, state.edges),
-    }));
-
-    get().newChange({
-      kind: 'edge',
-      before: undefined,
-      after: get().edges.find(
-        (v) =>
-          v.source === connection.source &&
-          v.sourceHandle === connection.sourceHandle &&
-          v.target === connection.target &&
-          v.targetHandle === connection.targetHandle,
-      ),
-      native: connection,
-    });
+    get().onEdgesChange([
+      {
+        type: 'add',
+        item: {
+          ...connection,
+          id: `${connection.source}-${connection.target}-${new Date().getTime()}`,
+        },
+      },
+    ]);
   },
   setDragged: (
     dragged: { type: string; data: Record<string, unknown> } | undefined,
   ) => {
     set({ dragged });
   },
-  setNodes: (nodes) => {
-    set({ nodes });
+  setNodes: (new_nodes) => {
+    const current_nodes = get().nodes;
+
+    const changes: NodeChange[] = [];
+    const newLookup = new Map<string, Node>(
+      new_nodes.map((item) => [item.id, item]),
+    );
+    const currentLookup = new Map<string, Node>(
+      current_nodes.map((item) => [item.id, item]),
+    );
+
+    for (const [index, item] of Array.from(new_nodes.entries())) {
+      const lookupItem = currentLookup.get(item.id);
+      const storeItem = (lookupItem as any)?.internals?.userNode ?? lookupItem;
+
+      if (storeItem !== undefined && storeItem !== item) {
+        changes.push({ id: item.id, item: item, type: 'replace' });
+      }
+
+      if (storeItem === undefined) {
+        changes.push({ item: item, type: 'add', index });
+      }
+    }
+
+    for (const [id] of Array.from(currentLookup)) {
+      const nextNode = newLookup.get(id);
+
+      if (nextNode === undefined) {
+        changes.push({ id, type: 'remove' });
+      }
+    }
+
+    get().onNodesChange(changes);
   },
   getNodes: () => get().nodes,
-  setEdges: (edges) => {
-    set({ edges });
+  setEdges: (new_edges) => {
+    const current_edges = get().edges;
+
+    const changes: EdgeChange[] = [];
+    const newLookup = new Map<string, Edge>(
+      new_edges.map((item) => [item.id, item]),
+    );
+    const currentLookup = new Map<string, Edge>(
+      current_edges.map((item) => [item.id, item]),
+    );
+
+    for (const [index, item] of Array.from(new_edges.entries())) {
+      const lookupItem = currentLookup.get(item.id);
+      const storeItem = (lookupItem as any)?.internals?.userNode ?? lookupItem;
+
+      if (storeItem !== undefined && storeItem !== item) {
+        changes.push({ id: item.id, item: item, type: 'replace' });
+      }
+
+      if (storeItem === undefined) {
+        changes.push({ item: item, type: 'add', index });
+      }
+    }
+
+    for (const [id] of Array.from(currentLookup)) {
+      const nextNode = newLookup.get(id);
+
+      if (nextNode === undefined) {
+        changes.push({ id, type: 'remove' });
+      }
+    }
+
+    get().onEdgesChange(changes);
   },
   getEdges: () => get().edges,
   updateNodeData: (nodeId, data) => {
     const newData = typeof data === 'function' ? data : () => data;
-
-    set({
-      nodes: get().nodes.map((v) =>
+    get().setNodes(
+      get().nodes.map((v) =>
         v.id === nodeId ? { ...v, data: newData(v.data) } : v,
       ),
-    });
+    );
   },
 });
 
-export type StoreType = GraphStateSlice &
+export type StoreType = ImgStateSlice &
+  GraphStateSlice &
   ChangeSliceState &
   ErrorStateSlice &
   ConfigurationState;
@@ -150,6 +225,7 @@ export type StoreType = GraphStateSlice &
 export const useStore = create<StoreType>()(
   persist(
     (...a) => ({
+      ...createImgStateSlice(...a),
       ...createGraphSlice(...a),
       ...createChangeSlice(...a),
       ...createErrorSlice(...a),
@@ -158,6 +234,13 @@ export const useStore = create<StoreType>()(
     {
       name: 'playground_graph',
       partialize: (state) => ({ nodes: state.nodes, edges: state.edges }),
+      onRehydrateStorage() {
+        return (state) => {
+          if (!state) return;
+
+          state.nodes.map((v) => v.id).forEach(state.invalidate_node);
+        };
+      },
     },
   ),
 );

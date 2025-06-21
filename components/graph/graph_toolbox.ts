@@ -248,6 +248,7 @@ export function onDocumentPasteCatpure(
       .map((v) => ({ ...v, selected: false }))
       .concat(newNodes.map((v) => ({ ...v, selected: true }))),
   );
+
   setEdges(
     getEdges()
       .map((v) => ({ ...v, selected: false }))

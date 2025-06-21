@@ -8,11 +8,13 @@ export interface ImportReference {
   name: string;
 }
 
-export type CodeRepresentation = [string | undefined, ImportReference[]];
+export type CodeRepresentation = {
+  imports: ImportReference[];
+  expression: string;
+};
 
 export interface ITamaroCardData {
   value: unknown;
-
   representation?: CodeRepresentation;
 }
 

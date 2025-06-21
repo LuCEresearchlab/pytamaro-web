@@ -52,6 +52,7 @@ function View() {
     setEdges,
     getErrors,
     error_level,
+    unstack_queue,
   } = store;
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -72,6 +73,14 @@ function View() {
     isSelecting,
     setIsSelecting,
   };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      unstack_queue();
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [unstack_queue]);
 
   useEffect(() => {
     if (getErrors().length === 0) setErrorPane(false);

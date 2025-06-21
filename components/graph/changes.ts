@@ -1,4 +1,4 @@
-import { Connection, Edge, EdgeChange, Node, NodeChange } from '@xyflow/react';
+import { Edge, EdgeChange, Node, NodeChange } from '@xyflow/react';
 import { StateCreator } from 'zustand';
 import { GraphStateSlice } from './store';
 
@@ -13,7 +13,7 @@ interface NodeFlowChange {
 
 interface EdgeFlowChange {
   kind: 'edge';
-  native: EdgeChange | Connection;
+  native: EdgeChange;
   before?: Edge;
   after?: Edge;
 }
@@ -27,6 +27,7 @@ export interface ChangeSliceState {
 
   stack: FlowChange[];
   index: number;
+  isReverting: boolean;
 }
 
 export const createChangeSlice: StateCreator<
@@ -35,8 +36,10 @@ export const createChangeSlice: StateCreator<
   [],
   ChangeSliceState
 > = (set, get) => ({
+  isReverting: false,
   newChange(change) {
     const state = get();
+    if (state.isReverting) return;
     const stack = state.stack;
     const index = state.index;
 
@@ -74,10 +77,14 @@ export const createChangeSlice: StateCreator<
         const nodes = state.nodes;
         set({
           index: index - 1,
-          nodes: nodes
+          isReverting: true,
+        });
+
+        get().setNodes(
+          nodes
             .filter((v) => v.id !== change.after?.id)
             .concat([change.before].filter((v) => v).map((v) => v!)),
-        });
+        );
         break;
       }
       case 'edge': {
@@ -85,13 +92,18 @@ export const createChangeSlice: StateCreator<
         const edges = state.edges;
         set({
           index: index - 1,
-          edges: edges
+          isReverting: true,
+        });
+
+        get().setEdges(
+          edges
             .filter((v) => v.id !== change.after?.id)
             .concat([change.before].filter((v) => v).map((v) => v!)),
-        });
+        );
         break;
       }
     }
+    set((state) => ({ isReverting: false }));
   },
   redoChange() {
     const state = get();
@@ -107,10 +119,13 @@ export const createChangeSlice: StateCreator<
         const nodes = state.nodes;
         set({
           index: index + 1,
-          nodes: nodes
+          isReverting: true,
+        });
+        get().setNodes(
+          nodes
             .filter((v) => v.id !== change.before?.id)
             .concat([change.after].filter((v) => v).map((v) => v!)),
-        });
+        );
         break;
       }
       case 'edge': {
@@ -118,13 +133,18 @@ export const createChangeSlice: StateCreator<
         const edges = state.edges;
         set({
           index: index + 1,
-          edges: edges
+          isReverting: true,
+        });
+
+        get().setEdges(
+          edges
             .filter((v) => v.id !== change.before?.id)
             .concat([change.after].filter((v) => v).map((v) => v!)),
-        });
+        );
         break;
       }
     }
+    set((state) => ({ isReverting: false }));
   },
 
   stack: [],

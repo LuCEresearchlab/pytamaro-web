@@ -1,0 +1,237 @@
+import { StateCreator } from 'zustand';
+import { CodeRepresentation } from './cards';
+import { StoreType } from './store';
+import { getFunctionParameterRelative, getNode, getParents } from './utils';
+import { ITamaroFunctionCardData } from './cards/function';
+import { ITamaroLiteralCardData } from './cards/literal';
+import { ITamaroConstantCardData } from './cards/constant';
+import { Edge, Node } from '@xyflow/react';
+
+interface ImgState {
+  id: string;
+  children: { handle: string }[];
+  code?: CodeRepresentation;
+  upToDate: boolean;
+}
+
+export interface ImgStateSlice {
+  img_states: ImgState[];
+  queue: string[];
+
+  invalidate_node: (id: string) => void;
+
+  unstack_queue: () => void;
+}
+
+function fuseQueue(queue: string[], ...new_values: string[]) {
+  return queue.filter((v) => !new_values.includes(v)).concat(new_values);
+}
+
+export const createImgStateSlice: StateCreator<
+  StoreType,
+  [],
+  [],
+  ImgStateSlice
+> = (set, get) => ({
+  img_states: [],
+  queue: [],
+
+  invalidate_node(id) {
+    const { nodes, edges, img_states } = get();
+    if (!img_states.find((v) => v.id === id)) {
+      const node = getNode(nodes, id);
+
+      let children: { handle: string }[] = [];
+      if (node?.type === 'function')
+        children = (
+          node.data as unknown as ITamaroFunctionCardData
+        ).value.parameters
+          .filter((v) => v.default == null)
+          .map((v) => ({ handle: v.name }));
+
+      set((state) => ({
+        img_states: state.img_states.concat({
+          id,
+          children,
+          upToDate: false,
+          code: undefined,
+        }),
+        queue: fuseQueue(state.queue, id),
+      }));
+      return;
+    }
+    const parents = getParents(nodes, edges, id);
+
+    set((state) => ({
+      img_states: state.img_states
+        .map((img) => {
+          const isParent = parents.entries().find((v) => parents.get(v[1].id));
+          if (!isParent) return img;
+
+          return {
+            ...img,
+            code: undefined,
+            upToDate: false,
+          };
+        })
+        .map((img) =>
+          img.id !== id
+            ? img
+            : {
+                ...img,
+                code: undefined,
+                upToDate: false,
+              },
+        ),
+      queue: fuseQueue(
+        state.queue,
+        ...Array.from(parents.values().map((v) => v.id)),
+      ),
+    }));
+
+    set((state) => ({ queue: fuseQueue(state.queue, id) }));
+  },
+
+  unstack_queue() {
+    const { queue, img_states, nodes, edges } = get();
+    if (queue.length === 0) return;
+    const element = queue.shift()!;
+
+    const data = img_states.find((v) => v.id === element)!;
+    const unsafe_children = data.children.map(({ handle }) =>
+      getFunctionParameterRelative(nodes, edges, data.id, handle),
+    );
+    if (data.upToDate) return;
+    if (unsafe_children.includes(undefined)) {
+      set({
+        img_states: img_states.map((v) =>
+          v.id !== data.id
+            ? v
+            : {
+                ...v,
+                code: undefined,
+                upToDate: true,
+              },
+        ),
+        queue,
+      });
+
+      get().updateNodeData(data.id, (data) => ({
+        ...data,
+        representation: undefined,
+      }));
+
+      const parents = getParents(nodes, edges, data.id);
+      parents.values().forEach((v) => get().invalidate_node(v.id));
+      return;
+    }
+
+    const children = (unsafe_children as Node[]).map((v) =>
+      img_states.find((o) => o.id === v.id),
+    );
+
+    if (children.includes(undefined) || children.find((v) => v?.code == null)) {
+      set({
+        img_states: img_states.map((v) =>
+          v.id !== data.id
+            ? v
+            : {
+                ...v,
+                code: undefined,
+                upToDate: true,
+              },
+        ),
+        queue,
+      });
+
+      get().updateNodeData(data.id, (data) => ({
+        ...data,
+        representation: undefined,
+      }));
+
+      const parents = getParents(nodes, edges, data.id);
+      parents.values().forEach((v) => get().invalidate_node(v.id));
+      return;
+    }
+    const node = getNode(nodes, data.id);
+
+    const type = node?.type;
+    let code: CodeRepresentation | undefined;
+
+    switch (type) {
+      case 'function': {
+        const card_data = node?.data as unknown as ITamaroFunctionCardData;
+        const fn = card_data.value;
+
+        const params = children.map((v) => v!.code!);
+
+        const expression = `${fn.name}(${params.map((v) => v.expression).join(',')})`;
+
+        const imports = params
+          .map((v) => v.imports)
+          .reduce((a, b) => a.concat(b), [])
+          .concat({ module: card_data.module, name: card_data.name });
+
+        code = { expression, imports };
+
+        set((state) => ({
+          queue,
+          img_states: state.img_states.map((v) =>
+            v.id !== data.id ? v : { ...data, upToDate: true, code },
+          ),
+        }));
+        break;
+      }
+
+      case 'literal': {
+        const card_data = node?.data as unknown as ITamaroLiteralCardData;
+        const expression = String(card_data.value || 0);
+
+        code = { expression, imports: [] };
+        set((state) => ({
+          queue,
+          img_states: state.img_states.map((v) =>
+            v.id !== data.id
+              ? v
+              : {
+                  ...data,
+                  upToDate: true,
+                  code,
+                },
+          ),
+        }));
+        break;
+      }
+
+      case 'constant': {
+        const card_data = node?.data as unknown as ITamaroConstantCardData;
+
+        const expression = card_data.name;
+        const imports = [{ module: card_data.module, name: card_data.name }];
+
+        code = { expression, imports };
+        set((state) => ({
+          queue,
+          img_states: state.img_states.map((v) =>
+            v.id !== data.id
+              ? v
+              : {
+                  ...data,
+                  upToDate: true,
+                  code,
+                },
+          ),
+        }));
+        break;
+      }
+    }
+
+    const parents = getParents(nodes, edges, data.id);
+    parents.values().forEach((v) => get().invalidate_node(v.id));
+
+    get().updateNodeData(data.id, (data) => ({
+      ...data,
+      representation: code,
+    }));
+  },
+});

@@ -29,7 +29,7 @@ function FloatLiteralCard({
   data: ITamaroLiteralCardData & { literal_type: 'float' };
   hide_handles?: boolean;
 }) {
-  const { updateNodeData } = useStore();
+  const { updateNodeData, invalidate_node } = useStore();
 
   const value = data.value;
   const setValue = (newValue: number) =>
@@ -51,6 +51,7 @@ function FloatLiteralCard({
             e.currentTarget.value = '0';
           if (e.currentTarget.value === '0-') {
             e.currentTarget.value = '-';
+            invalidate_node(id);
             return;
           }
           if (e.currentTarget.value === '-') {
@@ -67,6 +68,7 @@ function FloatLiteralCard({
           if (target.value !== String(new_value)) {
             target.value = String(new_value);
           }
+          invalidate_node(id);
         }}
         value={value}
       />
