@@ -98,7 +98,15 @@ export function onDrop(
 }
 
 export function onDocumentKeyDown(
-  { setFullscreen, redoChange, revertLastChange, setNodes, getNodes }: AllStore,
+  {
+    setFullscreen,
+    redoChange,
+    revertLastChange,
+    setNodes,
+    getNodes,
+    setEdges,
+    getEdges,
+  }: AllStore,
   e: KeyboardEvent,
 ) {
   {
@@ -107,6 +115,7 @@ export function onDocumentKeyDown(
     if (e.ctrlKey && e.key === 'a') {
       e.preventDefault();
       setNodes(getNodes().map((v) => ({ ...v, selected: true })));
+      setEdges(getEdges().map((v) => ({ ...v, selected: true })));
     }
 
     if (e.ctrlKey && e.key === 'Z' && e.shiftKey) {
@@ -283,6 +292,7 @@ export function onMouseUp(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   event: React_MouseEvent<HTMLDivElement, MouseEvent>,
 ) {
+  if (!isSelecting.is_dragging) return;
   const min_point = {
     x: Math.min(isSelecting.x, mousePosition.x),
     y: Math.min(isSelecting.y, mousePosition.y),
