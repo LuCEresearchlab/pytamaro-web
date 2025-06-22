@@ -25,64 +25,6 @@ export function TamaroFunctionCard({
 }: NodeProps & { data: ITamaroFunctionCardData }) {
   const function_el = data.value;
 
-  // useEffect(() => {
-  //   // eslint-disable-next-line no-param-reassign
-  //   data.representation = undefined;
-  //   clearErrors(id);
-
-  //   getFunctionHandles(function_el)
-  //     .map(({ name }) => {
-  //       const node = getFunctionParameterRelative(nodes, edges, id, name, true);
-  //       const node2 = getFunctionParameterRelative(
-  //         nodes,
-  //         edges,
-  //         id,
-  //         name,
-  //         false,
-  //       );
-  //       if (node != node2) return { name, message: 'type' };
-  //       if (!node) return { name, message: 'missing_parameter' };
-  //       const node_output_type = getHandleType(node, 'output');
-  //       const input_type = getHandleType(
-  //         getNode(nodes, id)!,
-  //         getHandleName(name),
-  //       );
-
-  //       if (input_type !== node_output_type) {
-  //         setEdges(
-  //           edges.map((v) =>
-  //             !(v.source === node.id && v.target === id)
-  //               ? v
-  //               : {
-  //                   ...v,
-  //                   className:
-  //                     'invalid_type_edge ' +
-  //                     (error_level === 'highlight' ? 'highlight_error' : ''),
-  //                 },
-  //           ),
-  //         );
-  //         return { name, message: 'type' };
-  //       }
-  //       return undefined;
-  //     })
-  //     .filter((v) => v)
-  //     .map((v) => v as { name: string; message: 'missing_parameter' | 'type' })
-  //     .forEach(({ name, message }) => {
-  //       addError(id, getHandleName(name), message);
-  //     });
-  // }, [
-  //   addError,
-  //   clearErrors,
-  //   data,
-  //   edges,
-  //   error_level,
-  //   function_el,
-  //   id,
-  //   local_scale,
-  //   nodes,
-  //   setEdges,
-  // ]);
-
   const code = data.representation
     ? ({
         expression: `show_graphic(${data.representation.expression})`,

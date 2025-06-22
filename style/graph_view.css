@@ -43,6 +43,30 @@
   background-color: black;
 }
 
+.error_text_highlight {
+  color: #DC8264 !important;
+  font-weight: bold;
+}
+
 .invalid_type_edge.highlight_error *{
-  stroke: yellow !important;
+  stroke: #E68232 !important;
+  filter: drop-shadow(0 0 1px #FFE182) drop-shadow(0 0 1px #FFE182) drop-shadow(0 0 2px #FFE182) drop-shadow(0 0 3px #FFE182);
+}
+
+.error-paragraph * {
+  font-size: x-large;
+}
+
+.error-paragraph .error_highlight {
+  color: #E68232
+}
+
+.error-paragraph .error-title {
+  font-weight: bold;
+  font-size: xx-large;
+  margin: 0;
+}
+
+.error-paragraph .error-body {
+  margin: 0px;
 }

@@ -10,6 +10,7 @@ import {
   JudiciousFunction,
 } from '../../src/schemas/documentation';
 import {
+  CardKeys,
   CardType,
   CodeRepresentation,
   ImportReference,
@@ -33,22 +34,40 @@ export function getTarget(nodes: Node[], edge: Edge) {
   return getNode(nodes, edge.target);
 }
 
-export function getChildren(nodes: Node[], edges: Edge[], node: string | Node) {
+export function getChildren(
+  nodes: Node[],
+  edges: Edge[],
+  node: string | Node,
+  unsafe_type: boolean = false,
+) {
   const node_id = typeof node === 'string' ? node : node.id;
 
   return new Map(
     edges
-      .filter((v) => v.target === node_id)
+      .filter(
+        (v) =>
+          v.target === node_id &&
+          (unsafe_type || !(v.className || '').includes('invalid_type_edge')),
+      )
       .map((v) => [v.targetHandle || '', getNode(nodes, v.source)!]),
   );
 }
 
-export function getParents(nodes: Node[], edges: Edge[], node: string | Node) {
+export function getParents(
+  nodes: Node[],
+  edges: Edge[],
+  node: string | Node,
+  unsafe_type: boolean = false,
+) {
   const node_id = typeof node === 'string' ? node : node.id;
 
   return new Map(
     edges
-      .filter((v) => v.source === node_id)
+      .filter(
+        (v) =>
+          v.source === node_id &&
+          (unsafe_type || !(v.className || '').includes('invalid_type_edge')),
+      )
       .map((v) => [v.sourceHandle || '', getNode(nodes, v.target)!]),
   );
 }
@@ -90,10 +109,6 @@ export function getFunctionParameterRelative(
 export function getHandleType(node: Node, handle: string) {
   if (!node.type) return 'Unknown';
 
-  const type = node.type;
-
-  if (!Object.keys(node_types).includes(type)) return 'Unknown';
-
   switch (node.type as CardType) {
     case 'function': {
       const data = node.data as unknown as ITamaroFunctionCardData;
@@ -115,6 +130,10 @@ export function getHandleType(node: Node, handle: string) {
       const cst = data.value as JudiciousConstant;
 
       return cst.type;
+    }
+
+    default: {
+      return 'Unknown';
     }
   }
 }

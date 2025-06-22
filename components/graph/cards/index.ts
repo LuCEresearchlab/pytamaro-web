@@ -32,4 +32,5 @@ export const node_types = {
   constant: (props: NodeProps) => TamaroConstantCard(props as any),
 } as const;
 
+export const CardKeys = Object.keys(node_types);
 export type CardType = keyof typeof node_types;

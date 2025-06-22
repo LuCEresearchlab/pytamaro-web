@@ -99,7 +99,7 @@ export const createImgStateSlice: StateCreator<
 
     const data = img_states.find((v) => v.id === element)!;
     const unsafe_children = data.children.map(({ handle }) =>
-      getFunctionParameterRelative(nodes, edges, data.id, handle),
+      getFunctionParameterRelative(nodes, edges, data.id, handle, false),
     );
     if (data.upToDate) return;
     if (unsafe_children.includes(undefined)) {

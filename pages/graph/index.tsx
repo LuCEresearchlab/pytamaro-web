@@ -10,7 +10,7 @@ import {
   ReactFlowProvider,
   useReactFlow,
 } from '@xyflow/react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, IconButton, Input, Paper } from '@mui/material';
 import '@xyflow/react/dist/style.css';
 import '../../style/graph_view.css';
@@ -50,9 +50,10 @@ function View() {
     onConnect,
     setNodes,
     setEdges,
-    getErrors,
     error_level,
     unstack_queue,
+    initialized,
+    getAnnotations,
   } = store;
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -74,6 +75,22 @@ function View() {
     setIsSelecting,
   };
 
+  const getErrors = useCallback(
+    () =>
+      getAnnotations().filter((v) =>
+        ['syntax-error', 'value-error', 'type-error'].includes(v.kind),
+      ),
+    [getAnnotations],
+  );
+
+  useEffect(() => {
+    if (initialized === 'wait') {
+      const { updateAnnotation, setInitialized } = store;
+      nodes.forEach(updateAnnotation);
+      setInitialized('done');
+    }
+  }, [initialized]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       unstack_queue();
@@ -84,7 +101,7 @@ function View() {
 
   useEffect(() => {
     if (getErrors().length === 0) setErrorPane(false);
-  }, [edges, getErrors, nodes]);
+  }, [edges, nodes]);
 
   useEffect(() => {
     const _onKeyDown = (e: KeyboardEvent) => onDocumentKeyDown(all_store, e);
@@ -147,10 +164,11 @@ function View() {
         proOptions={{
           hideAttribution: true,
         }}
+        maxZoom={6}
       >
         <Controls position={'bottom-right'} />
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-
+        <AnnotationLayer />
         <div
           style={{
             position: 'absolute',
@@ -225,37 +243,37 @@ function View() {
                 }}
               >
                 {getErrors().map((v) => (
-                  <h5
-                    key={`${v.nodeId}_${v.handle || 'default'}`}
+                  <div
                     style={{
-                      margin: '0px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      height: 'fit-content',
-                      marginRight: '30px',
-                      padding: '8px 10px',
-                      borderRadius: '5px',
-                      width: '100%',
-                      background: '#f99',
+                      position: 'relative',
+                      padding: '5px',
+                      borderRadius: '10px',
+                      border: 'solid #f99 4px',
+                      background: '#fcc',
                       userSelect: 'none',
                     }}
+                    key={`${v.location.node_id}_${v.location.handle || 'default'}`}
                   >
-                    {v.type}
-
-                    <div style={{ flexGrow: 1 }} />
+                    <ErrorParagraph annotation={v} />
 
                     <IconButton
+                      sx={{
+                        position: 'absolute',
+                        top: '0',
+                        right: '0',
+                        margin: '10px',
+                      }}
                       onClick={() =>
                         fitView({
-                          nodes: [getNode(getNodes(), v.nodeId)!],
+                          nodes: [getNode(getNodes(), v.location.node_id)!],
                           duration: 2,
-                          padding: 1,
+                          padding: 0.125,
                         })
                       }
                     >
                       <RemoveRedEye />
                     </IconButton>
-                  </h5>
+                  </div>
                 ))}
               </div>
             </div>
@@ -408,6 +426,8 @@ import {
   onMouseUp,
   onMouseDown,
 } from '../../components/graph/graph_toolbox';
+import { AnnotationLayer } from '../../components/graph/AnnotationLayer';
+import { ErrorParagraph } from '../../components/graph/ErrorParagraph';
 
 function Graph() {
   const [source] = useState('from pytamaro import *');

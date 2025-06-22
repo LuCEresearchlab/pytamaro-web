@@ -57,6 +57,15 @@ export const createChangeSlice: StateCreator<
         change.before = last.before; // Fuse movement if still dragging
       } else if (last) redo_revert_stack.push(last);
     }
+
+    if (
+      change.kind === 'node' &&
+      change.native.type === 'replace' &&
+      change.native.item.type === 'function'
+    )
+      return;
+
+    if (change.kind === 'edge' && change.native.type === 'replace') return;
     const newlength = redo_revert_stack.push(change);
     const trimmed_stack = redo_revert_stack.filter(
       (_, i) => newlength - i - 1 < MAX_STACK_SIZE,

@@ -14,10 +14,10 @@ import {
 import { create, StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ChangeSliceState, createChangeSlice } from './changes';
-import { createErrorSlice, ErrorStateSlice } from './errors';
 import { ConfigurationState, createConfigurationSlice } from './configuration';
 import { createImgStateSlice, ImgStateSlice } from './img_store';
-import { getElementsDiffChanges } from '@xyflow/react/dist/esm/utils/changes';
+import { AnnotationStateSlice, createAnnotationSlice } from './annotations';
+import { getNode } from './utils';
 
 export interface DraggedElementData {
   type: string;
@@ -26,6 +26,8 @@ export interface DraggedElementData {
 
 export interface GraphStateSlice {
   dragged: DraggedElementData | undefined;
+  initialized: 'before' | 'wait' | 'done';
+  setInitialized: (v: 'before' | 'wait' | 'done') => void;
   nodes: Node[];
   edges: Edge[];
   onNodesChange: OnNodesChange<Node>;
@@ -52,6 +54,10 @@ export const createGraphSlice: StateCreator<
   [],
   GraphStateSlice
 > = (set, get) => ({
+  initialized: 'before',
+  setInitialized: (v) => {
+    set({ initialized: v });
+  },
   dragged: undefined,
   nodes: [],
   edges: [],
@@ -85,12 +91,25 @@ export const createGraphSlice: StateCreator<
               : afters.find((v) => change.id === v.id),
         });
       });
+
+    changes
+      .filter((v) => v.type === 'remove')
+      .forEach((change) =>
+        get().setAnnotations(
+          get().annotations.filter((v) => v.location.node_id !== change.id),
+        ),
+      );
+
+    changes
+      .filter((v) => v.type === 'add')
+      .map((v) => v.item)
+      .forEach(get().updateAnnotation);
   },
   onEdgesChange: (changes) => {
     const befores = get().edges;
 
     const changed_edges = changes
-      .filter((v) => v.type !== 'select')
+      .filter((v) => v.type !== 'select' && v.type !== 'replace')
       .map((v) =>
         v.type === 'remove' ? befores.find((o) => o.id === v.id)! : v.item,
       );
@@ -112,12 +131,25 @@ export const createGraphSlice: StateCreator<
               ? undefined
               : befores.find((v) => change.id === v.id),
           after:
-            change.type === 'add'
+            change.type === 'remove'
               ? undefined
-              : afters.find((v) => change.id === v.id),
+              : afters.find((v) => change.item.id === v.id),
         });
       });
 
+    changed_edges
+      .map((v) => getNode(get().nodes, v.source))
+      .filter(Boolean)
+      .map((v) => v as Node)
+      .forEach(get().updateAnnotation);
+
+    changed_edges
+      .map((v) => getNode(get().nodes, v.target))
+      .filter(Boolean)
+      .map((v) => v as Node)
+      .forEach(get().updateAnnotation);
+
+    // Exec after annotation because some results are cached by annotation
     changed_edges.map((v) => v.target).forEach(get().invalidate_node);
   },
   onConnect: (connection) => {
@@ -219,8 +251,8 @@ export const createGraphSlice: StateCreator<
 export type StoreType = ImgStateSlice &
   GraphStateSlice &
   ChangeSliceState &
-  ErrorStateSlice &
-  ConfigurationState;
+  ConfigurationState &
+  AnnotationStateSlice;
 
 export const useStore = create<StoreType>()(
   persist(
@@ -228,8 +260,8 @@ export const useStore = create<StoreType>()(
       ...createImgStateSlice(...a),
       ...createGraphSlice(...a),
       ...createChangeSlice(...a),
-      ...createErrorSlice(...a),
       ...createConfigurationSlice(...a),
+      ...createAnnotationSlice(...a),
     }),
     {
       name: 'playground_graph',
@@ -239,6 +271,8 @@ export const useStore = create<StoreType>()(
           if (!state) return;
 
           state.nodes.map((v) => v.id).forEach(state.invalidate_node);
+          state.setInitialized('wait');
+          return state;
         };
       },
     },
