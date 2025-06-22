@@ -1,5 +1,5 @@
 import { iconPath } from '../components/documentation/utils';
-import Image from 'next/image';
+import N_Image from 'next/image';
 
 import '../style/tamaro_cards.css';
 
@@ -54,7 +54,7 @@ export function Arrow({
       ></div>
 
       {icon && (
-        <Image
+        <N_Image
           className='arrow_icon'
           alt={`${name} icon`}
           src={`data:image/svg+xml;utf8,${encodeURIComponent(icon)}`}
@@ -142,6 +142,11 @@ export function FunctionTamaroCard({
 
   const show_display = el.returnValue && returns_expression != null;
   const [imgData, setImgData] = useState(undefined as string | undefined);
+  const [dimension, setDimension] = useState(
+    undefined as { width: number; height: number } | undefined,
+  );
+
+  const IMG_SCALE = 0.2;
 
   useEffect(() => {
     if (returns_expression)
@@ -153,6 +158,20 @@ export function FunctionTamaroCard({
           const pytamaroDataUriRegex =
             /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
           return data.split(pytamaroDataUriRegex).filter(negate(isEmpty))[0];
+        })
+        .then(async (data) => {
+          if (!data) return undefined;
+          return await new Promise<string>(function (resolved, rejected) {
+            let i = new Image();
+            i.onload = function () {
+              setDimension({
+                width: i.naturalWidth * IMG_SCALE,
+                height: i.naturalHeight * IMG_SCALE,
+              });
+              resolved(data);
+            };
+            i.src = data;
+          });
         })
         .then(setImgData);
   }, [returns_expression]);
@@ -211,7 +230,7 @@ export function FunctionTamaroCard({
       )}
 
       <div className='pane tamaro_card function_card'>
-        <Image
+        <N_Image
           className='card_library hovergroup hovergroup_marker'
           data-hovergroup={'library'}
           src={iconPath(module)}
@@ -240,7 +259,7 @@ export function FunctionTamaroCard({
 
         {el.sideEffects && (
           <Tooltip title='Calling this function causes side effects' arrow>
-            <Image
+            <N_Image
               style={{
                 position: 'absolute',
                 top: '5%',
@@ -255,10 +274,27 @@ export function FunctionTamaroCard({
         )}
       </div>
 
-      <div className='pane output_pane hovergroup' data-hovergroup={'output'}>
-        {show_display && el.returnValue && imgData && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img className='img' alt='Expression Result' src={imgData} />
+      <div
+        style={
+          dimension
+            ? {
+                width: `${dimension.width + 24}px`,
+              }
+            : undefined
+        }
+        className='pane output_pane hovergroup'
+        data-hovergroup={'output'}
+      >
+        {show_display && el.returnValue && imgData && dimension && (
+          <img
+            style={{
+              width: `${dimension.width}px`,
+              height: `${dimension.height}px`,
+            }}
+            className='img'
+            alt='Expression Result'
+            src={imgData}
+          />
         )}
         {el.returnValue && (
           <Arrow
@@ -291,7 +327,7 @@ export function ConstantTamaroCard({
     <div className='pane_container constant_card_pane'>
       <div className='pane'></div>
       <div className='pane tamaro_card constant_card'>
-        <Image
+        <N_Image
           className='card_library hovergroup hovergroup_marker'
           data-hovergroup={'library'}
           src={iconPath(module)}
