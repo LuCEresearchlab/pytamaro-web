@@ -13,7 +13,7 @@ import Image from 'next/image';
 import PytamaroLogo from '../../public/PyTamaroLogo.png';
 import theme from '../../src/theme';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import '../../style/graph_options.css';
 import {
   CenterFocusStrong,
@@ -67,21 +67,6 @@ export function GraphOptions() {
   const { setNodes, setEdges, getNodes, getEdges, setFullscreen, fullscreen } =
     useStore();
   const { fitView } = useReactFlow();
-
-  const [download_file, setDownloadFile] = useState('');
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const url = URL.createObjectURL(
-      new Blob([JSON.stringify({ nodes: getNodes(), edges: getEdges() })], {
-        type: 'text/plain',
-      }),
-    );
-    setDownloadFile(url);
-
-    return () => URL.revokeObjectURL(url);
-  }, [getNodes, getEdges]);
 
   return (
     <div
@@ -171,9 +156,22 @@ export function GraphOptions() {
 
                   const link = document.createElement('a');
                   link.download = `${file_name.replaceAll(' ', '_')}.json`;
-                  link.href = download_file;
+                  link.href = URL.createObjectURL(
+                    new Blob(
+                      [
+                        JSON.stringify({
+                          nodes: getNodes(),
+                          edges: getEdges(),
+                        }),
+                      ],
+                      {
+                        type: 'text/plain',
+                      },
+                    ),
+                  );
                   link.click();
                   setDownloadModalOpen(false);
+                  URL.revokeObjectURL(link.href);
                 },
               },
             }}
