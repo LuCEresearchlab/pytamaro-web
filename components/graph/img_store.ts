@@ -101,7 +101,10 @@ export const createImgStateSlice: StateCreator<
     const unsafe_children = data.children.map(({ handle }) =>
       getFunctionParameterRelative(nodes, edges, data.id, handle, false),
     );
-    if (data.upToDate) return;
+    if (data.upToDate) {
+      set({ queue });
+      return;
+    }
     if (unsafe_children.includes(undefined)) {
       set({
         img_states: img_states.map((v) =>

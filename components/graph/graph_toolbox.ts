@@ -147,7 +147,14 @@ export function onDocumentCopyCatpure(
 }
 
 export function onDocumentPasteCatpure(
-  { getNodes, setNodes, getEdges, setEdges, mousePosition }: AllStore,
+  {
+    getNodes,
+    setNodes,
+    getEdges,
+    setEdges,
+    invalidate_node,
+    mousePosition,
+  }: AllStore,
   e: ClipboardEvent,
 ) {
   interface FlowChartClipboardData {
@@ -212,13 +219,6 @@ export function onDocumentPasteCatpure(
       ...v,
       id: newId,
       position: { x: v.position.x + diff.x, y: v.position.y + diff.y },
-      data: {
-        ...v.data,
-        imports: undefined,
-        expression: undefined,
-        visualization_imports: undefined,
-        visualization_expression: undefined,
-      },
     };
   });
 
@@ -254,6 +254,8 @@ export function onDocumentPasteCatpure(
       .map((v) => ({ ...v, selected: false }))
       .concat(newEdges.map((v) => ({ ...v, selected: true }))),
   );
+
+  newNodes.forEach((v) => invalidate_node(v.id));
 }
 
 export function onDocumentMouseMove(
