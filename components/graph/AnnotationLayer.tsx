@@ -124,7 +124,7 @@ export function createAnnotationComponents(
         style={{
           position: 'absolute',
           transform: `translate(${target_position.x - 10}px, ${target_position.y}px) translate(-100%, -50%) translateY(-1px)`,
-          zIndex: '0',
+          zIndex: '-1',
         }}
         className='error_text_highlight'
         key={`${node_id}_${handle}_${position}_syntaxètarget`}
