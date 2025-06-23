@@ -7,6 +7,7 @@ export type ConfigurationState = {
   error_level: ErrorLevels;
   local_scale: boolean;
   node_filter: ImportReference[];
+  functional_nodes_only: boolean;
   setConfiguration: (value: Partial<ConfigurationState>) => void;
 };
 
@@ -18,6 +19,7 @@ export const createConfigurationSlice: StateCreator<
 > = (set) => ({
   error_level: 'highlight',
   local_scale: true,
+  functional_nodes_only: true,
   node_filter: [
     {
       module: 'pytamaro',
