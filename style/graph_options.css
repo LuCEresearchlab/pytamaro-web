@@ -1,10 +1,14 @@
 .graph_options {
+  pointer-events: none; 
 }
 
+
 .graph_options .column-container {
+  pointer-events: auto; 
 }
 
 .graph_options .row-container {
+  pointer-events: auto; 
 }
 
 .column-container .item:first-child {
@@ -12,6 +16,7 @@
 }
 
 .graph_options button {
+  pointer-events: auto; 
   cursor: pointer;
 }
 

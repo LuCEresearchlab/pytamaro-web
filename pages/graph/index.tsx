@@ -106,7 +106,12 @@ function View() {
   });
 
   return (
-    <Paper className={`${fullscreen ? 'fullscreen' : 'normal'} graph_view `}>
+    <Paper
+      className={`${fullscreen ? 'fullscreen' : 'normal'} graph_view `}
+      style={{
+        border: 'solid black 2px',
+      }}
+    >
       <ReactFlow
         id='graph_element'
         tabIndex={0}
@@ -141,6 +146,7 @@ function View() {
             right: '0',
             bottom: '0',
             zIndex: '100',
+            pointerEvents: 'none',
           }}
         >
           <GraphOptions />
