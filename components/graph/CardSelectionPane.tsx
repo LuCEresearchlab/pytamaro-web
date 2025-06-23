@@ -6,7 +6,7 @@ import SelectionThroughList from './SelectionThroughList';
 export default function CardSelectionPane() {
   const [collapsed, setCollasped] = useState(false);
   return (
-    <Card>
+    <Card id='card_selection_pane'>
       <CardHeader
         sx={{ gap: '10px' }}
         subheader='Card Selection Menu'

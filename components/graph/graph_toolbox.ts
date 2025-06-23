@@ -56,6 +56,16 @@ export function onDrop(
   event: React_MouseEvent<HTMLDivElement>,
 ) {
   event.preventDefault();
+  const current_top_layer = document.elementFromPoint(
+    event.clientX,
+    event.clientY,
+  );
+
+  const card_selection_pane = document.getElementById('card_selection_pane');
+
+  if (card_selection_pane?.contains(current_top_layer)) {
+    return;
+  }
 
   // check if the dropped element is valid
   if (!dragged) {
