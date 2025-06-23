@@ -1,10 +1,8 @@
 import {
-  addEdge,
   applyEdgeChanges,
   applyNodeChanges,
   Edge,
   EdgeChange,
-  InternalNode,
   Node,
   NodeChange,
   OnConnect,
@@ -30,6 +28,8 @@ export interface GraphStateSlice {
   setInitialized: (v: 'before' | 'wait' | 'done') => void;
   nodes: Node[];
   edges: Edge[];
+  fullscreen: boolean;
+  setFullscreen: (value: boolean) => void;
   onNodesChange: OnNodesChange<Node>;
   onEdgesChange: OnEdgesChange<Edge>;
   onConnect: OnConnect;
@@ -54,6 +54,10 @@ export const createGraphSlice: StateCreator<
   [],
   GraphStateSlice
 > = (set, get) => ({
+  fullscreen: false,
+  setFullscreen: (value) => {
+    set({ fullscreen: value });
+  },
   initialized: 'before',
   setInitialized: (v) => {
     set({ initialized: v });
@@ -181,6 +185,7 @@ export const createGraphSlice: StateCreator<
 
     for (const [index, item] of Array.from(new_nodes.entries())) {
       const lookupItem = currentLookup.get(item.id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const storeItem = (lookupItem as any)?.internals?.userNode ?? lookupItem;
 
       if (storeItem !== undefined && storeItem !== item) {
@@ -216,6 +221,7 @@ export const createGraphSlice: StateCreator<
 
     for (const [index, item] of Array.from(new_edges.entries())) {
       const lookupItem = currentLookup.get(item.id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const storeItem = (lookupItem as any)?.internals?.userNode ?? lookupItem;
 
       if (storeItem !== undefined && storeItem !== item) {

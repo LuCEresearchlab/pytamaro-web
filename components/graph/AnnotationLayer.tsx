@@ -69,9 +69,9 @@ export function createAnnotationComponents(
     return bubble_position;
   }
 
-  let target_position = getPosition(node_id, handle, position);
+  const target_position = getPosition(node_id, handle, position);
   if (!target_position) return [];
-  let source_position = getPosition(node_id, handle, 'source');
+  const source_position = getPosition(node_id, handle, 'source');
 
   return [
     <div

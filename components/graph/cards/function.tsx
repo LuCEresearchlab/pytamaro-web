@@ -20,7 +20,6 @@ export function getParameterName(handle_name: string) {
 }
 
 export function TamaroFunctionCard({
-  id,
   data,
 }: NodeProps & { data: ITamaroFunctionCardData }) {
   const function_el = data.value;

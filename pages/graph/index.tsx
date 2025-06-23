@@ -3,42 +3,25 @@
 import {
   Background,
   BackgroundVariant,
-  Controls,
-  Edge,
-  Node,
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
 } from '@xyflow/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Button, IconButton, Input, Paper } from '@mui/material';
+import { IconButton, Paper } from '@mui/material';
 import '@xyflow/react/dist/style.css';
 import '../../style/graph_view.css';
-import {
-  Delete,
-  Download,
-  Error,
-  Fullscreen,
-  FullscreenExit,
-  RemoveRedEye,
-  Upload,
-} from '@mui/icons-material';
+import { Error, RemoveRedEye } from '@mui/icons-material';
 import { node_types } from '../../components/graph/cards';
 import CardSelectionPane from '../../components/graph/CardSelectionPane';
 import { appWithTranslation } from 'next-i18next';
 import { I18nextProvider } from 'react-i18next';
 
 function View() {
-  const [fullscreen, setFullscreen] = useState(false);
   const [errorPane, setErrorPane] = useState(false);
 
-  const {
-    getNodes,
-    getEdges,
-    screenToFlowPosition,
-    flowToScreenPosition,
-    fitView,
-  } = useReactFlow();
+  const { getNodes, screenToFlowPosition, flowToScreenPosition, fitView } =
+    useReactFlow();
 
   const store = useStore();
 
@@ -48,12 +31,12 @@ function View() {
     onNodesChange,
     onEdgesChange,
     onConnect,
-    setNodes,
-    setEdges,
     error_level,
     unstack_queue,
     initialized,
     getAnnotations,
+    fullscreen,
+    setFullscreen,
   } = store;
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -89,7 +72,7 @@ function View() {
       nodes.forEach(updateAnnotation);
       setInitialized('done');
     }
-  }, [initialized]);
+  }, [initialized, nodes, store]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -101,7 +84,7 @@ function View() {
 
   useEffect(() => {
     if (getErrors().length === 0) setErrorPane(false);
-  }, [edges, nodes]);
+  }, [edges, getErrors, nodes]);
 
   useEffect(() => {
     const _onKeyDown = (e: KeyboardEvent) => onDocumentKeyDown(all_store, e);
@@ -121,20 +104,6 @@ function View() {
       document.removeEventListener('mousemove', _onMouseMove);
     };
   });
-  const [download_file, setDownloadFile] = useState('');
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const url = URL.createObjectURL(
-      new Blob([JSON.stringify({ nodes: getNodes(), edges: getEdges() })], {
-        type: 'text/plain',
-      }),
-    );
-    setDownloadFile(url);
-
-    return () => URL.revokeObjectURL(url);
-  }, [getNodes, getEdges]);
 
   return (
     <Paper className={`${fullscreen ? 'fullscreen' : 'normal'} graph_view `}>
@@ -166,7 +135,16 @@ function View() {
         }}
         maxZoom={6}
       >
-        <Controls position={'bottom-right'} />
+        <div
+          style={{
+            position: 'absolute',
+            right: '0',
+            bottom: '0',
+            zIndex: '100',
+          }}
+        >
+          <GraphOptions />
+        </div>
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
         <AnnotationLayer />
         <div
@@ -181,19 +159,6 @@ function View() {
             zIndex: '100',
           }}
         >
-          <IconButton
-            style={{
-              fontSize: '40',
-            }}
-            onClick={() => setFullscreen(!fullscreen)}
-          >
-            {fullscreen ? (
-              <FullscreenExit style={{ fontSize: '40px' }} />
-            ) : (
-              <Fullscreen style={{ fontSize: '40px' }} />
-            )}
-          </IconButton>
-
           {getErrors().length !== 0 &&
             ['highlight', 'warning'].includes(error_level) && (
               <IconButton onClick={() => setErrorPane(!errorPane)}>
@@ -288,74 +253,7 @@ function View() {
             bottom: '0',
             left: '0',
           }}
-        >
-          <IconButton
-            size='large'
-            onClick={() => {
-              setNodes([]);
-              setEdges([]);
-            }}
-          >
-            <Delete />
-          </IconButton>
-
-          <Button
-            style={{
-              borderRadius: '5px',
-              fontSize: '18px',
-            }}
-            size='large'
-            itemType='file'
-            component='label'
-            role={undefined}
-          >
-            Import <Upload />
-            <Input
-              type='file'
-              style={{
-                clip: 'rect(0 0 0 0)',
-                clipPath: 'inset(50%)',
-                height: 1,
-                overflow: 'hidden',
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                whiteSpace: 'nowrap',
-                width: 1,
-              }}
-              onChange={(e) => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const file = (e.target as any).files[0] as File;
-
-                const reader = new FileReader();
-
-                reader.onload = (e) => {
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  const content = JSON.parse((e as any).target.result) as {
-                    nodes: Node[];
-                    edges: Edge[];
-                  };
-
-                  setNodes(content.nodes);
-                  setEdges(content.edges);
-                };
-                reader.readAsText(file);
-              }}
-            />
-          </Button>
-
-          <Button
-            style={{
-              borderRadius: '5px',
-              fontSize: '18px',
-            }}
-            size='large'
-            download={'tamaro_graph.json'}
-            href={download_file}
-          >
-            Download <Download />
-          </Button>
-        </div>
+        ></div>
 
         <div
           style={{
@@ -428,6 +326,7 @@ import {
 } from '../../components/graph/graph_toolbox';
 import { AnnotationLayer } from '../../components/graph/AnnotationLayer';
 import { ErrorParagraph } from '../../components/graph/ErrorParagraph';
+import { GraphOptions } from '../../components/graph/GraphOptions';
 
 function Graph() {
   const [source] = useState('from pytamaro import *');

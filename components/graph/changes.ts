@@ -112,7 +112,7 @@ export const createChangeSlice: StateCreator<
         break;
       }
     }
-    set((state) => ({ isReverting: false }));
+    set(() => ({ isReverting: false }));
   },
   redoChange() {
     const state = get();
@@ -153,7 +153,7 @@ export const createChangeSlice: StateCreator<
         break;
       }
     }
-    set((state) => ({ isReverting: false }));
+    set(() => ({ isReverting: false }));
   },
 
   stack: [],

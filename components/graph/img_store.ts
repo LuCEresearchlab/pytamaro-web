@@ -5,7 +5,7 @@ import { getFunctionParameterRelative, getNode, getParents } from './utils';
 import { ITamaroFunctionCardData } from './cards/function';
 import { ITamaroLiteralCardData } from './cards/literal';
 import { ITamaroConstantCardData } from './cards/constant';
-import { Edge, Node } from '@xyflow/react';
+import { Node } from '@xyflow/react';
 
 interface ImgState {
   id: string;

@@ -81,7 +81,7 @@
 
   margin-left: 5px;
   background-color: white;
-  
+
   border-radius: 30px;
   border-width: var(--outline-width);
   border-color: black;
@@ -215,25 +215,25 @@
 .function_card_pane .triangle_right {
   width: 0;
   height: 0;
-  border-top: calc(5*var(--outline-width)) solid transparent;
-  border-bottom: calc(5*var(--outline-width)) solid transparent;
-  border-left: calc(5*var(--outline-width)) solid #d2071d;
+  border-top: calc(5 * var(--outline-width)) solid transparent;
+  border-bottom: calc(5 * var(--outline-width)) solid transparent;
+  border-left: calc(5 * var(--outline-width)) solid #d2071d;
 
   display: inline-block;
   position: absolute;
-  bottom: calc(-5.5*var(--outline-width));
+  bottom: calc(-5.5 * var(--outline-width));
 }
 
 .constant_card_pane .triangle_right {
   width: 0;
   height: 0;
-  border-top: calc(5*var(--outline-width)) solid transparent;
-  border-bottom: calc(5*var(--outline-width)) solid transparent;
-  border-left: calc(5*var(--outline-width)) solid #008bcb;
+  border-top: calc(5 * var(--outline-width)) solid transparent;
+  border-bottom: calc(5 * var(--outline-width)) solid transparent;
+  border-left: calc(5 * var(--outline-width)) solid #008bcb;
 
   display: inline-block;
   position: absolute;
-  right: calc(-5*var(--outline-width));
+  right: calc(-5 * var(--outline-width));
   top: 50%;
   transform: translateY(-50%);
 }
@@ -262,5 +262,5 @@
 }
 
 .arrow_handles .handle_mover.left {
-  left:  var(--inner-handle);
+  left: var(--inner-handle);
 }

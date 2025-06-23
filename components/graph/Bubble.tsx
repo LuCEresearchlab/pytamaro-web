@@ -1,6 +1,6 @@
 import '../../style/bubble.css';
 
-export function ErrorBubble(props: React.PropsWithChildren<{}>) {
+export function ErrorBubble(props: React.PropsWithChildren) {
   const { children } = props;
 
   return (

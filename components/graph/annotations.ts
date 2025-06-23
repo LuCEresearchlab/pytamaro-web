@@ -5,7 +5,6 @@ import {
   getFunctionHandles,
   getFunctionParameterRelative,
   getHandleType,
-  getNode,
 } from './utils';
 import { getHandleName, ITamaroFunctionCardData } from './cards/function';
 

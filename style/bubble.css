@@ -9,12 +9,12 @@
   border: gray solid 1px;
 }
 
-.error-bubble .quote{
-    content: "";
-    position: absolute;
-    top: 100%;
-    right: 40%;
-    border-width: 30px 0px 0 30px;
-    border-style: solid;
-    border-color: black transparent;
+.error-bubble .quote {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 40%;
+  border-width: 30px 0px 0 30px;
+  border-style: solid;
+  border-color: black transparent;
 }
