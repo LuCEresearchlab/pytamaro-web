@@ -78,7 +78,6 @@ function View() {
     const interval = setInterval(() => {
       unstack_queue();
     }, 100);
-
     return () => clearInterval(interval);
   }, [unstack_queue]);
 
@@ -110,6 +109,7 @@ function View() {
       className={`${fullscreen ? 'fullscreen' : 'normal'} graph_view `}
       style={{
         border: 'solid black 2px',
+        backgroundColor: '#efefef',
       }}
     >
       <ReactFlow
@@ -118,11 +118,12 @@ function View() {
         nodes={nodes}
         edges={edges}
         nodeTypes={node_types}
+        edgeTypes={edge_type}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         defaultEdgeOptions={{
-          type: 'smoothstep',
+          type: 'custom_edge',
           focusable: true,
           style: {
             strokeWidth: 2,
@@ -134,7 +135,6 @@ function View() {
         isValidConnection={(params) => isValidConnection(all_store, params)}
         onMouseDown={(e) => onMouseDown(all_store, e)}
         onMouseUp={(e) => onMouseUp(all_store, e)}
-        fitView
         proOptions={{
           hideAttribution: true,
         }}
@@ -333,6 +333,7 @@ import {
 import { AnnotationLayer } from '../../components/graph/AnnotationLayer';
 import { ErrorParagraph } from '../../components/graph/ErrorParagraph';
 import { GraphOptions } from '../../components/graph/GraphOptions';
+import edge_type from '../../components/graph/SmoothStepWithPadding';
 
 function Graph() {
   const [source] = useState('from pytamaro import *');

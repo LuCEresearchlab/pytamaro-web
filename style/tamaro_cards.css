@@ -243,8 +243,11 @@
 }
 
 .pane_container .handle {
-  width: 20px;
-  height: 10px;
+  width: 100%;
+  height: 20px;
+  border-radius: 0;
+  transform: translateY(-50%);
+  padding: 0px 40px;
   opacity: 0;
 }
 
@@ -258,9 +261,9 @@
 }
 
 .arrow_handles .handle_mover.right {
-  right: var(--inner-handle);
+  left: var(--inner-handle);
 }
 
 .arrow_handles .handle_mover.left {
-  left: var(--inner-handle);
+  right: var(--inner-handle);
 }
