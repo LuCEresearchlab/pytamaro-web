@@ -139,12 +139,7 @@ export default function CardSelectionPane() {
       />
       <Collapse in={collapsed} orientation='vertical'>
         <Collapse in={collapsed} orientation='horizontal' unmountOnExit>
-          <div
-            className='card_selection_content'
-            style={{
-              overflow: 'scroll',
-            }}
-          >
+          <div className='card_selection_content' style={{}}>
             {N < N_LIMIT || modules.length === 1 ? (
               <>
                 <CardTabSelectionPane values={values} />

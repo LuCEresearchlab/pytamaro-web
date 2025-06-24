@@ -27,13 +27,13 @@
   z-index: 100;
 }
 
-.fullscreen.graph_view .card_selection_content {
-  height: calc(90vh);
+.fullscreen.graph_view .card_selection_content .selection_pane_content {
+  height: calc(80vh);
   width: 30vw;
 }
 
-.normal.graph_view .card_selection_content {
-  height: calc(60vh);
+.normal.graph_view .card_selection_content .selection_pane_content{
+  height: calc(50vh);
   width: 25vw;
 }
 

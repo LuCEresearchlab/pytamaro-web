@@ -1,9 +1,9 @@
-import { Card, CardContent } from '@mui/material';
+import { Card, CardActions, CardContent, Input } from '@mui/material';
 import { useStore } from './store';
-import { DragEvent } from 'react';
+import { DragEvent, useEffect, useState } from 'react';
 import TamaroCard from '../TamaroCard';
 import { JudiciousModuleElement } from './CardSelectionPane';
-import { TamaroLiteralCard } from './cards/literal';
+import { FLOAT_REGEX, STR_REGEX, TamaroLiteralCard } from './cards/literal';
 
 interface CardSelectionPaneProps {
   values: JudiciousModuleElement[];
@@ -11,6 +11,33 @@ interface CardSelectionPaneProps {
 
 export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
   const { setDragged } = useStore();
+
+  const [filter, setFilter] = useState('');
+
+  const [literals, setLiterals] = useState(
+    [] as { regex: RegExp; value: string; type: string }[],
+  );
+
+  useEffect(() => {
+    setLiterals(
+      [
+        { regex: /$^/, value: 'False', type: 'bool' },
+        { regex: /$^/, value: 'True', type: 'bool' },
+        { regex: FLOAT_REGEX, value: '0', type: 'float' },
+        { regex: STR_REGEX, value: '""', type: 'str' },
+      ]
+        .filter(
+          (v) =>
+            filter === '' ||
+            filter.match(v.regex) ||
+            v.value.startsWith(filter),
+        )
+        .map((v) => ({
+          ...v,
+          value: filter === '' || !filter.match(v.regex) ? v.value : filter,
+        })),
+    );
+  }, [filter, setLiterals]);
 
   const onDragStart = (
     event: DragEvent<HTMLDivElement>,
@@ -25,15 +52,18 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
   return (
     <Card sx={{ width: '100%' }}>
       <CardContent
+        className='selection_pane_content'
         sx={{
           display: 'flex',
           flexDirection: 'row',
           flexWrap: 'wrap',
           gap: '5px',
+          overflow: 'scroll',
         }}
       >
         {values
           .filter((el) => el.kind === 'function' || el.kind === 'constant')
+          .filter((v) => v.name.toLowerCase().startsWith(filter))
           .map((el) => (
             <div
               className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
@@ -53,33 +83,49 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
               </div>
             </div>
           ))}
-
-        <div
-          className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
-          style={{ userSelect: 'none' }}
-          onDragStart={(e) => {
-            onDragStart(e, 'literal', {
-              literal_type: 'float',
-              value: '0',
-            });
-          }}
-          draggable
-        >
-          <div style={{ pointerEvents: 'none' }}>
-            <TamaroLiteralCard
-              data={
-                {
-                  literal_type: 'float',
-                  value: '0',
-                } as Record<string, unknown>
-              }
-              hide_handles
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              {...({} as any)}
-            />
+        {literals.map(({ value, type }) => (
+          <div
+            className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
+            style={{ userSelect: 'none' }}
+            onDragStart={(e) => {
+              onDragStart(e, 'literal', {
+                literal_type: type,
+                value,
+              });
+            }}
+            draggable
+            key={value}
+          >
+            <div style={{ pointerEvents: 'none' }} data-dummy={value}>
+              <TamaroLiteralCard
+                data={
+                  {
+                    literal_type: type,
+                    value,
+                  } as Record<string, unknown>
+                }
+                hide_handles
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                {...({} as any)}
+              />
+            </div>
           </div>
-        </div>
+        ))}
       </CardContent>
+      <CardActions>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            width: '100%',
+            justifyContent: 'center',
+            gap: '20px',
+          }}
+        >
+          Filter :
+          <Input value={filter} onChange={(v) => setFilter(v.target.value)} />
+        </div>
+      </CardActions>
     </Card>
   );
 }

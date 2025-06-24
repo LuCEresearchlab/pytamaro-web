@@ -5,6 +5,10 @@ import { useStore } from '../store';
 import { CSSProperties, useRef } from 'react';
 import { getNode, getParents } from '../utils';
 
+export const BOOL_REGEX = /(True)|(False)/;
+export const FLOAT_REGEX = /^-?[0-9]+(\.[0-9]*)?$/g;
+export const STR_REGEX = /^"([^\\"]|(\\")|\\\\)*"$/g;
+
 export interface ITamaroLiteralCardData extends ITamaroCardData {
   literal_type?: 'float' | 'str' | 'bool';
   value: string;
@@ -48,9 +52,9 @@ export function TamaroLiteralCard({
   } = useStore();
 
   function guessType(v: string): 'float' | 'str' | 'bool' | undefined {
-    if (v === 'True' || v === 'False') return 'bool';
-    if (v.match(/^"([^\\"]|(\\")|\\\\)*"$/g)) return 'str';
-    if (v.match(/^-?[0-9]+(\.[0-9]*)?$/g)) return 'float';
+    if (v.match(BOOL_REGEX)) return 'bool';
+    if (v.match(STR_REGEX)) return 'str';
+    if (v.match(FLOAT_REGEX)) return 'float';
     return undefined;
   }
 
@@ -73,6 +77,7 @@ export function TamaroLiteralCard({
         display: 'flex',
         flexDirection: 'row',
         borderRadius: '5px',
+        position: 'relative',
       }}
     >
       <ContentEditableDiv
