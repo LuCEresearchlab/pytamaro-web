@@ -242,12 +242,20 @@
   --hover-color: #c2ecff;
 }
 
-.pane_container .handle {
+.function_card_pane .handle {
   width: 100%;
   height: 20px;
   border-radius: 0;
   transform: translateY(-50%);
   padding: 0px 40px;
+  opacity: 0;
+}
+
+.constant_card .handle {
+  height: 30px;
+  border-radius: 0;
+  transform: translateY(-50%) translateX(-50%);
+  padding: 0px 10px;
   opacity: 0;
 }
 
