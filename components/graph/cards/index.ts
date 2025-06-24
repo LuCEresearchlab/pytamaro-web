@@ -2,6 +2,7 @@ import { NodeProps } from '@xyflow/react';
 import { TamaroFunctionCard } from './function';
 import { TamaroLiteralCard } from './literal';
 import { TamaroConstantCard } from './constant';
+import { JudiciousElement } from '../../../src/schemas/documentation';
 
 export interface ImportReference {
   module: string;
@@ -21,6 +22,7 @@ export interface ITamaroCardData {
 export interface IImportedCardData extends ITamaroCardData {
   module: string;
   name: string;
+  value: JudiciousElement;
 }
 
 export const node_types = {

@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Background,
   BackgroundVariant,
@@ -11,18 +9,22 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { IconButton, Paper } from '@mui/material';
 import '@xyflow/react/dist/style.css';
 import '../../style/graph_view.css';
-import { Error, RemoveRedEye } from '@mui/icons-material';
-import { node_types } from '../../components/graph/cards';
-import CardSelectionPane from '../../components/graph/CardSelectionPane';
-import { appWithTranslation } from 'next-i18next';
-import { I18nextProvider } from 'react-i18next';
+import { Article, Error, RemoveRedEye } from '@mui/icons-material';
+import { IImportedCardData, node_types } from '../../components/graph/cards';
+import CardSelectionPane, {
+  JudiciousModuleElement,
+} from '../../components/graph/CardSelectionPane';
 
 function View() {
-  const [errorPane, setErrorPane] = useState(false);
+  const available_panes = ['error', 'documentation'] as const;
+  const [pane, setPane] = useState(
+    undefined as (typeof available_panes)[number] | undefined,
+  );
 
   const { getNodes, screenToFlowPosition, flowToScreenPosition, fitView } =
     useReactFlow();
 
+  // const { i18n } = useLocalTranslation(['common']);
   const store = useStore();
 
   const {
@@ -38,6 +40,51 @@ function View() {
     fullscreen,
     setFullscreen,
   } = store;
+
+  const getErrors = useCallback(
+    () =>
+      getAnnotations().filter((v) =>
+        ['syntax-error', 'value-error', 'type-error'].includes(v.kind),
+      ),
+    [getAnnotations],
+  );
+
+  const [availabilities, setAvailabilities] = useState({
+    error: undefined as ErrorAnnotation[] | undefined,
+    documentation: undefined as JudiciousModuleElement | undefined,
+  });
+
+  useEffect(() => {
+    setAvailabilities({
+      error: (() => {
+        return getErrors().length === 0 &&
+          ['highlight', 'warning'].includes(error_level)
+          ? undefined
+          : getErrors();
+      })(),
+      documentation: (() => {
+        const toBeDocumentedNodes = getNodes().filter((v) => v.selected);
+
+        if (
+          !(
+            toBeDocumentedNodes.length === 1 &&
+            toBeDocumentedNodes[0].type !== 'literal'
+          )
+        )
+          return;
+
+        const node = toBeDocumentedNodes[0];
+        const data = node.data as unknown as IImportedCardData;
+
+        return { ...data.value, module: data.module };
+      })(),
+    });
+  });
+
+  useEffect(() => {
+    if (!pane) return;
+    if (!availabilities[pane]) setPane(undefined);
+  }, [pane, setPane]);
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
@@ -58,14 +105,6 @@ function View() {
     setIsSelecting,
   };
 
-  const getErrors = useCallback(
-    () =>
-      getAnnotations().filter((v) =>
-        ['syntax-error', 'value-error', 'type-error'].includes(v.kind),
-      ),
-    [getAnnotations],
-  );
-
   useEffect(() => {
     if (initialized === 'wait') {
       const { updateAnnotation, setInitialized } = store;
@@ -80,10 +119,6 @@ function View() {
     }, 100);
     return () => clearInterval(interval);
   }, [unstack_queue]);
-
-  useEffect(() => {
-    if (getErrors().length === 0) setErrorPane(false);
-  }, [edges, getErrors, nodes]);
 
   useEffect(() => {
     const _onKeyDown = (e: KeyboardEvent) => onDocumentKeyDown(all_store, e);
@@ -165,101 +200,129 @@ function View() {
             zIndex: '100',
           }}
         >
-          {getErrors().length !== 0 &&
-            ['highlight', 'warning'].includes(error_level) && (
-              <IconButton onClick={() => setErrorPane(!errorPane)}>
-                <Error color='error' />
-              </IconButton>
-            )}
-        </div>
-
-        {errorPane &&
-          ['highlight', 'warning'].includes(error_level) &&
-          getErrors().length !== 0 && (
-            <div
-              style={{
-                position: 'absolute',
-                right: '100px',
-                width: '400px',
-                border: '#ddd solid 2px',
-                padding: '5px',
-                borderRadius: '5px',
-                top: '20px',
-                background: 'white',
-                zIndex: '100',
-              }}
+          {availabilities.error && (
+            <IconButton
+              onClick={() => setPane(pane !== 'error' ? 'error' : undefined)}
             >
-              <h3 style={{ margin: '10px 5px' }}>Errors :</h3>
-
-              <div
-                style={{
-                  position: 'relative',
-                  borderTop: '#ddd solid 2px',
-                  top: '-5px',
-                  margin: '0px',
-                }}
-              ></div>
-
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  position: 'relative',
-                  maxHeight: '300px',
-                  width: '100%',
-                  overflowY: 'scroll',
-                  overflowX: 'hidden',
-                  padding: '5px 5px',
-                  gap: '5px',
-                }}
-              >
-                {getErrors().map((v) => (
-                  <div
-                    style={{
-                      position: 'relative',
-                      padding: '5px',
-                      borderRadius: '10px',
-                      border: 'solid #f99 4px',
-                      background: '#fcc',
-                      userSelect: 'none',
-                    }}
-                    key={`${v.location.node_id}_${v.location.handle || 'default'}`}
-                  >
-                    <ErrorParagraph annotation={v} />
-
-                    <IconButton
-                      sx={{
-                        position: 'absolute',
-                        top: '0',
-                        right: '0',
-                        margin: '10px',
-                      }}
-                      onClick={() =>
-                        fitView({
-                          nodes: [getNode(getNodes(), v.location.node_id)!],
-                          duration: 2,
-                          padding: 0.125,
-                        })
-                      }
-                    >
-                      <RemoveRedEye />
-                    </IconButton>
-                  </div>
-                ))}
-              </div>
-            </div>
+              <Error color='error' />
+            </IconButton>
           )}
 
-        <div
-          style={{
-            zIndex: '100',
-            background: 'white',
-            borderRadius: '5px',
-            position: 'absolute',
-            bottom: '0',
-            left: '0',
-          }}
-        ></div>
+          {availabilities.documentation && (
+            <IconButton
+              onClick={() =>
+                setPane(pane !== 'documentation' ? 'documentation' : undefined)
+              }
+            >
+              <Article color='info' />
+            </IconButton>
+          )}
+        </div>
+
+        {availabilities.error && pane === 'error' && (
+          <div
+            style={{
+              position: 'absolute',
+              right: '100px',
+              width: '400px',
+              border: '#ddd solid 2px',
+              padding: '5px',
+              borderRadius: '5px',
+              top: '20px',
+              background: 'white',
+              zIndex: '100',
+            }}
+          >
+            <h3 style={{ margin: '10px 5px' }}>Errors :</h3>
+
+            <div
+              style={{
+                position: 'relative',
+                borderTop: '#ddd solid 2px',
+                top: '-5px',
+                margin: '0px',
+              }}
+            ></div>
+
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'relative',
+                maxHeight: '300px',
+                width: '100%',
+                overflowY: 'scroll',
+                overflowX: 'hidden',
+                padding: '5px 5px',
+                gap: '5px',
+              }}
+            >
+              {getErrors().map((v) => (
+                <div
+                  style={{
+                    position: 'relative',
+                    padding: '5px',
+                    borderRadius: '10px',
+                    border: 'solid #f99 4px',
+                    background: '#fcc',
+                    userSelect: 'none',
+                  }}
+                  key={`${v.location.node_id}_${v.location.handle || 'default'}`}
+                >
+                  <ErrorParagraph annotation={v} />
+
+                  <IconButton
+                    sx={{
+                      position: 'absolute',
+                      top: '0',
+                      right: '0',
+                      margin: '10px',
+                    }}
+                    onClick={() =>
+                      fitView({
+                        nodes: [getNode(getNodes(), v.location.node_id)!],
+                        duration: 2,
+                        padding: 0.125,
+                      })
+                    }
+                  >
+                    <RemoveRedEye />
+                  </IconButton>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {availabilities.documentation && pane === 'documentation' && (
+          <div
+            style={{
+              position: 'absolute',
+              right: '100px',
+              width: '30%',
+              maxHeight: '100%',
+              border: '#ddd solid 2px',
+              padding: '20px',
+              borderRadius: '5px',
+              top: '20px',
+              background: 'white',
+              zIndex: '100',
+              overflow: 'scroll',
+            }}
+          >
+            {availabilities.documentation?.kind === 'function' ? (
+              <FunctionDocumentation
+                fn={availabilities.documentation! as JudiciousFunction}
+                module={availabilities.documentation!.module}
+              />
+            ) : (
+              <TypeConstantDocumentation
+                element={availabilities.documentation! as JudiciousConstant}
+                module={availabilities.documentation!.module}
+              />
+            )}
+          </div>
+        )}
 
         <div
           style={{
@@ -314,7 +377,6 @@ function View() {
   );
 }
 
-import i18next from 'i18next';
 import { useStore } from '../../components/graph/store';
 import { getNode } from '../../components/graph/utils';
 import CodeEditor from '../../components/CodeEditor';
@@ -334,6 +396,18 @@ import { AnnotationLayer } from '../../components/graph/AnnotationLayer';
 import { ErrorParagraph } from '../../components/graph/ErrorParagraph';
 import { GraphOptions } from '../../components/graph/GraphOptions';
 import edge_type from '../../components/graph/SmoothStepWithPadding';
+import {
+  JudiciousConstant,
+  JudiciousElement,
+  JudiciousFunction,
+} from '../../src/schemas/documentation';
+import { ErrorAnnotation } from '../../components/graph/annotations';
+import DocElement from '../../components/documentation/DocElement';
+import DocElementCard from '../../components/documentation/DocElementCard';
+import FunctionDocumentation from '../../components/documentation/FunctionDocumentation';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
+import { translationProps } from '../../src/serverSideTranslationProps';
+import TypeConstantDocumentation from '../../components/documentation/TypeConstantDocumentation';
 
 function Graph() {
   const [source] = useState('from pytamaro import *');
@@ -380,23 +454,29 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
   }
 
   return (
-    <I18nextProvider i18n={i18next}>
-      <div className='graph_page'>
-        <div className='editor'>
-          <CodeEditor
-            initialSource=''
-            currentSource={source}
-            onChange={async (v) => {
-              extract_codes(v);
-            }}
-          />
-        </div>
-        <ReactFlowProvider>
-          <View />
-        </ReactFlowProvider>
+    <div className='graph_page'>
+      <div className='editor'>
+        <CodeEditor
+          initialSource=''
+          currentSource={source}
+          onChange={async (v) => {
+            extract_codes(v);
+          }}
+        />
       </div>
-    </I18nextProvider>
+      <ReactFlowProvider>
+        <View />
+      </ReactFlowProvider>
+    </div>
   );
 }
 
-export default appWithTranslation(Graph);
+export default Graph;
+
+export async function getStaticProps() {
+  return {
+    props: {
+      ...(await translationProps()),
+    },
+  };
+}

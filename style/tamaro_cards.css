@@ -66,7 +66,7 @@
 
 .extended_view .pane_container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 0px;
 }
 
@@ -252,10 +252,10 @@
 }
 
 .constant_card .handle {
-  height: 30px;
+  width: 30px;
+  height: 50px;
   border-radius: 0;
-  transform: translateY(-50%) translateX(-50%);
-  padding: 0px 10px;
+  transform: translateY(-50%) translateX(-50%) translateX(10px);
   opacity: 0;
 }
 
