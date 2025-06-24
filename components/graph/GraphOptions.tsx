@@ -64,8 +64,15 @@ export function GraphOptions() {
   const [collapsed, setCollapsed] = useState(false);
   const [downloadModalOpen, setDownloadModalOpen] = useState(false);
 
-  const { setNodes, setEdges, getNodes, getEdges, setFullscreen, fullscreen } =
-    useStore();
+  const {
+    setNodes,
+    setEdges,
+    getNodes,
+    getEdges,
+    setFullscreen,
+    fullscreen,
+    invalidate_node,
+  } = useStore();
   const { fitView } = useReactFlow();
 
   return (
@@ -124,6 +131,8 @@ export function GraphOptions() {
 
                   setNodes(content.nodes);
                   setEdges(content.edges);
+
+                  content.nodes.forEach((v) => invalidate_node(v.id));
                 };
                 reader.readAsText(file);
               }}
