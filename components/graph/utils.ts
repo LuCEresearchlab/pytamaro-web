@@ -118,7 +118,7 @@ export function getHandleType(node: Node, handle: string) {
     }
     case 'literal': {
       const data = node.data as unknown as ITamaroLiteralCardData;
-      return data.literal_type;
+      return data.literal_type || 'Unknown';
     }
 
     case 'constant': {

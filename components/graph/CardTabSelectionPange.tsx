@@ -60,7 +60,7 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
           onDragStart={(e) => {
             onDragStart(e, 'literal', {
               literal_type: 'float',
-              value: 0,
+              value: '0',
             });
           }}
           draggable
@@ -70,7 +70,7 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
               data={
                 {
                   literal_type: 'float',
-                  value: 0,
+                  value: '0',
                 } as Record<string, unknown>
               }
               hide_handles

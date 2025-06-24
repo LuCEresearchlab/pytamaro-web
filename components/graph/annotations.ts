@@ -106,7 +106,7 @@ export const createAnnotationSlice: StateCreator<
 
         const connected_type = getHandleType(connected_node, 'output');
 
-        if (connected_type !== type) {
+        if (connected_type !== type || connected_type === 'Unknown') {
           setEdges(
             edges.map((edge) =>
               !(edge.target === id && edge.targetHandle === getHandleName(name))
