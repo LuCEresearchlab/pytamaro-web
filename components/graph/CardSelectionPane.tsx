@@ -139,34 +139,41 @@ export default function CardSelectionPane() {
       />
       <Collapse in={collapsed} orientation='vertical'>
         <Collapse in={collapsed} orientation='horizontal' unmountOnExit>
-          {N < N_LIMIT ? (
-            <>
-              <CardTabSelectionPane values={values} />
-            </>
-          ) : (
-            <>
-              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs
-                  value={tab}
-                  onChange={(_, v) => setTab(v)}
-                  aria-label='lab API tabs example'
-                >
-                  {modules.map((v) => (
-                    <Tab label={v} value={v} key={v} />
-                  ))}
-                </Tabs>
-              </Box>
-              {modules.map((v) => {
-                return (
-                  <TabPanel value={tab} index={v} key={v}>
-                    <CardTabSelectionPane
-                      values={values.filter((o) => o.module === v)}
-                    />
-                  </TabPanel>
-                );
-              })}
-            </>
-          )}
+          <div
+            className='card_selection_content'
+            style={{
+              overflow: 'scroll',
+            }}
+          >
+            {N < N_LIMIT || modules.length === 1 ? (
+              <>
+                <CardTabSelectionPane values={values} />
+              </>
+            ) : (
+              <>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                  <Tabs
+                    value={tab}
+                    onChange={(_, v) => setTab(v)}
+                    aria-label='lab API tabs example'
+                  >
+                    {modules.map((v) => (
+                      <Tab label={v} value={v} key={v} />
+                    ))}
+                  </Tabs>
+                </Box>
+                {modules.map((v) => {
+                  return (
+                    <TabPanel value={tab} index={v} key={v}>
+                      <CardTabSelectionPane
+                        values={values.filter((o) => o.module === v)}
+                      />
+                    </TabPanel>
+                  );
+                })}
+              </>
+            )}
+          </div>
         </Collapse>
       </Collapse>
     </Card>

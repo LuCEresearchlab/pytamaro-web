@@ -30,9 +30,6 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
           flexDirection: 'row',
           flexWrap: 'wrap',
           gap: '5px',
-          maxHeight: '30vh',
-          overflow: 'scroll',
-          width: '40vw',
         }}
       >
         {values
