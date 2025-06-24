@@ -108,26 +108,12 @@ export function onDrop(
 }
 
 export function onDocumentKeyDown(
-  {
-    setFullscreen,
-    redoChange,
-    revertLastChange,
-    setNodes,
-    getNodes,
-    setEdges,
-    getEdges,
-  }: AllStore,
+  { setFullscreen, redoChange, revertLastChange }: AllStore,
   e: KeyboardEvent,
 ) {
   {
     if (e.key === 'Escape') setFullscreen(false);
     if (e.key === 'F11') setFullscreen(true);
-    if (e.ctrlKey && e.key === 'a') {
-      e.preventDefault();
-      setNodes(getNodes().map((v) => ({ ...v, selected: true })));
-      setEdges(getEdges().map((v) => ({ ...v, selected: true })));
-    }
-
     if (e.ctrlKey && e.key === 'Z' && e.shiftKey) {
       e.preventDefault();
       e.stopPropagation();
