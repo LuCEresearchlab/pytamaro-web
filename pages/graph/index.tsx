@@ -144,7 +144,6 @@ function View() {
       className={`${fullscreen ? 'fullscreen' : 'normal'} graph_view `}
       style={{
         border: 'solid black 2px',
-        backgroundColor: '#efefef',
       }}
     >
       <ReactFlow

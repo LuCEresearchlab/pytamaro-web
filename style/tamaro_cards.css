@@ -94,6 +94,9 @@
   position: absolute;
   object-fit: contain;
   overflow: hidden;
+
+
+  filter: drop-shadow(0 0 10px #aaa); 
 }
 
 .compact_view .pane_container {
