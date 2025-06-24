@@ -138,7 +138,17 @@ export const createAnnotationSlice: StateCreator<
               position: 'target',
             },
           };
-        }
+        } else
+          setEdges(
+            edges.map((edge) =>
+              !(edge.target === id && edge.targetHandle === getHandleName(name))
+                ? edge
+                : {
+                    ...edge,
+                    className: '',
+                  },
+            ),
+          );
 
         return undefined;
       })
