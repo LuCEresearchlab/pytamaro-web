@@ -5,6 +5,48 @@ import { ErrorBubble } from './Bubble';
 import { Annotation } from './annotations';
 import { ErrorParagraph } from './ErrorParagraph';
 
+const MISSING_PARAMETER = (
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    viewBox='0 0 30 10'
+    width='30px'
+    height='10px'
+  >
+    <rect
+      width='30'
+      height='10'
+      fill='rgb(255, 225, 130)'
+      rx='5'
+      ry='5'
+      transform='matrix(1, 0, 0, 1, -7.105427357601002e-15, -3.552713678800501e-15)'
+    />
+    <ellipse
+      fill='rgb(230, 130, 50)'
+      cx='5'
+      cy='5'
+      rx='2'
+      ry='2'
+      transform='matrix(1, 0, 0, 1, -7.105427357601002e-15, -3.552713678800501e-15)'
+    />
+    <ellipse
+      fill='rgb(230, 130, 50)'
+      cx='18.334'
+      cy='5'
+      rx='2'
+      ry='2'
+      transform='matrix(1, 0, 0, 1, -7.105427357601002e-15, -3.552713678800501e-15)'
+    />
+    <ellipse
+      fill='rgb(230, 130, 50)'
+      cx='11.667'
+      cy='5'
+      rx='2'
+      ry='2'
+      transform='matrix(1, 0, 0, 1, -7.105427357601002e-15, -3.552713678800501e-15)'
+    />
+  </svg>
+);
+
 export function createAnnotationComponents(
   annotation: Annotation,
   edges: Edge[],
@@ -77,7 +119,7 @@ export function createAnnotationComponents(
     <div
       style={{
         position: 'absolute',
-        transform: `translate(${target_position.x + 5}px, ${target_position.y - 5}px)`,
+        transform: `translate(${target_position.x - 5}px, ${target_position.y - 5}px)`,
       }}
       key={`${node_id}_${handle}_${position}`}
     >
@@ -97,7 +139,7 @@ export function createAnnotationComponents(
       <div
         style={{
           position: 'absolute',
-          transform: `translate(${target_position.x - 20}px, ${target_position.y - 5}px) translate(-100%, -100%)`,
+          transform: `translate(${target_position.x - 30}px, ${target_position.y}px) translate(-100%, -100%)`,
         }}
         className='error_text_highlight'
         key={`${node_id}_${handle}_${position}_type_target`}
@@ -110,7 +152,7 @@ export function createAnnotationComponents(
       <div
         style={{
           position: 'absolute',
-          transform: `translate(${source_position.x + 20}px, ${source_position.y - 5}px) translate(0%, -100%)`,
+          transform: `translate(${source_position.x + 10}px, ${source_position.y - 5}px) translate(0%, -100%)`,
         }}
         className='error_text_highlight'
         key={`${node_id}_${handle}_${position}_type_source`}
@@ -123,51 +165,13 @@ export function createAnnotationComponents(
       <div
         style={{
           position: 'absolute',
-          transform: `translate(${target_position.x - 10}px, ${target_position.y}px) translate(-100%, -50%) translateY(-1px)`,
+          transform: `translate(${target_position.x - 20}px, ${target_position.y}px) translate(-100%, -50%) translateY(-1px)`,
           zIndex: '-1',
         }}
         className='error_text_highlight'
         key={`${node_id}_${handle}_${position}_syntaxètarget`}
       >
-        <svg
-          xmlns='http://www.w3.org/2000/svg'
-          viewBox='0 0 30 10'
-          width='30px'
-          height='10px'
-        >
-          <rect
-            width='30'
-            height='10'
-            fill='rgb(255, 225, 130)'
-            rx='5'
-            ry='5'
-            transform='matrix(1, 0, 0, 1, -7.105427357601002e-15, -3.552713678800501e-15)'
-          />
-          <ellipse
-            fill='rgb(230, 130, 50)'
-            cx='5'
-            cy='5'
-            rx='2'
-            ry='2'
-            transform='matrix(1, 0, 0, 1, -7.105427357601002e-15, -3.552713678800501e-15)'
-          />
-          <ellipse
-            fill='rgb(230, 130, 50)'
-            cx='18.334'
-            cy='5'
-            rx='2'
-            ry='2'
-            transform='matrix(1, 0, 0, 1, -7.105427357601002e-15, -3.552713678800501e-15)'
-          />
-          <ellipse
-            fill='rgb(230, 130, 50)'
-            cx='11.667'
-            cy='5'
-            rx='2'
-            ry='2'
-            transform='matrix(1, 0, 0, 1, -7.105427357601002e-15, -3.552713678800501e-15)'
-          />
-        </svg>
+        {MISSING_PARAMETER}
       </div>
     ) : undefined,
   ]
