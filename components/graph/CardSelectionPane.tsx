@@ -82,7 +82,28 @@ function filterByImports(
               .concat(v.returnValue?.type || 'float')
               .find(
                 (v) =>
-                  !['float', 'Color', 'Graphic', 'Point', 'str'].includes(v),
+                  !JSON.stringify({
+                    Graphic: {
+                      en: 'Graphic',
+                      it: 'Grafica',
+                      de: 'Grafik',
+                      fr: 'Graphique',
+                    },
+                    Color: {
+                      en: 'Color',
+                      it: 'Colore',
+                      de: 'Farbe',
+                      fr: 'Couleur',
+                    },
+                    Point: {
+                      en: 'Point',
+                      it: 'Punto',
+                      de: 'Punkt',
+                      fr: 'Point',
+                    },
+                    float: {},
+                    str: {},
+                  }).includes(`"${v}"`),
               )
           );
         }
@@ -123,6 +144,8 @@ export default function CardSelectionPane() {
     useJudiciousDocData(modules),
     functional_nodes_only,
   );
+
+  console.log(values);
 
   const N = values.length;
 
