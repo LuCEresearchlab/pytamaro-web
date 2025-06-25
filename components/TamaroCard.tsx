@@ -46,22 +46,19 @@ export function Arrow({
         <h3 className='arrow_label_type_separator'>:</h3>
 
         <h3 className='arrow_type'> {type}</h3>
+
+        <div style={{ flexGrow: '1', minWidth: '10px' }} />
+        {icon && (
+          <div>
+            <img
+              className='arrow_icon'
+              alt={`${name} icon`}
+              src={`data:image/svg+xml;utf8,${encodeURIComponent(icon)}`}
+            />
+          </div>
+        )}
       </div>
 
-      <div
-        className='arrow_icon'
-        style={{ flexGrow: '1', minWidth: '20px' }}
-      ></div>
-
-      {icon && (
-        <N_Image
-          className='arrow_icon'
-          alt={`${name} icon`}
-          src={`data:image/svg+xml;utf8,${encodeURIComponent(icon)}`}
-          width={32}
-          height={32}
-        />
-      )}
       {Array.from({ length: multiple ? 3 : 1 }).map((_, i) => {
         return (
           <div
@@ -194,7 +191,7 @@ export function FunctionTamaroCard({
                 type={v.type}
                 optional={false}
                 multiple={v.variableLength == null ? false : v.variableLength}
-                icon={``}
+                icon={v.icon || ''}
                 handle_start={`input_${v.name}`}
                 show_handles={show_handles || false}
               />
@@ -218,7 +215,7 @@ export function FunctionTamaroCard({
                   name={v.name}
                   type={v.type}
                   multiple={v.variableLength == null ? false : v.variableLength}
-                  icon={``}
+                  icon={v.icon || ''}
                   optional={v.default != null}
                   handle_start={`input_${v.name}`}
                   show_handles={show_handles || false}
@@ -230,13 +227,11 @@ export function FunctionTamaroCard({
       )}
 
       <div className='pane tamaro_card function_card'>
-        <N_Image
+        <img
           className='card_library hovergroup hovergroup_marker'
           data-hovergroup={'library'}
           src={iconPath(module)}
           alt='Library Icon'
-          width={32}
-          height={32}
         />
 
         <div
@@ -255,6 +250,13 @@ export function FunctionTamaroCard({
           >
             {el.name}
           </h5>
+
+          {el.icon && (
+            <img
+              className='card_icon'
+              src={`data:image/svg+xml;utf8,${encodeURIComponent(el.icon)}`}
+            />
+          )}
         </div>
 
         {el.sideEffects && (
@@ -301,9 +303,9 @@ export function FunctionTamaroCard({
             parameter_amount={1}
             parameter_index={0}
             multiple={false}
-            name={'output'}
+            name={'->'}
             type={el.returnValue!.type}
-            icon={``}
+            icon={el.returnValue.icon || ''}
             optional={false}
             handle_end={`output`}
             show_handles={show_handles || false}
@@ -327,13 +329,11 @@ export function ConstantTamaroCard({
     <div className='pane_container constant_card_pane'>
       <div className='pane'></div>
       <div className='pane tamaro_card constant_card'>
-        <N_Image
+        <img
           className='card_library hovergroup hovergroup_marker'
           data-hovergroup={'library'}
           src={iconPath(module)}
           alt='Library icon'
-          width={32}
-          height={32}
         />
 
         <div
@@ -367,7 +367,14 @@ export function ConstantTamaroCard({
           )}
         </div>
       </div>
-      <div className='pane'></div>
+      <div className='constant_icon_pane'>
+        {el.icon && (
+          <img
+            className='constant_card_icon card_icon'
+            src={`data:image/svg+xml;utf8,${encodeURIComponent(el.icon)}`}
+          />
+        )}
+      </div>
     </div>
   );
 }

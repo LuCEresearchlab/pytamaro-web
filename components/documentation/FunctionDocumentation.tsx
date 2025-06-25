@@ -51,11 +51,13 @@ export default function FunctionDocumentation({
 
   return (
     <div
+      id='function_documentation'
       className={`extended_view
         ${docsMetadata.showTypes ? '' : 'hide_types'}
         ${docsMetadata.showOptional ? '' : 'hide_optionals'}`}
     >
       <ProceduralHoverStyles
+        root='#function_documentation'
         groups={fn.parameters
           .map((v) => `input_${v.name}`)
           .concat('output', 'library', 'function')}

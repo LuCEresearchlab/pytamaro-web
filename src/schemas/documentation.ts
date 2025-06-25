@@ -11,6 +11,7 @@ export type JudiciousElement =
   | JudiciousConstant;
 
 type JudiciousElementCommon = {
+  icon?: string;
   examples?: JudiciousExample[];
   urlSuffix?: string;
 };
@@ -22,6 +23,7 @@ export type JudiciousFunction = {
   description: JudiciousDescription;
   parameters: JudiciousParameter[];
   returnValue?: {
+    icon?: string;
     type: string;
     description: string;
   };
@@ -38,6 +40,7 @@ export type JudiciousDescription = {
 
 export type JudiciousParameter = {
   name: string;
+  icon?: string;
   type: string;
   description: string;
   default?: string;

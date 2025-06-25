@@ -3,18 +3,19 @@
   transform: translateY(-50%) translateY(5px);
   display: flex;
   flex-direction: row;
-  align-items: start;
-  padding-bottom: 0px;
+  align-items: end;
 }
 
 .arrow_text {
+  width: 100%;
   display: flex;
   font-size: small;
   flex-direction: row;
-  align-items: end;
+  align-items: center;
   flex-wrap: nowrap;
-  margin: 0px 4px;
-  padding: 0px 3px;
+  margin-left: 4px;
+  margin-right: 4px;
+  padding: 5px 3px;
   text-wrap: nowrap;
 }
 
@@ -37,7 +38,33 @@
   display: none;
 }
 
-.arrow_label {
+.card_icon {
+  height: 64px;
+  max-width: 70%;
+}
+
+.constant_icon_pane {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.constant_card_icon {
+  height: 32px;
+}
+
+.hide_icons .card_icon {
+  display: none;
+}
+
+.arrow_icon {
+  /* position: relative;
+  bottom: 8px;
+  right: 12px; */
+  height: 32px;
+  max-width: 64px;
+  margin: 0px 10px;
 }
 
 .arrow_label_type_separator {
@@ -64,9 +91,14 @@
   --outline-width: 2px;
 }
 
+.pane_container.constant_card_pane {
+  display: flex;
+  flex-direction: row;
+}
+
 .extended_view .pane_container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 0px;
 }
 
@@ -110,7 +142,7 @@
   justify-content: space-evenly;
 
   min-width: 50px;
-  gap: 15px;
+  gap: 30px;
   margin: 30px 0px;
 }
 
@@ -148,7 +180,7 @@
   flex-direction: column;
   align-items: center;
   min-width: 100px;
-  margin-right: 20px;
+  margin-right: 10px;
 }
 
 .output_pane {
@@ -161,6 +193,8 @@
 
 .card_library {
   position: absolute;
+  width: 16;
+  aspect-ratio: 1;
 }
 
 .card_name {
@@ -184,7 +218,7 @@
 }
 
 .extended_view.hide_labels .arrow_label {
-  visibility: hidden;
+  display: none;
 }
 
 .hide_optionals .opt_parameter_pane {
@@ -218,13 +252,13 @@
 .function_card_pane .triangle_right {
   width: 0;
   height: 0;
-  border-top: calc(5 * var(--outline-width)) solid transparent;
-  border-bottom: calc(5 * var(--outline-width)) solid transparent;
-  border-left: calc(5 * var(--outline-width)) solid #d2071d;
+  border-top: calc(2.5 * var(--outline-width)) solid transparent;
+  border-bottom: calc(2.5 * var(--outline-width)) solid transparent;
+  border-left: calc(2.5 * var(--outline-width)) solid #d2071d;
 
   display: inline-block;
   position: absolute;
-  bottom: calc(-5.5 * var(--outline-width));
+  bottom: calc(-3 * var(--outline-width));
 }
 
 .constant_card_pane .triangle_right {
