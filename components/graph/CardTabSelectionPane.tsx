@@ -23,8 +23,8 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
       [
         { regex: /$^/, value: 'False', type: 'bool' },
         { regex: /$^/, value: 'True', type: 'bool' },
-        { regex: FLOAT_REGEX, value: '0', type: 'float' },
-        { regex: STR_REGEX, value: '""', type: 'str' },
+        { regex: FLOAT_REGEX, value: '200.0', type: 'float' },
+        { regex: STR_REGEX, value: '"Abc"', type: 'str' },
       ]
         .filter(
           (v) =>

@@ -83,7 +83,8 @@ export function TamaroLiteralCard({
       <ContentEditableDiv
         initial_value={value}
         style={{
-          minWidth: '50px',
+          minWidth: '85px',
+          margin: 'auto',
           outline: 'none',
           backgroundColor: 'white',
           padding: '5px 20px',
@@ -98,13 +99,15 @@ export function TamaroLiteralCard({
       />
       <div
         style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
           justifyItems: 'center',
-          backgroundColor: 'white',
-          padding: '5px 20px',
           borderTopRightRadius: '5px',
           borderBottomRightRadius: '5px',
-          width: 'fit-content',
+          width: '75px',
           border: `solid ${literal_type == null ? 'red' : 'gray'} 1px`,
+          backgroundColor: literal_type == null ? '#500' : '#f0f0f0',
         }}
       >
         <div
@@ -113,7 +116,8 @@ export function TamaroLiteralCard({
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            color: literal_type == null ? 'red' : 'gray',
+            margin: 'auto',
+            color: literal_type == null ? 'red' : 'black',
           }}
         >
           {literal_type == null ? 'error' : literal_type}
@@ -141,13 +145,13 @@ export function TamaroLiteralCard({
           height: '0',
           borderTop: '5px solid transparent',
           borderBottom: '5px solid transparent',
-          borderLeft: '5px solid black',
+          borderLeft: `5px solid ${literal_type == null ? 'red' : 'black'}`,
 
           display: 'inline-block',
           position: 'absolute',
           top: '50%',
           right: '0%',
-          transform: 'translateY(-50%) translateX(100%) translateX(-2px)',
+          transform: 'translateY(-50%) translateX(100%) translateX(-1px)',
         }}
       ></div>
     </div>
