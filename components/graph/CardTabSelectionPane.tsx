@@ -66,7 +66,7 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
           .filter((v) => v.name.toLowerCase().startsWith(filter))
           .map((el) => (
             <div
-              className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
+              className='compact_view hide_types hide_labels hide_handles hide_optionals'
               style={{ userSelect: 'none' }}
               onDragStart={(e) => {
                 onDragStart(e, el.kind, {

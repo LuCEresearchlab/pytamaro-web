@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useStore } from './store';
-import { CardTabSelectionPane } from './CardTabSelectionPange';
+import { CardTabSelectionPane } from './CardTabSelectionPane';
 import useJudiciousDocData from '../../src/documentation';
 import {
   JudiciousElement,
