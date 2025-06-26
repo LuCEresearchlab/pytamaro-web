@@ -148,12 +148,6 @@ export const createGraphSlice: StateCreator<
     set({
       nodes: applyNodeChanges(changes, befores),
     });
-
-    changes
-      .filter((v) => v.type === 'dimensions')
-      .map((v) => v.id)
-      .map(get().invalidate_node);
-
     const afters = get().nodes;
 
     changes

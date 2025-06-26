@@ -323,8 +323,6 @@ export const createAnnotationSlice: StateCreator<
       case 'constant_definition': {
         const { name } = node.data as unknown as ITamaroConstantUseCardData;
 
-        console.log(get().img_states.find((v) => v.id === node.id));
-
         const output_value = get().img_states.find(
           (v) => v.id === node.id,
         )?.code;
