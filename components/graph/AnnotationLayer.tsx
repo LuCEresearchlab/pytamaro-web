@@ -1,9 +1,10 @@
 import { Edge, useReactFlow, ViewportPortal, XYPosition } from '@xyflow/react';
-import { useStore } from './store';
+import { StoreType, useStore } from './store';
 import { getHandleName } from './cards/function';
 import { ErrorBubble } from './Bubble';
 import { Annotation } from './annotations';
 import { ErrorParagraph } from './ErrorParagraph';
+import { getNode } from './utils';
 
 const MISSING_PARAMETER = (
   <svg
@@ -48,8 +49,8 @@ const MISSING_PARAMETER = (
 );
 
 export function createAnnotationComponents(
+  store: StoreType,
   annotation: Annotation,
-  edges: Edge[],
   screenToFlowPosition: (
     clientPosition: XYPosition,
     options?: {
@@ -57,55 +58,67 @@ export function createAnnotationComponents(
     },
   ) => XYPosition,
 ): JSX.Element[] {
+  const { edges, nodes } = store;
   const { node_id, position, handle } = annotation.location;
 
   function getPosition(
     node_id: string,
-    handle: string,
-    position: 'target' | 'middle' | 'source',
+    handle: string | undefined,
+    position: 'target' | 'middle' | 'source' | undefined,
   ): XYPosition | undefined {
     let bubble_position: XYPosition | undefined;
 
-    const edge = edges.find(
-      (v) => v.target === node_id && v.targetHandle === getHandleName(handle),
-    );
+    if (!handle || !position) {
+      const node = getNode(nodes, node_id);
 
-    if (position === 'target' || position === 'source') {
-      const nodeDiv = document.querySelector(
-        `[data-id="${position === 'target' ? node_id : edge?.source}"]`,
-      )! as HTMLDivElement;
-      if (!nodeDiv) return undefined;
+      if (!node) return { x: 0, y: 0 };
 
-      const handleDiv = nodeDiv.querySelector(
-        `[data-handleid="${position === 'target' ? getHandleName(handle) : 'output'}"]`,
-      )! as HTMLDivElement;
-      if (!handleDiv) return undefined;
-
-      const rect = handleDiv.getBoundingClientRect();
-
-      bubble_position = {
-        x: rect.x + rect.width / 2,
-        y: rect.y + rect.height / 2,
+      return {
+        x: node?.position.x + (node?.measured?.width || 0) / 3,
+        y: node.position.y,
       };
-
-      bubble_position = screenToFlowPosition(bubble_position);
     } else {
-      // position === 'middle'
+      const edge = edges.find(
+        (v) => v.target === node_id && v.targetHandle === getHandleName(handle),
+      );
 
-      const edgeDiv = document.querySelector(
-        `[data-id="${edge?.id}"]`,
-      )! as HTMLDivElement;
+      if (position === 'target' || position === 'source') {
+        const nodeDiv = document.querySelector(
+          `[data-id="${position === 'target' ? node_id : edge?.source}"]`,
+        )! as HTMLDivElement;
+        if (!nodeDiv) return undefined;
 
-      if (!edgeDiv) return undefined;
+        const handleDiv = nodeDiv.querySelector(
+          `[data-handleid="${position === 'target' ? getHandleName(handle) : 'output'}"]`,
+        )! as HTMLDivElement;
+        if (!handleDiv) return undefined;
 
-      const rect = edgeDiv.getBoundingClientRect();
+        const rect = handleDiv.getBoundingClientRect();
 
-      bubble_position = {
-        x: rect.x + rect.width / 2,
-        y: rect.y + rect.height / 2,
-      };
+        bubble_position = {
+          x: rect.x + rect.width / 2,
+          y: rect.y + rect.height / 2,
+        };
 
-      bubble_position = screenToFlowPosition(bubble_position);
+        bubble_position = screenToFlowPosition(bubble_position);
+      } else {
+        // position === 'middle'
+
+        const edgeDiv = document.querySelector(
+          `[data-id="${edge?.id}"]`,
+        )! as HTMLDivElement;
+
+        if (!edgeDiv) return undefined;
+
+        const rect = edgeDiv.getBoundingClientRect();
+
+        bubble_position = {
+          x: rect.x + rect.width / 2,
+          y: rect.y + rect.height / 2,
+        };
+
+        bubble_position = screenToFlowPosition(bubble_position);
+      }
     }
 
     return bubble_position;
@@ -161,7 +174,8 @@ export function createAnnotationComponents(
       </div>
     ) : undefined,
 
-    annotation.kind === 'syntax-error' ? (
+    annotation.kind === 'syntax-error' &&
+    annotation.subkind === 'missing_parameter' ? (
       <div
         style={{
           position: 'absolute',
@@ -169,7 +183,7 @@ export function createAnnotationComponents(
           zIndex: '-1',
         }}
         className='error_text_highlight'
-        key={`${node_id}_${handle}_${position}_syntaxètarget`}
+        key={`${node_id}_${handle}_${position}_syntax_target`}
       >
         {MISSING_PARAMETER}
       </div>
@@ -180,18 +194,15 @@ export function createAnnotationComponents(
 }
 
 export function AnnotationLayer() {
-  const { getAnnotations, getEdges } = useStore();
+  const store = useStore();
   const { screenToFlowPosition } = useReactFlow();
 
   return (
     <ViewportPortal>
-      {getAnnotations()
+      {store
+        .getAnnotations()
         .map((annotation) =>
-          createAnnotationComponents(
-            annotation,
-            getEdges(),
-            screenToFlowPosition,
-          ),
+          createAnnotationComponents(store, annotation, screenToFlowPosition),
         )
         .reduce((a, b) => a!.concat(b!), [])}
     </ViewportPortal>

@@ -53,10 +53,7 @@ function View() {
   } = store;
 
   const getErrors = useCallback(
-    () =>
-      getAnnotations().filter((v) =>
-        ['syntax-error', 'value-error', 'type-error'].includes(v.kind),
-      ),
+    () => getAnnotations().filter((v) => v.kind.includes('error')),
     [getAnnotations],
   );
 
@@ -145,7 +142,7 @@ function View() {
   useEffect(() => {
     const interval = setInterval(() => {
       unstack_queue();
-    }, 100);
+    }, 5);
     return () => clearInterval(interval);
   }, [unstack_queue]);
 

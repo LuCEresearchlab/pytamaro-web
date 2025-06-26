@@ -304,5 +304,7 @@ export const createImgStateSlice: StateCreator<
       ...data,
       representation: code,
     }));
+
+    get().updateAnnotation(node);
   },
 });
