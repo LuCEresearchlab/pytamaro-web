@@ -80,13 +80,15 @@ function View() {
     documentation: undefined as JudiciousModuleElement | undefined,
   });
 
+  const errors = getErrors();
+
   useEffect(() => {
     setAvailabilities({
       error: (() => {
-        return getErrors().length === 0 &&
-          ['highlight', 'warning'].includes(error_level)
+        return errors.length === 0 ||
+          !['highlight', 'warning'].includes(error_level)
           ? undefined
-          : getErrors();
+          : errors;
       })(),
       documentation: (() => {
         const toBeDocumentedNodes = getNodes().filter((v) => v.selected);
@@ -105,7 +107,7 @@ function View() {
         return { ...data.value, module: data.module };
       })(),
     });
-  }, [getErrors, error_level, getNodes]);
+  }, [errors, error_level, getNodes]);
 
   useEffect(() => {
     if (!pane) return;
@@ -233,7 +235,7 @@ function View() {
             zIndex: '100',
           }}
         >
-          {availabilities.error && (
+          {availabilities.error && initialized === 'done' && (
             <IconButton
               onClick={() => setPane(pane !== 'error' ? 'error' : undefined)}
             >
@@ -241,7 +243,7 @@ function View() {
             </IconButton>
           )}
 
-          {availabilities.documentation && (
+          {availabilities.documentation && initialized === 'done' && (
             <IconButton
               onClick={() =>
                 setPane(pane !== 'documentation' ? 'documentation' : undefined)
