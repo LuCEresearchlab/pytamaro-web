@@ -2,6 +2,7 @@ import { Dimensions, Handle, NodeProps, Position } from '@xyflow/react';
 import { createRef, RefObject, useEffect, useRef, useState } from 'react';
 import { useStore } from '../store';
 import { updateParent } from '../graph_toolbox';
+import { ContentEditableDiv } from './literal';
 
 const BORDER_COLOR = '#148CC8';
 const BACKGROUND_COLOR = '#E6F0FF';
@@ -18,7 +19,9 @@ export default function ConstantDefinition({
   const [textWidth, setTextWidth] = useState(0);
   const { initialized, getNodes, onNodesChange } = store;
   const thisInitialization = useRef(false);
-  const name = 'abcdefghijklmnopqrstaaaaaaaaaaaaaaaaaaaaaa';
+  const [name, setName] = useState(
+    'abcdefghijklmnopqrstaaaaaaaaaaaaaaaaaaaaaa',
+  );
 
   useEffect(() => {
     if (textRef.current) {
@@ -29,6 +32,10 @@ export default function ConstantDefinition({
 
   useEffect(() => {
     if (initialized === 'done' && !thisInitialization.current) {
+      if (textRef.current) {
+        const rect = textRef.current.getBoundingClientRect();
+        setTextWidth(rect.width);
+      }
       thisInitialization.current = true;
       onNodesChange([updateParent(store, id)]);
     }
@@ -45,7 +52,7 @@ export default function ConstantDefinition({
     y: p1.y + (dimension.height || 0),
   };
   const real_dim = {
-    width: p2.x - p1.x,
+    width: Math.max(p2.x - p1.x, 100 + textWidth),
     height: p2.y - p1.y,
   };
 
@@ -132,7 +139,12 @@ export default function ConstantDefinition({
               fontSize: '40px',
             }}
           >
-            = {name}
+            ={' '}
+            <ContentEditableDiv
+              initial_value={name}
+              onChange={setName}
+              style={{ margin: '0px 20px' }}
+            />
           </div>
         </div>
       </div>

@@ -17,7 +17,7 @@ export interface ITamaroLiteralCardData extends ITamaroCardData {
 export function ContentEditableDiv(props: {
   initial_value: string;
   onChange: (v: string) => void;
-  style: CSSProperties;
+  style?: CSSProperties;
 }) {
   const value = useRef(props.initial_value);
   return (
