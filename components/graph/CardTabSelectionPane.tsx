@@ -4,6 +4,8 @@ import { DragEvent, useEffect, useState } from 'react';
 import TamaroCard from '../TamaroCard';
 import { JudiciousModuleElement } from './CardSelectionPane';
 import { FLOAT_REGEX, STR_REGEX, TamaroLiteralCard } from './cards/literal';
+import ConstantUse from './cards/constant_use';
+import { check_const_name } from './cards/constant_definition';
 
 interface CardSelectionPaneProps {
   values: JudiciousModuleElement[];
@@ -13,6 +15,7 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
   const { setDragged } = useStore();
 
   const [filter, setFilter] = useState('');
+  const [constant_name, setConstantName] = useState('' as string | undefined);
 
   const [literals, setLiterals] = useState(
     [] as { regex: RegExp; value: string; type: string }[],
@@ -37,6 +40,9 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
           value: filter === '' || !filter.match(v.regex) ? v.value : filter,
         })),
     );
+
+    if (filter === '' || check_const_name(filter)) setConstantName(filter);
+    else setConstantName(undefined);
   }, [filter, setLiterals]);
 
   const onDragStart = (
@@ -111,6 +117,34 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
             </div>
           </div>
         ))}
+
+        {constant_name != null && (
+          <div
+            className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
+            style={{ userSelect: 'none' }}
+            onDragStart={(e) => {
+              onDragStart(e, 'constant_use', {
+                name: constant_name,
+              });
+            }}
+            draggable
+            data-dummy={filter}
+          >
+            <div style={{ pointerEvents: 'none' }} data-dummy={constant_name}>
+              <ConstantUse
+                data={
+                  {
+                    name: constant_name,
+                  } as Record<string, unknown>
+                }
+                hide_handles
+                resetOnChange
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                {...({} as any)}
+              />
+            </div>
+          </div>
+        )}
       </CardContent>
       <CardActions>
         <div

@@ -17,7 +17,7 @@ export default function NodeContextMenu({
   bottom?: number;
   right?: number;
 }) {
-  const { getNodes, setNodes, getEdges } = useStore();
+  const { getNodes, setNodes, getEdges, setEdges } = useStore();
 
   const extractAsConstant = useCallback(() => {
     const nodes = getNodes();
@@ -59,6 +59,20 @@ export default function NodeContextMenu({
               } as Node),
         )
         .concat(newNode),
+    );
+
+    setEdges(
+      getEdges()
+        .filter((v) => v.source !== id)
+        .concat([
+          {
+            id: `${id}-${newNode.id}-edge`,
+            source: id,
+            sourceHandle: 'output',
+            target: newNode.id,
+            targetHandle: 'output',
+          },
+        ]),
     );
   }, [getNodes, getEdges, id, setNodes]);
 

@@ -3,10 +3,30 @@ import { createRef, RefObject, useEffect, useRef, useState } from 'react';
 import { useStore } from '../store';
 import { updateParent } from '../graph_toolbox';
 import { ContentEditableDiv } from './literal';
+import { ITamaroCardData } from '.';
 
-const BORDER_COLOR = '#148CC8';
-const BACKGROUND_COLOR = '#E6F0FF';
+// Can't do that with regex because of the targeting
+export function check_const_name(name: string): boolean {
+  function letter(v: string): boolean {
+    if (v.match(/[a-zA-Z_]/)) return true;
+    const code = v.charCodeAt(0);
+    return 0xa1 <= code && code <= 0x10ffff;
+  }
+
+  return (
+    Array.from(name).find(
+      (v, i) => !(letter(v) || (i !== 0 && v.match(/[0-9]/) != null)),
+    ) == null
+  );
+}
+export const BORDER_COLOR = '#148CC8';
+export const BACKGROUND_COLOR = '#E6F0FF';
 const BORDER_WIDTH = '2px';
+
+export interface ITamaroConstantDefinitionCardData extends ITamaroCardData {
+  name: string;
+  type?: string;
+}
 
 export default function ConstantDefinition({
   id,
@@ -17,18 +37,18 @@ export default function ConstantDefinition({
   const textRef: RefObject<HTMLDivElement> = createRef();
   const store = useStore();
   const [textWidth, setTextWidth] = useState(0);
-  const { initialized, getNodes, onNodesChange } = store;
+  const { initialized, getNodes, onNodesChange, updateNodeData } = store;
   const thisInitialization = useRef(false);
-  const [name, setName] = useState(
-    'abcdefghijklmnopqrstaaaaaaaaaaaaaaaaaaaaaa',
-  );
 
-  useEffect(() => {
+  const name = (data.name || '') as string;
+  function setName(v: string) {
+    updateNodeData(id, (data) => ({ ...data, name: v }));
+
     if (textRef.current) {
       const rect = textRef.current.getBoundingClientRect();
       setTextWidth(rect.width);
     }
-  }, [name]);
+  }
 
   useEffect(() => {
     if (initialized === 'done' && !thisInitialization.current) {
@@ -141,9 +161,9 @@ export default function ConstantDefinition({
           >
             ={' '}
             <ContentEditableDiv
-              initial_value={name}
+              value={name}
               onChange={setName}
-              style={{ margin: '0px 20px' }}
+              style={{ margin: '0px 20px', width: '100%' }}
             />
           </div>
         </div>
@@ -199,6 +219,7 @@ export default function ConstantDefinition({
               transform: 'translateX(-100%) translateX(-32px)',
               opacity: '0',
             }}
+            id={'output'}
           />
         </div>
       </div>

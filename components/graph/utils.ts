@@ -17,6 +17,8 @@ import {
 } from './cards';
 import { ITamaroLiteralCardData } from './cards/literal';
 import { ITamaroConstantCardData } from './cards/constant';
+import { ITamaroConstantDefinitionCardData } from './cards/constant_definition';
+import { StoreType } from './store';
 
 export function getNode(nodes: Node[], id: string) {
   return nodes.find((v) => v.id === id);
@@ -102,7 +104,7 @@ export function getFunctionParameterRelative(
   return getRelative(nodes, edges, id, getHandleName(parameter), unsafe_type);
 }
 
-export function getHandleType(node: Node, handle: string) {
+export function getHandleType(nodes: Node[], node: Node, handle: string) {
   if (!node.type) return 'Unknown';
 
   switch (node.type as CardType) {
@@ -126,6 +128,23 @@ export function getHandleType(node: Node, handle: string) {
       const cst = data.value as JudiciousConstant;
 
       return cst.type;
+    }
+
+    case 'constant_definition': {
+      return 'Unknown'; // The Constant Definition return value is defined by the source of the edge, so we can't assign a type before the connection
+    }
+
+    case 'constant_use': {
+      const { name } =
+        node.data as unknown as ITamaroConstantDefinitionCardData;
+
+      const definitions = nodes.filter(
+        (v) => v.type === 'constant_definition' && v.data.name === name,
+      );
+
+      if (definitions.length !== 1) return 'Unknown';
+
+      return definitions[0]!.data.type as string;
     }
 
     default: {

@@ -2,7 +2,7 @@
 import { Handle, Node, Position } from '@xyflow/react';
 import { ITamaroCardData } from '.';
 import { useStore } from '../store';
-import { CSSProperties, useRef } from 'react';
+import { CSSProperties, useEffect, useRef, useState } from 'react';
 import { getNode, getParents } from '../utils';
 
 export const BOOL_REGEX = /(True)|(False)/;
@@ -15,15 +15,29 @@ export interface ITamaroLiteralCardData extends ITamaroCardData {
 }
 
 export function ContentEditableDiv(props: {
-  initial_value: string;
+  value: string;
   onChange: (v: string) => void;
+  resetOnChange?: boolean;
   style?: CSSProperties;
 }) {
-  const value = useRef(props.initial_value);
+  const value = useRef(props.value);
+
+  const [bool, setBool] = useState(false);
+
+  useEffect(() => {
+    if (props.resetOnChange === true) {
+      value.current = props.value;
+      setBool(!bool);
+    }
+  }, [props.value]);
+
   return (
     <div
       contentEditable
-      style={props.style}
+      style={{
+        outline: 'none',
+        ...props.style,
+      }}
       spellCheck={false}
       autoCorrect='off'
       autoCapitalize='false'
@@ -81,11 +95,10 @@ export function TamaroLiteralCard({
       }}
     >
       <ContentEditableDiv
-        initial_value={value}
+        value={value}
         style={{
           minWidth: '85px',
           margin: 'auto',
-          outline: 'none',
           backgroundColor: 'white',
           padding: '5px 20px',
           borderTopLeftRadius: '5px',

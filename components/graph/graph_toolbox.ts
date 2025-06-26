@@ -98,9 +98,17 @@ export function isValidConnection(
   const nodes = getNodes();
   const edges = getEdges();
   const { source, target, sourceHandle, targetHandle } = params;
+
+  const sourceNode = getNode(nodes, source);
+  const targetNode = getNode(nodes, target);
+
   return (
+    ((!sourceNode?.data.parent && targetNode?.data.parent) ||
+      sourceNode?.data.parent === targetNode?.data.parent ||
+      sourceNode?.data.parent === targetNode?.id) &&
     check_edge_looping(nodes, edges, source, target) &&
     (error_level !== 'prevent' ||
+      targetNode?.type === 'constant_definition' ||
       check_edge_typing(
         nodes,
         source,
@@ -202,7 +210,9 @@ export function onDocumentCopyCatpure(
   e.clipboardData?.clearData();
 
   const selected = {
-    nodes: getNodes().filter((v) => v.selected),
+    nodes: getNodes()
+      .filter((v) => v.selected)
+      .map((v) => ({ ...v, data: { ...v.data, parent: undefined } })),
     edges: getEdges().filter((v) => v.selected),
   };
 

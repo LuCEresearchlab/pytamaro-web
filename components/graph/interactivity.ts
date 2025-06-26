@@ -15,10 +15,10 @@ export function check_edge_typing(
   target_handle: string,
 ) {
   const source_node = getNode(nodes, source_id)!;
-  const origin_type = getHandleType(source_node, source_handle);
+  const origin_type = getHandleType(nodes, source_node, source_handle);
 
   const target_node = getNode(nodes, target_id)!;
-  const target_type = getHandleType(target_node, target_handle);
+  const target_type = getHandleType(nodes, target_node, target_handle);
 
   return origin_type === target_type && origin_type !== 'null';
 }

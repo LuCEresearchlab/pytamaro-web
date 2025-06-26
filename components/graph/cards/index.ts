@@ -4,14 +4,22 @@ import { TamaroLiteralCard } from './literal';
 import { TamaroConstantCard } from './constant';
 import { JudiciousElement } from '../../../src/schemas/documentation';
 import ConstantDefinition from './constant_definition';
+import ConstantUse from './constant_use';
 
 export interface ImportReference {
   module: string;
   name: string;
 }
 
+export interface CodeDefinitionRepresentation {
+  imports: ImportReference[];
+  name: string;
+  expression: string;
+}
+
 export type CodeRepresentation = {
   imports: ImportReference[];
+  definition?: string;
   expression: string;
 };
 
@@ -35,6 +43,8 @@ export const node_types = {
   constant: (props: NodeProps) => TamaroConstantCard(props as any),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constant_definition: (props: NodeProps) => ConstantDefinition(props as any),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  constant_use: (props: NodeProps) => ConstantUse(props as any),
 } as const;
 
 export const CardKeys = Object.keys(node_types);

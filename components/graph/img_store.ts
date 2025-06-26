@@ -1,7 +1,13 @@
 import { StateCreator } from 'zustand';
-import { CodeRepresentation } from './cards';
+import { CardType, CodeRepresentation } from './cards';
 import { StoreType } from './store';
-import { getFunctionParameterRelative, getNode, getParents } from './utils';
+import {
+  getChildren,
+  getFunctionParameterRelative,
+  getHandleType,
+  getNode,
+  getParents,
+} from './utils';
 import { ITamaroFunctionCardData } from './cards/function';
 import { ITamaroLiteralCardData } from './cards/literal';
 import { ITamaroConstantCardData } from './cards/constant';
@@ -156,12 +162,12 @@ export const createImgStateSlice: StateCreator<
       parents.values().forEach((v) => get().invalidate_node(v.id));
       return;
     }
-    const node = getNode(nodes, data.id);
+    const node = getNode(nodes, data.id)!;
 
     const type = node?.type;
     let code: CodeRepresentation | undefined;
 
-    switch (type) {
+    switch (type as CardType) {
       case 'function': {
         const card_data = node?.data as unknown as ITamaroFunctionCardData;
         const fn = card_data.value;
@@ -226,6 +232,17 @@ export const createImgStateSlice: StateCreator<
           ),
         }));
         break;
+      }
+
+      case 'constant_definition': {
+        const child = getChildren(nodes, edges, node, true).get('output');
+        if (child) {
+          const supposed_type = getHandleType(nodes, child, 'output');
+          get().updateNodeData(data.id, (data) => ({
+            ...data,
+            type: supposed_type,
+          }));
+        }
       }
     }
 
