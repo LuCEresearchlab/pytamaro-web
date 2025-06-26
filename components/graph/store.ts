@@ -17,7 +17,7 @@ import { ChangeSliceState, createChangeSlice } from './changes';
 import { ConfigurationState, createConfigurationSlice } from './configuration';
 import { createImgStateSlice, ImgStateSlice } from './img_store';
 import { AnnotationStateSlice, createAnnotationSlice } from './annotations';
-import { getNode } from './utils';
+import { getNode, getSubTreeFromRoot } from './utils';
 import { updateParent } from './graph_toolbox';
 
 export interface DraggedElementData {
@@ -189,6 +189,40 @@ export const createGraphSlice: StateCreator<
   },
   onEdgesChange: (changes) => {
     const befores = get().edges;
+
+    const node_changes = changes
+      .map((v): NodeChange[] => {
+        if (v.type === 'add') {
+          const { source, target } = v.item;
+          const { getNodes } = get();
+
+          const nodes = getNodes();
+          const targetNode = getNode(nodes, target);
+
+          const parent =
+            targetNode?.data.parent ||
+            (targetNode?.type === 'constant_definition' ? target : undefined);
+
+          if (!parent) return [];
+          const sourceNode = getNode(nodes, source);
+          if (sourceNode?.data.parent === parent) return [];
+
+          return getSubTreeFromRoot(nodes, befores, source)
+            .map((v) => getNode(nodes, v)!)
+            .map((v) => ({
+              type: 'replace',
+              id: v.id,
+              item: {
+                ...v,
+                data: { ...v?.data, parent },
+              } as Node,
+            }));
+        }
+
+        return [];
+      })
+      .reduce((a, b) => a.concat(b), []);
+    if (node_changes.length !== 0) get().onNodesChange(node_changes);
 
     const changed_edges = changes
       .filter((v) => v.type !== 'select' && v.type !== 'replace')

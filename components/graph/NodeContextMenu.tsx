@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Node } from '@xyflow/react';
 import { useStore } from './store';
-import { getChildren, getNode } from './utils';
+import { getChildren, getNode, getSubTreeFromRoot } from './utils';
 
 export default function NodeContextMenu({
   id,
@@ -23,22 +23,7 @@ export default function NodeContextMenu({
     const nodes = getNodes();
     const edges = getEdges();
 
-    const descendants: string[] = [];
-    const visited = new Set<string>();
-    const stack = [getNode(nodes, id)];
-
-    while (stack.length !== 0) {
-      const el = stack.shift()!;
-
-      if (visited.has(el.id)) continue;
-      visited.add(el.id);
-      descendants.push(el.id);
-
-      getChildren(nodes, edges, el, true).forEach((v) => {
-        stack.push(v);
-        descendants.push(v.id);
-      });
-    }
+    const descendants: string[] = getSubTreeFromRoot(nodes, edges, id);
 
     const newNode: Node = {
       id: `${new Date().getTime()}-parent`,

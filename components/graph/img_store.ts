@@ -12,6 +12,7 @@ import { ITamaroFunctionCardData } from './cards/function';
 import { ITamaroLiteralCardData } from './cards/literal';
 import { ITamaroConstantCardData } from './cards/constant';
 import { Node } from '@xyflow/react';
+import { ITamaroConstantDefinitionCardData } from './cards/constant_definition';
 
 interface ImgState {
   id: string;
@@ -138,7 +139,6 @@ export const createImgStateSlice: StateCreator<
     const children = (unsafe_children as Node[]).map((v) =>
       img_states.find((o) => o.id === v.id),
     );
-
     if (children.includes(undefined) || children.find((v) => v?.code == null)) {
       set({
         img_states: img_states.map((v) =>
@@ -235,6 +235,8 @@ export const createImgStateSlice: StateCreator<
       }
 
       case 'constant_definition': {
+        const { name } =
+          node.data as unknown as ITamaroConstantDefinitionCardData;
         const child = getChildren(nodes, edges, node, true).get('output');
         if (child) {
           const supposed_type = getHandleType(nodes, child, 'output');
@@ -242,7 +244,54 @@ export const createImgStateSlice: StateCreator<
             ...data,
             type: supposed_type,
           }));
+
+          const usages = get().nodes.filter(
+            (v) => v.type === 'constant_use' && v.data.name === name,
+          );
+
+          set((state) => ({
+            queue,
+            img_states: state.img_states.map((v) =>
+              v.id !== data.id
+                ? v
+                : {
+                    ...data,
+                    upToDate: true,
+                    code: state.img_states.find((v) => v.id === child.id)?.code,
+                  },
+            ),
+          }));
+
+          usages.map((v) => v.id).forEach(get().invalidate_node);
         }
+        break;
+      }
+
+      case 'constant_use': {
+        const { name } =
+          node?.data as unknown as ITamaroConstantDefinitionCardData;
+
+        const definitions = nodes.filter(
+          (v) => v.type === 'constant_definition' && v.data.name === name,
+        );
+
+        if (definitions.length === 1) {
+          set((state) => ({
+            queue,
+            img_states: state.img_states.map((v) =>
+              v.id !== data.id
+                ? v
+                : {
+                    ...data,
+                    upToDate: true,
+                    code: state.img_states.find(
+                      (v) => v.id === definitions[0].id,
+                    )?.code,
+                  },
+            ),
+          }));
+        }
+        break;
       }
     }
 

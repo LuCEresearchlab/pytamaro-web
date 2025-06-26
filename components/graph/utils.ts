@@ -153,6 +153,31 @@ export function getHandleType(nodes: Node[], node: Node, handle: string) {
   }
 }
 
+export function getSubTreeFromRoot(
+  nodes: Node[],
+  edges: Edge[],
+  root: Node | string,
+): string[] {
+  const descendants: string[] = [];
+  const visited = new Set<string>();
+  const stack = [typeof root === 'string' ? getNode(nodes, root) : root];
+
+  while (stack.length !== 0) {
+    const el = stack.shift()!;
+
+    if (visited.has(el.id)) continue;
+    visited.add(el.id);
+    descendants.push(el.id);
+
+    getChildren(nodes, edges, el, true).forEach((v) => {
+      stack.push(v);
+      descendants.push(v.id);
+    });
+  }
+
+  return descendants;
+}
+
 export function getFunctionHandles(fn: JudiciousFunction) {
   return fn.parameters
     .filter((v) => v.default == null)
