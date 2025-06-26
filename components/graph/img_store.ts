@@ -45,9 +45,8 @@ export const createImgStateSlice: StateCreator<
 
   invalidate_node(id) {
     const { nodes, edges, img_states } = get();
+    const node = getNode(nodes, id);
     if (!img_states.find((v) => v.id === id)) {
-      const node = getNode(nodes, id);
-
       let children: { handle: string }[] = [];
       if (node?.type === 'function')
         children = (
@@ -65,6 +64,7 @@ export const createImgStateSlice: StateCreator<
         }),
         queue: fuseQueue(state.queue, id),
       }));
+      if (node) get().updateAnnotation(node);
       return;
     }
     const parents = getParents(nodes, edges, id);
@@ -97,6 +97,8 @@ export const createImgStateSlice: StateCreator<
     }));
 
     set((state) => ({ queue: fuseQueue(state.queue, id) }));
+
+    if (node) get().updateAnnotation(node);
   },
 
   unstack_queue() {
@@ -262,6 +264,7 @@ export const createImgStateSlice: StateCreator<
             ),
           }));
 
+          console.log(usages);
           usages.map((v) => v.id).forEach(get().invalidate_node);
         }
         break;

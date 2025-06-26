@@ -1,8 +1,20 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Node } from '@xyflow/react';
 import { useStore } from './store';
 import { getChildren, getNode, getSubTreeFromRoot } from './utils';
 import { BACKGROUND_COLOR, BORDER_COLOR } from './cards/constant_definition';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Input,
+  Modal,
+  TextField,
+  Typography,
+} from '@mui/material';
 
 export default function NodeContextMenu({
   id,
@@ -10,6 +22,8 @@ export default function NodeContextMenu({
   left = undefined,
   right = undefined,
   bottom = undefined,
+  click_outside,
+  close,
   ...props
 }: {
   id: string;
@@ -17,72 +31,88 @@ export default function NodeContextMenu({
   left?: number;
   bottom?: number;
   right?: number;
+  click_outside?: boolean;
+  close: () => void;
 }) {
-  const { getNodes, setNodes, getEdges, setEdges } = useStore();
+  const [openNameModal, setNameModalOpen] = useState(false);
+  console.log(openNameModal);
+  const { getNodes, setNodes, getEdges, setEdges, invalidate_node } =
+    useStore();
 
-  const extractAsConstant = useCallback(() => {
-    const nodes = getNodes();
-    const edges = getEdges();
+  useEffect(() => {
+    if (click_outside && !openNameModal) {
+      close();
+    }
+  });
 
-    const descendants: string[] = getSubTreeFromRoot(nodes, edges, id);
+  const extractAsConstant = useCallback(
+    (name: string) => {
+      const nodes = getNodes();
+      const edges = getEdges();
 
-    const existing_edge = edges.find((v) => v.source === id);
+      const descendants: string[] = getSubTreeFromRoot(nodes, edges, id);
 
-    const newNode: Node = {
-      id: `${new Date().getTime()}-parent`,
-      type: 'constant_definition',
-      data: { name: new Date().getTime().toString() },
-      position: { x: 0, y: 0 },
-      zIndex: -100,
-    };
+      const existing_edge = edges.find((v) => v.source === id);
 
-    const replacedByNode: Node = {
-      id: `${new Date().getTime()}-replacement`,
-      type: 'constant_use',
-      data: { name: newNode.data.name },
-      position: getNode(nodes, id)!.position,
-    };
+      const newNode: Node = {
+        id: `${new Date().getTime()}-parent`,
+        type: 'constant_definition',
+        data: { name },
+        position: { x: 0, y: 0 },
+        zIndex: -100,
+      };
 
-    setNodes(
-      nodes
-        .map((v) =>
-          !descendants.includes(v.id)
-            ? v
-            : ({
-                ...v,
-                data: { ...v.data, parent: newNode.id },
-              } as Node),
-        )
-        .concat(newNode, replacedByNode),
-    );
+      const replacedByNode: Node = {
+        id: `${new Date().getTime()}-replacement`,
+        type: 'constant_use',
+        data: { name: newNode.data.name },
+        position: getNode(nodes, id)!.position,
+      };
 
-    setEdges(
-      getEdges()
-        .filter((v) => v.source !== id)
-        .concat([
-          {
-            id: `${id}-${newNode.id}-edge`,
-            source: id,
-            sourceHandle: 'output',
-            target: newNode.id,
-            targetHandle: 'output',
-          },
-        ])
-        .concat(
-          existing_edge
-            ? [
-                {
-                  id: `${id}-${replacedByNode.id}-edge`,
-                  source: replacedByNode.id,
-                  sourceHandle: 'output',
-                  target: existing_edge.target,
-                  targetHandle: existing_edge.targetHandle,
-                },
-              ]
-            : [],
-        ),
-    );
-  }, [getNodes, getEdges, id, setNodes]);
+      setNodes(
+        nodes
+          .map((v) =>
+            !descendants.includes(v.id)
+              ? v
+              : ({
+                  ...v,
+                  data: { ...v.data, parent: newNode.id },
+                } as Node),
+          )
+          .concat(newNode, replacedByNode),
+      );
+
+      invalidate_node(newNode.id);
+      invalidate_node(replacedByNode.id);
+
+      setEdges(
+        getEdges()
+          .filter((v) => v.source !== id)
+          .concat([
+            {
+              id: `${id}-${newNode.id}-edge`,
+              source: id,
+              sourceHandle: 'output',
+              target: newNode.id,
+              targetHandle: 'output',
+            },
+          ])
+          .concat(
+            existing_edge
+              ? [
+                  {
+                    ...existing_edge,
+                    id: `${id}-${replacedByNode.id}-edge`,
+                    source: replacedByNode.id,
+                    sourceHandle: 'output',
+                  },
+                ]
+              : [],
+          ),
+      );
+    },
+    [getNodes, getEdges, id, setNodes],
+  );
 
   return (
     <div
@@ -108,7 +138,7 @@ export default function NodeContextMenu({
           justifyContent: 'center',
           padding: '10px 20px',
         }}
-        onClick={extractAsConstant}
+        onClick={() => setNameModalOpen(true)}
       >
         Extract sub expression tree as constant
         <span
@@ -123,6 +153,46 @@ export default function NodeContextMenu({
           {' '}
         </span>
       </button>
+
+      <Dialog
+        open={openNameModal}
+        // onClose={() => setNameModalOpen(false)}
+        aria-labelledby='modal-modal-title'
+        aria-describedby='modal-modal-description'
+        slotProps={{
+          paper: {
+            component: 'form',
+            onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+              event.preventDefault();
+              const formData = new FormData(event.currentTarget);
+              const { name } = Object.fromEntries((formData as any).entries());
+              extractAsConstant(name);
+              setNameModalOpen(false);
+            },
+          },
+        }}
+      >
+        <Box>
+          <DialogTitle>Create a new constant node</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              required
+              margin='dense'
+              id='name'
+              name='name'
+              label='Constant name'
+              type='name'
+              fullWidth
+              variant='standard'
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setNameModalOpen(false)}>Cancel</Button>
+            <Button type='submit'>Subscribe</Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
     </div>
   );
 }

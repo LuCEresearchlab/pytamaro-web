@@ -26,8 +26,8 @@ function View() {
       id: string;
       top?: number;
       left?: number;
-      right?: number;
-      bottom?: number;
+      click_outside?: boolean;
+      close: () => void;
     } | null,
   );
   const ref: Ref<HTMLDivElement> = useRef(null);
@@ -72,6 +72,7 @@ function View() {
         id: node.id,
         top: event.clientY - shift_y,
         left: event.clientX - shift_x,
+        close: () => setMenu(null),
       });
     },
     [setMenu],
@@ -185,7 +186,10 @@ function View() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        onClick={() => setMenu(null)}
+        onClick={() => {
+          if (!menu) return;
+          return setMenu({ ...menu!, click_outside: true });
+        }}
         onNodeContextMenu={onNodeContextMenu}
         onPaneScroll={() => setMenu(null)}
         onScrollCapture={() => setMenu(null)}
