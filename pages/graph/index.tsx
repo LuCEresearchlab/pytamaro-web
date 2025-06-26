@@ -1,11 +1,12 @@
 import {
   Background,
   BackgroundVariant,
+  NodeMouseHandler,
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
 } from '@xyflow/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Ref, useCallback, useEffect, useRef, useState } from 'react';
 import { IconButton, Paper } from '@mui/material';
 import '@xyflow/react/dist/style.css';
 import '../../style/graph_view.css';
@@ -16,10 +17,20 @@ import CardSelectionPane, {
 } from '../../components/graph/CardSelectionPane';
 
 function View() {
-  const available_panes = ['error', 'documentation'] as const;
   const [pane, setPane] = useState(
-    undefined as (typeof available_panes)[number] | undefined,
+    undefined as 'error' | 'documentation' | undefined,
   );
+
+  const [menu, setMenu] = useState(
+    null as {
+      id: string;
+      top?: number;
+      left?: number;
+      right?: number;
+      bottom?: number;
+    } | null,
+  );
+  const ref: Ref<HTMLDivElement> = useRef(null);
 
   const { getNodes, screenToFlowPosition, flowToScreenPosition, fitView } =
     useReactFlow();
@@ -47,6 +58,23 @@ function View() {
         ['syntax-error', 'value-error', 'type-error'].includes(v.kind),
       ),
     [getAnnotations],
+  );
+
+  const onNodeContextMenu: NodeMouseHandler = useCallback(
+    (event, node) => {
+      // Prevent native context menu from showing
+      event.preventDefault();
+
+      // Calculate position of the context menu. We want to make sure it
+      // doesn't get positioned off-screen.
+      const { x: shift_x, y: shift_y } = ref.current!.getBoundingClientRect();
+      setMenu({
+        id: node.id,
+        top: event.clientY - shift_y,
+        left: event.clientX - shift_x,
+      });
+    },
+    [setMenu],
   );
 
   const [availabilities, setAvailabilities] = useState({
@@ -79,12 +107,12 @@ function View() {
         return { ...data.value, module: data.module };
       })(),
     });
-  });
+  }, [getErrors, error_level, getNodes]);
 
   useEffect(() => {
     if (!pane) return;
     if (!availabilities[pane]) setPane(undefined);
-  }, [pane, setPane]);
+  }, [availabilities, pane, setPane]);
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
@@ -149,6 +177,7 @@ function View() {
       <ReactFlow
         id='graph_element'
         tabIndex={0}
+        ref={ref}
         nodes={nodes}
         edges={edges}
         nodeTypes={node_types}
@@ -156,6 +185,10 @@ function View() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onClick={() => setMenu(null)}
+        onNodeContextMenu={onNodeContextMenu}
+        onPaneScroll={() => setMenu(null)}
+        onScrollCapture={() => setMenu(null)}
         defaultEdgeOptions={{
           type: 'custom_edge',
           focusable: true,
@@ -335,6 +368,7 @@ function View() {
           <CardSelectionPane />
         </div>
 
+        {menu && <NodeContextMenu {...menu} />}
         {/* Selection rectangle */}
 
         {isSelecting.is_dragging && (
@@ -397,16 +431,13 @@ import { GraphOptions } from '../../components/graph/GraphOptions';
 import edge_type from '../../components/graph/SmoothStepWithPadding';
 import {
   JudiciousConstant,
-  JudiciousElement,
   JudiciousFunction,
 } from '../../src/schemas/documentation';
 import { ErrorAnnotation } from '../../components/graph/annotations';
-import DocElement from '../../components/documentation/DocElement';
-import DocElementCard from '../../components/documentation/DocElementCard';
 import FunctionDocumentation from '../../components/documentation/FunctionDocumentation';
-import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { translationProps } from '../../src/serverSideTranslationProps';
 import TypeConstantDocumentation from '../../components/documentation/TypeConstantDocumentation';
+import NodeContextMenu from '../../components/graph/NodeContextMenu';
 
 function Graph() {
   const [source] = useState('from pytamaro import *');

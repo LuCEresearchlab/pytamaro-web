@@ -83,3 +83,7 @@
 .error-paragraph .error-body {
   margin: 0px;
 }
+
+.react-flow__node-constant_definition {
+  z-index: -100 !important;
+}
