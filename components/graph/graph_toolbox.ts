@@ -1,10 +1,17 @@
-import { Connection, Edge, Node, XYPosition } from '@xyflow/react';
+import {
+  Connection,
+  Edge,
+  Node,
+  NodeReplaceChange,
+  XYPosition,
+} from '@xyflow/react';
 import { check_edge_looping, check_edge_typing } from './interactivity';
 import {
   DragEvent as React_DragEvent,
   MouseEvent as React_MouseEvent,
 } from 'react';
 import { StoreType } from './store';
+import { getNode } from './utils';
 
 type AllStore = StoreType & {
   screenToFlowPosition: (
@@ -21,6 +28,66 @@ type AllStore = StoreType & {
   setIsSelecting: (v: XYPosition & { is_dragging: boolean }) => void;
   isSelecting: XYPosition & { is_dragging: boolean };
 };
+
+const PARENT_PADDING = 20;
+const TOP_MARGIN = 120;
+const RIGHT_MARGIN = 80;
+
+export function updateParent(store: StoreType, parent: string) {
+  const { getNodes } = store;
+
+  const befores = getNodes();
+  const node = getNode(befores, parent);
+
+  const children = befores.filter((v) => v.data.parent === parent);
+
+  const min_x =
+    Math.min(
+      ...children
+        .map((v) => v.position.x)
+        .concat(children.map((v) => (v.measured?.width || 0) + v.position.x)),
+    ) - PARENT_PADDING;
+
+  const max_x =
+    Math.max(
+      ...children
+        .map((v) => v.position.x)
+        .concat(children.map((v) => (v.measured?.width || 0) + v.position.x)),
+    ) +
+    PARENT_PADDING +
+    RIGHT_MARGIN;
+
+  const min_y =
+    Math.min(
+      ...children
+        .map((v) => v.position.y)
+        .concat(children.map((v) => (v.measured?.height || 0) + v.position.y)),
+    ) -
+    PARENT_PADDING -
+    TOP_MARGIN;
+
+  const max_y =
+    Math.max(
+      ...children
+        .map((v) => v.position.y)
+        .concat(children.map((v) => (v.measured?.height || 0) + v.position.y)),
+    ) + PARENT_PADDING;
+
+  const edit_parent = {
+    id: parent,
+    item: {
+      ...node,
+      data: {
+        ...node?.data,
+        dimensions: { width: max_x - min_x, height: max_y - min_y },
+      },
+      position: { x: min_x, y: min_y },
+    },
+    type: 'replace',
+  } as NodeReplaceChange;
+
+  return edit_parent;
+}
 
 export function isValidConnection(
   { getNodes, getEdges, error_level }: AllStore,

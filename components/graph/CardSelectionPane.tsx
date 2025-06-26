@@ -145,8 +145,6 @@ export default function CardSelectionPane() {
     functional_nodes_only,
   );
 
-  console.log(values);
-
   const N = values.length;
 
   return (

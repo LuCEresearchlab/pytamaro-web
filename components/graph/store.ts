@@ -5,6 +5,8 @@ import {
   EdgeChange,
   Node,
   NodeChange,
+  NodePositionChange,
+  NodeSelectionChange,
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
@@ -16,6 +18,7 @@ import { ConfigurationState, createConfigurationSlice } from './configuration';
 import { createImgStateSlice, ImgStateSlice } from './img_store';
 import { AnnotationStateSlice, createAnnotationSlice } from './annotations';
 import { getNode } from './utils';
+import { updateParent } from './graph_toolbox';
 
 export interface DraggedElementData {
   type: string;
@@ -65,8 +68,83 @@ export const createGraphSlice: StateCreator<
   dragged: undefined,
   nodes: [],
   edges: [],
-  onNodesChange: (changes) => {
+  onNodesChange: (raw_changes) => {
     const befores = get().nodes;
+
+    const parents_to_update: Set<string> = new Set();
+
+    const changes = raw_changes
+      .map((parent): NodeChange[] => {
+        if (parent.type === 'select') {
+          const node = getNode(befores, parent.id);
+          const parent_id: string | undefined = node?.data.parent as
+            | string
+            | undefined;
+
+          return befores
+            .filter((v) => v.data?.parent === parent.id && !v.selected)
+            .map(
+              ({ id }) =>
+                ({
+                  id,
+                  selected: true,
+                  type: 'select',
+                }) as NodeSelectionChange,
+            )
+            .concat(parent)
+            .concat(
+              parent_id && !parent.selected
+                ? [
+                    {
+                      id: parent_id,
+                      selected: false,
+                      type: 'select',
+                    },
+                  ]
+                : [],
+            );
+        }
+        if (parent.type === 'position') {
+          const node = getNode(befores, parent.id)!;
+          if (node.data.parent) {
+            parents_to_update.add(node.data.parent as string);
+          } else {
+            const previous_position = node.position;
+            const current_position = parent.position || previous_position;
+            const { x: dx, y: dy } = {
+              x: current_position.x - previous_position.x,
+              y: current_position.y - previous_position.y,
+            };
+            return (
+              befores
+                .filter((v) => v.data?.parent === parent.id)
+                // .filter((v) => !(v.selected && v.dragging))
+                .map(
+                  ({ id, dragging, selected, position: { x, y } }) =>
+                    ({
+                      id,
+                      position: !(selected && dragging)
+                        ? {
+                            x: x + dx,
+                            y: y + dy,
+                          }
+                        : undefined,
+                      type: 'position',
+                    }) as NodePositionChange,
+                )
+                .concat(parent)
+            );
+          }
+        }
+        return [parent];
+      })
+      .reduce((a, b) => a.concat(b), [])
+      .concat(
+        Array.from(parents_to_update).map((parent) =>
+          updateParent(get(), parent),
+        ),
+      );
+
     set({
       nodes: applyNodeChanges(changes, befores),
     });

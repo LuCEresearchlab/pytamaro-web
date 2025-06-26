@@ -5,9 +5,11 @@ import {
   GetSmoothStepPathParams,
   Position,
 } from '@xyflow/react';
+import { useStore } from './store';
+import { getNode } from './utils';
 
 interface GetSmoothStepWithPaddingPathParams extends GetSmoothStepPathParams {
-  padding: number;
+  padding: { source: number; target: number };
 }
 
 function getSmoothStepWithPaddingPath({
@@ -20,7 +22,7 @@ function getSmoothStepWithPaddingPath({
   borderRadius = 5,
   centerX,
   centerY,
-  padding = 20,
+  padding = { source: 20, target: 20 },
   offset = 20,
 }: GetSmoothStepWithPaddingPathParams): [
   path: string,
@@ -42,7 +44,7 @@ function getSmoothStepWithPaddingPath({
     offset,
   });
 
-  const newPath = `M ${sourceX - padding} ${sourceY} L ${sourceX} ${sourceY} ${path} M ${targetX} ${targetY} L ${targetX + padding} ${targetY}`;
+  const newPath = `M ${sourceX - padding.source} ${sourceY} L ${sourceX} ${sourceY} ${path} M ${targetX} ${targetY} L ${targetX + padding.target} ${targetY}`;
 
   return [newPath, ...other];
 }
@@ -53,15 +55,23 @@ function CustomEdge({
   sourceY,
   targetX,
   targetY,
+  target,
   style,
 }: EdgeProps) {
+  const { getNodes } = useStore();
+
+  const node = getNode(getNodes(), target)!;
+
   const [edgePath] = getSmoothStepWithPaddingPath({
     sourceX,
     sourceY,
     targetX,
     targetY,
     offset: 0,
-    padding: 20,
+    padding: {
+      source: 20,
+      target: node?.type !== 'constant_definition' ? 20 : 0,
+    },
   });
 
   return (
