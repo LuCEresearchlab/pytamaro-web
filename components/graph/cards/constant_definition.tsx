@@ -1,4 +1,10 @@
-import { Dimensions, Handle, NodeProps, Position } from '@xyflow/react';
+import {
+  Dimensions,
+  Handle,
+  NodeProps,
+  Position,
+  useReactFlow,
+} from '@xyflow/react';
 import { createRef, RefObject, useEffect, useRef, useState } from 'react';
 import { useStore } from '../store';
 import { updateParent } from '../graph_toolbox';
@@ -26,6 +32,9 @@ const BORDER_WIDTH = '2px';
 export interface ITamaroConstantDefinitionCardData extends ITamaroCardData {
   name: string;
   type?: string;
+
+  text_width?: number;
+  min_height?: number;
 }
 
 export default function ConstantDefinition({
@@ -33,29 +42,43 @@ export default function ConstantDefinition({
   data,
   positionAbsoluteX,
   positionAbsoluteY,
-}: NodeProps) {
+}: NodeProps & { data: ITamaroConstantDefinitionCardData }) {
+  const text_width = data.text_width || 0;
   const textRef: RefObject<HTMLDivElement> = createRef();
   const store = useStore();
-  const [textWidth, setTextWidth] = useState(0);
+  const { screenToFlowPosition } = useReactFlow();
   const { initialized, getNodes, onNodesChange, updateNodeData } = store;
   const thisInitialization = useRef(false);
 
   const name = (data.name || '') as string;
-  function setName(v: string) {
-    updateNodeData(id, (data) => ({ ...data, name: v }));
 
+  function updateDimData() {
     if (textRef.current) {
       const rect = textRef.current.getBoundingClientRect();
-      setTextWidth(rect.width);
+
+      const { x: x0, y: y0 } = screenToFlowPosition(rect);
+      const { x: x1, y: y1 } = screenToFlowPosition({
+        x: rect.x + rect.width,
+        y: rect.y + 150,
+      });
+
+      updateNodeData(id, (data) => ({
+        ...data,
+        text_width: x1 - x0,
+        min_height: y1 - y0,
+      }));
+      onNodesChange([updateParent(store, id)]);
     }
+  }
+
+  function setName(v: string) {
+    updateNodeData(id, (data) => ({ ...data, name: v }));
+    updateDimData();
   }
 
   useEffect(() => {
     if (initialized === 'done' && !thisInitialization.current) {
-      if (textRef.current) {
-        const rect = textRef.current.getBoundingClientRect();
-        setTextWidth(rect.width);
-      }
+      updateDimData();
       thisInitialization.current = true;
       onNodesChange([updateParent(store, id)]);
     }
@@ -72,7 +95,7 @@ export default function ConstantDefinition({
     y: p1.y + (dimension.height || 0),
   };
   const real_dim = {
-    width: Math.max(p2.x - p1.x, 100 + textWidth),
+    width: p2.x - p1.x,
     height: p2.y - p1.y,
   };
 
@@ -109,7 +132,7 @@ export default function ConstantDefinition({
               borderStyle: 'solid',
               bottom: '100%',
 
-              borderWidth: `30px ${textWidth / 2}px 0 ${textWidth / 2}px`,
+              borderWidth: `30px ${text_width / 2}px 0 ${text_width / 2}px`,
               borderColor: `${BORDER_COLOR} transparent ${BORDER_COLOR} transparent`,
               transform: 'rotate(180deg)',
               pointerEvents: 'none',
@@ -124,7 +147,7 @@ export default function ConstantDefinition({
               borderStyle: 'solid',
               bottom: `-${BORDER_WIDTH}`,
 
-              borderWidth: `30px ${textWidth / 2}px 0 ${textWidth / 2}px`,
+              borderWidth: `30px ${text_width / 2}px 0 ${text_width / 2}px`,
               borderColor: `${BACKGROUND_COLOR} transparent ${BACKGROUND_COLOR} transparent`,
               transform: 'rotate(180deg)',
               pointerEvents: 'none',

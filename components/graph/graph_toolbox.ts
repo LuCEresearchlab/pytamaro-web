@@ -62,9 +62,7 @@ export function updateParent(store: StoreType, parent: string) {
       ...children
         .map((v) => v.position.y)
         .concat(children.map((v) => (v.measured?.height || 0) + v.position.y)),
-    ) -
-    PARENT_PADDING -
-    TOP_MARGIN;
+    ) - PARENT_PADDING;
 
   const max_y =
     Math.max(
@@ -73,15 +71,34 @@ export function updateParent(store: StoreType, parent: string) {
         .concat(children.map((v) => (v.measured?.height || 0) + v.position.y)),
     ) + PARENT_PADDING;
 
+  const x_margin =
+    (Math.max(max_x - min_x, 100 + (node?.data.text_width as number) || 0) -
+      (max_x - min_x)) /
+    2;
+
+  const y_margin =
+    (Math.max(max_y - min_y, (node?.data.min_height as number) || 0) -
+      (max_y - min_y)) /
+    2;
+
   const edit_parent = {
     id: parent,
     item: {
       ...node,
       data: {
         ...node?.data,
-        dimensions: { width: max_x - min_x, height: max_y - min_y },
+        dimensions: {
+          width: Math.max(
+            max_x - min_x,
+            100 + (node?.data.text_width as number) || 0,
+          ),
+          height: Math.max(
+            max_y - min_y,
+            (node?.data.min_height as number) || 0,
+          ),
+        },
       },
-      position: { x: min_x, y: min_y },
+      position: { x: min_x - x_margin, y: min_y - TOP_MARGIN - y_margin },
     },
     type: 'replace',
   } as NodeReplaceChange;

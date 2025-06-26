@@ -264,7 +264,6 @@ export const createImgStateSlice: StateCreator<
             ),
           }));
 
-          console.log(usages);
           usages.map((v) => v.id).forEach(get().invalidate_node);
         }
         break;

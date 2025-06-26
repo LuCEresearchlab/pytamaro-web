@@ -35,7 +35,6 @@ export default function NodeContextMenu({
   close: () => void;
 }) {
   const [openNameModal, setNameModalOpen] = useState(false);
-  console.log(openNameModal);
   const { getNodes, setNodes, getEdges, setEdges, invalidate_node } =
     useStore();
 
