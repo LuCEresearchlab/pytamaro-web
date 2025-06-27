@@ -229,7 +229,7 @@ export function onDocumentCopyCatpure(
   const selected = {
     nodes: getNodes()
       .filter((v) => v.selected)
-      .map((v) => ({ ...v, data: { ...v.data, parent: undefined } })),
+      .map((v) => ({ ...v, data: { ...v.data } })),
     edges: getEdges().filter((v) => v.selected),
   };
 
@@ -278,10 +278,24 @@ export function onDocumentPasteCatpure(
     return `${new Date().getTime()}-${v}`;
   };
 
-  const positions = data.nodes
+  const nodes = data.nodes
+    .filter((v) => v.type === 'constant_definition')
+    .map((constant_def) => {
+      return getNodes().filter((v) => v.data.parent === constant_def.id);
+    })
+    .reduce((a, b) => a.concat(b), [])
+    .concat(
+      data.nodes.filter(
+        (v) =>
+          v.data.parent == null ||
+          data.nodes.find((o) => o.id === v.data.parent) == null,
+      ),
+    );
+
+  const positions = nodes
     .map((v) => v.position)
     .concat(
-      data.nodes
+      nodes
         .filter((v) => v.measured)
         .map((v) => ({
           x: v.position.x + (v.measured?.width || 0),
@@ -301,18 +315,37 @@ export function onDocumentPasteCatpure(
     y: mousePosition.y - centroid.y,
   };
 
-  const newNodes = data.nodes.map((v) => {
-    const newId = randomId();
+  function getOrCreateNodeMap(id: string): string {
+    return node_mapping.has(id)
+      ? node_mapping.get(id)!
+      : node_mapping.set(id, randomId()).get(id)!;
+  }
 
-    node_mapping.set(v.id, newId);
+  const newNodes = nodes.map((v) => {
     return {
       ...v,
-      id: newId,
+      id: getOrCreateNodeMap(v.id),
       position: { x: v.position.x + diff.x, y: v.position.y + diff.y },
+      data: {
+        ...v.data,
+        parent: v.data.parent
+          ? getOrCreateNodeMap(v.data.parent as string)
+          : undefined,
+      },
     };
   });
 
-  const newEdges = data.edges
+  const newEdges = data.nodes
+    .filter((v) => v.type === 'constant_definition')
+    .map((constant_def) => {
+      return getNodes()
+        .filter((v) => v.data.parent === constant_def.id)
+        .map((source) => getEdges().filter((v) => v.source === source.id))
+        .reduce((a, b) => a.concat(b), [])
+        .map((v): Edge => ({ ...v, $not_selected: true }) as any as Edge);
+    })
+    .reduce((a, b) => a.concat(b), [])
+    .concat(...data.edges)
     .map((v) => {
       const newId = randomId();
 
@@ -336,13 +369,26 @@ export function onDocumentPasteCatpure(
   setNodes(
     getNodes()
       .map((v) => ({ ...v, selected: false }))
-      .concat(newNodes.map((v) => ({ ...v, selected: true }))),
+      .concat(
+        newNodes.map((v) => ({
+          ...v,
+          selected:
+            v.data.parent == null ||
+            data.nodes.find((o) => o.id === v.data.parent) == null,
+        })),
+      ),
   );
 
   setEdges(
     getEdges()
       .map((v) => ({ ...v, selected: false }))
-      .concat(newEdges.map((v) => ({ ...v, selected: true }))),
+      .concat(
+        newEdges.map((v) => ({
+          ...v,
+          selected: Object.keys(v).includes('$not_selected') ? false : true,
+          $not_selected: undefined,
+        })),
+      ),
   );
 
   newNodes.forEach((v) => invalidate_node(v.id));
