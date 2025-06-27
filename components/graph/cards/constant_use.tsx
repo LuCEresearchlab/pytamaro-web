@@ -1,7 +1,6 @@
 import { Handle, NodeProps, Position } from '@xyflow/react';
 import { ITamaroCardData } from '.';
 import { ContentEditableDiv } from './literal';
-import { BACKGROUND_COLOR, BORDER_COLOR } from './constant_definition';
 import { useStore } from '../store';
 
 export interface ITamaroConstantUseCardData extends ITamaroCardData {
@@ -14,11 +13,12 @@ export default function ConstantUse({
   hide_handles,
   resetOnChange = false,
 }: NodeProps & { hide_handles: boolean; resetOnChange?: boolean }) {
-  const { updateNodeData } = useStore();
+  const { updateNodeData, invalidate_node } = useStore();
   const { name } = data as unknown as ITamaroConstantUseCardData;
 
   function setName(v: string) {
     updateNodeData(id, (data) => ({ ...data, name: v }));
+    invalidate_node(id);
   }
 
   return (

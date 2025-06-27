@@ -47,7 +47,13 @@ export default function ConstantDefinition({
   const textRef: RefObject<HTMLDivElement> = createRef();
   const store = useStore();
   const { screenToFlowPosition } = useReactFlow();
-  const { initialized, getNodes, onNodesChange, updateNodeData } = store;
+  const {
+    initialized,
+    getNodes,
+    onNodesChange,
+    updateNodeData,
+    invalidate_node,
+  } = store;
   const thisInitialization = useRef(false);
 
   const name = (data.name || '') as string;
@@ -74,6 +80,7 @@ export default function ConstantDefinition({
   function setName(v: string) {
     updateNodeData(id, (data) => ({ ...data, name: v }));
     updateDimData();
+    invalidate_node(id);
   }
 
   useEffect(() => {
