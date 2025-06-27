@@ -125,7 +125,7 @@ export default function FunctionDocumentation({
             </span>
           ))}
           <CodeElement>)</CodeElement>
-          {returnValue && docsMetadata.showTypes && (
+          {returnValue?.type && docsMetadata.showTypes && (
             <Box
               component='span'
               {...hoverProps(returnId(), hoverElement, setHoverElement)}
