@@ -73,37 +73,8 @@ export const createGraphSlice: StateCreator<
 
     const parents_to_update: Set<string> = new Set();
 
-    const changes = raw_changes
+    const changes_step_1 = raw_changes
       .map((parent): NodeChange[] => {
-        if (parent.type === 'select') {
-          const node = getNode(befores, parent.id);
-          const parent_id: string | undefined = node?.data.parent as
-            | string
-            | undefined;
-
-          return befores
-            .filter((v) => v.data?.parent === parent.id && !v.selected)
-            .map(
-              ({ id }) =>
-                ({
-                  id,
-                  selected: true,
-                  type: 'select',
-                }) as NodeSelectionChange,
-            )
-            .concat(parent)
-            .concat(
-              parent_id && !parent.selected
-                ? [
-                    {
-                      id: parent_id,
-                      selected: false,
-                      type: 'select',
-                    },
-                  ]
-                : [],
-            );
-        }
         if (parent.type === 'position') {
           const node = getNode(befores, parent.id)!;
           if (node.data.parent) {
@@ -144,6 +115,15 @@ export const createGraphSlice: StateCreator<
           updateParent(get(), parent),
         ),
       );
+
+    const changes = changes_step_1.filter(
+      (v) =>
+        v.type !== 'select' ||
+        v.selected ||
+        changes_step_1.find(
+          (o) => o.type === 'select' && o.id === v.id && o.selected,
+        ) == null,
+    );
 
     set({
       nodes: applyNodeChanges(changes, befores),
