@@ -6,7 +6,7 @@ import { CSSProperties, useEffect, useRef, useState } from 'react';
 import { getNode, getParents } from '../utils';
 
 export const BOOL_REGEX = /(True)|(False)/;
-export const FLOAT_REGEX = /^-?[0-9]+(\.[0-9]*)?$/g;
+export const FLOAT_REGEX = /^[0-9]+(\.[0-9]*)?$/g;
 export const STR_REGEX = /^"([^\\"]|(\\")|\\\\)*"$/g;
 
 export interface ITamaroLiteralCardData extends ITamaroCardData {
