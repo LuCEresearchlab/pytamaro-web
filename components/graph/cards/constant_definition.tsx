@@ -77,10 +77,18 @@ export default function ConstantDefinition({
     }
   }
 
-  function setName(v: string) {
-    updateNodeData(id, (data) => ({ ...data, name: v }));
+  function setName(newName: string) {
+    const prev_name = name;
+    updateNodeData(id, (data) => ({ ...data, name: newName }));
     updateDimData();
-    invalidate_node(id);
+    getNodes()
+      .filter(
+        (v) =>
+          v.type === 'constant_definition' &&
+          [prev_name, newName].includes(v.data.name as string),
+      )
+      .map((v) => v.id)
+      .forEach(invalidate_node);
   }
 
   useEffect(() => {
@@ -189,12 +197,12 @@ export default function ConstantDefinition({
               fontSize: '40px',
             }}
           >
-            ={' '}
             <ContentEditableDiv
               value={name}
               onChange={setName}
               style={{ margin: '0px 20px', width: '100%' }}
-            />
+            />{' '}
+            =
           </div>
         </div>
       </div>
