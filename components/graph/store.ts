@@ -6,7 +6,7 @@ import {
   Node,
   NodeChange,
   NodePositionChange,
-  NodeSelectionChange,
+  NodeRemoveChange,
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
@@ -150,11 +150,23 @@ export const createGraphSlice: StateCreator<
 
     changes
       .filter((v) => v.type === 'remove')
-      .forEach((change) =>
+      .map((v) => v as NodeRemoveChange)
+      .forEach((change) => {
         get().setAnnotations(
           get().annotations.filter((v) => v.location.node_id !== change.id),
-        ),
-      );
+        );
+
+        const node = getNode(befores, change.id);
+        if (node?.type === 'constant_definition') {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { name }: { name: string } = node.data as any;
+
+          const usages = get().nodes.filter(
+            (v) => v.type === 'constant_use' && v.data.name === name,
+          );
+          usages.map((v) => v.id).forEach(get().invalidate_node);
+        }
+      });
 
     changes
       .filter((v) => v.type === 'add')

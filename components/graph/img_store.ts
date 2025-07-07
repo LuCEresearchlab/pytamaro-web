@@ -247,10 +247,6 @@ export const createImgStateSlice: StateCreator<
             type: supposed_type,
           }));
 
-          const usages = get().nodes.filter(
-            (v) => v.type === 'constant_use' && v.data.name === name,
-          );
-
           set((state) => ({
             queue,
             img_states: state.img_states.map((v) =>
@@ -263,9 +259,25 @@ export const createImgStateSlice: StateCreator<
                   },
             ),
           }));
-
-          usages.map((v) => v.id).forEach(get().invalidate_node);
+        } else {
+          set((state) => ({
+            queue,
+            img_states: state.img_states.map((v) =>
+              v.id !== data.id
+                ? v
+                : {
+                    ...data,
+                    upToDate: true,
+                    code: undefined,
+                  },
+            ),
+          }));
         }
+
+        const usages = get().nodes.filter(
+          (v) => v.type === 'constant_use' && v.data.name === name,
+        );
+        usages.map((v) => v.id).forEach(get().invalidate_node);
         break;
       }
 
