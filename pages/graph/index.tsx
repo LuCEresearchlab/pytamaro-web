@@ -221,7 +221,6 @@ function View() {
         >
           <GraphOptions />
         </div>
-        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
         <AnnotationLayer />
         <div
           style={{
