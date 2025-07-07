@@ -137,21 +137,6 @@ export function TamaroLiteralCard({
         </div>
       </div>
 
-      {!hide_handles && (
-        <Handle
-          type='source'
-          position={Position.Right}
-          id='output'
-          style={{
-            width: '20px',
-            height: '40px',
-            borderRadius: '0px',
-            transform: 'translateY(-50%) translateX(10px)',
-            opacity: '0',
-          }}
-        />
-      )}
-
       <div
         style={{
           width: '0',
@@ -167,6 +152,20 @@ export function TamaroLiteralCard({
           transform: 'translateY(-50%) translateX(100%) translateX(-1px)',
         }}
       ></div>
+      {!hide_handles && (
+        <Handle
+          type='source'
+          position={Position.Right}
+          id='output'
+          style={{
+            width: '20px',
+            height: '40px',
+            borderRadius: '0px',
+            transform: 'translateY(-50%) translateX(10px)',
+            opacity: '0',
+          }}
+        />
+      )}
     </div>
   );
 }
