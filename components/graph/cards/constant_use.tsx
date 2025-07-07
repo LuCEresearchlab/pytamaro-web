@@ -68,14 +68,6 @@ export default function ConstantUse({
           )}
         </div>
       </div>
-      {/* <div className='constant_icon_pane'>
-        {el.icon && (
-          <img
-            className='constant_card_icon card_icon'
-            src={`data:image/svg+xml;utf8,${encodeURIComponent(el.icon)}`}
-          />
-        )}
-      </div> */}
     </div>
   );
 }

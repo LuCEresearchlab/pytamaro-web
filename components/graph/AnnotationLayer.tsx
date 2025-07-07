@@ -138,7 +138,7 @@ export function createAnnotationComponents(
     >
       <div
         style={{
-          transform: 'scale(0.1)',
+          transform: 'scale(0.35)',
           transformOrigin: 'top left',
         }}
       >

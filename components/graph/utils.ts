@@ -18,7 +18,6 @@ import {
 import { ITamaroLiteralCardData } from './cards/literal';
 import { ITamaroConstantCardData } from './cards/constant';
 import { ITamaroConstantDefinitionCardData } from './cards/constant_definition';
-import { StoreType } from './store';
 
 export function getNode(nodes: Node[], id: string) {
   return nodes.find((v) => v.id === id);

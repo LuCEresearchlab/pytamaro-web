@@ -139,7 +139,8 @@ export const createAnnotationSlice: StateCreator<
   },
 
   updateAnnotation(node) {
-    const { setEdges, nodes, edges, error_level } = get();
+    if (!node) return;
+    const { setEdges, nodes, edges, error_level, setNodes } = get();
     const id = node.id;
 
     let annotations: ErrorAnnotation[];
@@ -316,6 +317,42 @@ export const createAnnotationSlice: StateCreator<
         } else {
           annotations = [];
         }
+
+        const isNameValid =
+          annotations.find(
+            (v) =>
+              v.kind === 'syntax-error' &&
+              v.subkind === 'invalid_constant_identifier',
+          ) == null;
+
+        const isNameDefined =
+          annotations.find(
+            (v) => v.kind === 'name-error' && v.subkind === 'unknown_constant',
+          ) == null;
+
+        const isNameDefinitionUnique =
+          annotations.find(
+            (v) =>
+              v.kind === 'name-error' && v.subkind === 'multiple_definitions',
+          ) == null;
+
+        const hasOutputValue =
+          annotations.find(
+            (v) =>
+              v.kind === 'syntax-error' &&
+              v.subkind === 'constant_has_no_value',
+          ) == null;
+
+        setNodes(
+          nodes.map((v) =>
+            v.id !== id
+              ? v
+              : {
+                  ...v,
+                  className: `${!isNameValid ? 'invalid_identifier' : ''} ${!isNameDefined ? 'unknown_identifier' : ''} ${!isNameDefinitionUnique ? 'multiple_definitions' : ''} ${!hasOutputValue ? 'no_output_value' : ''}`,
+                },
+          ),
+        );
 
         break;
       }

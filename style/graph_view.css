@@ -87,3 +87,22 @@
 .react-flow__node-constant_definition {
   z-index: -100 !important;
 }
+
+.unknown_identifier .constant_card {
+  filter: drop-shadow(0px 0px 2px yellow) drop-shadow(0px 0px 2px yellow) drop-shadow(0px 0px 2px yellow);
+}
+
+.invalid_identifier .constant_card .card_name {
+  border-bottom: 2px solid red;
+}
+
+.multiple_definitions .constant_card {
+  filter: drop-shadow(0px 0px 2px red) drop-shadow(0px 0px 2px red) drop-shadow(0px 0px 2px red);
+}
+
+.no_output_value .constant_card {
+  opacity: 0.5;
+}
+.no_output_value .constant_card {
+  filter: drop-shadow(0px 0px 2px yellow) drop-shadow(0px 0px 2px yellow) drop-shadow(0px 0px 2px yellow);
+}
