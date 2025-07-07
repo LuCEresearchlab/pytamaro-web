@@ -290,7 +290,11 @@ export function onDocumentPasteCatpure(
           v.data.parent == null ||
           data.nodes.find((o) => o.id === v.data.parent) == null,
       ),
-    );
+    )
+    .map((v) => ({
+      ...v,
+      $not_selected: data.nodes.find((o) => o.id === v.id) == null,
+    }));
 
   const positions = nodes
     .map((v) => v.position)
@@ -338,11 +342,14 @@ export function onDocumentPasteCatpure(
   const newEdges = data.nodes
     .filter((v) => v.type === 'constant_definition')
     .map((constant_def) => {
-      return getNodes()
-        .filter((v) => v.data.parent === constant_def.id)
-        .map((source) => getEdges().filter((v) => v.source === source.id))
-        .reduce((a, b) => a.concat(b), [])
-        .map((v): Edge => ({ ...v, $not_selected: true }) as any as Edge);
+      return (
+        getNodes()
+          .filter((v) => v.data.parent === constant_def.id)
+          .map((source) => getEdges().filter((v) => v.source === source.id))
+          .reduce((a, b) => a.concat(b), [])
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .map((v): Edge => ({ ...v, $not_selected: true }) as any as Edge)
+      );
     })
     .reduce((a, b) => a.concat(b), [])
     .concat(...data.edges)
@@ -391,6 +398,16 @@ export function onDocumentPasteCatpure(
       ),
   );
 
+  newNodes
+    .filter((v) => v.type === 'constant_definition')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .map((v: any) => v.data.name as string)
+    .map((name) =>
+      getNodes()
+        .filter((v) => v.type === 'constant_definition' && v.data.name === name)
+        .map((v) => v.id)
+        .forEach(invalidate_node),
+    );
   newNodes.forEach((v) => invalidate_node(v.id));
 }
 
