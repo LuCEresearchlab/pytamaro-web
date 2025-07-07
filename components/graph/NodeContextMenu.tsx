@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Node } from '@xyflow/react';
+import { Node, useReactFlow } from '@xyflow/react';
 import { useStore } from './store';
-import { getChildren, getNode, getSubTreeFromRoot } from './utils';
-import { BACKGROUND_COLOR, BORDER_COLOR } from './cards/constant_definition';
+import { getConstantDefinition, getNode, getSubTreeFromRoot } from './utils';
+import { BORDER_COLOR } from './cards/constant_definition';
 import {
   Box,
   Button,
@@ -10,19 +10,14 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Input,
-  Modal,
   TextField,
-  Typography,
 } from '@mui/material';
 
 export default function NodeContextMenu({
   id,
   top = undefined,
   left = undefined,
-  right = undefined,
-  bottom = undefined,
-  click_outside,
+  click_outside = false,
   close,
   ...props
 }: {
@@ -35,6 +30,7 @@ export default function NodeContextMenu({
   close: () => void;
 }) {
   const [openNameModal, setNameModalOpen] = useState(false);
+  const { fitView } = useReactFlow();
   const { getNodes, setNodes, getEdges, setEdges, invalidate_node } =
     useStore();
 
@@ -110,8 +106,21 @@ export default function NodeContextMenu({
           ),
       );
     },
-    [getNodes, getEdges, id, setNodes],
+    [getNodes, getEdges, id, setNodes, invalidate_node, setEdges],
   );
+
+  const node = getNode(getNodes(), id);
+
+  const constant_reference: string | undefined =
+    node?.type === 'constant_use' && node.data.name
+      ? getConstantDefinition(getNodes(), node?.data?.name as string)?.id
+      : undefined;
+
+  const goToParentDefinition = useCallback(() => {
+    fitView({
+      nodes: getNodes().filter((v) => v.id === constant_reference),
+    });
+  }, [fitView, getNodes, constant_reference]);
 
   return (
     <div
@@ -134,7 +143,7 @@ export default function NodeContextMenu({
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'left',
           padding: '10px 20px',
         }}
         onClick={() => setNameModalOpen(true)}
@@ -147,12 +156,28 @@ export default function NodeContextMenu({
             height: '16px',
             margin: '0px 15px',
             backgroundColor: `${BORDER_COLOR}`,
+            borderRadius: '0',
           }}
         >
           {' '}
         </span>
       </button>
 
+      {constant_reference && (
+        <button
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'left',
+            padding: '10px 20px',
+            borderRadius: '0',
+          }}
+          onClick={() => goToParentDefinition()}
+        >
+          Go to constant definition
+        </button>
+      )}
       <Dialog
         open={openNameModal}
         // onClose={() => setNameModalOpen(false)}
@@ -164,6 +189,7 @@ export default function NodeContextMenu({
             onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
               event.preventDefault();
               const formData = new FormData(event.currentTarget);
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const { name } = Object.fromEntries((formData as any).entries());
               extractAsConstant(name);
               setNameModalOpen(false);

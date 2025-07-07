@@ -234,3 +234,12 @@ export function createCodeFromCodeRepresentation(code: CodeRepresentation) {
 
   return import_map + code.expression;
 }
+
+export function getConstantDefinition(
+  nodes: Node[],
+  name: string,
+): Node | undefined {
+  return nodes.find(
+    (v) => v.type === 'constant_definition' && v.data.name === name,
+  );
+}
