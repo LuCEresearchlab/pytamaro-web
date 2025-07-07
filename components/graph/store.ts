@@ -7,6 +7,7 @@ import {
   NodeChange,
   NodePositionChange,
   NodeRemoveChange,
+  NodeReplaceChange,
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
@@ -74,21 +75,21 @@ export const createGraphSlice: StateCreator<
     const parents_to_update: Set<string> = new Set();
 
     const changes_step_1 = raw_changes
-      .map((parent): NodeChange[] => {
-        if (parent.type === 'position') {
-          const node = getNode(befores, parent.id)!;
+      .map((change): NodeChange[] => {
+        if (change.type === 'position') {
+          const node = getNode(befores, change.id)!;
           if (node.data.parent) {
             parents_to_update.add(node.data.parent as string);
           } else {
             const previous_position = node.position;
-            const current_position = parent.position || previous_position;
+            const current_position = change.position || previous_position;
             const { x: dx, y: dy } = {
               x: current_position.x - previous_position.x,
               y: current_position.y - previous_position.y,
             };
             return (
               befores
-                .filter((v) => v.data?.parent === parent.id)
+                .filter((v) => v.data?.parent === change.id)
                 // .filter((v) => !(v.selected && v.dragging))
                 .map(
                   ({ id, dragging, selected, position: { x, y } }) =>
@@ -103,11 +104,11 @@ export const createGraphSlice: StateCreator<
                       type: 'position',
                     }) as NodePositionChange,
                 )
-                .concat(parent)
+                .concat(change)
             );
           }
         }
-        return [parent];
+        return [change];
       })
       .reduce((a, b) => a.concat(b), [])
       .concat(
@@ -176,6 +177,7 @@ export const createGraphSlice: StateCreator<
   onEdgesChange: (changes) => {
     const befores = get().edges;
 
+    const snd_changes: NodeChange[] = [];
     const node_changes = changes
       .map((v): NodeChange[] => {
         if (v.type === 'add') {
@@ -192,7 +194,51 @@ export const createGraphSlice: StateCreator<
           if (!parent) return [];
           const sourceNode = getNode(nodes, source);
           if (sourceNode?.data.parent === parent) return [];
+          if (!sourceNode) return [];
 
+          const dummy_move = {
+            id: source,
+            type: 'position',
+            dragging: false,
+            position: sourceNode?.position,
+            positionAbsolute: sourceNode?.position,
+          } as NodePositionChange;
+
+          snd_changes.push(dummy_move);
+
+          return getSubTreeFromRoot(nodes, befores, source)
+            .map((v) => getNode(nodes, v)!)
+            .map(
+              (v) =>
+                ({
+                  type: 'replace',
+                  id: v.id,
+                  item: {
+                    ...v,
+                    data: { ...v?.data, parent },
+                  } as Node,
+                }) as NodeReplaceChange,
+            )
+            .map((v) => v as NodeChange);
+        }
+
+        if (v.type === 'remove') {
+          const { getNodes } = get();
+          const nodes = getNodes();
+          const source = befores.find((o) => o.id === v.id)?.source;
+          if (!source) return [];
+          const sourceNode = getNode(nodes, source);
+          if (!sourceNode) return [];
+
+          const dummy_move = {
+            id: source,
+            type: 'position',
+            dragging: false,
+            position: sourceNode?.position,
+            positionAbsolute: sourceNode?.position,
+          } as NodePositionChange;
+
+          snd_changes.push(dummy_move);
           return getSubTreeFromRoot(nodes, befores, source)
             .map((v) => getNode(nodes, v)!)
             .map((v) => ({
@@ -200,15 +246,17 @@ export const createGraphSlice: StateCreator<
               id: v.id,
               item: {
                 ...v,
-                data: { ...v?.data, parent },
+                data: { ...v?.data, parent: undefined },
               } as Node,
-            }));
+            }))
+            .map((v) => v as NodeChange);
         }
 
         return [];
       })
       .reduce((a, b) => a.concat(b), []);
     if (node_changes.length !== 0) get().onNodesChange(node_changes);
+    if (snd_changes.length !== 0) get().onNodesChange(snd_changes);
 
     const changed_edges = changes
       .filter((v) => v.type !== 'select' && v.type !== 'replace')

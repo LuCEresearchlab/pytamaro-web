@@ -5,7 +5,7 @@ import {
   Position,
   useReactFlow,
 } from '@xyflow/react';
-import { createRef, RefObject, useEffect, useRef, useState } from 'react';
+import { createRef, RefObject, useCallback, useEffect, useRef } from 'react';
 import { useStore } from '../store';
 import { updateParent } from '../graph_toolbox';
 import { ContentEditableDiv } from './literal';
@@ -58,14 +58,14 @@ export default function ConstantDefinition({
 
   const name = (data.name || '') as string;
 
-  function updateDimData() {
+  const updateDimData = useCallback(() => {
     if (textRef.current) {
       const rect = textRef.current.getBoundingClientRect();
 
       const { x: x0, y: y0 } = screenToFlowPosition(rect);
       const { x: x1, y: y1 } = screenToFlowPosition({
         x: rect.x + rect.width,
-        y: rect.y + 150,
+        y: rect.y,
       });
 
       updateNodeData(id, (data) => ({
@@ -75,7 +75,7 @@ export default function ConstantDefinition({
       }));
       onNodesChange([updateParent(store, id)]);
     }
-  }
+  }, [id, onNodesChange, screenToFlowPosition, store, textRef, updateNodeData]);
 
   function setName(newName: string) {
     const prev_name = name;
@@ -84,7 +84,7 @@ export default function ConstantDefinition({
     getNodes()
       .filter(
         (v) =>
-          v.type === 'constant_definition' &&
+          (v.type === 'constant_definition' || v.type === 'constant_use') &&
           [prev_name, newName].includes(v.data.name as string),
       )
       .map((v) => v.id)
@@ -97,7 +97,7 @@ export default function ConstantDefinition({
       thisInitialization.current = true;
       onNodesChange([updateParent(store, id)]);
     }
-  }, [initialized, getNodes, store, id, onNodesChange]);
+  }, [initialized, getNodes, store, id, onNodesChange, updateDimData]);
 
   const dimension: Dimensions = (data.dimensions || {
     width: 100,
@@ -207,7 +207,6 @@ export default function ConstantDefinition({
         </div>
       </div>
       <div
-        className='tamaro_card'
         style={{
           borderTop: `solid ${BORDER_COLOR} 4px`,
           borderRight: `solid ${BORDER_COLOR} 4px`,
