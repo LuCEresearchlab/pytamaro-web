@@ -236,26 +236,26 @@ export default function ConstantDefinition({
           style={{
             position: 'absolute',
             top: '50%',
-            right: '40px',
+            right: '30px',
             transform: 'translateY(-50%) translateX(100%)',
-            paddingLeft: '16px',
-            width: '16px',
-            height: '64px',
-            borderRadius: '0px',
+            height: '50px',
+            width: '50px',
+            aspectRatio: '1',
             zIndex: '900',
+            borderTopLeftRadius: '50%',
+            borderBottomLeftRadius: '50%',
             borderLeft: `solid ${BORDER_COLOR} 32px`,
-            borderTop: 'solid transparent 32px',
-            borderBottom: 'solid transparent 32px',
-            borderRight: 'solid transparent 32px',
             backgroundColor: 'transparent',
           }}
         >
           <Handle
-            position={Position.Right}
+            position={Position.Left}
             type='target'
             style={{
-              right: '0',
-              transform: 'translateX(-100%) translateX(-32px)',
+              left: 'unset',
+              transform: 'translateY(-50%) translateX(-65%)',
+              height: '50px',
+              width: '50px',
               opacity: '0',
             }}
             id={'output'}
