@@ -2,6 +2,8 @@ import {
   BaseEdge,
   ConnectionLineComponentProps,
   EdgeProps,
+  getBezierPath,
+  getSimpleBezierPath,
   getSmoothStepPath,
   GetSmoothStepPathParams,
   Position,
@@ -32,17 +34,13 @@ function getSmoothStepWithPaddingPath({
   offsetX: number,
   offsetY: number,
 ] {
-  const [path, ...other] = getSmoothStepPath({
+  const [path, ...other] = getBezierPath({
     sourceX,
     sourceY,
-    sourcePosition,
+    sourcePosition: Position.Right,
     targetX,
     targetY,
-    targetPosition,
-    borderRadius,
-    centerX,
-    centerY,
-    offset,
+    targetPosition: Position.Left,
   });
 
   const newPath = `M ${sourceX - padding.source} ${sourceY} L ${sourceX} ${sourceY} ${path} M ${targetX} ${targetY} L ${targetX + padding.target} ${targetY}`;
