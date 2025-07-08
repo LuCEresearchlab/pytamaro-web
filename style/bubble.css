@@ -2,11 +2,12 @@
   position: relative;
   width: 100%;
   padding: 15px 25px 20px;
-  color: #fff;
-  background: black;
+  color: black;
+  background: #FFE600;
   border-radius: 25px;
   transform: translateY(-100%) translateY(-40px) translateX(-60%);
   border: gray solid 1px;
+  filter: drop-shadow(0px 0px 2px black)
 }
 
 .error-bubble .quote {
@@ -16,5 +17,10 @@
   right: 40%;
   border-width: 30px 0px 0 30px;
   border-style: solid;
-  border-color: black transparent;
+  border-color: #FFE600 transparent;
+}
+
+.error-bubble .error_highlight {
+  font-family: monospace;
+  color: #5E5500;
 }
