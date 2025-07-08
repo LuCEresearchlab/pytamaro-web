@@ -116,6 +116,7 @@ export default function ConstantDefinition({
 
   return (
     <div
+      className='tamaro_card'
       style={{
         position: 'relative',
         width: `${real_dim.width}px`,

@@ -242,3 +242,9 @@ export function getConstantDefinition(
     (v) => v.type === 'constant_definition' && v.data.name === name,
   );
 }
+
+export function getConstantDefinitions(nodes: Node[], name: string): Node[] {
+  return nodes.filter(
+    (v) => v.type === 'constant_definition' && v.data.name === name,
+  );
+}

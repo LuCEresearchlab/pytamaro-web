@@ -3,6 +3,7 @@ import { StoreType } from './store';
 import { Node } from '@xyflow/react';
 import {
   getConstantDefinition,
+  getConstantDefinitions,
   getFunctionHandles,
   getFunctionParameterRelative,
   getHandleType,
@@ -144,10 +145,21 @@ export const createAnnotationSlice: StateCreator<
 
   updateAnnotation(node) {
     if (!node) return;
-    const { setEdges, nodes, edges, error_level, setNodes } = get();
+    const {
+      setEdges,
+      getEdges,
+      nodes,
+      edges,
+      error_level,
+      setNodes,
+      getNodes,
+    } = get();
     const id = node.id;
 
     let annotations: ErrorAnnotation[];
+
+    const GENERIC_MAIN_CLASS_NAME = 'error-main-node-highlight';
+    const GENERIC_SND_CLASS_NAME = 'error-secondary-node-highlight';
 
     switch (node.type as CardType) {
       case 'function': {
@@ -252,10 +264,6 @@ export const createAnnotationSlice: StateCreator<
           (v) => v.type === 'constant_definition' && v.data.name === name,
         );
 
-        const output_value = get().img_states.find(
-          (v) => v.id === node.id,
-        )?.code;
-
         if (!check_const_name(name)) {
           annotations = [
             {
@@ -269,25 +277,8 @@ export const createAnnotationSlice: StateCreator<
               },
             },
           ];
-        } else if (definitions.length > 1) {
-          annotations = [
-            {
-              kind: 'name-error',
-              subkind: 'multiple_definitions',
-              args: [
-                {
-                  name: 'name',
-                  value: name,
-                },
-              ],
-              location: {
-                handle: undefined,
-                position: undefined,
-                node_id: node.id,
-              },
-            },
-          ];
-        } else if (definitions.length === 0) {
+        }
+        if (definitions.length === 0) {
           annotations = [
             {
               kind: 'name-error',
@@ -305,59 +296,9 @@ export const createAnnotationSlice: StateCreator<
               },
             },
           ];
-        } else if (output_value == null) {
-          annotations = [
-            {
-              kind: 'syntax-error',
-              subkind: 'constant_has_no_value',
-              args: [{ name: 'name', value: name }],
-              location: {
-                handle: undefined,
-                node_id: node.id,
-                position: undefined,
-              },
-            },
-          ];
         } else {
           annotations = [];
         }
-
-        const isNameValid =
-          annotations.find(
-            (v) =>
-              v.kind === 'syntax-error' &&
-              v.subkind === 'invalid_constant_identifier',
-          ) == null;
-
-        const isNameDefined =
-          annotations.find(
-            (v) => v.kind === 'name-error' && v.subkind === 'unknown_constant',
-          ) == null;
-
-        const isNameDefinitionUnique =
-          annotations.find(
-            (v) =>
-              v.kind === 'name-error' && v.subkind === 'multiple_definitions',
-          ) == null;
-
-        const hasOutputValue =
-          annotations.find(
-            (v) =>
-              v.kind === 'syntax-error' &&
-              v.subkind === 'constant_has_no_value',
-          ) == null;
-
-        setNodes(
-          nodes.map((v) =>
-            v.id !== id
-              ? v
-              : {
-                  ...v,
-                  className: `${!isNameValid ? 'invalid_identifier' : ''} ${!isNameDefined ? 'unknown_identifier' : ''} ${!isNameDefinitionUnique ? 'multiple_definitions' : ''} ${!hasOutputValue ? 'no_output_value' : ''}`,
-                },
-          ),
-        );
-
         break;
       }
 
@@ -480,6 +421,37 @@ export const createAnnotationSlice: StateCreator<
       get()
         .annotations.filter((v) => v.location.node_id !== id)
         .concat(annotations),
+    );
+
+    const now_annotations = get().annotations.map((v) => v.location.node_id);
+    const name =
+      node.type === 'constant_use'
+        ? (node.data.string as string | undefined)
+        : undefined;
+    const error_in_subtree = getSubTreeFromRoot(getNodes(), getEdges(), id)
+      .concat(
+        name ? getConstantDefinitions(getNodes(), name).map((o) => o.id) : [],
+      )
+
+      .find((o) => now_annotations.includes(o));
+
+    setNodes(
+      getNodes().map((v) =>
+        v.id !== id
+          ? v
+          : {
+              ...v,
+              className:
+                (v.className || '')
+                  .replace(GENERIC_MAIN_CLASS_NAME, '')
+                  .replace(GENERIC_SND_CLASS_NAME, '') +
+                (annotations.length !== 0
+                  ? ' ' + GENERIC_MAIN_CLASS_NAME
+                  : error_in_subtree
+                    ? ' ' + GENERIC_SND_CLASS_NAME
+                    : ''),
+            },
+      ),
     );
   },
 });

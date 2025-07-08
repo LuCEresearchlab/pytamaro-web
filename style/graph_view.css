@@ -88,21 +88,26 @@
   z-index: -100 !important;
 }
 
-.unknown_identifier .constant_card {
-  filter: drop-shadow(0px 0px 2px yellow) drop-shadow(0px 0px 2px yellow) drop-shadow(0px 0px 2px yellow);
+.error-main-node-highlight .tamaro_card {
+  --color: rgb(255, 225, 130);
+  --spread: 0.2px;
+  --radius: 4px;
+  
+  filter: drop-shadow(var(--radius) 0 var(--spread) var(--color))
+  drop-shadow(calc(-1 * var(--radius)) 0 var(--spread) var(--color))
+  drop-shadow(0px calc(-1 * var(--radius)) var(--spread) var(--color))
+  drop-shadow(0px var(--radius) var(--spread) var(--color));
+
 }
 
-.invalid_identifier .constant_card .card_name {
-  border-bottom: 2px solid red;
-}
+.error-secondary-node-highlight .tamaro_card {
+  --color: rgba(255, 225, 130, 0.5);
+  --radius: 0.2px;
+  --spread: 5px;
+    
+  filter: drop-shadow(var(--radius) 0 var(--spread) var(--color))
+  drop-shadow(calc(-1 * var(--radius)) 0 var(--spread) var(--color))
+  drop-shadow(0px calc(-1 * var(--radius)) var(--spread) var(--color))
+  drop-shadow(0px var(--radius) var(--spread) var(--color));
 
-.multiple_definitions .constant_card {
-  filter: drop-shadow(0px 0px 2px red) drop-shadow(0px 0px 2px red) drop-shadow(0px 0px 2px red);
-}
-
-.no_output_value .constant_card {
-  opacity: 0.5;
-}
-.no_output_value .constant_card {
-  filter: drop-shadow(0px 0px 2px yellow) drop-shadow(0px 0px 2px yellow) drop-shadow(0px 0px 2px yellow);
 }
