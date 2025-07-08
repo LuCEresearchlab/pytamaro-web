@@ -141,7 +141,6 @@ export function FunctionTamaroCard({
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
-    console.log('HAHAH');
     if (!returnsIconRef.current) return;
 
     const rect = returnsIconRef.current.getBoundingClientRect();

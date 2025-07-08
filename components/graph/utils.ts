@@ -347,3 +347,36 @@ export function getSubTreeFromRootConsideringConstants(
 
   return descendants;
 }
+
+export function toEnglishName(name: string): string | undefined {
+  const obj = {
+    Graphic: {
+      en: 'Graphic',
+      it: 'Grafica',
+      de: 'Grafik',
+      fr: 'Graphique',
+    },
+    Color: {
+      en: 'Color',
+      it: 'Colore',
+      de: 'Farbe',
+      fr: 'Couleur',
+    },
+    Point: {
+      en: 'Point',
+      it: 'Punto',
+      de: 'Punkt',
+      fr: 'Point',
+    },
+    float: {
+      _: 'float',
+    },
+    str: {
+      _: 'str',
+    },
+  };
+
+  return Object.entries(obj).find((v) =>
+    Object.values(v[1]).includes(name),
+  )?.[0] as string | undefined;
+}

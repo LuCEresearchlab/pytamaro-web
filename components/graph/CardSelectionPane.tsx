@@ -17,6 +17,7 @@ import {
   JudiciousModule,
 } from '../../src/schemas/documentation';
 import { ImportReference } from './cards';
+import { toEnglishName } from './utils';
 
 export type JudiciousModuleElement = JudiciousElement & { module: string };
 const N_LIMIT = 10;
@@ -80,31 +81,7 @@ function filterByImports(
               .filter((v) => !v.default)
               .map((v) => v.type)
               .concat(v.returnValue?.type || 'float')
-              .find(
-                (v) =>
-                  !JSON.stringify({
-                    Graphic: {
-                      en: 'Graphic',
-                      it: 'Grafica',
-                      de: 'Grafik',
-                      fr: 'Graphique',
-                    },
-                    Color: {
-                      en: 'Color',
-                      it: 'Colore',
-                      de: 'Farbe',
-                      fr: 'Couleur',
-                    },
-                    Point: {
-                      en: 'Point',
-                      it: 'Punto',
-                      de: 'Punkt',
-                      fr: 'Point',
-                    },
-                    float: {},
-                    str: {},
-                  }).includes(`"${v}"`),
-              )
+              .find((v) => toEnglishName(v) != null)
           );
         }
 
