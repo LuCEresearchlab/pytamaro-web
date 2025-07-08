@@ -132,12 +132,13 @@ export function createAnnotationComponents(
   const NODE_PADDING = 10;
   const isNearEnough =
     annotation.location.handle === undefined
-      ? mousePosition.x + NODE_PADDING > (node?.position?.x || 0) &&
-        mousePosition.x - NODE_PADDING <
-          (node?.position?.x || 0) + (node?.measured?.width || 0) &&
-        mousePosition.y + NODE_PADDING > (node?.position?.y || 0) &&
-        mousePosition.y - NODE_PADDING <
-          (node?.position?.y || 0) + (node?.measured?.height || 0)
+      ? node?.selected ||
+        (mousePosition.x + NODE_PADDING > (node?.position?.x || 0) &&
+          mousePosition.x - NODE_PADDING <
+            (node?.position?.x || 0) + (node?.measured?.width || 0) &&
+          mousePosition.y + NODE_PADDING > (node?.position?.y || 0) &&
+          mousePosition.y - NODE_PADDING <
+            (node?.position?.y || 0) + (node?.measured?.height || 0))
       : Math.abs(mousePosition.x - target_position.x + 50) < 100 &&
         Math.abs(mousePosition.y - target_position.y) < 35;
 

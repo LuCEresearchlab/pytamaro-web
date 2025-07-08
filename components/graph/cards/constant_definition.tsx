@@ -215,6 +215,7 @@ export default function ConstantDefinition({
           borderLeft: `solid ${BORDER_COLOR} 4px`,
           borderBottomLeftRadius: '10px',
           borderBottomRightRadius: '10px',
+          backgroundColor: 'white',
           minWidth: '100px',
           minHeight: '100px',
           width: '100%',

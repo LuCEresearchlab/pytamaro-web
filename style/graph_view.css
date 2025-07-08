@@ -41,9 +41,15 @@
   overflow: hidden;
 }
 .selected .tamaro_card {
-  box-shadow:
-    0 4px 8px 0 rgba(0, 0, 0, 0.4),
-    0 6px 20px 0 rgba(0, 0, 0, 0.38);
+  
+  --color: rgb(0, 0, 0, 0.4);
+  --spread: 10px;
+  --radius: 10px;
+  
+  filter: drop-shadow(var(--radius) 0 var(--spread) var(--color))
+  drop-shadow(calc(-1 * var(--radius)) 0 var(--spread) var(--color))
+  drop-shadow(0px calc(-1 * var(--radius)) var(--spread) var(--color))
+  drop-shadow(0px var(--radius) var(--spread) var(--color));
 }
 
 .react-flow__edge.selected path {
