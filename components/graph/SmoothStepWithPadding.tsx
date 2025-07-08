@@ -1,5 +1,6 @@
 import {
   BaseEdge,
+  ConnectionLineComponentProps,
   EdgeProps,
   getSmoothStepPath,
   GetSmoothStepPathParams,
@@ -79,6 +80,28 @@ function CustomEdge({
       <BaseEdge id={id} path={edgePath} style={style} />
     </>
   );
+}
+
+export function CustomEdgeLine({
+  fromX,
+  fromY,
+  toX,
+  toY,
+  connectionLineStyle,
+}: ConnectionLineComponentProps) {
+  const [edgePath] = getSmoothStepWithPaddingPath({
+    sourceX: fromX,
+    sourceY: fromY,
+    targetX: toX,
+    targetY: toY,
+    offset: 0,
+    padding: {
+      source: 0,
+      target: 20,
+    },
+  });
+
+  return <path style={connectionLineStyle} d={edgePath} />;
 }
 
 const edge_type = { custom_edge: CustomEdge };

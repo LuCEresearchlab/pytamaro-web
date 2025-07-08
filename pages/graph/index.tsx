@@ -180,6 +180,13 @@ function View() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        connectionRadius={100}
+        connectionLineComponent={CustomEdgeLine}
+        connectionLineStyle={{
+          fill: 'none',
+          strokeWidth: 2,
+          stroke: 'gray',
+        }}
         onClick={() => {
           if (!menu) return;
           return setMenu({ ...menu!, click_outside: true });
@@ -425,7 +432,9 @@ import {
 import { AnnotationLayer } from '../../components/graph/AnnotationLayer';
 import { ErrorParagraph } from '../../components/graph/ErrorParagraph';
 import { GraphOptions } from '../../components/graph/GraphOptions';
-import edge_type from '../../components/graph/SmoothStepWithPadding';
+import edge_type, {
+  CustomEdgeLine,
+} from '../../components/graph/SmoothStepWithPadding';
 import {
   JudiciousConstant,
   JudiciousFunction,
