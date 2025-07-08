@@ -22,8 +22,8 @@ export default function ConstantUse({
   }
 
   return (
-    <div className='pane_container constant_card_pane drag-handle'>
-      <div className='pane tamaro_card constant_card'>
+    <div className='pane_container tamaro_card constant_card drag-handle'>
+      <div className='pane constant_card_pane'>
         <div
           style={{
             alignSelf: 'center',
@@ -67,6 +67,7 @@ export default function ConstantUse({
             </div>
           )}
         </div>
+        <div className='triangle_right_fill'></div>
       </div>
     </div>
   );

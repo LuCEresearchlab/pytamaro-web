@@ -326,9 +326,8 @@ export function ConstantTamaroCard({
   show_handles?: boolean;
 }) {
   return (
-    <div className='pane_container constant_card_pane'>
-      <div className='pane'></div>
-      <div className='pane tamaro_card constant_card'>
+    <div className='pane_container tamaro_card constant_card drag-handle'>
+      <div className='pane constant_card_pane'>
         <img
           className='card_library hovergroup hovergroup_marker'
           data-hovergroup={'library'}
@@ -366,6 +365,7 @@ export function ConstantTamaroCard({
             </div>
           )}
         </div>
+        <div className='triangle_right_fill'></div>
       </div>
       <div className='constant_icon_pane'>
         {el.icon && (

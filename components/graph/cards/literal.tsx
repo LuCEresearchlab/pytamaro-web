@@ -5,9 +5,13 @@ import { useStore } from '../store';
 import { CSSProperties, useEffect, useRef, useState } from 'react';
 import { getNode, getParents } from '../utils';
 
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+
 export const BOOL_REGEX = /(True)|(False)/;
 export const FLOAT_REGEX = /^[0-9]+(\.[0-9]*)?$/g;
 export const STR_REGEX = /^"([^\\"]|(\\")|\\\\)*"$/g;
+
+import '../../../style/tamaro_cards.css';
 
 export interface ITamaroLiteralCardData extends ITamaroCardData {
   literal_type?: 'float' | 'str' | 'bool';
@@ -30,7 +34,7 @@ export function ContentEditableDiv(props: {
       value.current = props.value;
       setBool(!bool);
     }
-  }, [props.value]);
+  }, [bool, props.resetOnChange, props.value]);
 
   return (
     <div
@@ -55,7 +59,7 @@ export function ContentEditableDiv(props: {
 
 export function TamaroLiteralCard({
   id,
-  data: { value, literal_type },
+  data: { value },
   hide_handles = false,
 }: Node & { data: ITamaroLiteralCardData; hide_handles?: boolean }) {
   const {
@@ -86,87 +90,80 @@ export function TamaroLiteralCard({
   };
 
   return (
-    <div
-      className='drag-handle tamaro_card'
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        borderRadius: '5px',
-        position: 'relative',
-      }}
-    >
-      <ContentEditableDiv
-        value={value}
-        style={{
-          minWidth: '85px',
-          margin: 'auto',
-          backgroundColor: 'white',
-          padding: '5px 20px',
-          borderTopLeftRadius: '5px',
-          borderBottomLeftRadius: '5px',
-          //   width: 'fit-content',
-          borderLeft: `solid ${literal_type == null ? 'red' : 'gray'} 1px`,
-          borderTop: `solid ${literal_type == null ? 'red' : 'gray'} 1px`,
-          borderBottom: `solid ${literal_type == null ? 'red' : 'gray'} 1px`,
-        }}
-        onChange={setValue}
-      />
+    <div className='drag-handle tamaro_card literal_card'>
       <div
         style={{
           display: 'flex',
           flexDirection: 'row',
-          alignItems: 'center',
-          justifyItems: 'center',
-          borderTopRightRadius: '5px',
-          borderBottomRightRadius: '5px',
-          width: '75px',
-          border: `solid ${literal_type == null ? 'red' : 'gray'} 1px`,
-          backgroundColor: literal_type == null ? '#500' : '#f0f0f0',
+          borderRadius: '5px',
+          position: 'relative',
+          width: 'fit-content',
         }}
       >
         <div
           style={{
-            height: '100%',
+            borderTopLeftRadius: '5px',
+            borderBottomLeftRadius: '5px',
+            backgroundColor: '#DEDEDE',
+            width: '30px',
             display: 'flex',
             flexDirection: 'row',
-            alignItems: 'center',
-            margin: 'auto',
-            color: literal_type == null ? 'red' : 'black',
+            gap: '0px',
+            position: 'relative',
           }}
         >
-          {literal_type == null ? 'error' : literal_type}
+          <MoreVertIcon
+            sx={{
+              margin: 'none',
+              position: 'absolute',
+              left: '0px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: '#969696',
+            }}
+          />
+          <MoreVertIcon
+            sx={{
+              margin: 'none',
+              position: 'absolute',
+              left: '5px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: '#969696',
+            }}
+          />
+        </div>
+        <ContentEditableDiv
+          value={value}
+          style={{
+            minWidth: '85px',
+            backgroundColor: 'white',
+            padding: '5px 20px',
+            borderTopRightRadius: '5px',
+            borderBottomRightRadius: '5px',
+            borderLeft: 'solid #808080 1px',
+          }}
+          onChange={setValue}
+        />
+
+        <div className='triangle_right arrow_handles'>
+          {!hide_handles && (
+            <div className='right'>
+              <Handle
+                type='source'
+                position={Position.Right}
+                id={'output'}
+                className='handle'
+                style={{
+                  width: '20px',
+                  height: '20px',
+                  opacity: '0',
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
-
-      <div
-        style={{
-          width: '0',
-          height: '0',
-          borderTop: '5px solid transparent',
-          borderBottom: '5px solid transparent',
-          borderLeft: `5px solid ${literal_type == null ? 'red' : 'black'}`,
-
-          display: 'inline-block',
-          position: 'absolute',
-          top: '50%',
-          right: '0%',
-          transform: 'translateY(-50%) translateX(100%) translateX(-1px)',
-        }}
-      ></div>
-      {!hide_handles && (
-        <Handle
-          type='source'
-          position={Position.Right}
-          id='output'
-          style={{
-            width: '20px',
-            height: '40px',
-            borderRadius: '0px',
-            transform: 'translateY(-50%) translateX(10px)',
-            opacity: '0',
-          }}
-        />
-      )}
     </div>
   );
 }

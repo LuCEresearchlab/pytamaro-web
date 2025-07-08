@@ -91,11 +91,6 @@
   --outline-width: 2px;
 }
 
-.pane_container.constant_card_pane {
-  display: flex;
-  flex-direction: row;
-}
-
 .extended_view .pane_container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -195,6 +190,8 @@
   position: absolute;
   width: 16;
   aspect-ratio: 1;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .card_name {
@@ -262,17 +259,59 @@
 }
 
 .constant_card_pane .triangle_right {
+  --outline-width: 1px;
+  width: 0;
+  height: 0;
+  border-top: calc(10 * var(--outline-width)) solid transparent;
+  border-bottom: calc(10 * var(--outline-width)) solid transparent;
+  border-left: calc(10 * var(--outline-width)) solid #008bcb;
+
+  display: inline-block;
+  position: absolute;
+  right: calc(-12 * var(--outline-width));
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.constant_card_pane .triangle_right_fill {
+  --outline-width: 1px;
+  width: 0;
+  height: 0;
+  border-top: calc(10 * var(--outline-width)) solid transparent;
+  border-bottom: calc(10 * var(--outline-width)) solid transparent;
+  border-left: calc(10 * var(--outline-width)) solid #d1f0ff;
+
+  display: inline-block;
+  position: absolute;
+  right: calc(-8 * var(--outline-width));
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.literal_card .triangle_right {
+  --outline-width: 1px;
   width: 0;
   height: 0;
   border-top: calc(5 * var(--outline-width)) solid transparent;
   border-bottom: calc(5 * var(--outline-width)) solid transparent;
-  border-left: calc(5 * var(--outline-width)) solid #008bcb;
-
+  border-left: calc(5 * var(--outline-width)) solid white;
   display: inline-block;
   position: absolute;
-  right: calc(-5 * var(--outline-width));
+  left: 100%;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.literal_card {
+
+  --color: #7F7F7F;
+  --radius: 0px;
+  --spread: 0.5px;
+    
+  filter: drop-shadow(var(--radius) 0 var(--spread) var(--color))
+  drop-shadow(calc(-1 * var(--radius)) 0 var(--spread) var(--color))
+  drop-shadow(0px calc(-1 * var(--radius)) var(--spread) var(--color))
+  drop-shadow(0px var(--radius) var(--spread) var(--color));
 }
 
 .hovergroup_marker {
