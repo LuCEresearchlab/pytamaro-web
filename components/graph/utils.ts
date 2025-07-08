@@ -248,3 +248,102 @@ export function getConstantDefinitions(nodes: Node[], name: string): Node[] {
     (v) => v.type === 'constant_definition' && v.data.name === name,
   );
 }
+
+export function getUsages(nodes: Node[], name: string): Node[] {
+  return nodes.filter((v) => v.type === 'constant_use' && v.data.name === name);
+}
+
+export function getAscendants(edges: Edge[], source: string): string[] {
+  let last = edges.find((v) => v.source === source);
+  if (!last) return [];
+  const edge_ids: string[] = [last.id];
+
+  while (last) {
+    last = edges.find((v) => v.source === last?.target);
+    if (!last) return [];
+    edge_ids.push(last.id);
+  }
+
+  return edge_ids;
+}
+
+export function arcToEdges(
+  nodes: Node[],
+  edges: Edge[],
+  source: string,
+  target: string,
+): Edge[] | undefined {
+  function inline_search(
+    source: string,
+    target: string,
+    blacklist: string[] = [],
+  ): string[] | undefined {
+    let last: { source: string; target: string; id: string } | undefined = {
+      source: source,
+      target: source,
+      id: '',
+    };
+    const edge_ids: string[] = [];
+
+    while (last && last.target !== target) {
+      if (blacklist.includes(last!.id)) {
+        return undefined;
+      }
+      if (last.id !== '') edge_ids.push(last.id);
+      const last_node = getNode(nodes, last.target);
+      if (last_node?.type === 'constant_definition') {
+        const usages = getUsages(nodes, last_node.data.name as string);
+
+        const good_usage = usages.find((v) =>
+          inline_search(v.id, target, edge_ids),
+        );
+
+        if (!good_usage) return undefined;
+        edge_ids.push(...inline_search(good_usage.id, target, edge_ids)!);
+        return edge_ids;
+      }
+      last = edges.find((v) => v.source === last?.target);
+    }
+    if (!last) return undefined;
+    edge_ids.push(last.id);
+    return edge_ids;
+  }
+
+  const dir1 = inline_search(source, target);
+
+  const edges_ids = dir1 ? dir1 : inline_search(target, source);
+  if (!edges_ids) return undefined;
+  return edges.filter((v) => edges_ids.includes(v.id));
+}
+
+export function getSubTreeFromRootConsideringConstants(
+  nodes: Node[],
+  edges: Edge[],
+  root: Node | string,
+): string[] {
+  const descendants: string[] = [];
+  const visited = new Set<string>();
+  const stack = [typeof root === 'string' ? getNode(nodes, root) : root];
+
+  while (stack.length !== 0) {
+    const el = stack.shift()!;
+
+    if (visited.has(el.id)) continue;
+    visited.add(el.id);
+    descendants.push(el.id);
+
+    getChildren(nodes, edges, el, true).forEach((v) => {
+      stack.push(v);
+    });
+
+    if (el.type === 'constant_use') {
+      const definitions = getConstantDefinitions(nodes, el.data.name as string);
+      if (definitions.length !== 1) continue;
+
+      const d = definitions[0];
+      stack.push(d);
+    }
+  }
+
+  return descendants;
+}

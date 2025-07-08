@@ -2,15 +2,20 @@ import { StateCreator } from 'zustand';
 import { StoreType } from './store';
 import { Node } from '@xyflow/react';
 import {
+  arcToEdges,
   getConstantDefinition,
-  getConstantDefinitions,
   getFunctionHandles,
   getFunctionParameterRelative,
   getHandleType,
   getNode,
   getSubTreeFromRoot,
+  getSubTreeFromRootConsideringConstants,
 } from './utils';
-import { getHandleName, ITamaroFunctionCardData } from './cards/function';
+import {
+  getHandleName,
+  getParameterName,
+  ITamaroFunctionCardData,
+} from './cards/function';
 import { CardType } from './cards';
 import { ITamaroConstantUseCardData } from './cards/constant_use';
 import { check_const_name } from './cards/constant_definition';
@@ -145,21 +150,13 @@ export const createAnnotationSlice: StateCreator<
 
   updateAnnotation(node) {
     if (!node) return;
-    const {
-      setEdges,
-      getEdges,
-      nodes,
-      edges,
-      error_level,
-      setNodes,
-      getNodes,
-    } = get();
+    const { setEdges, getEdges, nodes, edges, setNodes, getNodes } = get();
     const id = node.id;
 
     let annotations: ErrorAnnotation[];
 
-    const GENERIC_MAIN_CLASS_NAME = 'error-main-node-highlight';
-    const GENERIC_SND_CLASS_NAME = 'error-secondary-node-highlight';
+    const GENERIC_MAIN_CLASS_NAME = 'error-main-highlight';
+    const GENERIC_SND_CLASS_NAME = 'error-secondary-highlight';
 
     switch (node.type as CardType) {
       case 'function': {
@@ -199,24 +196,6 @@ export const createAnnotationSlice: StateCreator<
             );
 
             if (connected_type !== type || connected_type === 'Unknown') {
-              setEdges(
-                edges.map((edge) =>
-                  !(
-                    edge.target === id &&
-                    edge.targetHandle === getHandleName(name)
-                  )
-                    ? edge
-                    : {
-                        ...edge,
-                        className:
-                          'invalid_type_edge ' +
-                          (error_level === 'highlight'
-                            ? 'highlight_error'
-                            : ''),
-                      },
-                ),
-              );
-
               return {
                 kind: 'type-error',
                 args: [
@@ -424,16 +403,27 @@ export const createAnnotationSlice: StateCreator<
     );
 
     const now_annotations = get().annotations.map((v) => v.location.node_id);
-    const name =
-      node.type === 'constant_use'
-        ? (node.data.string as string | undefined)
-        : undefined;
-    const error_in_subtree = getSubTreeFromRoot(getNodes(), getEdges(), id)
-      .concat(
-        name ? getConstantDefinitions(getNodes(), name).map((o) => o.id) : [],
-      )
 
-      .find((o) => now_annotations.includes(o));
+    const subtree_nodes = getSubTreeFromRootConsideringConstants(
+      getNodes(),
+      getEdges(),
+      id,
+    );
+
+    const subtree_errors = subtree_nodes.filter((o) =>
+      now_annotations.includes(o),
+    );
+
+    const subtree_edges = get()
+      .edges.filter((v) => subtree_nodes.includes(v.target))
+      .map((v) => v.id);
+
+    const subtree_error_edges: Set<string> = new Set<string>();
+
+    subtree_errors
+      .map((v) => arcToEdges(nodes, edges, v, id) || [])
+      .reduce((a, b) => a.concat(b), [])
+      .forEach((v) => subtree_error_edges.add(v.id));
 
     setNodes(
       getNodes().map((v) =>
@@ -441,15 +431,54 @@ export const createAnnotationSlice: StateCreator<
           ? v
           : {
               ...v,
-              className:
+              className: (
                 (v.className || '')
                   .replace(GENERIC_MAIN_CLASS_NAME, '')
                   .replace(GENERIC_SND_CLASS_NAME, '') +
                 (annotations.length !== 0
                   ? ' ' + GENERIC_MAIN_CLASS_NAME
-                  : error_in_subtree
+                  : subtree_errors.length !== 0
                     ? ' ' + GENERIC_SND_CLASS_NAME
-                    : ''),
+                    : '')
+              ).trim(),
+            },
+      ),
+    );
+
+    const now_edges_annotations = get()
+      .annotations.filter((v) => v.location.handle !== undefined)
+      .map(
+        (anno) =>
+          getEdges().find(
+            (v) =>
+              (v.target === anno.location.node_id &&
+                getParameterName(v.targetHandle || '') ===
+                  anno.location.handle) ||
+              (v.source === anno.location.node_id &&
+                getParameterName(v.sourceHandle || '') ===
+                  anno.location.handle),
+          )?.id,
+      )
+      .filter((v) => v)
+      .map((v) => v as string);
+
+    setEdges(
+      getEdges().map((v) =>
+        !subtree_edges.includes(v.id)
+          ? v
+          : {
+              ...v,
+              className: (
+                (v.className || '')
+                  .replace(GENERIC_MAIN_CLASS_NAME, '')
+                  .replace(GENERIC_SND_CLASS_NAME, '') +
+                (subtree_error_edges.has(v.id)
+                  ? ' ' + GENERIC_SND_CLASS_NAME
+                  : '') +
+                (now_edges_annotations.includes(v.id)
+                  ? ' ' + GENERIC_MAIN_CLASS_NAME
+                  : '')
+              ).trim(),
             },
       ),
     );
