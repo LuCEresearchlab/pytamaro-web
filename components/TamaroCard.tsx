@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { iconPath } from '../components/documentation/utils';
 import N_Image from 'next/image';
 
@@ -10,9 +11,8 @@ import {
 } from '../src/schemas/documentation';
 import { Tooltip } from '@mui/material';
 import { Handle, Position } from '@xyflow/react';
-import { executeOnServer } from '../src/useActivity';
-import { useEffect, useState } from 'react';
-import { isEmpty, negate } from 'lodash';
+import { ReactElement, useEffect, useRef, useState } from 'react';
+import { Height } from '@mui/icons-material';
 
 interface IArrow {
   parameter_index: number;
@@ -127,51 +127,26 @@ export function FunctionTamaroCard({
   el,
   module,
   show_handles = false,
-  returns_expression = undefined,
+  returns_icon = undefined,
 }: {
   el: JudiciousFunction;
   module: string;
   show_handles?: boolean;
-  returns_expression?: string;
+  returns_icon?: ReactElement;
 }) {
   const needed_parameters = el.parameters.filter((v) => v.default == null);
   const parameters = el.parameters;
 
-  const show_display = el.returnValue && returns_expression != null;
-  const [imgData, setImgData] = useState(undefined as string | undefined);
-  const [dimension, setDimension] = useState(
-    undefined as { width: number; height: number } | undefined,
-  );
-
-  const IMG_SCALE = 0.2;
+  const returnsIconRef = useRef() as React.MutableRefObject<HTMLDivElement>;
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
-    if (returns_expression)
-      executeOnServer([returns_expression], 0, [], [])
-        .catch(() => undefined)
-        .then((v) => (v?.type === 'success' ? v.stdout : undefined))
-        .then((data) => {
-          if (!data) return undefined;
-          const pytamaroDataUriRegex =
-            /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
-          return data.split(pytamaroDataUriRegex).filter(negate(isEmpty))[0];
-        })
-        .then(async (data) => {
-          if (!data) return undefined;
-          return await new Promise<string>(function (resolved, rejected) {
-            let i = new Image();
-            i.onload = function () {
-              setDimension({
-                width: i.naturalWidth * IMG_SCALE,
-                height: i.naturalHeight * IMG_SCALE,
-              });
-              resolved(data);
-            };
-            i.src = data;
-          });
-        })
-        .then(setImgData);
-  }, [returns_expression]);
+    console.log('HAHAH');
+    if (!returnsIconRef.current) return;
+
+    const rect = returnsIconRef.current.getBoundingClientRect();
+    setDimensions({ width: rect.width, height: rect.height });
+  }, [returns_icon]);
 
   return (
     <div className='pane_container function_card_pane'>
@@ -277,26 +252,20 @@ export function FunctionTamaroCard({
       </div>
 
       <div
+        className='pane output_pane hovergroup'
+        data-hovergroup={'output'}
         style={
-          dimension
+          returnsIconRef
             ? {
-                width: `${dimension.width + 24}px`,
+                width: `${dimensions.width + 24}px`,
               }
             : undefined
         }
-        className='pane output_pane hovergroup'
-        data-hovergroup={'output'}
       >
-        {show_display && el.returnValue && imgData && dimension && (
-          <img
-            style={{
-              width: `${dimension.width}px`,
-              height: `${dimension.height}px`,
-            }}
-            className='img'
-            alt='Expression Result'
-            src={imgData}
-          />
+        {returns_icon && (
+          <div ref={returnsIconRef} className='returns_icon'>
+            {returns_icon && (returns_icon as ReactElement)}
+          </div>
         )}
         {el.returnValue && (
           <Arrow
@@ -326,8 +295,8 @@ export function ConstantTamaroCard({
   show_handles?: boolean;
 }) {
   return (
-    <div className='pane_container tamaro_card constant_card drag-handle'>
-      <div className='pane constant_card_pane'>
+    <div className='pane_container drag-handle'>
+      <div className='pane tamaro_card constant_card constant_card_pane'>
         <img
           className='card_library hovergroup hovergroup_marker'
           data-hovergroup={'library'}

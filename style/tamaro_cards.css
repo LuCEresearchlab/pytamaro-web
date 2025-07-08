@@ -52,6 +52,7 @@
 
 .constant_card_icon {
   height: 32px;
+  margin: 10px;
 }
 
 .hide_icons .card_icon {
@@ -116,7 +117,7 @@
   background-color: rgb(240, 240, 240);
 }
 
-.output_pane .img {
+.output_pane .returns_icon {
   transform: translateY(-50%) translate(8px, -8px);
   position: absolute;
   object-fit: contain;
@@ -187,11 +188,8 @@
 }
 
 .card_library {
-  position: absolute;
   width: 16;
   aspect-ratio: 1;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 .card_name {
