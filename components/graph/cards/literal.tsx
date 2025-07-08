@@ -8,7 +8,7 @@ import { getNode, getParents } from '../utils';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 export const BOOL_REGEX = /(True)|(False)/;
-export const FLOAT_REGEX = /^[0-9]+(\.[0-9]*)?$/g;
+export const FLOAT_REGEX = /^-?[0-9]+(\.[0-9]*)?$/g;
 export const STR_REGEX = /^"([^\\"]|(\\")|\\\\)*"$/g;
 
 import '../../../style/tamaro_cards.css';

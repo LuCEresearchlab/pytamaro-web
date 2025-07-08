@@ -19,6 +19,7 @@ import {
 import { CardType } from './cards';
 import { ITamaroConstantUseCardData } from './cards/constant_use';
 import { check_const_name } from './cards/constant_definition';
+import { ITamaroLiteralCardData } from './cards/literal';
 
 export type Annotation = ErrorAnnotation;
 export type ErrorAnnotation =
@@ -30,7 +31,8 @@ export type ErrorAnnotation =
 export type SyntaxErrorAnnotation =
   | SyntaxErrorInvalidConstantIdentifierAnnotation
   | SyntaxErrorMissingParameterAnnotation
-  | SyntaxErrorConstantHasNoValueAnnotation;
+  | SyntaxErrorConstantHasNoValueAnnotation
+  | SyntaxErrorInvalidLiteralAnnotation;
 
 export interface SyntaxErrorInvalidConstantIdentifierAnnotation {
   kind: 'syntax-error';
@@ -41,6 +43,17 @@ export interface SyntaxErrorInvalidConstantIdentifierAnnotation {
     position: undefined;
   };
   args: [{ name: 'name'; value: string }];
+}
+
+export interface SyntaxErrorInvalidLiteralAnnotation {
+  kind: 'syntax-error';
+  subkind: 'invalid_literal';
+  location: {
+    node_id: string;
+    handle: undefined;
+    position: undefined;
+  };
+  args: [{ name: 'value'; value: string }];
 }
 
 export interface SyntaxErrorConstantHasNoValueAnnotation {
@@ -159,6 +172,30 @@ export const createAnnotationSlice: StateCreator<
     const GENERIC_SND_CLASS_NAME = 'error-secondary-highlight';
 
     switch (node.type as CardType) {
+      case 'literal': {
+        const card = node.data as unknown as ITamaroLiteralCardData;
+        if (card.literal_type == null) {
+          annotations = [
+            {
+              kind: 'syntax-error',
+              subkind: 'invalid_literal',
+              location: {
+                node_id: node.id,
+                handle: undefined,
+                position: undefined,
+              },
+              args: [
+                {
+                  name: 'value',
+                  value: card.value,
+                },
+              ],
+            },
+          ];
+        } else annotations = [];
+        break;
+      }
+
       case 'function': {
         const card = node.data as unknown as ITamaroFunctionCardData;
         const function_el = card.value;
@@ -195,7 +232,11 @@ export const createAnnotationSlice: StateCreator<
               'output',
             );
 
-            if (connected_type !== type || connected_type === 'Unknown') {
+            if (
+              connected_type !== type &&
+              connected_type !== 'Unknown' &&
+              type !== 'Unknown'
+            ) {
               return {
                 kind: 'type-error',
                 args: [

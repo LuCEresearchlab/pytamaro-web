@@ -19,6 +19,7 @@ export function ErrorParagraph(props: { annotation: ErrorAnnotation }) {
             'Constant identifier *{name}* is invalid.',
           missing_parameter: 'Missing argument for parameter *{name}*.',
           constant_has_no_value: 'Constant *{name}* has no value.',
+          invalid_literal: 'Literal value *{value}* is invalid.',
         },
         'type-error': 'Expected *{expected}*, got *{got}*.',
         'value-error': 'Invalid value for parameter *{name}*.',

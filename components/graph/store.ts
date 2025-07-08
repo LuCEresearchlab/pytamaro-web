@@ -398,7 +398,7 @@ export const createGraphSlice: StateCreator<
   updateNodeData: (nodeId, data) => {
     const newData =
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      typeof data === 'function' ? data : (v: any) => ({ ...v, data });
+      typeof data === 'function' ? data : (v: any) => ({ ...v, ...data });
     get().setNodes(
       get().nodes.map((v) =>
         v.id === nodeId ? { ...v, data: newData(v.data) } : v,
