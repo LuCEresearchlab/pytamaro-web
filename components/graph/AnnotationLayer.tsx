@@ -124,13 +124,22 @@ export function createAnnotationComponents(
     return bubble_position;
   }
 
+  const node = getNode(nodes, node_id);
   const target_position = getPosition(node_id, handle, position);
   if (!target_position) return [];
   const source_position = getPosition(node_id, handle, 'source');
 
+  const NODE_PADDING = 10;
   const isNearEnough =
-    Math.abs(mousePosition.x - target_position.x + 50) < 100 &&
-    Math.abs(mousePosition.y - target_position.y) < 35;
+    annotation.location.handle === undefined
+      ? mousePosition.x + NODE_PADDING > (node?.position?.x || 0) &&
+        mousePosition.x - NODE_PADDING <
+          (node?.position?.x || 0) + (node?.measured?.width || 0) &&
+        mousePosition.y + NODE_PADDING > (node?.position?.y || 0) &&
+        mousePosition.y - NODE_PADDING <
+          (node?.position?.y || 0) + (node?.measured?.height || 0)
+      : Math.abs(mousePosition.x - target_position.x + 50) < 100 &&
+        Math.abs(mousePosition.y - target_position.y) < 35;
 
   return [
     <div
