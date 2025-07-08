@@ -74,11 +74,8 @@ export default function NodeContextMenu({
                   data: { ...v.data, parent: newNode.id },
                 } as Node),
           )
-          .concat(newNode, replacedByNode),
+          .concat(replacedByNode, newNode),
       );
-
-      invalidate_node(newNode.id);
-      invalidate_node(replacedByNode.id);
 
       setEdges(
         getEdges()
@@ -105,6 +102,10 @@ export default function NodeContextMenu({
               : [],
           ),
       );
+
+      invalidate_node(newNode.id);
+      invalidate_node(replacedByNode.id);
+      descendants.forEach(invalidate_node);
     },
     [getNodes, getEdges, id, setNodes, invalidate_node, setEdges],
   );

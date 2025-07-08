@@ -14,6 +14,7 @@ export interface ITamaroLiteralCardData extends ITamaroCardData {
   value: string;
 }
 
+// eslint-disable-next-line react/require-default-props
 export function ContentEditableDiv(props: {
   value: string;
   onChange: (v: string) => void;

@@ -68,12 +68,30 @@ export const createImgStateSlice: StateCreator<
       return;
     }
     const parents = getParents(nodes, edges, id);
+    const usages =
+      node?.type === 'constant_definition'
+        ? nodes.filter(
+            (v) => v.type === 'constant_use' && v.data.name === node?.data.name,
+          )
+        : [];
 
     set((state) => ({
       img_states: state.img_states
         .map((img) => {
-          const isParent = parents.entries().find((v) => parents.get(v[1].id));
+          const isParent = parents
+            .entries()
+            .find((v) => parents.get(v[1].id)?.id === img.id);
           if (!isParent) return img;
+
+          return {
+            ...img,
+            code: undefined,
+            upToDate: false,
+          };
+        })
+        .map((img) => {
+          const isUsage = usages.find((v) => v.id === img.id);
+          if (!isUsage) return img;
 
           return {
             ...img,
@@ -93,6 +111,7 @@ export const createImgStateSlice: StateCreator<
       queue: fuseQueue(
         state.queue,
         ...Array.from(parents.values().map((v) => v.id)),
+        ...usages.map((v) => v.id),
       ),
     }));
 
@@ -105,7 +124,6 @@ export const createImgStateSlice: StateCreator<
     const { queue, img_states, nodes, edges } = get();
     if (queue.length === 0) return;
     const element = queue.shift()!;
-
     const data = img_states.find((v) => v.id === element)!;
     const unsafe_children = data.children.map(({ handle }) =>
       getFunctionParameterRelative(nodes, edges, data.id, handle, false),
