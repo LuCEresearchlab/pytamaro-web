@@ -11,6 +11,7 @@ import {
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
+  XYPosition,
 } from '@xyflow/react';
 import { create, StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -32,6 +33,8 @@ export interface GraphStateSlice {
   setInitialized: (v: 'before' | 'wait' | 'done') => void;
   nodes: Node[];
   edges: Edge[];
+  mousePosition: XYPosition;
+  setMousePosition: (v: XYPosition) => void;
   fullscreen: boolean;
   setFullscreen: (value: boolean) => void;
   onNodesChange: OnNodesChange<Node>;
@@ -69,6 +72,8 @@ export const createGraphSlice: StateCreator<
   dragged: undefined,
   nodes: [],
   edges: [],
+  mousePosition: { x: 0, y: 0 },
+  setMousePosition: (v) => set({ mousePosition: v }),
   onNodesChange: (raw_changes) => {
     const befores = get().nodes;
 

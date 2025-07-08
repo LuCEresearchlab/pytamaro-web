@@ -1,6 +1,4 @@
 import {
-  Background,
-  BackgroundVariant,
   NodeMouseHandler,
   ReactFlow,
   ReactFlowProvider,
@@ -50,6 +48,7 @@ function View() {
     getAnnotations,
     fullscreen,
     setFullscreen,
+    mousePosition,
   } = store;
 
   const getErrors = useCallback(
@@ -114,8 +113,6 @@ function View() {
     if (!availabilities[pane]) setPane(undefined);
   }, [availabilities, pane, setPane]);
 
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
   const [isSelecting, setIsSelecting] = useState({
     x: 0,
     y: 0,
@@ -127,8 +124,6 @@ function View() {
     screenToFlowPosition,
     setFullscreen,
     fullscreen,
-    mousePosition,
-    setMousePosition,
     isSelecting,
     setIsSelecting,
   };

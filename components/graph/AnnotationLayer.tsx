@@ -1,4 +1,4 @@
-import { Edge, useReactFlow, ViewportPortal, XYPosition } from '@xyflow/react';
+import { useReactFlow, ViewportPortal, XYPosition } from '@xyflow/react';
 import { StoreType, useStore } from './store';
 import { getHandleName } from './cards/function';
 import { ErrorBubble } from './Bubble';
@@ -58,7 +58,7 @@ export function createAnnotationComponents(
     },
   ) => XYPosition,
 ): JSX.Element[] {
-  const { edges, nodes } = store;
+  const { edges, nodes, mousePosition } = store;
   const { node_id, position, handle } = annotation.location;
 
   function getPosition(
@@ -128,6 +128,10 @@ export function createAnnotationComponents(
   if (!target_position) return [];
   const source_position = getPosition(node_id, handle, 'source');
 
+  const isNearEnough =
+    Math.abs(mousePosition.x - target_position.x + 50) < 100 &&
+    Math.abs(mousePosition.y - target_position.y) < 35;
+
   return [
     <div
       style={{
@@ -140,6 +144,7 @@ export function createAnnotationComponents(
         style={{
           transform: 'scale(0.35)',
           transformOrigin: 'top left',
+          opacity: isNearEnough ? '1' : '0',
         }}
       >
         <ErrorBubble>
