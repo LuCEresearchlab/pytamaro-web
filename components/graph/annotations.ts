@@ -2,9 +2,12 @@ import { StateCreator } from 'zustand';
 import { StoreType } from './store';
 import { Node } from '@xyflow/react';
 import {
+  getConstantDefinition,
   getFunctionHandles,
   getFunctionParameterRelative,
   getHandleType,
+  getNode,
+  getSubTreeFromRoot,
 } from './utils';
 import { getHandleName, ITamaroFunctionCardData } from './cards/function';
 import { CardType } from './cards';
@@ -68,7 +71,8 @@ export interface TypeErrorAnnotation {
 
 export type NameErrorAnnotation =
   | NameErrorMultipleConstantDefinitionAnnotation
-  | NameErrorUnknownConstantAnnotation;
+  | NameErrorUnknownConstantAnnotation
+  | NameErrorCyclicalDependenciesAnnotation;
 
 export interface NameErrorUnknownConstantAnnotation {
   kind: 'name-error';
@@ -368,6 +372,36 @@ export const createAnnotationSlice: StateCreator<
           (v) => v.type === 'constant_definition' && v.data.name === name,
         );
 
+        const stack: string[][] = [[node.id]];
+
+        let result: string[] | undefined = undefined;
+        while (stack.length !== 0) {
+          const current_dependecy_edge = stack.pop()!;
+          const el = current_dependecy_edge[0];
+          if (current_dependecy_edge.includes(el, 1)) {
+            result = current_dependecy_edge
+              .map((v) => getNode(nodes, v))
+              .map((v) => (v?.data.name || '') as string);
+            break;
+          }
+
+          const dependsOn = Array.from(
+            new Set(
+              getSubTreeFromRoot(nodes, edges, el)
+                .map((v) => getNode(nodes, v))
+                .filter((v) => v?.type === 'constant_use')
+                .map((v) => v?.data?.name as string | undefined)
+                .filter((v) => v)
+                .map((v) => v as string)
+                .map((v) => getConstantDefinition(nodes, v))
+                .filter((v) => v)
+                .map((v) => v!.id),
+            ),
+          );
+
+          stack.push(...dependsOn.map((o) => [o, ...current_dependecy_edge]));
+        }
+
         if (!check_const_name(name)) {
           annotations = [
             {
@@ -396,6 +430,27 @@ export const createAnnotationSlice: StateCreator<
                 handle: undefined,
                 position: undefined,
                 node_id: node.id,
+              },
+            },
+          ];
+        } else if (result) {
+          annotations = [
+            {
+              kind: 'name-error',
+              subkind: 'cyclical_dependencies',
+              args: [
+                {
+                  name: 'names',
+                  value: result
+                    .map((v) => '*' + v + '*')
+                    .toReversed()
+                    .join(' -> '),
+                },
+              ],
+              location: {
+                handle: undefined,
+                node_id: id,
+                position: undefined,
               },
             },
           ];

@@ -27,11 +27,12 @@ export function ErrorParagraph(props: { annotation: ErrorAnnotation }) {
           multiple_definitions:
             'The constant *{name}* is defined multiple times',
           cyclical_dependencies:
-            'The constants {names} are in a cyclical dependence',
+            'The constant is in the following dependency cycle : *{names}*',
         },
       }[annotation.kind];
 
       if (Object.keys(annotation).includes('subkind')) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         group = (group as any)[(annotation as any).subkind] as string;
       }
 

@@ -326,9 +326,13 @@ export const createImgStateSlice: StateCreator<
         break;
       }
     }
-
-    const parents = getParents(nodes, edges, data.id);
-    parents.values().forEach((v) => get().invalidate_node(v.id));
+    if (
+      JSON.stringify({ ...data, upToDate: true }) !==
+      JSON.stringify(get().img_states.find((v) => v.id === data.id))
+    ) {
+      const parents = getParents(nodes, edges, data.id);
+      parents.values().forEach((v) => get().invalidate_node(v.id));
+    }
 
     get().updateNodeData(data.id, (data) => ({
       ...data,
