@@ -92,16 +92,11 @@ function View() {
       documentation: (() => {
         const toBeDocumentedNodes = getNodes().filter((v) => v.selected);
 
-        if (
-          !(
-            toBeDocumentedNodes.length === 1 &&
-            toBeDocumentedNodes[0].type !== 'literal'
-          )
-        )
-          return;
+        if (!(toBeDocumentedNodes.length === 1)) return;
 
         const node = toBeDocumentedNodes[0];
         const data = node.data as unknown as IImportedCardData;
+        if (data.module == null) return;
 
         return { ...data.value, module: data.module };
       })(),
