@@ -191,7 +191,7 @@ export default function ConstantDefinition({
               borderStyle: 'solid',
               bottom: '0%',
 
-              borderWidth: `30px ${text_width / 2}px 0 ${text_width / 2}px`,
+              borderWidth: `15px ${text_width / 2}px 0 ${text_width / 2}px`,
               borderColor: `${BORDER_COLOR} transparent ${BORDER_COLOR} transparent`,
               transform: 'rotate(180deg)',
               pointerEvents: 'none',
@@ -207,7 +207,7 @@ export default function ConstantDefinition({
               borderStyle: 'solid',
               bottom: `-${BORDER_WIDTH}`,
 
-              borderWidth: `30px ${text_width / 2}px 0 ${text_width / 2}px`,
+              borderWidth: `15px ${text_width / 2}px 0 ${text_width / 2}px`,
               borderColor: `${BACKGROUND_COLOR} transparent ${BACKGROUND_COLOR} transparent`,
               transform: 'rotate(180deg)',
               pointerEvents: 'none',
