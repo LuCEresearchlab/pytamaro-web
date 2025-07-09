@@ -77,6 +77,8 @@ export function TamaroLiteralCard({
     return undefined;
   }
 
+  const toInvalidateTimeout = useRef(undefined as NodeJS.Timeout | undefined);
+
   const setValue = (newValue: string) => {
     updateNodeData(id, { literal_type: guessType(newValue), value: newValue });
     const nodes = getNodes();
@@ -86,7 +88,10 @@ export function TamaroLiteralCard({
     const values = Array.from(getParents(nodes, edges, id, true).values());
     values.forEach(updateAnnotation);
 
-    invalidate_node(id);
+    if (toInvalidateTimeout.current) clearTimeout(toInvalidateTimeout.current);
+    toInvalidateTimeout.current = setTimeout(() => {
+      invalidate_node(id);
+    }, 500);
   };
 
   return (
