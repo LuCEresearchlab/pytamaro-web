@@ -177,6 +177,7 @@ function View() {
         onConnect={onConnect}
         connectionRadius={100}
         connectionLineComponent={CustomEdgeLine}
+        deleteKeyCode={['Delete', 'Backspace']}
         connectionLineStyle={{
           fill: 'none',
           strokeWidth: 2,
