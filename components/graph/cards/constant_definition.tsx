@@ -280,15 +280,14 @@ export default function ConstantDefinition({
           style={{
             position: 'absolute',
             top: '50%',
-            right: '30px',
+            right: '15px',
             transform: 'translateY(-50%) translateX(100%)',
-            height: '50px',
-            width: '50px',
+            height: '25px',
             aspectRatio: '1',
             zIndex: '900',
             borderTopLeftRadius: '50%',
             borderBottomLeftRadius: '50%',
-            borderLeft: `solid ${BORDER_COLOR} 32px`,
+            borderLeft: `solid ${BORDER_COLOR} 16px`,
             backgroundColor: 'transparent',
           }}
         >
@@ -298,8 +297,8 @@ export default function ConstantDefinition({
             style={{
               left: 'unset',
               transform: 'translateY(-50%) translateX(-65%)',
-              height: '50px',
-              width: '50px',
+              height: '25px',
+              width: '25px',
               opacity: '0',
             }}
             id={'output'}
