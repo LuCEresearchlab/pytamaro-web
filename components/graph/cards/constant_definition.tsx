@@ -11,6 +11,44 @@ import { updateParent } from '../graph_toolbox';
 import { ContentEditableDiv } from './literal';
 import { ITamaroCardData } from '.';
 
+const KEYWORDS: string[] = [
+  'False',
+  'await',
+  'else',
+  'import',
+  'pass',
+  'None',
+  'break',
+  'except',
+  'in',
+  'raise',
+  'True',
+  'class',
+  'finally',
+  'is',
+  'return',
+  'and',
+  'continue',
+  'for',
+  'lambda',
+  'try',
+  'as',
+  'def',
+  'from',
+  'nonlocal',
+  'while',
+  'assert',
+  'del',
+  'global',
+  'not',
+  'with',
+  'async',
+  'elif',
+  'if',
+  'or',
+  'yield',
+];
+
 // Can't do that with regex because of the targeting
 export function check_const_name(name: string): boolean {
   function letter(v: string): boolean {
@@ -22,7 +60,7 @@ export function check_const_name(name: string): boolean {
   return (
     Array.from(name).find(
       (v, i) => !(letter(v) || (i !== 0 && v.match(/[0-9]/) != null)),
-    ) == null
+    ) == null && !KEYWORDS.includes(name)
   );
 }
 export const BORDER_COLOR = '#148CC8';

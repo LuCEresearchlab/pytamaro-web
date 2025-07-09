@@ -297,8 +297,7 @@ export const createAnnotationSlice: StateCreator<
               },
             },
           ];
-        }
-        if (definitions.length === 0) {
+        } else if (definitions.length === 0) {
           annotations = [
             {
               kind: 'name-error',
