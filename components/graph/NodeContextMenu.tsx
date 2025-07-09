@@ -215,7 +215,7 @@ export default function NodeContextMenu({
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setNameModalOpen(false)}>Cancel</Button>
-            <Button type='submit'>Subscribe</Button>
+            <Button type='submit'>Confirm</Button>
           </DialogActions>
         </Box>
       </Dialog>
