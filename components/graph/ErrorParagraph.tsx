@@ -44,7 +44,7 @@ export function ErrorParagraph(props: { annotation: ErrorAnnotation }) {
   return (
     <div className='error-paragraph'>
       <p className='error-title'>{title}</p>
-      <p className='error-body'>
+      <div className='error-body'>
         {message.split('\n').map((line, i) => (
           <div key={i}>
             {line.split('*').map((v, i) =>
@@ -58,7 +58,7 @@ export function ErrorParagraph(props: { annotation: ErrorAnnotation }) {
             )}
           </div>
         ))}
-      </p>
+      </div>
     </div>
   );
 }
