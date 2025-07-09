@@ -284,7 +284,7 @@ export const createAnnotationSlice: StateCreator<
           (v) => v.type === 'constant_definition' && v.data.name === name,
         );
 
-        if (!check_const_name(name)) {
+        if (!check_const_name(get().reserved_names, name)) {
           annotations = [
             {
               kind: 'syntax-error',
@@ -362,7 +362,7 @@ export const createAnnotationSlice: StateCreator<
           stack.push(...dependsOn.map((o) => [o, ...current_dependecy_edge]));
         }
 
-        if (!check_const_name(name)) {
+        if (!check_const_name(get().reserved_names, name)) {
           annotations = [
             {
               kind: 'syntax-error',

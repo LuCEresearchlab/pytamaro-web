@@ -34,6 +34,8 @@ export interface GraphStateSlice {
   nodes: Node[];
   edges: Edge[];
   mousePosition: XYPosition;
+  reserved_names: string[];
+  setReservedNames: (v: string[]) => void;
   setMousePosition: (v: XYPosition) => void;
   fullscreen: boolean;
   setFullscreen: (value: boolean) => void;
@@ -65,6 +67,8 @@ export const createGraphSlice: StateCreator<
   setFullscreen: (value) => {
     set({ fullscreen: value });
   },
+  reserved_names: [],
+  setReservedNames: (v) => set({ reserved_names: v }),
   initialized: 'before',
   setInitialized: (v) => {
     set({ initialized: v });

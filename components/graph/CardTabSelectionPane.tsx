@@ -12,7 +12,7 @@ interface CardSelectionPaneProps {
 }
 
 export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
-  const { setDragged } = useStore();
+  const { setDragged, reserved_names } = useStore();
 
   const [filter, setFilter] = useState('');
   const [constant_name, setConstantName] = useState('' as string | undefined);
@@ -41,7 +41,8 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
         })),
     );
 
-    if (filter === '' || check_const_name(filter)) setConstantName(filter);
+    if (filter === '' || check_const_name(reserved_names, filter))
+      setConstantName(filter);
     else setConstantName(undefined);
   }, [filter, setLiterals]);
 

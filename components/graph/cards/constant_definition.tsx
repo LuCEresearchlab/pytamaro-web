@@ -50,7 +50,10 @@ const KEYWORDS: string[] = [
 ];
 
 // Can't do that with regex because of the targeting
-export function check_const_name(name: string): boolean {
+export function check_const_name(
+  reserved_name: string[],
+  name: string,
+): boolean {
   function letter(v: string): boolean {
     if (v.match(/[a-zA-Z_]/)) return true;
     const code = v.charCodeAt(0);
@@ -60,7 +63,9 @@ export function check_const_name(name: string): boolean {
   return (
     Array.from(name).find(
       (v, i) => !(letter(v) || (i !== 0 && v.match(/[0-9]/) != null)),
-    ) == null && !KEYWORDS.includes(name)
+    ) == null &&
+    !KEYWORDS.includes(name) &&
+    !reserved_name.includes(name)
   );
 }
 export const BORDER_COLOR = '#148CC8';

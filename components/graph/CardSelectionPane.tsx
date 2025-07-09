@@ -8,7 +8,7 @@ import {
   Tab,
   Tabs,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStore } from './store';
 import { CardTabSelectionPane } from './CardTabSelectionPane';
 import useJudiciousDocData from '../../src/documentation';
@@ -113,7 +113,12 @@ function TabPanel(props: React.PropsWithChildren<TabPanelProps>) {
 export default function CardSelectionPane() {
   const [collapsed, setCollasped] = useState(false);
 
-  const { node_filter, functional_nodes_only } = useStore();
+  const {
+    node_filter,
+    functional_nodes_only,
+    setReservedNames: setReservedName,
+    reserved_names,
+  } = useStore();
   const modules = getModules(node_filter);
   const [tab, setTab] = useState(modules[0]);
   const values = filterByImports(
@@ -121,6 +126,14 @@ export default function CardSelectionPane() {
     useJudiciousDocData(modules),
     functional_nodes_only,
   );
+
+  useEffect(() => {
+    if (
+      JSON.stringify(values.map((v) => v.name)) !==
+      JSON.stringify(reserved_names)
+    )
+      setReservedName(values.map((v) => v.name));
+  });
 
   const N = values.length;
 
