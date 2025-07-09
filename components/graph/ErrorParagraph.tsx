@@ -24,11 +24,11 @@ export function ErrorParagraph(props: { annotation: ErrorAnnotation }) {
         'type-error': 'Expected *{expected}*, got *{got}*.',
         'value-error': 'Invalid value for parameter *{name}*.',
         'name-error': {
-          unknown_constant: 'The constant *{name}* is not defined',
+          unknown_constant: 'The constant *{name}* is not defined.',
           multiple_definitions:
-            'The constant *{name}* is defined multiple times',
+            'The constant *{name}* is defined multiple times.',
           cyclical_dependencies:
-            'Cyclic dependencies between constant definitions : \n{names}.',
+            'Cyclic dependencies between constant definitions: \n{names}.',
         },
       }[annotation.kind];
 
