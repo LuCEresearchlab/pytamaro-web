@@ -5,6 +5,7 @@ import {
   getHandleType,
   getNode,
   getParents,
+  toEnglishName,
 } from './utils';
 
 export function check_edge_typing(
@@ -20,7 +21,16 @@ export function check_edge_typing(
   const target_node = getNode(nodes, target_id)!;
   const target_type = getHandleType(nodes, target_node, target_handle);
 
-  return origin_type === target_type && origin_type !== 'null';
+  return type_equality_rule(origin_type, target_type);
+}
+
+export function type_equality_rule(type1: string, type2: string) {
+  const en_type1 = toEnglishName(type1);
+  const en_type2 = toEnglishName(type2);
+
+  console.log(en_type1, en_type2, type1, type2);
+
+  return en_type1 && en_type2 && en_type1 === en_type2 && type1 !== 'null';
 }
 
 export function check_edge_looping(

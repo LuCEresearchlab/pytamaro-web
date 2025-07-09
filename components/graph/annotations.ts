@@ -20,6 +20,7 @@ import { CardType } from './cards';
 import { ITamaroConstantUseCardData } from './cards/constant_use';
 import { check_const_name } from './cards/constant_definition';
 import { ITamaroLiteralCardData } from './cards/literal';
+import { type_equality_rule } from './interactivity';
 
 export type Annotation = ErrorAnnotation;
 export type ErrorAnnotation =
@@ -236,11 +237,7 @@ export const createAnnotationSlice: StateCreator<
               'output',
             );
 
-            if (
-              connected_type !== type &&
-              connected_type !== 'Unknown' &&
-              type !== 'Unknown'
-            ) {
+            if (!type_equality_rule(connected_type, type)) {
               return {
                 kind: 'type-error',
                 args: [
