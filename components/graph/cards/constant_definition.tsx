@@ -240,6 +240,7 @@ export default function ConstantDefinition({
               height: '100%',
               margin: 'auto 40px',
               fontSize: '20px',
+              fontWeight: 'bold',
             }}
           >
             <ContentEditableDiv
