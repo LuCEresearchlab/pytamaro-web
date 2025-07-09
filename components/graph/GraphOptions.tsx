@@ -142,7 +142,7 @@ export function GraphOptions() {
 
         <div className='item'>
           <Button onClick={() => setDownloadModalOpen(true)}>
-            Download <Download />
+            Export <Download />
           </Button>
 
           <Dialog
