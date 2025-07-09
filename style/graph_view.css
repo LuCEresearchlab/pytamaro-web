@@ -114,24 +114,36 @@
 
 .error-main-highlight .tamaro_card {
   --color: rgb(255, 225, 130);
-  --spread: 0.2px;
-  --radius: 4px;
+  --spread: 2px;
+  --radius: 1px;
   
-  filter: drop-shadow(var(--radius) 0 var(--spread) var(--color))
-  drop-shadow(calc(-1 * var(--radius)) 0 var(--spread) var(--color))
-  drop-shadow(0px calc(-1 * var(--radius)) var(--spread) var(--color))
-  drop-shadow(0px var(--radius) var(--spread) var(--color));
+
+  filter: drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color));
 
 }
 
-.error-secondary-highlight .tamaro_card {
-  --color: rgba(255, 225, 130, 0.5);
-  --radius: 0.2px;
-  --spread: 5px;
-    
-  filter: drop-shadow(var(--radius) 0 var(--spread) var(--color))
-  drop-shadow(calc(-1 * var(--radius)) 0 var(--spread) var(--color))
-  drop-shadow(0px calc(-1 * var(--radius)) var(--spread) var(--color))
-  drop-shadow(0px var(--radius) var(--spread) var(--color));
+.error-secondary-highlight .tamaro_card{
+  --color: rgba(255, 225, 130, 0.8);
+  --radius: 1px;
+  --spread: 1px;
 
+  filter: drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color));
 }

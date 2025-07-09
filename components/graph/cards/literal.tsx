@@ -108,6 +108,9 @@ export function TamaroLiteralCard({
             width: '30px',
             display: 'flex',
             flexDirection: 'row',
+            borderLeft: '2px solid #7F7F7F',
+            borderTop: '2px solid #7F7F7F',
+            borderBottom: '2px solid #7F7F7F',
             gap: '0px',
             position: 'relative',
           }}
@@ -141,14 +144,18 @@ export function TamaroLiteralCard({
             padding: '5px 20px',
             borderTopRightRadius: '5px',
             borderBottomRightRadius: '5px',
-            borderLeft: 'solid #808080 1px',
+            borderLeft: 'solid #7F7F7F 2px',
+
+            borderRight: '2px solid #7F7F7F',
+            borderTop: '2px solid #7F7F7F',
+            borderBottom: '2px solid #7F7F7F',
           }}
           onChange={setValue}
         />
 
-        <div className='triangle_right arrow_handles'>
-          {!hide_handles && (
-            <div className='right'>
+        <div className='triangle_right_border arrow_handles'>
+          <div className='right'>
+            {!hide_handles && (
               <Handle
                 type='source'
                 position={Position.Right}
@@ -160,9 +167,12 @@ export function TamaroLiteralCard({
                   opacity: '0',
                 }}
               />
-            </div>
-          )}
+            )}
+          </div>
+          <div className='right_white' />
         </div>
+
+        <div className='triangle_right'></div>
       </div>
     </div>
   );

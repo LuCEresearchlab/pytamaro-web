@@ -30,7 +30,7 @@ type AllStore = StoreType & {
 };
 
 const PARENT_PADDING = 20;
-const TOP_MARGIN = 120;
+const TOP_MARGIN = 40;
 const RIGHT_MARGIN = 80;
 
 export function updateParent(store: StoreType, parent: string) {

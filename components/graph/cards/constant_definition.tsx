@@ -26,7 +26,7 @@ export function check_const_name(name: string): boolean {
   );
 }
 export const BORDER_COLOR = '#148CC8';
-export const BACKGROUND_COLOR = '#E6F0FF';
+export const BACKGROUND_COLOR = '#d1f0ff';
 const BORDER_WIDTH = '2px';
 
 export interface ITamaroConstantDefinitionCardData extends ITamaroCardData {
@@ -129,7 +129,7 @@ export default function ConstantDefinition({
         style={{
           display: 'flex',
           flexDirection: 'column',
-          height: '120px',
+          height: '40px',
           width: 'fit-content',
         }}
       >
@@ -138,7 +138,7 @@ export default function ConstantDefinition({
             position: 'relative',
             width: '100%',
             height: '25%',
-            overflow: 'hidden',
+            zIndex: '-1',
           }}
         >
           <div
@@ -146,12 +146,13 @@ export default function ConstantDefinition({
               width: '100%',
               height: '25%',
               borderStyle: 'solid',
-              bottom: '100%',
+              bottom: '0%',
 
               borderWidth: `30px ${text_width / 2}px 0 ${text_width / 2}px`,
               borderColor: `${BORDER_COLOR} transparent ${BORDER_COLOR} transparent`,
               transform: 'rotate(180deg)',
               pointerEvents: 'none',
+              position: 'absolute',
             }}
           />
 
@@ -176,7 +177,7 @@ export default function ConstantDefinition({
             display: 'flex',
             flexDirection: 'row',
             color: `${BORDER_COLOR}`,
-            minWidth: '400px',
+            minWidth: '200px',
             width: 'fit-content',
             height: '75%',
             borderLeft: `solid ${BORDER_COLOR} ${BORDER_WIDTH}`,
@@ -195,7 +196,7 @@ export default function ConstantDefinition({
               width: '100%',
               height: '100%',
               margin: 'auto 40px',
-              fontSize: '40px',
+              fontSize: '20px',
             }}
           >
             <ContentEditableDiv
