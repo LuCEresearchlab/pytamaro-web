@@ -188,6 +188,7 @@
 }
 
 .card_library {
+  position: absolute;
   width: 16;
   aspect-ratio: 1;
 }
