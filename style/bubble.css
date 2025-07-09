@@ -29,6 +29,6 @@
 }
 
 .error-bubble .error_highlight {
-  font-family: monospace;
+  font-family: 'Fira Code', monospace;
   color: #5E5500;
 }
