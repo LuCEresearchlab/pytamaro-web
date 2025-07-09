@@ -41,6 +41,13 @@ export function updateParent(store: StoreType, parent: string) {
 
   const children = befores.filter((v) => v.data.parent === parent);
 
+  if (children.length === 0)
+    return {
+      id: parent,
+      item: node,
+      type: 'replace',
+    } as NodeReplaceChange;
+
   const min_x =
     Math.min(
       ...children
