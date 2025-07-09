@@ -370,6 +370,7 @@ export function toEnglishName(name: string): string | undefined {
     },
     float: {
       _: 'float',
+      _2: 'int',
     },
     str: {
       _: 'str',
