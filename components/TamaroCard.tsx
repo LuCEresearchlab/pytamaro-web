@@ -143,8 +143,10 @@ export function FunctionTamaroCard({
   useEffect(() => {
     if (!returnsIconRef.current) return;
 
-    const rect = returnsIconRef.current.getBoundingClientRect();
-    setDimensions({ width: rect.width, height: rect.height });
+    setDimensions({
+      width: returnsIconRef.current.clientWidth,
+      height: returnsIconRef.current.clientHeight,
+    });
   }, [returns_icon]);
 
   return (
@@ -256,7 +258,7 @@ export function FunctionTamaroCard({
         style={
           returnsIconRef
             ? {
-                width: `${dimensions.width + 24}px`,
+                minWidth: `${dimensions.width + 24}px`,
               }
             : undefined
         }
