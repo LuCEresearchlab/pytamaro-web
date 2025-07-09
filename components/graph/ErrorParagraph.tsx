@@ -28,7 +28,7 @@ export function ErrorParagraph(props: { annotation: ErrorAnnotation }) {
           multiple_definitions:
             'The constant *{name}* is defined multiple times',
           cyclical_dependencies:
-            'The constant is in the following dependency cycle : *{names}*',
+            'Cyclic dependencies between constant definitions : \n{names}.',
         },
       }[annotation.kind];
 
@@ -45,15 +45,19 @@ export function ErrorParagraph(props: { annotation: ErrorAnnotation }) {
     <div className='error-paragraph'>
       <p className='error-title'>{title}</p>
       <p className='error-body'>
-        {message.split('*').map((v, i) =>
-          i % 2 === 0 ? (
-            <span key={i}>{v}</span>
-          ) : (
-            <span className='error_highlight' key={i}>
-              {v}
-            </span>
-          ),
-        )}
+        {message.split('\n').map((line, i) => (
+          <div key={i}>
+            {line.split('*').map((v, i) =>
+              i % 2 === 0 ? (
+                <span key={i}>{v}</span>
+              ) : (
+                <span className='error_highlight' key={i}>
+                  {v}
+                </span>
+              ),
+            )}
+          </div>
+        ))}
       </p>
     </div>
   );

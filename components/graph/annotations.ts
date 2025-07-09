@@ -402,9 +402,10 @@ export const createAnnotationSlice: StateCreator<
                 {
                   name: 'names',
                   value: result
-                    .map((v) => '*' + v + '*')
-                    .toReversed()
-                    .join(' -> '),
+                    .filter((_, i) => i != result.length - 1)
+                    .map((v, i) => [v, result[i + 1]])
+                    .map((v) => `the meaning of *${v[0]}* depends on *${v[1]}*`)
+                    .join(', but \n'),
                 },
               ],
               location: {
