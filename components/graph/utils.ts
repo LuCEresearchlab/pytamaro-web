@@ -295,7 +295,7 @@ export function arcToEdges(
         const usages = getUsages(nodes, last_node.data.name as string);
 
         const good_usage = usages.find((v) =>
-          inline_search(v.id, target, edge_ids),
+          inline_search(v.id, target, edge_ids.concat(blacklist)),
         );
 
         if (!good_usage) return undefined;

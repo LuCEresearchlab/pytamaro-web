@@ -139,6 +139,8 @@ export interface ValueErrorAnnotation {
 export interface AnnotationStateSlice {
   annotations: Annotation[];
 
+  edge_error_state: Map<string, { primary: string[]; secondary: string[] }>;
+
   setAnnotations: (annotations: Annotation[]) => void;
   getAnnotations: () => Annotation[];
 
@@ -152,6 +154,8 @@ export const createAnnotationSlice: StateCreator<
   AnnotationStateSlice
 > = (set, get) => ({
   annotations: [],
+
+  edge_error_state: new Map(),
 
   setAnnotations(annotations) {
     set({ annotations });
@@ -467,6 +471,8 @@ export const createAnnotationSlice: StateCreator<
       .reduce((a, b) => a.concat(b), [])
       .forEach((v) => subtree_error_edges.add(v.id));
 
+    const { edge_error_state } = get();
+
     setNodes(
       getNodes().map((v) =>
         v.id !== id
@@ -504,6 +510,23 @@ export const createAnnotationSlice: StateCreator<
       .filter((v) => v)
       .map((v) => v as string);
 
+    subtree_edges.forEach((v) => {
+      const value = edge_error_state.get(v) || { primary: [], secondary: [] };
+
+      value.primary = value.primary.filter(
+        (v) => getNodes().find((o) => o.id === v) != null && v !== id,
+      );
+
+      value.secondary = value.secondary.filter(
+        (v) => getNodes().find((o) => o.id === v) != null && v !== id,
+      );
+
+      if (now_edges_annotations.includes(v)) value.primary.push(id);
+      if (subtree_error_edges.has(v)) value.secondary.push(id);
+
+      edge_error_state.set(v, value);
+    });
+
     setEdges(
       getEdges().map((v) =>
         !subtree_edges.includes(v.id)
@@ -514,12 +537,11 @@ export const createAnnotationSlice: StateCreator<
                 (v.className || '')
                   .replace(GENERIC_MAIN_CLASS_NAME, '')
                   .replace(GENERIC_SND_CLASS_NAME, '') +
-                (subtree_error_edges.has(v.id)
-                  ? ' ' + GENERIC_SND_CLASS_NAME
-                  : '') +
-                (now_edges_annotations.includes(v.id)
+                (edge_error_state.get(v.id)?.primary?.length !== 0
                   ? ' ' + GENERIC_MAIN_CLASS_NAME
-                  : '')
+                  : edge_error_state.get(v.id)?.secondary?.length !== 0
+                    ? ' ' + GENERIC_SND_CLASS_NAME
+                    : '')
               ).trim(),
             },
       ),
