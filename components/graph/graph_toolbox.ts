@@ -31,7 +31,7 @@ type AllStore = StoreType & {
 
 const PARENT_PADDING = 20;
 const TOP_MARGIN = 40;
-const RIGHT_MARGIN = 80;
+const RIGHT_MARGIN = 20;
 
 export function updateParent(store: StoreType, parent: string) {
   const { getNodes } = store;
@@ -72,7 +72,7 @@ export function updateParent(store: StoreType, parent: string) {
     ) + PARENT_PADDING;
 
   const x_margin =
-    (Math.max(max_x - min_x, 100 + (node?.data.text_width as number) || 0) -
+    (Math.max(max_x - min_x, 50 + (node?.data.text_width as number) || 0) -
       (max_x - min_x)) /
     2;
 
@@ -90,7 +90,7 @@ export function updateParent(store: StoreType, parent: string) {
         dimensions: {
           width: Math.max(
             max_x - min_x,
-            100 + (node?.data.text_width as number) || 0,
+            50 + (node?.data.text_width as number) || 0,
           ),
           height: Math.max(
             max_y - min_y,
