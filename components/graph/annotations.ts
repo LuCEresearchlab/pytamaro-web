@@ -404,7 +404,8 @@ export const createAnnotationSlice: StateCreator<
                   value: result
                     .filter((_, i) => i != result.length - 1)
                     .map((v, i) => [v, result[i + 1]])
-                    .map((v) => `the meaning of *${v[0]}* depends on *${v[1]}*`)
+                    .toReversed()
+                    .map((v) => `the meaning of *${v[1]}* depends on *${v[0]}*`)
                     .join(', and \n'),
                 },
               ],
