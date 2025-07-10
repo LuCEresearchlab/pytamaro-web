@@ -9,14 +9,14 @@ import {
   Tabs,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useStore } from './store';
-import { CardTabSelectionPane } from './CardTabSelectionPane';
 import useJudiciousDocData from '../../src/documentation';
 import {
   JudiciousElement,
   JudiciousModule,
 } from '../../src/schemas/documentation';
 import { ImportReference } from './cards';
+import { CardTabSelectionPane } from './CardTabSelectionPane';
+import { useStore } from './store';
 import { toEnglishName } from './utils';
 
 export type JudiciousModuleElement = JudiciousElement & { module: string };
@@ -140,8 +140,8 @@ export default function CardSelectionPane() {
   return (
     <Card id='card_selection_pane'>
       <CardHeader
-        sx={{ gap: '10px' }}
-        subheader='Card Selection Menu'
+        sx={{ gap: '10px', minWidth: '200px' }}
+        subheader='Palette'
         action={
           <IconButton onClick={() => setCollasped(!collapsed)}>
             <ExpandMore></ExpandMore>
