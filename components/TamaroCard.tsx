@@ -290,11 +290,25 @@ export function ConstantTamaroCard({
   el,
   module,
   show_handles = false,
+  returns_icon = undefined,
 }: {
   el: JudiciousConstant;
   module: string;
   show_handles?: boolean;
+  returns_icon?: ReactElement;
 }) {
+  const returnsIconRef = useRef() as React.MutableRefObject<HTMLDivElement>;
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    if (!returnsIconRef.current) return;
+
+    setDimensions({
+      width: returnsIconRef.current.clientWidth,
+      height: returnsIconRef.current.clientHeight,
+    });
+  }, [returns_icon]);
+
   return (
     <div className='pane_container drag-handle'>
       <div className='pane tamaro_card constant_card constant_card_pane'>
@@ -323,26 +337,65 @@ export function ConstantTamaroCard({
           </h5>
         </div>
 
-        <div className='triangle_right arrow_handles'>
-          {show_handles && (
-            <div className='handle_mover right'>
-              <Handle
-                type='source'
-                position={Position.Right}
-                id={'output'}
-                className='handle'
-              />
+        <div className='triangle_right arrow_handles' />
+        <div className='triangle_right_fill' />
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'start',
+        }}
+      >
+        <div
+          className='output_pane constant_icon_pane'
+          style={{
+            position: returns_icon ? 'absolute' : undefined,
+            minWidth: '0px',
+          }}
+        >
+          {returns_icon && (
+            <div ref={returnsIconRef} className='returns_icon'>
+              {returns_icon && (returns_icon as ReactElement)}
             </div>
           )}
+
+          {el.icon && (
+            <img
+              className='constant_card_icon card_icon'
+              src={`data:image/svg+xml;utf8,${encodeURIComponent(el.icon)}`}
+            />
+          )}
         </div>
-        <div className='triangle_right_fill'></div>
-      </div>
-      <div className='constant_icon_pane'>
-        {el.icon && (
-          <img
-            className='constant_card_icon card_icon'
-            src={`data:image/svg+xml;utf8,${encodeURIComponent(el.icon)}`}
+
+        {show_handles && (
+          <Handle
+            type='source'
+            position={Position.Right}
+            id={'output'}
+            className='handle'
+            style={{
+              position: 'absolute',
+              borderRadius: '0px',
+              minWidth: `${dimensions.width === 0 ? 0 : dimensions.width + 8}px`,
+              right: `${dimensions.width === 0 ? 0 : (dimensions.width + 8) / 2}px`,
+              opacity: '0',
+            }}
           />
+        )}
+        {returns_icon && (
+          <div
+            style={{
+              position: 'relative',
+              zIndex: '-1000',
+              left: '-5px',
+              top: '0px',
+              margin: 'auto',
+              minWidth: `${dimensions.width === 0 ? 0 : dimensions.width + 8}px`,
+              borderBottom: '2px solid black',
+            }}
+          ></div>
         )}
       </div>
     </div>

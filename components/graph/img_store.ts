@@ -265,6 +265,8 @@ export const createImgStateSlice: StateCreator<
             type: supposed_type,
           }));
 
+          code = get().img_states.find((v) => v.id === child.id)?.code;
+
           set((state) => ({
             queue,
             img_states: state.img_states.map((v) =>
@@ -308,6 +310,7 @@ export const createImgStateSlice: StateCreator<
         );
 
         if (definitions.length === 1) {
+          code = get().img_states.find((v) => v.id === definitions[0].id)?.code;
           set((state) => ({
             queue,
             img_states: state.img_states.map((v) =>

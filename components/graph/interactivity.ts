@@ -28,8 +28,6 @@ export function type_equality_rule(type1: string, type2: string) {
   const en_type1 = toEnglishName(type1);
   const en_type2 = toEnglishName(type2);
 
-  console.log(en_type1, en_type2, type1, type2);
-
   return en_type1 && en_type2 && en_type1 === en_type2 && type1 !== 'null';
 }
 

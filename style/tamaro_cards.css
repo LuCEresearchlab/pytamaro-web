@@ -117,12 +117,20 @@
   background-color: rgb(240, 240, 240);
 }
 
-.output_pane .returns_icon {
+.function_card_pane .output_pane .returns_icon {
   transform: translateY(-50%) translate(8px, -8px);
   position: absolute;
   object-fit: contain;
   overflow: hidden;
 
+  filter: drop-shadow(0 0 10px #aaa); 
+}
+
+.constant_icon_pane .returns_icon {
+  transform: translate(-4px, 4px);
+  /* position: absolute; */
+  object-fit: contain;
+  overflow: hidden;
 
   filter: drop-shadow(0 0 10px #aaa); 
 }
