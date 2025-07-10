@@ -1,18 +1,18 @@
+import { Article, Error, RemoveRedEye } from '@mui/icons-material';
+import { IconButton, Paper } from '@mui/material';
 import {
   NodeMouseHandler,
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
 } from '@xyflow/react';
-import { Ref, useCallback, useEffect, useRef, useState } from 'react';
-import { IconButton, Paper } from '@mui/material';
 import '@xyflow/react/dist/style.css';
-import '../../style/graph_view.css';
-import { Article, Error, RemoveRedEye } from '@mui/icons-material';
+import { Ref, useCallback, useEffect, useRef, useState } from 'react';
 import { IImportedCardData, node_types } from '../../components/graph/cards';
 import CardSelectionPane, {
   JudiciousModuleElement,
 } from '../../components/graph/CardSelectionPane';
+import '../../style/graph_view.css';
 
 function View() {
   const [pane, setPane] = useState(
@@ -330,13 +330,13 @@ function View() {
           <div
             style={{
               position: 'absolute',
-              right: '100px',
+              right: '10px',
               width: '30%',
               maxHeight: '100%',
               border: '#ddd solid 2px',
               padding: '20px',
               borderRadius: '5px',
-              top: '20px',
+              top: '50px',
               background: 'white',
               zIndex: '100',
               overflow: 'scroll',
@@ -410,36 +410,36 @@ function View() {
   );
 }
 
-import { useStore } from '../../components/graph/store';
-import { getNode } from '../../components/graph/utils';
 import CodeEditor from '../../components/CodeEditor';
-import { executeOnServer } from '../../src/useActivity';
+import FunctionDocumentation from '../../components/documentation/FunctionDocumentation';
+import TypeConstantDocumentation from '../../components/documentation/TypeConstantDocumentation';
+import { AnnotationLayer } from '../../components/graph/AnnotationLayer';
+import { ErrorAnnotation } from '../../components/graph/annotations';
+import { ErrorParagraph } from '../../components/graph/ErrorParagraph';
 import {
   isValidConnection,
   onDocumentCopyCatpure,
-  onDrop,
   onDocumentKeyDown,
   onDocumentMouseMove,
   onDocumentPasteCatpure,
   onDragOver,
-  onMouseUp,
+  onDrop,
   onMouseDown,
+  onMouseUp,
 } from '../../components/graph/graph_toolbox';
-import { AnnotationLayer } from '../../components/graph/AnnotationLayer';
-import { ErrorParagraph } from '../../components/graph/ErrorParagraph';
 import { GraphOptions } from '../../components/graph/GraphOptions';
+import NodeContextMenu from '../../components/graph/NodeContextMenu';
 import edge_type, {
   CustomEdgeLine,
 } from '../../components/graph/SmoothStepWithPadding';
+import { useStore } from '../../components/graph/store';
+import { getNode } from '../../components/graph/utils';
 import {
   JudiciousConstant,
   JudiciousFunction,
 } from '../../src/schemas/documentation';
-import { ErrorAnnotation } from '../../components/graph/annotations';
-import FunctionDocumentation from '../../components/documentation/FunctionDocumentation';
 import { translationProps } from '../../src/serverSideTranslationProps';
-import TypeConstantDocumentation from '../../components/documentation/TypeConstantDocumentation';
-import NodeContextMenu from '../../components/graph/NodeContextMenu';
+import { executeOnServer } from '../../src/useActivity';
 
 function Graph() {
   const [source] = useState('from pytamaro import *');
