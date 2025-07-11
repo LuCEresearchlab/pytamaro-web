@@ -41,6 +41,7 @@ export function ContentEditableDiv(props: {
       contentEditable
       style={{
         outline: 'none',
+        whiteSpace: 'pre',
         ...props.style,
       }}
       spellCheck={false}
