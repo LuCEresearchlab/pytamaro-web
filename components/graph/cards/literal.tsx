@@ -96,7 +96,7 @@ export function TamaroLiteralCard({
   };
 
   return (
-    <div className='drag-handle tamaro_card literal_card'>
+    <div className='tamaro_card literal_card'>
       <div
         style={{
           display: 'flex',
@@ -107,6 +107,7 @@ export function TamaroLiteralCard({
         }}
       >
         <div
+          className='drag-handle'
           style={{
             borderTopLeftRadius: '5px',
             borderBottomLeftRadius: '5px',
