@@ -1,8 +1,8 @@
-import { Location, SoundType, UnsoundType, ValueType } from './expression';
+import { Location, SoundType, UnsoundType } from './expression';
 
 export interface FunctionParameter {
   name: string;
-  type: ValueType;
+  type: SoundType;
 }
 
 export type TamaroCardParameterEnvironment = FunctionParameter[];

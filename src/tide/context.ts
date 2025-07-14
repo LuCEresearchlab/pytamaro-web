@@ -58,7 +58,7 @@ export interface ILocalConstantDefinition extends IConstantDefinition {
   import: Location;
 
   subkind: 'local';
-  root: TamaroCard<[]>;
+  root?: TamaroCard<[]>;
 }
 
 export interface IImportedConstantDefinition extends IConstantDefinition {

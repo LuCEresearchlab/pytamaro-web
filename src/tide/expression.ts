@@ -1,3 +1,5 @@
+import { TideError } from './errors';
+
 export interface Location {
   module: string | false;
   name: string;
@@ -18,7 +20,7 @@ export interface CodeRepresentation {
   imports: Location[];
 }
 
-export type Value = ExpressionValue | ErrorValue;
+export type Value = ExpressionValue | ErrorValue | ErrorPropagation;
 
 export interface ExpressionValue {
   value: CodeRepresentation;
@@ -27,6 +29,12 @@ export interface ExpressionValue {
 
 export interface ErrorValue {
   type: UnsoundType.Bottom;
+  error: TideError | TideError[];
+}
+
+export interface ErrorPropagation {
+  type: UnsoundType.Bottom;
+  error: false;
 }
 
 export type ValueType = SoundType | UnsoundType;
@@ -38,6 +46,23 @@ export enum SoundType {
   Color,
   Graphic,
   Point,
+}
+
+export function type_toString(type: SoundType) {
+  switch (type) {
+    case SoundType.Float:
+      return 'float';
+    case SoundType.Str:
+      return 'str';
+    case SoundType.Bool:
+      return 'bool';
+    case SoundType.Color:
+      return 'Color';
+    case SoundType.Graphic:
+      return 'Graphic';
+    case SoundType.Point:
+      return 'Point';
+  }
 }
 
 export enum UnsoundType {
