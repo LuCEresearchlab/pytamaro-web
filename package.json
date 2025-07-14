@@ -10,6 +10,7 @@
     "build": "cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "jest",
     "cypress": "cypress open",
     "build-python-analyzer": "wasm-pack build tools/python-analyzer --target bundler --out-dir ../../src/python-analyzer && rm src/python-analyzer/.gitignore"
   },
@@ -66,6 +67,7 @@
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.5",
+    "@types/jest": "^30.0.0",
     "@types/lodash": "^4.14.194",
     "@types/node": "18.11.6",
     "@types/react": "18.0.23",
@@ -80,9 +82,11 @@
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-cypress": "^3.6.0",
     "eslint-plugin-prettier": "^5.2.5",
+    "jest": "^30.0.4",
     "monaco-editor": "^0.46.0",
     "prettier": "^3.5.3",
     "simple-git": "^3.14.1",
+    "ts-jest": "^29.4.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.5.4"
   },
