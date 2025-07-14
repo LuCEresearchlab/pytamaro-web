@@ -1,4 +1,4 @@
-import { FunctionParameter, TamaroCard } from './cards';
+import { EvaluatedTamaroCard, FunctionParameter, TamaroCard } from './cards';
 import {
   Context,
   Definition,
@@ -18,6 +18,7 @@ import {
   TideSyntaxErrorNodeKindMismatch_builder,
   TideTypeError_builder,
 } from './error_builders';
+import { TideError } from './errors';
 import {
   compareLocation,
   ExpressionValue,
@@ -146,8 +147,8 @@ function sort_context_by_dependency(
   return [depth_order.reverse(), evaluated_cyclical];
 }
 
-export function find_dependencies(
-  value: TamaroCard<FunctionParameter[]>,
+export function find_dependencies<U>(
+  value: TamaroCard<FunctionParameter[], U>,
 ): Location[] {
   switch (value.kind) {
     case 'constant_use':
@@ -179,76 +180,70 @@ export function check_identifier_name(name: string): boolean {
   );
 }
 
-export function evaluate_tree<T extends FunctionParameter[]>(
-  root: TamaroCard<T>,
+export function evaluate_tree<T extends FunctionParameter[], U>(
+  root: TamaroCard<T, U>,
   context: EvaluatedContext,
-): Value {
+): EvaluatedTamaroCard<T, U> {
+  function returning_error(error: false | TideError | TideError[]) {
+    return { ...root, value: { type: -1, error } } as EvaluatedTamaroCard<T, U>;
+  }
+
   switch (root.kind) {
     case 'constant_use': {
       if (!check_identifier_name(root.import.name))
-        return {
-          type: -1,
-          error: TideSyntaxErrorInvalidConstantIdentifier_builder(
-            root.import.name,
-          ),
-        };
+        return returning_error(
+          TideSyntaxErrorInvalidConstantIdentifier_builder(root.import.name),
+        );
       if (!context.has(root.import))
-        return {
-          type: -1,
-          error: TideNameErrorUnknownConstant_builder(root.import.name),
-        };
+        return returning_error(
+          TideNameErrorUnknownConstant_builder(root.import.name),
+        );
       const value = context.get(root.import)!;
       if (value.kind === 'function_definition')
-        return {
-          type: -1,
-          error: TideSyntaxErrorNodeKindMismatch_builder(
-            'constant',
-            'function',
-          ),
-        };
+        return returning_error(
+          TideSyntaxErrorNodeKindMismatch_builder('constant', 'function'),
+        );
       if (value.evaluated_type === UnsoundType.Bottom) {
-        return {
-          type: UnsoundType.Bottom,
-          error: false,
-        };
+        return returning_error(false);
       }
       return {
-        type: value.evaluated_type,
-        value: { expression: value.import.name, imports: [value.import] },
+        ...root,
+        value: {
+          type: value.evaluated_type,
+          value: { expression: value.import.name, imports: [value.import] },
+        },
       };
     }
-    case 'literal':
-      return root.type === -1
-        ? { type: -1, error: TideSyntaxErrorInvalidLiteral_builder(root.value) }
-        : { type: root.type, value: { expression: root.value, imports: [] } };
+    case 'literal': {
+      if (root.type === -1)
+        return returning_error(
+          TideSyntaxErrorInvalidLiteral_builder(root.str_value),
+        );
+      return {
+        ...root,
+        value: {
+          type: root.type,
+          value: { expression: root.str_value, imports: [] },
+        },
+      } as EvaluatedTamaroCard<T, U>;
+    }
     case 'function_use': {
       if (!check_identifier_name(root.import.name))
-        return {
-          type: -1,
-          error: TideSyntaxErrorInvalidFunctionIdentifier_builder(
-            root.import.name,
-          ),
-        };
+        return returning_error(
+          TideSyntaxErrorInvalidFunctionIdentifier_builder(root.import.name),
+        );
       if (!context.has(root.import))
-        return {
-          type: -1,
-          error: TideNameErrorUnknownFunction_builder(root.import.name),
-        };
+        return returning_error(
+          TideNameErrorUnknownFunction_builder(root.import.name),
+        );
       const value = context.get(root.import)!;
       if (value.kind === 'constant_definition')
-        return {
-          type: -1,
-          error: TideSyntaxErrorNodeKindMismatch_builder(
-            'function',
-            'constant',
-          ),
-        };
+        return returning_error(
+          TideSyntaxErrorNodeKindMismatch_builder('function', 'constant'),
+        );
 
       if (value.evaluated_type === UnsoundType.Bottom) {
-        return {
-          type: -1,
-          error: false,
-        };
+        return returning_error(false);
       }
       const args = value.parameters.map((v) => {
         const arg = root.children.get(v.name);
@@ -259,49 +254,49 @@ export function evaluate_tree<T extends FunctionParameter[]>(
       });
       const missing_parameters = args.filter((v) => !v.arg);
       if (missing_parameters.length !== 0)
-        return {
-          type: -1,
-          error: missing_parameters.map((v) =>
+        return returning_error(
+          missing_parameters.map((v) =>
             TideSyntaxErrorMissingParameter_builder(v.parameter.name),
           ),
-        };
+        );
 
       const bottom_args = args.filter(
-        (v) => v.arg!.type === UnsoundType.Bottom,
+        (v) => v.arg!.value.type === UnsoundType.Bottom,
       );
 
       if (bottom_args.length !== 0) {
-        return {
-          type: -1,
-          error: false,
-        };
+        return returning_error(false);
       }
 
       const typed_args: [
         boolean,
-        { parameter: FunctionParameter; arg?: Value },
+        { parameter: FunctionParameter; arg?: EvaluatedTamaroCard<T, U> },
       ][] = args.map(
-        (v): [boolean, { parameter: FunctionParameter; arg?: Value }] =>
-          type_equality_rule(v.arg!.type, v.parameter.type)
+        (
+          v,
+        ): [
+          boolean,
+          { parameter: FunctionParameter; arg?: EvaluatedTamaroCard<T, U> },
+        ] =>
+          type_equality_rule(v.arg!.value.type, v.parameter.type)
             ? [true, v]
             : [false, v],
       );
 
       const mismatch_types = typed_args.filter((v) => !v[0]);
       if (mismatch_types.length !== 0)
-        return {
-          type: -1,
-          error: mismatch_types.map((v) =>
+        return returning_error(
+          mismatch_types.map((v) =>
             TideTypeError_builder(
-              type_toString(v[1].arg!.type as SoundType),
+              type_toString(v[1].arg!.value.type as SoundType),
               type_toString(v[1].parameter.type as SoundType),
             ),
           ),
-        };
+        );
 
       const checked_args = typed_args.map((v) => ({
         ...v!,
-        arg: v[1]!.arg! as ExpressionValue,
+        arg: v[1]!.arg!.value as ExpressionValue,
       }));
 
       const expression = `${value.import.name}(${checked_args.map((v) => v.arg.value.expression).join(', ')})`;
@@ -314,18 +309,27 @@ export function evaluate_tree<T extends FunctionParameter[]>(
         ),
       ).sort(compareLocation);
 
+      const children = new Map(args.map((v) => [v.parameter.name, v.arg!]));
+
       return {
-        type: value.evaluated_type,
+        ...root,
+        children,
         value: {
-          expression,
-          imports,
+          type: value.evaluated_type,
+          value: {
+            expression,
+            imports,
+          },
         },
       };
     }
     case 'parameter_use':
       return {
-        type: root.parameter.type,
-        value: { expression: root.parameter.name, imports: [] },
+        ...root,
+        value: {
+          type: root.parameter.type,
+          value: { expression: root.parameter.name, imports: [] },
+        },
       };
   }
 }
@@ -350,8 +354,8 @@ export function evaluate_context(context: Context): EvaluatedContext {
     if (element.subkind === 'imported') evaluated.set(element.import, element);
     else {
       if (element.kind === 'constant_definition') {
-        const value = element.root
-          ? evaluate_tree(element.root, evaluated)
+        const value: Value = element.root
+          ? evaluate_tree(element.root, evaluated).value
           : {
               type: -1,
               error: TideSyntaxErrorConstantHasNoValue_builder(
