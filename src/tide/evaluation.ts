@@ -6,6 +6,7 @@ import {
   EvaluatedDefinition,
 } from './context';
 import {
+  compareLocation,
   ExpressionValue,
   Location,
   type_equality_rule,
@@ -144,9 +145,13 @@ export function evaluate_tree<T extends FunctionParameter[]>(
 
       const expression = `${value.import.name}(${checked_args.map((v) => v.arg.value.expression).join(', ')})`;
 
-      const imports = checked_args
-        .map((v) => v.arg.value.imports)
-        .reduce((a, b) => a.concat(b), [value.import]);
+      const imports = Array.from(
+        new Set(
+          checked_args
+            .map((v) => v.arg.value.imports)
+            .reduce((a, b) => a.concat(b), [value.import]),
+        ),
+      ).sort(compareLocation);
 
       return {
         type: value.evaluated_type,

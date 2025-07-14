@@ -1,7 +1,11 @@
 import { TamaroCard, TamaroCard_Literal } from '../../src/tide/cards';
 import { EvaluatedContext } from '../../src/tide/context';
 import { evaluate_tree } from '../../src/tide/evaluation';
-import { Location, SoundType } from '../../src/tide/expression';
+import {
+  compareLocation,
+  Location,
+  SoundType,
+} from '../../src/tide/expression';
 import { getDefaultContext, RECTANGLE, RED } from './data';
 
 function literal_card(
@@ -108,7 +112,52 @@ test('simple_evaluate_function_use', () => {
     type: SoundType.Graphic,
     value: {
       expression: 'rectangle(100.0, 100.0, red)',
-      imports: [RECTANGLE.import, RED.import],
+      imports: [RECTANGLE.import, RED.import].sort(compareLocation),
+    },
+  });
+});
+
+test('evaluate_local_constant_use_inside_function_use', () => {
+  const map: EvaluatedContext = getDefaultContext();
+  const import_size: Location = { module: false, name: 'size' };
+  map.set(import_size, {
+    kind: 'constant_definition',
+    subkind: 'local',
+    dependencies: [],
+    evaluated: true,
+    evaluated_type: SoundType.Float,
+    import: import_size,
+    root: literal_card('100.0', SoundType.Float),
+    value: {
+      type: SoundType.Float,
+      value: {
+        expression: '100.0',
+        imports: [],
+      },
+    },
+  });
+
+  const arg_map: Map<string, TamaroCard<[]>> = new Map();
+  arg_map.set('width', { kind: 'constant_use', import: import_size });
+  arg_map.set('height', { kind: 'constant_use', import: import_size });
+  arg_map.set('color', { kind: 'constant_use', import: RED.import });
+
+  expect(
+    evaluate_tree(
+      {
+        kind: 'function_use',
+        children: arg_map,
+        import: RECTANGLE.import,
+      },
+      map,
+    ),
+  ).toMatchObject({
+    type: SoundType.Graphic,
+    value: {
+      expression: 'rectangle(size, size, red)',
+      imports: [RECTANGLE.import, import_size, RED.import].sort(
+        compareLocation,
+      ),
     },
   });
 });

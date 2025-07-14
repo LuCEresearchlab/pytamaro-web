@@ -3,6 +3,16 @@ export interface Location {
   name: string;
 }
 
+export function compareLocation(a: Location, b: Location) {
+  if (a.module === b.module) {
+    return a.name.localeCompare(b.name);
+  }
+  if (a.module === false) {
+    return 1;
+  }
+  return -1;
+}
+
 export interface CodeRepresentation {
   expression: string;
   imports: Location[];
