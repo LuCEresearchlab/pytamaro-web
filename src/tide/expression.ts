@@ -1,3 +1,4 @@
+import { EvaluatedTamaroCard, TamaroCardParameterEnvironment } from './cards';
 import { TideError } from './errors';
 
 export interface Location {
@@ -30,11 +31,13 @@ export interface ExpressionValue {
 export interface ErrorValue {
   type: UnsoundType.Bottom;
   error: TideError | TideError[];
+  children?: EvaluatedTamaroCard<TamaroCardParameterEnvironment, unknown>[];
 }
 
 export interface ErrorPropagation {
   type: UnsoundType.Bottom;
   error: false;
+  children?: EvaluatedTamaroCard<TamaroCardParameterEnvironment, unknown>[];
 }
 
 export type ValueType = SoundType | UnsoundType;

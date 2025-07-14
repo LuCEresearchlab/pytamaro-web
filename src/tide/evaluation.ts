@@ -184,8 +184,14 @@ export function evaluate_tree<T extends FunctionParameter[], U>(
   root: TamaroCard<T, U>,
   context: EvaluatedContext,
 ): EvaluatedTamaroCard<T, U> {
-  function returning_error(error: false | TideError | TideError[]) {
-    return { ...root, value: { type: -1, error } } as EvaluatedTamaroCard<T, U>;
+  function returning_error(
+    error: false | TideError | TideError[],
+    children?: EvaluatedTamaroCard<T, U>[],
+  ) {
+    return {
+      ...root,
+      value: { type: -1, error, children },
+    } as EvaluatedTamaroCard<T, U>;
   }
 
   switch (root.kind) {
@@ -231,19 +237,33 @@ export function evaluate_tree<T extends FunctionParameter[], U>(
       if (!check_identifier_name(root.import.name))
         return returning_error(
           TideSyntaxErrorInvalidFunctionIdentifier_builder(root.import.name),
+          Array.from(root.children.values()).map((v) =>
+            evaluate_tree(v, context),
+          ),
         );
       if (!context.has(root.import))
         return returning_error(
           TideNameErrorUnknownFunction_builder(root.import.name),
+          Array.from(root.children.values()).map((v) =>
+            evaluate_tree(v, context),
+          ),
         );
       const value = context.get(root.import)!;
       if (value.kind === 'constant_definition')
         return returning_error(
           TideSyntaxErrorNodeKindMismatch_builder('function', 'constant'),
+          Array.from(root.children.values()).map((v) =>
+            evaluate_tree(v, context),
+          ),
         );
 
       if (value.evaluated_type === UnsoundType.Bottom) {
-        return returning_error(false);
+        return returning_error(
+          false,
+          Array.from(root.children.values()).map((v) =>
+            evaluate_tree(v, context),
+          ),
+        );
       }
       const args = value.parameters.map((v) => {
         const arg = root.children.get(v.name);
@@ -255,8 +275,9 @@ export function evaluate_tree<T extends FunctionParameter[], U>(
       const missing_parameters = args.filter((v) => !v.arg);
       if (missing_parameters.length !== 0)
         return returning_error(
-          missing_parameters.map((v) =>
-            TideSyntaxErrorMissingParameter_builder(v.parameter.name),
+          missing_parameters.map(
+            (v) => TideSyntaxErrorMissingParameter_builder(v.parameter.name),
+            args.filter((v) => v).map((v) => v.arg!),
           ),
         );
 
@@ -265,7 +286,10 @@ export function evaluate_tree<T extends FunctionParameter[], U>(
       );
 
       if (bottom_args.length !== 0) {
-        return returning_error(false);
+        return returning_error(
+          false,
+          args.filter((v) => v).map((v) => v.arg!),
+        );
       }
 
       const typed_args: [
@@ -292,6 +316,7 @@ export function evaluate_tree<T extends FunctionParameter[], U>(
               type_toString(v[1].parameter.type as SoundType),
             ),
           ),
+          args.filter((v) => v).map((v) => v.arg!),
         );
 
       const checked_args = typed_args.map((v) => ({
