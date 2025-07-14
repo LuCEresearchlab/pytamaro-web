@@ -68,14 +68,14 @@ const KEYWORDS: string[] = [
   'yield',
 ];
 
-type DefinitionWithImports = Definition & {
+type DefinitionWithImports<U> = Definition<U> & {
   dependencies: Location[];
 };
-type ContextWithImports = DefinitionWithImports[];
+type ContextWithImports<U> = DefinitionWithImports<U>[];
 
-function is_cylicaly_defined(
-  def: DefinitionWithImports,
-  context: ContextWithImports,
+function is_cylicaly_defined<U>(
+  def: DefinitionWithImports<U>,
+  context: ContextWithImports<U>,
 ): Location[] | undefined {
   const seen: Set<Location> = new Set();
   const stack: Location[][] = def.dependencies.map((v) => [v]);
@@ -96,9 +96,9 @@ function is_cylicaly_defined(
   return undefined;
 }
 
-function sort_context_by_dependency(
-  context: ContextWithImports,
-): [ContextWithImports, EvaluatedContext] {
+function sort_context_by_dependency<U>(
+  context: ContextWithImports<U>,
+): [ContextWithImports<U>, EvaluatedContext<U>] {
   const [stack, cyclical] = context
     .map((v) => ({ value: v, cyclical: is_cylicaly_defined(v, context) }))
     .reduce(
@@ -106,29 +106,28 @@ function sort_context_by_dependency(
         b.cyclical
           ? [a[0], a[1].concat([b.cyclical, b.value])]
           : [a[0].concat(b.value), a[1]],
-      [[] as ContextWithImports, [] as [Location[], DefinitionWithImports][]],
+      [
+        [] as ContextWithImports<U>,
+        [] as [Location[], DefinitionWithImports<U>][],
+      ],
     );
 
-  const evaluated_cyclical: EvaluatedContext = new Map(
-    cyclical
-      .map(
-        (v) =>
-          ({
-            ...v[1],
-            evaluated: true,
-            value: {
-              type: -1,
-              error: TideNameErrorCyclicalDependencies_builder(
-                v[0].map((v) => v.name),
-              ),
-            },
-            evaluated_type: UnsoundType.Bottom,
-          }) as EvaluatedDefinition,
-      )
-      .map((v) => [v.import, v]),
+  const evaluated_cyclical: EvaluatedContext<U> = cyclical.map(
+    (v) =>
+      ({
+        ...v[1],
+        evaluated: true,
+        value: {
+          type: -1,
+          error: TideNameErrorCyclicalDependencies_builder(
+            v[0].map((v) => v.name),
+          ),
+        },
+        evaluated_type: UnsoundType.Bottom,
+      }) as EvaluatedDefinition<U>,
   );
 
-  const depth_order: DefinitionWithImports[] = [];
+  const depth_order: DefinitionWithImports<U>[] = [];
   const seen = new Set<Location>();
 
   while (stack.length !== 0) {
@@ -182,7 +181,7 @@ export function check_identifier_name(name: string): boolean {
 
 export function evaluate_tree<T extends FunctionParameter[], U>(
   root: TamaroCard<T, U>,
-  context: EvaluatedContext,
+  context: EvaluatedContext<U>,
 ): EvaluatedTamaroCard<T, U> {
   function returning_error(
     error: false | TideError | TideError[],
@@ -200,11 +199,11 @@ export function evaluate_tree<T extends FunctionParameter[], U>(
         return returning_error(
           TideSyntaxErrorInvalidConstantIdentifier_builder(root.import.name),
         );
-      if (!context.has(root.import))
+      if (!context.find((o) => o.import === root.import))
         return returning_error(
           TideNameErrorUnknownConstant_builder(root.import.name),
         );
-      const value = context.get(root.import)!;
+      const value = context.find((o) => o.import === root.import)!;
       if (value.kind === 'function_definition')
         return returning_error(
           TideSyntaxErrorNodeKindMismatch_builder('constant', 'function'),
@@ -241,14 +240,14 @@ export function evaluate_tree<T extends FunctionParameter[], U>(
             evaluate_tree(v, context),
           ),
         );
-      if (!context.has(root.import))
+      if (!context.find((o) => o.import === root.import))
         return returning_error(
           TideNameErrorUnknownFunction_builder(root.import.name),
           Array.from(root.children.values()).map((v) =>
             evaluate_tree(v, context),
           ),
         );
-      const value = context.get(root.import)!;
+      const value = context.find((o) => o.import === root.import)!;
       if (value.kind === 'constant_definition')
         return returning_error(
           TideSyntaxErrorNodeKindMismatch_builder('function', 'constant'),
@@ -359,8 +358,8 @@ export function evaluate_tree<T extends FunctionParameter[], U>(
   }
 }
 
-export function evaluate_context(context: Context): EvaluatedContext {
-  const context_with_imports: ContextWithImports = context.map((v) => {
+export function evaluate_context<U>(context: Context<U>): EvaluatedContext<U> {
+  const context_with_imports: ContextWithImports<U> = context.map((v) => {
     if (v.subkind === 'local')
       return { ...v, dependencies: v.root ? find_dependencies(v.root) : [] };
     return { ...v, dependencies: [] };
@@ -369,14 +368,17 @@ export function evaluate_context(context: Context): EvaluatedContext {
   const [context_stack, evaluated] =
     sort_context_by_dependency(context_with_imports);
 
+  const multiple_definitions: Location[] = [];
   while (context_stack.length !== 0) {
     const element = context_stack.pop()!;
 
-    if (element.dependencies.find((v) => !evaluated.has(v)))
+    if (
+      element.dependencies.find((v) => !evaluated.find((o) => o.import === v))
+    )
       throw new Error(
         'Error in evaluation logic, dependencies should be ordered from the least dependent to the most dependent',
       );
-    if (element.subkind === 'imported') evaluated.set(element.import, element);
+    if (element.subkind === 'imported') evaluated.push(element);
     else {
       if (element.kind === 'constant_definition') {
         const value: Value = element.root
@@ -387,23 +389,10 @@ export function evaluate_context(context: Context): EvaluatedContext {
                 element.import.name,
               ),
             };
-        if (evaluated.has(element.import)) {
-          evaluated.set(element.import, {
-            dependencies: [],
-            evaluated: true,
-            evaluated_type: UnsoundType.Bottom,
-            import: element.import,
-            kind: element.kind,
-            subkind: element.subkind,
-            value: {
-              type: -1,
-              error: TideNameErrorMultipleDefinition_builder(
-                element.import.name,
-              ),
-            },
-          });
+        if (evaluated.find((o) => o.import === element.import)) {
+          multiple_definitions.push(element.import);
         }
-        evaluated.set(element.import, {
+        evaluated.push({
           ...element,
           value,
           evaluated: true,
@@ -415,5 +404,19 @@ export function evaluate_context(context: Context): EvaluatedContext {
     }
   }
 
-  return evaluated;
+  return evaluated.map((element) => {
+    if (multiple_definitions.find((o) => o === element.import)) {
+      return {
+        ...element,
+        dependencies: [],
+        evaluated: true,
+        evaluated_type: UnsoundType.Bottom,
+        value: {
+          type: -1,
+          error: TideNameErrorMultipleDefinition_builder(element.import.name),
+        },
+      };
+    }
+    return element;
+  });
 }

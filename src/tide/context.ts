@@ -1,20 +1,21 @@
 import { FunctionParameter, TamaroCard } from './cards';
 import { ValueType, Location, Value } from './expression';
 
-export type Definition =
-  | FunctionDefinition<FunctionParameter[]>
-  | ConstantDefinition;
-export type EvaluatedDefinition =
-  | EvaluatedFunctionDefinition<FunctionParameter[]>
-  | EvaluatedConstantDefinition;
+export type Definition<U> =
+  | FunctionDefinition<FunctionParameter[], U>
+  | ConstantDefinition<U>;
 
-export type FunctionDefinition<T extends FunctionParameter[]> =
-  | ILocalFunctionDefinition<T>
-  | EvaluatedFunctionDefinition<T>;
+export type EvaluatedDefinition<U> =
+  | EvaluatedFunctionDefinition<FunctionParameter[], U>
+  | EvaluatedConstantDefinition<U>;
 
-export type EvaluatedFunctionDefinition<T extends FunctionParameter[]> =
-  | IImportedFunctionDefintion<T>
-  | IEvaluatedLocalFunctionDefinition<T>;
+export type FunctionDefinition<T extends FunctionParameter[], U> =
+  | ILocalFunctionDefinition<T, U>
+  | EvaluatedFunctionDefinition<T, U>;
+
+export type EvaluatedFunctionDefinition<T extends FunctionParameter[], U> =
+  | IImportedFunctionDefintion<T, U>
+  | IEvaluatedLocalFunctionDefinition<T, U>;
 
 export interface IFunctionDefinition<T extends FunctionParameter[]> {
   kind: 'function_definition';
@@ -24,24 +25,26 @@ export interface IFunctionDefinition<T extends FunctionParameter[]> {
   parameters: T;
 }
 
-export interface ILocalFunctionDefinition<T extends FunctionParameter[]>
+export interface ILocalFunctionDefinition<T extends FunctionParameter[], U>
   extends IFunctionDefinition<T> {
   subkind: 'local';
-  root: TamaroCard<T>;
+  root: TamaroCard<T, U>;
 }
 
-export interface IImportedFunctionDefintion<T extends FunctionParameter[]>
+export interface IImportedFunctionDefintion<T extends FunctionParameter[], U>
   extends IFunctionDefinition<T> {
   subkind: 'imported';
   evaluated: true;
 
   evaluated_type: ValueType;
   dependencies: [];
+  metadata: U;
 }
 
 export interface IEvaluatedLocalFunctionDefinition<
   T extends FunctionParameter[],
-> extends ILocalFunctionDefinition<T> {
+  U,
+> extends ILocalFunctionDefinition<T, U> {
   evaluated: true;
 
   evaluated_type: ValueType;
@@ -54,14 +57,14 @@ export interface IConstantDefinition {
   evaluated: boolean;
 }
 
-export interface ILocalConstantDefinition extends IConstantDefinition {
+export interface ILocalConstantDefinition<U> extends IConstantDefinition {
   import: Location;
 
   subkind: 'local';
-  root?: TamaroCard<[]>;
+  root?: TamaroCard<[], U>;
 }
 
-export interface IImportedConstantDefinition extends IConstantDefinition {
+export interface IImportedConstantDefinition<U> extends IConstantDefinition {
   import: Location;
 
   subkind: 'imported';
@@ -69,10 +72,11 @@ export interface IImportedConstantDefinition extends IConstantDefinition {
 
   evaluated_type: ValueType;
   dependencies: [];
+  metadata: U;
 }
 
-export interface IEvaluatedLocalConstantDefinition
-  extends ILocalConstantDefinition {
+export interface IEvaluatedLocalConstantDefinition<U>
+  extends ILocalConstantDefinition<U> {
   evaluated: true;
 
   value: Value;
@@ -80,13 +84,13 @@ export interface IEvaluatedLocalConstantDefinition
   dependencies: Location[];
 }
 
-export type ConstantDefinition =
-  | ILocalConstantDefinition
-  | EvaluatedConstantDefinition;
+export type ConstantDefinition<U> =
+  | ILocalConstantDefinition<U>
+  | EvaluatedConstantDefinition<U>;
 
-export type EvaluatedConstantDefinition =
-  | IImportedConstantDefinition
-  | IEvaluatedLocalConstantDefinition;
+export type EvaluatedConstantDefinition<U> =
+  | IImportedConstantDefinition<U>
+  | IEvaluatedLocalConstantDefinition<U>;
 
-export type Context = Definition[];
-export type EvaluatedContext = Map<Location, EvaluatedDefinition>;
+export type Context<U> = Definition<U>[];
+export type EvaluatedContext<U> = EvaluatedDefinition<U>[];
