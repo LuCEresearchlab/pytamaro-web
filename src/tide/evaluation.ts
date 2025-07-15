@@ -1,4 +1,6 @@
-import { executeOnServer } from '../useActivity';
+// import { executeOnServer } from '../useActivity';
+import axios from 'axios';
+import { ExecutionResponse } from '../codeExecution';
 import { EvaluatedTamaroCard, FunctionParameter, TamaroCard } from './cards';
 import { create_code } from './code';
 import {
@@ -8,10 +10,12 @@ import {
   EvaluatedDefinition,
 } from './context';
 import {
+  TideGenericError_builder,
   TideNameErrorCyclicalDependencies_builder,
   TideNameErrorMultipleDefinition_builder,
   TideNameErrorUnknownConstant_builder,
   TideNameErrorUnknownFunction_builder,
+  TideRuntimeError_builder,
   TideSyntaxErrorConstantHasNoValue_builder,
   TideSyntaxErrorInvalidConstantIdentifier_builder,
   TideSyntaxErrorInvalidFunctionIdentifier_builder,
@@ -69,6 +73,20 @@ const KEYWORDS: string[] = [
   'or',
   'yield',
 ];
+
+async function executeOnServer(source: string): Promise<ExecutionResponse> {
+  try {
+    const response = await axios.post('/api/execute', {
+      sources: [source],
+      idx: 0,
+      toolboxFunctions: [],
+      extraPythonFiles: [],
+    });
+    return response.data;
+  } catch {
+    return { type: 'network-error' };
+  }
+}
 
 type DefinitionWithImports<U> = Definition<U> & {
   dependencies: Location[];
@@ -396,14 +414,43 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
 
       const code = create_code(value, dependencies);
 
-      return await executeOnServer([code], 0, [], [])
+      // console.log(code);
+      return await executeOnServer(code)
         .then((v) => {
-          console.log(v);
-          return card;
+          switch (v.type) {
+            case 'success':
+              return card;
+            case 'error': {
+              const content = v.stderr;
+              const error_message = content.substring(
+                content.lastIndexOf('Error: ') + 'Error: '.length,
+              );
+              return {
+                ...card,
+                value: {
+                  type: -1,
+                  error: TideRuntimeError_builder(error_message.trim()),
+                },
+              };
+            }
+            default:
+              return {
+                ...card,
+                value: {
+                  type: -1,
+                  error: TideGenericError_builder(),
+                },
+              };
+          }
         })
-        .catch((e) => {
-          console.log(e);
-          return card;
+        .catch(() => {
+          return {
+            ...card,
+            value: {
+              type: -1,
+              error: TideGenericError_builder(),
+            },
+          };
         });
     }
     case 'parameter_use':

@@ -1,7 +1,6 @@
-import exp from 'constants';
 import { EvaluatedDefinition } from './context';
 import { sort_dependencies } from './evaluation';
-import { ExpressionValue, UnsoundType, Value } from './expression';
+import { UnsoundType, Value } from './expression';
 
 export function create_code_from_definition(
   definition: EvaluatedDefinition<unknown>,
@@ -10,15 +9,16 @@ export function create_code_from_definition(
     case 'function_definition': {
       switch (definition.subkind) {
         case 'imported':
-          return `import ${definition.import.name} from ${definition.import.module}`;
+          return `from ${definition.import.module} import ${definition.import.name}`;
         case 'local':
           throw new Error('Not supported Yet');
       }
+      break;
     }
     case 'constant_definition':
       switch (definition.subkind) {
         case 'imported':
-          return `import ${definition.import.name} from ${definition.import.module}`;
+          return `from ${definition.import.module} import ${definition.import.name}`;
         case 'local':
           return `${definition.import.name} = ${create_code_from_expression(definition.value)}`;
       }

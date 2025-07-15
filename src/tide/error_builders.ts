@@ -11,7 +11,7 @@ import {
   TideSyntaxErrorMissingParameter,
   TideSyntaxErrorNodeKindMismatch,
   TideTypeError,
-  TideValueError,
+  TideRuntimeError,
 } from './errors';
 
 export function TideSyntaxErrorNodeKindMismatch_builder(
@@ -131,10 +131,10 @@ export function TideNameErrorCyclicalDependencies_builder(
   };
 }
 
-export function TideValueError_builder(name: string): TideValueError {
+export function TideRuntimeError_builder(error: string): TideRuntimeError {
   return {
-    kind: 'value-error',
-    args: [{ name: 'name', value: name }],
+    kind: 'runtime-error',
+    args: [{ name: 'error', value: error }],
   };
 }
 

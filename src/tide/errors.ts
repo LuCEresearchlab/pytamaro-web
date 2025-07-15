@@ -2,7 +2,7 @@ export type TideError =
   | TideGenericError
   | TideSyntaxError
   | TideTypeError
-  | TideValueError
+  | TideRuntimeError
   | TideNameError;
 
 export type TideSyntaxError =
@@ -87,9 +87,9 @@ export interface TideNameErrorCyclicalDependencies {
   args: [{ name: 'names'; value: string[] }];
 }
 
-export interface TideValueError {
-  kind: 'value-error';
-  args: [{ name: 'name'; value: string }];
+export interface TideRuntimeError {
+  kind: 'runtime-error';
+  args: [{ name: 'error'; value: string }];
 }
 
 export interface TideGenericError {
