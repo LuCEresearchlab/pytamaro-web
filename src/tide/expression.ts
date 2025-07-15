@@ -21,11 +21,32 @@ export interface CodeRepresentation {
   imports: Location[];
 }
 
-export type Value = IExpressionValue | ErrorValue | ErrorPropagation;
+export type Value = ExpressionValue | ErrorValue | ErrorPropagation;
+
+export type ExpressionValue =
+  | GraphicExpressionValue
+  | ColorExpressionValue
+  | OtherExpressionValue;
 export interface IExpressionValue {
   value: CodeRepresentation;
   type: SoundType;
 }
+
+export interface GraphicExpressionValue extends IExpressionValue {
+  type: SoundType.Graphic;
+  data?: string;
+}
+
+export interface ColorExpressionValue extends IExpressionValue {
+  type: SoundType.Color;
+  data?: { red: number; green: number; blue: number; alpha: number };
+}
+
+export interface OtherExpressionValue extends IExpressionValue {
+  type: SoundType.Float | SoundType.Bool | SoundType.Str | SoundType.Point;
+  data: undefined;
+}
+
 export interface ErrorValue {
   type: UnsoundType.Bottom;
   error: TideError | TideError[];

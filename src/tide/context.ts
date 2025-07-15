@@ -1,5 +1,5 @@
 import { FunctionParameter, TamaroCard } from './cards';
-import { ValueType, Location, Value } from './expression';
+import { ValueType, Location, Value, SoundType } from './expression';
 
 export type Definition<U> =
   | FunctionDefinition<FunctionParameter[], U>
@@ -22,7 +22,7 @@ export interface IFunctionDefinition<T extends FunctionParameter[]> {
   import: Location;
   evaluated: boolean;
 
-  return_type: ValueType;
+  return_type: SoundType;
   parameters: T;
 }
 

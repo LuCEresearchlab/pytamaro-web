@@ -33,6 +33,7 @@ function literal_card_evaluated(
   return {
     ...literal_card(value, type),
     value: {
+      data: undefined,
       type,
       value: {
         expression: value,
@@ -75,6 +76,7 @@ describe('Unit test constant use', () => {
     ).to.deep.eq({
       ...{ kind: 'constant_use', import: RED.import, metadata: {} },
       value: {
+        data: { red: 255, green: 0, blue: 0, alpha: 1 },
         type: SoundType.Color,
         value: {
           expression: RED.import.name,
@@ -95,6 +97,7 @@ describe('Unit test constant use', () => {
       import: import_size,
       root: literal_card('100.0', SoundType.Float),
       value: {
+        data: undefined,
         type: SoundType.Float,
         value: {
           expression: '100.0',
@@ -111,6 +114,7 @@ describe('Unit test constant use', () => {
     ).to.deep.eq({
       ...{ kind: 'constant_use', import: import_size, metadata: {} },
       value: {
+        data: undefined,
         type: SoundType.Float,
         value: {
           expression: import_size.name,
@@ -145,6 +149,7 @@ describe('Unit test function use', () => {
         map,
       ).then((v) => v.value),
     ).to.deep.eq({
+      data: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAABAElEQVR4nO3RQQ0AIBDAsAP/nuGNAvZoFSzZOjNnyNi/A3gZEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIzAXsTALGT7m3PwAAAABJRU5ErkJggg==',
       type: SoundType.Graphic,
       value: {
         expression: 'rectangle(100.0, 100.0, red)',
@@ -164,6 +169,7 @@ describe('Unit test function use', () => {
       import: import_size,
       root: literal_card('100.0', SoundType.Float),
       value: {
+        data: undefined,
         type: SoundType.Float,
         value: {
           expression: '100.0',
@@ -200,6 +206,7 @@ describe('Unit test function use', () => {
         map,
       ).then((v) => v.value),
     ).to.deep.eq({
+      data: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAABAElEQVR4nO3RQQ0AIBDAsAP/nuGNAvZoFSzZOjNnyNi/A3gZEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIzAXsTALGT7m3PwAAAABJRU5ErkJggg==',
       type: SoundType.Graphic,
       value: {
         expression: 'rectangle(size, size, red)',
@@ -221,6 +228,7 @@ describe('Unit test function use', () => {
       import: import_size,
       root: literal_card('-100.0', SoundType.Float),
       value: {
+        data: undefined,
         type: SoundType.Float,
         value: {
           expression: '-100.0',
@@ -259,6 +267,65 @@ describe('Unit test function use', () => {
     ).to.deep.eq({
       type: UnsoundType.Bottom,
       error: TideRuntimeError_builder('Invalid length for parameter `width`'),
+    });
+  });
+
+  it('evaluate_local_constant_use_inside_function_use_0x0', async () => {
+    const map: EvaluatedContext<object> = getDefaultContext();
+    const import_size: Location = { module: false, name: 'size' };
+    map.push({
+      kind: 'constant_definition',
+      subkind: 'local',
+      dependencies: [],
+      evaluated: true,
+      import: import_size,
+      root: literal_card('0.0', SoundType.Float),
+      value: {
+        data: undefined,
+        type: SoundType.Float,
+        value: {
+          expression: '0.0',
+          imports: [],
+        },
+      },
+    });
+
+    const arg_map: Map<string, TamaroCard<[], object>> = new Map();
+    arg_map.set('width', {
+      kind: 'constant_use',
+      import: import_size,
+      metadata: {},
+    });
+    arg_map.set('height', {
+      kind: 'constant_use',
+      import: import_size,
+      metadata: {},
+    });
+    arg_map.set('color', {
+      kind: 'constant_use',
+      import: RED.import,
+      metadata: {},
+    });
+
+    expect(
+      await evaluate_tree(
+        {
+          kind: 'function_use',
+          children: arg_map,
+          import: RECTANGLE.import,
+          metadata: {},
+        },
+        map,
+      ).then((v) => v.value),
+    ).to.deep.eq({
+      data: undefined,
+      type: SoundType.Graphic,
+      value: {
+        expression: 'rectangle(size, size, red)',
+        imports: [RECTANGLE.import, import_size, RED.import].sort(
+          compareLocation,
+        ),
+      },
     });
   });
 });

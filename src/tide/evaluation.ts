@@ -28,6 +28,7 @@ import {
 import { TideError } from './errors';
 import {
   compareLocation,
+  ExpressionValue,
   IExpressionValue,
   Location,
   SoundType,
@@ -36,6 +37,7 @@ import {
   UnsoundType,
   Value,
 } from './expression';
+import { extract_data } from './data_extraction';
 
 const KEYWORDS: string[] = [
   'False',
@@ -75,7 +77,9 @@ const KEYWORDS: string[] = [
   'yield',
 ];
 
-async function executeOnServer(source: string): Promise<ExecutionResponse> {
+export async function executeOnServer(
+  source: string,
+): Promise<ExecutionResponse> {
   try {
     const response = await axios.post('/api/execute', {
       sources: [source],
@@ -118,11 +122,12 @@ function is_cylicaly_defined<U>(
 }
 
 export function sort_dependencies<T>(
-  stack: T[],
+  values: T[],
   get_position: (v: T) => Location,
   get_dependencies: (v: T) => Location[],
   get_element: (v: Location) => T | undefined,
 ): T[] {
+  const stack = Array.from(values);
   const depth_order: T[] = [];
   const seen = new Set<Location>();
 
@@ -260,12 +265,14 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
       if (constant_type === UnsoundType.Bottom) {
         return returning_error(false);
       }
+
       return {
         ...root,
         value: {
+          data: await extract_data(value.import.name, constant_type, [value]),
           type: constant_type,
           value: { expression: value.import.name, imports: [value.import] },
-        },
+        } as unknown as ExpressionValue,
       };
     }
     case 'literal': {
@@ -276,6 +283,7 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
       return {
         ...root,
         value: {
+          data: undefined,
           type: root.type,
           value: { expression: root.str_value, imports: [] },
         },
@@ -311,16 +319,17 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
           ),
         );
 
-      if (definition.return_type === UnsoundType.Bottom) {
-        return returning_error(
-          false,
-          await Promise.all(
-            Array.from(root.children.values()).map((v) =>
-              evaluate_tree(v, context),
-            ),
-          ),
-        );
-      }
+      // For now all functions have a return value
+      // if (definition.return_type === UnsoundType.Bottom) {
+      //   return returning_error(
+      //     false,
+      //     await Promise.all(
+      //       Array.from(root.children.values()).map((v) =>
+      //         evaluate_tree(v, context),
+      //       ),
+      //     ),
+      //   );
+      // }
       const args = await Promise.all(
         definition.parameters.map(async (v) => {
           const arg = root.children.get(v.name);
@@ -394,12 +403,13 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
 
       const children = new Map(args.map((v) => [v.parameter.name, v.arg!]));
 
-      const value = {
+      const value: ExpressionValue = {
         type: definition.return_type,
         value: {
           expression,
           imports,
         },
+        data: undefined,
       };
 
       const card: EvaluatedTamaroCard<T, U> = {
@@ -415,12 +425,21 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
 
       const code = create_code(value, dependencies);
 
-      // console.log(code);
       return await executeOnServer(code)
-        .then((v) => {
+        .then(async (v) => {
           switch (v.type) {
             case 'success':
-              return card;
+              return {
+                ...card,
+                value: {
+                  ...value,
+                  data: await extract_data(
+                    expression,
+                    definition.return_type,
+                    dependencies,
+                  ),
+                },
+              } as EvaluatedTamaroCard<T, U>;
             case 'error': {
               const content = v.stderr;
               const error_message = content.substring(
@@ -458,6 +477,7 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
       return {
         ...root,
         value: {
+          data: undefined,
           type: root.parameter.type,
           value: { expression: root.parameter.name, imports: [] },
         },

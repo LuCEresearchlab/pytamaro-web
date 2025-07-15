@@ -35,7 +35,7 @@ export function create_code_from_expression(expression: Value) {
 }
 
 export function create_code(
-  expression: Value,
+  expression: Value | string,
   definitions: EvaluatedDefinition<unknown>[],
 ) {
   const sorted = sort_dependencies(
@@ -46,6 +46,11 @@ export function create_code(
   );
   return sorted
     .map(create_code_from_definition)
-    .concat(['', create_code_from_expression(expression)])
+    .concat([
+      '',
+      typeof expression === 'string'
+        ? expression
+        : create_code_from_expression(expression),
+    ])
     .join('\n');
 }
