@@ -92,7 +92,6 @@ describe('Unit test constant use', () => {
       subkind: 'local',
       dependencies: [],
       evaluated: true,
-      evaluated_type: SoundType.Float,
       import: import_size,
       root: literal_card('100.0', SoundType.Float),
       value: {
@@ -162,7 +161,6 @@ describe('Unit test function use', () => {
       subkind: 'local',
       dependencies: [],
       evaluated: true,
-      evaluated_type: SoundType.Float,
       import: import_size,
       root: literal_card('100.0', SoundType.Float),
       value: {
@@ -220,7 +218,6 @@ describe('Unit test function use', () => {
       subkind: 'local',
       dependencies: [],
       evaluated: true,
-      evaluated_type: SoundType.Float,
       import: import_size,
       root: literal_card('-100.0', SoundType.Float),
       value: {

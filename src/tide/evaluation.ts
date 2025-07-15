@@ -8,6 +8,7 @@ import {
   Definition,
   EvaluatedContext,
   EvaluatedDefinition,
+  get_constant_type,
 } from './context';
 import {
   TideGenericError_builder,
@@ -27,7 +28,7 @@ import {
 import { TideError } from './errors';
 import {
   compareLocation,
-  ExpressionValue,
+  IExpressionValue,
   Location,
   SoundType,
   type_equality_rule,
@@ -168,7 +169,6 @@ function sort_context_by_dependency<U>(
             v[0].map((v) => v.name),
           ),
         },
-        evaluated_type: UnsoundType.Bottom,
       }) as EvaluatedDefinition<U>,
   );
 
@@ -256,13 +256,14 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
         return returning_error(
           TideSyntaxErrorNodeKindMismatch_builder('constant', 'function'),
         );
-      if (value.evaluated_type === UnsoundType.Bottom) {
+      const constant_type = get_constant_type(value);
+      if (constant_type === UnsoundType.Bottom) {
         return returning_error(false);
       }
       return {
         ...root,
         value: {
-          type: value.evaluated_type,
+          type: constant_type,
           value: { expression: value.import.name, imports: [value.import] },
         },
       };
@@ -310,7 +311,7 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
           ),
         );
 
-      if (definition.evaluated_type === UnsoundType.Bottom) {
+      if (definition.return_type === UnsoundType.Bottom) {
         return returning_error(
           false,
           await Promise.all(
@@ -378,7 +379,7 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
 
       const checked_args = typed_args.map((v) => ({
         ...v!,
-        arg: v[1]!.arg!.value as ExpressionValue,
+        arg: v[1]!.arg!.value as IExpressionValue,
       }));
 
       const expression = `${definition.import.name}(${checked_args.map((v) => v.arg.value.expression).join(', ')})`;
@@ -394,7 +395,7 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
       const children = new Map(args.map((v) => [v.parameter.name, v.arg!]));
 
       const value = {
-        type: definition.evaluated_type,
+        type: definition.return_type,
         value: {
           expression,
           imports,
@@ -507,7 +508,6 @@ export async function evaluate_context<U>(
           ...element,
           value,
           evaluated: true,
-          evaluated_type: value.type,
         });
       } else {
         throw new Error('Not supported Yet');

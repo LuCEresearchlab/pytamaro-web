@@ -21,13 +21,11 @@ export interface CodeRepresentation {
   imports: Location[];
 }
 
-export type Value = ExpressionValue | ErrorValue | ErrorPropagation;
-
-export interface ExpressionValue {
+export type Value = IExpressionValue | ErrorValue | ErrorPropagation;
+export interface IExpressionValue {
   value: CodeRepresentation;
   type: SoundType;
 }
-
 export interface ErrorValue {
   type: UnsoundType.Bottom;
   error: TideError | TideError[];

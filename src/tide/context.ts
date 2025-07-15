@@ -22,6 +22,7 @@ export interface IFunctionDefinition<T extends FunctionParameter[]> {
   import: Location;
   evaluated: boolean;
 
+  return_type: ValueType;
   parameters: T;
 }
 
@@ -36,7 +37,6 @@ export interface IImportedFunctionDefintion<T extends FunctionParameter[], U>
   subkind: 'imported';
   evaluated: true;
 
-  evaluated_type: ValueType;
   dependencies: [];
   metadata: U;
 }
@@ -47,7 +47,6 @@ export interface IEvaluatedLocalFunctionDefinition<
 > extends ILocalFunctionDefinition<T, U> {
   evaluated: true;
 
-  evaluated_type: ValueType;
   dependencies: Location[];
 }
 
@@ -80,7 +79,6 @@ export interface IEvaluatedLocalConstantDefinition<U>
   evaluated: true;
 
   value: Value;
-  evaluated_type: ValueType;
   dependencies: Location[];
 }
 
@@ -94,3 +92,12 @@ export type EvaluatedConstantDefinition<U> =
 
 export type Context<U> = Definition<U>[];
 export type EvaluatedContext<U> = EvaluatedDefinition<U>[];
+
+export function get_constant_type(v: EvaluatedConstantDefinition<unknown>) {
+  switch (v.subkind) {
+    case 'local':
+      return v.value.type;
+    case 'imported':
+      return v.evaluated_type;
+  }
+}

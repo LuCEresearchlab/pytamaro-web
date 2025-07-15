@@ -2,9 +2,9 @@ import { FunctionParameter } from '../../../src/tide/cards';
 import { EvaluatedDefinition } from '../../../src/tide/context';
 import { Location, SoundType } from '../../../src/tide/expression';
 
-const context = new Map<Location, EvaluatedDefinition<{}>>();
+const context = new Map<Location, EvaluatedDefinition<object>>();
 
-function register(def: EvaluatedDefinition<{}>) {
+function register(def: EvaluatedDefinition<object>) {
   context.set(def.import, def);
   return def;
 }
@@ -37,7 +37,7 @@ function function_use(
     subkind: 'imported',
     dependencies: [],
     evaluated: true,
-    evaluated_type: type,
+    return_type: type,
     import: i,
     parameters: _params,
     metadata: {},
