@@ -1,4 +1,6 @@
+import { executeOnServer } from '../useActivity';
 import { EvaluatedTamaroCard, FunctionParameter, TamaroCard } from './cards';
+import { create_code } from './code';
 import {
   Context,
   Definition,
@@ -96,6 +98,31 @@ function is_cylicaly_defined<U>(
   return undefined;
 }
 
+export function sort_dependencies<T>(
+  stack: T[],
+  get_position: (v: T) => Location,
+  get_dependencies: (v: T) => Location[],
+  get_element: (v: Location) => T | undefined,
+): T[] {
+  const depth_order: T[] = [];
+  const seen = new Set<Location>();
+
+  while (stack.length !== 0) {
+    const element = stack.pop()!;
+    const i = get_position(element);
+
+    if (seen.has(i)) continue;
+
+    depth_order.push(element);
+    const values = get_dependencies(element)
+      .map(get_element)
+      .filter((v) => v)
+      .map((v) => v!);
+    stack.unshift(...values);
+  }
+  return depth_order.reverse();
+}
+
 function sort_context_by_dependency<U>(
   context: ContextWithImports<U>,
 ): [ContextWithImports<U>, EvaluatedContext<U>] {
@@ -127,40 +154,43 @@ function sort_context_by_dependency<U>(
       }) as EvaluatedDefinition<U>,
   );
 
-  const depth_order: DefinitionWithImports<U>[] = [];
-  const seen = new Set<Location>();
-
-  while (stack.length !== 0) {
-    const element = stack.pop()!;
-
-    if (seen.has(element.import)) continue;
-
-    depth_order.push(element);
-    const values = element.dependencies
-      .map((i) => context.find((v) => v.import === i))
-      .filter((v) => v)
-      .map((v) => v!);
-    stack.unshift(...values);
-  }
-
-  return [depth_order.reverse(), evaluated_cyclical];
+  return [
+    sort_dependencies(
+      stack,
+      (v) => v.import,
+      (v) => v.dependencies,
+      (v) => context.find((o) => o.import === v),
+    ),
+    evaluated_cyclical,
+  ];
 }
 
 export function find_dependencies<U>(
   value: TamaroCard<FunctionParameter[], U>,
+  context: EvaluatedContext<U>,
 ): Location[] {
-  switch (value.kind) {
-    case 'constant_use':
-      return [value.import];
-    case 'literal':
-      return [];
-    case 'function_use':
-      return Array.from(value.children.values())
-        .map((v) => find_dependencies(v))
-        .reduce((a, b) => a.concat(b), [value.import]);
-    case 'parameter_use':
-      return [];
+  function aux(value: TamaroCard<FunctionParameter[], U>): Location[] {
+    switch (value.kind) {
+      case 'constant_use':
+        return [value.import];
+      case 'literal':
+        return [];
+      case 'function_use':
+        return Array.from(value.children.values())
+          .map((v) => aux(v))
+          .reduce((a, b) => a.concat(b), [value.import])
+          .sort(compareLocation);
+      case 'parameter_use':
+        return [];
+    }
   }
+  if (context.length === 0) return aux(value);
+  return sort_dependencies(
+    aux(value),
+    (v) => v,
+    (v) => context.find((o) => o.import === v)?.dependencies || [],
+    (v) => v,
+  );
 }
 
 export function check_identifier_name(name: string): boolean {
@@ -179,10 +209,10 @@ export function check_identifier_name(name: string): boolean {
   );
 }
 
-export function evaluate_tree<T extends FunctionParameter[], U>(
+export async function evaluate_tree<T extends FunctionParameter[], U>(
   root: TamaroCard<T, U>,
   context: EvaluatedContext<U>,
-): EvaluatedTamaroCard<T, U> {
+): Promise<EvaluatedTamaroCard<T, U>> {
   function returning_error(
     error: false | TideError | TideError[],
     children?: EvaluatedTamaroCard<T, U>[],
@@ -236,41 +266,51 @@ export function evaluate_tree<T extends FunctionParameter[], U>(
       if (!check_identifier_name(root.import.name))
         return returning_error(
           TideSyntaxErrorInvalidFunctionIdentifier_builder(root.import.name),
-          Array.from(root.children.values()).map((v) =>
-            evaluate_tree(v, context),
+          await Promise.all(
+            Array.from(root.children.values()).map((v) =>
+              evaluate_tree(v, context),
+            ),
           ),
         );
       if (!context.find((o) => o.import === root.import))
         return returning_error(
           TideNameErrorUnknownFunction_builder(root.import.name),
-          Array.from(root.children.values()).map((v) =>
-            evaluate_tree(v, context),
+          await Promise.all(
+            Array.from(root.children.values()).map((v) =>
+              evaluate_tree(v, context),
+            ),
           ),
         );
-      const value = context.find((o) => o.import === root.import)!;
-      if (value.kind === 'constant_definition')
+      const definition = context.find((o) => o.import === root.import)!;
+      if (definition.kind === 'constant_definition')
         return returning_error(
           TideSyntaxErrorNodeKindMismatch_builder('function', 'constant'),
-          Array.from(root.children.values()).map((v) =>
-            evaluate_tree(v, context),
+          await Promise.all(
+            Array.from(root.children.values()).map((v) =>
+              evaluate_tree(v, context),
+            ),
           ),
         );
 
-      if (value.evaluated_type === UnsoundType.Bottom) {
+      if (definition.evaluated_type === UnsoundType.Bottom) {
         return returning_error(
           false,
-          Array.from(root.children.values()).map((v) =>
-            evaluate_tree(v, context),
+          await Promise.all(
+            Array.from(root.children.values()).map((v) =>
+              evaluate_tree(v, context),
+            ),
           ),
         );
       }
-      const args = value.parameters.map((v) => {
-        const arg = root.children.get(v.name);
-        return {
-          parameter: v,
-          arg: arg ? evaluate_tree(arg, context) : undefined,
-        };
-      });
+      const args = await Promise.all(
+        definition.parameters.map(async (v) => {
+          const arg = root.children.get(v.name);
+          return {
+            parameter: v,
+            arg: arg ? await evaluate_tree(arg, context) : undefined,
+          };
+        }),
+      );
       const missing_parameters = args.filter((v) => !v.arg);
       if (missing_parameters.length !== 0)
         return returning_error(
@@ -323,29 +363,48 @@ export function evaluate_tree<T extends FunctionParameter[], U>(
         arg: v[1]!.arg!.value as ExpressionValue,
       }));
 
-      const expression = `${value.import.name}(${checked_args.map((v) => v.arg.value.expression).join(', ')})`;
+      const expression = `${definition.import.name}(${checked_args.map((v) => v.arg.value.expression).join(', ')})`;
 
       const imports = Array.from(
         new Set(
           checked_args
             .map((v) => v.arg.value.imports)
-            .reduce((a, b) => a.concat(b), [value.import]),
+            .reduce((a, b) => a.concat(b), [definition.import]),
         ),
       ).sort(compareLocation);
 
       const children = new Map(args.map((v) => [v.parameter.name, v.arg!]));
 
-      return {
-        ...root,
-        children,
+      const value = {
+        type: definition.evaluated_type,
         value: {
-          type: value.evaluated_type,
-          value: {
-            expression,
-            imports,
-          },
+          expression,
+          imports,
         },
       };
+
+      const card: EvaluatedTamaroCard<T, U> = {
+        ...root,
+        children,
+        value,
+      };
+
+      const dependencies = imports
+        .map((v) => context.find((o) => o.import === v))
+        .filter((v) => v)
+        .map((v) => v!);
+
+      const code = create_code(value, dependencies);
+
+      return await executeOnServer([code], 0, [], [])
+        .then((v) => {
+          console.log(v);
+          return card;
+        })
+        .catch((e) => {
+          console.log(e);
+          return card;
+        });
     }
     case 'parameter_use':
       return {
@@ -358,10 +417,15 @@ export function evaluate_tree<T extends FunctionParameter[], U>(
   }
 }
 
-export function evaluate_context<U>(context: Context<U>): EvaluatedContext<U> {
+export async function evaluate_context<U>(
+  context: Context<U>,
+): Promise<EvaluatedContext<U>> {
   const context_with_imports: ContextWithImports<U> = context.map((v) => {
     if (v.subkind === 'local')
-      return { ...v, dependencies: v.root ? find_dependencies(v.root) : [] };
+      return {
+        ...v,
+        dependencies: v.root ? find_dependencies(v.root, []) : [],
+      };
     return { ...v, dependencies: [] };
   });
 
@@ -382,7 +446,7 @@ export function evaluate_context<U>(context: Context<U>): EvaluatedContext<U> {
     else {
       if (element.kind === 'constant_definition') {
         const value: Value = element.root
-          ? evaluate_tree(element.root, evaluated).value
+          ? await evaluate_tree(element.root, evaluated).then((v) => v.value)
           : {
               type: -1,
               error: TideSyntaxErrorConstantHasNoValue_builder(

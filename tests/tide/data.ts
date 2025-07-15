@@ -2,9 +2,9 @@ import { FunctionParameter } from '../../src/tide/cards';
 import { EvaluatedDefinition } from '../../src/tide/context';
 import { Location, SoundType } from '../../src/tide/expression';
 
-const context = new Map<Location, EvaluatedDefinition>();
+const context = new Map<Location, EvaluatedDefinition<{}>>();
 
-function register(def: EvaluatedDefinition) {
+function register(def: EvaluatedDefinition<{}>) {
   context.set(def.import, def);
   return def;
 }
@@ -18,6 +18,7 @@ function constant_use(name: string, type: SoundType) {
     evaluated: true,
     evaluated_type: type,
     subkind: 'imported',
+    metadata: {},
   });
 }
 
@@ -39,6 +40,7 @@ function function_use(
     evaluated_type: type,
     import: i,
     parameters: _params,
+    metadata: {},
   });
 }
 
@@ -165,5 +167,5 @@ export const RGB_COLOR = function_use('rgb_color', SoundType.Color, {
 });
 
 export function getDefaultContext() {
-  return context;
+  return Array.from(context.values());
 }
