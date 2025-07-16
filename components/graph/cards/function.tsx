@@ -17,13 +17,14 @@ export function getParameterName(handle_name: string) {
     : undefined;
 }
 
-export function TamaroFunctionCard(
-  props: NodeProps<FunctionNode> & ExtraneousNodeProps,
-) {
-  const { id, data, show_handles } = props;
+export function TamaroFunctionCard({
+  id,
+  data,
+  show_handles,
+}: NodeProps<FunctionNode> & ExtraneousNodeProps) {
   const i = data.import as { module: string; name: string };
 
-  const { updateNodeData } = useStore();
+  const updateNodeData = useStore((state) => state.updateNodeData);
 
   const [el] = useJudiciousDocData([i.module]).map(
     (v) =>

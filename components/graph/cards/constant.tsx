@@ -5,10 +5,10 @@ import { ConstantTamaroCard } from '../../TamaroCard';
 import useJudiciousDocData from '../../../src/documentation';
 import ResultIcon from '../ResultIcon';
 
-export function TamaroConstantCard(
-  props: NodeProps<ConstantNode> & ExtraneousNodeProps,
-) {
-  const { data, show_handles } = props;
+export function TamaroConstantCard({
+  data,
+  show_handles,
+}: NodeProps<ConstantNode> & ExtraneousNodeProps) {
   const i = data.import as { module: string; name: string };
 
   const [el] = useJudiciousDocData([i.module]).map(

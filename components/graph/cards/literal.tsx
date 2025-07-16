@@ -57,15 +57,12 @@ export function ContentEditableDiv(props: {
   );
 }
 
-export function TamaroLiteralCard(
-  props: NodeProps<LiteralNode> & ExtraneousNodeProps,
-) {
-  const {
-    id,
-    show_handles,
-    data: { str_value: value },
-  } = props;
-  const { updateNodeData } = useStore();
+export function TamaroLiteralCard({
+  id,
+  show_handles,
+  data: { str_value: value },
+}: NodeProps<LiteralNode> & ExtraneousNodeProps) {
+  const updateNodeData = useStore((state) => state.updateNodeData);
 
   function guessType(v: string): LiteralType {
     if (v.match(BOOL_REGEX)) return SoundType.Bool;

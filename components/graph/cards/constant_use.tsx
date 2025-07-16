@@ -96,7 +96,7 @@ export default function ConstantUse(
 ) {
   const { id, show_handles, data } = props;
   const i = data.import;
-  const { updateNodeData } = useStore();
+  const updateNodeData = useStore((state) => state.updateNodeData);
 
   const setName = useCallback(
     (v: string) => {

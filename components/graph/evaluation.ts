@@ -74,7 +74,8 @@ function updateTreeInsideNodes(nodes: TamaroCardNode[], edges: Edge[]) {
   const sorted = nodes
     .map((v): [number, TamaroCardNode] => [getDepth(v, nodes, edges), v])
     .toSorted((a, b) => a[0] - b[0])
-    .map((v) => v[1]);
+    .map((v) => v[1])
+    .toReversed();
 
   const leaves = sorted.filter((v) => v.type !== 'function');
   const functions = sorted
