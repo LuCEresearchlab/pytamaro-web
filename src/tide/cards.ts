@@ -28,14 +28,14 @@ export type ITamaroCard_FunctionUse<
   children: Map<string, TamaroCard<T, U>>;
   metadata: U;
 };
-export type ITamaroCard_ParameterUse<
-  T extends TamaroCardParameterEnvironment,
-  U,
-> = {
-  kind: 'parameter_use';
-  parameter: T[number];
-  metadata: U;
-};
+// export type ITamaroCard_ParameterUse<
+//   T extends TamaroCardParameterEnvironment,
+//   U,
+// > = {
+//   kind: 'parameter_use';
+//   parameter: T[number];
+//   metadata: U;
+// };
 
 export type INonEvaluated = { evaluated: false };
 
@@ -50,10 +50,10 @@ export type NonEvaluatedTamaroCard_FunctionUse<
   U,
 > = INonEvaluated & ITamaroCard_FunctionUse<T, U>;
 
-export type NonEvaluatedTamaroCard_ParameterUse<
-  T extends TamaroCardParameterEnvironment,
-  U,
-> = INonEvaluated & ITamaroCard_ParameterUse<T, U>;
+// export type NonEvaluatedTamaroCard_ParameterUse<
+//   T extends TamaroCardParameterEnvironment,
+//   U,
+// > = INonEvaluated & ITamaroCard_ParameterUse<T, U>;
 
 export type NonEvaluatedTamaroCard<
   T extends TamaroCardParameterEnvironment,
@@ -61,8 +61,8 @@ export type NonEvaluatedTamaroCard<
 > =
   | NonEvaluatedTamaroCard_ConstantUse<U>
   | NonEvaluatedTamaroCard_Literal<U>
-  | NonEvaluatedTamaroCard_FunctionUse<T, U>
-  | NonEvaluatedTamaroCard_ParameterUse<T, U>;
+  | NonEvaluatedTamaroCard_FunctionUse<T, U>;
+// | NonEvaluatedTamaroCard_ParameterUse<T, U>;
 
 export type IEvaluated = { value: Value; evaluated: true };
 
@@ -80,22 +80,22 @@ export type EvaluatedTamaroCard_FunctionUse<
     children: Map<string, EvaluatedTamaroCard<T, U>>;
   };
 
-export type EvaluatedTamaroCard_ParameterUse<
-  T extends TamaroCardParameterEnvironment,
-  U,
-> = IEvaluated & ITamaroCard_ParameterUse<T, U>;
+// export type EvaluatedTamaroCard_ParameterUse<
+//   T extends TamaroCardParameterEnvironment,
+//   U,
+// > = IEvaluated & ITamaroCard_ParameterUse<T, U>;
 
 export type EvaluatedTamaroCard<T extends TamaroCardParameterEnvironment, U> =
   | EvaluatedTamaroCard_ConstantUse<U>
   | EvaluatedTamaroCard_Literal<U>
-  | EvaluatedTamaroCard_FunctionUse<T, U>
-  | EvaluatedTamaroCard_ParameterUse<T, U>;
+  | EvaluatedTamaroCard_FunctionUse<T, U>;
+// | EvaluatedTamaroCard_ParameterUse<T, U>;
 
 export type TamaroCard<T extends TamaroCardParameterEnvironment, U> =
   | TamaroCard_ConstantUse<U>
   | TamaroCard_Literal<U>
-  | TamaroCard_FunctionUse<T, U>
-  | TamaroCard_ParameterUse<T, U>;
+  | TamaroCard_FunctionUse<T, U>;
+// | TamaroCard_ParameterUse<T, U>;
 
 export type TamaroCard_ConstantUse<U> =
   | NonEvaluatedTamaroCard_ConstantUse<U>
@@ -112,9 +112,9 @@ export type TamaroCard_FunctionUse<
   | NonEvaluatedTamaroCard_FunctionUse<T, U>
   | EvaluatedTamaroCard_FunctionUse<T, U>;
 
-export type TamaroCard_ParameterUse<
-  T extends TamaroCardParameterEnvironment,
-  U,
-> =
-  | NonEvaluatedTamaroCard_ParameterUse<T, U>
-  | EvaluatedTamaroCard_ParameterUse<T, U>;
+// export type TamaroCard_ParameterUse<
+//   T extends TamaroCardParameterEnvironment,
+//   U,
+// > =
+//   | NonEvaluatedTamaroCard_ParameterUse<T, U>
+//   | EvaluatedTamaroCard_ParameterUse<T, U>;

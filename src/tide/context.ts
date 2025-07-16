@@ -14,7 +14,7 @@ export type FunctionDefinition<T extends FunctionParameter[], U> =
   | EvaluatedFunctionDefinition<T, U>;
 
 export type EvaluatedFunctionDefinition<T extends FunctionParameter[], U> =
-  | IImportedFunctionDefintion<T, U>
+  | IImportedFunctionDefintion<T>
   | IEvaluatedLocalFunctionDefinition<T, U>;
 
 export type IFunctionDefinition<T extends FunctionParameter[]> = {
@@ -32,18 +32,16 @@ export type ILocalFunctionDefinition<
 > = IFunctionDefinition<T> & {
   subkind: 'local';
   root: TamaroCard<T, U>;
-};
-
-export type IImportedFunctionDefintion<
-  T extends FunctionParameter[],
-  U,
-> = IFunctionDefinition<T> & {
-  subkind: 'imported';
-  evaluated: true;
-
-  dependencies: [];
   metadata: U;
 };
+
+export type IImportedFunctionDefintion<T extends FunctionParameter[]> =
+  IFunctionDefinition<T> & {
+    subkind: 'imported';
+    evaluated: true;
+
+    dependencies: [];
+  };
 
 export type IEvaluatedLocalFunctionDefinition<
   T extends FunctionParameter[],
@@ -65,9 +63,10 @@ export type ILocalConstantDefinition<U> = IConstantDefinition & {
 
   subkind: 'local';
   root?: TamaroCard<[], U>;
+  metadata: U;
 };
 
-export type IImportedConstantDefinition<U> = IConstantDefinition & {
+export type IImportedConstantDefinition = IConstantDefinition & {
   import: Location;
 
   subkind: 'imported';
@@ -75,7 +74,6 @@ export type IImportedConstantDefinition<U> = IConstantDefinition & {
 
   evaluated_type: ValueType;
   dependencies: [];
-  metadata: U;
 };
 
 export type IEvaluatedLocalConstantDefinition<U> =
@@ -95,7 +93,7 @@ export type ConstantDefinition<U> =
   | EvaluatedConstantDefinition<U>;
 
 export type EvaluatedConstantDefinition<U> =
-  | IImportedConstantDefinition<U>
+  | IImportedConstantDefinition
   | IEvaluatedLocalConstantDefinition<U>;
 
 export type Context<U> = Definition<U>[];

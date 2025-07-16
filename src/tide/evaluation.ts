@@ -38,6 +38,7 @@ import {
   Value,
 } from './expression';
 import { extract_data } from './data_extraction';
+import { eqLocation } from './utils';
 
 const KEYWORDS: string[] = [
   'False',
@@ -109,10 +110,10 @@ function is_cylicaly_defined<U>(
     const is = stack.pop()!;
     const i = is[0];
 
-    if (i === def.import) return is;
+    if (eqLocation(i, def.import)) return is;
     if (seen.has(i)) continue;
 
-    const el = context.find((v) => v.import === i);
+    const el = context.find((v) => eqLocation(v.import, i));
     if (el == null) continue;
 
     stack.push(...el.dependencies.map((v) => [v, ...is]));
@@ -182,7 +183,7 @@ function sort_context_by_dependency<U>(
       stack,
       (v) => v.import,
       (v) => v.dependencies,
-      (v) => context.find((o) => o.import === v),
+      (v) => context.find((o) => eqLocation(o.import, v)),
     ),
     evaluated_cyclical,
   ];
@@ -203,15 +204,15 @@ export function find_dependencies<U>(
           .map((v) => aux(v))
           .reduce((a, b) => a.concat(b), [value.import])
           .sort(compareLocation);
-      case 'parameter_use':
-        return [];
+      // case 'parameter_use':
+      //   return [];
     }
   }
   if (context.length === 0) return aux(value);
   return sort_dependencies(
     aux(value),
     (v) => v,
-    (v) => context.find((o) => o.import === v)?.dependencies || [],
+    (v) => context.find((o) => eqLocation(o.import, v))?.dependencies || [],
     (v) => v,
   );
 }
@@ -236,12 +237,14 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
   root: TamaroCard<T, U>,
   context: EvaluatedContext<U>,
 ): Promise<EvaluatedTamaroCard<T, U>> {
+  if (root.evaluated) return root;
   function returning_error(
     error: false | TideError | TideError[],
     children?: EvaluatedTamaroCard<T, U>[],
   ) {
     return {
       ...root,
+      evaluated: true,
       value: { type: -1, error, children },
     } as EvaluatedTamaroCard<T, U>;
   }
@@ -252,11 +255,11 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
         return returning_error(
           TideSyntaxErrorInvalidConstantIdentifier_builder(root.import.name),
         );
-      if (!context.find((o) => o.import === root.import))
+      if (!context.find((o) => eqLocation(o.import, root.import)))
         return returning_error(
           TideNameErrorUnknownConstant_builder(root.import.name),
         );
-      const value = context.find((o) => o.import === root.import)!;
+      const value = context.find((o) => eqLocation(o.import, root.import))!;
       if (value.kind === 'function_definition')
         return returning_error(
           TideSyntaxErrorNodeKindMismatch_builder('constant', 'function'),
@@ -283,6 +286,7 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
         );
       return {
         ...root,
+        evaluated: true,
         value: {
           data: undefined,
           type: root.type,
@@ -300,7 +304,7 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
             ),
           ),
         );
-      if (!context.find((o) => o.import === root.import))
+      if (!context.find((o) => eqLocation(o.import, root.import)))
         return returning_error(
           TideNameErrorUnknownFunction_builder(root.import.name),
           await Promise.all(
@@ -309,7 +313,9 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
             ),
           ),
         );
-      const definition = context.find((o) => o.import === root.import)!;
+      const definition = context.find((o) =>
+        eqLocation(o.import, root.import),
+      )!;
       if (definition.kind === 'constant_definition')
         return returning_error(
           TideSyntaxErrorNodeKindMismatch_builder('function', 'constant'),
@@ -421,7 +427,7 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
       };
 
       const dependencies = imports
-        .map((v) => context.find((o) => o.import === v))
+        .map((v) => context.find((o) => eqLocation(o.import, v)))
         .filter((v) => v)
         .map((v) => v!);
 
@@ -475,16 +481,16 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
           };
         });
     }
-    case 'parameter_use':
-      return {
-        ...root,
-        evaluated: true,
-        value: {
-          data: undefined,
-          type: root.parameter.type,
-          value: { expression: root.parameter.name, imports: [] },
-        },
-      };
+    // case 'parameter_use':
+    //   return {
+    //     ...root,
+    //     evaluated: true,
+    //     value: {
+    //       data: undefined,
+    //       type: root.parameter.type,
+    //       value: { expression: root.parameter.name, imports: [] },
+    //     },
+    //   };
   }
 }
 
@@ -508,7 +514,9 @@ export async function evaluate_context<U>(
     const element = context_stack.pop()!;
 
     if (
-      element.dependencies.find((v) => !evaluated.find((o) => o.import === v))
+      element.dependencies.find(
+        (v) => !evaluated.find((o) => eqLocation(o.import, v)),
+      )
     )
       throw new Error(
         'Error in evaluation logic, dependencies should be ordered from the least dependent to the most dependent',
@@ -524,7 +532,7 @@ export async function evaluate_context<U>(
                 element.import.name,
               ),
             };
-        if (evaluated.find((o) => o.import === element.import)) {
+        if (evaluated.find((o) => eqLocation(o.import, element.import))) {
           multiple_definitions.push(element.import);
         }
         evaluated.push({
@@ -539,7 +547,7 @@ export async function evaluate_context<U>(
   }
 
   return evaluated.map((element) => {
-    if (multiple_definitions.find((o) => o === element.import)) {
+    if (multiple_definitions.find((o) => eqLocation(o, element.import))) {
       return {
         ...element,
         dependencies: [],

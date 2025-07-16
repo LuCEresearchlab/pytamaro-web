@@ -14,11 +14,9 @@ export function check_edge_typing(
 ) {
   const source_node = getNode(nodes, source_id)!;
   const origin_type = getHandleType(context, source_node, source_handle);
-  console.log(source_node.id, source_handle, origin_type);
 
   const target_node = getNode(nodes, target_id)!;
   const target_type = getHandleType(context, target_node, target_handle);
-  console.log(target_node.id, target_handle, target_type);
 
   return type_equality_rule(origin_type, target_type);
 }

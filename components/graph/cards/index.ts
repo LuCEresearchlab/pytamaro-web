@@ -36,7 +36,7 @@ export interface IImportedCardData extends ITamaroCardData {
 
 export type ExtraneousNodeProps = { show_handles?: boolean };
 export type CommonNodeData = { parent?: string };
-export type TideNodeMetadata = object;
+export type TideNodeMetadata = { node_id: string };
 
 export type FunctionNode = Node<
   TamaroCard_FunctionUse<[], TideNodeMetadata> & CommonNodeData,

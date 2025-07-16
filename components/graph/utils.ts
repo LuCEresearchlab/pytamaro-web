@@ -1,5 +1,5 @@
 'use client';
-import { Edge, Node } from '@xyflow/react';
+import { Edge, Node, NodeChange } from '@xyflow/react';
 import { getHandleName, getParameterName } from './cards/function';
 import { JudiciousFunction } from '../../src/schemas/documentation';
 import {
@@ -15,7 +15,7 @@ import {
   EvaluatedFunctionDefinition,
 } from '../../src/tide/context';
 import { UnsoundType } from '../../src/tide/expression';
-import { getCardOutputType } from '../../src/tide/utils';
+import { eqLocation, getCardOutputType } from '../../src/tide/utils';
 import {
   TamaroCard,
   TamaroCardParameterEnvironment,
@@ -118,15 +118,13 @@ export function getHandleType(
   switch (node.type as CardType) {
     case 'function': {
       const { data } = node as FunctionNode;
-      const def = context.find((v) => v.import === data.import) as
+      const def = context.find((v) => eqLocation(v.import, data.import)) as
         | EvaluatedFunctionDefinition<TamaroCardParameterEnvironment, unknown>
         | undefined;
       if (!def) return UnsoundType.Bottom;
       const arg_name = getParameterName(handle);
-      return (
-        def.parameters.find((v) => v.name === arg_name)?.type ||
-        UnsoundType.Bottom
-      );
+      const param = def.parameters.find((v) => v.name === arg_name);
+      return param ? param.type : UnsoundType.Bottom;
     }
     case 'constant_definition':
       return UnsoundType.Bottom;
@@ -353,4 +351,52 @@ export function toEnglishName(name: string): string | undefined {
   return Object.entries(obj).find((v) =>
     Object.values(v[1]).includes(name),
   )?.[0] as string | undefined;
+}
+
+export function compute_node_change(
+  before: TamaroCardNode[],
+  after: TamaroCardNode[],
+) {
+  const changes: NodeChange<TamaroCardNode>[] = [];
+  const newLookup = new Map<string, TamaroCardNode>(
+    after.map((item) => [item.id, item]),
+  );
+  const currentLookup = new Map<string, TamaroCardNode>(
+    before.map((item) => [item.id, item]),
+  );
+
+  for (const [index, item] of Array.from(after.entries())) {
+    const lookupItem = currentLookup.get(item.id);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const storeItem = (lookupItem as any)?.internals?.userNode ?? lookupItem;
+
+    if (storeItem !== undefined && storeItem !== item) {
+      changes.push({ id: item.id, item: item, type: 'replace' });
+    }
+
+    if (storeItem === undefined) {
+      changes.push({ item: item, type: 'add', index });
+    }
+  }
+
+  for (const [id] of Array.from(currentLookup)) {
+    const nextNode = newLookup.get(id);
+
+    if (nextNode === undefined) {
+      changes.push({ id, type: 'remove' });
+    }
+  }
+
+  return changes;
+}
+
+export function getDepth(
+  node: TamaroCardNode,
+  nodes: TamaroCardNode[],
+  edges: Edge[],
+): number {
+  const successor = edges.find((v) => v.source === node.id);
+  if (!successor) return 0;
+
+  return 1 + getDepth(getNode(nodes, successor.target)!, nodes, edges);
 }

@@ -3,8 +3,10 @@ import {
   applyNodeChanges,
   Edge,
   EdgeChange,
+  NodeAddChange,
   NodeChange,
   NodePositionChange,
+  NodeRemoveChange,
   NodeReplaceChange,
   OnConnect,
   OnEdgesChange,
@@ -15,21 +17,27 @@ import { create, StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ChangeSliceState, createChangeSlice } from './changes';
 import { ConfigurationState, createConfigurationSlice } from './configuration';
-import { getNode, getSubTreeFromRoot } from './utils';
+import { compute_node_change, getNode, getSubTreeFromRoot } from './utils';
 import { updateParent } from './graph_toolbox';
 import { TamaroCardNode, TideNodeMetadata } from './cards';
-import { EvaluatedContext } from '../../src/tide/context';
+import { evaluation, uneval } from './evaluation';
+import {
+  EvaluatedConstantDefinition,
+  EvaluatedContext,
+} from '../../src/tide/context';
+import { getDefaultContext } from '../../cypress/e2e/tide/data';
 
 export interface DraggedElementData {
   type: string;
   data: TamaroCardNode['data'];
 }
 
+let evaluation_timeout: NodeJS.Timeout | undefined = undefined;
 export interface GraphStateSlice {
   dragged: DraggedElementData | undefined;
-  evaluated_context: EvaluatedContext<TideNodeMetadata>;
   initialized: 'before' | 'wait' | 'done';
   setInitialized: (v: 'before' | 'wait' | 'done') => void;
+  evaluated_context: () => EvaluatedContext<TideNodeMetadata>;
   nodes: TamaroCardNode[];
   edges: Edge[];
   mousePosition: XYPosition;
@@ -62,7 +70,6 @@ export const createGraphSlice: StateCreator<
   [],
   GraphStateSlice
 > = (set, get) => ({
-  evaluated_context: [],
   fullscreen: false,
   setFullscreen: (value) => {
     set({ fullscreen: value });
@@ -78,12 +85,32 @@ export const createGraphSlice: StateCreator<
   edges: [],
   mousePosition: { x: 0, y: 0 },
   setMousePosition: (v) => set({ mousePosition: v }),
+  evaluated_context: () => {
+    return (
+      getDefaultContext() as unknown as EvaluatedConstantDefinition<TideNodeMetadata>[]
+    ).concat(
+      get()
+        .nodes.filter(
+          (v) => v.data.kind === 'constant_definition' && v.data.evaluated,
+        )
+        .map((v) => v.data as EvaluatedConstantDefinition<TideNodeMetadata>),
+    );
+  },
   onNodesChange: (raw_changes) => {
-    const befores = get().nodes;
+    const { nodes: befores, edges } = get();
+
+    const after_unevaluation = uneval(
+      applyNodeChanges(raw_changes, befores),
+      edges,
+      ...raw_changes
+        .filter((v) => ['add', 'replace', 'remove'].includes(v.type))
+        .map((v) => v as NodeAddChange | NodeReplaceChange | NodeRemoveChange)
+        .map((v) => (v.type === 'remove' ? v.id : v.item.id)),
+    );
 
     const parents_to_update: Set<string> = new Set();
 
-    const changes_step_1 = raw_changes
+    const changes_step_1 = compute_node_change(befores, after_unevaluation)
       .map((change): NodeChange<TamaroCardNode>[] => {
         if (change.type === 'position') {
           const node = getNode(befores, change.id)!;
@@ -136,7 +163,7 @@ export const createGraphSlice: StateCreator<
     );
 
     set({
-      nodes: applyNodeChanges(changes, befores),
+      nodes: after_unevaluation,
     });
     const afters = get().nodes;
 
@@ -157,6 +184,25 @@ export const createGraphSlice: StateCreator<
               : afters.find((v) => change.id === v.id),
         });
       });
+    if (evaluation_timeout) clearTimeout(evaluation_timeout);
+    evaluation_timeout = setTimeout(async () => {
+      const prev = evaluation_timeout;
+      const { nodes, edges } = get();
+      const evaluated = new Map(
+        (await evaluation(nodes, edges)).map((v) => [v.metadata.node_id, v]),
+      );
+      if (prev !== evaluation_timeout || !evaluation_timeout) return;
+      evaluation_timeout = undefined;
+      set({
+        nodes: nodes.map(
+          (v) =>
+            ({
+              ...v,
+              data: evaluated.get(v.id) || v.data,
+            }) as TamaroCardNode,
+        ),
+      });
+    }, 1000);
   },
   onEdgesChange: (changes) => {
     const befores = get().edges;
@@ -282,39 +328,7 @@ export const createGraphSlice: StateCreator<
     set({ dragged });
   },
   setNodes: (new_nodes) => {
-    const current_nodes = get().nodes;
-
-    const changes: NodeChange<TamaroCardNode>[] = [];
-    const newLookup = new Map<string, TamaroCardNode>(
-      new_nodes.map((item) => [item.id, item]),
-    );
-    const currentLookup = new Map<string, TamaroCardNode>(
-      current_nodes.map((item) => [item.id, item]),
-    );
-
-    for (const [index, item] of Array.from(new_nodes.entries())) {
-      const lookupItem = currentLookup.get(item.id);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const storeItem = (lookupItem as any)?.internals?.userNode ?? lookupItem;
-
-      if (storeItem !== undefined && storeItem !== item) {
-        changes.push({ id: item.id, item: item, type: 'replace' });
-      }
-
-      if (storeItem === undefined) {
-        changes.push({ item: item, type: 'add', index });
-      }
-    }
-
-    for (const [id] of Array.from(currentLookup)) {
-      const nextNode = newLookup.get(id);
-
-      if (nextNode === undefined) {
-        changes.push({ id, type: 'remove' });
-      }
-    }
-
-    get().onNodesChange(changes);
+    get().onNodesChange(compute_node_change(get().nodes, new_nodes));
   },
   getNodes: () => get().nodes,
   setEdges: (new_edges) => {
@@ -358,9 +372,9 @@ export const createGraphSlice: StateCreator<
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       typeof data === 'function' ? data : (v: any) => ({ ...v, ...data });
     get().setNodes(
-      get().nodes.map((v) =>
-        v.id === nodeId ? { ...v, data: newData(v.data) } : v,
-      ),
+      get().nodes.map((v) => {
+        return v.id === nodeId ? { ...v, data: newData(v.data) } : v;
+      }),
     );
   },
 });

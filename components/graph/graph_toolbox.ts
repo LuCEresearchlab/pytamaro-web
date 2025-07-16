@@ -132,7 +132,7 @@ export function isValidConnection(
       (error_level !== 'prevent' ||
         targetNode?.type === 'constant_definition' ||
         check_edge_typing(
-          evaluated_context,
+          evaluated_context(),
           nodes,
           source,
           sourceHandle || '',
@@ -175,11 +175,13 @@ export function onDrop(
     y: event.clientY,
   });
 
+  const id = `${dragged.type}-${Date.now()}`;
+
   const newNode = {
-    id: `${dragged.type}-${Date.now()}`,
+    id,
     type: dragged.type,
     position: topLeftPosition,
-    data: dragged.data,
+    data: { ...dragged.data, metadata: { node_id: id } },
     dragHandle: '.drag-handle',
     className: 'node_hidden',
   } as TamaroCardNode;
@@ -331,6 +333,9 @@ export function onDocumentPasteCatpure(
       position: { x: v.position.x + diff.x, y: v.position.y + diff.y },
       data: {
         ...v.data,
+        metadata: {
+          node_id: getOrCreateNodeMap(v.data.metadata.node_id),
+        },
         parent: v.data.parent
           ? getOrCreateNodeMap(v.data.parent as string)
           : undefined,

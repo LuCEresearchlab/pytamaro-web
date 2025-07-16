@@ -18,7 +18,6 @@ function constant_use(name: string, type: SoundType) {
     evaluated: true,
     evaluated_type: type,
     subkind: 'imported',
-    metadata: {},
   });
 }
 
@@ -40,7 +39,6 @@ function function_use(
     return_type: type,
     import: i,
     parameters: _params,
-    metadata: {},
   });
 }
 

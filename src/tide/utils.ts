@@ -3,7 +3,12 @@ import {
   TamaroCard,
   TamaroCardParameterEnvironment,
 } from './cards';
-import { UnsoundType, ValueType } from './expression';
+import {
+  compareLocation,
+  Location,
+  UnsoundType,
+  ValueType,
+} from './expression';
 
 export function getCardAsEvaluated<
   U extends TamaroCardParameterEnvironment,
@@ -23,7 +28,21 @@ export function getCardOutputType<U extends TamaroCardParameterEnvironment, T>(
       return card.evaluated ? card.value.type : UnsoundType.Bottom;
     case 'function_use':
       return card.evaluated ? card.value.type : UnsoundType.Bottom;
-    case 'parameter_use':
-      return card.parameter.type;
   }
+}
+
+export function toFlat<U extends TamaroCardParameterEnvironment, T>(
+  card: TamaroCard<U, T>,
+): TamaroCard<U, T>[] {
+  switch (card.kind) {
+    case 'literal':
+    case 'constant_use':
+      return [card];
+    case 'function_use':
+      return Array.from(card.children.values()).concat(card);
+  }
+}
+
+export function eqLocation(a: Location, b: Location) {
+  return compareLocation(a, b) === 0;
 }

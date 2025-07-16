@@ -88,7 +88,9 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
                       evaluated: false,
                       import: { module: el.module, name: el.name },
                       kind: 'function_use',
-                      metadata: {},
+                      metadata: {
+                        node_id: '',
+                      },
                     });
                     break;
                   }
@@ -97,7 +99,9 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
                       kind: 'constant_use',
                       evaluated: false,
                       import: { module: el.module, name: el.name },
-                      metadata: {},
+                      metadata: {
+                        node_id: '',
+                      },
                     });
                     break;
                   }
@@ -119,7 +123,9 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
               onDragStart(e, 'literal', {
                 evaluated: true,
                 kind: 'literal',
-                metadata: {},
+                metadata: {
+                  node_id: '',
+                },
                 str_value: value,
                 type,
                 value:
@@ -147,7 +153,9 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
                   {
                     evaluated: true,
                     kind: 'literal',
-                    metadata: {},
+                    metadata: {
+                      node_id: '',
+                    },
                     str_value: value,
                     type,
                     value:
@@ -186,7 +194,9 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
                   module: false,
                   name: constant_name,
                 },
-                metadata: {},
+                metadata: {
+                  node_id: '',
+                },
               });
             }}
             draggable

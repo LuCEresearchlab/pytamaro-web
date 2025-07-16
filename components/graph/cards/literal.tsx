@@ -80,26 +80,28 @@ export function TamaroLiteralCard(
       updateNodeData(id, {
         evaluated: true,
         kind: 'literal',
-        metadata: {},
+        metadata: {
+          node_id: id,
+        },
         str_value: newValue,
         type,
         value:
           type === UnsoundType.Bottom
             ? {
                 type: UnsoundType.Bottom,
-                error: TideSyntaxErrorInvalidLiteral_builder(value),
+                error: TideSyntaxErrorInvalidLiteral_builder(newValue),
               }
             : {
                 type: type,
                 data: undefined,
                 value: {
-                  expression: value,
+                  expression: newValue,
                   imports: [],
                 },
               },
-      });
+      } as LiteralNode['data']);
     },
-    [id, updateNodeData, value],
+    [id, updateNodeData],
   );
 
   return (
