@@ -3,6 +3,7 @@ import { CommonNodeData, FunctionNode } from '.';
 import { FunctionTamaroCard } from '../../TamaroCard';
 import { JudiciousFunction } from '../../../src/schemas/documentation';
 import useJudiciousDocData from '../../../src/documentation';
+import ResultIcon from '../ResultIcon';
 
 export function getHandleName(parameter_name: string) {
   return `input_${parameter_name}`;
@@ -34,7 +35,9 @@ export function TamaroFunctionCard(
           el={el}
           module={i.module}
           show_handles={show_handles}
-          returns_icon={undefined}
+          returns_icon={
+            <ResultIcon value={data.evaluated ? data.value : undefined} />
+          }
         />
       )}
     </div>

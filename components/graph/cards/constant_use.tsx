@@ -1,9 +1,17 @@
 import { Handle, NodeProps, Position } from '@xyflow/react';
 import { CommonNodeData, ConstantUseNode, ITamaroCardData } from '.';
 import { useStore } from '../store';
-import { ChangeEvent, CSSProperties, useEffect, useRef, useState } from 'react';
+import {
+  ChangeEvent,
+  CSSProperties,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
 import { Location } from '../../../src/tide/expression';
+import ResultIcon from '../ResultIcon';
 
 export interface ITamaroConstantUseCardData extends ITamaroCardData {
   name: string;
@@ -89,11 +97,8 @@ export function AutoWidthInput({
 export default function ConstantUse(
   props: NodeProps<ConstantUseNode> & CommonNodeData,
 ) {
-  const {
-    id,
-    show_handles,
-    data: { import: i },
-  } = props;
+  const { id, show_handles, data } = props;
+  const i = data.import;
   const { updateNodeData } = useStore((state) => ({
     updateNodeData: state.updateNodeData,
   }));
@@ -111,7 +116,10 @@ export default function ConstantUse(
 
   const [editing, setEditing] = useState(false);
 
-  const returns_icon = undefined;
+  const value = data.evaluated ? data.value : undefined;
+  const returns_icon = useMemo(() => {
+    return <ResultIcon value={value} />;
+  }, [value]);
 
   useEffect(() => {
     if (!returnsIconRef.current) return;

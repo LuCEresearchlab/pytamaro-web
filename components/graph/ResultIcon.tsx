@@ -1,31 +1,7 @@
-import { Node, NodeProps } from '@xyflow/react';
-import {
-  createCodeFromCodeRepresentation,
-  getHandleType,
-  toEnglishName,
-} from './utils';
-import { CodeRepresentation, ITamaroCardData } from './cards';
-import { useEffect, useMemo, useState } from 'react';
-import { executeOnServer } from '../../src/useActivity';
-import { isEmpty, negate } from 'lodash';
-import { useStore } from './store';
+import { useEffect, useState } from 'react';
+import { SoundType, Value } from '../../src/tide/expression';
 
-function GraphicIcon({ data }: NodeProps & { data: ITamaroCardData }) {
-  const code = useMemo(
-    () =>
-      data.representation
-        ? ({
-            expression: `show_graphic(${data.representation.expression})`,
-            imports: data.representation.imports.concat({
-              module: 'pytamaro',
-              name: 'show_graphic',
-            }),
-          } as CodeRepresentation)
-        : undefined,
-    [data.representation],
-  );
-
-  const [imgData, setImgData] = useState(undefined as string | undefined);
+function GraphicIcon({ data }: { data: string | undefined }) {
   const [dimension, setDimension] = useState(
     undefined as { width: number; height: number } | undefined,
   );
@@ -33,38 +9,20 @@ function GraphicIcon({ data }: NodeProps & { data: ITamaroCardData }) {
   const IMG_SCALE = 0.2;
 
   useEffect(() => {
-    const returns_expression = code
-      ? createCodeFromCodeRepresentation(code)
-      : undefined;
-
-    if (returns_expression) {
-      executeOnServer([returns_expression], 0, [], [])
-        .catch(() => undefined)
-        .then((v) => (v?.type === 'success' ? v.stdout : undefined))
-        .then((data) => {
-          if (!data) return undefined;
-          const pytamaroDataUriRegex =
-            /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
-          return data.split(pytamaroDataUriRegex).filter(negate(isEmpty))[0];
-        })
-        .then(async (data) => {
-          if (!data) return undefined;
-          return await new Promise<string>(function (resolved, rejected) {
-            const i = new Image();
-            i.onload = function () {
-              setDimension({
-                width: i.naturalWidth * IMG_SCALE,
-                height: i.naturalHeight * IMG_SCALE,
-              });
-              resolved(data);
-            };
-            i.onerror = rejected;
-            i.src = data;
-          });
-        })
-        .then(setImgData);
-    }
-  }, [code]);
+    if (!data) return;
+    new Promise<string>(function (resolved, rejected) {
+      const i = new Image();
+      i.onload = function () {
+        setDimension({
+          width: i.naturalWidth * IMG_SCALE,
+          height: i.naturalHeight * IMG_SCALE,
+        });
+        resolved(data);
+      };
+      i.onerror = rejected;
+      i.src = data;
+    });
+  });
 
   return dimension ? (
     // eslint-disable-next-line @next/next/no-img-element
@@ -75,58 +33,18 @@ function GraphicIcon({ data }: NodeProps & { data: ITamaroCardData }) {
       }}
       className='img'
       alt='Expression Result'
-      src={imgData}
+      src={data}
     />
   ) : (
     <div />
   );
 }
 
-function ColorIcon({ data }: NodeProps & { data: ITamaroCardData }) {
-  const function_el = data.value;
-
-  const [code, setCode] = useState(undefined as CodeRepresentation | undefined);
-
-  useEffect(() => {
-    setCode(
-      data.representation
-        ? ({
-            expression: `color = ${data.representation.expression}\nprint(color.red)\nprint(color.green)\nprint(color.blue)\nprint(color.alpha)`,
-            imports: data.representation.imports.concat({
-              module: 'pytamaro',
-              name: 'show_graphic',
-            }),
-          } as CodeRepresentation)
-        : undefined,
-    );
-  }, [data.representation, data]);
-
-  const [color, setColor] = useState(
-    undefined as
-      | { red: number; green: number; blue: number; alpha: number }
-      | undefined,
-  );
-
-  useEffect(() => {
-    const returns_expression = code
-      ? createCodeFromCodeRepresentation(code)
-      : undefined;
-
-    if (returns_expression) {
-      setColor(undefined);
-      executeOnServer([returns_expression], 0, [], [])
-        .catch(() => undefined)
-        .then((v) => (v?.type === 'success' ? v.stdout : undefined))
-        .then((data) => {
-          const lines = (data || '').split('\n').map((v) => v.trim());
-          if (lines.length !== 5) return undefined;
-
-          const [red, green, blue, alpha] = lines.map(Number.parseFloat);
-          setColor({ red, green, blue, alpha });
-        });
-    }
-  }, [code, function_el]);
-
+function ColorIcon({
+  data: color,
+}: {
+  data: { red: number; green: number; blue: number; alpha: number } | undefined;
+}) {
   return color ? (
     <svg
       width='32'
@@ -153,22 +71,21 @@ function ColorIcon({ data }: NodeProps & { data: ITamaroCardData }) {
   );
 }
 
-export default function ResultIcon(props: {
-  node_props: NodeProps & { data: ITamaroCardData };
-}) {
-  const { node_props } = props;
-
-  const { getNodes } = useStore();
-  const nodes = getNodes();
-  const type = getHandleType(nodes, node_props as unknown as Node, 'output');
-  if (!type) return <div />;
-  const en_name = toEnglishName(type);
-
-  return en_name === 'Graphic' ? (
-    <GraphicIcon {...node_props} />
-  ) : en_name === 'Color' ? (
-    <ColorIcon {...node_props} />
-  ) : (
-    <div />
-  );
+export default function ResultIcon({ value = undefined }: { value?: Value }) {
+  switch (value?.type) {
+    case SoundType.Color:
+      return (
+        <ColorIcon
+          data={
+            value.data as
+              | { red: number; green: number; blue: number; alpha: number }
+              | undefined
+          }
+        />
+      );
+    case SoundType.Graphic:
+      return <GraphicIcon data={value.data as string | undefined} />;
+    default:
+      return <div />;
+  }
 }

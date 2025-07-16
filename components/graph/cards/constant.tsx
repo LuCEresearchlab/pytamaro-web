@@ -3,6 +3,7 @@ import { CommonNodeData, ConstantNode, IImportedCardData } from '.';
 import { JudiciousConstant } from '../../../src/schemas/documentation';
 import { ConstantTamaroCard } from '../../TamaroCard';
 import useJudiciousDocData from '../../../src/documentation';
+import ResultIcon from '../ResultIcon';
 
 export interface ITamaroConstantCardData extends IImportedCardData {
   value: JudiciousConstant;
@@ -28,7 +29,9 @@ export function TamaroConstantCard(
           el={el}
           module={i.module}
           show_handles={show_handles}
-          returns_icon={undefined}
+          returns_icon={
+            <ResultIcon value={data.evaluated ? data.value : undefined} />
+          }
         />
       )}
     </div>
