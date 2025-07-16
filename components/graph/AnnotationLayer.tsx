@@ -1,11 +1,6 @@
-import { useReactFlow, ViewportPortal, XYPosition } from '@xyflow/react';
-import { StoreType, useStore } from './store';
-import { getHandleName } from './cards/function';
-import { ErrorBubble } from './Bubble';
-import { Annotation } from './annotations';
-import { ErrorParagraph } from './ErrorParagraph';
-import { getNode } from './utils';
+import { ViewportPortal } from '@xyflow/react';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const MISSING_PARAMETER = (
   <svg
     xmlns='http://www.w3.org/2000/svg'
@@ -48,178 +43,170 @@ const MISSING_PARAMETER = (
   </svg>
 );
 
-export function createAnnotationComponents(
-  store: StoreType,
-  annotation: Annotation,
-  screenToFlowPosition: (
-    clientPosition: XYPosition,
-    options?: {
-      snapToGrid: boolean;
-    },
-  ) => XYPosition,
-): JSX.Element[] {
-  const { edges, nodes, mousePosition } = store;
-  const { node_id, position, handle } = annotation.location;
+// export function createAnnotationComponents(
+//   store: StoreType,
+//   annotation: TideError,
+//   screenToFlowPosition: (
+//     clientPosition: XYPosition,
+//     options?: {
+//       snapToGrid: boolean;
+//     },
+//   ) => XYPosition,
+// ): JSX.Element[] {
+//   const { edges, nodes, mousePosition } = store;
+//   const { node_id, position, handle } = annotation.location;
 
-  function getPosition(
-    node_id: string,
-    handle: string | undefined,
-    position: 'target' | 'middle' | 'source' | undefined,
-  ): XYPosition | undefined {
-    let bubble_position: XYPosition | undefined;
+//   function getPosition(
+//     node_id: string,
+//     handle: string | undefined,
+//     position: 'target' | 'middle' | 'source' | undefined,
+//   ): XYPosition | undefined {
+//     let bubble_position: XYPosition | undefined;
 
-    if (!handle || !position) {
-      const node = getNode(nodes, node_id);
+//     if (!handle || !position) {
+//       const node = getNode(nodes, node_id);
 
-      if (!node) return { x: 0, y: 0 };
+//       if (!node) return { x: 0, y: 0 };
 
-      return {
-        x: node?.position.x + (node?.measured?.width || 0) / 3,
-        y: node.position.y,
-      };
-    } else {
-      const edge = edges.find(
-        (v) => v.target === node_id && v.targetHandle === getHandleName(handle),
-      );
+//       return {
+//         x: node?.position.x + (node?.measured?.width || 0) / 3,
+//         y: node.position.y,
+//       };
+//     } else {
+//       const edge = edges.find(
+//         (v) => v.target === node_id && v.targetHandle === getHandleName(handle),
+//       );
 
-      if (position === 'target' || position === 'source') {
-        const nodeDiv = document.querySelector(
-          `[data-id="${position === 'target' ? node_id : edge?.source}"]`,
-        )! as HTMLDivElement;
-        if (!nodeDiv) return undefined;
+//       if (position === 'target' || position === 'source') {
+//         const nodeDiv = document.querySelector(
+//           `[data-id="${position === 'target' ? node_id : edge?.source}"]`,
+//         )! as HTMLDivElement;
+//         if (!nodeDiv) return undefined;
 
-        const handleDiv = nodeDiv.querySelector(
-          `[data-handleid="${position === 'target' ? getHandleName(handle) : 'output'}"]`,
-        )! as HTMLDivElement;
-        if (!handleDiv) return undefined;
+//         const handleDiv = nodeDiv.querySelector(
+//           `[data-handleid="${position === 'target' ? getHandleName(handle) : 'output'}"]`,
+//         )! as HTMLDivElement;
+//         if (!handleDiv) return undefined;
 
-        const rect = handleDiv.getBoundingClientRect();
+//         const rect = handleDiv.getBoundingClientRect();
 
-        bubble_position = {
-          x: rect.x + rect.width / 2,
-          y: rect.y + rect.height / 2,
-        };
+//         bubble_position = {
+//           x: rect.x + rect.width / 2,
+//           y: rect.y + rect.height / 2,
+//         };
 
-        bubble_position = screenToFlowPosition(bubble_position);
-      } else {
-        // position === 'middle'
+//         bubble_position = screenToFlowPosition(bubble_position);
+//       } else {
+//         // position === 'middle'
 
-        const edgeDiv = document.querySelector(
-          `[data-id="${edge?.id}"]`,
-        )! as HTMLDivElement;
+//         const edgeDiv = document.querySelector(
+//           `[data-id="${edge?.id}"]`,
+//         )! as HTMLDivElement;
 
-        if (!edgeDiv) return undefined;
+//         if (!edgeDiv) return undefined;
 
-        const rect = edgeDiv.getBoundingClientRect();
+//         const rect = edgeDiv.getBoundingClientRect();
 
-        bubble_position = {
-          x: rect.x + rect.width / 2,
-          y: rect.y + rect.height / 2,
-        };
+//         bubble_position = {
+//           x: rect.x + rect.width / 2,
+//           y: rect.y + rect.height / 2,
+//         };
 
-        bubble_position = screenToFlowPosition(bubble_position);
-      }
-    }
+//         bubble_position = screenToFlowPosition(bubble_position);
+//       }
+//     }
 
-    return bubble_position;
-  }
+//     return bubble_position;
+//   }
 
-  const node = getNode(nodes, node_id);
-  const target_position = getPosition(node_id, handle, position);
-  if (!target_position) return [];
-  const source_position = getPosition(node_id, handle, 'source');
+//   const node = getNode(nodes, node_id);
+//   const target_position = getPosition(node_id, handle, position);
+//   if (!target_position) return [];
+//   const source_position = getPosition(node_id, handle, 'source');
 
-  const NODE_PADDING = 10;
-  const isNearEnough =
-    annotation.location.handle === undefined
-      ? node?.selected ||
-        (mousePosition.x + NODE_PADDING > (node?.position?.x || 0) &&
-          mousePosition.x - NODE_PADDING <
-            (node?.position?.x || 0) + (node?.measured?.width || 0) &&
-          mousePosition.y + NODE_PADDING > (node?.position?.y || 0) &&
-          mousePosition.y - NODE_PADDING <
-            (node?.position?.y || 0) + (node?.measured?.height || 0))
-      : Math.abs(mousePosition.x - target_position.x + 50) < 100 &&
-        Math.abs(mousePosition.y - target_position.y) < 35;
+//   const NODE_PADDING = 10;
+//   const isNearEnough =
+//     annotation.location.handle === undefined
+//       ? node?.selected ||
+//         (mousePosition.x + NODE_PADDING > (node?.position?.x || 0) &&
+//           mousePosition.x - NODE_PADDING <
+//             (node?.position?.x || 0) + (node?.measured?.width || 0) &&
+//           mousePosition.y + NODE_PADDING > (node?.position?.y || 0) &&
+//           mousePosition.y - NODE_PADDING <
+//             (node?.position?.y || 0) + (node?.measured?.height || 0))
+//       : Math.abs(mousePosition.x - target_position.x + 50) < 100 &&
+//         Math.abs(mousePosition.y - target_position.y) < 35;
 
-  return [
-    <div
-      style={{
-        position: 'absolute',
-        transform: `translate(${target_position.x - 5}px, ${target_position.y - 5}px)`,
-      }}
-      key={`${node_id}_${handle}_${position}`}
-    >
-      <div
-        style={{
-          transform: 'scale(0.35)',
-          transformOrigin: 'top left',
-          opacity: isNearEnough ? '1' : '0',
-        }}
-      >
-        <ErrorBubble>
-          <ErrorParagraph annotation={annotation} />
-        </ErrorBubble>
-      </div>
-    </div>,
+//   return [
+//     <div
+//       style={{
+//         position: 'absolute',
+//         transform: `translate(${target_position.x - 5}px, ${target_position.y - 5}px)`,
+//       }}
+//       key={`${node_id}_${handle}_${position}`}
+//     >
+//       <div
+//         style={{
+//           transform: 'scale(0.35)',
+//           transformOrigin: 'top left',
+//           opacity: isNearEnough ? '1' : '0',
+//         }}
+//       >
+//         <ErrorBubble>
+//           <ErrorParagraph annotation={annotation} />
+//         </ErrorBubble>
+//       </div>
+//     </div>,
 
-    annotation.kind === 'type-error' ? (
-      <div
-        style={{
-          position: 'absolute',
-          transform: `translate(${target_position.x - 30}px, ${target_position.y}px) translate(-100%, -100%)`,
-        }}
-        className='error_text_highlight'
-        key={`${node_id}_${handle}_${position}_type_target`}
-      >
-        {annotation.args[0].value}
-      </div>
-    ) : undefined,
+//     annotation.kind === 'type-error' ? (
+//       <div
+//         style={{
+//           position: 'absolute',
+//           transform: `translate(${target_position.x - 30}px, ${target_position.y}px) translate(-100%, -100%)`,
+//         }}
+//         className='error_text_highlight'
+//         key={`${node_id}_${handle}_${position}_type_target`}
+//       >
+//         {annotation.args[0].value}
+//       </div>
+//     ) : undefined,
 
-    annotation.kind === 'type-error' && source_position ? (
-      <div
-        style={{
-          position: 'absolute',
-          transform: `translate(${source_position.x + 10}px, ${source_position.y - 5}px) translate(0%, -100%)`,
-        }}
-        className='error_text_highlight'
-        key={`${node_id}_${handle}_${position}_type_source`}
-      >
-        {annotation.args[1].value}
-      </div>
-    ) : undefined,
+//     annotation.kind === 'type-error' && source_position ? (
+//       <div
+//         style={{
+//           position: 'absolute',
+//           transform: `translate(${source_position.x + 10}px, ${source_position.y - 5}px) translate(0%, -100%)`,
+//         }}
+//         className='error_text_highlight'
+//         key={`${node_id}_${handle}_${position}_type_source`}
+//       >
+//         {annotation.args[1].value}
+//       </div>
+//     ) : undefined,
 
-    annotation.kind === 'syntax-error' &&
-    annotation.subkind === 'missing_parameter' ? (
-      <div
-        style={{
-          position: 'absolute',
-          transform: `translate(${target_position.x - 20}px, ${target_position.y}px) translate(-100%, -50%) translateY(-1px)`,
-          zIndex: '-1',
-        }}
-        className='error_text_highlight'
-        key={`${node_id}_${handle}_${position}_syntax_target`}
-      >
-        {MISSING_PARAMETER}
-      </div>
-    ) : undefined,
-  ]
-    .filter(Boolean)
-    .map((v) => v as JSX.Element);
-}
+//     annotation.kind === 'syntax-error' &&
+//     annotation.subkind === 'missing_parameter' ? (
+//       <div
+//         style={{
+//           position: 'absolute',
+//           transform: `translate(${target_position.x - 20}px, ${target_position.y}px) translate(-100%, -50%) translateY(-1px)`,
+//           zIndex: '-1',
+//         }}
+//         className='error_text_highlight'
+//         key={`${node_id}_${handle}_${position}_syntax_target`}
+//       >
+//         {MISSING_PARAMETER}
+//       </div>
+//     ) : undefined,
+//   ]
+//     .filter(Boolean)
+//     .map((v) => v as JSX.Element);
+// }
 
 export function AnnotationLayer() {
-  const store = useStore();
-  const { screenToFlowPosition } = useReactFlow();
-
   return (
     <ViewportPortal>
-      {store
-        .getAnnotations()
-        .map((annotation) =>
-          createAnnotationComponents(store, annotation, screenToFlowPosition),
-        )
-        .reduce((a, b) => a!.concat(b!), [])}
+      <div></div>
     </ViewportPortal>
   );
 }

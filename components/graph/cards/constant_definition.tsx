@@ -90,13 +90,7 @@ export default function ConstantDefinition({
   const textRef: RefObject<HTMLDivElement> = createRef();
   const store = useStore();
   const { screenToFlowPosition } = useReactFlow();
-  const {
-    initialized,
-    getNodes,
-    onNodesChange,
-    updateNodeData,
-    invalidate_node,
-  } = store;
+  const { initialized, getNodes, onNodesChange, updateNodeData } = store;
   const thisInitialization = useRef(false);
 
   const name = (data.name || '') as string;
@@ -121,17 +115,8 @@ export default function ConstantDefinition({
   }, [id, onNodesChange, screenToFlowPosition, store, textRef, updateNodeData]);
 
   function setName(newName: string) {
-    const prev_name = name;
     updateNodeData(id, (data) => ({ ...data, name: newName }));
     updateDimData();
-    getNodes()
-      .filter(
-        (v) =>
-          (v.type === 'constant_definition' || v.type === 'constant_use') &&
-          [prev_name, newName].includes(v.data.name as string),
-      )
-      .map((v) => v.id)
-      .forEach(invalidate_node);
   }
 
   useEffect(() => {

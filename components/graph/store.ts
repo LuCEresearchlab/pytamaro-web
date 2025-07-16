@@ -6,7 +6,6 @@ import {
   Node,
   NodeChange,
   NodePositionChange,
-  NodeRemoveChange,
   NodeReplaceChange,
   OnConnect,
   OnEdgesChange,
@@ -17,8 +16,6 @@ import { create, StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ChangeSliceState, createChangeSlice } from './changes';
 import { ConfigurationState, createConfigurationSlice } from './configuration';
-import { createImgStateSlice, ImgStateSlice } from './img_store';
-import { AnnotationStateSlice, createAnnotationSlice } from './annotations';
 import { getNode, getSubTreeFromRoot } from './utils';
 import { updateParent } from './graph_toolbox';
 
@@ -157,31 +154,6 @@ export const createGraphSlice: StateCreator<
               : afters.find((v) => change.id === v.id),
         });
       });
-
-    changes
-      .filter((v) => v.type === 'remove')
-      .map((v) => v as NodeRemoveChange)
-      .forEach((change) => {
-        get().setAnnotations(
-          get().annotations.filter((v) => v.location.node_id !== change.id),
-        );
-
-        const node = getNode(befores, change.id);
-        if (node?.type === 'constant_definition') {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { name }: { name: string } = node.data as any;
-
-          const usages = get().nodes.filter(
-            (v) => v.type === 'constant_use' && v.data.name === name,
-          );
-          usages.map((v) => v.id).forEach(get().invalidate_node);
-        }
-      });
-
-    changes
-      .filter((v) => v.type === 'add')
-      .map((v) => v.item)
-      .forEach(get().updateAnnotation);
   },
   onEdgesChange: (changes) => {
     const befores = get().edges;
@@ -267,12 +239,6 @@ export const createGraphSlice: StateCreator<
     if (node_changes.length !== 0) get().onNodesChange(node_changes);
     if (snd_changes.length !== 0) get().onNodesChange(snd_changes);
 
-    const changed_edges = changes
-      .filter((v) => v.type !== 'select' && v.type !== 'replace')
-      .map((v) =>
-        v.type === 'remove' ? befores.find((o) => o.id === v.id)! : v.item,
-      );
-
     set({
       edges: applyEdgeChanges(changes, get().edges),
     });
@@ -295,21 +261,6 @@ export const createGraphSlice: StateCreator<
               : afters.find((v) => change.item.id === v.id),
         });
       });
-
-    changed_edges
-      .map((v) => getNode(get().nodes, v.source))
-      .filter(Boolean)
-      .map((v) => v as Node)
-      .forEach(get().updateAnnotation);
-
-    changed_edges
-      .map((v) => getNode(get().nodes, v.target))
-      .filter(Boolean)
-      .map((v) => v as Node)
-      .forEach(get().updateAnnotation);
-
-    // Exec after annotation because some results are cached by annotation
-    changed_edges.map((v) => v.target).forEach(get().invalidate_node);
   },
   onConnect: (connection) => {
     get().onEdgesChange([
@@ -411,20 +362,14 @@ export const createGraphSlice: StateCreator<
   },
 });
 
-export type StoreType = ImgStateSlice &
-  GraphStateSlice &
-  ChangeSliceState &
-  ConfigurationState &
-  AnnotationStateSlice;
+export type StoreType = GraphStateSlice & ChangeSliceState & ConfigurationState;
 
 export const useStore = create<StoreType>()(
   persist(
     (...a) => ({
-      ...createImgStateSlice(...a),
       ...createGraphSlice(...a),
       ...createChangeSlice(...a),
       ...createConfigurationSlice(...a),
-      ...createAnnotationSlice(...a),
     }),
     {
       name: 'playground_graph',
@@ -433,7 +378,6 @@ export const useStore = create<StoreType>()(
         return (state) => {
           if (!state) return;
 
-          state.nodes.map((v) => v.id).forEach(state.invalidate_node);
           state.setInitialized('wait');
           return state;
         };

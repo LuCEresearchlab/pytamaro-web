@@ -3,7 +3,6 @@ import { Handle, Node, Position } from '@xyflow/react';
 import { ITamaroCardData } from '.';
 import { useStore } from '../store';
 import { CSSProperties, useEffect, useRef, useState } from 'react';
-import { getNode, getParents } from '../utils';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
@@ -63,13 +62,7 @@ export function TamaroLiteralCard({
   data: { value },
   hide_handles = false,
 }: Node & { data: ITamaroLiteralCardData; hide_handles?: boolean }) {
-  const {
-    updateNodeData,
-    invalidate_node,
-    updateAnnotation,
-    getNodes,
-    getEdges,
-  } = useStore();
+  const { updateNodeData } = useStore();
 
   function guessType(v: string): 'float' | 'str' | 'bool' | undefined {
     if (v.match(BOOL_REGEX)) return 'bool';
@@ -78,21 +71,8 @@ export function TamaroLiteralCard({
     return undefined;
   }
 
-  const toInvalidateTimeout = useRef(undefined as NodeJS.Timeout | undefined);
-
   const setValue = (newValue: string) => {
     updateNodeData(id, { literal_type: guessType(newValue), value: newValue });
-    const nodes = getNodes();
-    const edges = getEdges();
-
-    updateAnnotation(getNode(nodes, id)!);
-    const values = Array.from(getParents(nodes, edges, id, true).values());
-    values.forEach(updateAnnotation);
-
-    if (toInvalidateTimeout.current) clearTimeout(toInvalidateTimeout.current);
-    toInvalidateTimeout.current = setTimeout(() => {
-      invalidate_node(id);
-    }, 500);
   };
 
   return (

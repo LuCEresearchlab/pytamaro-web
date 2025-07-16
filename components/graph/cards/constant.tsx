@@ -1,7 +1,7 @@
 import { NodeProps } from '@xyflow/react';
 import { IImportedCardData } from '.';
 import { JudiciousConstant } from '../../../src/schemas/documentation';
-import TamaroCard, { ConstantTamaroCard } from '../../TamaroCard';
+import { ConstantTamaroCard } from '../../TamaroCard';
 import ResultIcon from '../ResultIcon';
 
 export interface ITamaroConstantCardData extends IImportedCardData {

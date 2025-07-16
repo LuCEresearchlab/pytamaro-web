@@ -44,7 +44,7 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
     if (filter === '' || check_const_name(reserved_names, filter))
       setConstantName(filter);
     else setConstantName(undefined);
-  }, [filter, setLiterals]);
+  }, [filter, reserved_names, setLiterals]);
 
   const onDragStart = (
     event: DragEvent<HTMLDivElement>,

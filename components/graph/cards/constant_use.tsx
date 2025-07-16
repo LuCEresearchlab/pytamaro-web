@@ -102,13 +102,12 @@ export default function ConstantUse(
   },
 ) {
   const { id, data, hide_handles } = props;
-  const { updateNodeData, invalidate_node } = useStore();
+  const { updateNodeData } = useStore();
   const { name } = data as unknown as ITamaroConstantUseCardData;
 
   function setName(v: string) {
     if (v === name) return;
     updateNodeData(id, (data) => ({ ...data, name: v }));
-    invalidate_node(id);
   }
 
   const returns_icon = useMemo(

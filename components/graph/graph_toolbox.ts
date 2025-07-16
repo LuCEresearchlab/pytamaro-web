@@ -116,7 +116,7 @@ export function updateParent(store: StoreType, parent: string) {
 export function isValidConnection(
   { getNodes, getEdges, error_level }: AllStore,
   params: Edge | Connection,
-) {
+): boolean {
   if (typeof window === 'undefined') return false;
 
   const nodes = getNodes();
@@ -244,14 +244,7 @@ export function onDocumentCopyCatpure(
 }
 
 export function onDocumentPasteCatpure(
-  {
-    getNodes,
-    setNodes,
-    getEdges,
-    setEdges,
-    invalidate_node,
-    mousePosition,
-  }: AllStore,
+  { getNodes, setNodes, getEdges, setEdges, mousePosition }: AllStore,
   e: ClipboardEvent,
 ) {
   interface FlowChartClipboardData {
@@ -404,18 +397,6 @@ export function onDocumentPasteCatpure(
         })),
       ),
   );
-
-  newNodes
-    .filter((v) => v.type === 'constant_definition')
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .map((v: any) => v.data.name as string)
-    .map((name) =>
-      getNodes()
-        .filter((v) => v.type === 'constant_definition' && v.data.name === name)
-        .map((v) => v.id)
-        .forEach(invalidate_node),
-    );
-  newNodes.forEach((v) => invalidate_node(v.id));
 }
 
 export function onDocumentMouseMove(

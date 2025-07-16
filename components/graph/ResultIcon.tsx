@@ -2,7 +2,6 @@ import { Node, NodeProps } from '@xyflow/react';
 import {
   createCodeFromCodeRepresentation,
   getHandleType,
-  getNode,
   toEnglishName,
 } from './utils';
 import { CodeRepresentation, ITamaroCardData } from './cards';
@@ -159,7 +158,7 @@ export default function ResultIcon(props: {
 }) {
   const { node_props } = props;
 
-  const { getNodes, img_states } = useStore();
+  const { getNodes } = useStore();
   const nodes = getNodes();
   const type = getHandleType(nodes, node_props as unknown as Node, 'output');
   if (!type) return <div />;

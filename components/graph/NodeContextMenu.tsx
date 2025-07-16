@@ -31,8 +31,7 @@ export default function NodeContextMenu({
 }) {
   const [openNameModal, setNameModalOpen] = useState(false);
   const { fitView } = useReactFlow();
-  const { getNodes, setNodes, getEdges, setEdges, invalidate_node } =
-    useStore();
+  const { getNodes, setNodes, getEdges, setEdges } = useStore();
 
   useEffect(() => {
     if (click_outside && !openNameModal) {
@@ -102,12 +101,8 @@ export default function NodeContextMenu({
               : [],
           ),
       );
-
-      invalidate_node(newNode.id);
-      invalidate_node(replacedByNode.id);
-      descendants.forEach(invalidate_node);
     },
-    [getNodes, getEdges, id, setNodes, invalidate_node, setEdges],
+    [getNodes, getEdges, id, setNodes, setEdges],
   );
 
   const node = getNode(getNodes(), id);

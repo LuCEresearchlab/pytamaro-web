@@ -1,4 +1,4 @@
-import { Article, Error, RemoveRedEye } from '@mui/icons-material';
+import { Article, Error } from '@mui/icons-material';
 import { IconButton, Paper } from '@mui/material';
 import {
   NodeMouseHandler,
@@ -30,7 +30,7 @@ function View() {
   );
   const ref: Ref<HTMLDivElement> = useRef(null);
 
-  const { getNodes, screenToFlowPosition, flowToScreenPosition, fitView } =
+  const { getNodes, screenToFlowPosition, flowToScreenPosition } =
     useReactFlow();
 
   // const { i18n } = useLocalTranslation(['common']);
@@ -43,18 +43,13 @@ function View() {
     onEdgesChange,
     onConnect,
     error_level,
-    unstack_queue,
     initialized,
-    getAnnotations,
     fullscreen,
     setFullscreen,
     mousePosition,
   } = store;
 
-  const getErrors = useCallback(
-    () => getAnnotations().filter((v) => v.kind.includes('error')),
-    [getAnnotations],
-  );
+  const getErrors = useCallback(() => false, []);
 
   const onNodeContextMenu: NodeMouseHandler = useCallback(
     (event, node) => {
@@ -75,7 +70,7 @@ function View() {
   );
 
   const [availabilities, setAvailabilities] = useState({
-    error: undefined as ErrorAnnotation[] | undefined,
+    error: false,
     documentation: undefined as JudiciousModuleElement | undefined,
   });
 
@@ -83,12 +78,7 @@ function View() {
 
   useEffect(() => {
     setAvailabilities({
-      error: (() => {
-        return errors.length === 0 ||
-          !['highlight', 'warning'].includes(error_level)
-          ? undefined
-          : errors;
-      })(),
+      error: false,
       documentation: (() => {
         const toBeDocumentedNodes = getNodes().filter((v) => v.selected);
 
@@ -122,21 +112,6 @@ function View() {
     isSelecting,
     setIsSelecting,
   };
-
-  useEffect(() => {
-    if (initialized === 'wait') {
-      const { updateAnnotation, setInitialized } = store;
-      nodes.forEach(updateAnnotation);
-      setInitialized('done');
-    }
-  }, [initialized, nodes, store]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      unstack_queue();
-    }, 5);
-    return () => clearInterval(interval);
-  }, [unstack_queue]);
 
   useEffect(() => {
     const _onKeyDown = (e: KeyboardEvent) => onDocumentKeyDown(all_store, e);
@@ -289,7 +264,7 @@ function View() {
                 gap: '5px',
               }}
             >
-              {getErrors().map((v) => (
+              {/* {getErrors().map((v) => (
                 <div
                   style={{
                     position: 'relative',
@@ -321,7 +296,7 @@ function View() {
                     <RemoveRedEye />
                   </IconButton>
                 </div>
-              ))}
+              ))} */}
             </div>
           </div>
         )}
@@ -414,8 +389,6 @@ import CodeEditor from '../../components/CodeEditor';
 import FunctionDocumentation from '../../components/documentation/FunctionDocumentation';
 import TypeConstantDocumentation from '../../components/documentation/TypeConstantDocumentation';
 import { AnnotationLayer } from '../../components/graph/AnnotationLayer';
-import { ErrorAnnotation } from '../../components/graph/annotations';
-import { ErrorParagraph } from '../../components/graph/ErrorParagraph';
 import {
   isValidConnection,
   onDocumentCopyCatpure,
@@ -433,7 +406,6 @@ import edge_type, {
   CustomEdgeLine,
 } from '../../components/graph/SmoothStepWithPadding';
 import { useStore } from '../../components/graph/store';
-import { getNode } from '../../components/graph/utils';
 import {
   JudiciousConstant,
   JudiciousFunction,

@@ -3,8 +3,6 @@ import {
   ConnectionLineComponentProps,
   EdgeProps,
   getBezierPath,
-  getSimpleBezierPath,
-  getSmoothStepPath,
   GetSmoothStepPathParams,
   Position,
 } from '@xyflow/react';
@@ -18,15 +16,9 @@ interface GetSmoothStepWithPaddingPathParams extends GetSmoothStepPathParams {
 function getSmoothStepWithPaddingPath({
   sourceX,
   sourceY,
-  sourcePosition = Position.Bottom,
   targetX,
   targetY,
-  targetPosition = Position.Top,
-  borderRadius = 5,
-  centerX,
-  centerY,
   padding = { source: 20, target: 20 },
-  offset = 20,
 }: GetSmoothStepWithPaddingPathParams): [
   path: string,
   labelX: number,

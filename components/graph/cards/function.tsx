@@ -1,5 +1,5 @@
 import { NodeProps } from '@xyflow/react';
-import { CodeRepresentation, IImportedCardData } from '.';
+import { IImportedCardData } from '.';
 import { FunctionTamaroCard } from '../../TamaroCard';
 import { JudiciousFunction } from '../../../src/schemas/documentation';
 import ResultIcon from '../ResultIcon';
