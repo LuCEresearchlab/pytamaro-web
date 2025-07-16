@@ -6,6 +6,9 @@ import { JudiciousModuleElement } from './CardSelectionPane';
 import { FLOAT_REGEX, STR_REGEX, TamaroLiteralCard } from './cards/literal';
 import ConstantUse from './cards/constant_use';
 import { check_const_name } from './cards/constant_definition';
+import { TamaroCardNode } from './cards';
+import { LiteralType, SoundType, UnsoundType } from '../../src/tide/expression';
+import { TideSyntaxErrorInvalidLiteral_builder } from '../../src/tide/error_builders';
 
 interface CardSelectionPaneProps {
   values: JudiciousModuleElement[];
@@ -18,17 +21,19 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
   const [constant_name, setConstantName] = useState('' as string | undefined);
 
   const [literals, setLiterals] = useState(
-    [] as { regex: RegExp; value: string; type: string }[],
+    [] as { regex: RegExp; value: string; type: LiteralType }[],
   );
 
   useEffect(() => {
     setLiterals(
-      [
-        { regex: /$^/, value: 'False', type: 'bool' },
-        { regex: /$^/, value: 'True', type: 'bool' },
-        { regex: FLOAT_REGEX, value: '200.0', type: 'float' },
-        { regex: STR_REGEX, value: '"Abc"', type: 'str' },
-      ]
+      (
+        [
+          { regex: /$^/, value: 'False', type: SoundType.Bool },
+          { regex: /$^/, value: 'True', type: SoundType.Bool },
+          { regex: FLOAT_REGEX, value: '200.0', type: SoundType.Float },
+          { regex: STR_REGEX, value: '"Abc"', type: SoundType.Str },
+        ] as { regex: RegExp; value: string; type: LiteralType }[]
+      )
         .filter(
           (v) =>
             filter === '' ||
@@ -46,11 +51,11 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
     else setConstantName(undefined);
   }, [filter, reserved_names, setLiterals]);
 
-  const onDragStart = (
+  const onDragStart = function <T extends string>(
     event: DragEvent<HTMLDivElement>,
-    type: string,
-    data: Record<string, unknown>,
-  ) => {
+    type: T,
+    data: (TamaroCardNode & { type: T })['data'],
+  ) {
     setDragged({ type, data });
     // eslint-disable-next-line no-param-reassign
     event.dataTransfer!.effectAllowed = 'move';
@@ -76,11 +81,27 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
               className='compact_view hide_types hide_labels hide_handles hide_optionals'
               style={{ userSelect: 'none' }}
               onDragStart={(e) => {
-                onDragStart(e, el.kind, {
-                  module: el.module,
-                  name: el.name,
-                  value: el,
-                } as Record<string, unknown>);
+                switch (el.kind) {
+                  case 'function': {
+                    onDragStart(e, 'function', {
+                      children: new Map(),
+                      evaluated: false,
+                      import: { module: el.module, name: el.name },
+                      kind: 'function_use',
+                      metadata: {},
+                    });
+                    break;
+                  }
+                  case 'constant': {
+                    onDragStart(e, 'constant', {
+                      kind: 'constant_use',
+                      evaluated: false,
+                      import: { module: el.module, name: el.name },
+                      metadata: {},
+                    });
+                    break;
+                  }
+                }
               }}
               draggable
               key={el.module + '$' + el.name}
@@ -96,8 +117,25 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
             style={{ userSelect: 'none' }}
             onDragStart={(e) => {
               onDragStart(e, 'literal', {
-                literal_type: type,
-                value,
+                evaluated: true,
+                kind: 'literal',
+                metadata: {},
+                str_value: value,
+                type,
+                value:
+                  type === UnsoundType.Bottom
+                    ? {
+                        type: UnsoundType.Bottom,
+                        error: TideSyntaxErrorInvalidLiteral_builder(value),
+                      }
+                    : {
+                        type: type,
+                        data: undefined,
+                        value: {
+                          expression: value,
+                          imports: [],
+                        },
+                      },
               });
             }}
             draggable
@@ -107,8 +145,25 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
               <TamaroLiteralCard
                 data={
                   {
-                    literal_type: type,
-                    value,
+                    evaluated: true,
+                    kind: 'literal',
+                    metadata: {},
+                    str_value: value,
+                    type,
+                    value:
+                      type === UnsoundType.Bottom
+                        ? {
+                            type: UnsoundType.Bottom,
+                            error: TideSyntaxErrorInvalidLiteral_builder(value),
+                          }
+                        : {
+                            type: type,
+                            data: undefined,
+                            value: {
+                              expression: value,
+                              imports: [],
+                            },
+                          },
                   } as Record<string, unknown>
                 }
                 hide_handles
@@ -125,7 +180,13 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
             style={{ userSelect: 'none' }}
             onDragStart={(e) => {
               onDragStart(e, 'constant_use', {
-                name: constant_name,
+                evaluated: false,
+                kind: 'constant_use',
+                import: {
+                  module: false,
+                  name: constant_name,
+                },
+                metadata: {},
               });
             }}
             draggable
@@ -135,7 +196,13 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
               <ConstantUse
                 data={
                   {
-                    name: constant_name,
+                    evaluated: false,
+                    kind: 'constant_use',
+                    import: {
+                      module: false,
+                      name: constant_name,
+                    },
+                    metadata: {},
                   } as Record<string, unknown>
                 }
                 hide_handles

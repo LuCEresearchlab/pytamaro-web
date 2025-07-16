@@ -1,10 +1,16 @@
-import { NodeProps } from '@xyflow/react';
+import { Dimensions, Node, NodeProps } from '@xyflow/react';
 import { TamaroFunctionCard } from './function';
 import { TamaroLiteralCard } from './literal';
 import { TamaroConstantCard } from './constant';
 import { JudiciousElement } from '../../../src/schemas/documentation';
 import ConstantDefinition from './constant_definition';
 import ConstantUse from './constant_use';
+import {
+  TamaroCard_ConstantUse,
+  TamaroCard_FunctionUse,
+  TamaroCard_Literal,
+} from '../../../src/tide/cards';
+import { LocalConstantDefinition } from '../../../src/tide/context';
 
 export interface ImportReference {
   module: string;
@@ -34,17 +40,54 @@ export interface IImportedCardData extends ITamaroCardData {
   value: JudiciousElement;
 }
 
+export type CommonNodeData = { show_handles?: boolean };
+export type TideNodeMetadata = object;
+
+export type FunctionNode = Node<
+  TamaroCard_FunctionUse<[], TideNodeMetadata>,
+  'function'
+>;
+
+export type LiteralNode = Node<TamaroCard_Literal<TideNodeMetadata>, 'literal'>;
+
+export type ConstantNode = Node<
+  TamaroCard_ConstantUse<TideNodeMetadata>,
+  'constant'
+>;
+
+export type ConstantUseNode = Node<
+  TamaroCard_ConstantUse<TideNodeMetadata>,
+  'constant_use'
+>;
+
+export type ConstantDefinitionNode = Node<
+  LocalConstantDefinition<TideNodeMetadata> &
+    CommonNodeData & {
+      text_width?: number;
+      min_height?: number;
+      dimensions?: Dimensions;
+    },
+  'constant_definition'
+>;
+
+export type TamaroCardNode =
+  | FunctionNode
+  | LiteralNode
+  | ConstantNode
+  | ConstantUseNode
+  | ConstantDefinitionNode;
+
 export const node_types = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function: (props: NodeProps) => TamaroFunctionCard(props as any),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  literal: (props: NodeProps) => TamaroLiteralCard(props as any),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constant: (props: NodeProps) => TamaroConstantCard(props as any),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constant_definition: (props: NodeProps) => ConstantDefinition(props as any),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constant_use: (props: NodeProps) => ConstantUse(props as any),
+  function: (props: NodeProps<FunctionNode>) =>
+    TamaroFunctionCard({ ...props, show_handles: true }),
+  literal: (props: NodeProps<LiteralNode>) =>
+    TamaroLiteralCard({ ...props, show_handles: true }),
+  constant: (props: NodeProps<ConstantNode>) =>
+    TamaroConstantCard({ ...props, show_handles: true }),
+  constant_definition: (props: NodeProps<ConstantDefinitionNode>) =>
+    ConstantDefinition({ ...props, show_handles: true }),
+  constant_use: (props: NodeProps<ConstantUseNode>) =>
+    ConstantUse({ ...props, show_handles: true }),
 } as const;
 
 export const CardKeys = Object.keys(node_types);

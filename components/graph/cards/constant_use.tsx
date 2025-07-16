@@ -1,16 +1,9 @@
 import { Handle, NodeProps, Position } from '@xyflow/react';
-import { ITamaroCardData } from '.';
+import { CommonNodeData, ConstantUseNode, ITamaroCardData } from '.';
 import { useStore } from '../store';
-import {
-  ChangeEvent,
-  CSSProperties,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import ResultIcon from '../ResultIcon';
+import { ChangeEvent, CSSProperties, useEffect, useRef, useState } from 'react';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
+import { Location } from '../../../src/tide/expression';
 
 export interface ITamaroConstantUseCardData extends ITamaroCardData {
   name: string;
@@ -94,31 +87,29 @@ export function AutoWidthInput({
 }
 
 export default function ConstantUse(
-  // eslint-disable-next-line react/require-default-props
-  props: NodeProps & {
-    data: ITamaroConstantUseCardData;
-    hide_handles: boolean;
-    resetOnChange?: boolean;
-  },
+  props: NodeProps<ConstantUseNode> & CommonNodeData,
 ) {
-  const { id, data, hide_handles } = props;
+  const {
+    id,
+    show_handles,
+    data: { import: i },
+  } = props;
   const { updateNodeData } = useStore();
-  const { name } = data as unknown as ITamaroConstantUseCardData;
 
   function setName(v: string) {
-    if (v === name) return;
-    updateNodeData(id, (data) => ({ ...data, name: v }));
+    if (v === i.name) return;
+    updateNodeData(id, (data) => ({
+      ...data,
+      import: { module: false, name: v } as Location,
+    }));
   }
-
-  const returns_icon = useMemo(
-    () => <ResultIcon node_props={props} />,
-    [props],
-  );
 
   const returnsIconRef = useRef() as React.MutableRefObject<HTMLDivElement>;
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   const [editing, setEditing] = useState(false);
+
+  const returns_icon = undefined;
 
   useEffect(() => {
     if (!returnsIconRef.current) return;
@@ -168,7 +159,7 @@ export default function ConstantUse(
               onBlur={() => setEditing(false)}
             >
               <AutoWidthInput
-                value={name}
+                value={i.name}
                 onChange={(e) => setName(e.currentTarget.value)}
                 style={{
                   minWidth: '100%',
@@ -202,7 +193,7 @@ export default function ConstantUse(
             )}
           </div>
 
-          {!hide_handles && (
+          {show_handles === true && (
             <Handle
               type='source'
               position={Position.Right}

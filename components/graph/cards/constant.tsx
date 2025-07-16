@@ -1,26 +1,34 @@
 import { NodeProps } from '@xyflow/react';
-import { IImportedCardData } from '.';
+import { CommonNodeData, ConstantNode, IImportedCardData } from '.';
 import { JudiciousConstant } from '../../../src/schemas/documentation';
 import { ConstantTamaroCard } from '../../TamaroCard';
-import ResultIcon from '../ResultIcon';
+import useJudiciousDocData from '../../../src/documentation';
 
 export interface ITamaroConstantCardData extends IImportedCardData {
   value: JudiciousConstant;
 }
 
 export function TamaroConstantCard(
-  props: NodeProps & { data: ITamaroConstantCardData },
+  props: NodeProps<ConstantNode> & CommonNodeData,
 ) {
-  const { data } = props;
-  const function_el = data.value;
+  const { data, show_handles } = props;
+  const i = data.import as { module: string; name: string };
+
+  const [el] = useJudiciousDocData([i.module]).map(
+    (v) =>
+      v.elements.find((o) => o.name === i.name) as
+        | JudiciousConstant
+        | undefined,
+  );
+
   return (
     <div className='drag-handle compact_view hide_types hide_icons hide_output hide_optionals'>
-      {function_el && (
+      {el && (
         <ConstantTamaroCard
-          el={function_el}
-          module={data.module}
-          show_handles
-          returns_icon={<ResultIcon node_props={props} />}
+          el={el}
+          module={i.module}
+          show_handles={show_handles}
+          returns_icon={undefined}
         />
       )}
     </div>

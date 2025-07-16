@@ -1,13 +1,8 @@
 import { NodeProps } from '@xyflow/react';
-import { IImportedCardData } from '.';
+import { CommonNodeData, FunctionNode } from '.';
 import { FunctionTamaroCard } from '../../TamaroCard';
 import { JudiciousFunction } from '../../../src/schemas/documentation';
-import ResultIcon from '../ResultIcon';
-
-export interface ITamaroFunctionCardData extends IImportedCardData {
-  value: JudiciousFunction;
-  size?: { width: number; height: number };
-}
+import useJudiciousDocData from '../../../src/documentation';
 
 export function getHandleName(parameter_name: string) {
   return `input_${parameter_name}`;
@@ -20,19 +15,26 @@ export function getParameterName(handle_name: string) {
 }
 
 export function TamaroFunctionCard(
-  props: NodeProps & { data: ITamaroFunctionCardData },
+  props: NodeProps<FunctionNode> & CommonNodeData,
 ) {
-  const { data } = props;
-  const function_el = data.value;
+  const { data, show_handles } = props;
+  const i = data.import as { module: string; name: string };
+
+  const [el] = useJudiciousDocData([i.module]).map(
+    (v) =>
+      v.elements.find((o) => o.name === i.name) as
+        | JudiciousFunction
+        | undefined,
+  );
 
   return (
     <div className='drag-handle compact_view hide_types hide_icons hide_output hide_optionals hide_labels'>
-      {function_el && (
+      {el && (
         <FunctionTamaroCard
-          el={function_el}
-          module={data.module}
-          show_handles
-          returns_icon={<ResultIcon node_props={props} />}
+          el={el}
+          module={i.module}
+          show_handles={show_handles}
+          returns_icon={undefined}
         />
       )}
     </div>

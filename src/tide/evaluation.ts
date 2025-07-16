@@ -268,6 +268,7 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
 
       return {
         ...root,
+        evaluated: true,
         value: {
           data: await extract_data(value.import.name, constant_type, [value]),
           type: constant_type,
@@ -415,6 +416,7 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
       const card: EvaluatedTamaroCard<T, U> = {
         ...root,
         children,
+        evaluated: true,
         value,
       };
 
@@ -476,6 +478,7 @@ export async function evaluate_tree<T extends FunctionParameter[], U>(
     case 'parameter_use':
       return {
         ...root,
+        evaluated: true,
         value: {
           data: undefined,
           type: root.parameter.type,

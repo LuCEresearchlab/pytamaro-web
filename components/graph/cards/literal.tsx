@@ -1,6 +1,5 @@
-/* eslint-disable no-param-reassign */
-import { Handle, Node, Position } from '@xyflow/react';
-import { ITamaroCardData } from '.';
+import { Handle, NodeProps, Position } from '@xyflow/react';
+import { CommonNodeData, ITamaroCardData, LiteralNode } from '.';
 import { useStore } from '../store';
 import { CSSProperties, useEffect, useRef, useState } from 'react';
 
@@ -11,6 +10,12 @@ export const FLOAT_REGEX = /^-?[0-9]+(\.[0-9]*)?$/g;
 export const STR_REGEX = /^"([^\\"]|(\\")|\\\\)*"$/g;
 
 import '../../../style/tamaro_cards.css';
+import {
+  LiteralType,
+  SoundType,
+  UnsoundType,
+} from '../../../src/tide/expression';
+import { TideSyntaxErrorInvalidLiteral_builder } from '../../../src/tide/error_builders';
 
 export interface ITamaroLiteralCardData extends ITamaroCardData {
   literal_type?: 'float' | 'str' | 'bool';
@@ -57,22 +62,46 @@ export function ContentEditableDiv(props: {
   );
 }
 
-export function TamaroLiteralCard({
-  id,
-  data: { value },
-  hide_handles = false,
-}: Node & { data: ITamaroLiteralCardData; hide_handles?: boolean }) {
+export function TamaroLiteralCard(
+  props: NodeProps<LiteralNode> & CommonNodeData,
+) {
+  const {
+    id,
+    show_handles,
+    data: { str_value: value },
+  } = props;
   const { updateNodeData } = useStore();
 
-  function guessType(v: string): 'float' | 'str' | 'bool' | undefined {
-    if (v.match(BOOL_REGEX)) return 'bool';
-    if (v.match(STR_REGEX)) return 'str';
-    if (v.match(FLOAT_REGEX)) return 'float';
-    return undefined;
+  function guessType(v: string): LiteralType {
+    if (v.match(BOOL_REGEX)) return SoundType.Bool;
+    if (v.match(STR_REGEX)) return SoundType.Str;
+    if (v.match(FLOAT_REGEX)) return SoundType.Float;
+    return UnsoundType.Bottom;
   }
 
   const setValue = (newValue: string) => {
-    updateNodeData(id, { literal_type: guessType(newValue), value: newValue });
+    const type = guessType(newValue);
+    updateNodeData(id, {
+      evaluated: true,
+      kind: 'literal',
+      metadata: {},
+      str_value: newValue,
+      type,
+      value:
+        type === UnsoundType.Bottom
+          ? {
+              type: UnsoundType.Bottom,
+              error: TideSyntaxErrorInvalidLiteral_builder(value),
+            }
+          : {
+              type: type,
+              data: undefined,
+              value: {
+                expression: value,
+                imports: [],
+              },
+            },
+    });
   };
 
   return (
@@ -142,7 +171,7 @@ export function TamaroLiteralCard({
 
         <div className='triangle_right_border arrow_handles'>
           <div className='right'>
-            {!hide_handles && (
+            {show_handles === true && (
               <Handle
                 type='source'
                 position={Position.Right}

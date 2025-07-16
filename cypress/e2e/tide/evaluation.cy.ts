@@ -1,7 +1,7 @@
 import {
   EvaluatedTamaroCard_Literal,
   TamaroCard,
-  TamaroCard_Literal,
+  NonEvaluatedTamaroCard_Literal,
 } from '../../../src/tide/cards';
 import { EvaluatedContext } from '../../../src/tide/context';
 import { TideRuntimeError_builder } from '../../../src/tide/error_builders';
@@ -17,7 +17,7 @@ import { getDefaultContext, RECTANGLE, RED } from './data';
 function literal_card(
   value: string,
   type: SoundType.Float | SoundType.Str | SoundType.Bool,
-): TamaroCard_Literal<object> {
+): NonEvaluatedTamaroCard_Literal<object> {
   return {
     kind: 'literal',
     str_value: value,

@@ -9,7 +9,7 @@ import { createRef, RefObject, useCallback, useEffect, useRef } from 'react';
 import { useStore } from '../store';
 import { updateParent } from '../graph_toolbox';
 import { ContentEditableDiv } from './literal';
-import { ITamaroCardData } from '.';
+import { CommonNodeData, ConstantDefinitionNode, ITamaroCardData } from '.';
 
 const KEYWORDS: string[] = [
   'False',
@@ -80,12 +80,11 @@ export interface ITamaroConstantDefinitionCardData extends ITamaroCardData {
   min_height?: number;
 }
 
-export default function ConstantDefinition({
-  id,
-  data,
-  positionAbsoluteX,
-  positionAbsoluteY,
-}: NodeProps & { data: ITamaroConstantDefinitionCardData }) {
+export default function ConstantDefinition(
+  props: NodeProps<ConstantDefinitionNode> & CommonNodeData,
+) {
+  const { id, positionAbsoluteX, positionAbsoluteY, data, show_handles } =
+    props;
   const text_width = data.text_width || 0;
   const textRef: RefObject<HTMLDivElement> = createRef();
   const store = useStore();
@@ -93,7 +92,7 @@ export default function ConstantDefinition({
   const { initialized, getNodes, onNodesChange, updateNodeData } = store;
   const thisInitialization = useRef(false);
 
-  const name = (data.name || '') as string;
+  const name = (data.import.name || '') as string;
 
   const updateDimData = useCallback(() => {
     if (textRef.current) {
@@ -277,18 +276,20 @@ export default function ConstantDefinition({
             backgroundColor: 'transparent',
           }}
         >
-          <Handle
-            position={Position.Left}
-            type='target'
-            style={{
-              left: 'unset',
-              transform: 'translateY(-50%) translateX(-65%)',
-              height: '25px',
-              width: '25px',
-              opacity: '0',
-            }}
-            id={'output'}
-          />
+          {show_handles === true && (
+            <Handle
+              position={Position.Left}
+              type='target'
+              style={{
+                left: 'unset',
+                transform: 'translateY(-50%) translateX(-65%)',
+                height: '25px',
+                width: '25px',
+                opacity: '0',
+              }}
+              id={'output'}
+            />
+          )}
         </div>
       </div>
     </div>

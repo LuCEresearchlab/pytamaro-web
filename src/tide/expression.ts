@@ -61,6 +61,12 @@ export interface ErrorPropagation {
 
 export type ValueType = SoundType | UnsoundType;
 
+export type LiteralType =
+  | SoundType.Float
+  | SoundType.Str
+  | SoundType.Bool
+  | UnsoundType;
+
 export enum SoundType {
   Float,
   Str,
