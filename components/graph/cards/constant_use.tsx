@@ -94,7 +94,9 @@ export default function ConstantUse(
     show_handles,
     data: { import: i },
   } = props;
-  const { updateNodeData } = useStore();
+  const { updateNodeData } = useStore((state) => ({
+    updateNodeData: state.updateNodeData,
+  }));
 
   function setName(v: string) {
     if (v === i.name) return;

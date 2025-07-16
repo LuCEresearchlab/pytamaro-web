@@ -70,7 +70,9 @@ export function TamaroLiteralCard(
     show_handles,
     data: { str_value: value },
   } = props;
-  const { updateNodeData } = useStore();
+  const { updateNodeData } = useStore((state) => ({
+    updateNodeData: state.updateNodeData,
+  }));
 
   function guessType(v: string): LiteralType {
     if (v.match(BOOL_REGEX)) return SoundType.Bool;

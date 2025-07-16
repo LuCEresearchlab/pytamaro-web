@@ -89,7 +89,7 @@ export default function ConstantDefinition(
   const textRef: RefObject<HTMLDivElement> = createRef();
   const store = useStore();
   const { screenToFlowPosition } = useReactFlow();
-  const { initialized, getNodes, onNodesChange, updateNodeData } = store;
+  const { initialized, onNodesChange, updateNodeData } = store;
   const thisInitialization = useRef(false);
 
   const name = (data.import.name || '') as string;
@@ -124,7 +124,7 @@ export default function ConstantDefinition(
       thisInitialization.current = true;
       onNodesChange([updateParent(store, id)]);
     }
-  }, [initialized, getNodes, store, id, onNodesChange, updateDimData]);
+  }, [initialized, store, id, onNodesChange, updateDimData]);
 
   const dimension: Dimensions = (data.dimensions || {
     width: 100,
