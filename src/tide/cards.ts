@@ -115,4 +115,6 @@ export type TamaroCard_FunctionUse<
 export type TamaroCard_ParameterUse<
   T extends TamaroCardParameterEnvironment,
   U,
-> = ITamaroCard_ParameterUse<T, U> | EvaluatedTamaroCard_ParameterUse<T, U>;
+> =
+  | NonEvaluatedTamaroCard_ParameterUse<T, U>
+  | EvaluatedTamaroCard_ParameterUse<T, U>;

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Node, useReactFlow } from '@xyflow/react';
+import { useReactFlow } from '@xyflow/react';
 import { useStore } from './store';
 import { getConstantDefinition, getNode, getSubTreeFromRoot } from './utils';
 import { BORDER_COLOR } from './cards/constant_definition';
@@ -12,6 +12,17 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
+import {
+  ConstantDefinitionNode,
+  ConstantUseNode,
+  TamaroCardNode,
+} from './cards';
+import {
+  EvaluatedTamaroCard,
+  TamaroCard,
+  TamaroCardParameterEnvironment,
+} from '../../src/tide/cards';
+import { find_dependencies } from '../../src/tide/evaluation';
 
 export default function NodeContextMenu({
   id,
@@ -31,7 +42,8 @@ export default function NodeContextMenu({
 }) {
   const [openNameModal, setNameModalOpen] = useState(false);
   const { fitView } = useReactFlow();
-  const { getNodes, setNodes, getEdges, setEdges } = useStore();
+  const { getNodes, setNodes, getEdges, setEdges, evaluated_context } =
+    useStore();
 
   useEffect(() => {
     if (click_outside && !openNameModal) {
@@ -47,19 +59,46 @@ export default function NodeContextMenu({
       const descendants: string[] = getSubTreeFromRoot(nodes, edges, id);
 
       const existing_edge = edges.find((v) => v.source === id);
+      const node = getNode(nodes, id)!;
+      const { data } = node;
 
-      const newNode: Node = {
+      const newNode: ConstantDefinitionNode = {
         id: `${new Date().getTime()}-parent`,
         type: 'constant_definition',
-        data: { name },
+        data: (() => {
+          const retyped = data as TamaroCard<
+            TamaroCardParameterEnvironment,
+            unknown
+          >;
+          return {
+            dependencies: find_dependencies(retyped, evaluated_context),
+            evaluated: retyped.evaluated,
+            import: { module: false, name },
+            kind: 'constant_definition',
+            subkind: 'local',
+            value: retyped.evaluated
+              ? (
+                  retyped as EvaluatedTamaroCard<
+                    TamaroCardParameterEnvironment,
+                    unknown
+                  >
+                ).value
+              : undefined,
+          };
+        })(),
         position: { x: 0, y: 0 },
         zIndex: -100,
       };
 
-      const replacedByNode: Node = {
+      const replacedByNode: ConstantUseNode = {
         id: `${new Date().getTime()}-replacement`,
         type: 'constant_use',
-        data: { name: newNode.data.name },
+        data: {
+          kind: 'constant_use',
+          evaluated: false,
+          import: { module: false, name },
+          metadata: {},
+        },
         position: getNode(nodes, id)!.position,
       };
 
@@ -71,7 +110,7 @@ export default function NodeContextMenu({
               : ({
                   ...v,
                   data: { ...v.data, parent: newNode.id },
-                } as Node),
+                } as TamaroCardNode),
           )
           .concat(replacedByNode, newNode),
       );
@@ -102,14 +141,14 @@ export default function NodeContextMenu({
           ),
       );
     },
-    [getNodes, getEdges, id, setNodes, setEdges],
+    [getNodes, getEdges, id, setNodes, setEdges, evaluated_context],
   );
 
   const node = getNode(getNodes(), id);
 
   const constant_reference: string | undefined =
-    node?.type === 'constant_use' && node.data.name
-      ? getConstantDefinition(getNodes(), node?.data?.name as string)?.id
+    node?.type === 'constant_use' && node.data.import.name
+      ? getConstantDefinition(getNodes(), node?.data?.import.name as string)?.id
       : undefined;
 
   const goToParentDefinition = useCallback(() => {

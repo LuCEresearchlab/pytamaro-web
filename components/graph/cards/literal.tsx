@@ -1,7 +1,7 @@
 import { Handle, NodeProps, Position } from '@xyflow/react';
-import { CommonNodeData, ITamaroCardData, LiteralNode } from '.';
+import { ExtraneousNodeProps, LiteralNode } from '.';
 import { useStore } from '../store';
-import { CSSProperties, useEffect, useRef, useState } from 'react';
+import { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
@@ -16,11 +16,6 @@ import {
   UnsoundType,
 } from '../../../src/tide/expression';
 import { TideSyntaxErrorInvalidLiteral_builder } from '../../../src/tide/error_builders';
-
-export interface ITamaroLiteralCardData extends ITamaroCardData {
-  literal_type?: 'float' | 'str' | 'bool';
-  value: string;
-}
 
 // eslint-disable-next-line react/require-default-props
 export function ContentEditableDiv(props: {
@@ -63,16 +58,14 @@ export function ContentEditableDiv(props: {
 }
 
 export function TamaroLiteralCard(
-  props: NodeProps<LiteralNode> & CommonNodeData,
+  props: NodeProps<LiteralNode> & ExtraneousNodeProps,
 ) {
   const {
     id,
     show_handles,
     data: { str_value: value },
   } = props;
-  const { updateNodeData } = useStore((state) => ({
-    updateNodeData: state.updateNodeData,
-  }));
+  const { updateNodeData } = useStore();
 
   function guessType(v: string): LiteralType {
     if (v.match(BOOL_REGEX)) return SoundType.Bool;
@@ -81,30 +74,33 @@ export function TamaroLiteralCard(
     return UnsoundType.Bottom;
   }
 
-  const setValue = (newValue: string) => {
-    const type = guessType(newValue);
-    updateNodeData(id, {
-      evaluated: true,
-      kind: 'literal',
-      metadata: {},
-      str_value: newValue,
-      type,
-      value:
-        type === UnsoundType.Bottom
-          ? {
-              type: UnsoundType.Bottom,
-              error: TideSyntaxErrorInvalidLiteral_builder(value),
-            }
-          : {
-              type: type,
-              data: undefined,
-              value: {
-                expression: value,
-                imports: [],
+  const setValue = useCallback(
+    (newValue: string) => {
+      const type = guessType(newValue);
+      updateNodeData(id, {
+        evaluated: true,
+        kind: 'literal',
+        metadata: {},
+        str_value: newValue,
+        type,
+        value:
+          type === UnsoundType.Bottom
+            ? {
+                type: UnsoundType.Bottom,
+                error: TideSyntaxErrorInvalidLiteral_builder(value),
+              }
+            : {
+                type: type,
+                data: undefined,
+                value: {
+                  expression: value,
+                  imports: [],
+                },
               },
-            },
-    });
-  };
+      });
+    },
+    [id, updateNodeData, value],
+  );
 
   return (
     <div className='tamaro_card literal_card'>

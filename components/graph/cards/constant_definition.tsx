@@ -9,7 +9,7 @@ import { createRef, RefObject, useCallback, useEffect, useRef } from 'react';
 import { useStore } from '../store';
 import { updateParent } from '../graph_toolbox';
 import { ContentEditableDiv } from './literal';
-import { CommonNodeData, ConstantDefinitionNode, ITamaroCardData } from '.';
+import { ExtraneousNodeProps, ConstantDefinitionNode } from '.';
 
 const KEYWORDS: string[] = [
   'False',
@@ -72,16 +72,8 @@ export const BORDER_COLOR = '#148CC8';
 export const BACKGROUND_COLOR = '#d1f0ff';
 const BORDER_WIDTH = '2px';
 
-export interface ITamaroConstantDefinitionCardData extends ITamaroCardData {
-  name: string;
-  type?: string;
-
-  text_width?: number;
-  min_height?: number;
-}
-
 export default function ConstantDefinition(
-  props: NodeProps<ConstantDefinitionNode> & CommonNodeData,
+  props: NodeProps<ConstantDefinitionNode> & ExtraneousNodeProps,
 ) {
   const { id, positionAbsoluteX, positionAbsoluteY, data, show_handles } =
     props;

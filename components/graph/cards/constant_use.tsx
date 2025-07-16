@@ -1,9 +1,10 @@
 import { Handle, NodeProps, Position } from '@xyflow/react';
-import { CommonNodeData, ConstantUseNode, ITamaroCardData } from '.';
+import { ExtraneousNodeProps, ConstantUseNode } from '.';
 import { useStore } from '../store';
 import {
   ChangeEvent,
   CSSProperties,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -12,10 +13,6 @@ import {
 import { ReactElement } from 'react-markdown/lib/react-markdown';
 import { Location } from '../../../src/tide/expression';
 import ResultIcon from '../ResultIcon';
-
-export interface ITamaroConstantUseCardData extends ITamaroCardData {
-  name: string;
-}
 
 export function AutoWidthInput({
   value,
@@ -95,21 +92,22 @@ export function AutoWidthInput({
 }
 
 export default function ConstantUse(
-  props: NodeProps<ConstantUseNode> & CommonNodeData,
+  props: NodeProps<ConstantUseNode> & ExtraneousNodeProps,
 ) {
   const { id, show_handles, data } = props;
   const i = data.import;
-  const { updateNodeData } = useStore((state) => ({
-    updateNodeData: state.updateNodeData,
-  }));
+  const { updateNodeData } = useStore();
 
-  function setName(v: string) {
-    if (v === i.name) return;
-    updateNodeData(id, (data) => ({
-      ...data,
-      import: { module: false, name: v } as Location,
-    }));
-  }
+  const setName = useCallback(
+    (v: string) => {
+      if (v === i.name) return;
+      updateNodeData(id, (data) => ({
+        ...data,
+        import: { module: false, name: v } as Location,
+      }));
+    },
+    [i.name, id, updateNodeData],
+  );
 
   const returnsIconRef = useRef() as React.MutableRefObject<HTMLDivElement>;
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });

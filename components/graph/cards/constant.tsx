@@ -1,16 +1,12 @@
 import { NodeProps } from '@xyflow/react';
-import { CommonNodeData, ConstantNode, IImportedCardData } from '.';
+import { ExtraneousNodeProps, ConstantNode } from '.';
 import { JudiciousConstant } from '../../../src/schemas/documentation';
 import { ConstantTamaroCard } from '../../TamaroCard';
 import useJudiciousDocData from '../../../src/documentation';
 import ResultIcon from '../ResultIcon';
 
-export interface ITamaroConstantCardData extends IImportedCardData {
-  value: JudiciousConstant;
-}
-
 export function TamaroConstantCard(
-  props: NodeProps<ConstantNode> & CommonNodeData,
+  props: NodeProps<ConstantNode> & ExtraneousNodeProps,
 ) {
   const { data, show_handles } = props;
   const i = data.import as { module: string; name: string };

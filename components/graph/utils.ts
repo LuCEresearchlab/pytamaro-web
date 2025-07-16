@@ -1,40 +1,42 @@
 'use client';
 import { Edge, Node } from '@xyflow/react';
-import {
-  getHandleName,
-  getParameterName,
-  ITamaroFunctionCardData,
-} from './cards/function';
-import {
-  JudiciousConstant,
-  JudiciousFunction,
-} from '../../src/schemas/documentation';
+import { getHandleName, getParameterName } from './cards/function';
+import { JudiciousFunction } from '../../src/schemas/documentation';
 import {
   CardType,
-  CodeRepresentation,
+  FunctionNode,
   ImportReference,
   node_types,
+  TamaroCardNode,
+  TideNodeMetadata,
 } from './cards';
-import { ITamaroLiteralCardData } from './cards/literal';
-import { ITamaroConstantCardData } from './cards/constant';
-import { ITamaroConstantDefinitionCardData } from './cards/constant_definition';
+import {
+  EvaluatedContext,
+  EvaluatedFunctionDefinition,
+} from '../../src/tide/context';
+import { UnsoundType } from '../../src/tide/expression';
+import { getCardOutputType } from '../../src/tide/utils';
+import {
+  TamaroCard,
+  TamaroCardParameterEnvironment,
+} from '../../src/tide/cards';
 
-export function getNode(nodes: Node[], id: string) {
+export function getNode(nodes: TamaroCardNode[], id: string) {
   return nodes.find((v) => v.id === id);
 }
 
-export function getSource(nodes: Node[], edge: Edge) {
+export function getSource(nodes: TamaroCardNode[], edge: Edge) {
   return getNode(nodes, edge.source);
 }
 
-export function getTarget(nodes: Node[], edge: Edge) {
+export function getTarget(nodes: TamaroCardNode[], edge: Edge) {
   return getNode(nodes, edge.target);
 }
 
 export function getChildren(
-  nodes: Node[],
+  nodes: TamaroCardNode[],
   edges: Edge[],
-  node: string | Node,
+  node: string | TamaroCardNode,
   unsafe_type: boolean = false,
 ) {
   const node_id = typeof node === 'string' ? node : node.id;
@@ -51,7 +53,7 @@ export function getChildren(
 }
 
 export function getParents(
-  nodes: Node[],
+  nodes: TamaroCardNode[],
   edges: Edge[],
   node: string | Node,
   unsafe_type: boolean = false,
@@ -70,7 +72,7 @@ export function getParents(
 }
 
 export function getRelative(
-  nodes: Node[],
+  nodes: TamaroCardNode[],
   edges: Edge[],
   id: string,
   handle: string,
@@ -94,7 +96,7 @@ export function getRelative(
 }
 
 export function getFunctionParameterRelative(
-  nodes: Node[],
+  nodes: TamaroCardNode[],
   edges: Edge[],
   id: string,
   parameter: string,
@@ -103,59 +105,46 @@ export function getFunctionParameterRelative(
   return getRelative(nodes, edges, id, getHandleName(parameter), unsafe_type);
 }
 
-export function getHandleType(nodes: Node[], node: Node, handle: string) {
-  if (!node.type) return 'Unknown';
+export function getHandleType(
+  context: EvaluatedContext<TideNodeMetadata>,
+  node: TamaroCardNode,
+  handle: string,
+) {
+  if (handle === 'output')
+    return getCardOutputType(
+      node.data as TamaroCard<TamaroCardParameterEnvironment, unknown>,
+    );
 
   switch (node.type as CardType) {
     case 'function': {
-      const data = node.data as unknown as ITamaroFunctionCardData;
-      const function_el = data.value as JudiciousFunction;
-      if (handle === 'output') return function_el?.returnValue?.type || 'null';
+      const { data } = node as FunctionNode;
+      const def = context.find((v) => v.import === data.import) as
+        | EvaluatedFunctionDefinition<TamaroCardParameterEnvironment, unknown>
+        | undefined;
+      if (!def) return UnsoundType.Bottom;
       const arg_name = getParameterName(handle);
       return (
-        function_el?.parameters.find((v) => v.name === arg_name)?.type ||
-        'Unknown'
+        def.parameters.find((v) => v.name === arg_name)?.type ||
+        UnsoundType.Bottom
       );
     }
-    case 'literal': {
-      const data = node.data as unknown as ITamaroLiteralCardData;
-      return data.literal_type || 'Unknown';
-    }
+    case 'constant_definition':
+      return UnsoundType.Bottom;
 
-    case 'constant': {
-      const data = node.data as unknown as ITamaroConstantCardData;
-      const cst = data.value as JudiciousConstant;
-
-      return cst.type;
-    }
-
-    case 'constant_definition': {
-      return 'Unknown'; // The Constant Definition return value is defined by the source of the edge, so we can't assign a type before the connection
-    }
-
-    case 'constant_use': {
-      const { name } =
-        node.data as unknown as ITamaroConstantDefinitionCardData;
-
-      const definitions = nodes.filter(
-        (v) => v.type === 'constant_definition' && v.data.name === name,
+    default:
+      throw new Error(
+        'Unknown handle for ' +
+          String(node.id) +
+          ' of type ' +
+          String(node.type),
       );
-
-      if (definitions.length !== 1) return 'Unknown';
-
-      return definitions[0]!.data.type as string;
-    }
-
-    default: {
-      return 'Unknown';
-    }
   }
 }
 
 export function getSubTreeFromRoot(
-  nodes: Node[],
+  nodes: TamaroCardNode[],
   edges: Edge[],
-  root: Node | string,
+  root: TamaroCardNode | string,
 ): string[] {
   const descendants: string[] = [];
   const visited = new Set<string>();
@@ -183,7 +172,7 @@ export function getFunctionHandles(fn: JudiciousFunction) {
     .map((v) => ({ name: v.name, type: v.type }));
 }
 
-export function getAmountOfExpectConnections(node: Node) {
+export function getAmountOfExpectConnections(node: TamaroCardNode) {
   if (!node.type) return 'Unknown';
 
   const type = node.type;
@@ -192,12 +181,8 @@ export function getAmountOfExpectConnections(node: Node) {
 
   switch (node.type as CardType) {
     case 'function': {
-      const data = node.data as unknown as ITamaroFunctionCardData;
-      const fn = data.value as JudiciousFunction;
-      return (
-        fn.parameters.filter((v) => v.default == null).length +
-        (fn.returnValue ? 1 : 0)
-      );
+      const data = (node as FunctionNode).data;
+      return data.children.size + 1;
     }
     case 'literal':
       return 1;
@@ -211,46 +196,31 @@ export const TRANSPARENT_IMPORT: ImportReference = {
   name: 'transparent',
 };
 
-export function createCodeFromCodeRepresentation(code: CodeRepresentation) {
-  const map: Map<string, string[]> = code.imports.reduce(
-    (a: Map<string, string[]>, b) => {
-      if (!a.has(b.module)) a.set(b.module, []);
-      a.get(b.module)!.push(b.name);
-      return a;
-    },
-    new Map<string, string[]>(),
-  );
-
-  const import_map =
-    map
-      .keys()
-      .toArray()
-      .map(
-        (k) =>
-          `from ${k} import ${map.get(k)?.includes('*') ? '*' : map.get(k)!.toSorted().join(', ')}`,
-      )
-      .join('\n') + '\n\n';
-
-  return import_map + code.expression;
-}
-
 export function getConstantDefinition(
-  nodes: Node[],
+  nodes: TamaroCardNode[],
   name: string,
-): Node | undefined {
+): TamaroCardNode | undefined {
   return nodes.find(
-    (v) => v.type === 'constant_definition' && v.data.name === name,
+    (v) => v.type === 'constant_definition' && v.data.import.name === name,
   );
 }
 
-export function getConstantDefinitions(nodes: Node[], name: string): Node[] {
+export function getConstantDefinitions(
+  nodes: TamaroCardNode[],
+  name: string,
+): TamaroCardNode[] {
   return nodes.filter(
-    (v) => v.type === 'constant_definition' && v.data.name === name,
+    (v) => v.type === 'constant_definition' && v.data.import.name === name,
   );
 }
 
-export function getUsages(nodes: Node[], name: string): Node[] {
-  return nodes.filter((v) => v.type === 'constant_use' && v.data.name === name);
+export function getUsages(
+  nodes: TamaroCardNode[],
+  name: string,
+): TamaroCardNode[] {
+  return nodes.filter(
+    (v) => v.type === 'constant_use' && v.data.import.name === name,
+  );
 }
 
 export function getAscendants(edges: Edge[], source: string): string[] {
@@ -268,7 +238,7 @@ export function getAscendants(edges: Edge[], source: string): string[] {
 }
 
 export function arcToEdges(
-  nodes: Node[],
+  nodes: TamaroCardNode[],
   edges: Edge[],
   source: string,
   target: string,
@@ -292,7 +262,7 @@ export function arcToEdges(
       if (last.id !== '') edge_ids.push(last.id);
       const last_node = getNode(nodes, last.target);
       if (last_node?.type === 'constant_definition') {
-        const usages = getUsages(nodes, last_node.data.name as string);
+        const usages = getUsages(nodes, last_node.data.import.name as string);
 
         const good_usage = usages.find((v) =>
           inline_search(v.id, target, edge_ids.concat(blacklist)),
@@ -317,9 +287,9 @@ export function arcToEdges(
 }
 
 export function getSubTreeFromRootConsideringConstants(
-  nodes: Node[],
+  nodes: TamaroCardNode[],
   edges: Edge[],
-  root: Node | string,
+  root: TamaroCardNode | string,
 ): string[] {
   const descendants: string[] = [];
   const visited = new Set<string>();
@@ -337,7 +307,10 @@ export function getSubTreeFromRootConsideringConstants(
     });
 
     if (el.type === 'constant_use') {
-      const definitions = getConstantDefinitions(nodes, el.data.name as string);
+      const definitions = getConstantDefinitions(
+        nodes,
+        el.data.import.name as string,
+      );
       if (definitions.length !== 1) continue;
 
       const d = definitions[0];

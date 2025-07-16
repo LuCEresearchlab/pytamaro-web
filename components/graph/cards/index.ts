@@ -17,12 +17,6 @@ export interface ImportReference {
   name: string;
 }
 
-export interface CodeDefinitionRepresentation {
-  imports: ImportReference[];
-  name: string;
-  expression: string;
-}
-
 export type CodeRepresentation = {
   imports: ImportReference[];
   definition?: string;
@@ -40,23 +34,27 @@ export interface IImportedCardData extends ITamaroCardData {
   value: JudiciousElement;
 }
 
-export type CommonNodeData = { show_handles?: boolean };
+export type ExtraneousNodeProps = { show_handles?: boolean };
+export type CommonNodeData = { parent?: string };
 export type TideNodeMetadata = object;
 
 export type FunctionNode = Node<
-  TamaroCard_FunctionUse<[], TideNodeMetadata>,
+  TamaroCard_FunctionUse<[], TideNodeMetadata> & CommonNodeData,
   'function'
 >;
 
-export type LiteralNode = Node<TamaroCard_Literal<TideNodeMetadata>, 'literal'>;
+export type LiteralNode = Node<
+  TamaroCard_Literal<TideNodeMetadata> & CommonNodeData,
+  'literal'
+>;
 
 export type ConstantNode = Node<
-  TamaroCard_ConstantUse<TideNodeMetadata>,
+  TamaroCard_ConstantUse<TideNodeMetadata> & CommonNodeData,
   'constant'
 >;
 
 export type ConstantUseNode = Node<
-  TamaroCard_ConstantUse<TideNodeMetadata>,
+  TamaroCard_ConstantUse<TideNodeMetadata> & CommonNodeData,
   'constant_use'
 >;
 

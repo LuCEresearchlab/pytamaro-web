@@ -3,7 +3,6 @@ import {
   applyNodeChanges,
   Edge,
   EdgeChange,
-  Node,
   NodeChange,
   NodePositionChange,
   NodeReplaceChange,
@@ -18,17 +17,20 @@ import { ChangeSliceState, createChangeSlice } from './changes';
 import { ConfigurationState, createConfigurationSlice } from './configuration';
 import { getNode, getSubTreeFromRoot } from './utils';
 import { updateParent } from './graph_toolbox';
+import { TamaroCardNode, TideNodeMetadata } from './cards';
+import { EvaluatedContext } from '../../src/tide/context';
 
 export interface DraggedElementData {
   type: string;
-  data: Record<string, unknown>;
+  data: TamaroCardNode['data'];
 }
 
 export interface GraphStateSlice {
   dragged: DraggedElementData | undefined;
+  evaluated_context: EvaluatedContext<TideNodeMetadata>;
   initialized: 'before' | 'wait' | 'done';
   setInitialized: (v: 'before' | 'wait' | 'done') => void;
-  nodes: Node[];
+  nodes: TamaroCardNode[];
   edges: Edge[];
   mousePosition: XYPosition;
   reserved_names: string[];
@@ -36,15 +38,15 @@ export interface GraphStateSlice {
   setMousePosition: (v: XYPosition) => void;
   fullscreen: boolean;
   setFullscreen: (value: boolean) => void;
-  onNodesChange: OnNodesChange<Node>;
+  onNodesChange: OnNodesChange<TamaroCardNode>;
   onEdgesChange: OnEdgesChange<Edge>;
   onConnect: OnConnect;
-  setNodes: (nodes: Node[]) => void;
+  setNodes: (nodes: TamaroCardNode[]) => void;
   setEdges: (edges: Edge[]) => void;
-  getNodes: () => Node[];
+  getNodes: () => TamaroCardNode[];
   getEdges: () => Edge[];
   setDragged: (
-    dragged: { type: string; data: Record<string, unknown> } | undefined,
+    dragged: { type: string; data: TamaroCardNode['data'] } | undefined,
   ) => void;
   updateNodeData: (
     nodeId: string,
@@ -60,6 +62,7 @@ export const createGraphSlice: StateCreator<
   [],
   GraphStateSlice
 > = (set, get) => ({
+  evaluated_context: [],
   fullscreen: false,
   setFullscreen: (value) => {
     set({ fullscreen: value });
@@ -81,7 +84,7 @@ export const createGraphSlice: StateCreator<
     const parents_to_update: Set<string> = new Set();
 
     const changes_step_1 = raw_changes
-      .map((change): NodeChange[] => {
+      .map((change): NodeChange<TamaroCardNode>[] => {
         if (change.type === 'position') {
           const node = getNode(befores, change.id)!;
           if (node.data.parent) {
@@ -158,9 +161,9 @@ export const createGraphSlice: StateCreator<
   onEdgesChange: (changes) => {
     const befores = get().edges;
 
-    const snd_changes: NodeChange[] = [];
+    const snd_changes: NodeChange<TamaroCardNode>[] = [];
     const node_changes = changes
-      .map((v): NodeChange[] => {
+      .map((v): NodeChange<TamaroCardNode>[] => {
         if (v.type === 'add') {
           const { source, target } = v.item;
           const { getNodes } = get();
@@ -197,10 +200,10 @@ export const createGraphSlice: StateCreator<
                   item: {
                     ...v,
                     data: { ...v?.data, parent },
-                  } as Node,
-                }) as NodeReplaceChange,
+                  } as TamaroCardNode,
+                }) as NodeReplaceChange<TamaroCardNode>,
             )
-            .map((v) => v as NodeChange);
+            .map((v) => v as NodeChange<TamaroCardNode>);
         }
 
         if (v.type === 'remove') {
@@ -227,10 +230,10 @@ export const createGraphSlice: StateCreator<
               id: v.id,
               item: {
                 ...v,
-                data: { ...v?.data, parent: undefined },
-              } as Node,
+                data: { ...v.data, parent: undefined },
+              } as TamaroCardNode,
             }))
-            .map((v) => v as NodeChange);
+            .map((v) => v as NodeChange<TamaroCardNode>);
         }
 
         return [];
@@ -274,18 +277,18 @@ export const createGraphSlice: StateCreator<
     ]);
   },
   setDragged: (
-    dragged: { type: string; data: Record<string, unknown> } | undefined,
+    dragged: { type: string; data: TamaroCardNode['data'] } | undefined,
   ) => {
     set({ dragged });
   },
   setNodes: (new_nodes) => {
     const current_nodes = get().nodes;
 
-    const changes: NodeChange[] = [];
-    const newLookup = new Map<string, Node>(
+    const changes: NodeChange<TamaroCardNode>[] = [];
+    const newLookup = new Map<string, TamaroCardNode>(
       new_nodes.map((item) => [item.id, item]),
     );
-    const currentLookup = new Map<string, Node>(
+    const currentLookup = new Map<string, TamaroCardNode>(
       current_nodes.map((item) => [item.id, item]),
     );
 

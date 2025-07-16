@@ -1,43 +1,30 @@
 import { Edge, Node } from '@xyflow/react';
-import {
-  getAmountOfExpectConnections,
-  getChildren,
-  getHandleType,
-  getNode,
-  getParents,
-  toEnglishName,
-} from './utils';
+import { getHandleType, getNode, getParents } from './utils';
+import { TamaroCardNode, TideNodeMetadata } from './cards';
+import { type_equality_rule } from '../../src/tide/expression';
+import { EvaluatedContext } from '../../src/tide/context';
 
 export function check_edge_typing(
-  nodes: Node[],
+  context: EvaluatedContext<TideNodeMetadata>,
+  nodes: TamaroCardNode[],
   source_id: string,
   source_handle: string,
   target_id: string,
   target_handle: string,
 ) {
   const source_node = getNode(nodes, source_id)!;
-  const origin_type = getHandleType(nodes, source_node, source_handle);
+  const origin_type = getHandleType(context, source_node, source_handle);
+  console.log(source_node.id, source_handle, origin_type);
 
   const target_node = getNode(nodes, target_id)!;
-  const target_type = getHandleType(nodes, target_node, target_handle);
+  const target_type = getHandleType(context, target_node, target_handle);
+  console.log(target_node.id, target_handle, target_type);
 
   return type_equality_rule(origin_type, target_type);
 }
 
-export function type_equality_rule(type1: string, type2: string) {
-  const en_type1 = toEnglishName(type1);
-  const en_type2 = toEnglishName(type2);
-
-  return (
-    Boolean(en_type1) &&
-    Boolean(en_type2) &&
-    en_type1 === en_type2 &&
-    type1 !== 'null'
-  );
-}
-
 export function check_edge_looping(
-  nodes: Node[],
+  nodes: TamaroCardNode[],
   edges: Edge[],
   source: string,
   target: string,
@@ -68,14 +55,4 @@ export function check_edge_looping(
   }
 
   return true;
-}
-
-export function check_valid_graph(nodes: Node[], edges: Edge[]) {
-  return !nodes.find((node) => {
-    return (
-      getChildren(nodes, edges, node).size +
-        getParents(nodes, edges, node).size !==
-      getAmountOfExpectConnections(node)
-    );
-  });
 }

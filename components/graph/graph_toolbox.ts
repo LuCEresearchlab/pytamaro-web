@@ -1,10 +1,4 @@
-import {
-  Connection,
-  Edge,
-  Node,
-  NodeReplaceChange,
-  XYPosition,
-} from '@xyflow/react';
+import { Connection, Edge, NodeReplaceChange, XYPosition } from '@xyflow/react';
 import { check_edge_looping, check_edge_typing } from './interactivity';
 import {
   DragEvent as React_DragEvent,
@@ -12,6 +6,7 @@ import {
 } from 'react';
 import { StoreType } from './store';
 import { getNode } from './utils';
+import { ConstantDefinitionNode, TamaroCardNode } from './cards';
 
 type AllStore = StoreType & {
   screenToFlowPosition: (
@@ -33,11 +28,14 @@ const PARENT_PADDING = 20;
 const TOP_MARGIN = 40;
 const RIGHT_MARGIN = 20;
 
-export function updateParent(store: StoreType, parent: string) {
+export function updateParent(
+  store: StoreType,
+  parent: string,
+): NodeReplaceChange<TamaroCardNode> {
   const { getNodes } = store;
 
   const befores = getNodes();
-  const node = getNode(befores, parent);
+  const node = getNode(befores, parent)! as ConstantDefinitionNode;
 
   const children = befores.filter((v) => v.data.parent === parent);
 
@@ -46,7 +44,7 @@ export function updateParent(store: StoreType, parent: string) {
       id: parent,
       item: node,
       type: 'replace',
-    } as NodeReplaceChange;
+    };
 
   const min_x =
     Math.min(
@@ -108,13 +106,13 @@ export function updateParent(store: StoreType, parent: string) {
       position: { x: min_x - x_margin, y: min_y - TOP_MARGIN - y_margin },
     },
     type: 'replace',
-  } as NodeReplaceChange;
+  } as NodeReplaceChange<TamaroCardNode>;
 
   return edit_parent;
 }
 
 export function isValidConnection(
-  { getNodes, getEdges, error_level }: AllStore,
+  { getNodes, getEdges, error_level, evaluated_context }: AllStore,
   params: Edge | Connection,
 ): boolean {
   if (typeof window === 'undefined') return false;
@@ -126,20 +124,21 @@ export function isValidConnection(
   const sourceNode = getNode(nodes, source);
   const targetNode = getNode(nodes, target);
 
-  return (
+  return Boolean(
     ((!sourceNode?.data.parent && targetNode?.data.parent) ||
       sourceNode?.data.parent === targetNode?.data.parent ||
       sourceNode?.data.parent === targetNode?.id) &&
-    check_edge_looping(nodes, edges, source, target) &&
-    (error_level !== 'prevent' ||
-      targetNode?.type === 'constant_definition' ||
-      check_edge_typing(
-        nodes,
-        source,
-        sourceHandle || '',
-        target,
-        targetHandle || '',
-      ))
+      check_edge_looping(nodes, edges, source, target) &&
+      (error_level !== 'prevent' ||
+        targetNode?.type === 'constant_definition' ||
+        check_edge_typing(
+          evaluated_context,
+          nodes,
+          source,
+          sourceHandle || '',
+          target,
+          targetHandle || '',
+        )),
   );
 }
 
@@ -183,7 +182,7 @@ export function onDrop(
     data: dragged.data,
     dragHandle: '.drag-handle',
     className: 'node_hidden',
-  };
+  } as TamaroCardNode;
 
   setNodes(getNodes().concat(newNode));
 
@@ -248,7 +247,7 @@ export function onDocumentPasteCatpure(
   e: ClipboardEvent,
 ) {
   interface FlowChartClipboardData {
-    nodes: Node[];
+    nodes: TamaroCardNode[];
     edges: Edge[];
   }
   const paste = e.clipboardData?.getData('flowchart:graph');
@@ -336,7 +335,7 @@ export function onDocumentPasteCatpure(
           ? getOrCreateNodeMap(v.data.parent as string)
           : undefined,
       },
-    };
+    } as TamaroCardNode;
   });
 
   const newEdges = data.nodes

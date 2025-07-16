@@ -1,5 +1,4 @@
-import { ErrorAnnotation } from './annotations';
-
+type ErrorAnnotation = object;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function ErrorParagraph(props: { annotation: ErrorAnnotation }) {
   return <div></div>;

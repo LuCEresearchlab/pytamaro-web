@@ -1,14 +1,15 @@
-import { Edge, EdgeChange, Node, NodeChange } from '@xyflow/react';
+import { Edge, EdgeChange, NodeChange } from '@xyflow/react';
 import { StateCreator } from 'zustand';
 import { GraphStateSlice } from './store';
+import { TamaroCardNode } from './cards';
 
 type FlowChange = NodeFlowChange | EdgeFlowChange;
 
 interface NodeFlowChange {
   kind: 'node';
-  native: NodeChange;
-  before?: Node;
-  after?: Node;
+  native: NodeChange<TamaroCardNode>;
+  before?: TamaroCardNode;
+  after?: TamaroCardNode;
 }
 
 interface EdgeFlowChange {

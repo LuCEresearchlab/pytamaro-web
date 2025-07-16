@@ -1,5 +1,5 @@
 import { NodeProps } from '@xyflow/react';
-import { CommonNodeData, FunctionNode } from '.';
+import { ExtraneousNodeProps, FunctionNode } from '.';
 import { FunctionTamaroCard } from '../../TamaroCard';
 import { JudiciousFunction } from '../../../src/schemas/documentation';
 import useJudiciousDocData from '../../../src/documentation';
@@ -16,7 +16,7 @@ export function getParameterName(handle_name: string) {
 }
 
 export function TamaroFunctionCard(
-  props: NodeProps<FunctionNode> & CommonNodeData,
+  props: NodeProps<FunctionNode> & ExtraneousNodeProps,
 ) {
   const { data, show_handles } = props;
   const i = data.import as { module: string; name: string };
