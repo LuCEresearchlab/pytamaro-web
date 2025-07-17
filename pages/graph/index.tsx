@@ -1,4 +1,4 @@
-import { Article, Error } from '@mui/icons-material';
+import { Article, Error, RemoveRedEye } from '@mui/icons-material';
 import { IconButton, Paper } from '@mui/material';
 import {
   NodeMouseHandler,
@@ -8,7 +8,12 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { Ref, useCallback, useEffect, useRef, useState } from 'react';
-import { IImportedCardData, node_types } from '../../components/graph/cards';
+import {
+  IImportedCardData,
+  node_types,
+  TamaroCardNode,
+  TideNodeMetadata,
+} from '../../components/graph/cards';
 import CardSelectionPane, {
   JudiciousModuleElement,
 } from '../../components/graph/CardSelectionPane';
@@ -30,7 +35,7 @@ function View() {
   );
   const ref: Ref<HTMLDivElement> = useRef(null);
 
-  const { getNodes, screenToFlowPosition, flowToScreenPosition } =
+  const { getNodes, screenToFlowPosition, flowToScreenPosition, fitView } =
     useReactFlow();
 
   // const { i18n } = useLocalTranslation(['common']);
@@ -48,8 +53,6 @@ function View() {
     setFullscreen,
     mousePosition,
   } = store;
-
-  const getErrors = useCallback(() => false, []);
 
   const onNodeContextMenu: NodeMouseHandler = useCallback(
     (event, node) => {
@@ -69,16 +72,51 @@ function View() {
     [setMenu],
   );
 
+  type Error = [TideNodeMetadata, TideErrorValue];
   const [availabilities, setAvailabilities] = useState({
-    error: false,
+    error: undefined as Error[] | undefined,
     documentation: undefined as JudiciousModuleElement | undefined,
   });
 
-  const errors = getErrors();
-
   useEffect(() => {
     setAvailabilities({
-      error: false,
+      error: (() => {
+        const errors: Error[] = nodes
+          .map((v) => (v as TamaroCardNode).data)
+          .filter((v) => {
+            switch (v.kind) {
+              case 'constant_definition':
+                return (
+                  v.evaluated &&
+                  (v as IEvaluatedLocalConstantDefinition<TideNodeMetadata>)
+                    .value.type === UnsoundType.Bottom
+                );
+              case 'literal':
+              case 'constant_use':
+              case 'function_use':
+                return v.evaluated && v.value.type === UnsoundType.Bottom;
+            }
+          })
+          .map((v) => {
+            switch (v.kind) {
+              case 'constant_definition':
+                return [
+                  v.metadata,
+                  (v as IEvaluatedLocalConstantDefinition<TideNodeMetadata>)
+                    .value as TideErrorValue,
+                ];
+              case 'literal':
+              case 'constant_use':
+              case 'function_use':
+                return [
+                  v.metadata,
+                  (v as EvaluatedTamaroCard<[], TideNodeMetadata>)
+                    .value as TideErrorValue,
+                ];
+            }
+          });
+        return errors.length === 0 ? undefined : errors;
+      })(),
       documentation: (() => {
         const toBeDocumentedNodes = getNodes().filter((v) => v.selected);
 
@@ -91,7 +129,7 @@ function View() {
         return { ...data.value, module: data.module };
       })(),
     });
-  }, [errors, error_level, getNodes]);
+  }, [error_level, getNodes, nodes]);
 
   useEffect(() => {
     if (!pane) return;
@@ -264,39 +302,52 @@ function View() {
                 gap: '5px',
               }}
             >
-              {/* {getErrors().map((v) => (
-                <div
-                  style={{
-                    position: 'relative',
-                    padding: '5px',
-                    borderRadius: '10px',
-                    border: 'solid #f99 4px',
-                    background: '#fcc',
-                    userSelect: 'none',
-                  }}
-                  key={`${v.location.node_id}_${v.location.handle || 'default'}`}
-                >
-                  <ErrorParagraph annotation={v} />
-
-                  <IconButton
-                    sx={{
-                      position: 'absolute',
-                      top: '0',
-                      right: '0',
-                      margin: '10px',
+              {availabilities.error
+                .filter((v) => v[1].error !== false)
+                .map((v): [TideNodeMetadata, TideError][] =>
+                  Array.isArray(v[1].error)
+                    ? v[1].error.map((o) => [v[0], o])
+                    : [[v[0], v[1].error as TideError]],
+                )
+                .reduce((a, b) => a.concat(b), [])
+                .map((v, i) => (
+                  <div
+                    style={{
+                      position: 'relative',
+                      padding: '5px',
+                      borderRadius: '10px',
+                      border: 'solid #f99 4px',
+                      background: '#fcc',
+                      userSelect: 'none',
                     }}
-                    onClick={() =>
-                      fitView({
-                        nodes: [getNode(getNodes(), v.location.node_id)!],
-                        duration: 2,
-                        padding: 0.125,
-                      })
-                    }
+                    key={`${v[0].node_id}_${i}`}
                   >
-                    <RemoveRedEye />
-                  </IconButton>
-                </div>
-              ))} */}
+                    <ErrorParagraph annotation={v[1]} />
+
+                    <IconButton
+                      sx={{
+                        position: 'absolute',
+                        top: '0',
+                        right: '0',
+                        margin: '10px',
+                      }}
+                      onClick={() =>
+                        fitView({
+                          nodes: [
+                            getNode(
+                              getNodes() as TamaroCardNode[],
+                              v[0].node_id,
+                            )!,
+                          ],
+                          duration: 2,
+                          padding: 0.125,
+                        })
+                      }
+                    >
+                      <RemoveRedEye />
+                    </IconButton>
+                  </div>
+                ))}
             </div>
           </div>
         )}
@@ -412,6 +463,12 @@ import {
 } from '../../src/schemas/documentation';
 import { translationProps } from '../../src/serverSideTranslationProps';
 import { executeOnServer } from '../../src/useActivity';
+import { TideErrorValue, UnsoundType } from '../../src/tide/expression';
+import { IEvaluatedLocalConstantDefinition } from '../../src/tide/context';
+import { EvaluatedTamaroCard } from '../../src/tide/cards';
+import { getNode } from '../../components/graph/utils';
+import { ErrorParagraph } from '../../components/graph/ErrorParagraph';
+import { TideError } from '../../src/tide/errors';
 
 function Graph() {
   const [source] = useState('from pytamaro import *');

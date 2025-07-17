@@ -94,4 +94,5 @@ export interface TideRuntimeError {
 
 export interface TideGenericError {
   kind: 'generic';
+  args: [];
 }

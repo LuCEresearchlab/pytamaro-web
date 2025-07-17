@@ -20,7 +20,8 @@ export interface CodeRepresentation {
   imports: Location[];
 }
 
-export type Value = ExpressionValue | ErrorValue | ErrorPropagation;
+export type TideErrorValue = ErrorValue | ErrorPropagation;
+export type Value = ExpressionValue | TideErrorValue;
 
 export type ExpressionValue =
   | GraphicExpressionValue

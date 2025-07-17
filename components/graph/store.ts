@@ -488,6 +488,8 @@ export const useStore = create<StoreType>()(
           }
 
           state.setNodes(state.nodes.map(reconstructChildrenMap));
+
+          state.setInitialized('done');
         };
       },
     },

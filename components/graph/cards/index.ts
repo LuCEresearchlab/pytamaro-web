@@ -11,6 +11,7 @@ import {
   TamaroCard_Literal,
 } from '../../../src/tide/cards';
 import { LocalConstantDefinition } from '../../../src/tide/context';
+import TamaroWrapper from './wrapper';
 
 export interface ImportReference {
   module: string;
@@ -77,15 +78,30 @@ export type TamaroCardNode =
 
 export const node_types = {
   function: (props: NodeProps<FunctionNode>) =>
-    TamaroFunctionCard({ ...props, show_handles: true }),
+    TamaroWrapper({
+      nodeprops: props,
+      el: TamaroFunctionCard({ ...props, show_handles: true }),
+    }),
   literal: (props: NodeProps<LiteralNode>) =>
-    TamaroLiteralCard({ ...props, show_handles: true }),
+    TamaroWrapper({
+      nodeprops: props,
+      el: TamaroLiteralCard({ ...props, show_handles: true }),
+    }),
   constant: (props: NodeProps<ConstantNode>) =>
-    TamaroConstantCard({ ...props, show_handles: true }),
+    TamaroWrapper({
+      nodeprops: props,
+      el: TamaroConstantCard({ ...props, show_handles: true }),
+    }),
   constant_definition: (props: NodeProps<ConstantDefinitionNode>) =>
-    ConstantDefinition({ ...props, show_handles: true }),
+    TamaroWrapper({
+      nodeprops: props,
+      el: ConstantDefinition({ ...props, show_handles: true }),
+    }),
   constant_use: (props: NodeProps<ConstantUseNode>) =>
-    ConstantUse({ ...props, show_handles: true }),
+    TamaroWrapper({
+      nodeprops: props,
+      el: ConstantUse({ ...props, show_handles: true }),
+    }),
 } as const;
 
 export const CardKeys = Object.keys(node_types);

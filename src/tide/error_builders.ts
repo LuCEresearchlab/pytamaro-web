@@ -141,5 +141,6 @@ export function TideRuntimeError_builder(error: string): TideRuntimeError {
 export function TideGenericError_builder(): TideGenericError {
   return {
     kind: 'generic',
+    args: [],
   };
 }
