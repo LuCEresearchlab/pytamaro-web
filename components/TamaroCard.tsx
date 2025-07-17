@@ -11,8 +11,7 @@ import {
 } from '../src/schemas/documentation';
 import { Tooltip } from '@mui/material';
 import { Handle, Position } from '@xyflow/react';
-import { ReactElement, useEffect, useRef, useState } from 'react';
-import { Height } from '@mui/icons-material';
+import { ReactElement, RefObject, useEffect, useRef, useState } from 'react';
 
 interface IArrow {
   parameter_index: number;
@@ -27,6 +26,25 @@ interface IArrow {
   handle_end?: string;
   show_handles: boolean;
 }
+
+const useMutationObserver = (
+  ref: RefObject<Node>,
+  callback: () => void,
+  options = {
+    attributes: true,
+    characterData: true,
+    childList: true,
+    subtree: true,
+  },
+) => {
+  useEffect(() => {
+    if (ref.current) {
+      const observer = new MutationObserver(callback);
+      observer.observe(ref.current, options);
+      return () => observer.disconnect();
+    }
+  }, [callback, options, ref]);
+};
 
 export function Arrow({
   name,
@@ -140,14 +158,12 @@ export function FunctionTamaroCard({
   const returnsIconRef = useRef() as React.MutableRefObject<HTMLDivElement>;
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
-  useEffect(() => {
-    if (!returnsIconRef.current) return;
-
+  useMutationObserver(returnsIconRef, () => {
     setDimensions({
       width: returnsIconRef.current.clientWidth,
       height: returnsIconRef.current.clientHeight,
     });
-  }, [returns_icon]);
+  });
 
   return (
     <div className='pane_container function_card_pane'>
@@ -229,6 +245,7 @@ export function FunctionTamaroCard({
 
           {el.icon && (
             <img
+              alt=''
               className='card_icon'
               src={`data:image/svg+xml;utf8,${encodeURIComponent(el.icon)}`}
             />
@@ -300,14 +317,12 @@ export function ConstantTamaroCard({
   const returnsIconRef = useRef() as React.MutableRefObject<HTMLDivElement>;
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
-  useEffect(() => {
-    if (!returnsIconRef.current) return;
-
+  useMutationObserver(returnsIconRef, () => {
     setDimensions({
       width: returnsIconRef.current.clientWidth,
       height: returnsIconRef.current.clientHeight,
     });
-  }, [returns_icon]);
+  });
 
   return (
     <div className='pane_container drag-handle'>
@@ -363,6 +378,7 @@ export function ConstantTamaroCard({
 
           {el.icon && (
             <img
+              alt=''
               className='constant_card_icon card_icon'
               src={`data:image/svg+xml;utf8,${encodeURIComponent(el.icon)}`}
             />
