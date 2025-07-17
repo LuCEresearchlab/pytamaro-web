@@ -3,13 +3,21 @@ import {
   Handle,
   NodeProps,
   Position,
+  useNodeConnections,
   useReactFlow,
 } from '@xyflow/react';
 import { createRef, RefObject, useCallback, useEffect, useRef } from 'react';
 import { useStore } from '../store';
 import { updateParent } from '../graph_toolbox';
 import { ContentEditableDiv } from './literal';
-import { ExtraneousNodeProps, ConstantDefinitionNode } from '.';
+import {
+  ExtraneousNodeProps,
+  ConstantDefinitionNode,
+  TideNodeMetadata,
+} from '.';
+import { connect } from 'http2';
+import { getNode } from '../utils';
+import { TamaroCard } from '../../../src/tide/cards';
 
 const KEYWORDS: string[] = [
   'False',
@@ -110,6 +118,30 @@ export default function ConstantDefinition(
     updateDimData();
   }
 
+  const connections = useNodeConnections({ id, handleId: 'output' });
+
+  useEffect(() => {
+    const newRoot =
+      connections.length === 0
+        ? undefined
+        : (getNode(store.getNodes(), connections[0].source)!.data as TamaroCard<
+            [],
+            TideNodeMetadata
+          >);
+
+    if (
+      (newRoot == null && data.root == null) ||
+      (newRoot != null &&
+        data.root != null &&
+        newRoot.metadata.node_id === data.root!.metadata.node_id)
+    )
+      return;
+    updateNodeData(id, (data) => ({
+      ...data,
+      root: newRoot,
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connections, id, store, updateNodeData]);
   useEffect(() => {
     if (initialized === 'done' && !thisInitialization.current) {
       updateDimData();

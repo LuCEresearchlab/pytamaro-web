@@ -7,7 +7,6 @@ import {
 import { getConstantDefinitions, getNode, getUsages } from './utils';
 import { evaluate_context, evaluate_tree } from '../../src/tide/evaluation';
 import {
-  EvaluatedTamaroCard,
   EvaluatedTamaroCard_FunctionUse,
   TamaroCard,
   TamaroCardParameterEnvironment,
@@ -185,7 +184,7 @@ export async function evaluation(
   const context = await evaluate_context(nodes_context);
 
   const all_evaluated: TamaroCardNode['data'][] = await Promise.all(
-    roots(nodes, edges).map(async (v) => {
+    roots(nodes, edges).map(async (v): Promise<TamaroCardNode['data']> => {
       if (v.data.kind === 'constant_definition') {
         if (v.data.root) {
           const eval_root = await evaluate_tree(v.data.root, context);
@@ -197,7 +196,7 @@ export async function evaluation(
             value: eval_root.value,
           };
         }
-        return v;
+        return v.data;
       }
       return await evaluate_tree(v.data, context);
     }),
