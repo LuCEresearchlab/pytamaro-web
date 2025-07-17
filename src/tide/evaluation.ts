@@ -437,6 +437,7 @@ export async function evaluate_tree<
             TideTypeError_builder(
               type_toString(v[1].arg!.value.type as SoundType),
               type_toString(v[1].parameter.type as SoundType),
+              v[1].parameter.name,
             ),
           ),
           new Map(

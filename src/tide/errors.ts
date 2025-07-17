@@ -60,7 +60,11 @@ export interface TideSyntaxErrorMissingParameter {
 
 export interface TideTypeError {
   kind: 'type-error';
-  args: [{ name: 'expected'; value: string }, { name: 'got'; value: string }];
+  args: [
+    { name: 'expected'; value: string },
+    { name: 'got'; value: string },
+    { name: 'handle'; value: string },
+  ];
 }
 
 export interface TideNameErrorUnknownConstant {

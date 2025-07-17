@@ -17,7 +17,7 @@ export const createConfigurationSlice: StateCreator<
   [],
   ConfigurationState
 > = (set) => ({
-  error_level: 'prevent',
+  error_level: 'highlight',
   local_scale: true,
   functional_nodes_only: true,
   node_filter: [

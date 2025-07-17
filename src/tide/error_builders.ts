@@ -81,12 +81,14 @@ export function TideSyntaxErrorMissingParameter_builder(
 export function TideTypeError_builder(
   expected: string,
   got: string,
+  handle: string,
 ): TideTypeError {
   return {
     kind: 'type-error',
     args: [
       { name: 'expected', value: expected },
       { name: 'got', value: got },
+      { name: 'handle', value: handle },
     ],
   };
 }

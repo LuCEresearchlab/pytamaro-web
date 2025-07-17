@@ -248,7 +248,7 @@ export const createGraphSlice: StateCreator<
               }) as TamaroCardNode,
           ),
         }));
-      }, 1000);
+      }, 200);
     }
   },
   onEdgesChange: (changes) => {
