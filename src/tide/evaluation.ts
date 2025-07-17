@@ -250,12 +250,20 @@ export async function evaluate_tree<
   if (root.evaluated) return root;
   function returning_error(
     error: false | TideError | TideError[],
-    children?: EvaluatedTamaroCard<T, U>[],
+    children?: Map<string, EvaluatedTamaroCard<T, U>>,
   ) {
+    if (root.kind === 'function_use') {
+      return {
+        ...root,
+        children: children || root.children,
+        evaluated: true,
+        value: { type: -1, error },
+      } as EvaluatedTamaroCard<T, U>;
+    }
     return {
       ...root,
       evaluated: true,
-      value: { type: -1, error, children },
+      value: { type: -1, error },
     } as EvaluatedTamaroCard<T, U>;
   }
 
@@ -308,18 +316,31 @@ export async function evaluate_tree<
       if (!check_identifier_name(root.import.name))
         return returning_error(
           TideSyntaxErrorInvalidFunctionIdentifier_builder(root.import.name),
-          await Promise.all(
-            Array.from(root.children.values()).map((v) =>
-              evaluate_tree(v, context),
+
+          new Map(
+            await Promise.all(
+              root.children
+                .entries()
+                .map(
+                  async ([k, v]): Promise<
+                    [string, EvaluatedTamaroCard<T, U>]
+                  > => [k, await evaluate_tree(v, context)],
+                ),
             ),
           ),
         );
       if (!context.find((o) => eqLocation(o.import, root.import)))
         return returning_error(
           TideNameErrorUnknownFunction_builder(root.import.name),
-          await Promise.all(
-            Array.from(root.children.values()).map((v) =>
-              evaluate_tree(v, context),
+          new Map(
+            await Promise.all(
+              root.children
+                .entries()
+                .map(
+                  async ([k, v]): Promise<
+                    [string, EvaluatedTamaroCard<T, U>]
+                  > => [k, await evaluate_tree(v, context)],
+                ),
             ),
           ),
         );
@@ -329,9 +350,15 @@ export async function evaluate_tree<
       if (definition.kind === 'constant_definition')
         return returning_error(
           TideSyntaxErrorNodeKindMismatch_builder('function', 'constant'),
-          await Promise.all(
-            Array.from(root.children.values()).map((v) =>
-              evaluate_tree(v, context),
+          new Map(
+            await Promise.all(
+              root.children
+                .entries()
+                .map(
+                  async ([k, v]): Promise<
+                    [string, EvaluatedTamaroCard<T, U>]
+                  > => [k, await evaluate_tree(v, context)],
+                ),
             ),
           ),
         );
@@ -372,7 +399,9 @@ export async function evaluate_tree<
       if (bottom_args.length !== 0) {
         return returning_error(
           false,
-          args.filter((v) => v).map((v) => v.arg!),
+          new Map(
+            args.filter((v) => v.arg).map((v) => [v.parameter.name, v.arg!]),
+          ),
         );
       }
 
@@ -400,7 +429,9 @@ export async function evaluate_tree<
               type_toString(v[1].parameter.type as SoundType),
             ),
           ),
-          args.filter((v) => v).map((v) => v.arg!),
+          new Map(
+            args.filter((v) => v.arg).map((v) => [v.parameter.name, v.arg!]),
+          ),
         );
 
       const checked_args = typed_args.map((v) => ({

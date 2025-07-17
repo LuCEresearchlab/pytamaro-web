@@ -116,7 +116,7 @@ export default function ConstantUse(
 
   const value = data.evaluated ? data.value : undefined;
   const returns_icon = useMemo(() => {
-    return <ResultIcon value={value} />;
+    return ResultIcon({ value });
   }, [value]);
 
   useEffect(() => {

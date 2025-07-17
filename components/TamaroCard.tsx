@@ -165,6 +165,14 @@ export function FunctionTamaroCard({
     });
   });
 
+  useEffect(() => {
+    if (returns_icon != null) return;
+    setDimensions({
+      width: 0,
+      height: 0,
+    });
+  }, [returns_icon]);
+
   return (
     <div className='pane_container function_card_pane'>
       <div className='pane req_parameter_pane parameter_pane'>
@@ -323,6 +331,14 @@ export function ConstantTamaroCard({
       height: returnsIconRef.current.clientHeight,
     });
   });
+
+  useEffect(() => {
+    if (returns_icon != null) return;
+    setDimensions({
+      width: 0,
+      height: 0,
+    });
+  }, [returns_icon]);
 
   return (
     <div className='pane_container drag-handle'>

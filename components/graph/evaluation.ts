@@ -8,6 +8,8 @@ import {
 import { getConstantDefinitions, getDepth, getNode, getUsages } from './utils';
 import { evaluate_context, evaluate_tree } from '../../src/tide/evaluation';
 import {
+  EvaluatedTamaroCard,
+  EvaluatedTamaroCard_FunctionUse,
   TamaroCard,
   TamaroCardParameterEnvironment,
 } from '../../src/tide/cards';
@@ -114,10 +116,38 @@ function updateTreeInsideNodes(nodes: TamaroCardNode[], edges: Edge[]) {
           },
         ),
     );
-    return updated_map.set(v.id, {
-      ...v,
-      data: { ...v.data, evaluated: false, children },
-    });
+
+    const children_uneval =
+      children.values().find((v) => !v.evaluated) !== undefined;
+
+    if (v.data.evaluated && !children_uneval) {
+      updated_map.set(v.id, {
+        ...v,
+        data: {
+          ...v.data,
+          evaluated: true,
+          children: children as unknown as Map<
+            string,
+            EvaluatedTamaroCard<
+              TamaroCardParameterEnvironment,
+              TideNodeMetadata
+            >
+          >,
+        } as EvaluatedTamaroCard_FunctionUse<
+          TamaroCardParameterEnvironment,
+          TideNodeMetadata
+        >,
+      });
+    } else {
+      updated_map.set(v.id, {
+        ...v,
+        data: {
+          ...v.data,
+          evaluated: false,
+          children,
+        },
+      });
+    }
   });
 
   return nodes.map((v) => updated_map.get(v.id)!);
@@ -146,15 +176,14 @@ export async function evaluation(_nodes: TamaroCardNode[], edges: Edge[]) {
   ).then((array) => {
     return array
       .map((v) => v as TamaroCardNode['data'])
-      .map((v): TamaroCardNode['data'][] =>
-        v.kind === 'constant_definition'
+      .map((v): TamaroCardNode['data'][] => {
+        return v.kind === 'constant_definition'
           ? (v.root ? (toFlat(v.root) as TamaroCardNode['data'][]) : []).concat(
               [v],
             )
-          : toFlat(v),
-      )
+          : toFlat(v);
+      })
       .reduce((a, b) => a.concat(b), []);
   });
-
   return all_evaluated;
 }

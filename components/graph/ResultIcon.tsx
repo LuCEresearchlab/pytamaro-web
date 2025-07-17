@@ -86,6 +86,6 @@ export default function ResultIcon({ value = undefined }: { value?: Value }) {
     case SoundType.Graphic:
       return <GraphicIcon data={value.data as string | undefined} />;
     default:
-      return <div />;
+      return undefined;
   }
 }

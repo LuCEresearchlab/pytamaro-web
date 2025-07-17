@@ -3,10 +3,8 @@ import {
   applyNodeChanges,
   Edge,
   EdgeChange,
-  NodeAddChange,
   NodeChange,
   NodePositionChange,
-  NodeRemoveChange,
   NodeReplaceChange,
   OnConnect,
   OnEdgesChange,
@@ -17,7 +15,12 @@ import { create, StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ChangeSliceState, createChangeSlice } from './changes';
 import { ConfigurationState, createConfigurationSlice } from './configuration';
-import { compute_node_change, getNode, getSubTreeFromRoot } from './utils';
+import {
+  compute_node_change,
+  getChildren,
+  getNode,
+  getSubTreeFromRoot,
+} from './utils';
 import { updateParent } from './graph_toolbox';
 import { TamaroCardNode, TideNodeMetadata } from './cards';
 import { evaluation, uneval } from './evaluation';
@@ -26,6 +29,8 @@ import {
   EvaluatedContext,
 } from '../../src/tide/context';
 import { getDefaultContext } from '../../cypress/e2e/tide/data';
+import { eqCard } from '../../src/tide/utils';
+import { getParameterName } from './cards/function';
 
 export interface DraggedElementData {
   type: string;
@@ -99,14 +104,40 @@ export const createGraphSlice: StateCreator<
   onNodesChange: (raw_changes) => {
     const { nodes: befores, edges } = get();
 
-    const after_unevaluation = uneval(
-      applyNodeChanges(raw_changes, befores),
-      edges,
-      ...raw_changes
-        .filter((v) => ['add', 'replace', 'remove'].includes(v.type))
-        .map((v) => v as NodeAddChange | NodeReplaceChange | NodeRemoveChange)
-        .map((v) => (v.type === 'remove' ? v.id : v.item.id)),
-    );
+    const after = applyNodeChanges(raw_changes, befores);
+
+    const initial_uneval = raw_changes
+      .map((v) => {
+        switch (v.type) {
+          case 'remove':
+            return v.id;
+          case 'replace': {
+            const id = v.id;
+            const before = getNode(befores, id)!;
+            const after = v.item;
+
+            if (
+              before.data.kind !== 'constant_definition' &&
+              after.data.kind !== 'constant_definition'
+            )
+              if (
+                before.data.kind === 'function_use' ||
+                !eqCard(before.data, after.data)
+              )
+                return id;
+            if (JSON.stringify(before.data) !== JSON.stringify(after.data))
+              return id;
+            break;
+          }
+          case 'add':
+            return v.item.id;
+        }
+        return undefined;
+      })
+      .filter(Boolean)
+      .map((v) => v as string)
+      .concat(after.filter((v) => !v.data.evaluated).map((v) => v.id));
+    const after_unevaluation = uneval(after, edges, ...initial_uneval);
 
     const parents_to_update: Set<string> = new Set();
 
@@ -390,13 +421,31 @@ export const useStore = create<StoreType>()(
     }),
     {
       name: 'playground_graph',
-      partialize: (state) => ({ nodes: state.nodes, edges: state.edges }),
+      partialize: (state) => ({
+        nodes: state.nodes,
+        edges: state.edges,
+      }),
       onRehydrateStorage() {
         return (state) => {
           if (!state) return;
 
           state.setInitialized('wait');
-          return state;
+          return {
+            ...state,
+            nodes: state.nodes.map((v) => {
+              if (v.data.kind !== 'function_use') return v;
+
+              const children = new Map(
+                getChildren(state.nodes, state.edges, v, true)
+                  .entries()
+                  .map(([k, v]) => [getParameterName(k), v]),
+              );
+
+              return v.data.kind !== 'function_use'
+                ? v
+                : { ...v, data: { ...v.data, children } };
+            }),
+          };
         };
       },
     },

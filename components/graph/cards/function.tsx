@@ -44,12 +44,16 @@ export function TamaroFunctionCard({
       ]),
     );
 
-    updateNodeData(id, (data) => ({ ...data, children: newChildren }));
+    updateNodeData(id, (data) => ({
+      ...data,
+      children: newChildren,
+      evaluated: false,
+    }));
   }, [connections, getNode, id, updateNodeData]);
 
   const value = data.evaluated ? data.value : undefined;
   const result_icon = useMemo(() => {
-    return <ResultIcon value={value} />;
+    return ResultIcon({ value });
   }, [value]);
 
   return (
