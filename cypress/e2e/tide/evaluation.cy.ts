@@ -23,6 +23,7 @@ function literal_card(
     str_value: value,
     metadata: {},
     type,
+    evaluated: false,
   };
 }
 
@@ -40,6 +41,7 @@ function literal_card_evaluated(
         imports: [],
       },
     },
+    evaluated: true,
   };
 }
 
@@ -70,11 +72,17 @@ describe('Unit test constant use', () => {
 
     expect(
       await evaluate_tree(
-        { kind: 'constant_use', import: RED.import, metadata: {} },
+        {
+          kind: 'constant_use',
+          import: RED.import,
+          evaluated: false,
+          metadata: {},
+        },
         map,
       ),
     ).to.deep.eq({
       ...{ kind: 'constant_use', import: RED.import, metadata: {} },
+      evaluated: true,
       value: {
         data: { red: 255, green: 0, blue: 0, alpha: 1 },
         type: SoundType.Color,
@@ -104,15 +112,22 @@ describe('Unit test constant use', () => {
           imports: [],
         },
       },
+      metadata: {},
     });
 
     expect(
       await evaluate_tree(
-        { kind: 'constant_use', import: import_size, metadata: {} },
+        {
+          kind: 'constant_use',
+          import: import_size,
+          evaluated: false,
+          metadata: {},
+        },
         map,
       ),
     ).to.deep.eq({
       ...{ kind: 'constant_use', import: import_size, metadata: {} },
+      evaluated: true,
       value: {
         data: undefined,
         type: SoundType.Float,
@@ -136,6 +151,7 @@ describe('Unit test function use', () => {
       kind: 'constant_use',
       import: RED.import,
       metadata: {},
+      evaluated: false,
     });
 
     expect(
@@ -145,6 +161,7 @@ describe('Unit test function use', () => {
           children: arg_map,
           import: RECTANGLE.import,
           metadata: {},
+          evaluated: false,
         },
         map,
       ).then((v) => v.value),
@@ -176,6 +193,7 @@ describe('Unit test function use', () => {
           imports: [],
         },
       },
+      metadata: {},
     });
 
     const arg_map: Map<string, TamaroCard<[], object>> = new Map();
@@ -183,16 +201,19 @@ describe('Unit test function use', () => {
       kind: 'constant_use',
       import: import_size,
       metadata: {},
+      evaluated: false,
     });
     arg_map.set('height', {
       kind: 'constant_use',
       import: import_size,
       metadata: {},
+      evaluated: false,
     });
     arg_map.set('color', {
       kind: 'constant_use',
       import: RED.import,
       metadata: {},
+      evaluated: false,
     });
 
     expect(
@@ -202,6 +223,7 @@ describe('Unit test function use', () => {
           children: arg_map,
           import: RECTANGLE.import,
           metadata: {},
+          evaluated: false,
         },
         map,
       ).then((v) => v.value),
@@ -235,6 +257,7 @@ describe('Unit test function use', () => {
           imports: [],
         },
       },
+      metadata: {},
     });
 
     const arg_map: Map<string, TamaroCard<[], object>> = new Map();
@@ -242,16 +265,19 @@ describe('Unit test function use', () => {
       kind: 'constant_use',
       import: import_size,
       metadata: {},
+      evaluated: false,
     });
     arg_map.set('height', {
       kind: 'constant_use',
       import: import_size,
       metadata: {},
+      evaluated: false,
     });
     arg_map.set('color', {
       kind: 'constant_use',
       import: RED.import,
       metadata: {},
+      evaluated: false,
     });
 
     expect(
@@ -261,6 +287,7 @@ describe('Unit test function use', () => {
           children: arg_map,
           import: RECTANGLE.import,
           metadata: {},
+          evaluated: false,
         },
         map,
       ).then((v) => v.value),
@@ -288,6 +315,7 @@ describe('Unit test function use', () => {
           imports: [],
         },
       },
+      metadata: {},
     });
 
     const arg_map: Map<string, TamaroCard<[], object>> = new Map();
@@ -295,16 +323,19 @@ describe('Unit test function use', () => {
       kind: 'constant_use',
       import: import_size,
       metadata: {},
+      evaluated: false,
     });
     arg_map.set('height', {
       kind: 'constant_use',
       import: import_size,
       metadata: {},
+      evaluated: false,
     });
     arg_map.set('color', {
       kind: 'constant_use',
       import: RED.import,
       metadata: {},
+      evaluated: false,
     });
 
     expect(
@@ -313,6 +344,7 @@ describe('Unit test function use', () => {
           kind: 'function_use',
           children: arg_map,
           import: RECTANGLE.import,
+          evaluated: false,
           metadata: {},
         },
         map,
