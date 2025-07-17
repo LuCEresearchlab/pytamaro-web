@@ -111,6 +111,9 @@ export const createGraphSlice: StateCreator<
 
     const after = applyNodeChanges(raw_changes, befores);
 
+    const previous_uneval = after
+      .filter((v) => !v.data.evaluated)
+      .map((v) => v.id);
     const initial_uneval = raw_changes
       .map((v) => {
         switch (v.type) {
@@ -141,7 +144,7 @@ export const createGraphSlice: StateCreator<
       })
       .filter(Boolean)
       .map((v) => v as string)
-      .concat(after.filter((v) => !v.data.evaluated).map((v) => v.id));
+      .concat(previous_uneval);
     const after_unevaluation = uneval(after, edges, ...initial_uneval);
 
     const parents_to_update: Set<string> = new Set();
@@ -221,7 +224,12 @@ export const createGraphSlice: StateCreator<
               : afters.find((v) => change.id === v.id),
         });
       });
-    if (initial_uneval.length !== 0) {
+    if (
+      (previous_uneval.length === initial_uneval.length &&
+        previous_uneval.length > 0 &&
+        evaluation_timeout == null) ||
+      initial_uneval.length > previous_uneval.length
+    ) {
       if (evaluation_timeout) clearTimeout(evaluation_timeout);
       evaluation_timeout = setTimeout(async () => {
         const prev = evaluation_timeout;
@@ -231,15 +239,15 @@ export const createGraphSlice: StateCreator<
         );
         if (prev !== evaluation_timeout || !evaluation_timeout) return;
         evaluation_timeout = undefined;
-        set({
-          nodes: nodes.map(
+        set((state) => ({
+          nodes: state.nodes.map(
             (v) =>
               ({
                 ...v,
                 data: evaluated.get(v.id) || v.data,
               }) as TamaroCardNode,
           ),
-        });
+        }));
       }, 1000);
     }
   },
