@@ -14,6 +14,8 @@ import {
 import { toFlat } from '../../src/tide/utils';
 import { Edge } from '@xyflow/react';
 import { getDefaultContext } from '../../cypress/e2e/tide/data';
+import { UnsoundType } from '../../src/tide/expression';
+import { TideSyntaxErrorConstantHasNoValue_builder } from '../../src/tide/error_builders';
 
 export function roots(nodes: TamaroCardNode[], edges: Edge[]) {
   const not_roots = new Set(edges.map((v) => v.source));
@@ -196,7 +198,16 @@ export async function evaluation(
             value: eval_root.value,
           };
         }
-        return v.data;
+        return {
+          ...v.data,
+          evaluated: true,
+          value: {
+            type: UnsoundType.Bottom,
+            error: TideSyntaxErrorConstantHasNoValue_builder(
+              v.data.import.name,
+            ),
+          },
+        };
       }
       return await evaluate_tree(v.data, context);
     }),

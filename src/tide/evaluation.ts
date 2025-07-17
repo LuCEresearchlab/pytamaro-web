@@ -397,6 +397,9 @@ export async function evaluate_tree<
             (v) => TideSyntaxErrorMissingParameter_builder(v.parameter.name),
             args.filter((v) => v).map((v) => v.arg!),
           ),
+          new Map(
+            args.filter((v) => v.arg).map((v) => [v.parameter.name, v.arg!]),
+          ),
         );
 
       const bottom_args = args.filter(
