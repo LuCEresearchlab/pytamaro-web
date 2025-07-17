@@ -43,7 +43,7 @@ export function create_code(
     (v) => v.import,
     (v) => v.dependencies,
     (v) => definitions.find((o) => o.import === v),
-  );
+  ).reverse();
   return sorted
     .map(create_code_from_definition)
     .concat([

@@ -3,6 +3,29 @@ import { create_code } from './code';
 import { EvaluatedContext } from './context';
 import { executeOnServer } from './evaluation';
 import { SoundType } from './expression';
+import { eqLocation } from './utils';
+
+export function unwrap_local_definition<T>(
+  definitions: EvaluatedContext<T>,
+  context: EvaluatedContext<T>,
+) {
+  const unwrap_context: EvaluatedContext<T> = [];
+  const stack = Array.from(definitions);
+
+  while (stack.length !== 0) {
+    const el = stack.pop()!;
+
+    if (unwrap_context.find((v) => eqLocation(v.import, el.import))) continue;
+    unwrap_context.push(el);
+
+    stack.push(
+      ...el.dependencies.map(
+        (v) => context.find((o) => eqLocation(v, o.import))!,
+      ),
+    );
+  }
+  return unwrap_context;
+}
 
 export async function extract_data(
   expression: string,

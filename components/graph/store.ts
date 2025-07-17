@@ -22,7 +22,11 @@ import {
   getSubTreeFromRoot,
 } from './utils';
 import { updateParent } from './graph_toolbox';
-import { TamaroCardNode, TideNodeMetadata } from './cards';
+import {
+  ConstantDefinitionNode,
+  TamaroCardNode,
+  TideNodeMetadata,
+} from './cards';
 import { evaluation, uneval } from './evaluation';
 import {
   EvaluatedConstantDefinition,
@@ -31,6 +35,7 @@ import {
 import { getDefaultContext } from '../../cypress/e2e/tide/data';
 import { eqCard } from '../../src/tide/utils';
 import { getParameterName } from './cards/function';
+import { TamaroCard } from '../../src/tide/cards';
 
 export interface DraggedElementData {
   type: string;
@@ -141,7 +146,8 @@ export const createGraphSlice: StateCreator<
 
     const parents_to_update: Set<string> = new Set();
 
-    const changes_step_1 = compute_node_change(befores, after_unevaluation)
+    const changes_step_1 = raw_changes
+      .concat(compute_node_change(befores, after_unevaluation))
       .map((change): NodeChange<TamaroCardNode>[] => {
         if (change.type === 'position') {
           const node = getNode(befores, change.id)!;
@@ -194,7 +200,7 @@ export const createGraphSlice: StateCreator<
     );
 
     set({
-      nodes: after_unevaluation,
+      nodes: applyNodeChanges(changes_step_1, befores),
     });
     const afters = get().nodes;
 
@@ -215,25 +221,27 @@ export const createGraphSlice: StateCreator<
               : afters.find((v) => change.id === v.id),
         });
       });
-    if (evaluation_timeout) clearTimeout(evaluation_timeout);
-    evaluation_timeout = setTimeout(async () => {
-      const prev = evaluation_timeout;
-      const { nodes, edges } = get();
-      const evaluated = new Map(
-        (await evaluation(nodes, edges)).map((v) => [v.metadata.node_id, v]),
-      );
-      if (prev !== evaluation_timeout || !evaluation_timeout) return;
-      evaluation_timeout = undefined;
-      set({
-        nodes: nodes.map(
-          (v) =>
-            ({
-              ...v,
-              data: evaluated.get(v.id) || v.data,
-            }) as TamaroCardNode,
-        ),
-      });
-    }, 1000);
+    if (initial_uneval.length !== 0) {
+      if (evaluation_timeout) clearTimeout(evaluation_timeout);
+      evaluation_timeout = setTimeout(async () => {
+        const prev = evaluation_timeout;
+        const { nodes, edges } = get();
+        const evaluated = new Map(
+          (await evaluation(nodes, edges)).map((v) => [v.metadata.node_id, v]),
+        );
+        if (prev !== evaluation_timeout || !evaluation_timeout) return;
+        evaluation_timeout = undefined;
+        set({
+          nodes: nodes.map(
+            (v) =>
+              ({
+                ...v,
+                data: evaluated.get(v.id) || v.data,
+              }) as TamaroCardNode,
+          ),
+        });
+      }, 1000);
+    }
   },
   onEdgesChange: (changes) => {
     const befores = get().edges;
@@ -430,22 +438,48 @@ export const useStore = create<StoreType>()(
           if (!state) return;
 
           state.setInitialized('wait');
-          return {
-            ...state,
-            nodes: state.nodes.map((v) => {
-              if (v.data.kind !== 'function_use') return v;
 
-              const children = new Map(
-                getChildren(state.nodes, state.edges, v, true)
-                  .entries()
-                  .map(([k, v]) => [getParameterName(k), v]),
-              );
+          const { nodes, edges } = state!;
 
-              return v.data.kind !== 'function_use'
-                ? v
-                : { ...v, data: { ...v.data, children } };
-            }),
-          };
+          function reconstructChildrenMap(v: TamaroCardNode): TamaroCardNode {
+            switch (v.data.kind) {
+              case 'constant_definition': {
+                if (!v.data.root) return v;
+                const root_node = getNode(nodes, v.data.root.metadata.node_id);
+                return {
+                  ...v,
+                  data: {
+                    ...v.data,
+                    root: root_node
+                      ? reconstructChildrenMap(root_node).data
+                      : undefined,
+                  } as ConstantDefinitionNode['data'],
+                } as ConstantDefinitionNode;
+              }
+              case 'function_use': {
+                const children = new Map(
+                  getChildren(nodes, edges, v, true)
+                    .entries()
+                    .map(([k, v]) => [
+                      getParameterName(k)!,
+                      reconstructChildrenMap(v).data as TamaroCard<
+                        [],
+                        TideNodeMetadata
+                      >,
+                    ]),
+                );
+
+                return {
+                  ...v,
+                  data: { ...v.data, children } as unknown,
+                } as TamaroCardNode;
+              }
+              default:
+                return v;
+            }
+          }
+
+          state.setNodes(state.nodes.map(reconstructChildrenMap));
         };
       },
     },

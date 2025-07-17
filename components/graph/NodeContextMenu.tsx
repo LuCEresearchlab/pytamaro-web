@@ -16,6 +16,7 @@ import {
   ConstantDefinitionNode,
   ConstantUseNode,
   TamaroCardNode,
+  TideNodeMetadata,
 } from './cards';
 import {
   EvaluatedTamaroCard,
@@ -62,20 +63,26 @@ export default function NodeContextMenu({
       const node = getNode(nodes, id)!;
       const { data } = node;
 
+      const newNodeId = `${new Date().getTime()}-parent`;
+
       const newNode: ConstantDefinitionNode = {
-        id: `${new Date().getTime()}-parent`,
+        id: newNodeId,
         type: 'constant_definition',
         data: (() => {
           const retyped = data as TamaroCard<
             TamaroCardParameterEnvironment,
-            unknown
+            TideNodeMetadata
           >;
           return {
-            dependencies: find_dependencies(retyped, evaluated_context),
+            dependencies: find_dependencies(retyped, evaluated_context()),
             evaluated: retyped.evaluated,
             import: { module: false, name },
             kind: 'constant_definition',
             subkind: 'local',
+            metadata: {
+              node_id: newNodeId,
+            },
+            root: retyped,
             value: retyped.evaluated
               ? (
                   retyped as EvaluatedTamaroCard<
@@ -90,14 +97,17 @@ export default function NodeContextMenu({
         zIndex: -100,
       };
 
+      const replacedByNodeId = `${new Date().getTime()}-replacement`;
       const replacedByNode: ConstantUseNode = {
-        id: `${new Date().getTime()}-replacement`,
+        id: replacedByNodeId,
         type: 'constant_use',
         data: {
           kind: 'constant_use',
           evaluated: false,
           import: { module: false, name },
-          metadata: {},
+          metadata: {
+            node_id: replacedByNodeId,
+          },
         },
         position: getNode(nodes, id)!.position,
       };

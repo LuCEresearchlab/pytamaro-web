@@ -42,7 +42,7 @@ import {
   UnsoundType,
   Value,
 } from './expression';
-import { extract_data } from './data_extraction';
+import { extract_data, unwrap_local_definition } from './data_extraction';
 import { eqLocation } from './utils';
 
 const KEYWORDS: string[] = [
@@ -183,15 +183,13 @@ function sort_context_by_dependency<U>(
       }) as EvaluatedDefinition<U>,
   );
 
-  return [
-    sort_dependencies(
-      stack,
-      (v) => v.import,
-      (v) => v.dependencies,
-      (v) => context.find((o) => eqLocation(o.import, v)),
-    ),
-    evaluated_cyclical,
-  ];
+  const sorted = sort_dependencies(
+    stack,
+    (v) => v.import,
+    (v) => v.dependencies,
+    (v) => context.find((o) => eqLocation(o.import, v)),
+  ).reverse();
+  return [sorted, evaluated_cyclical];
 }
 
 export function find_dependencies<U>(
@@ -277,12 +275,14 @@ export async function evaluate_tree<
         return returning_error(
           TideNameErrorUnknownConstant_builder(root.import.name),
         );
-      const value = context.find((o) => eqLocation(o.import, root.import))!;
-      if (value.kind === 'function_definition')
+      const definition = context.find((o) =>
+        eqLocation(o.import, root.import),
+      )!;
+      if (definition.kind === 'function_definition')
         return returning_error(
           TideSyntaxErrorNodeKindMismatch_builder('constant', 'function'),
         );
-      const constant_type = get_constant_type(value);
+      const constant_type = get_constant_type(definition);
       if (constant_type === UnsoundType.Bottom) {
         return returning_error(false);
       }
@@ -291,9 +291,16 @@ export async function evaluate_tree<
         ...root,
         evaluated: true,
         value: {
-          data: await extract_data(value.import.name, constant_type, [value]),
+          data: await extract_data(
+            definition.import.name,
+            constant_type,
+            unwrap_local_definition([definition], context),
+          ),
           type: constant_type,
-          value: { expression: value.import.name, imports: [value.import] },
+          value: {
+            expression: definition.import.name,
+            imports: [definition.import],
+          },
         } as unknown as ExpressionValue,
       };
     }
@@ -472,7 +479,10 @@ export async function evaluate_tree<
         .filter((v) => v)
         .map((v) => v!);
 
-      const code = create_code(value, dependencies);
+      const code = create_code(
+        value,
+        unwrap_local_definition(dependencies, context),
+      );
 
       return await executeOnServer(code)
         .then(async (v) => {
@@ -485,7 +495,7 @@ export async function evaluate_tree<
                   data: await extract_data(
                     expression,
                     definition.return_type,
-                    dependencies,
+                    unwrap_local_definition(dependencies, context),
                   ),
                 },
               } as EvaluatedTamaroCard<T, U>;

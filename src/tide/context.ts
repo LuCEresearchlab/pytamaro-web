@@ -42,7 +42,7 @@ export type IImportedFunctionDefintion<
   subkind: 'imported';
   evaluated: true;
 
-  dependencies: [];
+  dependencies: Location[];
 };
 
 export type IEvaluatedLocalFunctionDefinition<
@@ -75,7 +75,7 @@ export type IImportedConstantDefinition = IConstantDefinition & {
   evaluated: true;
 
   evaluated_type: ValueType;
-  dependencies: [];
+  dependencies: Location[];
 };
 
 export type IEvaluatedLocalConstantDefinition<U> =
