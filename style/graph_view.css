@@ -65,7 +65,7 @@
   font-weight: bold;
 }
 
-.react-flow__edge.error-main-highlight * {
+.react-flow__edge .error-main-highlight {
   stroke: #e68232 !important;
   
   --color: #ffe182;
@@ -78,7 +78,7 @@
   drop-shadow(0px var(--radius) var(--spread) var(--color));
 }
 
-.react-flow__edge.error-secondary-highlight * {
+.react-flow__edge .error-secondary-highlight {
   --color: rgba(255, 225, 130, 0.5);
   --radius: 0.2px;
   --spread: 5px;

@@ -8,7 +8,17 @@ import {
 } from '@xyflow/react';
 import { useStore } from './store';
 import { getNode } from './utils';
+import { TamaroCardNode } from './cards';
+import { useEffect, useState } from 'react';
+import { UnsoundType, Value } from '../../src/tide/expression';
+import { getParameterName } from './cards/function';
 
+function getValue(node: TamaroCardNode): Value | undefined {
+  return node!.data.evaluated
+    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ((node!.data as any)['value'] as Value)
+    : undefined;
+}
 interface GetSmoothStepWithPaddingPathParams extends GetSmoothStepPathParams {
   padding: { source: number; target: number };
 }
@@ -42,16 +52,60 @@ function getSmoothStepWithPaddingPath({
 
 function CustomEdge({
   id,
+  source,
   sourceX,
   sourceY,
   targetX,
   targetY,
   target,
+  targetHandleId,
   style,
 }: EdgeProps) {
-  const { getNodes } = useStore();
+  const [primary_error, setPrimaryError] = useState(false);
+  const [secondary_error, setSecondaryError] = useState(false);
+  const nodes = useStore((state) => state.nodes);
+  const sourceNode = getNode(nodes, source);
+  const targetNode = getNode(nodes, target);
 
-  const node = getNode(getNodes(), target)!;
+  useEffect(() => {
+    if (!sourceNode || !targetNode) {
+      setPrimaryError(false);
+      setSecondaryError(false);
+      return;
+    }
+
+    const sourceValue = getValue(sourceNode);
+    const targetValue = getValue(targetNode);
+
+    setPrimaryError(
+      targetValue != null &&
+        targetValue.type === UnsoundType.Bottom &&
+        targetValue.error !== false &&
+        (Array.isArray(targetValue.error)
+          ? targetValue.error
+          : [targetValue.error]
+        ).find(
+          (v) =>
+            v.kind === 'type-error' &&
+            v.args[2].value === getParameterName(targetHandleId!)!,
+        ) != null,
+    );
+
+    setSecondaryError(
+      !primary_error &&
+        sourceValue != null &&
+        sourceValue.type === UnsoundType.Bottom,
+    );
+  }, [
+    source,
+    primary_error,
+    secondary_error,
+    nodes,
+    target,
+    targetHandleId,
+    sourceNode,
+    targetNode,
+  ]);
 
   const [edgePath] = getSmoothStepWithPaddingPath({
     sourceX,
@@ -61,13 +115,18 @@ function CustomEdge({
     offset: 0,
     padding: {
       source: 20,
-      target: node?.type !== 'constant_definition' ? 20 : 0,
+      target: targetNode?.type !== 'constant_definition' ? 20 : 0,
     },
   });
 
   return (
     <>
-      <BaseEdge id={id} path={edgePath} style={style} />
+      <BaseEdge
+        className={`${primary_error ? 'error-main-highlight ' : ''}${secondary_error ? 'error-secondary-highlight' : ''}`}
+        id={id}
+        path={edgePath}
+        style={style}
+      />
     </>
   );
 }
@@ -78,7 +137,10 @@ export function CustomEdgeLine({
   toX,
   toY,
   connectionLineStyle,
-}: ConnectionLineComponentProps) {
+}: Pick<
+  ConnectionLineComponentProps<TamaroCardNode>,
+  'fromX' | 'fromY' | 'toX' | 'toY' | 'connectionLineStyle'
+>) {
   const [edgePath] = getSmoothStepWithPaddingPath({
     sourceX: fromX,
     sourceY: fromY,
@@ -90,7 +152,6 @@ export function CustomEdgeLine({
       target: 20,
     },
   });
-
   return <path style={connectionLineStyle} d={edgePath} />;
 }
 
