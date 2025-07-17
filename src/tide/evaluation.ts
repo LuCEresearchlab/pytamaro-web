@@ -1,7 +1,12 @@
 // import { executeOnServer } from '../useActivity';
 import axios from 'axios';
 import { ExecutionResponse } from '../codeExecution';
-import { EvaluatedTamaroCard, FunctionParameter, TamaroCard } from './cards';
+import {
+  EvaluatedTamaroCard,
+  FunctionParameter,
+  TamaroCard,
+  TamaroCardParameterEnvironment,
+} from './cards';
 import { create_code } from './code';
 import {
   Context,
@@ -190,10 +195,12 @@ function sort_context_by_dependency<U>(
 }
 
 export function find_dependencies<U>(
-  value: TamaroCard<FunctionParameter[], U>,
+  value: TamaroCard<TamaroCardParameterEnvironment, U>,
   context: EvaluatedContext<U>,
 ): Location[] {
-  function aux(value: TamaroCard<FunctionParameter[], U>): Location[] {
+  function aux(
+    value: TamaroCard<TamaroCardParameterEnvironment, U>,
+  ): Location[] {
     switch (value.kind) {
       case 'constant_use':
         return [value.import];
@@ -233,7 +240,10 @@ export function check_identifier_name(name: string): boolean {
   );
 }
 
-export async function evaluate_tree<T extends FunctionParameter[], U>(
+export async function evaluate_tree<
+  T extends TamaroCardParameterEnvironment,
+  U,
+>(
   root: TamaroCard<T, U>,
   context: EvaluatedContext<U>,
 ): Promise<EvaluatedTamaroCard<T, U>> {

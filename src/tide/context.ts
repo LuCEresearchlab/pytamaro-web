@@ -1,23 +1,24 @@
-import { FunctionParameter, TamaroCard } from './cards';
+import { TamaroCard, TamaroCardParameterEnvironment } from './cards';
 import { ValueType, Location, Value, SoundType } from './expression';
 
 export type Definition<U> =
-  | FunctionDefinition<FunctionParameter[], U>
+  | FunctionDefinition<TamaroCardParameterEnvironment, U>
   | ConstantDefinition<U>;
 
 export type EvaluatedDefinition<U> =
-  | EvaluatedFunctionDefinition<FunctionParameter[], U>
+  | EvaluatedFunctionDefinition<TamaroCardParameterEnvironment, U>
   | EvaluatedConstantDefinition<U>;
 
-export type FunctionDefinition<T extends FunctionParameter[], U> =
+export type FunctionDefinition<T extends TamaroCardParameterEnvironment, U> =
   | ILocalFunctionDefinition<T, U>
   | EvaluatedFunctionDefinition<T, U>;
 
-export type EvaluatedFunctionDefinition<T extends FunctionParameter[], U> =
-  | IImportedFunctionDefintion<T>
-  | IEvaluatedLocalFunctionDefinition<T, U>;
+export type EvaluatedFunctionDefinition<
+  T extends TamaroCardParameterEnvironment,
+  U,
+> = IImportedFunctionDefintion<T> | IEvaluatedLocalFunctionDefinition<T, U>;
 
-export type IFunctionDefinition<T extends FunctionParameter[]> = {
+export type IFunctionDefinition<T extends TamaroCardParameterEnvironment> = {
   kind: 'function_definition';
   import: Location;
   evaluated: boolean;
@@ -27,7 +28,7 @@ export type IFunctionDefinition<T extends FunctionParameter[]> = {
 };
 
 export type ILocalFunctionDefinition<
-  T extends FunctionParameter[],
+  T extends TamaroCardParameterEnvironment,
   U,
 > = IFunctionDefinition<T> & {
   subkind: 'local';
@@ -35,16 +36,17 @@ export type ILocalFunctionDefinition<
   metadata: U;
 };
 
-export type IImportedFunctionDefintion<T extends FunctionParameter[]> =
-  IFunctionDefinition<T> & {
-    subkind: 'imported';
-    evaluated: true;
+export type IImportedFunctionDefintion<
+  T extends TamaroCardParameterEnvironment,
+> = IFunctionDefinition<T> & {
+  subkind: 'imported';
+  evaluated: true;
 
-    dependencies: [];
-  };
+  dependencies: [];
+};
 
 export type IEvaluatedLocalFunctionDefinition<
-  T extends FunctionParameter[],
+  T extends TamaroCardParameterEnvironment,
   U,
 > = ILocalFunctionDefinition<T, U> & {
   evaluated: true;

@@ -19,6 +19,7 @@ export type ITamaroCard_Literal<U> = {
   type: SoundType.Float | SoundType.Str | SoundType.Bool | UnsoundType.Bottom;
   metadata: U;
 };
+
 export type ITamaroCard_FunctionUse<
   T extends TamaroCardParameterEnvironment,
   U,
