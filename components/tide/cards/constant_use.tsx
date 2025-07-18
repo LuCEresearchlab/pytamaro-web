@@ -1,5 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 import { Handle, NodeProps, Position } from '@xyflow/react';
-import { ExtraneousNodeProps, ConstantUseNode } from '.';
+import { ExtraneousNodeProps, ConstantNode } from '.';
 import { useStore } from '../../../src/tide/store';
 import {
   ChangeEvent,
@@ -13,6 +14,7 @@ import {
 import { ReactElement } from 'react-markdown/lib/react-markdown';
 import { Location } from '../../../src/tide/language/expression';
 import ResultIcon from '../ResultIcon';
+import { iconPath } from '../../documentation/utils';
 
 export function AutoWidthInput({
   value,
@@ -92,21 +94,27 @@ export function AutoWidthInput({
 }
 
 export default function ConstantUse(
-  props: NodeProps<ConstantUseNode> & ExtraneousNodeProps,
+  props: NodeProps<ConstantNode> & ExtraneousNodeProps,
 ) {
   const { id, show_handles, data } = props;
   const i = data.import;
   const updateNodeData = useStore((state) => state.updateNodeData);
+  const context = useStore((state) => state.evaluated_context);
 
   const setName = useCallback(
-    (v: string) => {
-      if (v === i.name) return;
+    (newName: string) => {
+      if (newName === i.name) return;
       updateNodeData(id, (data) => ({
         ...data,
-        import: { module: false, name: v } as Location,
+        import: {
+          module:
+            context().find((v) => v.import.name === newName)?.import.module ||
+            false,
+          name: newName,
+        } as Location,
       }));
     },
-    [i.name, id, updateNodeData],
+    [context, i.name, id, updateNodeData],
   );
 
   const returnsIconRef = useRef() as React.MutableRefObject<HTMLDivElement>;
@@ -141,8 +149,17 @@ export default function ConstantUse(
     <div
       className={`${editing ? '' : 'drag-handle'} compact_view hide_types hide_icons hide_output hide_optionals hide_labels`}
     >
-      <div className='pane_container'>
+      <div className='pane_container drag-handle'>
         <div className='pane tamaro_card constant_card constant_card_pane'>
+          {i.module !== false && (
+            <img
+              className='card_library hovergroup hovergroup_marker'
+              data-hovergroup={'library'}
+              src={iconPath(i.module)}
+              alt='Library icon'
+            />
+          )}
+
           <div
             style={{
               alignSelf: 'center',
@@ -151,7 +168,6 @@ export default function ConstantUse(
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
-              minWidth: '100%',
             }}
           >
             <h5
@@ -201,7 +217,7 @@ export default function ConstantUse(
             )}
           </div>
 
-          {show_handles === true && (
+          {show_handles && (
             <Handle
               type='source'
               position={Position.Right}

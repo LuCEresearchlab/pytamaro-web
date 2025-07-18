@@ -80,7 +80,6 @@ function updateTreeInsideNodes(nodes: TamaroCardNode[]) {
       return updated_map.get(node.data.metadata.node_id)!;
     switch (node.type) {
       case 'constant':
-      case 'constant_use':
       case 'literal': {
         updated_map.set(node.id, node);
         return node;

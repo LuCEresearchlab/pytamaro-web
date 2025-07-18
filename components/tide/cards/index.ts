@@ -1,7 +1,6 @@
 import { Dimensions, Node, NodeProps } from '@xyflow/react';
 import { TamaroFunctionCard } from './function';
 import { TamaroLiteralCard } from './literal';
-import { TamaroConstantCard } from './constant';
 import { JudiciousElement } from '../../../src/schemas/documentation';
 import ConstantDefinition from './constant_definition';
 import ConstantUse from './constant_use';
@@ -54,11 +53,6 @@ export type ConstantNode = Node<
   'constant'
 >;
 
-export type ConstantUseNode = Node<
-  TamaroCard_ConstantUse<TideNodeMetadata> & CommonNodeData,
-  'constant_use'
->;
-
 export type ConstantDefinitionNode = Node<
   LocalConstantDefinition<TideNodeMetadata> &
     CommonNodeData & {
@@ -73,7 +67,6 @@ export type TamaroCardNode =
   | FunctionNode
   | LiteralNode
   | ConstantNode
-  | ConstantUseNode
   | ConstantDefinitionNode;
 
 export const node_types = {
@@ -87,17 +80,12 @@ export const node_types = {
       nodeprops: props,
       el: TamaroLiteralCard({ ...props, show_handles: true }),
     }),
-  constant: (props: NodeProps<ConstantNode>) =>
-    TamaroWrapper({
-      nodeprops: props,
-      el: TamaroConstantCard({ ...props, show_handles: true }),
-    }),
   constant_definition: (props: NodeProps<ConstantDefinitionNode>) =>
     TamaroWrapper({
       nodeprops: props,
       el: ConstantDefinition({ ...props, show_handles: true }),
     }),
-  constant_use: (props: NodeProps<ConstantUseNode>) =>
+  constant: (props: NodeProps<ConstantNode>) =>
     TamaroWrapper({
       nodeprops: props,
       el: ConstantUse({ ...props, show_handles: true }),

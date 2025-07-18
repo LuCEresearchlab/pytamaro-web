@@ -131,7 +131,6 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
                   node_id: '',
                 },
                 str_value: value,
-                type,
                 value:
                   type === UnsoundType.Bottom
                     ? {
@@ -191,7 +190,7 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
             className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
             style={{ userSelect: 'none' }}
             onDragStart={(e) => {
-              onDragStart(e, 'constant_use', {
+              onDragStart(e, 'constant', {
                 evaluated: false,
                 kind: 'constant_use',
                 import: {

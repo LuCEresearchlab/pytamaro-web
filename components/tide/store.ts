@@ -20,7 +20,7 @@ import {
   getChildren,
   getNode,
   getSubTreeFromRoot,
-} from './utils';
+} from '../../src/tide/utils';
 import { updateParent } from '../../src/tide/graph_toolbox';
 import {
   ConstantDefinitionNode,

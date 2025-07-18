@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import {
   ConstantDefinitionNode,
-  ConstantUseNode,
+  ConstantNode,
   TamaroCardNode,
   TideNodeMetadata,
 } from './cards';
@@ -102,9 +102,9 @@ export default function NodeContextMenu({
       };
 
       const replacedByNodeId = `${new Date().getTime()}-replacement`;
-      const replacedByNode: ConstantUseNode = {
+      const replacedByNode: ConstantNode = {
         id: replacedByNodeId,
-        type: 'constant_use',
+        type: 'constant',
         data: {
           kind: 'constant_use',
           evaluated: false,
@@ -161,7 +161,7 @@ export default function NodeContextMenu({
   const node = getNode(getNodes(), id);
 
   const constant_reference: string | undefined =
-    node?.type === 'constant_use' && node.data.import.name
+    node?.type === 'constant' && node.data.import.name
       ? getConstantDefinition(getNodes(), node?.data?.import.name as string)?.id
       : undefined;
 

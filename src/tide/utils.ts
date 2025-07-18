@@ -217,7 +217,7 @@ export function getUsages(
   name: string,
 ): TamaroCardNode[] {
   return nodes.filter(
-    (v) => v.type === 'constant_use' && v.data.import.name === name,
+    (v) => v.type === 'constant' && v.data.import.name === name,
   );
 }
 
@@ -304,7 +304,7 @@ export function getSubTreeFromRootConsideringConstants(
       stack.push(v);
     });
 
-    if (el.type === 'constant_use') {
+    if (el.type === 'constant') {
       const definitions = getConstantDefinitions(
         nodes,
         el.data.import.name as string,
