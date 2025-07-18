@@ -123,7 +123,7 @@
   object-fit: contain;
   overflow: hidden;
 
-  filter: drop-shadow(0 0 10px #aaa); 
+  filter: drop-shadow(0 0 10px #aaa);
 }
 
 .constant_icon_pane .returns_icon {
@@ -132,7 +132,7 @@
   object-fit: contain;
   overflow: hidden;
 
-  filter: drop-shadow(0 0 10px #aaa); 
+  filter: drop-shadow(0 0 10px #aaa);
 }
 
 .compact_view .pane_container {
@@ -318,7 +318,7 @@
   height: 0;
   border-top: calc(5 * var(--outline-width)) solid transparent;
   border-bottom: calc(5 * var(--outline-width)) solid transparent;
-  border-left: calc(5 * var(--outline-width)) solid  #7F7F7F;
+  border-left: calc(5 * var(--outline-width)) solid #7f7f7f;
   z-index: 100;
   display: inline-block;
   position: absolute;

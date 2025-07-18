@@ -3,11 +3,11 @@
   width: 100%;
   padding: 15px 25px 20px;
   color: black;
-  background: #FFE600;
+  background: #ffe600;
   border-radius: 25px;
   transform: translateY(-100%) translateY(-40px) translateX(-60%);
   /* border: gray solid 2px; */
-  filter: drop-shadow(0px 0px 4px black) drop-shadow(0px 0px 2px black)
+  filter: drop-shadow(0px 0px 4px black) drop-shadow(0px 0px 2px black);
 }
 
 .error-bubble .quote {
@@ -17,18 +17,18 @@
   right: 40%;
   border-width: 30px 0px 0 30px;
   border-style: solid;
-  border-color: #FFE600 transparent;
+  border-color: #ffe600 transparent;
 }
 
 .error-bubble .error-title {
   font-size: 48px;
 }
 
-.error-bubble .error-body *{
+.error-bubble .error-body * {
   font-size: 36px;
 }
 
 .error-bubble .error_highlight {
   font-family: 'Fira Code', monospace;
-  color: #5E5500;
+  color: #5e5500;
 }

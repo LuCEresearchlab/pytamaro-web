@@ -1,6 +1,4 @@
-// import { executeOnServer } from '../useActivity';
 import axios from 'axios';
-import { ExecutionResponse } from '../codeExecution';
 import {
   EvaluatedTamaroCard,
   FunctionParameter,
@@ -44,6 +42,7 @@ import {
 } from './expression';
 import { extract_data, unwrap_local_definition } from './data_extraction';
 import { eqLocation } from './utils';
+import { ExecutionResponse } from '../../codeExecution';
 
 const KEYWORDS: string[] = [
   'False',
@@ -175,7 +174,7 @@ function sort_context_by_dependency<U>(
         ...v[1],
         evaluated: true,
         value: {
-          type: -1,
+          type: UnsoundType.Bottom,
           error: TideNameErrorCyclicalDependencies_builder(
             v[0].map((v) => v.name),
           ),
@@ -255,13 +254,13 @@ export async function evaluate_tree<
         ...root,
         children: children || root.children,
         evaluated: true,
-        value: { type: -1, error },
+        value: { type: UnsoundType.Bottom, error },
       } as EvaluatedTamaroCard<T, U>;
     }
     return {
       ...root,
       evaluated: true,
-      value: { type: -1, error },
+      value: { type: UnsoundType.Bottom, error },
     } as EvaluatedTamaroCard<T, U>;
   }
 
@@ -511,7 +510,7 @@ export async function evaluate_tree<
               return {
                 ...card,
                 value: {
-                  type: -1,
+                  type: UnsoundType.Bottom,
                   error: TideRuntimeError_builder(error_message.trim()),
                 },
               };
@@ -520,7 +519,7 @@ export async function evaluate_tree<
               return {
                 ...card,
                 value: {
-                  type: -1,
+                  type: UnsoundType.Bottom,
                   error: TideGenericError_builder(),
                 },
               };
@@ -530,7 +529,7 @@ export async function evaluate_tree<
           return {
             ...card,
             value: {
-              type: -1,
+              type: UnsoundType.Bottom,
               error: TideGenericError_builder(),
             },
           };
@@ -582,7 +581,7 @@ export async function evaluate_context<U>(
         const value: Value = element.root
           ? await evaluate_tree(element.root, evaluated).then((v) => v.value)
           : {
-              type: -1,
+              type: UnsoundType.Bottom,
               error: TideSyntaxErrorConstantHasNoValue_builder(
                 element.import.name,
               ),
@@ -609,7 +608,7 @@ export async function evaluate_context<U>(
         evaluated: true,
         evaluated_type: UnsoundType.Bottom,
         value: {
-          type: -1,
+          type: UnsoundType.Bottom,
           error: TideNameErrorMultipleDefinition_builder(element.import.name),
         },
       };
