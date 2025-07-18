@@ -158,6 +158,7 @@ export function createAnnotationComponents(
       style={{
         position: 'absolute',
         transform: `translate(${target_position.x - 5}px, ${target_position.y - 5}px)`,
+        zIndex: '10000',
       }}
       key={key}
     >
