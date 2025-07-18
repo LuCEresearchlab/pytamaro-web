@@ -152,13 +152,14 @@ export function createAnnotationComponents(
       : Math.abs(mousePosition.x - target_position.x + 50) < 100 &&
         Math.abs(mousePosition.y - target_position.y) < 35;
 
+  const key = `${node_id}_${param}_${position}_${annotation.args.map((v) => v.value + '_' + v.value).join('_')}`;
   return [
     <div
       style={{
         position: 'absolute',
         transform: `translate(${target_position.x - 5}px, ${target_position.y - 5}px)`,
       }}
-      key={`${node_id}_${param}_${position}`}
+      key={key}
     >
       <div
         style={{
@@ -180,7 +181,7 @@ export function createAnnotationComponents(
           transform: `translate(${target_position.x - 30}px, ${target_position.y}px) translate(-100%, -100%)`,
         }}
         className='error_text_highlight'
-        key={`${node_id}_${param}_${position}_type_target`}
+        key={`${key}_type_target`}
       >
         {annotation.args[0].value}
       </div>
@@ -193,7 +194,7 @@ export function createAnnotationComponents(
           transform: `translate(${source_position.x + 10}px, ${source_position.y - 5}px) translate(0%, -100%)`,
         }}
         className='error_text_highlight'
-        key={`${node_id}_${param}_${position}_type_source`}
+        key={`${key}_type_source`}
       >
         {annotation.args[1].value}
       </div>
@@ -208,7 +209,7 @@ export function createAnnotationComponents(
           zIndex: '-1',
         }}
         className='error_text_highlight'
-        key={`${node_id}_${param}_${position}_syntax_target`}
+        key={`${key}_syntax_target`}
       >
         {MISSING_PARAMETER}
       </div>

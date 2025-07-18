@@ -150,6 +150,8 @@ export const createGraphSlice: StateCreator<
     const parents_to_update: Set<string> = new Set();
 
     const changes_step_1 = raw_changes
+      .filter((v) => v.type === 'position')
+      .map((v) => v as NodeChange<TamaroCardNode>)
       .concat(compute_node_change(befores, after_unevaluation))
       .map((change): NodeChange<TamaroCardNode>[] => {
         if (change.type === 'position') {
