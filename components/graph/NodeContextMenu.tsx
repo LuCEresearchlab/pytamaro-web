@@ -208,6 +208,24 @@ export default function NodeContextMenu({
         </span>
       </button>
 
+      <button
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'left',
+          padding: '10px 20px',
+        }}
+        onClick={() => {
+          setEdges(
+            getEdges().filter((v) => !(v.source === id || v.target === id)),
+          );
+          setNodes(getNodes().filter((v) => v.id !== id));
+        }}
+      >
+        Delete node
+      </button>
+
       {constant_reference && (
         <button
           style={{
