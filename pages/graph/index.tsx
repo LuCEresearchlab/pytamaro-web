@@ -9,7 +9,6 @@ import {
 import '@xyflow/react/dist/style.css';
 import { Ref, useCallback, useEffect, useRef, useState } from 'react';
 import {
-  IImportedCardData,
   node_types,
   TamaroCardNode,
   TideNodeMetadata,
@@ -35,15 +34,26 @@ function View() {
   );
   const ref: Ref<HTMLDivElement> = useRef(null);
 
-  const { getNodes, screenToFlowPosition, flowToScreenPosition, fitView } =
+  const { screenToFlowPosition, flowToScreenPosition, fitView } =
     useReactFlow();
 
-  // const { i18n } = useLocalTranslation(['common']);
   const store = useStore();
+
+  const documentation = useJudiciousDocData(
+    Array.from(
+      new Set(
+        store
+          .evaluated_context()
+          .map((v) => v.import.module)
+          .filter((v) => v !== false),
+      ),
+    ),
+  );
 
   const {
     edges,
     nodes,
+    getNodes,
     onNodesChange,
     onEdgesChange,
     onConnect,
@@ -123,13 +133,21 @@ function View() {
         if (!(toBeDocumentedNodes.length === 1)) return;
 
         const node = toBeDocumentedNodes[0];
-        const data = node.data as unknown as IImportedCardData;
-        if (data.module == null) return;
+        const data = node.data;
+        if (!('import' in data)) return;
 
-        return { ...data.value, module: data.module };
+        const { module, name } = data.import;
+        if (module === false) return;
+
+        const result = documentation
+          .find((v) => v.module === module)
+          ?.elements.find((v) => v.name === name);
+
+        if (!result) return;
+        return { ...result, module };
       })(),
     });
-  }, [error_level, getNodes, nodes]);
+  }, [documentation, error_level, getNodes, nodes]);
 
   useEffect(() => {
     if (!pane) return;
@@ -356,8 +374,8 @@ function View() {
           <div
             style={{
               position: 'absolute',
-              right: '10px',
-              width: '30%',
+              right: '50px',
+              width: '40%',
               maxHeight: '100%',
               border: '#ddd solid 2px',
               padding: '20px',
@@ -469,6 +487,7 @@ import { EvaluatedTamaroCard } from '../../src/tide/cards';
 import { getNode } from '../../components/graph/utils';
 import { ErrorParagraph } from '../../components/graph/ErrorParagraph';
 import { TideError } from '../../src/tide/errors';
+import useJudiciousDocData from '../../src/documentation';
 
 function Graph() {
   const [source] = useState('from pytamaro import *');
