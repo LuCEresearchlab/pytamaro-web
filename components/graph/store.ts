@@ -31,11 +31,11 @@ import { evaluation, uneval } from './evaluation';
 import {
   EvaluatedConstantDefinition,
   EvaluatedContext,
-} from '../../src/tide/context';
+} from '../../src/tide/language/context';
 import { getDefaultContext } from '../../cypress/e2e/tide/data';
-import { eqCard } from '../../src/tide/utils';
+import { eqCard } from '../../src/tide/language/utils';
 import { getParameterName } from './cards/function';
-import { TamaroCard } from '../../src/tide/cards';
+import { TamaroCard } from '../../src/tide/language/cards';
 
 export interface DraggedElementData {
   type: string;

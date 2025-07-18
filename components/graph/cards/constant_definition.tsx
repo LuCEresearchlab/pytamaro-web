@@ -17,7 +17,7 @@ import {
 } from '.';
 import { connect } from 'http2';
 import { getNode } from '../utils';
-import { TamaroCard } from '../../../src/tide/cards';
+import { TamaroCard } from '../../../src/tide/language/cards';
 
 const KEYWORDS: string[] = [
   'False',

@@ -1,4 +1,7 @@
-import { type_equality_rule, UnsoundType } from '../../../src/tide/expression';
+import {
+  type_equality_rule,
+  UnsoundType,
+} from '../../../src/tide/language/expression';
 
 describe('Unit test type_equality', () => {
   it('type_equality_rule_same', () => {

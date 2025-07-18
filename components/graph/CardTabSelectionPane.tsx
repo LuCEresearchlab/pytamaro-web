@@ -7,8 +7,12 @@ import { FLOAT_REGEX, STR_REGEX, TamaroLiteralCard } from './cards/literal';
 import ConstantUse from './cards/constant_use';
 import { check_const_name } from './cards/constant_definition';
 import { TamaroCardNode } from './cards';
-import { LiteralType, SoundType, UnsoundType } from '../../src/tide/expression';
-import { TideSyntaxErrorInvalidLiteral_builder } from '../../src/tide/error_builders';
+import {
+  LiteralType,
+  SoundType,
+  UnsoundType,
+} from '../../src/tide/language/expression';
+import { TideSyntaxErrorInvalidLiteral_builder } from '../../src/tide/language/error_builders';
 
 interface CardSelectionPaneProps {
   values: JudiciousModuleElement[];

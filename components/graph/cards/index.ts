@@ -9,8 +9,8 @@ import {
   TamaroCard_ConstantUse,
   TamaroCard_FunctionUse,
   TamaroCard_Literal,
-} from '../../../src/tide/cards';
-import { LocalConstantDefinition } from '../../../src/tide/context';
+} from '../../../src/tide/language/cards';
+import { LocalConstantDefinition } from '../../../src/tide/language/context';
 import TamaroWrapper from './wrapper';
 
 export interface ImportReference {

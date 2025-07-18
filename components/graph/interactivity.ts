@@ -1,8 +1,8 @@
 import { Edge, Node } from '@xyflow/react';
 import { getHandleType, getNode, getParents } from './utils';
 import { TamaroCardNode, TideNodeMetadata } from './cards';
-import { type_equality_rule } from '../../src/tide/expression';
-import { EvaluatedContext } from '../../src/tide/context';
+import { type_equality_rule } from '../../src/tide/language/expression';
+import { EvaluatedContext } from '../../src/tide/language/context';
 
 export function check_edge_typing(
   context: EvaluatedContext<TideNodeMetadata>,

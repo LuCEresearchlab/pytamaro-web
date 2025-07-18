@@ -13,13 +13,13 @@ import {
 import {
   EvaluatedContext,
   EvaluatedFunctionDefinition,
-} from '../../src/tide/context';
-import { UnsoundType } from '../../src/tide/expression';
-import { eqLocation, getCardOutputType } from '../../src/tide/utils';
+} from '../../src/tide/language/context';
+import { UnsoundType } from '../../src/tide/language/expression';
+import { eqLocation, getCardOutputType } from '../../src/tide/language/utils';
 import {
   TamaroCard,
   TamaroCardParameterEnvironment,
-} from '../../src/tide/cards';
+} from '../../src/tide/language/cards';
 
 export function getNode(nodes: TamaroCardNode[], id: string) {
   return nodes.find((v) => v.id === id);

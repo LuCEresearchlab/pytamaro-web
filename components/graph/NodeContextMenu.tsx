@@ -22,8 +22,8 @@ import {
   EvaluatedTamaroCard,
   TamaroCard,
   TamaroCardParameterEnvironment,
-} from '../../src/tide/cards';
-import { find_dependencies } from '../../src/tide/evaluation';
+} from '../../src/tide/language/cards';
+import { find_dependencies } from '../../src/tide/language/evaluation';
 
 export default function NodeContextMenu({
   id,

@@ -1,6 +1,6 @@
-import { FunctionParameter } from '../../../src/tide/cards';
-import { EvaluatedDefinition } from '../../../src/tide/context';
-import { Location, SoundType } from '../../../src/tide/expression';
+import { FunctionParameter } from '../../../src/tide/language/cards';
+import { EvaluatedDefinition } from '../../../src/tide/language/context';
+import { Location, SoundType } from '../../../src/tide/language/expression';
 
 const context = new Map<Location, EvaluatedDefinition<object>>();
 

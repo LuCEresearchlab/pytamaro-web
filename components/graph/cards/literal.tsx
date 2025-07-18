@@ -14,8 +14,8 @@ import {
   LiteralType,
   SoundType,
   UnsoundType,
-} from '../../../src/tide/expression';
-import { TideSyntaxErrorInvalidLiteral_builder } from '../../../src/tide/error_builders';
+} from '../../../src/tide/language/expression';
+import { TideSyntaxErrorInvalidLiteral_builder } from '../../../src/tide/language/error_builders';
 
 // eslint-disable-next-line react/require-default-props
 export function ContentEditableDiv(props: {

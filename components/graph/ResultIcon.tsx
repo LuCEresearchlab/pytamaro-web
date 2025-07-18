@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { SoundType, Value } from '../../src/tide/expression';
+import { SoundType, Value } from '../../src/tide/language/expression';
 
 function GraphicIcon({ data }: { data: string | undefined }) {
   const [dimension, setDimension] = useState(

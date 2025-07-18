@@ -481,12 +481,15 @@ import {
 } from '../../src/schemas/documentation';
 import { translationProps } from '../../src/serverSideTranslationProps';
 import { executeOnServer } from '../../src/useActivity';
-import { TideErrorValue, UnsoundType } from '../../src/tide/expression';
-import { IEvaluatedLocalConstantDefinition } from '../../src/tide/context';
-import { EvaluatedTamaroCard } from '../../src/tide/cards';
+import {
+  TideErrorValue,
+  UnsoundType,
+} from '../../src/tide/language/expression';
+import { IEvaluatedLocalConstantDefinition } from '../../src/tide/language/context';
+import { EvaluatedTamaroCard } from '../../src/tide/language/cards';
 import { getNode } from '../../components/graph/utils';
 import { ErrorParagraph } from '../../components/graph/ErrorParagraph';
-import { TideError } from '../../src/tide/errors';
+import { TideError } from '../../src/tide/language/errors';
 import useJudiciousDocData from '../../src/documentation';
 
 function Graph() {

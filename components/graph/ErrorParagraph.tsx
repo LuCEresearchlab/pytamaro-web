@@ -2,7 +2,7 @@ import {
   TideError,
   TideNameError,
   TideSyntaxError,
-} from '../../src/tide/errors';
+} from '../../src/tide/language/errors';
 
 function getRawContent(annotation: TideError): {
   title: string;

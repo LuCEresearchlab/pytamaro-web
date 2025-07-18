@@ -11,7 +11,7 @@ import {
   useState,
 } from 'react';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
-import { Location } from '../../../src/tide/expression';
+import { Location } from '../../../src/tide/language/expression';
 import ResultIcon from '../ResultIcon';
 
 export function AutoWidthInput({

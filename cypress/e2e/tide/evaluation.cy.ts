@@ -2,16 +2,16 @@ import {
   EvaluatedTamaroCard_Literal,
   TamaroCard,
   NonEvaluatedTamaroCard_Literal,
-} from '../../../src/tide/cards';
-import { EvaluatedContext } from '../../../src/tide/context';
-import { TideRuntimeError_builder } from '../../../src/tide/error_builders';
-import { evaluate_tree } from '../../../src/tide/evaluation';
+} from '../../../src/tide/language/cards';
+import { EvaluatedContext } from '../../../src/tide/language/context';
+import { TideRuntimeError_builder } from '../../../src/tide/language/error_builders';
+import { evaluate_tree } from '../../../src/tide/language/evaluation';
 import {
   compareLocation,
   Location,
   SoundType,
   UnsoundType,
-} from '../../../src/tide/expression';
+} from '../../../src/tide/language/expression';
 import { getDefaultContext, RECTANGLE, RED } from './data';
 
 function literal_card(

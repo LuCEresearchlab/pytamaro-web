@@ -1,11 +1,15 @@
 import { useReactFlow, ViewportPortal, XYPosition } from '@xyflow/react';
 import { TideNodeMetadata } from './cards';
-import { TideError } from '../../src/tide/errors';
+import { TideError } from '../../src/tide/language/errors';
 import { StoreType, useStore } from './store';
 import { getNode } from './utils';
 import { ErrorBubble } from './Bubble';
 import { ErrorParagraph } from './ErrorParagraph';
-import { TideErrorValue, UnsoundType, Value } from '../../src/tide/expression';
+import {
+  TideErrorValue,
+  UnsoundType,
+  Value,
+} from '../../src/tide/language/expression';
 import { getHandleName } from './cards/function';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
