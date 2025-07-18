@@ -468,13 +468,13 @@ import {
   onDrop,
   onMouseDown,
   onMouseUp,
-} from '../../components/graph/graph_toolbox';
+} from '../../src/tide/graph_toolbox';
 import { GraphOptions } from '../../components/graph/GraphOptions';
 import NodeContextMenu from '../../components/graph/NodeContextMenu';
 import edge_type, {
   CustomEdgeLine,
 } from '../../components/graph/SmoothStepWithPadding';
-import { useStore } from '../../components/graph/store';
+import { useStore } from '../../src/tide/store';
 import {
   JudiciousConstant,
   JudiciousFunction,
@@ -487,7 +487,7 @@ import {
 } from '../../src/tide/language/expression';
 import { IEvaluatedLocalConstantDefinition } from '../../src/tide/language/context';
 import { EvaluatedTamaroCard } from '../../src/tide/language/cards';
-import { getNode } from '../../components/graph/utils';
+import { getNode } from '../../src/tide/utils';
 import { ErrorParagraph } from '../../components/graph/ErrorParagraph';
 import { TideError } from '../../src/tide/language/errors';
 import useJudiciousDocData from '../../src/documentation';

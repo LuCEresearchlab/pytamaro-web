@@ -6,8 +6,8 @@ import {
   GetSmoothStepPathParams,
   Position,
 } from '@xyflow/react';
-import { useStore } from './store';
-import { getNode } from './utils';
+import { useStore } from '../../src/tide/store';
+import { getNode } from '../../src/tide/utils';
 import { TamaroCardNode } from './cards';
 import { useEffect, useState } from 'react';
 import { UnsoundType, Value } from '../../src/tide/language/expression';

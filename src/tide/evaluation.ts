@@ -1,24 +1,25 @@
-import { Context, EvaluatedDefinition } from '../../src/tide/language/context';
+import { Context, EvaluatedDefinition } from './language/context';
 import {
   ConstantDefinitionNode,
   TamaroCardNode,
   TideNodeMetadata,
-} from './cards';
-import { getConstantDefinitions, getNode, getUsages } from './utils';
+} from '../../components/graph/cards';
 import {
-  evaluate_context,
-  evaluate_tree,
-} from '../../src/tide/language/evaluation';
+  getConstantDefinitions,
+  getNode,
+  getUsages,
+} from '../../components/graph/utils';
+import { evaluate_context, evaluate_tree } from './language/evaluation';
 import {
   EvaluatedTamaroCard_FunctionUse,
   TamaroCard,
   TamaroCardParameterEnvironment,
-} from '../../src/tide/language/cards';
-import { toFlat } from '../../src/tide/language/utils';
+} from './language/cards';
+import { toFlat } from './language/utils';
 import { Edge } from '@xyflow/react';
 import { getDefaultContext } from '../../cypress/e2e/tide/language/data';
-import { UnsoundType } from '../../src/tide/language/expression';
-import { TideSyntaxErrorConstantHasNoValue_builder } from '../../src/tide/language/error_builders';
+import { UnsoundType } from './language/expression';
+import { TideSyntaxErrorConstantHasNoValue_builder } from './language/error_builders';
 
 export function roots(nodes: TamaroCardNode[], edges: Edge[]) {
   const not_roots = new Set(edges.map((v) => v.source));

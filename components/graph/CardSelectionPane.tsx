@@ -16,8 +16,8 @@ import {
 } from '../../src/schemas/documentation';
 import { ImportReference } from './cards';
 import { CardTabSelectionPane } from './CardTabSelectionPane';
-import { useStore } from './store';
-import { toEnglishName } from './utils';
+import { useStore } from '../../src/tide/store';
+import { toEnglishName } from '../../src/tide/utils';
 
 export type JudiciousModuleElement = JudiciousElement & { module: string };
 const N_LIMIT = 10;

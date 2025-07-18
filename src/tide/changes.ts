@@ -1,7 +1,7 @@
 import { Edge, EdgeChange, NodeChange } from '@xyflow/react';
 import { StateCreator } from 'zustand';
-import { GraphStateSlice } from './store';
-import { TamaroCardNode } from './cards';
+import { GraphStateSlice } from '../../components/graph/store';
+import { TamaroCardNode } from '../../components/graph/cards';
 
 type FlowChange = NodeFlowChange | EdgeFlowChange;
 

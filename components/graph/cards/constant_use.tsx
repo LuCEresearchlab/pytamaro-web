@@ -1,6 +1,6 @@
 import { Handle, NodeProps, Position } from '@xyflow/react';
 import { ExtraneousNodeProps, ConstantUseNode } from '.';
-import { useStore } from '../store';
+import { useStore } from '../../../src/tide/store';
 import {
   ChangeEvent,
   CSSProperties,

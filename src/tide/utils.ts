@@ -1,7 +1,10 @@
 'use client';
 import { Edge, Node, NodeChange } from '@xyflow/react';
-import { getHandleName, getParameterName } from './cards/function';
-import { JudiciousFunction } from '../../src/schemas/documentation';
+import {
+  getHandleName,
+  getParameterName,
+} from '../../components/graph/cards/function';
+import { JudiciousFunction } from '../schemas/documentation';
 import {
   CardType,
   FunctionNode,
@@ -9,17 +12,14 @@ import {
   node_types,
   TamaroCardNode,
   TideNodeMetadata,
-} from './cards';
+} from '../../components/graph/cards';
 import {
   EvaluatedContext,
   EvaluatedFunctionDefinition,
-} from '../../src/tide/language/context';
-import { UnsoundType } from '../../src/tide/language/expression';
-import { eqLocation, getCardOutputType } from '../../src/tide/language/utils';
-import {
-  TamaroCard,
-  TamaroCardParameterEnvironment,
-} from '../../src/tide/language/cards';
+} from './language/context';
+import { UnsoundType } from './language/expression';
+import { eqLocation, getCardOutputType } from './language/utils';
+import { TamaroCard, TamaroCardParameterEnvironment } from './language/cards';
 
 export function getNode(nodes: TamaroCardNode[], id: string) {
   return nodes.find((v) => v.id === id);

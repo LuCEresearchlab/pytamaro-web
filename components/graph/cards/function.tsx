@@ -5,7 +5,7 @@ import { JudiciousFunction } from '../../../src/schemas/documentation';
 import useJudiciousDocData from '../../../src/documentation';
 import ResultIcon from '../ResultIcon';
 import { useEffect, useMemo } from 'react';
-import { useStore } from '../store';
+import { useStore } from '../../../src/tide/store';
 
 export function getHandleName(parameter_name: string) {
   return `input_${parameter_name}`;

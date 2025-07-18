@@ -23,7 +23,7 @@ import {
   FullscreenExit,
   Upload,
 } from '@mui/icons-material';
-import { useStore } from './store';
+import { useStore } from '../../src/tide/store';
 import { Edge, useReactFlow } from '@xyflow/react';
 import { TamaroCardNode } from './cards';
 

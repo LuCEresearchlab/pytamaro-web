@@ -1,7 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useReactFlow } from '@xyflow/react';
-import { useStore } from './store';
-import { getConstantDefinition, getNode, getSubTreeFromRoot } from './utils';
+import { useStore } from '../../src/tide/store';
+import {
+  getConstantDefinition,
+  getNode,
+  getSubTreeFromRoot,
+} from '../../src/tide/utils';
 import { BORDER_COLOR } from './cards/constant_definition';
 import {
   Box,

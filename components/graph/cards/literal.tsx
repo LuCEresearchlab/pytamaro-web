@@ -1,6 +1,6 @@
 import { Handle, NodeProps, Position } from '@xyflow/react';
 import { ExtraneousNodeProps, LiteralNode } from '.';
-import { useStore } from '../store';
+import { useStore } from '../../../src/tide/store';
 import { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';

@@ -1,12 +1,18 @@
 import { Connection, Edge, NodeReplaceChange, XYPosition } from '@xyflow/react';
-import { check_edge_looping, check_edge_typing } from './interactivity';
+import {
+  check_edge_looping,
+  check_edge_typing,
+} from '../../components/graph/interactivity';
 import {
   DragEvent as React_DragEvent,
   MouseEvent as React_MouseEvent,
 } from 'react';
-import { StoreType } from './store';
-import { getNode } from './utils';
-import { ConstantDefinitionNode, TamaroCardNode } from './cards';
+import { StoreType } from '../../components/graph/store';
+import { getNode } from '../../components/graph/utils';
+import {
+  ConstantDefinitionNode,
+  TamaroCardNode,
+} from '../../components/graph/cards';
 
 type AllStore = StoreType & {
   screenToFlowPosition: (

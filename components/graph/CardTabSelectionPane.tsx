@@ -1,5 +1,5 @@
 import { Card, CardActions, CardContent, Input } from '@mui/material';
-import { useStore } from './store';
+import { useStore } from '../../src/tide/store';
 import { DragEvent, useEffect, useState } from 'react';
 import TamaroCard from '../TamaroCard';
 import { JudiciousModuleElement } from './CardSelectionPane';

@@ -1,8 +1,8 @@
 import { useReactFlow, ViewportPortal, XYPosition } from '@xyflow/react';
 import { TideNodeMetadata } from './cards';
 import { TideError } from '../../src/tide/language/errors';
-import { StoreType, useStore } from './store';
-import { getNode } from './utils';
+import { StoreType, useStore } from '../../src/tide/store';
+import { getNode } from '../../src/tide/utils';
 import { ErrorBubble } from './Bubble';
 import { ErrorParagraph } from './ErrorParagraph';
 import {

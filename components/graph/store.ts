@@ -13,7 +13,7 @@ import {
 } from '@xyflow/react';
 import { create, StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { ChangeSliceState, createChangeSlice } from './changes';
+import { ChangeSliceState, createChangeSlice } from '../../src/tide/changes';
 import { ConfigurationState, createConfigurationSlice } from './configuration';
 import {
   compute_node_change,
@@ -21,13 +21,13 @@ import {
   getNode,
   getSubTreeFromRoot,
 } from './utils';
-import { updateParent } from './graph_toolbox';
+import { updateParent } from '../../src/tide/graph_toolbox';
 import {
   ConstantDefinitionNode,
   TamaroCardNode,
   TideNodeMetadata,
 } from './cards';
-import { evaluation, uneval } from './evaluation';
+import { evaluation, uneval } from '../../src/tide/evaluation';
 import {
   EvaluatedConstantDefinition,
   EvaluatedContext,

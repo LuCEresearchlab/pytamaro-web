@@ -7,16 +7,15 @@ import {
   useReactFlow,
 } from '@xyflow/react';
 import { createRef, RefObject, useCallback, useEffect, useRef } from 'react';
-import { useStore } from '../store';
-import { updateParent } from '../graph_toolbox';
+import { useStore } from '../../../src/tide/store';
+import { updateParent } from '../../../src/tide/graph_toolbox';
 import { ContentEditableDiv } from './literal';
 import {
   ExtraneousNodeProps,
   ConstantDefinitionNode,
   TideNodeMetadata,
 } from '.';
-import { connect } from 'http2';
-import { getNode } from '../utils';
+import { getNode } from '../../../src/tide/utils';
 import { TamaroCard } from '../../../src/tide/language/cards';
 
 const KEYWORDS: string[] = [
