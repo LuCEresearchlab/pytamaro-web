@@ -12,10 +12,10 @@ import {
   node_types,
   TamaroCardNode,
   TideNodeMetadata,
-} from '../../components/graph/cards';
+} from '../../components/tide/cards';
 import CardSelectionPane, {
   JudiciousModuleElement,
-} from '../../components/graph/CardSelectionPane';
+} from '../../components/tide/CardSelectionPane';
 import '../../style/graph_view.css';
 
 function View() {
@@ -457,7 +457,7 @@ function View() {
 import CodeEditor from '../../components/CodeEditor';
 import FunctionDocumentation from '../../components/documentation/FunctionDocumentation';
 import TypeConstantDocumentation from '../../components/documentation/TypeConstantDocumentation';
-import { AnnotationLayer } from '../../components/graph/AnnotationLayer';
+import { AnnotationLayer } from '../../components/tide/AnnotationLayer';
 import {
   isValidConnection,
   onDocumentCopyCatpure,
@@ -469,11 +469,11 @@ import {
   onMouseDown,
   onMouseUp,
 } from '../../src/tide/graph_toolbox';
-import { GraphOptions } from '../../components/graph/GraphOptions';
-import NodeContextMenu from '../../components/graph/NodeContextMenu';
+import { GraphOptions } from '../../components/tide/GraphOptions';
+import NodeContextMenu from '../../components/tide/NodeContextMenu';
 import edge_type, {
   CustomEdgeLine,
-} from '../../components/graph/SmoothStepWithPadding';
+} from '../../components/tide/SmoothStepWithPadding';
 import { useStore } from '../../src/tide/store';
 import {
   JudiciousConstant,
@@ -488,7 +488,7 @@ import {
 import { IEvaluatedLocalConstantDefinition } from '../../src/tide/language/context';
 import { EvaluatedTamaroCard } from '../../src/tide/language/cards';
 import { getNode } from '../../src/tide/utils';
-import { ErrorParagraph } from '../../components/graph/ErrorParagraph';
+import { ErrorParagraph } from '../../components/tide/ErrorParagraph';
 import { TideError } from '../../src/tide/language/errors';
 import useJudiciousDocData from '../../src/documentation';
 

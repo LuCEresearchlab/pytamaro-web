@@ -3,12 +3,8 @@ import {
   ConstantDefinitionNode,
   TamaroCardNode,
   TideNodeMetadata,
-} from '../../components/graph/cards';
-import {
-  getConstantDefinitions,
-  getNode,
-  getUsages,
-} from '../../components/graph/utils';
+} from '../../components/tide/cards';
+import { getConstantDefinitions, getNode, getUsages } from './utils';
 import { evaluate_context, evaluate_tree } from './language/evaluation';
 import {
   EvaluatedTamaroCard_FunctionUse,
@@ -17,9 +13,9 @@ import {
 } from './language/cards';
 import { toFlat } from './language/utils';
 import { Edge } from '@xyflow/react';
-import { getDefaultContext } from '../../cypress/e2e/tide/language/data';
 import { UnsoundType } from './language/expression';
 import { TideSyntaxErrorConstantHasNoValue_builder } from './language/error_builders';
+import { getDefaultContext } from '../../cypress/e2e/tide/data';
 
 export function roots(nodes: TamaroCardNode[], edges: Edge[]) {
   const not_roots = new Set(edges.map((v) => v.source));

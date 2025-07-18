@@ -17,19 +17,19 @@ import { ChangeSliceState, createChangeSlice } from './changes';
 import {
   ConfigurationState,
   createConfigurationSlice,
-} from '../../components/graph/configuration';
+} from '../../components/tide/configuration';
 import {
   compute_node_change,
   getChildren,
   getNode,
   getSubTreeFromRoot,
-} from '../../components/graph/utils';
+} from './utils';
 import { updateParent } from './graph_toolbox';
 import {
   ConstantDefinitionNode,
   TamaroCardNode,
   TideNodeMetadata,
-} from '../../components/graph/cards';
+} from '../../components/tide/cards';
 import { evaluation, uneval } from './evaluation';
 import {
   EvaluatedConstantDefinition,
@@ -37,7 +37,7 @@ import {
 } from './language/context';
 import { getDefaultContext } from '../../cypress/e2e/tide/data';
 import { eqCard } from './language/utils';
-import { getParameterName } from '../../components/graph/cards/function';
+import { getParameterName } from '../../components/tide/cards/function';
 import { TamaroCard } from './language/cards';
 
 export interface DraggedElementData {

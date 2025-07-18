@@ -3,7 +3,7 @@ import { Edge, Node, NodeChange } from '@xyflow/react';
 import {
   getHandleName,
   getParameterName,
-} from '../../components/graph/cards/function';
+} from '../../components/tide/cards/function';
 import { JudiciousFunction } from '../schemas/documentation';
 import {
   CardType,
@@ -12,7 +12,7 @@ import {
   node_types,
   TamaroCardNode,
   TideNodeMetadata,
-} from '../../components/graph/cards';
+} from '../../components/tide/cards';
 import {
   EvaluatedContext,
   EvaluatedFunctionDefinition,

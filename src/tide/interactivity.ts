@@ -1,10 +1,6 @@
 import { Edge, Node } from '@xyflow/react';
-import {
-  getHandleType,
-  getNode,
-  getParents,
-} from '../../components/graph/utils';
-import { TamaroCardNode, TideNodeMetadata } from '../../components/graph/cards';
+import { getHandleType, getNode, getParents } from './utils';
+import { TamaroCardNode, TideNodeMetadata } from '../../components/tide/cards';
 import { type_equality_rule } from './language/expression';
 import { EvaluatedContext } from './language/context';
 
