@@ -188,7 +188,7 @@ export function createAnnotationComponents(
         className='error_text_highlight'
         key={`${key}_type_target`}
       >
-        {annotation.args[0].value}
+        {annotation.args[1].value}
       </div>
     ) : undefined,
 
@@ -201,7 +201,7 @@ export function createAnnotationComponents(
         className='error_text_highlight'
         key={`${key}_type_source`}
       >
-        {annotation.args[1].value}
+        {annotation.args[0].value}
       </div>
     ) : undefined,
 
