@@ -8,11 +8,24 @@ import {
 } from './cards';
 import {
   compareLocation,
+  LiteralType,
   Location,
+  SoundType,
   UnsoundType,
   Value,
   ValueType,
 } from './expression';
+
+export const BOOL_REGEX = /(True)|(False)/;
+export const FLOAT_REGEX = /^-?[0-9]+(\.[0-9]*)?$/g;
+export const STR_REGEX = /^"([^\\"]|(\\")|\\\\)*"$/g;
+
+export function inferRawValueType(v: string): LiteralType {
+  if (v.match(BOOL_REGEX)) return SoundType.Bool;
+  if (v.match(STR_REGEX)) return SoundType.Str;
+  if (v.match(FLOAT_REGEX)) return SoundType.Float;
+  return UnsoundType.Bottom;
+}
 
 export function getCardAsEvaluated<
   U extends TamaroCardParameterEnvironment,
@@ -76,7 +89,7 @@ export function eqCard<T extends TamaroCardParameterEnvironment, U>(
     case 'literal': {
       const b = _b as ITamaroCard_Literal<U>;
 
-      return b.str_value === a.str_value && a.type === b.type;
+      return b.str_value === a.str_value;
     }
     case 'function_use': {
       const b = _b as ITamaroCard_FunctionUse<T, U>;

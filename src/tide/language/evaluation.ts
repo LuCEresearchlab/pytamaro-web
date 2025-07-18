@@ -41,7 +41,7 @@ import {
   Value,
 } from './expression';
 import { extract_data, unwrap_local_definition } from './data_extraction';
-import { eqLocation } from './utils';
+import { eqLocation, inferRawValueType } from './utils';
 import { ExecutionResponse } from '../../codeExecution';
 
 const KEYWORDS: string[] = [
@@ -304,7 +304,8 @@ export async function evaluate_tree<
       };
     }
     case 'literal': {
-      if (root.type === -1)
+      const type = inferRawValueType(root.str_value);
+      if (type === UnsoundType.Bottom)
         return returning_error(
           TideSyntaxErrorInvalidLiteral_builder(root.str_value),
         );
@@ -313,7 +314,7 @@ export async function evaluate_tree<
         evaluated: true,
         value: {
           data: undefined,
-          type: root.type,
+          type: type,
           value: { expression: root.str_value, imports: [] },
         },
       } as EvaluatedTamaroCard<T, U>;

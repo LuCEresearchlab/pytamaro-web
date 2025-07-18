@@ -10,12 +10,6 @@ export const FLOAT_REGEX = /^-?[0-9]+(\.[0-9]*)?$/g;
 export const STR_REGEX = /^"([^\\"]|(\\")|\\\\)*"$/g;
 
 import '../../../style/tamaro_cards.css';
-import {
-  LiteralType,
-  SoundType,
-  UnsoundType,
-} from '../../../src/tide/language/expression';
-import { TideSyntaxErrorInvalidLiteral_builder } from '../../../src/tide/language/error_builders';
 
 // eslint-disable-next-line react/require-default-props
 export function ContentEditableDiv(props: {
@@ -64,38 +58,15 @@ export function TamaroLiteralCard({
 }: NodeProps<LiteralNode> & ExtraneousNodeProps) {
   const updateNodeData = useStore((state) => state.updateNodeData);
 
-  function guessType(v: string): LiteralType {
-    if (v.match(BOOL_REGEX)) return SoundType.Bool;
-    if (v.match(STR_REGEX)) return SoundType.Str;
-    if (v.match(FLOAT_REGEX)) return SoundType.Float;
-    return UnsoundType.Bottom;
-  }
-
   const setValue = useCallback(
     (newValue: string) => {
-      const type = guessType(newValue);
       updateNodeData(id, {
-        evaluated: true,
+        evaluated: false,
         kind: 'literal',
         metadata: {
           node_id: id,
         },
         str_value: newValue,
-        type,
-        value:
-          type === UnsoundType.Bottom
-            ? {
-                type: UnsoundType.Bottom,
-                error: TideSyntaxErrorInvalidLiteral_builder(newValue),
-              }
-            : {
-                type: type,
-                data: undefined,
-                value: {
-                  expression: newValue,
-                  imports: [],
-                },
-              },
       } as LiteralNode['data']);
     },
     [id, updateNodeData],

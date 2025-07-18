@@ -1,4 +1,4 @@
-import { Location, SoundType, UnsoundType, Value } from './expression';
+import { Location, SoundType, Value } from './expression';
 
 export interface FunctionParameter {
   name: string;
@@ -16,7 +16,6 @@ export type ITamaroCard_ConstantUse<U> = {
 export type ITamaroCard_Literal<U> = {
   kind: 'literal';
   str_value: string;
-  type: SoundType.Float | SoundType.Str | SoundType.Bool | UnsoundType.Bottom;
   metadata: U;
 };
 
