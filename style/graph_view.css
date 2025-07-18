@@ -112,7 +112,43 @@
   z-index: -100 !important;
 }
 
-.error-main-highlight .tamaro_card {
+.react-flow__node.selected .error-main-highlight .tamaro_card {
+
+  --color: rgb(255, 225, 130);
+  --spread: 2px;
+  --radius: 1px;
+
+  filter: drop-shadow(0px 0px var(--spread) black)
+          drop-shadow(0px 0px var(--spread) black)
+          drop-shadow(0px 0px var(--spread) black)
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color));
+}
+
+.react-flow__node.selected .error-secondary-highlight .tamaro_card {
+
+  --color: rgb(255, 225, 130);
+  --spread: 2px;
+  --radius: 1px;
+
+  filter: drop-shadow(0px 0px var(--spread) black)
+          drop-shadow(0px 0px var(--spread) black)
+          drop-shadow(0px 0px var(--spread) black)
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color))
+          drop-shadow(0px 0px var(--spread) var(--color));
+}
+
+.react-flow__node:not(.selected) .error-main-highlight .tamaro_card {
   --color: rgb(255, 225, 130);
   --spread: 2px;
   --radius: 1px;
@@ -131,7 +167,7 @@
 
 }
 
-.error-secondary-highlight .tamaro_card{
+.react-flow__node:not(.selected) .error-secondary-highlight .tamaro_card{
   --color: rgba(255, 225, 130, 0.8);
   --radius: 1px;
   --spread: 1px;
