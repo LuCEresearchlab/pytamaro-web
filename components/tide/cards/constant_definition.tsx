@@ -108,7 +108,7 @@ export default function ConstantDefinition(
         text_width: x1 - x0,
         min_height: y1 - y0,
       }));
-      onNodesChange([updateParent(store, id)]);
+      onNodesChange([updateParent(store.nodes, id)]);
     }
   }, [id, onNodesChange, screenToFlowPosition, store, textRef, updateNodeData]);
 
@@ -145,7 +145,7 @@ export default function ConstantDefinition(
     if (initialized === 'done' && !thisInitialization.current) {
       updateDimData();
       thisInitialization.current = true;
-      onNodesChange([updateParent(store, id)]);
+      onNodesChange([updateParent(store.nodes, id)]);
     }
   }, [initialized, store, id, onNodesChange, updateDimData]);
 

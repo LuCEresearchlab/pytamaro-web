@@ -194,7 +194,7 @@ export const createGraphSlice: StateCreator<
       .reduce((a, b) => a.concat(b), [])
       .concat(
         Array.from(parents_to_update).map((parent) =>
-          updateParent(get(), parent),
+          updateParent(get().nodes, parent),
         ),
       );
 
@@ -244,15 +244,27 @@ export const createGraphSlice: StateCreator<
         );
         if (prev !== evaluation_timeout || !evaluation_timeout) return;
         evaluation_timeout = undefined;
-        set((state) => ({
-          nodes: state.nodes.map(
-            (v) =>
-              ({
-                ...v,
-                data: evaluated.get(v.id) || v.data,
-              }) as TamaroCardNode,
-          ),
-        }));
+
+        set((state) => {
+          evaluated
+            .values()
+            .filter((v) => v.kind === 'constant_definition')
+            .forEach((v) =>
+              evaluated.set(
+                v.metadata.node_id,
+                updateParent(state.nodes, v.metadata.node_id).item.data,
+              ),
+            );
+          return {
+            nodes: state.nodes.map(
+              (v) =>
+                ({
+                  ...v,
+                  data: { ...v.data, ...(evaluated.get(v.id) || {}) },
+                }) as TamaroCardNode,
+            ),
+          };
+        });
       }, 200);
     }
   },

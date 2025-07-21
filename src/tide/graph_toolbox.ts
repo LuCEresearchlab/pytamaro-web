@@ -32,15 +32,12 @@ const TOP_MARGIN = 40;
 const RIGHT_MARGIN = 20;
 
 export function updateParent(
-  store: StoreType,
+  nodes: TamaroCardNode[],
   parent: string,
 ): NodeReplaceChange<TamaroCardNode> {
-  const { getNodes } = store;
+  const node = getNode(nodes, parent)! as ConstantDefinitionNode;
 
-  const befores = getNodes();
-  const node = getNode(befores, parent)! as ConstantDefinitionNode;
-
-  const children = befores.filter((v) => v.data.parent === parent);
+  const children = nodes.filter((v) => v.data.parent === parent);
 
   if (children.length === 0)
     return {
