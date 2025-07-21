@@ -171,7 +171,7 @@ function updateTreeInsideNodes(nodes: TamaroCardNode[]) {
 export async function evaluation(
   _nodes: TamaroCardNode[],
   edges: Edge[],
-): Promise<TamaroCardNode['data'][]> {
+): Promise<TamaroCardNode[]> {
   const nodes = updateTreeInsideNodes(_nodes);
 
   const nodes_context: Context<TideNodeMetadata> = (
@@ -184,9 +184,10 @@ export async function evaluation(
 
   const context = await evaluate_context(nodes_context);
 
-  const all_evaluated: TamaroCardNode['data'][] = await Promise.all(
+  const all_evaluated: TamaroCardNode[] = await Promise.all(
     roots(nodes, edges).map(async (v): Promise<TamaroCardNode['data']> => {
       if (v.data.kind === 'constant_definition') {
+        console.log('CONSTANT DEF');
         if (v.data.root) {
           const eval_root = await evaluate_tree(v.data.root, context);
           return {
@@ -220,7 +221,18 @@ export async function evaluation(
             )
           : toFlat(v);
       })
-      .reduce((a, b) => a.concat(b), []);
+      .reduce((a, b) => a.concat(b), [])
+      .map((v) => {
+        const node = nodes.find((node) => node.id === v.metadata.node_id)!;
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            ...v,
+          },
+        } as TamaroCardNode;
+      });
   });
+
   return all_evaluated;
 }

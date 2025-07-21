@@ -117,6 +117,7 @@ export const createGraphSlice: StateCreator<
     const previous_uneval = after
       .filter((v) => !v.data.evaluated)
       .map((v) => v.id);
+
     const initial_uneval = raw_changes
       .map((v) => {
         switch (v.type) {
@@ -168,25 +169,28 @@ export const createGraphSlice: StateCreator<
               x: current_position.x - previous_position.x,
               y: current_position.y - previous_position.y,
             };
-            return (
-              befores
-                .filter((v) => v.data?.parent === change.id)
-                // .filter((v) => !(v.selected && v.dragging))
-                .map(
-                  ({ id, dragging, selected, position: { x, y } }) =>
-                    ({
-                      id,
-                      position: !(selected && dragging)
-                        ? {
-                            x: x + dx,
-                            y: y + dy,
-                          }
-                        : undefined,
-                      type: 'position',
-                    }) as NodePositionChange,
-                )
-                .concat(change)
-            );
+            return befores
+              .filter((v) => v.data?.parent === change.id)
+              .map(
+                ({ id, dragging, selected, position: { x, y } }) =>
+                  ({
+                    id,
+                    position: !(selected && dragging)
+                      ? {
+                          x: x + dx,
+                          y: y + dy,
+                        }
+                      : undefined,
+                    type: 'position',
+                  }) as NodePositionChange,
+              )
+              .concat(change);
+          }
+        }
+        if (change.type === 'replace') {
+          const before_node = getNode(befores, change.id)!;
+          if (before_node.data.parent) {
+            parents_to_update.add(before_node.data.parent as string);
           }
         }
         return [change];
@@ -240,27 +244,18 @@ export const createGraphSlice: StateCreator<
         const prev = evaluation_timeout;
         const { nodes, edges } = get();
         const evaluated = new Map(
-          (await evaluation(nodes, edges)).map((v) => [v.metadata.node_id, v]),
+          (await evaluation(nodes, edges)).map((v) => [v.id, v.data]),
         );
         if (prev !== evaluation_timeout || !evaluation_timeout) return;
         evaluation_timeout = undefined;
 
         set((state) => {
-          evaluated
-            .values()
-            .filter((v) => v.kind === 'constant_definition')
-            .forEach((v) =>
-              evaluated.set(
-                v.metadata.node_id,
-                updateParent(state.nodes, v.metadata.node_id).item.data,
-              ),
-            );
           return {
             nodes: state.nodes.map(
               (v) =>
                 ({
                   ...v,
-                  data: { ...v.data, ...(evaluated.get(v.id) || {}) },
+                  data: evaluated.get(v.id),
                 }) as TamaroCardNode,
             ),
           };
