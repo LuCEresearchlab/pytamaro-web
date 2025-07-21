@@ -119,6 +119,23 @@ export default function ConstantDefinition(
   const connections = useNodeConnections({ id, handleId: 'output' });
 
   useEffect(() => {
+    const nodes = store.getNodes();
+    const change = updateParent(nodes, id);
+
+    const newDim = change.item.data.dimensions!;
+    const newPos = change.item.position!;
+
+    // TODO: On principle store.ts should handle that but currently they are too many bugs
+    if (
+      JSON.stringify(newDim) !== JSON.stringify(data.dimensions) ||
+      JSON.stringify(newPos) !==
+        JSON.stringify({ x: positionAbsoluteX, y: positionAbsoluteY })
+    ) {
+      store.onNodesChange([change]);
+    }
+  }, [data.dimensions, id, positionAbsoluteX, positionAbsoluteY, store]);
+
+  useEffect(() => {
     const newRoot =
       connections.length === 0
         ? undefined

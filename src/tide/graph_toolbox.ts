@@ -34,7 +34,7 @@ const RIGHT_MARGIN = 20;
 export function updateParent(
   nodes: TamaroCardNode[],
   parent: string,
-): NodeReplaceChange<TamaroCardNode> {
+): NodeReplaceChange<ConstantDefinitionNode> {
   const node = getNode(nodes, parent)! as ConstantDefinitionNode;
 
   const children = nodes.filter((v) => v.data.parent === parent);
