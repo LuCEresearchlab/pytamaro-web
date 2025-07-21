@@ -35,12 +35,12 @@ export function evaluated_context(nodes: TamaroCardNode[], edges: Edge[]) {
   );
 }
 
-export function uneval(
+export function propagate_unevaluation(
   nodes: TamaroCardNode[],
   edges: Edge[],
   ...ids: string[]
-) {
-  const to_uneval = new Set();
+): string[] {
+  const to_uneval = new Set<string>();
   const stack: TamaroCardNode['data'][] = ids
     .map((v) => getNode(nodes, v)?.data)
     .filter((v) => v)
@@ -65,11 +65,7 @@ export function uneval(
     }
   }
 
-  return nodes.map((v) =>
-    !to_uneval.has(v.id)
-      ? v
-      : ({ ...v, data: { ...v.data, evaluated: false } } as TamaroCardNode),
-  );
+  return Array.from(to_uneval);
 }
 
 function updateTreeInsideNodes(nodes: TamaroCardNode[]) {
@@ -187,7 +183,6 @@ export async function evaluation(
   const all_evaluated: TamaroCardNode[] = await Promise.all(
     roots(nodes, edges).map(async (v): Promise<TamaroCardNode['data']> => {
       if (v.data.kind === 'constant_definition') {
-        console.log('CONSTANT DEF');
         if (v.data.root) {
           const eval_root = await evaluate_tree(v.data.root, context);
           return {

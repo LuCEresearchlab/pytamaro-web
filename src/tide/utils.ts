@@ -1,5 +1,5 @@
 'use client';
-import { Edge, Node, NodeChange } from '@xyflow/react';
+import { Edge, EdgeChange, Node, NodeChange } from '@xyflow/react';
 import {
   getHandleName,
   getParameterName,
@@ -18,7 +18,7 @@ import {
   EvaluatedFunctionDefinition,
 } from './language/context';
 import { UnsoundType } from './language/expression';
-import { eqLocation, getCardOutputType } from './language/utils';
+import { eqCard, eqLocation, getCardOutputType } from './language/utils';
 import { TamaroCard, TamaroCardParameterEnvironment } from './language/cards';
 
 export function getNode(nodes: TamaroCardNode[], id: string) {
@@ -390,6 +390,38 @@ export function compute_node_change(
   return changes;
 }
 
+export function compute_edge_change(befores: Edge[], after: Edge[]) {
+  const changes: EdgeChange[] = [];
+  const newLookup = new Map<string, Edge>(after.map((item) => [item.id, item]));
+  const currentLookup = new Map<string, Edge>(
+    befores.map((item) => [item.id, item]),
+  );
+
+  for (const [index, item] of Array.from(after.entries())) {
+    const lookupItem = currentLookup.get(item.id);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const storeItem = (lookupItem as any)?.internals?.userNode ?? lookupItem;
+
+    if (storeItem !== undefined && storeItem !== item) {
+      changes.push({ id: item.id, item: item, type: 'replace' });
+    }
+
+    if (storeItem === undefined) {
+      changes.push({ item: item, type: 'add', index });
+    }
+  }
+
+  for (const [id] of Array.from(currentLookup)) {
+    const nextNode = newLookup.get(id);
+
+    if (nextNode === undefined) {
+      changes.push({ id, type: 'remove' });
+    }
+  }
+
+  return changes;
+}
+
 export function getDepth(
   node: TamaroCardNode,
   nodes: TamaroCardNode[],
@@ -399,4 +431,40 @@ export function getDepth(
   if (!successor) return 0;
 
   return 1 + getDepth(getNode(nodes, successor.target)!, nodes, edges);
+}
+
+export function getUnevalutedChange(
+  nodes: TamaroCardNode[],
+  changes: NodeChange<TamaroCardNode>[],
+): string[] {
+  return changes
+    .map((v) => {
+      switch (v.type) {
+        case 'remove':
+          return v.id;
+        case 'replace': {
+          const id = v.id;
+          const before = getNode(nodes, id)!;
+          const after = v.item;
+
+          if (
+            before.data.kind !== 'constant_definition' &&
+            after.data.kind !== 'constant_definition'
+          )
+            if (
+              before.data.kind === 'function_use' ||
+              !eqCard(before.data, after.data)
+            )
+              return id;
+          if (JSON.stringify(before.data) !== JSON.stringify(after.data))
+            return id;
+          break;
+        }
+        case 'add':
+          return v.item.id;
+      }
+      return undefined;
+    })
+    .filter(Boolean)
+    .map((v) => v as string);
 }
