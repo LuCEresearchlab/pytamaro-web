@@ -1,4 +1,4 @@
-import { EvaluatedDefinition } from './context';
+import { EvaluatedDefinition } from './definitions';
 import { sort_dependencies } from './evaluation';
 import { UnsoundType, Value } from './expression';
 

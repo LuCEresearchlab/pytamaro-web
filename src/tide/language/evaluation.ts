@@ -7,12 +7,12 @@ import {
 } from './cards';
 import { create_code } from './code';
 import {
-  Context,
+  Definitions,
   Definition,
-  EvaluatedContext,
+  EvaluatedDefinitions,
   EvaluatedDefinition,
   get_constant_type,
-} from './context';
+} from './definitions';
 import {
   TideGenericError_builder,
   TideNameErrorCyclicalDependencies_builder,
@@ -101,11 +101,11 @@ export async function executeOnServer(
 type DefinitionWithImports<U> = Definition<U> & {
   dependencies: Location[];
 };
-type ContextWithImports<U> = DefinitionWithImports<U>[];
+type DefinitionsWithImports<U> = DefinitionWithImports<U>[];
 
 function is_cylicaly_defined<U>(
   def: DefinitionWithImports<U>,
-  context: ContextWithImports<U>,
+  context: DefinitionsWithImports<U>,
 ): Location[] | undefined {
   const seen: Set<Location> = new Set();
   const stack: Location[][] = def.dependencies.map((v) => [v]);
@@ -153,8 +153,8 @@ export function sort_dependencies<T>(
 }
 
 function sort_context_by_dependency<U>(
-  context: ContextWithImports<U>,
-): [ContextWithImports<U>, EvaluatedContext<U>] {
+  context: DefinitionsWithImports<U>,
+): [DefinitionsWithImports<U>, EvaluatedDefinitions<U>] {
   const [stack, cyclical] = context
     .map((v) => ({ value: v, cyclical: is_cylicaly_defined(v, context) }))
     .reduce(
@@ -163,12 +163,12 @@ function sort_context_by_dependency<U>(
           ? [a[0], a[1].concat([b.cyclical, b.value])]
           : [a[0].concat(b.value), a[1]],
       [
-        [] as ContextWithImports<U>,
+        [] as DefinitionsWithImports<U>,
         [] as [Location[], DefinitionWithImports<U>][],
       ],
     );
 
-  const evaluated_cyclical: EvaluatedContext<U> = cyclical.map(
+  const evaluated_cyclical: EvaluatedDefinitions<U> = cyclical.map(
     (v) =>
       ({
         ...v[1],
@@ -193,7 +193,7 @@ function sort_context_by_dependency<U>(
 
 export function find_dependencies<U>(
   value: TamaroCard<TamaroCardParameterEnvironment, U>,
-  context: EvaluatedContext<U>,
+  context: EvaluatedDefinitions<U>,
 ): Location[] {
   function aux(
     value: TamaroCard<TamaroCardParameterEnvironment, U>,
@@ -242,7 +242,7 @@ export async function evaluate_tree<
   U,
 >(
   root: TamaroCard<T, U>,
-  context: EvaluatedContext<U>,
+  context: EvaluatedDefinitions<U>,
 ): Promise<EvaluatedTamaroCard<T, U>> {
   if (root.evaluated) return root;
   function returning_error(
@@ -550,9 +550,9 @@ export async function evaluate_tree<
 }
 
 export async function evaluate_context<U>(
-  context: Context<U>,
-): Promise<EvaluatedContext<U>> {
-  const context_with_imports: ContextWithImports<U> = context.map((v) => {
+  context: Definitions<U>,
+): Promise<EvaluatedDefinitions<U>> {
+  const context_with_imports: DefinitionsWithImports<U> = context.map((v) => {
     if (v.subkind === 'local')
       return {
         ...v,

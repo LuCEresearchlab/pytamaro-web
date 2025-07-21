@@ -14,9 +14,9 @@ import {
   TideNodeMetadata,
 } from '../../components/tide/cards';
 import {
-  EvaluatedContext,
+  EvaluatedDefinitions,
   EvaluatedFunctionDefinition,
-} from './language/context';
+} from './language/definitions';
 import { UnsoundType } from './language/expression';
 import { eqCard, eqLocation, getCardOutputType } from './language/utils';
 import { TamaroCard, TamaroCardParameterEnvironment } from './language/cards';
@@ -106,7 +106,7 @@ export function getFunctionParameterRelative(
 }
 
 export function getHandleType(
-  context: EvaluatedContext<TideNodeMetadata>,
+  context: EvaluatedDefinitions<TideNodeMetadata>,
   node: TamaroCardNode,
   handle: string,
 ) {

@@ -1,15 +1,15 @@
 import { CompletedExecutionResponse } from '../../codeExecution';
 import { create_code } from './code';
-import { EvaluatedContext } from './context';
+import { EvaluatedDefinitions } from './definitions';
 import { executeOnServer } from './evaluation';
 import { SoundType } from './expression';
 import { eqLocation } from './utils';
 
 export function unwrap_local_definition<T>(
-  definitions: EvaluatedContext<T>,
-  context: EvaluatedContext<T>,
+  definitions: EvaluatedDefinitions<T>,
+  context: EvaluatedDefinitions<T>,
 ) {
-  const unwrap_context: EvaluatedContext<T> = [];
+  const unwrap_context: EvaluatedDefinitions<T> = [];
   const stack = Array.from(definitions);
 
   while (stack.length !== 0) {
@@ -30,7 +30,7 @@ export function unwrap_local_definition<T>(
 export async function extract_data(
   expression: string,
   type: SoundType,
-  definitions: EvaluatedContext<unknown>,
+  definitions: EvaluatedDefinitions<unknown>,
 ): Promise<unknown> {
   switch (type) {
     case SoundType.Graphic: {

@@ -485,7 +485,7 @@ import {
   TideErrorValue,
   UnsoundType,
 } from '../../src/tide/language/expression';
-import { IEvaluatedLocalConstantDefinition } from '../../src/tide/language/context';
+import { IEvaluatedLocalConstantDefinition } from '../../src/tide/language/definitions';
 import { EvaluatedTamaroCard } from '../../src/tide/language/cards';
 import { getNode } from '../../src/tide/utils';
 import { ErrorParagraph } from '../../components/tide/ErrorParagraph';

@@ -9,7 +9,7 @@ import {
   TamaroCard_FunctionUse,
   TamaroCard_Literal,
 } from '../../../src/tide/language/cards';
-import { LocalConstantDefinition } from '../../../src/tide/language/context';
+import { LocalConstantDefinition } from '../../../src/tide/language/definitions';
 import TamaroWrapper from './wrapper';
 
 export interface ImportReference {

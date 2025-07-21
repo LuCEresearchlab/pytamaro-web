@@ -3,7 +3,7 @@ import {
   TamaroCard,
   NonEvaluatedTamaroCard_Literal,
 } from '../../../src/tide/language/cards';
-import { EvaluatedContext } from '../../../src/tide/language/context';
+import { EvaluatedDefinitions } from '../../../src/tide/language/definitions';
 import { TideRuntimeError_builder } from '../../../src/tide/language/error_builders';
 import { evaluate_tree } from '../../../src/tide/language/evaluation';
 import {
@@ -68,7 +68,7 @@ describe('Unit test literal evaluation', () => {
 
 describe('Unit test constant use', () => {
   it('evaluate_imported_constant_use', async () => {
-    const map: EvaluatedContext<object> = getDefaultContext();
+    const map: EvaluatedDefinitions<object> = getDefaultContext();
 
     expect(
       await evaluate_tree(
@@ -95,7 +95,7 @@ describe('Unit test constant use', () => {
   });
 
   it('evaluate_local_constant_use', async () => {
-    const map: EvaluatedContext<object> = [];
+    const map: EvaluatedDefinitions<object> = [];
     const import_size: Location = { module: false, name: 'size' };
     map.push({
       kind: 'constant_definition',
@@ -142,7 +142,7 @@ describe('Unit test constant use', () => {
 
 describe('Unit test function use', () => {
   it('evalute_simple_function_use', async () => {
-    const map: EvaluatedContext<object> = getDefaultContext();
+    const map: EvaluatedDefinitions<object> = getDefaultContext();
 
     const arg_map: Map<string, TamaroCard<[], object>> = new Map();
     arg_map.set('width', literal_card('100.0', SoundType.Float));
@@ -176,7 +176,7 @@ describe('Unit test function use', () => {
   });
 
   it('evaluate_local_constant_use_inside_function_use', async () => {
-    const map: EvaluatedContext<object> = getDefaultContext();
+    const map: EvaluatedDefinitions<object> = getDefaultContext();
     const import_size: Location = { module: false, name: 'size' };
     map.push({
       kind: 'constant_definition',
@@ -240,7 +240,7 @@ describe('Unit test function use', () => {
   });
 
   it('evaluate_local_constant_use_inside_function_use_runtime_error', async () => {
-    const map: EvaluatedContext<object> = getDefaultContext();
+    const map: EvaluatedDefinitions<object> = getDefaultContext();
     const import_size: Location = { module: false, name: 'size' };
     map.push({
       kind: 'constant_definition',
@@ -298,7 +298,7 @@ describe('Unit test function use', () => {
   });
 
   it('evaluate_local_constant_use_inside_function_use_0x0', async () => {
-    const map: EvaluatedContext<object> = getDefaultContext();
+    const map: EvaluatedDefinitions<object> = getDefaultContext();
     const import_size: Location = { module: false, name: 'size' };
     map.push({
       kind: 'constant_definition',

@@ -34,8 +34,8 @@ import {
 import { evaluation, propagate_unevaluation } from './evaluation';
 import {
   EvaluatedConstantDefinition,
-  EvaluatedContext,
-} from './language/context';
+  EvaluatedDefinitions,
+} from './language/definitions';
 import { getDefaultContext } from '../../cypress/e2e/tide/data';
 import { getParameterName } from '../../components/tide/cards/function';
 import { TamaroCard } from './language/cards';
@@ -50,7 +50,7 @@ export interface GraphStateSlice {
   dragged: DraggedElementData | undefined;
   initialized: 'before' | 'wait' | 'done';
   setInitialized: (v: 'before' | 'wait' | 'done') => void;
-  evaluated_context: () => EvaluatedContext<TideNodeMetadata>;
+  evaluated_context: () => EvaluatedDefinitions<TideNodeMetadata>;
   nodes: TamaroCardNode[];
   edges: Edge[];
   mousePosition: XYPosition;

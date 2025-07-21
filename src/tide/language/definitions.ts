@@ -1,5 +1,5 @@
 import { TamaroCard, TamaroCardParameterEnvironment } from './cards';
-import { ValueType, Location, Value, SoundType } from './expression';
+import { Location, SoundType, Value, ValueType } from './expression';
 
 export type Definition<U> =
   | FunctionDefinition<TamaroCardParameterEnvironment, U>
@@ -17,6 +17,21 @@ export type EvaluatedFunctionDefinition<
   T extends TamaroCardParameterEnvironment,
   U,
 > = IImportedFunctionDefintion<T> | IEvaluatedLocalFunctionDefinition<T, U>;
+
+export type ConstantDefinition<U> =
+  | ILocalConstantDefinition<U>
+  | EvaluatedConstantDefinition<U>;
+
+export type LocalConstantDefinition<U> =
+  | ILocalConstantDefinition<U>
+  | IEvaluatedLocalConstantDefinition<U>;
+
+export type EvaluatedConstantDefinition<U> =
+  | IImportedConstantDefinition
+  | IEvaluatedLocalConstantDefinition<U>;
+
+export type Definitions<U> = Definition<U>[];
+export type EvaluatedDefinitions<U> = EvaluatedDefinition<U>[];
 
 export type IFunctionDefinition<T extends TamaroCardParameterEnvironment> = {
   kind: 'function_definition';
@@ -85,21 +100,6 @@ export type IEvaluatedLocalConstantDefinition<U> =
     value: Value;
     dependencies: Location[];
   };
-
-export type LocalConstantDefinition<U> =
-  | ILocalConstantDefinition<U>
-  | IEvaluatedLocalConstantDefinition<U>;
-
-export type ConstantDefinition<U> =
-  | ILocalConstantDefinition<U>
-  | EvaluatedConstantDefinition<U>;
-
-export type EvaluatedConstantDefinition<U> =
-  | IImportedConstantDefinition
-  | IEvaluatedLocalConstantDefinition<U>;
-
-export type Context<U> = Definition<U>[];
-export type EvaluatedContext<U> = EvaluatedDefinition<U>[];
 
 export function get_constant_type(v: EvaluatedConstantDefinition<unknown>) {
   switch (v.subkind) {

@@ -1,4 +1,4 @@
-import { Context, EvaluatedDefinition } from './language/context';
+import { Definitions, EvaluatedDefinition } from './language/definitions';
 import {
   ConstantDefinitionNode,
   TamaroCardNode,
@@ -170,8 +170,8 @@ export async function evaluation(
 ): Promise<TamaroCardNode[]> {
   const nodes = updateTreeInsideNodes(_nodes);
 
-  const nodes_context: Context<TideNodeMetadata> = (
-    getDefaultContext() as Context<TideNodeMetadata>
+  const nodes_context: Definitions<TideNodeMetadata> = (
+    getDefaultContext() as Definitions<TideNodeMetadata>
   ).concat(
     nodes
       .filter((v) => v.data.kind === 'constant_definition')
