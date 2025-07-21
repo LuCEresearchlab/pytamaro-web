@@ -3,13 +3,13 @@ import {
   DragEvent as React_DragEvent,
   MouseEvent as React_MouseEvent,
 } from 'react';
-import { StoreType } from '../../components/tide/store';
 import {
   ConstantDefinitionNode,
   TamaroCardNode,
 } from '../../components/tide/cards';
 import { getNode } from './utils';
 import { check_edge_looping, check_edge_typing } from './interactivity';
+import { StoreType } from './store';
 
 type AllStore = StoreType & {
   screenToFlowPosition: (

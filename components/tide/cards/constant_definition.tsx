@@ -84,7 +84,6 @@ export default function ConstantDefinition(
 ) {
   const { id, positionAbsoluteX, positionAbsoluteY, data, show_handles } =
     props;
-  const text_width = data.text_width || 0;
   const textRef: RefObject<HTMLDivElement> = createRef();
   const store = useStore();
   const { screenToFlowPosition } = useReactFlow();
@@ -189,37 +188,48 @@ export default function ConstantDefinition(
             width: '100%',
             height: '25%',
             zIndex: '-1',
+            overflow: 'visible',
           }}
         >
-          <div
-            style={{
-              width: '100%',
-              height: '25%',
-              borderStyle: 'solid',
-              bottom: '0%',
-
-              borderWidth: `15px ${text_width / 2}px 0 ${text_width / 2}px`,
-              borderColor: `${BORDER_COLOR} transparent ${BORDER_COLOR} transparent`,
-              transform: 'rotate(180deg)',
-              pointerEvents: 'none',
-              position: 'absolute',
-            }}
-          />
-
-          <div
+          <svg
             style={{
               position: 'absolute',
-              width: '100%',
-              height: '25%',
-              borderStyle: 'solid',
-              bottom: `-${BORDER_WIDTH}`,
-
-              borderWidth: `15px ${text_width / 2}px 0 ${text_width / 2}px`,
-              borderColor: `${BACKGROUND_COLOR} transparent ${BACKGROUND_COLOR} transparent`,
-              transform: 'rotate(180deg)',
-              pointerEvents: 'none',
+              bottom: '-0px',
             }}
-          />
+            width='100%'
+            height='300%'
+            viewBox='0 -85 100 200'
+            preserveAspectRatio='none'
+          >
+            <path
+              d='M0 120L0 100L50 0L100 100L100 120Z'
+              style={{
+                fill: BACKGROUND_COLOR,
+                stroke: '0px',
+                vectorEffect: 'non-scaling-stroke',
+              }}
+            />
+            <path
+              d='M0 120L0 100L50 0L100 100L100 120'
+              style={{
+                fill: 'none', // or replace with fill color if needed
+                stroke: BORDER_COLOR,
+                strokeWidth: '2px',
+                vectorEffect: 'non-scaling-stroke',
+                strokeLinejoin: 'miter',
+                strokeMiterlimit: 100, // Increase this if needed
+              }}
+            />
+            <path
+              d='M100 100L100 120M0 100L0 120'
+              style={{
+                fill: 'none', // or replace with fill color if needed
+                stroke: BORDER_COLOR,
+                strokeWidth: '4px',
+                vectorEffect: 'non-scaling-stroke',
+              }}
+            />
+          </svg>
         </div>
         <div
           ref={textRef}
