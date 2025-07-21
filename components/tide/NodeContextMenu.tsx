@@ -22,11 +22,8 @@ import {
   TamaroCardNode,
   TideNodeMetadata,
 } from './cards';
-import {
-  EvaluatedTamaroCard,
-  TamaroCard,
-  TamaroCardParameterEnvironment,
-} from '../../src/tide/language/cards';
+import { EvaluatedTamaroCard, TamaroCard } from '../../src/tide/language/cards';
+import { TamaroCardParameterEnvironment } from '../../src/tide/language/types';
 import { find_dependencies } from '../../src/tide/language/evaluation';
 
 export default function NodeContextMenu({
@@ -77,24 +74,35 @@ export default function NodeContextMenu({
             TamaroCardParameterEnvironment,
             TideNodeMetadata
           >;
+          if (retyped.evaluated) {
+            return {
+              dependencies: find_dependencies(retyped, evaluated_context()),
+              evaluated: true,
+              location: { module: false, name },
+              kind: 'constant_definition',
+              subkind: 'local',
+              metadata: {
+                node_id: newNodeId,
+              },
+              root: retyped,
+              value: (
+                retyped as EvaluatedTamaroCard<
+                  TamaroCardParameterEnvironment,
+                  unknown
+                >
+              ).value,
+            };
+          }
           return {
             dependencies: find_dependencies(retyped, evaluated_context()),
-            evaluated: retyped.evaluated,
-            import: { module: false, name },
+            evaluated: false,
+            location: { module: false, name },
             kind: 'constant_definition',
             subkind: 'local',
             metadata: {
               node_id: newNodeId,
             },
             root: retyped,
-            value: retyped.evaluated
-              ? (
-                  retyped as EvaluatedTamaroCard<
-                    TamaroCardParameterEnvironment,
-                    unknown
-                  >
-                ).value
-              : undefined,
           };
         })(),
         position: { x: 0, y: 0 },
@@ -108,7 +116,7 @@ export default function NodeContextMenu({
         data: {
           kind: 'constant_use',
           evaluated: false,
-          import: { module: false, name },
+          location: { module: false, name },
           metadata: {
             node_id: replacedByNodeId,
           },
@@ -161,8 +169,9 @@ export default function NodeContextMenu({
   const node = getNode(getNodes(), id);
 
   const constant_reference: string | undefined =
-    node?.type === 'constant' && node.data.import.name
-      ? getConstantDefinition(getNodes(), node?.data?.import.name as string)?.id
+    node?.type === 'constant' && node.data.location.name
+      ? getConstantDefinition(getNodes(), node?.data?.location.name as string)
+          ?.id
       : undefined;
 
   const goToParentDefinition = useCallback(() => {

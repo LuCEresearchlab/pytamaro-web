@@ -17,9 +17,10 @@ import {
   EvaluatedDefinitions,
   EvaluatedFunctionDefinition,
 } from './language/definitions';
-import { UnsoundType } from './language/expression';
+import { UnsoundType } from './language/typing';
 import { eqCard, eqLocation, getCardOutputType } from './language/utils';
-import { TamaroCard, TamaroCardParameterEnvironment } from './language/cards';
+import { TamaroCard } from './language/cards';
+import { TamaroCardParameterEnvironment } from './language/types';
 
 export function getNode(nodes: TamaroCardNode[], id: string) {
   return nodes.find((v) => v.id === id);
@@ -199,7 +200,7 @@ export function getConstantDefinition(
   name: string,
 ): TamaroCardNode | undefined {
   return nodes.find(
-    (v) => v.type === 'constant_definition' && v.data.import.name === name,
+    (v) => v.type === 'constant_definition' && v.data.location.name === name,
   );
 }
 
@@ -208,7 +209,7 @@ export function getConstantDefinitions(
   name: string,
 ): TamaroCardNode[] {
   return nodes.filter(
-    (v) => v.type === 'constant_definition' && v.data.import.name === name,
+    (v) => v.type === 'constant_definition' && v.data.location.name === name,
   );
 }
 
@@ -217,7 +218,7 @@ export function getUsages(
   name: string,
 ): TamaroCardNode[] {
   return nodes.filter(
-    (v) => v.type === 'constant' && v.data.import.name === name,
+    (v) => v.type === 'constant' && v.data.location.name === name,
   );
 }
 
@@ -260,7 +261,7 @@ export function arcToEdges(
       if (last.id !== '') edge_ids.push(last.id);
       const last_node = getNode(nodes, last.target);
       if (last_node?.type === 'constant_definition') {
-        const usages = getUsages(nodes, last_node.data.import.name as string);
+        const usages = getUsages(nodes, last_node.data.location.name as string);
 
         const good_usage = usages.find((v) =>
           inline_search(v.id, target, edge_ids.concat(blacklist)),
@@ -307,7 +308,7 @@ export function getSubTreeFromRootConsideringConstants(
     if (el.type === 'constant') {
       const definitions = getConstantDefinitions(
         nodes,
-        el.data.import.name as string,
+        el.data.location.name as string,
       );
       if (definitions.length !== 1) continue;
 

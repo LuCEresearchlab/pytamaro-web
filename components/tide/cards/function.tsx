@@ -22,7 +22,7 @@ export function TamaroFunctionCard({
   data,
   show_handles,
 }: NodeProps<FunctionNode> & ExtraneousNodeProps) {
-  const i = data.import as { module: string; name: string };
+  const i = data.location as { module: string; name: string };
 
   const updateNodeData = useStore((state) => state.updateNodeData);
 

@@ -1,8 +1,11 @@
 import { CompletedExecutionResponse } from '../../codeExecution';
 import { create_code } from './code';
-import { EvaluatedDefinitions } from './definitions';
+import {
+  EvaluatedDefinitions,
+  get_definition_dependencies,
+} from './definitions';
 import { executeOnServer } from './evaluation';
-import { SoundType } from './expression';
+import { SoundType } from './typing';
 import { eqLocation } from './utils';
 
 export function unwrap_local_definition<T>(
@@ -15,12 +18,13 @@ export function unwrap_local_definition<T>(
   while (stack.length !== 0) {
     const el = stack.pop()!;
 
-    if (unwrap_context.find((v) => eqLocation(v.import, el.import))) continue;
+    if (unwrap_context.find((v) => eqLocation(v.location, el.location)))
+      continue;
     unwrap_context.push(el);
 
     stack.push(
-      ...el.dependencies.map(
-        (v) => context.find((o) => eqLocation(v, o.import))!,
+      ...get_definition_dependencies(el).map(
+        (v) => context.find((o) => eqLocation(v, o.location))!,
       ),
     );
   }

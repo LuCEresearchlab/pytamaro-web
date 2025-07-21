@@ -90,7 +90,7 @@ export default function ConstantDefinition(
   const { initialized, onNodesChange, updateNodeData } = store;
   const thisInitialization = useRef(false);
 
-  const name = (data.import.name || '') as string;
+  const name = (data.location.name || '') as string;
 
   const updateDimData = useCallback(() => {
     if (textRef.current) {

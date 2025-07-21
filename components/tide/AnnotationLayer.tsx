@@ -5,11 +5,8 @@ import { StoreType, useStore } from '../../src/tide/store';
 import { getNode } from '../../src/tide/utils';
 import { ErrorBubble } from './Bubble';
 import { ErrorParagraph } from './ErrorParagraph';
-import {
-  TideErrorValue,
-  UnsoundType,
-  Value,
-} from '../../src/tide/language/expression';
+import { TideErrorValue, Value } from '../../src/tide/language/expression';
+import { UnsoundType } from '../../src/tide/language/typing';
 import { getHandleName } from './cards/function';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

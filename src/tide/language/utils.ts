@@ -4,17 +4,11 @@ import {
   ITamaroCard_FunctionUse,
   ITamaroCard_Literal,
   TamaroCard,
-  TamaroCardParameterEnvironment,
 } from './cards';
-import {
-  compareLocation,
-  LiteralType,
-  Location,
-  SoundType,
-  UnsoundType,
-  Value,
-  ValueType,
-} from './expression';
+import { TamaroCardParameterEnvironment } from './types';
+import { Value } from './expression';
+import { Location } from './types';
+import { LiteralType, SoundType, UnsoundType, ValueType } from './typing';
 
 export const BOOL_REGEX = /(True)|(False)/;
 export const INT_REGEX = /^-?[0-9]+$/g;
@@ -85,7 +79,7 @@ export function eqCard<T extends TamaroCardParameterEnvironment, U>(
   switch (a.kind) {
     case 'constant_use': {
       const b = _b as ITamaroCard_ConstantUse<U>;
-      return eqLocation(a.import, b.import);
+      return eqLocation(a.location, b.location);
     }
 
     case 'literal': {
@@ -95,7 +89,7 @@ export function eqCard<T extends TamaroCardParameterEnvironment, U>(
     }
     case 'function_use': {
       const b = _b as ITamaroCard_FunctionUse<T, U>;
-      if (!eqLocation(a.import, b.import)) return false;
+      if (!eqLocation(a.location, b.location)) return false;
 
       return (
         a.children.size === b.children.size &&
@@ -107,4 +101,13 @@ export function eqCard<T extends TamaroCardParameterEnvironment, U>(
       );
     }
   }
+}
+export function compareLocation(a: Location, b: Location) {
+  if (a.module === b.module) {
+    return a.name.localeCompare(b.name);
+  }
+  if (a.module === false) {
+    return 1;
+  }
+  return -1;
 }

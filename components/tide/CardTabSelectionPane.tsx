@@ -11,7 +11,7 @@ import {
   LiteralType,
   SoundType,
   UnsoundType,
-} from '../../src/tide/language/expression';
+} from '../../src/tide/language/typing';
 import { TideSyntaxErrorInvalidLiteral_builder } from '../../src/tide/language/error_builders';
 import { INT_REGEX } from '../../src/tide/language/utils';
 
@@ -92,7 +92,7 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
                     onDragStart(e, 'function', {
                       children: new Map(),
                       evaluated: false,
-                      import: { module: el.module, name: el.name },
+                      location: { module: el.module, name: el.name },
                       kind: 'function_use',
                       metadata: {
                         node_id: '',
@@ -104,7 +104,7 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
                     onDragStart(e, 'constant', {
                       kind: 'constant_use',
                       evaluated: false,
-                      import: { module: el.module, name: el.name },
+                      location: { module: el.module, name: el.name },
                       metadata: {
                         node_id: '',
                       },
@@ -195,7 +195,7 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
               onDragStart(e, 'constant', {
                 evaluated: false,
                 kind: 'constant_use',
-                import: {
+                location: {
                   module: false,
                   name: constant_name,
                 },
@@ -213,7 +213,7 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
                   {
                     evaluated: false,
                     kind: 'constant_use',
-                    import: {
+                    location: {
                       module: false,
                       name: constant_name,
                     },

@@ -1,6 +1,7 @@
 import { NodeProps } from '@xyflow/react';
 import { TamaroCardNode } from '.';
-import { UnsoundType, Value } from '../../../src/tide/language/expression';
+import { Value } from '../../../src/tide/language/expression';
+import { UnsoundType } from '../../../src/tide/language/typing';
 
 export default function TamaroWrapper({
   nodeprops,

@@ -1,17 +1,15 @@
 import axios from 'axios';
-import {
-  EvaluatedTamaroCard,
-  FunctionParameter,
-  TamaroCard,
-  TamaroCardParameterEnvironment,
-} from './cards';
+import { EvaluatedTamaroCard, TamaroCard } from './cards';
+import { TamaroCardParameterEnvironment } from './types';
+import { FunctionParameter } from './types';
 import { create_code } from './code';
 import {
   Definitions,
   Definition,
   EvaluatedDefinitions,
   EvaluatedDefinition,
-  get_constant_type,
+  get_definition_output_type,
+  get_definition_dependencies,
 } from './definitions';
 import {
   TideGenericError_builder,
@@ -29,17 +27,15 @@ import {
   TideTypeError_builder,
 } from './error_builders';
 import { TideError } from './errors';
+import { ExpressionValue, IExpressionValue, Value } from './expression';
+import { Location } from './types';
+import { compareLocation } from './utils';
 import {
-  compareLocation,
-  ExpressionValue,
-  IExpressionValue,
-  Location,
   SoundType,
   type_equality_rule,
   type_toString,
   UnsoundType,
-  Value,
-} from './expression';
+} from './typing';
 import { extract_data, unwrap_local_definition } from './data_extraction';
 import { eqLocation, inferRawValueType } from './utils';
 import { ExecutionResponse } from '../../codeExecution';
@@ -114,10 +110,10 @@ function is_cylicaly_defined<U>(
     const is = stack.pop()!;
     const i = is[0];
 
-    if (eqLocation(i, def.import)) return is;
+    if (eqLocation(i, def.location)) return is;
     if (seen.has(i)) continue;
 
-    const el = context.find((v) => eqLocation(v.import, i));
+    const el = context.find((v) => eqLocation(v.location, i));
     if (el == null) continue;
 
     stack.push(...el.dependencies.map((v) => [v, ...is]));
@@ -184,9 +180,9 @@ function sort_context_by_dependency<U>(
 
   const sorted = sort_dependencies(
     stack,
-    (v) => v.import,
+    (v) => v.location,
     (v) => v.dependencies,
-    (v) => context.find((o) => eqLocation(o.import, v)),
+    (v) => context.find((o) => eqLocation(o.location, v)),
   ).reverse();
   return [sorted, evaluated_cyclical];
 }
@@ -200,13 +196,13 @@ export function find_dependencies<U>(
   ): Location[] {
     switch (value.kind) {
       case 'constant_use':
-        return [value.import];
+        return [value.location];
       case 'literal':
         return [];
       case 'function_use':
         return Array.from(value.children.values())
           .map((v) => aux(v))
-          .reduce((a, b) => a.concat(b), [value.import])
+          .reduce((a, b) => a.concat(b), [value.location])
           .sort(compareLocation);
       // case 'parameter_use':
       //   return [];
@@ -216,7 +212,10 @@ export function find_dependencies<U>(
   return sort_dependencies(
     aux(value),
     (v) => v,
-    (v) => context.find((o) => eqLocation(o.import, v))?.dependencies || [],
+    (v) =>
+      get_definition_dependencies(
+        context.find((o) => eqLocation(o.location, v)),
+      ),
     (v) => v,
   );
 }
@@ -266,22 +265,22 @@ export async function evaluate_tree<
 
   switch (root.kind) {
     case 'constant_use': {
-      if (!check_identifier_name(root.import.name))
+      if (!check_identifier_name(root.location.name))
         return returning_error(
-          TideSyntaxErrorInvalidConstantIdentifier_builder(root.import.name),
+          TideSyntaxErrorInvalidConstantIdentifier_builder(root.location.name),
         );
-      if (!context.find((o) => eqLocation(o.import, root.import)))
+      if (!context.find((o) => eqLocation(o.location, root.location)))
         return returning_error(
-          TideNameErrorUnknownConstant_builder(root.import.name),
+          TideNameErrorUnknownConstant_builder(root.location.name),
         );
       const definition = context.find((o) =>
-        eqLocation(o.import, root.import),
+        eqLocation(o.location, root.location),
       )!;
       if (definition.kind === 'function_definition')
         return returning_error(
           TideSyntaxErrorNodeKindMismatch_builder('constant', 'function'),
         );
-      const constant_type = get_constant_type(definition);
+      const constant_type = get_definition_output_type(definition);
       if (constant_type === UnsoundType.Bottom) {
         return returning_error(false);
       }
@@ -291,14 +290,14 @@ export async function evaluate_tree<
         evaluated: true,
         value: {
           data: await extract_data(
-            definition.import.name,
+            definition.location.name,
             constant_type,
             unwrap_local_definition([definition], context),
           ),
           type: constant_type,
           value: {
-            expression: definition.import.name,
-            imports: [definition.import],
+            expression: definition.location.name,
+            imports: [definition.location],
           },
         } as unknown as ExpressionValue,
       };
@@ -320,9 +319,9 @@ export async function evaluate_tree<
       } as EvaluatedTamaroCard<T, U>;
     }
     case 'function_use': {
-      if (!check_identifier_name(root.import.name))
+      if (!check_identifier_name(root.location.name))
         return returning_error(
-          TideSyntaxErrorInvalidFunctionIdentifier_builder(root.import.name),
+          TideSyntaxErrorInvalidFunctionIdentifier_builder(root.location.name),
 
           new Map(
             await Promise.all(
@@ -336,9 +335,9 @@ export async function evaluate_tree<
             ),
           ),
         );
-      if (!context.find((o) => eqLocation(o.import, root.import)))
+      if (!context.find((o) => eqLocation(o.location, root.location)))
         return returning_error(
-          TideNameErrorUnknownFunction_builder(root.import.name),
+          TideNameErrorUnknownFunction_builder(root.location.name),
           new Map(
             await Promise.all(
               root.children
@@ -352,7 +351,7 @@ export async function evaluate_tree<
           ),
         );
       const definition = context.find((o) =>
-        eqLocation(o.import, root.import),
+        eqLocation(o.location, root.location),
       )!;
       if (definition.kind === 'constant_definition')
         return returning_error(
@@ -450,20 +449,20 @@ export async function evaluate_tree<
         arg: v[1]!.arg!.value as IExpressionValue,
       }));
 
-      const expression = `${definition.import.name}(${checked_args.map((v) => v.arg.value.expression).join(', ')})`;
+      const expression = `${definition.location.name}(${checked_args.map((v) => v.arg.value.expression).join(', ')})`;
 
       const imports = Array.from(
         new Set(
           checked_args
             .map((v) => v.arg.value.imports)
-            .reduce((a, b) => a.concat(b), [definition.import]),
+            .reduce((a, b) => a.concat(b), [definition.location]),
         ),
       ).sort(compareLocation);
 
       const children = new Map(args.map((v) => [v.parameter.name, v.arg!]));
 
       const value: ExpressionValue = {
-        type: definition.return_type,
+        type: get_definition_output_type(definition) as SoundType,
         value: {
           expression,
           imports,
@@ -479,7 +478,7 @@ export async function evaluate_tree<
       };
 
       const dependencies = imports
-        .map((v) => context.find((o) => eqLocation(o.import, v)))
+        .map((v) => context.find((o) => eqLocation(o.location, v)))
         .filter((v) => v)
         .map((v) => v!);
 
@@ -498,7 +497,7 @@ export async function evaluate_tree<
                   ...value,
                   data: await extract_data(
                     expression,
-                    definition.return_type,
+                    get_definition_output_type(definition) as SoundType,
                     unwrap_local_definition(dependencies, context),
                   ),
                 },
@@ -570,7 +569,7 @@ export async function evaluate_context<U>(
 
     if (
       element.dependencies.find(
-        (v) => !evaluated.find((o) => eqLocation(o.import, v)),
+        (v) => !evaluated.find((o) => eqLocation(o.location, v)),
       )
     )
       throw new Error(
@@ -584,11 +583,11 @@ export async function evaluate_context<U>(
           : {
               type: UnsoundType.Bottom,
               error: TideSyntaxErrorConstantHasNoValue_builder(
-                element.import.name,
+                element.location.name,
               ),
             };
-        if (evaluated.find((o) => eqLocation(o.import, element.import))) {
-          multiple_definitions.push(element.import);
+        if (evaluated.find((o) => eqLocation(o.location, element.location))) {
+          multiple_definitions.push(element.location);
         }
         evaluated.push({
           ...element,
@@ -602,7 +601,7 @@ export async function evaluate_context<U>(
   }
 
   return evaluated.map((element) => {
-    if (multiple_definitions.find((o) => eqLocation(o, element.import))) {
+    if (multiple_definitions.find((o) => eqLocation(o, element.location))) {
       return {
         ...element,
         dependencies: [],
@@ -610,7 +609,7 @@ export async function evaluate_context<U>(
         evaluated_type: UnsoundType.Bottom,
         value: {
           type: UnsoundType.Bottom,
-          error: TideNameErrorMultipleDefinition_builder(element.import.name),
+          error: TideNameErrorMultipleDefinition_builder(element.location.name),
         },
       };
     }

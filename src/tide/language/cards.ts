@@ -1,33 +1,28 @@
-import { Location, SoundType, Value } from './expression';
+import {
+  Evaluated,
+  Kind,
+  Located,
+  TamaroCardParameterEnvironment,
+  Metadata,
+} from './types';
 
-export interface FunctionParameter {
-  name: string;
-  type: SoundType;
-}
+export type ITamaroCard_ConstantUse<U> = Metadata<U> &
+  Located &
+  Kind<'constant_use'>;
 
-export type TamaroCardParameterEnvironment = FunctionParameter[];
-
-export type ITamaroCard_ConstantUse<U> = {
-  kind: 'constant_use';
-  import: Location;
-  metadata: U;
-};
-
-export type ITamaroCard_Literal<U> = {
-  kind: 'literal';
-  str_value: string;
-  metadata: U;
-};
+export type ITamaroCard_Literal<U> = Metadata<U> &
+  Kind<'literal'> & {
+    str_value: string;
+  };
 
 export type ITamaroCard_FunctionUse<
   T extends TamaroCardParameterEnvironment,
   U,
-> = {
-  kind: 'function_use';
-  import: Location;
-  children: Map<string, TamaroCard<T, U>>;
-  metadata: U;
-};
+> = Metadata<U> &
+  Kind<'function_use'> &
+  Located & {
+    children: Map<string, TamaroCard<T, U>>;
+  };
 // export type ITamaroCard_ParameterUse<
 //   T extends TamaroCardParameterEnvironment,
 //   U,
@@ -39,16 +34,16 @@ export type ITamaroCard_FunctionUse<
 
 export type INonEvaluated = { evaluated: false };
 
-export type NonEvaluatedTamaroCard_ConstantUse<U> = INonEvaluated &
+export type NonEvaluatedTamaroCard_ConstantUse<U> = Evaluated<false> &
   ITamaroCard_ConstantUse<U>;
 
-export type NonEvaluatedTamaroCard_Literal<U> = INonEvaluated &
+export type NonEvaluatedTamaroCard_Literal<U> = Evaluated<false> &
   ITamaroCard_Literal<U>;
 
 export type NonEvaluatedTamaroCard_FunctionUse<
   T extends TamaroCardParameterEnvironment,
   U,
-> = INonEvaluated & ITamaroCard_FunctionUse<T, U>;
+> = Evaluated<false> & ITamaroCard_FunctionUse<T, U>;
 
 // export type NonEvaluatedTamaroCard_ParameterUse<
 //   T extends TamaroCardParameterEnvironment,
@@ -64,18 +59,16 @@ export type NonEvaluatedTamaroCard<
   | NonEvaluatedTamaroCard_FunctionUse<T, U>;
 // | NonEvaluatedTamaroCard_ParameterUse<T, U>;
 
-export type IEvaluated = { value: Value; evaluated: true };
-
-export type EvaluatedTamaroCard_ConstantUse<U> = IEvaluated &
+export type EvaluatedTamaroCard_ConstantUse<U> = Evaluated<true> &
   ITamaroCard_ConstantUse<U>;
 
-export type EvaluatedTamaroCard_Literal<U> = IEvaluated &
+export type EvaluatedTamaroCard_Literal<U> = Evaluated<true> &
   ITamaroCard_Literal<U>;
 
 export type EvaluatedTamaroCard_FunctionUse<
   T extends TamaroCardParameterEnvironment,
   U,
-> = IEvaluated &
+> = Evaluated<true> &
   ITamaroCard_FunctionUse<T, U> & {
     children: Map<string, EvaluatedTamaroCard<T, U>>;
   };

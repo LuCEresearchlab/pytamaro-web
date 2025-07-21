@@ -6,12 +6,9 @@ import {
 import { EvaluatedDefinitions } from '../../../src/tide/language/definitions';
 import { TideRuntimeError_builder } from '../../../src/tide/language/error_builders';
 import { evaluate_tree } from '../../../src/tide/language/evaluation';
-import {
-  compareLocation,
-  Location,
-  SoundType,
-  UnsoundType,
-} from '../../../src/tide/language/expression';
+import { Location } from '../../../src/tide/language/types';
+import { compareLocation } from '../../../src/tide/language/utils';
+import { SoundType, UnsoundType } from '../../../src/tide/language/typing';
 import { getDefaultContext, RECTANGLE, RED } from './data';
 
 function literal_card(
@@ -74,20 +71,20 @@ describe('Unit test constant use', () => {
       await evaluate_tree(
         {
           kind: 'constant_use',
-          import: RED.import,
+          location: RED.import,
           evaluated: false,
           metadata: {},
         },
         map,
       ),
     ).to.deep.eq({
-      ...{ kind: 'constant_use', import: RED.import, metadata: {} },
+      ...{ kind: 'constant_use', location: RED.import, metadata: {} },
       evaluated: true,
       value: {
         data: { red: 255, green: 0, blue: 0, alpha: 1 },
         type: SoundType.Color,
         value: {
-          expression: RED.import.name,
+          expression: RED.location.name,
           imports: [RED.import],
         },
       },
@@ -102,7 +99,7 @@ describe('Unit test constant use', () => {
       subkind: 'local',
       dependencies: [],
       evaluated: true,
-      import: import_size,
+      location: import_size,
       root: literal_card('100.0', SoundType.Float),
       value: {
         data: undefined,
@@ -119,14 +116,14 @@ describe('Unit test constant use', () => {
       await evaluate_tree(
         {
           kind: 'constant_use',
-          import: import_size,
+          location: import_size,
           evaluated: false,
           metadata: {},
         },
         map,
       ),
     ).to.deep.eq({
-      ...{ kind: 'constant_use', import: import_size, metadata: {} },
+      ...{ kind: 'constant_use', location: import_size, metadata: {} },
       evaluated: true,
       value: {
         data: undefined,
@@ -149,7 +146,7 @@ describe('Unit test function use', () => {
     arg_map.set('height', literal_card('100.0', SoundType.Float));
     arg_map.set('color', {
       kind: 'constant_use',
-      import: RED.import,
+      location: RED.import,
       metadata: {},
       evaluated: false,
     });
@@ -159,7 +156,7 @@ describe('Unit test function use', () => {
         {
           kind: 'function_use',
           children: arg_map,
-          import: RECTANGLE.import,
+          location: RECTANGLE.import,
           metadata: {},
           evaluated: false,
         },
@@ -183,7 +180,7 @@ describe('Unit test function use', () => {
       subkind: 'local',
       dependencies: [],
       evaluated: true,
-      import: import_size,
+      location: import_size,
       root: literal_card('100.0', SoundType.Float),
       value: {
         data: undefined,
@@ -199,19 +196,19 @@ describe('Unit test function use', () => {
     const arg_map: Map<string, TamaroCard<[], object>> = new Map();
     arg_map.set('width', {
       kind: 'constant_use',
-      import: import_size,
+      location: import_size,
       metadata: {},
       evaluated: false,
     });
     arg_map.set('height', {
       kind: 'constant_use',
-      import: import_size,
+      location: import_size,
       metadata: {},
       evaluated: false,
     });
     arg_map.set('color', {
       kind: 'constant_use',
-      import: RED.import,
+      location: RED.import,
       metadata: {},
       evaluated: false,
     });
@@ -221,7 +218,7 @@ describe('Unit test function use', () => {
         {
           kind: 'function_use',
           children: arg_map,
-          import: RECTANGLE.import,
+          location: RECTANGLE.import,
           metadata: {},
           evaluated: false,
         },
@@ -247,7 +244,7 @@ describe('Unit test function use', () => {
       subkind: 'local',
       dependencies: [],
       evaluated: true,
-      import: import_size,
+      location: import_size,
       root: literal_card('-100.0', SoundType.Float),
       value: {
         data: undefined,
@@ -263,19 +260,19 @@ describe('Unit test function use', () => {
     const arg_map: Map<string, TamaroCard<[], object>> = new Map();
     arg_map.set('width', {
       kind: 'constant_use',
-      import: import_size,
+      location: import_size,
       metadata: {},
       evaluated: false,
     });
     arg_map.set('height', {
       kind: 'constant_use',
-      import: import_size,
+      location: import_size,
       metadata: {},
       evaluated: false,
     });
     arg_map.set('color', {
       kind: 'constant_use',
-      import: RED.import,
+      location: RED.import,
       metadata: {},
       evaluated: false,
     });
@@ -285,7 +282,7 @@ describe('Unit test function use', () => {
         {
           kind: 'function_use',
           children: arg_map,
-          import: RECTANGLE.import,
+          location: RECTANGLE.import,
           metadata: {},
           evaluated: false,
         },
@@ -305,7 +302,7 @@ describe('Unit test function use', () => {
       subkind: 'local',
       dependencies: [],
       evaluated: true,
-      import: import_size,
+      location: import_size,
       root: literal_card('0.0', SoundType.Float),
       value: {
         data: undefined,
@@ -321,19 +318,19 @@ describe('Unit test function use', () => {
     const arg_map: Map<string, TamaroCard<[], object>> = new Map();
     arg_map.set('width', {
       kind: 'constant_use',
-      import: import_size,
+      location: import_size,
       metadata: {},
       evaluated: false,
     });
     arg_map.set('height', {
       kind: 'constant_use',
-      import: import_size,
+      location: import_size,
       metadata: {},
       evaluated: false,
     });
     arg_map.set('color', {
       kind: 'constant_use',
-      import: RED.import,
+      location: RED.import,
       metadata: {},
       evaluated: false,
     });
@@ -343,7 +340,7 @@ describe('Unit test function use', () => {
         {
           kind: 'function_use',
           children: arg_map,
-          import: RECTANGLE.import,
+          location: RECTANGLE.import,
           evaluated: false,
           metadata: {},
         },

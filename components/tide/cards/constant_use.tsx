@@ -12,7 +12,7 @@ import {
   useState,
 } from 'react';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
-import { Location } from '../../../src/tide/language/expression';
+import { Location } from '../../../src/tide/language/types';
 import ResultIcon from '../ResultIcon';
 import { iconPath } from '../../documentation/utils';
 
@@ -97,7 +97,7 @@ export default function ConstantUse(
   props: NodeProps<ConstantNode> & ExtraneousNodeProps,
 ) {
   const { id, show_handles, data } = props;
-  const i = data.import;
+  const i = data.location;
   const updateNodeData = useStore((state) => state.updateNodeData);
   const context = useStore((state) => state.evaluated_context);
 
@@ -106,10 +106,10 @@ export default function ConstantUse(
       if (newName === i.name) return;
       updateNodeData(id, (data) => ({
         ...data,
-        import: {
+        location: {
           module:
-            context().find((v) => v.import.name === newName)?.import.module ||
-            false,
+            context().find((v) => v.location.name === newName)?.location
+              .module || false,
           name: newName,
         } as Location,
       }));

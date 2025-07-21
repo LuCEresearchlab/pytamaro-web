@@ -1,11 +1,19 @@
-import { FunctionParameter } from '../../../src/tide/language/cards';
-import { EvaluatedDefinition } from '../../../src/tide/language/definitions';
-import { Location, SoundType } from '../../../src/tide/language/expression';
+import {
+  FunctionParameter,
+  TamaroCardParameterEnvironment,
+} from '../../../src/tide/language/types';
+import {
+  EvaluatedDefinition,
+  IImportedConstantDefinition,
+  IImportedFunctionDefinition,
+} from '../../../src/tide/language/definitions';
+import { Location } from '../../../src/tide/language/types';
+import { SoundType } from '../../../src/tide/language/typing';
 
 const context = new Map<Location, EvaluatedDefinition<object>>();
 
 function register(def: EvaluatedDefinition<object>) {
-  context.set(def.import, def);
+  context.set(def.location, def);
   return def;
 }
 
@@ -13,12 +21,11 @@ function constant_use(name: string, type: SoundType) {
   const i: Location = { module: 'pytamaro', name };
   return register({
     kind: 'constant_definition',
-    dependencies: [],
-    import: i,
+    subkind: 'imported',
+    location: i,
     evaluated: true,
     evaluated_type: type,
-    subkind: 'imported',
-  });
+  } as IImportedConstantDefinition);
 }
 
 function function_use(
@@ -34,12 +41,11 @@ function function_use(
   return register({
     kind: 'function_definition',
     subkind: 'imported',
-    dependencies: [],
     evaluated: true,
-    return_type: type,
-    import: i,
+    evaluated_type: type,
+    location: i,
     parameters: _params,
-  });
+  } as IImportedFunctionDefinition<TamaroCardParameterEnvironment>);
 }
 
 function graphic_function_use(

@@ -10,7 +10,8 @@ import { useStore } from '../../src/tide/store';
 import { getNode } from '../../src/tide/utils';
 import { TamaroCardNode } from './cards';
 import { useEffect, useState } from 'react';
-import { UnsoundType, Value } from '../../src/tide/language/expression';
+import { Value } from '../../src/tide/language/expression';
+import { UnsoundType } from '../../src/tide/language/typing';
 import { getParameterName } from './cards/function';
 
 function getValue(node: TamaroCardNode): Value | undefined {

@@ -44,7 +44,7 @@ function View() {
       new Set(
         store
           .evaluated_context()
-          .map((v) => v.import.module)
+          .map((v) => v.location.module)
           .filter((v) => v !== false),
       ),
     ),
@@ -134,9 +134,9 @@ function View() {
 
         const node = toBeDocumentedNodes[0];
         const data = node.data;
-        if (!('import' in data)) return;
+        if (!('location' in data)) return;
 
-        const { module, name } = data.import;
+        const { module, name } = data.location;
         if (module === false) return;
 
         const result = documentation
@@ -481,10 +481,8 @@ import {
 } from '../../src/schemas/documentation';
 import { translationProps } from '../../src/serverSideTranslationProps';
 import { executeOnServer } from '../../src/useActivity';
-import {
-  TideErrorValue,
-  UnsoundType,
-} from '../../src/tide/language/expression';
+import { TideErrorValue } from '../../src/tide/language/expression';
+import { UnsoundType } from '../../src/tide/language/typing';
 import { IEvaluatedLocalConstantDefinition } from '../../src/tide/language/definitions';
 import { EvaluatedTamaroCard } from '../../src/tide/language/cards';
 import { getNode } from '../../src/tide/utils';

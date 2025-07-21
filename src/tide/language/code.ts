@@ -1,6 +1,8 @@
 import { EvaluatedDefinition } from './definitions';
 import { sort_dependencies } from './evaluation';
-import { UnsoundType, Value } from './expression';
+import { Value } from './expression';
+import { Location } from './types';
+import { UnsoundType } from './typing';
 
 export function create_code_from_definition(
   definition: EvaluatedDefinition<unknown>,
@@ -9,7 +11,7 @@ export function create_code_from_definition(
     case 'function_definition': {
       switch (definition.subkind) {
         case 'imported':
-          return `from ${definition.import.module} import ${definition.import.name}`;
+          return `from ${definition.location.module} import ${definition.location.name}`;
         case 'local':
           throw new Error('Not supported Yet');
       }
@@ -18,9 +20,9 @@ export function create_code_from_definition(
     case 'constant_definition':
       switch (definition.subkind) {
         case 'imported':
-          return `from ${definition.import.module} import ${definition.import.name}`;
+          return `from ${definition.location.module} import ${definition.location.name}`;
         case 'local':
-          return `${definition.import.name} = ${create_code_from_expression(definition.value)}`;
+          return `${definition.location.name} = ${create_code_from_expression(definition.value)}`;
       }
   }
 }
@@ -40,9 +42,9 @@ export function create_code(
 ) {
   const sorted = sort_dependencies(
     definitions,
-    (v) => v.import,
-    (v) => v.dependencies,
-    (v) => definitions.find((o) => o.import === v),
+    (v) => v.location,
+    (v) => ('dependencies' in v ? v.dependencies : []),
+    (v) => definitions.find((o) => o.location === v),
   ).reverse();
   return sorted
     .map(create_code_from_definition)
@@ -53,4 +55,8 @@ export function create_code(
         : create_code_from_expression(expression),
     ])
     .join('\n');
+}
+export interface CodeRepresentation {
+  expression: string;
+  imports: Location[];
 }

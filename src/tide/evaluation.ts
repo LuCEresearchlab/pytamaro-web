@@ -1,4 +1,8 @@
-import { Definitions, EvaluatedDefinition } from './language/definitions';
+import {
+  Definitions,
+  EvaluatedDefinition,
+  IEvaluatedLocalConstantDefinition,
+} from './language/definitions';
 import {
   ConstantDefinitionNode,
   TamaroCardNode,
@@ -6,14 +10,11 @@ import {
 } from '../../components/tide/cards';
 import { getConstantDefinitions, getNode, getUsages } from './utils';
 import { evaluate_context, evaluate_tree } from './language/evaluation';
-import {
-  EvaluatedTamaroCard_FunctionUse,
-  TamaroCard,
-  TamaroCardParameterEnvironment,
-} from './language/cards';
+import { EvaluatedTamaroCard_FunctionUse, TamaroCard } from './language/cards';
+import { TamaroCardParameterEnvironment } from './language/types';
 import { toFlat } from './language/utils';
 import { Edge } from '@xyflow/react';
-import { UnsoundType } from './language/expression';
+import { UnsoundType } from './language/typing';
 import { TideSyntaxErrorConstantHasNoValue_builder } from './language/error_builders';
 import { getDefaultContext } from '../../cypress/e2e/tide/data';
 
@@ -58,9 +59,9 @@ export function propagate_unevaluation(
 
     if (successor) stack.push(getNode(nodes, successor)!.data);
     if (data.kind === 'constant_definition') {
-      stack.push(...getUsages(nodes, data.import.name).map((v) => v.data));
+      stack.push(...getUsages(nodes, data.location.name).map((v) => v.data));
       stack.push(
-        ...getConstantDefinitions(nodes, data.import.name).map((v) => v.data),
+        ...getConstantDefinitions(nodes, data.location.name).map((v) => v.data),
       );
     }
   }
@@ -189,9 +190,10 @@ export async function evaluation(
             ...v.data,
             evaluated: true,
             kind: 'constant_definition',
+            subkind: 'local',
             root: eval_root,
             value: eval_root.value,
-          };
+          } as IEvaluatedLocalConstantDefinition<TideNodeMetadata>;
         }
         return {
           ...v.data,
@@ -199,10 +201,10 @@ export async function evaluation(
           value: {
             type: UnsoundType.Bottom,
             error: TideSyntaxErrorConstantHasNoValue_builder(
-              v.data.import.name,
+              v.data.location.name,
             ),
           },
-        };
+        } as IEvaluatedLocalConstantDefinition<TideNodeMetadata>;
       }
       return await evaluate_tree(v.data, context);
     }),
