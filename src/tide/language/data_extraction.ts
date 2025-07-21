@@ -1,4 +1,4 @@
-import { CompletedExecutionResponse } from '../codeExecution';
+import { CompletedExecutionResponse } from '../../codeExecution';
 import { create_code } from './code';
 import { EvaluatedContext } from './context';
 import { executeOnServer } from './evaluation';
@@ -59,12 +59,13 @@ export async function extract_data(
       const { stdout } = await executeOnServer(code).then(
         (v) => v as CompletedExecutionResponse,
       );
-      const lines = (stdout || '').split('\n').map((v) => v.trim());
+      const lines = (stdout || '').split('\n').map((v: string) => v.trim());
       if (lines.length !== 5) return undefined;
 
       const [red, green, blue, alpha] = lines.map(Number.parseFloat);
       return { red, green, blue, alpha };
     }
+    case SoundType.Int:
     case SoundType.Float:
     case SoundType.Str:
     case SoundType.Bool:

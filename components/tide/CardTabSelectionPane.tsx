@@ -13,6 +13,7 @@ import {
   UnsoundType,
 } from '../../src/tide/language/expression';
 import { TideSyntaxErrorInvalidLiteral_builder } from '../../src/tide/language/error_builders';
+import { INT_REGEX } from '../../src/tide/language/utils';
 
 interface CardSelectionPaneProps {
   values: JudiciousModuleElement[];
@@ -35,6 +36,7 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
           { regex: /$^/, value: 'False', type: SoundType.Bool },
           { regex: /$^/, value: 'True', type: SoundType.Bool },
           { regex: FLOAT_REGEX, value: '200.0', type: SoundType.Float },
+          { regex: INT_REGEX, value: '200', type: SoundType.Int },
           { regex: STR_REGEX, value: '"Abc"', type: SoundType.Str },
         ] as { regex: RegExp; value: string; type: LiteralType }[]
       )

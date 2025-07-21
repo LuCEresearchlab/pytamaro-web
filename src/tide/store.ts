@@ -174,22 +174,11 @@ export const createGraphSlice: StateCreator<
       })
       .reduce((a, b) => a.concat(b), []);
 
+    const interm_nodes = applyNodeChanges(changes_step_1, get().nodes);
     const changes_step_2 = changes_step_1.concat(
-      Array.from(parents_to_update).map((parent) => {
-        const new_node = updateParent(get().nodes, parent);
-        const new_position = changes_step_1.find(
-          (v) => v.type === 'position' && v.id === parent,
-        ) as NodePositionChange | undefined;
-
-        if (!new_position) return new_node;
-
-        new_node.item = {
-          ...new_node.item,
-          position: new_position.position,
-        } as TamaroCardNode;
-
-        return new_node;
-      }),
+      Array.from(parents_to_update).map((parent) =>
+        updateParent(interm_nodes, parent),
+      ),
     );
 
     const changes = changes_step_2.filter(

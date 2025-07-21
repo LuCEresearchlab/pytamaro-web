@@ -43,7 +43,7 @@ export interface ColorExpressionValue extends IExpressionValue {
 }
 
 export interface OtherExpressionValue extends IExpressionValue {
-  type: SoundType.Float | SoundType.Bool | SoundType.Str | SoundType.Point;
+  type: Exclude<ValueType, UnsoundType.Bottom>;
   data: undefined;
 }
 
@@ -60,12 +60,14 @@ export interface ErrorPropagation {
 export type ValueType = SoundType | UnsoundType;
 
 export type LiteralType =
+  | SoundType.Int
   | SoundType.Float
   | SoundType.Str
   | SoundType.Bool
   | UnsoundType;
 
 export enum SoundType {
+  Int,
   Float,
   Str,
   Bool,
@@ -76,6 +78,8 @@ export enum SoundType {
 
 export function type_toString(type: SoundType) {
   switch (type) {
+    case SoundType.Int:
+      return 'int';
     case SoundType.Float:
       return 'float';
     case SoundType.Str:
@@ -96,5 +100,13 @@ export enum UnsoundType {
 }
 
 export function type_equality_rule(a: ValueType, b: ValueType) {
-  return a === b && a != UnsoundType.Bottom;
+  return (
+    a != UnsoundType.Bottom &&
+    b != UnsoundType.Bottom &&
+    (a === b || convert_type(a, b) || convert_type(b, a))
+  );
+}
+
+export function convert_type(a: ValueType, b: ValueType) {
+  return a === SoundType.Int && b === SoundType.Float;
 }

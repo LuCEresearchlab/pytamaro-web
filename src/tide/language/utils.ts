@@ -17,12 +17,14 @@ import {
 } from './expression';
 
 export const BOOL_REGEX = /(True)|(False)/;
+export const INT_REGEX = /^-?[0-9]+$/g;
 export const FLOAT_REGEX = /^-?[0-9]+(\.[0-9]*)?$/g;
 export const STR_REGEX = /^"([^\\"]|(\\")|\\\\)*"$/g;
 
 export function inferRawValueType(v: string): LiteralType {
   if (v.match(BOOL_REGEX)) return SoundType.Bool;
   if (v.match(STR_REGEX)) return SoundType.Str;
+  if (v.match(INT_REGEX)) return SoundType.Int;
   if (v.match(FLOAT_REGEX)) return SoundType.Float;
   return UnsoundType.Bottom;
 }
