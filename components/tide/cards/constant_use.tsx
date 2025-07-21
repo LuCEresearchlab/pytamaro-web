@@ -201,6 +201,7 @@ export default function ConstantUse(
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'start',
+            position: 'relative',
           }}
         >
           <div
@@ -208,6 +209,9 @@ export default function ConstantUse(
             style={{
               position: returns_icon ? 'absolute' : undefined,
               minWidth: '0px',
+              left: '0',
+              bottom: '50%',
+              transform: 'translate(5px, -10px)',
             }}
           >
             {returns_icon && (
