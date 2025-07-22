@@ -15,8 +15,6 @@ import {
 
 import { toFlat } from './language/utils';
 import { Edge } from '@xyflow/react';
-import { UnsoundType } from './language/typing';
-import { TideSyntaxErrorConstantHasNoValue_builder } from './language/error_builders';
 import { getDefaultContext } from '../../cypress/e2e/tide/data';
 
 export function roots(nodes: TideNode[], edges: Edge[]) {
@@ -171,28 +169,10 @@ export async function evaluation(
   const all_evaluated: TideNode[] = await Promise.all(
     roots(nodes, edges).map(async (v): Promise<TideNode['data']> => {
       if (v.data.kind === 'constant_definition') {
-        if (v.data.root) {
-          const eval_root = await evaluate_tree(v.data.root, context);
-
-          return {
-            ...v.data,
-            evaluated: true,
-            kind: 'constant_definition',
-            subkind: 'local',
-            root: eval_root,
-            value: eval_root.value,
-          };
-        }
-        return {
-          ...v.data,
-          evaluated: true,
-          value: {
-            type: UnsoundType.Bottom,
-            error: TideSyntaxErrorConstantHasNoValue_builder(
-              v.data.location.name,
-            ),
-          },
-        };
+        const context_data = context
+          .filter((v) => v.subkind === 'local')
+          .find((def) => def.metadata.node_id === v.id);
+        return { ...v.data, ...context_data } as ConstantDefinitionNode['data'];
       }
       return await evaluate_tree(
         v.data as TamaroCard<TideNodeMetadata>,

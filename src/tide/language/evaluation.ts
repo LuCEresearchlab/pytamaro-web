@@ -570,19 +570,22 @@ export async function evaluate_context<U>(
     if (element.subkind === 'imported') evaluated.push(element);
     else {
       if (element.kind === 'constant_definition') {
-        const value: Value = element.root
-          ? await evaluate_tree(element.root, evaluated).then((v) => v.value)
-          : {
-              type: UnsoundType.Bottom,
-              error: TideSyntaxErrorConstantHasNoValue_builder(
-                element.location.name,
-              ),
-            };
+        const tree = element.root
+          ? await evaluate_tree(element.root, evaluated)
+          : undefined;
+
+        const value: Value = tree?.value || {
+          type: UnsoundType.Bottom,
+          error: TideSyntaxErrorConstantHasNoValue_builder(
+            element.location.name,
+          ),
+        };
         if (evaluated.find((o) => eqLocation(o.location, element.location))) {
           multiple_definitions.push(element.location);
         }
         evaluated.push({
           ...element,
+          root: element.root ? tree : undefined,
           value,
           evaluated: true,
         });
