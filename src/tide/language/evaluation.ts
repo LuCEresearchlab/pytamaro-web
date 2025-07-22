@@ -547,7 +547,11 @@ export async function evaluate_context<U>(
     if (v.subkind === 'local')
       return {
         ...v,
-        dependencies: v.root ? find_dependencies(v.root, []) : [],
+        dependencies: v.root
+          ? find_dependencies(v.root, []).filter(
+              (v) => context.find((o) => eqLocation(o.location, v)) != null,
+            )
+          : [],
       };
     return { ...v, dependencies: [] };
   });
