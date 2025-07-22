@@ -107,9 +107,8 @@ export default function ConstantDefinition(
         text_width: x1 - x0,
         min_height: y1 - y0,
       }));
-      onNodesChange([updateParent(store.nodes, id)]);
     }
-  }, [id, onNodesChange, screenToFlowPosition, store, textRef, updateNodeData]);
+  }, [id, screenToFlowPosition, textRef, updateNodeData]);
 
   function setName(newName: string) {
     updateNodeData(id, (data) => ({
