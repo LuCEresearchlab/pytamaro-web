@@ -110,6 +110,7 @@ function is_cylicaly_defined<U>(
 
     if (eqLocation(i, def.location)) return is;
     if (seen.has(i)) continue;
+    seen.add(i);
 
     const el = context.find((v) => eqLocation(v.location, i));
     if (el == null) continue;
@@ -135,6 +136,7 @@ export function sort_dependencies<T>(
     const i = get_position(element);
 
     if (seen.has(i)) continue;
+    seen.add(i);
 
     depth_order.push(element);
     const values = get_dependencies(element)
@@ -154,7 +156,7 @@ function sort_context_by_dependency<U>(
     .reduce(
       (a, b) =>
         b.cyclical
-          ? [a[0], a[1].concat([b.cyclical, b.value])]
+          ? [a[0], a[1].concat([[b.cyclical, b.value]])]
           : [a[0].concat(b.value), a[1]],
       [
         [] as DefinitionsWithImports<U>,

@@ -65,10 +65,21 @@ export function ErrorParagraph(props: { annotation: TideError }) {
 
   const { title, message: raw_message } = getRawContent(annotation);
 
-  const message = annotation.args.reduce(
-    (a, b) => a.replaceAll(`{${b.name}}`, String(b.value)),
-    raw_message,
-  );
+  const message = annotation.args.reduce((a, b) => {
+    if (b.name === 'names')
+      return a.replaceAll(
+        `{${b.name}}`,
+        b.value
+          .map((v, i) => [
+            v,
+            i != b.value.length - 1 ? b.value[i + 1] : b.value[0],
+          ])
+          .toReversed()
+          .map((v) => `the meaning of *${v[1]}* depends on *${v[0]}*`)
+          .join(', and \n'),
+      );
+    return a.replaceAll(`{${b.name}}`, String(b.value));
+  }, raw_message);
 
   return (
     <div className='error-paragraph'>
