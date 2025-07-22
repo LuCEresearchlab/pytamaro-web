@@ -193,6 +193,8 @@ export default function ConstantDefinition(
     >
       <div
         style={{
+          position: 'relative',
+          top: '2px',
           display: 'flex',
           flexDirection: 'column',
           height: '40px',
@@ -259,6 +261,7 @@ export default function ConstantDefinition(
             height: '75%',
             borderLeft: `solid ${BORDER_COLOR} ${BORDER_WIDTH}`,
             borderRight: `solid ${BORDER_COLOR} ${BORDER_WIDTH}`,
+            borderBottom: `solid ${BORDER_COLOR} ${BORDER_WIDTH}`,
             backgroundColor: `${BACKGROUND_COLOR}`,
           }}
         >

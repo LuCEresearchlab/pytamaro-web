@@ -127,25 +127,35 @@ export function sort_dependencies<T>(
   get_dependencies: (v: T) => Location[],
   get_element: (v: Location) => T | undefined,
 ): T[] {
-  const stack = Array.from(values);
-  const depth_order: T[] = [];
-  const seen = new Set<Location>();
-
-  while (stack.length !== 0) {
-    const element = stack.pop()!;
-    const i = get_position(element);
-
-    if (seen.has(i)) continue;
-    seen.add(i);
-
-    depth_order.push(element);
-    const values = get_dependencies(element)
+  const data_map = new Map<string, { value: T; order: number }>();
+  let order = 0;
+  function depth_first(value: T) {
+    const key = get_position(value).module + '|' + get_position(value).name;
+    if (data_map.has(key)) return;
+    const children = get_dependencies(value)
       .map(get_element)
       .filter((v) => v)
       .map((v) => v!);
-    stack.unshift(...values);
+
+    // Prevent crash if the cyclical search failed
+    data_map.set(key, {
+      value,
+      order: -1,
+    });
+    children.forEach((v) => depth_first(v));
+    data_map.set(key, {
+      value,
+      order: order++,
+    });
   }
-  return depth_order.reverse();
+
+  values.forEach((v) => depth_first(v));
+
+  const topological_order = Array.from(data_map.values())
+    .toSorted((a, b) => a.order - b.order)
+    .map((v) => v.value);
+
+  return topological_order;
 }
 
 function sort_context_by_dependency<U>(
@@ -177,8 +187,15 @@ function sort_context_by_dependency<U>(
     stack,
     (v) => v.location,
     (v) => v.dependencies,
-    (v) => context.find((o) => eqLocation(o.location, v)),
-  ).reverse();
+    (v) => {
+      const value = context.find((o) => eqLocation(o.location, v));
+      return value != null &&
+        evaluated_cyclical.find((o) => eqLocation(o.location, v)) == null
+        ? value
+        : undefined;
+    },
+  );
+
   return [sorted, evaluated_cyclical];
 }
 
@@ -563,7 +580,7 @@ export async function evaluate_context<U>(
 
   const multiple_definitions: Location[] = [];
   while (context_stack.length !== 0) {
-    const element = context_stack.pop()!;
+    const element = context_stack.shift()!;
 
     if (
       element.dependencies.find(
@@ -571,7 +588,11 @@ export async function evaluate_context<U>(
       )
     )
       throw new Error(
-        'Error in evaluation logic, dependencies should be ordered from the least dependent to the most dependent',
+        `Error in evaluation logic, dependencies should be ordered from the least dependent to the most dependent (error occurs because ${JSON.stringify(element.location)} depends on ${JSON.stringify(
+          element.dependencies.find(
+            (v) => !evaluated.find((o) => eqLocation(o.location, v)),
+          ),
+        )} which is not yet evaluated)`,
       );
     if (element.subkind === 'imported') evaluated.push(element);
     else {
