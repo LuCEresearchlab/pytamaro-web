@@ -3,105 +3,101 @@ import {
   Kind,
   Located,
   Subkind,
-  TamaroCardParameterEnvironment,
   Metadata,
   Dependencies,
+  FunctionParameter,
+  Expand,
 } from './types';
 import { Evaluated } from './types';
 import { UnsoundType } from './typing';
 
-export type Definition<U> =
-  | FunctionDefinition<TamaroCardParameterEnvironment, U>
-  | ConstantDefinition<U>;
+export type FunctionDefinition<U, B extends boolean = boolean> =
+  | LocalFunctionDefinition<U, B>
+  | ImportedFunctionDefinition;
+
+export type ConstantDefinition<U, B extends boolean = boolean> =
+  | LocalConstantDefinition<U, B>
+  | ImportedConstantDefinition;
+
+export type LocalDefinition<U, B extends boolean = boolean> =
+  | LocalConstantDefinition<U, B>
+  | LocalFunctionDefinition<U, B>;
+
+export type ImportedDefinition =
+  | ImportedConstantDefinition
+  | ImportedFunctionDefinition;
+
+export type EvaluatedFunctionDefinition<U> = Expand<
+  FunctionDefinition<U, true>
+>;
+
+export type EvaluatedConstantDefinition<U> = Expand<
+  ConstantDefinition<U, true>
+>;
+
+export type EvaluatedLocalDefinition<U> = Expand<LocalDefinition<U, true>>;
+
+export type EvaluatedImportedDefinition = Expand<ImportedDefinition>;
+
+export type NonEvaluatedFunctionDefinition<U> = Expand<
+  FunctionDefinition<U, false>
+>;
+
+export type NonEvaluatedConstantDefinition<U> = Expand<
+  ConstantDefinition<U, false>
+>;
+
+export type NonEvaluatedLocalDefinition<U> = Expand<LocalDefinition<U, false>>;
+
+export type NonEvaluatedImportedDefinition = Expand<ImportedDefinition>;
+
+export type Definition<U> = FunctionDefinition<U> | ConstantDefinition<U>;
 
 export type EvaluatedDefinition<U> =
-  | EvaluatedFunctionDefinition<TamaroCardParameterEnvironment, U>
+  | EvaluatedFunctionDefinition<U>
   | EvaluatedConstantDefinition<U>;
-
-export type FunctionDefinition<T extends TamaroCardParameterEnvironment, U> =
-  | ILocalFunctionDefinition<T, U>
-  | EvaluatedFunctionDefinition<T, U>;
-
-export type EvaluatedFunctionDefinition<
-  T extends TamaroCardParameterEnvironment,
-  U,
-> = IImportedFunctionDefinition<T> | IEvaluatedLocalFunctionDefinition<T, U>;
-
-export type ConstantDefinition<U> =
-  | ILocalConstantDefinition<U>
-  | EvaluatedConstantDefinition<U>;
-
-export type LocalConstantDefinition<U> =
-  | ILocalConstantDefinition<U>
-  | IEvaluatedLocalConstantDefinition<U>;
-
-export type EvaluatedConstantDefinition<U> =
-  | IImportedConstantDefinition
-  | IEvaluatedLocalConstantDefinition<U>;
 
 export type Definitions<U> = Definition<U>[];
 export type EvaluatedDefinitions<U> = EvaluatedDefinition<U>[];
 
-export type IFunctionDefinition<T extends TamaroCardParameterEnvironment> =
-  Kind<'function_definition'> &
-    Located<boolean> &
-    Evaluated<boolean> & {
-      parameters: T;
-    };
-
-export type ILocalFunctionDefinition<
-  T extends TamaroCardParameterEnvironment,
-  U,
-> = IFunctionDefinition<T> &
-  Located<false> &
-  Subkind<'local'> &
-  Evaluated<boolean, true, Dependencies> &
-  Metadata<U> & {
-    root: TamaroCard<T, U>;
-  };
-
-export type IImportedFunctionDefinition<
-  T extends TamaroCardParameterEnvironment,
-> = Subkind<'imported'> &
-  IFunctionDefinition<T> &
-  Located<true> &
-  Evaluated<true, false>;
-
-export const a: Evaluated<true, false> = {
-  evaluated: true,
-  evaluated_type: UnsoundType.Bottom,
+export type FunctionDefinitionCommon = Kind<'function_definition'> & {
+  parameters: FunctionParameter[];
 };
 
-export type IEvaluatedLocalFunctionDefinition<
-  T extends TamaroCardParameterEnvironment,
+export type ConstantDefinitionCommon = Kind<'constant_definition'>;
+
+export type LocalDefinitionCommon<
   U,
-> = Subkind<'local'> &
-  ILocalFunctionDefinition<T, U> &
-  Located<false> &
-  Evaluated<true, true, Dependencies>;
-
-export type IConstantDefinition = Located &
-  Kind<'constant_definition'> & {
-    evaluated: boolean;
+  B extends boolean = boolean,
+> = Located<false> &
+  Evaluated<B, 'value', Dependencies> &
+  Subkind<'local'> &
+  Metadata<U> & {
+    root?: TamaroCard<U>;
   };
 
-export type ILocalConstantDefinition<U> = Subkind<'local'> &
-  IConstantDefinition &
-  Located<false> &
-  Metadata<U> &
-  Evaluated<boolean, true, Dependencies> & {
-    root?: TamaroCard<[], U>;
-  };
-
-export type IImportedConstantDefinition = IConstantDefinition &
-  Located<true> &
+export type ImportedDefinitionCommon = Located<true> &
   Subkind<'imported'> &
-  Evaluated<true, false>;
+  Evaluated<true, 'type'>;
 
-export type IEvaluatedLocalConstantDefinition<U> = ILocalConstantDefinition<U> &
-  Evaluated<true, true, Dependencies>;
+export type LocalFunctionDefinition<
+  U,
+  B extends boolean = boolean,
+> = FunctionDefinitionCommon & LocalDefinitionCommon<U, B>;
 
-export function get_definition_output_type(v: EvaluatedDefinition<unknown>) {
+export type LocalConstantDefinition<
+  U,
+  B extends boolean = boolean,
+> = ConstantDefinitionCommon & LocalDefinitionCommon<U, B>;
+
+export type ImportedFunctionDefinition = FunctionDefinitionCommon &
+  ImportedDefinitionCommon;
+
+export type ImportedConstantDefinition = ConstantDefinitionCommon &
+  ImportedDefinitionCommon;
+
+export function get_definition_output_type(v?: EvaluatedDefinition<unknown>) {
+  if (!v) return UnsoundType.Bottom;
   switch (v.subkind) {
     case 'local':
       return v.value.type;

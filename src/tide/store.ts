@@ -28,7 +28,7 @@ import {
 import { updateParent } from './graph_toolbox';
 import {
   ConstantDefinitionNode,
-  TamaroCardNode,
+  TideNode,
   TideNodeMetadata,
 } from '../../components/tide/cards';
 import { evaluation, propagate_unevaluation } from './evaluation';
@@ -42,7 +42,7 @@ import { TamaroCard } from './language/cards';
 
 export interface DraggedElementData {
   type: string;
-  data: TamaroCardNode['data'];
+  data: TideNode['data'];
 }
 
 let evaluation_timeout: NodeJS.Timeout | undefined = undefined;
@@ -51,7 +51,7 @@ export interface GraphStateSlice {
   initialized: 'before' | 'wait' | 'done';
   setInitialized: (v: 'before' | 'wait' | 'done') => void;
   evaluated_context: () => EvaluatedDefinitions<TideNodeMetadata>;
-  nodes: TamaroCardNode[];
+  nodes: TideNode[];
   edges: Edge[];
   mousePosition: XYPosition;
   reserved_names: string[];
@@ -59,15 +59,15 @@ export interface GraphStateSlice {
   setMousePosition: (v: XYPosition) => void;
   fullscreen: boolean;
   setFullscreen: (value: boolean) => void;
-  onNodesChange: OnNodesChange<TamaroCardNode>;
+  onNodesChange: OnNodesChange<TideNode>;
   onEdgesChange: OnEdgesChange<Edge>;
   onConnect: OnConnect;
-  setNodes: (nodes: TamaroCardNode[]) => void;
+  setNodes: (nodes: TideNode[]) => void;
   setEdges: (edges: Edge[]) => void;
-  getNodes: () => TamaroCardNode[];
+  getNodes: () => TideNode[];
   getEdges: () => Edge[];
   setDragged: (
-    dragged: { type: string; data: TamaroCardNode['data'] } | undefined,
+    dragged: { type: string; data: TideNode['data'] } | undefined,
   ) => void;
   updateNodeData: (
     nodeId: string,
@@ -134,7 +134,7 @@ export const createGraphSlice: StateCreator<
     const parents_to_update: Set<string> = new Set();
 
     const changes_step_1 = raw_changes
-      .map((change): NodeChange<TamaroCardNode>[] => {
+      .map((change): NodeChange<TideNode>[] => {
         if (change.type === 'position') {
           const node = getNode(befores, change.id)!;
           if (node.data.parent) {
@@ -194,7 +194,7 @@ export const createGraphSlice: StateCreator<
       nodes: applyNodeChanges(changes_step_2, befores).map((v) =>
         !current_uneval.includes(v.id)
           ? v
-          : ({ ...v, data: { ...v.data, evaluated: false } } as TamaroCardNode),
+          : ({ ...v, data: { ...v.data, evaluated: false } } as TideNode),
       ),
     });
     const afters = get().nodes;
@@ -241,7 +241,7 @@ export const createGraphSlice: StateCreator<
                   ({
                     ...v,
                     data: evaluated.get(v.id),
-                  }) as TamaroCardNode,
+                  }) as TideNode,
               ),
             };
           });
@@ -253,9 +253,9 @@ export const createGraphSlice: StateCreator<
   onEdgesChange: (changes) => {
     const befores = get().edges;
 
-    const snd_changes: NodeChange<TamaroCardNode>[] = [];
+    const snd_changes: NodeChange<TideNode>[] = [];
     const node_changes = changes
-      .map((v): NodeChange<TamaroCardNode>[] => {
+      .map((v): NodeChange<TideNode>[] => {
         if (v.type === 'add') {
           const { source, target } = v.item;
           const { getNodes } = get();
@@ -292,10 +292,10 @@ export const createGraphSlice: StateCreator<
                   item: {
                     ...v,
                     data: { ...v?.data, parent },
-                  } as TamaroCardNode,
-                }) as NodeReplaceChange<TamaroCardNode>,
+                  } as TideNode,
+                }) as NodeReplaceChange<TideNode>,
             )
-            .map((v) => v as NodeChange<TamaroCardNode>);
+            .map((v) => v as NodeChange<TideNode>);
         }
 
         if (v.type === 'remove') {
@@ -323,9 +323,9 @@ export const createGraphSlice: StateCreator<
               item: {
                 ...v,
                 data: { ...v.data, parent: undefined },
-              } as TamaroCardNode,
+              } as TideNode,
             }))
-            .map((v) => v as NodeChange<TamaroCardNode>);
+            .map((v) => v as NodeChange<TideNode>);
         }
 
         return [];
@@ -369,7 +369,7 @@ export const createGraphSlice: StateCreator<
     ]);
   },
   setDragged: (
-    dragged: { type: string; data: TamaroCardNode['data'] } | undefined,
+    dragged: { type: string; data: TideNode['data'] } | undefined,
   ) => {
     set({ dragged });
   },
@@ -416,7 +416,7 @@ export const useStore = create<StoreType>()(
 
           const { nodes, edges } = state!;
 
-          function reconstructChildrenMap(v: TamaroCardNode): TamaroCardNode {
+          function reconstructChildrenMap(v: TideNode): TideNode {
             switch (v.data.kind) {
               case 'constant_definition': {
                 if (!v.data.root) return v;
@@ -437,17 +437,15 @@ export const useStore = create<StoreType>()(
                     .entries()
                     .map(([k, v]) => [
                       getParameterName(k)!,
-                      reconstructChildrenMap(v).data as TamaroCard<
-                        [],
-                        TideNodeMetadata
-                      >,
+                      reconstructChildrenMap(v)
+                        .data as TamaroCard<TideNodeMetadata>,
                     ]),
                 );
 
                 return {
                   ...v,
                   data: { ...v.data, children } as unknown,
-                } as TamaroCardNode;
+                } as TideNode;
               }
               default:
                 return v;

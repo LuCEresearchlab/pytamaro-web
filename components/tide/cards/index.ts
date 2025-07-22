@@ -5,6 +5,7 @@ import { JudiciousElement } from '../../../src/schemas/documentation';
 import ConstantDefinition from './constant_definition';
 import ConstantUse from './constant_use';
 import {
+  TamaroCard,
   TamaroCard_ConstantUse,
   TamaroCard_FunctionUse,
   TamaroCard_Literal,
@@ -39,7 +40,7 @@ export type CommonNodeData = { parent?: string };
 export type TideNodeMetadata = { node_id: string };
 
 export type FunctionNode = Node<
-  TamaroCard_FunctionUse<[], TideNodeMetadata> & CommonNodeData,
+  TamaroCard_FunctionUse<TideNodeMetadata> & CommonNodeData,
   'function'
 >;
 
@@ -63,11 +64,10 @@ export type ConstantDefinitionNode = Node<
   'constant_definition'
 >;
 
-export type TamaroCardNode =
-  | FunctionNode
-  | LiteralNode
-  | ConstantNode
-  | ConstantDefinitionNode;
+export type TideTamaroCard = TamaroCard<TideNodeMetadata>;
+export type TamaroCardNode = FunctionNode | LiteralNode | ConstantNode;
+
+export type TideNode = TamaroCardNode | ConstantDefinitionNode;
 
 export const node_types = {
   function: (props: NodeProps<FunctionNode>) =>

@@ -10,7 +10,7 @@ import {
   FunctionNode,
   ImportReference,
   node_types,
-  TamaroCardNode,
+  TideNode,
   TideNodeMetadata,
 } from '../../components/tide/cards';
 import {
@@ -20,24 +20,23 @@ import {
 import { UnsoundType } from './language/typing';
 import { eqCard, eqLocation, getCardOutputType } from './language/utils';
 import { TamaroCard } from './language/cards';
-import { TamaroCardParameterEnvironment } from './language/types';
 
-export function getNode(nodes: TamaroCardNode[], id: string) {
+export function getNode(nodes: TideNode[], id: string) {
   return nodes.find((v) => v.id === id);
 }
 
-export function getSource(nodes: TamaroCardNode[], edge: Edge) {
+export function getSource(nodes: TideNode[], edge: Edge) {
   return getNode(nodes, edge.source);
 }
 
-export function getTarget(nodes: TamaroCardNode[], edge: Edge) {
+export function getTarget(nodes: TideNode[], edge: Edge) {
   return getNode(nodes, edge.target);
 }
 
 export function getChildren(
-  nodes: TamaroCardNode[],
+  nodes: TideNode[],
   edges: Edge[],
-  node: string | TamaroCardNode,
+  node: string | TideNode,
   unsafe_type: boolean = false,
 ) {
   const node_id = typeof node === 'string' ? node : node.id;
@@ -54,7 +53,7 @@ export function getChildren(
 }
 
 export function getParents(
-  nodes: TamaroCardNode[],
+  nodes: TideNode[],
   edges: Edge[],
   node: string | Node,
   unsafe_type: boolean = false,
@@ -73,7 +72,7 @@ export function getParents(
 }
 
 export function getRelative(
-  nodes: TamaroCardNode[],
+  nodes: TideNode[],
   edges: Edge[],
   id: string,
   handle: string,
@@ -97,7 +96,7 @@ export function getRelative(
 }
 
 export function getFunctionParameterRelative(
-  nodes: TamaroCardNode[],
+  nodes: TideNode[],
   edges: Edge[],
   id: string,
   parameter: string,
@@ -108,19 +107,17 @@ export function getFunctionParameterRelative(
 
 export function getHandleType(
   context: EvaluatedDefinitions<TideNodeMetadata>,
-  node: TamaroCardNode,
+  node: TideNode,
   handle: string,
 ) {
   if (handle === 'output')
-    return getCardOutputType(
-      node.data as TamaroCard<TamaroCardParameterEnvironment, unknown>,
-    );
+    return getCardOutputType(node.data as TamaroCard<unknown>);
 
   switch (node.type as CardType) {
     case 'function': {
       const { data } = node as FunctionNode;
-      const def = context.find((v) => eqLocation(v.import, data.import)) as
-        | EvaluatedFunctionDefinition<TamaroCardParameterEnvironment, unknown>
+      const def = context.find((v) => eqLocation(v.location, data.location)) as
+        | EvaluatedFunctionDefinition<unknown>
         | undefined;
       if (!def) return UnsoundType.Bottom;
       const arg_name = getParameterName(handle);
@@ -141,9 +138,9 @@ export function getHandleType(
 }
 
 export function getSubTreeFromRoot(
-  nodes: TamaroCardNode[],
+  nodes: TideNode[],
   edges: Edge[],
-  root: TamaroCardNode | string,
+  root: TideNode | string,
 ): string[] {
   const descendants: string[] = [];
   const visited = new Set<string>();
@@ -171,7 +168,7 @@ export function getFunctionHandles(fn: JudiciousFunction) {
     .map((v) => ({ name: v.name, type: v.type }));
 }
 
-export function getAmountOfExpectConnections(node: TamaroCardNode) {
+export function getAmountOfExpectConnections(node: TideNode) {
   if (!node.type) return 'Unknown';
 
   const type = node.type;
@@ -196,27 +193,24 @@ export const TRANSPARENT_IMPORT: ImportReference = {
 };
 
 export function getConstantDefinition(
-  nodes: TamaroCardNode[],
+  nodes: TideNode[],
   name: string,
-): TamaroCardNode | undefined {
+): TideNode | undefined {
   return nodes.find(
     (v) => v.type === 'constant_definition' && v.data.location.name === name,
   );
 }
 
 export function getConstantDefinitions(
-  nodes: TamaroCardNode[],
+  nodes: TideNode[],
   name: string,
-): TamaroCardNode[] {
+): TideNode[] {
   return nodes.filter(
     (v) => v.type === 'constant_definition' && v.data.location.name === name,
   );
 }
 
-export function getUsages(
-  nodes: TamaroCardNode[],
-  name: string,
-): TamaroCardNode[] {
+export function getUsages(nodes: TideNode[], name: string): TideNode[] {
   return nodes.filter(
     (v) => v.type === 'constant' && v.data.location.name === name,
   );
@@ -237,7 +231,7 @@ export function getAscendants(edges: Edge[], source: string): string[] {
 }
 
 export function arcToEdges(
-  nodes: TamaroCardNode[],
+  nodes: TideNode[],
   edges: Edge[],
   source: string,
   target: string,
@@ -286,9 +280,9 @@ export function arcToEdges(
 }
 
 export function getSubTreeFromRootConsideringConstants(
-  nodes: TamaroCardNode[],
+  nodes: TideNode[],
   edges: Edge[],
-  root: TamaroCardNode | string,
+  root: TideNode | string,
 ): string[] {
   const descendants: string[] = [];
   const visited = new Set<string>();
@@ -354,15 +348,12 @@ export function toEnglishName(name: string): string | undefined {
   )?.[0] as string | undefined;
 }
 
-export function compute_node_change(
-  before: TamaroCardNode[],
-  after: TamaroCardNode[],
-) {
-  const changes: NodeChange<TamaroCardNode>[] = [];
-  const newLookup = new Map<string, TamaroCardNode>(
+export function compute_node_change(before: TideNode[], after: TideNode[]) {
+  const changes: NodeChange<TideNode>[] = [];
+  const newLookup = new Map<string, TideNode>(
     after.map((item) => [item.id, item]),
   );
-  const currentLookup = new Map<string, TamaroCardNode>(
+  const currentLookup = new Map<string, TideNode>(
     before.map((item) => [item.id, item]),
   );
 
@@ -424,8 +415,8 @@ export function compute_edge_change(befores: Edge[], after: Edge[]) {
 }
 
 export function getDepth(
-  node: TamaroCardNode,
-  nodes: TamaroCardNode[],
+  node: TideNode,
+  nodes: TideNode[],
   edges: Edge[],
 ): number {
   const successor = edges.find((v) => v.source === node.id);
@@ -435,8 +426,8 @@ export function getDepth(
 }
 
 export function getUnevalutedChange(
-  nodes: TamaroCardNode[],
-  changes: NodeChange<TamaroCardNode>[],
+  nodes: TideNode[],
+  changes: NodeChange<TideNode>[],
 ): string[] {
   return changes
     .map((v) => {
@@ -454,7 +445,10 @@ export function getUnevalutedChange(
           )
             if (
               before.data.kind === 'function_use' ||
-              !eqCard(before.data, after.data)
+              !eqCard(
+                before.data as TamaroCard<TideNodeMetadata>,
+                after.data as TamaroCard<TideNodeMetadata>,
+              )
             )
               return id;
           if (JSON.stringify(before.data) !== JSON.stringify(after.data))

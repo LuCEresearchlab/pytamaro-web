@@ -112,7 +112,10 @@ export default function ConstantDefinition(
   }, [id, onNodesChange, screenToFlowPosition, store, textRef, updateNodeData]);
 
   function setName(newName: string) {
-    updateNodeData(id, (data) => ({ ...data, name: newName }));
+    updateNodeData(id, (data) => ({
+      ...data,
+      location: { module: false, name: newName },
+    }));
     updateDimData();
   }
 
@@ -139,10 +142,8 @@ export default function ConstantDefinition(
     const newRoot =
       connections.length === 0
         ? undefined
-        : (getNode(store.getNodes(), connections[0].source)!.data as TamaroCard<
-            [],
-            TideNodeMetadata
-          >);
+        : (getNode(store.getNodes(), connections[0].source)
+            ?.data as TamaroCard<TideNodeMetadata>);
 
     if (
       (newRoot == null && data.root == null) ||

@@ -10,7 +10,7 @@ import '@xyflow/react/dist/style.css';
 import { Ref, useCallback, useEffect, useRef, useState } from 'react';
 import {
   node_types,
-  TamaroCardNode,
+  TideNode,
   TideNodeMetadata,
 } from '../../components/tide/cards';
 import CardSelectionPane, {
@@ -92,7 +92,7 @@ function View() {
     setAvailabilities({
       error: (() => {
         const errors: Error[] = nodes
-          .map((v) => (v as TamaroCardNode).data)
+          .map((v) => (v as TideNode).data)
           .filter((v) => {
             switch (v.kind) {
               case 'constant_definition':
@@ -120,7 +120,7 @@ function View() {
               case 'function_use':
                 return [
                   v.metadata,
-                  (v as EvaluatedTamaroCard<[], TideNodeMetadata>)
+                  (v as EvaluatedTamaroCard<TideNodeMetadata>)
                     .value as TideErrorValue,
                 ];
             }
@@ -352,10 +352,7 @@ function View() {
                       onClick={() =>
                         fitView({
                           nodes: [
-                            getNode(
-                              getNodes() as TamaroCardNode[],
-                              v[0].node_id,
-                            )!,
+                            getNode(getNodes() as TideNode[], v[0].node_id)!,
                           ],
                           duration: 2,
                           padding: 0.125,

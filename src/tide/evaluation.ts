@@ -1,29 +1,30 @@
-import {
-  Definitions,
-  EvaluatedDefinition,
-  IEvaluatedLocalConstantDefinition,
-} from './language/definitions';
+import { Definitions, EvaluatedDefinition } from './language/definitions';
 import {
   ConstantDefinitionNode,
   TamaroCardNode,
+  TideNode,
   TideNodeMetadata,
 } from '../../components/tide/cards';
 import { getConstantDefinitions, getNode, getUsages } from './utils';
 import { evaluate_context, evaluate_tree } from './language/evaluation';
-import { EvaluatedTamaroCard_FunctionUse, TamaroCard } from './language/cards';
-import { TamaroCardParameterEnvironment } from './language/types';
+import {
+  EvaluatedTamaroCard_FunctionUse,
+  NonEvaluatedTamaroCard_FunctionUse,
+  TamaroCard,
+} from './language/cards';
+
 import { toFlat } from './language/utils';
 import { Edge } from '@xyflow/react';
 import { UnsoundType } from './language/typing';
 import { TideSyntaxErrorConstantHasNoValue_builder } from './language/error_builders';
 import { getDefaultContext } from '../../cypress/e2e/tide/data';
 
-export function roots(nodes: TamaroCardNode[], edges: Edge[]) {
+export function roots(nodes: TideNode[], edges: Edge[]) {
   const not_roots = new Set(edges.map((v) => v.source));
   return nodes.filter((v) => !not_roots.has(v.id));
 }
 
-export function evaluated_context(nodes: TamaroCardNode[], edges: Edge[]) {
+export function evaluated_context(nodes: TideNode[], edges: Edge[]) {
   return (
     getDefaultContext() as unknown as EvaluatedDefinition<TideNodeMetadata>[]
   ).concat(
@@ -37,15 +38,15 @@ export function evaluated_context(nodes: TamaroCardNode[], edges: Edge[]) {
 }
 
 export function propagate_unevaluation(
-  nodes: TamaroCardNode[],
+  nodes: TideNode[],
   edges: Edge[],
   ...ids: string[]
 ): string[] {
   const to_uneval = new Set<string>();
-  const stack: TamaroCardNode['data'][] = ids
+  const stack: TideNode['data'][] = ids
     .map((v) => getNode(nodes, v)?.data)
     .filter((v) => v)
-    .map((v) => v as TamaroCardNode['data']);
+    .map((v) => v as TideNode['data']);
 
   while (stack.length !== 0) {
     const data = stack.pop()!;
@@ -69,10 +70,10 @@ export function propagate_unevaluation(
   return Array.from(to_uneval);
 }
 
-function updateTreeInsideNodes(nodes: TamaroCardNode[]) {
-  const updated_map = new Map<string, TamaroCardNode>();
+function updateTreeInsideNodes(nodes: TideNode[]) {
+  const updated_map = new Map<string, TideNode>();
 
-  function aux(node: TamaroCardNode): TamaroCardNode {
+  function aux(node: TideNode): TideNode {
     if (updated_map.has(node.data.metadata.node_id))
       return updated_map.get(node.data.metadata.node_id)!;
     switch (node.type) {
@@ -90,9 +91,8 @@ function updateTreeInsideNodes(nodes: TamaroCardNode[]) {
           return node;
         }
 
-        const root_data: TamaroCard<[], TideNodeMetadata> | undefined = aux(
-          root,
-        )?.data as TamaroCard<[], TideNodeMetadata> | undefined;
+        const root_data: TamaroCard<TideNodeMetadata> | undefined = aux(root)
+          ?.data as TamaroCard<TideNodeMetadata> | undefined;
 
         const newNode: ConstantDefinitionNode = {
           ...node,
@@ -106,28 +106,18 @@ function updateTreeInsideNodes(nodes: TamaroCardNode[]) {
         return newNode;
       }
       case 'function': {
-        const children: Map<
-          string,
-          TamaroCard<TamaroCardParameterEnvironment, TideNodeMetadata>
-        > = new Map(
+        const children: Map<string, TamaroCardNode['data']> = new Map(
           node.data.children
             .entries()
-            .map(
-              ([k, v]): [
-                string,
-                TamaroCard<TamaroCardParameterEnvironment, TideNodeMetadata>,
-              ] => {
-                const node = getNode(nodes, v.metadata.node_id);
-                const updated = node ? aux(node)?.data : undefined;
-                if (updated?.kind === 'constant_definition')
-                  throw new Error(
-                    'Constant definition should be child of function',
-                  );
+            .map(([k, v]): [string, TamaroCardNode['data']] => {
+              const node = getNode(nodes, v.metadata.node_id) as TamaroCardNode;
+              const updated: TamaroCardNode['data'] | undefined = node
+                ? (aux(node)?.data as TamaroCardNode['data'])
+                : undefined;
 
-                if (updated) return [k, updated];
-                return [k, v];
-              },
-            ),
+              if (updated) return [k, updated];
+              return [k, v];
+            }),
         );
 
         const children_uneval =
@@ -141,10 +131,7 @@ function updateTreeInsideNodes(nodes: TamaroCardNode[]) {
               ...node.data,
               evaluated: true,
               children: children,
-            } as EvaluatedTamaroCard_FunctionUse<
-              TamaroCardParameterEnvironment,
-              TideNodeMetadata
-            >,
+            } as EvaluatedTamaroCard_FunctionUse<TideNodeMetadata>,
           });
         } else {
           updated_map.set(node.id, {
@@ -153,8 +140,8 @@ function updateTreeInsideNodes(nodes: TamaroCardNode[]) {
             data: {
               ...node.data,
               evaluated: false,
-              children,
-            },
+              children: children,
+            } as NonEvaluatedTamaroCard_FunctionUse<TideNodeMetadata>,
           });
         }
         return updated_map.get(node.id)!;
@@ -166,9 +153,9 @@ function updateTreeInsideNodes(nodes: TamaroCardNode[]) {
 }
 
 export async function evaluation(
-  _nodes: TamaroCardNode[],
+  _nodes: TideNode[],
   edges: Edge[],
-): Promise<TamaroCardNode[]> {
+): Promise<TideNode[]> {
   const nodes = updateTreeInsideNodes(_nodes);
 
   const nodes_context: Definitions<TideNodeMetadata> = (
@@ -181,11 +168,12 @@ export async function evaluation(
 
   const context = await evaluate_context(nodes_context);
 
-  const all_evaluated: TamaroCardNode[] = await Promise.all(
-    roots(nodes, edges).map(async (v): Promise<TamaroCardNode['data']> => {
+  const all_evaluated: TideNode[] = await Promise.all(
+    roots(nodes, edges).map(async (v): Promise<TideNode['data']> => {
       if (v.data.kind === 'constant_definition') {
         if (v.data.root) {
           const eval_root = await evaluate_tree(v.data.root, context);
+
           return {
             ...v.data,
             evaluated: true,
@@ -193,7 +181,7 @@ export async function evaluation(
             subkind: 'local',
             root: eval_root,
             value: eval_root.value,
-          } as IEvaluatedLocalConstantDefinition<TideNodeMetadata>;
+          };
         }
         return {
           ...v.data,
@@ -204,19 +192,20 @@ export async function evaluation(
               v.data.location.name,
             ),
           },
-        } as IEvaluatedLocalConstantDefinition<TideNodeMetadata>;
+        };
       }
-      return await evaluate_tree(v.data, context);
+      return await evaluate_tree(
+        v.data as TamaroCard<TideNodeMetadata>,
+        context,
+      );
     }),
   ).then((array) => {
     return array
-      .map((v) => v as TamaroCardNode['data'])
-      .map((v): TamaroCardNode['data'][] => {
+      .map((v) => v as TideNode['data'])
+      .map((v): TideNode['data'][] => {
         return v.kind === 'constant_definition'
-          ? (v.root ? (toFlat(v.root) as TamaroCardNode['data'][]) : []).concat(
-              [v],
-            )
-          : toFlat(v);
+          ? (v.root ? (toFlat(v.root) as TideNode['data'][]) : []).concat([v])
+          : toFlat(v as TamaroCard<TideNodeMetadata>);
       })
       .reduce((a, b) => a.concat(b), [])
       .map((v) => {
@@ -227,7 +216,7 @@ export async function evaluation(
             ...node.data,
             ...v,
           },
-        } as TamaroCardNode;
+        } as TideNode;
       });
   });
 

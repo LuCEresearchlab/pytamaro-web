@@ -141,7 +141,7 @@ describe('Unit test function use', () => {
   it('evalute_simple_function_use', async () => {
     const map: EvaluatedDefinitions<object> = getDefaultContext();
 
-    const arg_map: Map<string, TamaroCard<[], object>> = new Map();
+    const arg_map: Map<string, TamaroCard<object>> = new Map();
     arg_map.set('width', literal_card('100.0', SoundType.Float));
     arg_map.set('height', literal_card('100.0', SoundType.Float));
     arg_map.set('color', {
@@ -193,7 +193,7 @@ describe('Unit test function use', () => {
       metadata: {},
     });
 
-    const arg_map: Map<string, TamaroCard<[], object>> = new Map();
+    const arg_map: Map<string, TamaroCard<object>> = new Map();
     arg_map.set('width', {
       kind: 'constant_use',
       location: import_size,
@@ -257,7 +257,7 @@ describe('Unit test function use', () => {
       metadata: {},
     });
 
-    const arg_map: Map<string, TamaroCard<[], object>> = new Map();
+    const arg_map: Map<string, TamaroCard<object>> = new Map();
     arg_map.set('width', {
       kind: 'constant_use',
       location: import_size,
@@ -315,7 +315,7 @@ describe('Unit test function use', () => {
       metadata: {},
     });
 
-    const arg_map: Map<string, TamaroCard<[], object>> = new Map();
+    const arg_map: Map<string, TamaroCard<object>> = new Map();
     arg_map.set('width', {
       kind: 'constant_use',
       location: import_size,

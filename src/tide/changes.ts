@@ -1,15 +1,15 @@
 import { Edge, EdgeChange, NodeChange } from '@xyflow/react';
 import { StateCreator } from 'zustand';
-import { TamaroCardNode } from '../../components/tide/cards';
+import { TideNode } from '../../components/tide/cards';
 import { GraphStateSlice } from './store';
 
 type FlowChange = NodeFlowChange | EdgeFlowChange;
 
 interface NodeFlowChange {
   kind: 'node';
-  native: NodeChange<TamaroCardNode>;
-  before?: TamaroCardNode;
-  after?: TamaroCardNode;
+  native: NodeChange<TideNode>;
+  before?: TideNode;
+  after?: TideNode;
 }
 
 interface EdgeFlowChange {

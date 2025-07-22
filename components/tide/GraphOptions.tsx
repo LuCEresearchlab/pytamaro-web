@@ -25,7 +25,7 @@ import {
 } from '@mui/icons-material';
 import { useStore } from '../../src/tide/store';
 import { Edge, useReactFlow } from '@xyflow/react';
-import { TamaroCardNode } from './cards';
+import { TideNode } from './cards';
 
 export function GraphOptionsIcon(props: { onClick: () => void }) {
   return (
@@ -119,7 +119,7 @@ export function GraphOptions() {
                 reader.onload = (e) => {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   const content = JSON.parse((e as any).target.result) as {
-                    nodes: TamaroCardNode[];
+                    nodes: TideNode[];
                     edges: Edge[];
                   };
 

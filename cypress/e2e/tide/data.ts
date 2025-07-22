@@ -1,11 +1,8 @@
-import {
-  FunctionParameter,
-  TamaroCardParameterEnvironment,
-} from '../../../src/tide/language/types';
+import { FunctionParameter } from '../../../src/tide/language/types';
 import {
   EvaluatedDefinition,
-  IImportedConstantDefinition,
-  IImportedFunctionDefinition,
+  ImportedConstantDefinition,
+  ImportedFunctionDefinition,
 } from '../../../src/tide/language/definitions';
 import { Location } from '../../../src/tide/language/types';
 import { SoundType } from '../../../src/tide/language/typing';
@@ -25,7 +22,7 @@ function constant_use(name: string, type: SoundType) {
     location: i,
     evaluated: true,
     evaluated_type: type,
-  } as IImportedConstantDefinition);
+  } as ImportedConstantDefinition);
 }
 
 function function_use(
@@ -45,7 +42,7 @@ function function_use(
     evaluated_type: type,
     location: i,
     parameters: _params,
-  } as IImportedFunctionDefinition<TamaroCardParameterEnvironment>);
+  } as ImportedFunctionDefinition);
 }
 
 function graphic_function_use(

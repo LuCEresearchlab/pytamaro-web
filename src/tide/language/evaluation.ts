@@ -1,13 +1,11 @@
 import axios from 'axios';
 import { EvaluatedTamaroCard, TamaroCard } from './cards';
-import { TamaroCardParameterEnvironment } from './types';
 import { FunctionParameter } from './types';
 import { create_code } from './code';
 import {
   Definitions,
   Definition,
   EvaluatedDefinitions,
-  EvaluatedDefinition,
   get_definition_output_type,
   get_definition_dependencies,
 } from './definitions';
@@ -164,19 +162,14 @@ function sort_context_by_dependency<U>(
       ],
     );
 
-  const evaluated_cyclical: EvaluatedDefinitions<U> = cyclical.map(
-    (v) =>
-      ({
-        ...v[1],
-        evaluated: true,
-        value: {
-          type: UnsoundType.Bottom,
-          error: TideNameErrorCyclicalDependencies_builder(
-            v[0].map((v) => v.name),
-          ),
-        },
-      }) as EvaluatedDefinition<U>,
-  );
+  const evaluated_cyclical: EvaluatedDefinitions<U> = cyclical.map((v) => ({
+    ...v[1],
+    evaluated: true,
+    value: {
+      type: UnsoundType.Bottom,
+      error: TideNameErrorCyclicalDependencies_builder(v[0].map((v) => v.name)),
+    },
+  }));
 
   const sorted = sort_dependencies(
     stack,
@@ -188,12 +181,10 @@ function sort_context_by_dependency<U>(
 }
 
 export function find_dependencies<U>(
-  value: TamaroCard<TamaroCardParameterEnvironment, U>,
+  value: TamaroCard<U>,
   context: EvaluatedDefinitions<U>,
 ): Location[] {
-  function aux(
-    value: TamaroCard<TamaroCardParameterEnvironment, U>,
-  ): Location[] {
+  function aux(value: TamaroCard<U>): Location[] {
     switch (value.kind) {
       case 'constant_use':
         return [value.location];
@@ -236,17 +227,14 @@ export function check_identifier_name(name: string): boolean {
   );
 }
 
-export async function evaluate_tree<
-  T extends TamaroCardParameterEnvironment,
-  U,
->(
-  root: TamaroCard<T, U>,
+export async function evaluate_tree<U>(
+  root: TamaroCard<U>,
   context: EvaluatedDefinitions<U>,
-): Promise<EvaluatedTamaroCard<T, U>> {
+): Promise<EvaluatedTamaroCard<U>> {
   if (root.evaluated) return root;
   function returning_error(
     error: false | TideError | TideError[],
-    children?: Map<string, EvaluatedTamaroCard<T, U>>,
+    children?: Map<string, EvaluatedTamaroCard<U>>,
   ) {
     if (root.kind === 'function_use') {
       return {
@@ -254,13 +242,13 @@ export async function evaluate_tree<
         children: children || root.children,
         evaluated: true,
         value: { type: UnsoundType.Bottom, error },
-      } as EvaluatedTamaroCard<T, U>;
+      } as EvaluatedTamaroCard<U>;
     }
     return {
       ...root,
       evaluated: true,
       value: { type: UnsoundType.Bottom, error },
-    } as EvaluatedTamaroCard<T, U>;
+    } as EvaluatedTamaroCard<U>;
   }
 
   switch (root.kind) {
@@ -287,6 +275,7 @@ export async function evaluate_tree<
 
       return {
         ...root,
+        kind: 'constant_use',
         evaluated: true,
         value: {
           data: await extract_data(
@@ -299,8 +288,8 @@ export async function evaluate_tree<
             expression: definition.location.name,
             imports: [definition.location],
           },
-        } as unknown as ExpressionValue,
-      };
+        },
+      } as EvaluatedTamaroCard<U>;
     }
     case 'literal': {
       const type = inferRawValueType(root.str_value);
@@ -316,7 +305,7 @@ export async function evaluate_tree<
           type: type,
           value: { expression: root.str_value, imports: [] },
         },
-      } as EvaluatedTamaroCard<T, U>;
+      };
     }
     case 'function_use': {
       if (!check_identifier_name(root.location.name))
@@ -328,9 +317,10 @@ export async function evaluate_tree<
               root.children
                 .entries()
                 .map(
-                  async ([k, v]): Promise<
-                    [string, EvaluatedTamaroCard<T, U>]
-                  > => [k, await evaluate_tree(v, context)],
+                  async ([k, v]): Promise<[string, EvaluatedTamaroCard<U>]> => [
+                    k,
+                    await evaluate_tree(v, context),
+                  ],
                 ),
             ),
           ),
@@ -343,9 +333,10 @@ export async function evaluate_tree<
               root.children
                 .entries()
                 .map(
-                  async ([k, v]): Promise<
-                    [string, EvaluatedTamaroCard<T, U>]
-                  > => [k, await evaluate_tree(v, context)],
+                  async ([k, v]): Promise<[string, EvaluatedTamaroCard<U>]> => [
+                    k,
+                    await evaluate_tree(v, context),
+                  ],
                 ),
             ),
           ),
@@ -361,9 +352,10 @@ export async function evaluate_tree<
               root.children
                 .entries()
                 .map(
-                  async ([k, v]): Promise<
-                    [string, EvaluatedTamaroCard<T, U>]
-                  > => [k, await evaluate_tree(v, context)],
+                  async ([k, v]): Promise<[string, EvaluatedTamaroCard<U>]> => [
+                    k,
+                    await evaluate_tree(v, context),
+                  ],
                 ),
             ),
           ),
@@ -416,13 +408,13 @@ export async function evaluate_tree<
 
       const typed_args: [
         boolean,
-        { parameter: FunctionParameter; arg?: EvaluatedTamaroCard<T, U> },
+        { parameter: FunctionParameter; arg?: EvaluatedTamaroCard<U> },
       ][] = args.map(
         (
           v,
         ): [
           boolean,
-          { parameter: FunctionParameter; arg?: EvaluatedTamaroCard<T, U> },
+          { parameter: FunctionParameter; arg?: EvaluatedTamaroCard<U> },
         ] =>
           type_equality_rule(v.arg!.value.type, v.parameter.type)
             ? [true, v]
@@ -435,7 +427,7 @@ export async function evaluate_tree<
           mismatch_types.map((v) =>
             TideTypeError_builder(
               type_toString(v[1].arg!.value.type as SoundType),
-              type_toString(v[1].parameter.type as SoundType),
+              type_toString(v[1].parameter.type),
               v[1].parameter.name,
             ),
           ),
@@ -470,7 +462,7 @@ export async function evaluate_tree<
         data: undefined,
       };
 
-      const card: EvaluatedTamaroCard<T, U> = {
+      const card: EvaluatedTamaroCard<U> = {
         ...root,
         children,
         evaluated: true,
@@ -501,7 +493,7 @@ export async function evaluate_tree<
                     unwrap_local_definition(dependencies, context),
                   ),
                 },
-              } as EvaluatedTamaroCard<T, U>;
+              } as EvaluatedTamaroCard<U>;
             case 'error': {
               const content = v.stderr;
               const error_message = content.substring(
@@ -606,7 +598,6 @@ export async function evaluate_context<U>(
         ...element,
         dependencies: [],
         evaluated: true,
-        evaluated_type: UnsoundType.Bottom,
         value: {
           type: UnsoundType.Bottom,
           error: TideNameErrorMultipleDefinition_builder(element.location.name),

@@ -1,11 +1,10 @@
 import {
   EvaluatedTamaroCard,
-  ITamaroCard_ConstantUse,
-  ITamaroCard_FunctionUse,
-  ITamaroCard_Literal,
+  TamaroCard_ConstantUse,
+  TamaroCard_FunctionUse,
+  TamaroCard_Literal,
   TamaroCard,
 } from './cards';
-import { TamaroCardParameterEnvironment } from './types';
 import { Value } from './expression';
 import { Location } from './types';
 import { LiteralType, SoundType, UnsoundType, ValueType } from './typing';
@@ -23,30 +22,19 @@ export function inferRawValueType(v: string): LiteralType {
   return UnsoundType.Bottom;
 }
 
-export function getCardAsEvaluated<
-  U extends TamaroCardParameterEnvironment,
-  T,
-  B extends true,
->(card: TamaroCard<U, T> & { evaluated: B }) {
-  return card as EvaluatedTamaroCard<U, T>;
-}
-
-export function getCardOutputType<U extends TamaroCardParameterEnvironment, T>(
-  card: TamaroCard<U, T>,
-): ValueType {
+export function getCardOutputType<T>(card: TamaroCard<T>): ValueType {
+  if (card.evaluated !== true) return UnsoundType.Bottom;
   switch (card.kind) {
     case 'constant_use':
-      return card.evaluated ? card.value.type : UnsoundType.Bottom;
     case 'literal':
-      return card.evaluated ? card.value.type : UnsoundType.Bottom;
     case 'function_use':
-      return card.evaluated ? card.value.type : UnsoundType.Bottom;
+      return (card as EvaluatedTamaroCard<T>).value.type;
+    default:
+      return UnsoundType.Bottom;
   }
 }
 
-export function toFlat<U extends TamaroCardParameterEnvironment, T>(
-  card: TamaroCard<U, T>,
-): TamaroCard<U, T>[] {
+export function toFlat<T>(card: TamaroCard<T>): TamaroCard<T>[] {
   switch (card.kind) {
     case 'literal':
     case 'constant_use':
@@ -69,26 +57,23 @@ export function eqValue(a: Value, b: Value) {
 }
 
 // This equality is not perfect because we should not need more than that
-export function eqCard<T extends TamaroCardParameterEnvironment, U>(
-  a: TamaroCard<T, U>,
-  _b: TamaroCard<T, U>,
-): boolean {
+export function eqCard<U>(a: TamaroCard<U>, _b: TamaroCard<U>): boolean {
   if (a.kind !== _b.kind) return false;
   if (a.evaluated !== _b.evaluated) return false;
 
   switch (a.kind) {
     case 'constant_use': {
-      const b = _b as ITamaroCard_ConstantUse<U>;
+      const b = _b as TamaroCard_ConstantUse<U>;
       return eqLocation(a.location, b.location);
     }
 
     case 'literal': {
-      const b = _b as ITamaroCard_Literal<U>;
+      const b = _b as TamaroCard_Literal<U>;
 
       return b.str_value === a.str_value;
     }
     case 'function_use': {
-      const b = _b as ITamaroCard_FunctionUse<T, U>;
+      const b = _b as TamaroCard_FunctionUse<U>;
       if (!eqLocation(a.location, b.location)) return false;
 
       return (

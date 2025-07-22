@@ -19,11 +19,10 @@ import {
 import {
   ConstantDefinitionNode,
   ConstantNode,
-  TamaroCardNode,
+  TideNode,
   TideNodeMetadata,
 } from './cards';
 import { EvaluatedTamaroCard, TamaroCard } from '../../src/tide/language/cards';
-import { TamaroCardParameterEnvironment } from '../../src/tide/language/types';
 import { find_dependencies } from '../../src/tide/language/evaluation';
 
 export default function NodeContextMenu({
@@ -70,10 +69,7 @@ export default function NodeContextMenu({
         id: newNodeId,
         type: 'constant_definition',
         data: (() => {
-          const retyped = data as TamaroCard<
-            TamaroCardParameterEnvironment,
-            TideNodeMetadata
-          >;
+          const retyped = data as TamaroCard<TideNodeMetadata>;
           if (retyped.evaluated) {
             return {
               dependencies: find_dependencies(retyped, evaluated_context()),
@@ -85,12 +81,7 @@ export default function NodeContextMenu({
                 node_id: newNodeId,
               },
               root: retyped,
-              value: (
-                retyped as EvaluatedTamaroCard<
-                  TamaroCardParameterEnvironment,
-                  unknown
-                >
-              ).value,
+              value: (retyped as EvaluatedTamaroCard<unknown>).value,
             };
           }
           return {
@@ -132,7 +123,7 @@ export default function NodeContextMenu({
               : ({
                   ...v,
                   data: { ...v.data, parent: newNode.id },
-                } as TamaroCardNode),
+                } as TideNode),
           )
           .concat(replacedByNode, newNode),
       );

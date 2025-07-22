@@ -1,12 +1,12 @@
 import { Edge, Node } from '@xyflow/react';
 import { getHandleType, getNode, getParents } from './utils';
-import { TamaroCardNode, TideNodeMetadata } from '../../components/tide/cards';
+import { TideNode, TideNodeMetadata } from '../../components/tide/cards';
 import { type_equality_rule } from './language/typing';
 import { EvaluatedDefinitions } from './language/definitions';
 
 export function check_edge_typing(
   context: EvaluatedDefinitions<TideNodeMetadata>,
-  nodes: TamaroCardNode[],
+  nodes: TideNode[],
   source_id: string,
   source_handle: string,
   target_id: string,
@@ -22,7 +22,7 @@ export function check_edge_typing(
 }
 
 export function check_edge_looping(
-  nodes: TamaroCardNode[],
+  nodes: TideNode[],
   edges: Edge[],
   source: string,
   target: string,

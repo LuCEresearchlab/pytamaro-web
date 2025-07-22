@@ -3,10 +3,7 @@ import {
   DragEvent as React_DragEvent,
   MouseEvent as React_MouseEvent,
 } from 'react';
-import {
-  ConstantDefinitionNode,
-  TamaroCardNode,
-} from '../../components/tide/cards';
+import { ConstantDefinitionNode, TideNode } from '../../components/tide/cards';
 import { getNode } from './utils';
 import { check_edge_looping, check_edge_typing } from './interactivity';
 import { StoreType } from './store';
@@ -32,7 +29,7 @@ const TOP_MARGIN = 40;
 const RIGHT_MARGIN = 20;
 
 export function updateParent(
-  nodes: TamaroCardNode[],
+  nodes: TideNode[],
   parent: string,
 ): NodeReplaceChange<ConstantDefinitionNode> {
   const node = getNode(nodes, parent)! as ConstantDefinitionNode;
@@ -106,7 +103,7 @@ export function updateParent(
       position: { x: min_x - x_margin, y: min_y - TOP_MARGIN - y_margin },
     },
     type: 'replace',
-  } as NodeReplaceChange<TamaroCardNode>;
+  } as NodeReplaceChange<ConstantDefinitionNode>;
 
   return edit_parent;
 }
@@ -184,7 +181,7 @@ export function onDrop(
     data: { ...dragged.data, metadata: { node_id: id } },
     dragHandle: '.drag-handle',
     className: 'node_hidden',
-  } as TamaroCardNode;
+  } as TideNode;
 
   setNodes(getNodes().concat(newNode));
 
@@ -249,7 +246,7 @@ export function onDocumentPasteCatpure(
   e: ClipboardEvent,
 ) {
   interface FlowChartClipboardData {
-    nodes: TamaroCardNode[];
+    nodes: TideNode[];
     edges: Edge[];
   }
   const paste = e.clipboardData?.getData('flowchart:graph');
@@ -340,7 +337,7 @@ export function onDocumentPasteCatpure(
           ? getOrCreateNodeMap(v.data.parent as string)
           : undefined,
       },
-    } as TamaroCardNode;
+    } as TideNode;
   });
 
   const newEdges = data.nodes

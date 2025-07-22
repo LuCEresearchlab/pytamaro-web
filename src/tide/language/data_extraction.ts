@@ -5,6 +5,7 @@ import {
   get_definition_dependencies,
 } from './definitions';
 import { executeOnServer } from './evaluation';
+import { ExpressionValue } from './expression';
 import { SoundType } from './typing';
 import { eqLocation } from './utils';
 
@@ -35,7 +36,7 @@ export async function extract_data(
   expression: string,
   type: SoundType,
   definitions: EvaluatedDefinitions<unknown>,
-): Promise<unknown> {
+): Promise<ExpressionValue['data']> {
   switch (type) {
     case SoundType.Graphic: {
       const new_expression = `from pytamaro import show_graphic\nshow_graphic(${expression})`;

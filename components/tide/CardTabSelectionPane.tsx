@@ -6,7 +6,7 @@ import { JudiciousModuleElement } from './CardSelectionPane';
 import { FLOAT_REGEX, STR_REGEX, TamaroLiteralCard } from './cards/literal';
 import ConstantUse from './cards/constant_use';
 import { check_const_name } from './cards/constant_definition';
-import { TamaroCardNode } from './cards';
+import { TideNode } from './cards';
 import {
   LiteralType,
   SoundType,
@@ -60,7 +60,7 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
   const onDragStart = function <T extends string>(
     event: DragEvent<HTMLDivElement>,
     type: T,
-    data: (TamaroCardNode & { type: T })['data'],
+    data: (TideNode & { type: T })['data'],
   ) {
     setDragged({ type, data });
     // eslint-disable-next-line no-param-reassign

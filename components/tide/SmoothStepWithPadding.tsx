@@ -8,13 +8,13 @@ import {
 } from '@xyflow/react';
 import { useStore } from '../../src/tide/store';
 import { getNode } from '../../src/tide/utils';
-import { TamaroCardNode } from './cards';
+import { TideNode } from './cards';
 import { useEffect, useState } from 'react';
 import { Value } from '../../src/tide/language/expression';
 import { UnsoundType } from '../../src/tide/language/typing';
 import { getParameterName } from './cards/function';
 
-function getValue(node: TamaroCardNode): Value | undefined {
+function getValue(node: TideNode): Value | undefined {
   return node!.data.evaluated
     ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ((node!.data as any)['value'] as Value)
@@ -139,7 +139,7 @@ export function CustomEdgeLine({
   toY,
   connectionLineStyle,
 }: Pick<
-  ConnectionLineComponentProps<TamaroCardNode>,
+  ConnectionLineComponentProps<TideNode>,
   'fromX' | 'fromY' | 'toX' | 'toY' | 'connectionLineStyle'
 >) {
   const [edgePath] = getSmoothStepWithPaddingPath({
