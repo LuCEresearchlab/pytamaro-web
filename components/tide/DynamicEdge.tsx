@@ -37,18 +37,14 @@ function getSmoothStepWithPaddingPath({
   offsetX: number,
   offsetY: number,
 ] {
-  const [path, ...other] = getBezierPath({
-    sourceX,
+  return getBezierPath({
+    sourceX: sourceX - padding.source,
     sourceY,
     sourcePosition: Position.Right,
-    targetX,
+    targetX: targetX + padding.target,
     targetY,
     targetPosition: Position.Left,
   });
-
-  const newPath = `M ${sourceX - padding.source} ${sourceY} L ${sourceX} ${sourceY} ${path} M ${targetX} ${targetY} L ${targetX + padding.target} ${targetY}`;
-
-  return [newPath, ...other];
 }
 
 function CustomEdge({
@@ -150,7 +146,7 @@ export function CustomEdgeLine({
     offset: 0,
     padding: {
       source: 0,
-      target: 20,
+      target: 0,
     },
   });
   return <path style={connectionLineStyle} d={edgePath} />;

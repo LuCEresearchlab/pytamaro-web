@@ -98,13 +98,17 @@ function View() {
               case 'constant_definition':
                 return (
                   v.evaluated &&
-                  (v as IEvaluatedLocalConstantDefinition<TideNodeMetadata>)
-                    .value.type === UnsoundType.Bottom
+                  (v as EvaluatedLocalDefinition<TideNodeMetadata>).value
+                    .type === UnsoundType.Bottom
                 );
               case 'literal':
               case 'constant_use':
               case 'function_use':
-                return v.evaluated && v.value.type === UnsoundType.Bottom;
+                return (
+                  v.evaluated &&
+                  (v as EvaluatedTamaroCard<TideNodeMetadata>).value.type ===
+                    UnsoundType.Bottom
+                );
             }
           })
           .map((v) => {
@@ -112,7 +116,7 @@ function View() {
               case 'constant_definition':
                 return [
                   v.metadata,
-                  (v as IEvaluatedLocalConstantDefinition<TideNodeMetadata>)
+                  (v as EvaluatedLocalDefinition<TideNodeMetadata>)
                     .value as TideErrorValue,
                 ];
               case 'literal':
@@ -468,9 +472,7 @@ import {
 } from '../../src/tide/graph_toolbox';
 import { GraphOptions } from '../../components/tide/GraphOptions';
 import NodeContextMenu from '../../components/tide/NodeContextMenu';
-import edge_type, {
-  CustomEdgeLine,
-} from '../../components/tide/SmoothStepWithPadding';
+import edge_type, { CustomEdgeLine } from '../../components/tide/DynamicEdge';
 import { useStore } from '../../src/tide/store';
 import {
   JudiciousConstant,
@@ -480,12 +482,12 @@ import { translationProps } from '../../src/serverSideTranslationProps';
 import { executeOnServer } from '../../src/useActivity';
 import { TideErrorValue } from '../../src/tide/language/expression';
 import { UnsoundType } from '../../src/tide/language/typing';
-import { IEvaluatedLocalConstantDefinition } from '../../src/tide/language/definitions';
 import { EvaluatedTamaroCard } from '../../src/tide/language/cards';
 import { getNode } from '../../src/tide/utils';
 import { ErrorParagraph } from '../../components/tide/ErrorParagraph';
 import { TideError } from '../../src/tide/language/errors';
 import useJudiciousDocData from '../../src/documentation';
+import { EvaluatedLocalDefinition } from '../../src/tide/language/definitions';
 
 function Graph() {
   const [source] = useState('from pytamaro import *');
