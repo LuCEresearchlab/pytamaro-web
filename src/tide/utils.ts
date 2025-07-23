@@ -7,6 +7,7 @@ import {
 import { JudiciousFunction } from '../schemas/documentation';
 import {
   CardType,
+  ConstantDefinitionNode,
   FunctionNode,
   ImportReference,
   node_types,
@@ -462,4 +463,43 @@ export function getUnevalutedChange(
     })
     .filter(Boolean)
     .map((v) => v as string);
+}
+
+export function reconstructChildrenMap(
+  nodes: TideNode[],
+  edges: Edge[],
+): TideNode[] {
+  function aux(node: TideNode): TideNode {
+    switch (node.data.kind) {
+      case 'constant_definition': {
+        if (!node.data.root) return node;
+        const root_node = getNode(nodes, node.data.root.metadata.node_id);
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            root: root_node ? aux(root_node).data : undefined,
+          } as ConstantDefinitionNode['data'],
+        } as ConstantDefinitionNode;
+      }
+      case 'function_use': {
+        const children = new Map(
+          getChildren(nodes, edges, node, true)
+            .entries()
+            .map(([k, v]) => [
+              getParameterName(k)!,
+              aux(v).data as TamaroCard<TideNodeMetadata>,
+            ]),
+        );
+
+        return {
+          ...node,
+          data: { ...node.data, children } as unknown,
+        } as TideNode;
+      }
+      default:
+        return node;
+    }
+  }
+  return nodes.map(aux);
 }

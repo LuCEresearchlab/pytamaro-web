@@ -26,6 +26,7 @@ import {
 import { useStore } from '../../src/tide/store';
 import { Edge, useReactFlow } from '@xyflow/react';
 import { TideNode } from './cards';
+import { reconstructChildrenMap } from '../../src/tide/utils';
 
 export function GraphOptionsIcon(props: { onClick: () => void }) {
   return (
@@ -123,7 +124,9 @@ export function GraphOptions() {
                     edges: Edge[];
                   };
 
-                  setNodes(content.nodes);
+                  setNodes(
+                    reconstructChildrenMap(content.nodes, content.edges),
+                  );
                   setEdges(content.edges);
                 };
                 reader.readAsText(file);

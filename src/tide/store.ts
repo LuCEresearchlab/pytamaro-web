@@ -20,14 +20,13 @@ import {
 import {
   compute_edge_change,
   compute_node_change,
-  getChildren,
   getNode,
   getSubTreeFromRoot,
   getUnevalutedChange,
+  reconstructChildrenMap,
 } from './utils';
 import { updateParent } from './graph_toolbox';
 import {
-  ConstantDefinitionNode,
   TamaroCardNode,
   TideNode,
   TideNodeMetadata,
@@ -38,8 +37,6 @@ import {
   EvaluatedDefinitions,
 } from './language/definitions';
 import { getDefaultContext } from '../../cypress/e2e/tide/data';
-import { getParameterName } from '../../components/tide/cards/function';
-import { TamaroCard } from './language/cards';
 
 export interface DraggedElementData {
   type: string;
@@ -413,43 +410,7 @@ export const useStore = create<StoreType>()(
 
           const { nodes, edges } = state!;
 
-          function reconstructChildrenMap(v: TideNode): TideNode {
-            switch (v.data.kind) {
-              case 'constant_definition': {
-                if (!v.data.root) return v;
-                const root_node = getNode(nodes, v.data.root.metadata.node_id);
-                return {
-                  ...v,
-                  data: {
-                    ...v.data,
-                    root: root_node
-                      ? reconstructChildrenMap(root_node).data
-                      : undefined,
-                  } as ConstantDefinitionNode['data'],
-                } as ConstantDefinitionNode;
-              }
-              case 'function_use': {
-                const children = new Map(
-                  getChildren(nodes, edges, v, true)
-                    .entries()
-                    .map(([k, v]) => [
-                      getParameterName(k)!,
-                      reconstructChildrenMap(v)
-                        .data as TamaroCard<TideNodeMetadata>,
-                    ]),
-                );
-
-                return {
-                  ...v,
-                  data: { ...v.data, children } as unknown,
-                } as TideNode;
-              }
-              default:
-                return v;
-            }
-          }
-
-          state.setNodes(state.nodes.map(reconstructChildrenMap));
+          state.setNodes(reconstructChildrenMap(nodes, edges));
 
           state.setInitialized('done');
         };
