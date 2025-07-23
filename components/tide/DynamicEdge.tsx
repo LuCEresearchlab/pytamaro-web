@@ -7,7 +7,7 @@ import {
   Position,
 } from '@xyflow/react';
 import { useStore } from '../../src/tide/store';
-import { getNode } from '../../src/tide/utils';
+import { getHandleDiv, getNode } from '../../src/tide/utils';
 import { TideNode } from './cards';
 import { useEffect, useState } from 'react';
 import { Value } from '../../src/tide/language/expression';
@@ -29,8 +29,10 @@ function getSmoothStepWithPaddingPath({
   sourceY,
   targetX,
   targetY,
-  padding = { source: 20, target: 20 },
-}: GetSmoothStepWithPaddingPathParams): [
+}: Pick<
+  GetSmoothStepWithPaddingPathParams,
+  'sourceX' | 'sourceY' | 'targetX' | 'targetY'
+>): [
   path: string,
   labelX: number,
   labelY: number,
@@ -38,10 +40,10 @@ function getSmoothStepWithPaddingPath({
   offsetY: number,
 ] {
   return getBezierPath({
-    sourceX: sourceX - padding.source,
+    sourceX: sourceX,
     sourceY,
     sourcePosition: Position.Right,
-    targetX: targetX + padding.target,
+    targetX: targetX,
     targetY,
     targetPosition: Position.Left,
   });
@@ -55,7 +57,7 @@ function CustomEdge({
   targetX,
   targetY,
   target,
-  targetHandleId,
+  targetHandleId: toHandle,
   style,
 }: EdgeProps) {
   const [primary_error, setPrimaryError] = useState(false);
@@ -84,7 +86,7 @@ function CustomEdge({
         ).find(
           (v) =>
             v.kind === 'type-error' &&
-            v.args[2].value === getParameterName(targetHandleId!)!,
+            v.args[2].value === getParameterName(toHandle!)!,
         ) != null,
     );
 
@@ -99,9 +101,9 @@ function CustomEdge({
     secondary_error,
     nodes,
     target,
-    targetHandleId,
     sourceNode,
     targetNode,
+    toHandle,
   ]);
 
   const [edgePath] = getSmoothStepWithPaddingPath({
@@ -109,11 +111,6 @@ function CustomEdge({
     sourceY,
     targetX,
     targetY,
-    offset: 0,
-    padding: {
-      source: 20,
-      target: targetNode?.type !== 'constant_definition' ? 20 : 0,
-    },
   });
 
   return (
@@ -130,26 +127,46 @@ function CustomEdge({
 
 export function CustomEdgeLine({
   fromX,
-  fromY,
+  fromY: sourceY,
   toX,
-  toY,
+  toY: targetY,
   connectionLineStyle,
+  fromNode,
+  toNode,
+  fromHandle,
+  toHandle,
 }: Pick<
   ConnectionLineComponentProps<TideNode>,
-  'fromX' | 'fromY' | 'toX' | 'toY' | 'connectionLineStyle'
+  | 'fromX'
+  | 'fromY'
+  | 'toX'
+  | 'toY'
+  | 'connectionLineStyle'
+  | 'fromNode'
+  | 'toNode'
+  | 'fromHandle'
+  | 'toHandle'
 >) {
+  const sourceHandleDiv =
+    getHandleDiv(fromNode.id, fromHandle.id || '')?.clientWidth || 0;
+  const targetHandleDiv =
+    (toNode &&
+      toHandle &&
+      getHandleDiv(toNode.id, toHandle.id || '')?.clientWidth) ||
+    0;
+
+  const sourceX = fromX + sourceHandleDiv / 2;
+  const targetX = toX - targetHandleDiv / 2;
+
   const [edgePath] = getSmoothStepWithPaddingPath({
-    sourceX: fromX,
-    sourceY: fromY,
-    targetX: toX,
-    targetY: toY,
-    offset: 0,
-    padding: {
-      source: 0,
-      target: 0,
-    },
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
   });
-  return <path style={connectionLineStyle} d={edgePath} />;
+  return (
+    <path style={{ ...connectionLineStyle, zIndex: '-1000' }} d={edgePath} />
+  );
 }
 
 const edge_type = { custom_edge: CustomEdge };

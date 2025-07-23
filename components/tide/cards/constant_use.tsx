@@ -5,6 +5,7 @@ import { useStore } from '../../../src/tide/store';
 import {
   ChangeEvent,
   CSSProperties,
+  RefObject,
   useCallback,
   useEffect,
   useMemo,
@@ -15,6 +16,25 @@ import { ReactElement } from 'react-markdown/lib/react-markdown';
 import { Location } from '../../../src/tide/language/types';
 import ResultIcon from '../ResultIcon';
 import { iconPath } from '../../documentation/utils';
+
+const useMutationObserver = (
+  ref: RefObject<Node>,
+  callback: () => void,
+  options = {
+    attributes: true,
+    characterData: true,
+    childList: true,
+    subtree: true,
+  },
+) => {
+  useEffect(() => {
+    if (ref.current) {
+      const observer = new MutationObserver(callback);
+      observer.observe(ref.current, options);
+      return () => observer.disconnect();
+    }
+  }, [callback, options, ref]);
+};
 
 export function AutoWidthInput({
   value,
@@ -122,32 +142,29 @@ export function TideConstantUse({
   );
 
   const returnsIconRef = useRef() as React.MutableRefObject<HTMLDivElement>;
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-
-  const [editing, setEditing] = useState(false);
 
   const value = data.evaluated && 'value' in data ? data.value : undefined;
   const returns_icon = useMemo(() => {
     return ResultIcon({ value });
   }, [value]);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
-  useEffect(() => {
-    if (!returnsIconRef.current) return;
-
-    const newDim = {
+  useMutationObserver(returnsIconRef, () => {
+    setDimensions({
       width: returnsIconRef.current.clientWidth,
       height: returnsIconRef.current.clientHeight,
-    };
+    });
+  });
 
-    if (
-      newDim.width === dimensions.width &&
-      newDim.height === dimensions.height
-    )
-      return;
-
-    setDimensions(newDim);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (returns_icon != null) return;
+    setDimensions({
+      width: 0,
+      height: 0,
+    });
   }, [returns_icon]);
+
+  const [editing, setEditing] = useState(false);
 
   return (
     <div
@@ -234,7 +251,8 @@ export function TideConstantUse({
               style={{
                 position: 'absolute',
                 borderRadius: '0px',
-                minWidth: `${dimensions.width === 0 ? 0 : dimensions.width + 8}px`,
+                width: `${dimensions.width === 0 ? 20 : dimensions.width + 8}px`,
+                minHeight: `20px`,
                 right: `${dimensions.width === 0 ? 0 : (dimensions.width + 8) / 2}px`,
                 opacity: '0',
               }}

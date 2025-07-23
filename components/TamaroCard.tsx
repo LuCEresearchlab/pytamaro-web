@@ -410,7 +410,7 @@ export function ConstantTamaroCard({
             style={{
               position: 'absolute',
               borderRadius: '0px',
-              minWidth: `${dimensions.width === 0 ? 0 : dimensions.width + 8}px`,
+              width: `${dimensions.width === 0 ? 0 : dimensions.width + 8}px`,
               right: `${dimensions.width === 0 ? 0 : (dimensions.width + 8) / 2}px`,
               opacity: '0',
             }}

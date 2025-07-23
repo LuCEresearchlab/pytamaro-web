@@ -55,6 +55,8 @@ function getRawContent(annotation: TideError): {
       }
     }
     default:
+      // eslint-disable-next-line no-console
+      console.error(JSON.stringify(annotation));
       return { title: 'Error', message: 'Unknown error.' };
   }
 }

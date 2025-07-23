@@ -503,3 +503,27 @@ export function reconstructChildrenMap(
   }
   return nodes.map(aux);
 }
+
+export function getNodeDiv(node: string): HTMLDivElement | undefined {
+  return typeof window !== 'undefined'
+    ? (Array.from(document.getElementsByClassName('react-flow__node')).find(
+        (v) => {
+          return v && v.getAttribute('data-id') === node;
+        },
+      ) as HTMLDivElement | undefined)
+    : undefined;
+}
+
+export function getHandleDiv(
+  node: string,
+  handle: string,
+): HTMLDivElement | undefined {
+  const element = getNodeDiv(node);
+  if (element)
+    return Array.from(
+      element.getElementsByClassName('react-flow__handle'),
+    ).find((v) => v && v.getAttribute('data-handleid') === handle) as
+      | HTMLDivElement
+      | undefined;
+  return undefined;
+}

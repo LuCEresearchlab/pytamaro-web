@@ -149,8 +149,8 @@ export function TideLiteral({
                 id={'output'}
                 className='handle'
                 style={{
-                  width: '20px',
-                  height: '20px',
+                  width: '40px',
+                  height: '40px',
                   opacity: '0',
                 }}
               />
