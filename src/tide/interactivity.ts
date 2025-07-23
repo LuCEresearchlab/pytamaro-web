@@ -1,5 +1,10 @@
 import { Edge, Node } from '@xyflow/react';
-import { getHandleType, getNode, getParents } from './utils';
+import {
+  getHandleType,
+  getNode,
+  getParents,
+  getSubTreeFromRoot,
+} from './utils';
 import { TideNode, TideNodeMetadata } from '../../components/tide/cards';
 import { type_equality_rule } from './language/typing';
 import { EvaluatedDefinitions } from './language/definitions';
@@ -27,30 +32,8 @@ export function check_edge_looping(
   source: string,
   target: string,
 ) {
-  if (getParents(nodes, edges, source).size != 0) return false;
-  const visited: Set<string> = new Set();
-  visited.add(source);
-
-  const stack: Array<Node> = [getNode(nodes, target)!];
-
-  while (stack.length !== 0) {
-    const el = stack.pop()!;
-    if (visited.has(el.id)) {
-      return false;
-    }
-
-    const parents = getParents(nodes, edges, el);
-    if (parents.size > 1) {
-      return false;
-    }
-
-    visited.add(el.id);
-    if (parents.size === 1) {
-      const val = parents.values().next().value!;
-      if (visited.has(val.id)) continue;
-      stack.push(val);
-    }
-  }
-
-  return true;
+  return (
+    !getSubTreeFromRoot(nodes, edges, source).includes(target) &&
+    !getSubTreeFromRoot(nodes, edges, target).includes(source)
+  );
 }

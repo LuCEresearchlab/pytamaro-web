@@ -121,11 +121,17 @@ export function isValidConnection(
   const sourceNode = getNode(nodes, source);
   const targetNode = getNode(nodes, target);
 
+  const handleUsed = edges.find(
+    (v) =>
+      (v.source === source && v.sourceHandle === params.sourceHandle) ||
+      (v.target === target && v.targetHandle === params.targetHandle),
+  );
   return Boolean(
     ((!sourceNode?.data.parent && targetNode?.data.parent) ||
       sourceNode?.data.parent === targetNode?.data.parent ||
       sourceNode?.data.parent === targetNode?.id) &&
       check_edge_looping(nodes, edges, source, target) &&
+      handleUsed == null &&
       (error_level !== 'prevent' ||
         targetNode?.type === 'constant_definition' ||
         check_edge_typing(
