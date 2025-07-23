@@ -51,11 +51,14 @@ export function ContentEditableDiv(props: {
   );
 }
 
-export function TamaroLiteralCard({
+export function TideLiteral({
   id,
   show_handles,
   data: { str_value: value },
-}: NodeProps<LiteralNode> & ExtraneousNodeProps) {
+}: Pick<
+  NodeProps<LiteralNode> & ExtraneousNodeProps,
+  'id' | 'show_handles' | 'data'
+>) {
   const updateNodeData = useStore((state) => state.updateNodeData);
 
   const setValue = useCallback(

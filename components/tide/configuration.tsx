@@ -1,12 +1,12 @@
 import { StateCreator } from 'zustand';
-import { ImportReference } from './cards';
+import { ImportedDefinition } from '../../src/tide/language/definitions';
 
 export type ErrorLevels = 'prevent' | 'none' | 'warning' | 'highlight';
 
 export type ConfigurationState = {
   error_level: ErrorLevels;
   local_scale: boolean;
-  node_filter: ImportReference[];
+  imported_definitions: ImportedDefinition[];
   functional_nodes_only: boolean;
   setConfiguration: (value: Partial<ConfigurationState>) => void;
 };
@@ -20,11 +20,6 @@ export const createConfigurationSlice: StateCreator<
   error_level: 'highlight',
   local_scale: true,
   functional_nodes_only: true,
-  node_filter: [
-    {
-      module: 'pytamaro',
-      name: '*',
-    },
-  ],
+  imported_definitions: [],
   setConfiguration: set,
 });

@@ -1,4 +1,4 @@
-import { NodeProps, useNodeConnections, useReactFlow } from '@xyflow/react';
+import { NodeProps, useNodeConnections } from '@xyflow/react';
 import { ExtraneousNodeProps, FunctionNode } from '.';
 import { FunctionTamaroCard } from '../../TamaroCard';
 import { JudiciousFunction } from '../../../src/schemas/documentation';
@@ -6,6 +6,8 @@ import useJudiciousDocData from '../../../src/documentation';
 import ResultIcon from '../ResultIcon';
 import { useEffect, useMemo } from 'react';
 import { useStore } from '../../../src/tide/store';
+import { getNode } from '../../../src/tide/utils';
+import { useShallow } from 'zustand/shallow';
 
 export function getHandleName(parameter_name: string) {
   return `input_${parameter_name}`;
@@ -17,14 +19,22 @@ export function getParameterName(handle_name: string) {
     : undefined;
 }
 
-export function TamaroFunctionCard({
+export function TideFunctionuse({
   id,
   data,
   show_handles,
-}: NodeProps<FunctionNode> & ExtraneousNodeProps) {
+}: Pick<
+  NodeProps<FunctionNode> & ExtraneousNodeProps,
+  'id' | 'data' | 'show_handles'
+>) {
   const i = data.location as { module: string; name: string };
 
-  const updateNodeData = useStore((state) => state.updateNodeData);
+  const { updateNodeData, nodes } = useStore(
+    useShallow((state) => ({
+      updateNodeData: state.updateNodeData,
+      nodes: state.nodes,
+    })),
+  );
 
   const [el] = useJudiciousDocData([i.module]).map(
     (v) =>
@@ -33,25 +43,36 @@ export function TamaroFunctionCard({
         | undefined,
   );
 
-  const connections = useNodeConnections({ handleType: 'target' });
-  const { getNode } = useReactFlow();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const connections = show_handles
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      useNodeConnections({ handleType: 'target' })
+    : [];
 
   useEffect(() => {
     const newChildren = new Map(
       connections.map((v) => [
         getParameterName(v.targetHandle!),
-        getNode(v.source)!.data,
+        getNode(nodes, v.source)!.data,
       ]),
     );
 
-    updateNodeData(id, (data) => ({
-      ...data,
-      children: newChildren,
-      evaluated: false,
-    }));
-  }, [connections, getNode, id, updateNodeData]);
+    if (data.children.size !== newChildren.size)
+      updateNodeData(id, (data) => ({
+        ...data,
+        children: newChildren,
+        evaluated: false,
+      }));
+  }, [
+    connections,
+    data.children.size,
+    id,
+    nodes,
+    show_handles,
+    updateNodeData,
+  ]);
 
-  const value = data.evaluated ? data.value : undefined;
+  const value = data.evaluated && 'value' in data ? data.value : undefined;
   const result_icon = useMemo(() => {
     return ResultIcon({ value });
   }, [value]);

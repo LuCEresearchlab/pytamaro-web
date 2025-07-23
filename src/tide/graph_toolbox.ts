@@ -172,13 +172,20 @@ export function onDrop(
     y: event.clientY,
   });
 
-  const id = `${dragged.type}-${Date.now()}`;
+  const id = `${dragged.kind}-${Date.now()}`;
+
+  const type =
+    dragged.kind === 'constant_use'
+      ? 'constant'
+      : dragged.kind === 'function_use'
+        ? 'function'
+        : 'literal';
 
   const newNode = {
     id,
-    type: dragged.type,
+    type: type,
     position: topLeftPosition,
-    data: { ...dragged.data, metadata: { node_id: id } },
+    data: { ...dragged, metadata: { node_id: id } },
     dragHandle: '.drag-handle',
     className: 'node_hidden',
   } as TideNode;

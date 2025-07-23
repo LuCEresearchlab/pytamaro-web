@@ -13,9 +13,9 @@ import {
   TideNode,
   TideNodeMetadata,
 } from '../../components/tide/cards';
-import CardSelectionPane, {
+import TidePalette, {
   JudiciousModuleElement,
-} from '../../components/tide/CardSelectionPane';
+} from '../../components/tide/TidePalette';
 import '../../style/graph_view.css';
 
 function View() {
@@ -410,7 +410,7 @@ function View() {
             zIndex: '100',
           }}
         >
-          <CardSelectionPane />
+          <TidePalette />
         </div>
 
         {menu && <NodeContextMenu {...menu} />}
@@ -486,22 +486,33 @@ import { EvaluatedTamaroCard } from '../../src/tide/language/cards';
 import { getNode } from '../../src/tide/utils';
 import { ErrorParagraph } from '../../components/tide/ErrorParagraph';
 import { TideError } from '../../src/tide/language/errors';
-import useJudiciousDocData from '../../src/documentation';
-import { EvaluatedLocalDefinition } from '../../src/tide/language/definitions';
+import useJudiciousDocData, {
+  allKinds,
+  modules_keys,
+} from '../../src/documentation';
+import {
+  EvaluatedLocalDefinition,
+  ImportedDefinition,
+} from '../../src/tide/language/definitions';
+import {
+  toTideConstant,
+  toTideFunction,
+} from '../../src/tide/judiciours_to_tide';
 
-function Graph() {
-  const [source] = useState('from pytamaro import *');
+function TidePage() {
+  const [source, setSource] = useState('from pytamaro import *');
 
   const { setConfiguration } = useStore();
 
   const configuration_timeout = useRef(undefined as NodeJS.Timeout | undefined);
+  const cached_modules = useRef([] as string[]);
 
-  function extract_codes(configuration_code: string) {
-    if (configuration_timeout.current)
-      clearTimeout(configuration_timeout.current);
-    configuration_timeout.current = setTimeout(async () => {
-      const code = `from ast import parse, ImportFrom
+  const modules = useJudiciousDocData(modules_keys);
 
+  const extract_names = useCallback(
+    async (configuration_code: string) => {
+      const code = `
+from ast import parse, ImportFrom
 parsed = parse(
     """${configuration_code}"""
 )
@@ -525,14 +536,76 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
           return imports;
         });
 
-      setConfiguration({
-        node_filter: results
-          .map((v) => v.split(' '))
-          .map((v) => ({ module: v[0], name: v[1] })),
-      });
-    }, 500);
-  }
+      const imports = results
+        .map((v) => v.split(' '))
+        .map((v) => ({ module: v[0], name: v[1] }));
 
+      const result = imports
+        .map(({ module, name }) => {
+          if (name === '*') {
+            return (
+              modules
+                .find((v) => v.module === module)
+                ?.elements.filter(
+                  (v) => v.kind === 'constant' || v.kind === 'function',
+                )
+                .map((v) => ({ module, value: v })) || []
+            );
+          }
+          return (
+            modules
+              .find((v) => v.module === module)
+              ?.elements.filter(
+                (v) => v.kind === 'constant' || v.kind === 'function',
+              )
+              .filter((v) => v.name === name)
+              .map((v) => ({ module, value: v })) || []
+          );
+        })
+        .map((v) =>
+          v
+            .map((o) => {
+              try {
+                return o.value.kind === 'constant'
+                  ? toTideConstant(o.value, o.module)
+                  : toTideFunction(o.value, o.module);
+              } catch {
+                return undefined;
+              }
+            })
+            .filter((v) => v),
+        )
+        .flat()
+        .map((v) => v as ImportedDefinition);
+
+      setConfiguration({
+        imported_definitions: result.toSorted((a, b) => {
+          const v_a =
+            a.kind === 'function_definition'
+              ? allKinds.function.priority
+              : allKinds.constant.priority;
+          const v_b =
+            b.kind === 'function_definition'
+              ? allKinds.function.priority
+              : allKinds.constant.priority;
+          return v_b - v_a;
+        }),
+      });
+    },
+    [modules, setConfiguration],
+  );
+
+  useEffect(() => {
+    if (modules.length === cached_modules.current.length) return;
+    cached_modules.current = modules.map((v) => v.module);
+    if (configuration_timeout.current)
+      clearTimeout(configuration_timeout.current);
+    configuration_timeout.current = setTimeout(async () => {
+      configuration_timeout.current = undefined;
+      return extract_names(source);
+    }, 500);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modules, source]);
   return (
     <div className='graph_page'>
       <div className='editor'>
@@ -540,7 +613,7 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
           initialSource=''
           currentSource={source}
           onChange={async (v) => {
-            extract_codes(v);
+            setSource(v);
           }}
         />
       </div>
@@ -551,7 +624,7 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
   );
 }
 
-export default Graph;
+export default TidePage;
 
 export async function getStaticProps() {
   return {

@@ -28,6 +28,7 @@ import {
 import { updateParent } from './graph_toolbox';
 import {
   ConstantDefinitionNode,
+  TamaroCardNode,
   TideNode,
   TideNodeMetadata,
 } from '../../components/tide/cards';
@@ -47,7 +48,7 @@ export interface DraggedElementData {
 
 let evaluation_timeout: NodeJS.Timeout | undefined = undefined;
 export interface GraphStateSlice {
-  dragged: DraggedElementData | undefined;
+  dragged: TamaroCardNode['data'] | undefined;
   initialized: 'before' | 'wait' | 'done';
   setInitialized: (v: 'before' | 'wait' | 'done') => void;
   evaluated_context: () => EvaluatedDefinitions<TideNodeMetadata>;
@@ -66,9 +67,7 @@ export interface GraphStateSlice {
   setEdges: (edges: Edge[]) => void;
   getNodes: () => TideNode[];
   getEdges: () => Edge[];
-  setDragged: (
-    dragged: { type: string; data: TideNode['data'] } | undefined,
-  ) => void;
+  setDragged: (dragged: TamaroCardNode['data'] | undefined) => void;
   updateNodeData: (
     nodeId: string,
     data:
@@ -368,9 +367,7 @@ export const createGraphSlice: StateCreator<
       },
     ]);
   },
-  setDragged: (
-    dragged: { type: string; data: TideNode['data'] } | undefined,
-  ) => {
+  setDragged: (dragged: TamaroCardNode['data'] | undefined) => {
     set({ dragged });
   },
   setNodes: (new_nodes) => {

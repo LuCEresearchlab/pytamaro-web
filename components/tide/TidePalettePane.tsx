@@ -1,12 +1,15 @@
 import { Card, CardActions, CardContent, Input } from '@mui/material';
 import { useStore } from '../../src/tide/store';
 import { DragEvent, useEffect, useState } from 'react';
-import TamaroCard from '../TamaroCard';
-import { JudiciousModuleElement } from './CardSelectionPane';
-import { FLOAT_REGEX, STR_REGEX, TamaroLiteralCard } from './cards/literal';
-import ConstantUse from './cards/constant_use';
+import { FLOAT_REGEX, STR_REGEX, TideLiteral } from './cards/literal';
 import { check_const_name } from './cards/constant_definition';
-import { TideNode } from './cards';
+import {
+  FunctionNode,
+  ConstantNode,
+  TideNodeMetadata,
+  TamaroCardNode,
+  LiteralNode,
+} from './cards';
 import {
   LiteralType,
   SoundType,
@@ -14,12 +17,15 @@ import {
 } from '../../src/tide/language/typing';
 import { TideSyntaxErrorInvalidLiteral_builder } from '../../src/tide/language/error_builders';
 import { INT_REGEX } from '../../src/tide/language/utils';
+import { Definitions } from '../../src/tide/language/definitions';
+import { TideFunctionuse } from './cards/function';
+import { TideConstantUse } from './cards/constant_use';
 
 interface CardSelectionPaneProps {
-  values: JudiciousModuleElement[];
+  values: Definitions<TideNodeMetadata>;
 }
 
-export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
+export function TidePalettePane({ values }: CardSelectionPaneProps) {
   const { setDragged, reserved_names } = useStore();
 
   const [filter, setFilter] = useState('');
@@ -57,12 +63,11 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
     else setConstantName(undefined);
   }, [filter, reserved_names, setLiterals]);
 
-  const onDragStart = function <T extends string>(
+  const onDragStart = function (
     event: DragEvent<HTMLDivElement>,
-    type: T,
-    data: (TideNode & { type: T })['data'],
+    data: TamaroCardNode['data'],
   ) {
-    setDragged({ type, data });
+    setDragged(data);
     // eslint-disable-next-line no-param-reassign
     event.dataTransfer!.effectAllowed = 'move';
   };
@@ -80,119 +85,103 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
         }}
       >
         {values
-          .filter((el) => el.kind === 'function' || el.kind === 'constant')
-          .filter((v) => v.name.toLowerCase().startsWith(filter))
+          .filter(
+            (el) =>
+              el.kind === 'function_definition' ||
+              el.kind === 'constant_definition',
+          )
+          .filter((v) => v.location.name.toLowerCase().startsWith(filter))
+          .map((el): FunctionNode['data'] | ConstantNode['data'] => {
+            switch (el.kind) {
+              case 'function_definition': {
+                return {
+                  children: new Map(),
+                  evaluated: false,
+                  location: el.location,
+                  kind: 'function_use',
+                  metadata: {
+                    node_id: '',
+                  },
+                } as FunctionNode['data'];
+                break;
+              }
+              case 'constant_definition': {
+                return {
+                  kind: 'constant_use',
+                  evaluated: false,
+                  location: el.location,
+                  metadata: {
+                    node_id: '',
+                  },
+                } as ConstantNode['data'];
+                break;
+              }
+            }
+          })
           .map((el) => (
             <div
               className='compact_view hide_types hide_labels hide_handles hide_optionals'
               style={{ userSelect: 'none' }}
-              onDragStart={(e) => {
-                switch (el.kind) {
-                  case 'function': {
-                    onDragStart(e, 'function', {
-                      children: new Map(),
-                      evaluated: false,
-                      location: { module: el.module, name: el.name },
-                      kind: 'function_use',
-                      metadata: {
-                        node_id: '',
-                      },
-                    });
-                    break;
-                  }
-                  case 'constant': {
-                    onDragStart(e, 'constant', {
-                      kind: 'constant_use',
-                      evaluated: false,
-                      location: { module: el.module, name: el.name },
-                      metadata: {
-                        node_id: '',
-                      },
-                    });
-                    break;
-                  }
-                }
-              }}
+              onDragStart={(e) => onDragStart(e, el)}
               draggable
-              key={el.module + '$' + el.name}
+              key={el.location.module + '$' + el.location.name}
             >
               <div style={{ pointerEvents: 'none' }}>
-                <TamaroCard el={el} module={el.module} show_handles={false} />
+                {el.kind === 'function_use' ? (
+                  <TideFunctionuse data={el} show_handles={false} id='' />
+                ) : (
+                  <TideConstantUse data={el} show_handles={false} id='' />
+                )}
               </div>
             </div>
           ))}
-        {literals.map(({ value, type }) => (
-          <div
-            className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
-            style={{ userSelect: 'none' }}
-            onDragStart={(e) => {
-              onDragStart(e, 'literal', {
-                evaluated: true,
-                kind: 'literal',
-                metadata: {
-                  node_id: '',
-                },
-                str_value: value,
-                value:
-                  type === UnsoundType.Bottom
-                    ? {
-                        type: UnsoundType.Bottom,
-                        error: TideSyntaxErrorInvalidLiteral_builder(value),
-                      }
-                    : {
-                        type: type,
-                        data: undefined,
-                        value: {
-                          expression: value,
-                          imports: [],
-                        },
+        {literals
+          .map(({ value, type }): LiteralNode['data'] => {
+            return {
+              evaluated: true,
+              kind: 'literal',
+              metadata: {
+                node_id: '',
+              },
+              str_value: value,
+              value:
+                type === UnsoundType.Bottom
+                  ? {
+                      type: UnsoundType.Bottom,
+                      error: TideSyntaxErrorInvalidLiteral_builder(value),
+                    }
+                  : {
+                      type: type,
+                      data: undefined,
+                      value: {
+                        expression: value,
+                        imports: [],
                       },
-              });
-            }}
-            draggable
-            key={value}
-          >
-            <div style={{ pointerEvents: 'none' }} data-dummy={value}>
-              <TamaroLiteralCard
-                data={
-                  {
-                    evaluated: true,
-                    kind: 'literal',
-                    metadata: {
-                      node_id: '',
                     },
-                    str_value: value,
-                    type,
-                    value:
-                      type === UnsoundType.Bottom
-                        ? {
-                            type: UnsoundType.Bottom,
-                            error: TideSyntaxErrorInvalidLiteral_builder(value),
-                          }
-                        : {
-                            type: type,
-                            data: undefined,
-                            value: {
-                              expression: value,
-                              imports: [],
-                            },
-                          },
-                  } as Record<string, unknown>
-                }
-                hide_handles
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                {...({} as any)}
-              />
+            };
+          })
+          .map((el) => (
+            <div
+              className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
+              style={{ userSelect: 'none' }}
+              onDragStart={(e) => {
+                onDragStart(e, el);
+              }}
+              draggable
+              key={el.str_value}
+            >
+              <div style={{ pointerEvents: 'none' }} data-dummy={el.str_value}>
+                <TideLiteral data={el} show_handles={false} id='' />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
 
         {constant_name != null && (
           <div
             className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
             style={{ userSelect: 'none' }}
             onDragStart={(e) => {
-              onDragStart(e, 'constant', {
+              onDragStart(e, {
                 evaluated: false,
                 kind: 'constant_use',
                 location: {
@@ -208,7 +197,7 @@ export function CardTabSelectionPane({ values }: CardSelectionPaneProps) {
             data-dummy={filter}
           >
             <div style={{ pointerEvents: 'none' }} data-dummy={constant_name}>
-              <ConstantUse
+              <TideConstantUse
                 data={
                   {
                     evaluated: false,

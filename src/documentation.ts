@@ -18,6 +18,18 @@ export default function useJudiciousDocData(modules: string[]) {
     .filter((data) => data !== undefined);
 }
 
+export const modules_keys = [
+  'builtins',
+  'functools',
+  'math',
+  'pytamaro.de',
+  'pytamaro.fr',
+  'pytamaro.it',
+  'pytamaro',
+  'random',
+  'string',
+];
+
 export const allKinds = {
   function: { id: 'function', label: 'Function', priority: 0 },
   constant: { id: 'constant', label: 'Constant', priority: 1 },

@@ -93,10 +93,14 @@ export function AutoWidthInput({
   );
 }
 
-export default function ConstantUse(
-  props: NodeProps<ConstantNode> & ExtraneousNodeProps,
-) {
-  const { id, show_handles, data } = props;
+export function TideConstantUse({
+  id,
+  show_handles,
+  data,
+}: Pick<
+  NodeProps<ConstantNode> & ExtraneousNodeProps,
+  'id' | 'show_handles' | 'data'
+>) {
   const i = data.location;
   const updateNodeData = useStore((state) => state.updateNodeData);
   const context = useStore((state) => state.evaluated_context);
@@ -122,7 +126,7 @@ export default function ConstantUse(
 
   const [editing, setEditing] = useState(false);
 
-  const value = data.evaluated ? data.value : undefined;
+  const value = data.evaluated && 'value' in data ? data.value : undefined;
   const returns_icon = useMemo(() => {
     return ResultIcon({ value });
   }, [value]);

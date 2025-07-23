@@ -79,7 +79,7 @@ export const BORDER_COLOR = '#148CC8';
 export const BACKGROUND_COLOR = '#d1f0ff';
 const BORDER_WIDTH = '2px';
 
-export default function ConstantDefinition(
+export default function TideConstantDefinition(
   props: NodeProps<ConstantDefinitionNode> & ExtraneousNodeProps,
 ) {
   const { id, positionAbsoluteX, positionAbsoluteY, data, show_handles } =
@@ -118,7 +118,11 @@ export default function ConstantDefinition(
     updateDimData();
   }
 
-  const connections = useNodeConnections({ id, handleId: 'output' });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const connections = show_handles
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      useNodeConnections({ handleId: 'output' })
+    : [];
 
   useEffect(() => {
     const nodes = store.getNodes();
