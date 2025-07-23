@@ -54,7 +54,12 @@ export function TidePalettePane({ values }: CardSelectionPaneProps) {
         )
         .map((v) => ({
           ...v,
-          value: filter === '' || !filter.match(v.regex) ? v.value : filter,
+          value:
+            filter === '' || !filter.match(v.regex)
+              ? v.value
+              : v.type !== SoundType.Float || filter.includes('.')
+                ? filter
+                : filter + '.0',
         })),
     );
 
