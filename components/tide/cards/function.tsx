@@ -1,5 +1,5 @@
 import { NodeProps, useNodeConnections } from '@xyflow/react';
-import { ExtraneousNodeProps, FunctionNode } from '.';
+import { ExtraneousNodeProps, FunctionNode, TamaroCardNode } from '.';
 import { FunctionTamaroCard } from '../../TamaroCard';
 import { JudiciousFunction } from '../../../src/schemas/documentation';
 import useJudiciousDocData from '../../../src/documentation';
@@ -51,10 +51,13 @@ export function TideFunctionuse({
 
   useEffect(() => {
     const newChildren = new Map(
-      connections.map((v) => [
-        getParameterName(v.targetHandle!),
-        getNode(nodes, v.source)!.data,
-      ]),
+      connections
+        .map((v) => [
+          getParameterName(v.targetHandle!),
+          getNode(nodes, v.source)?.data,
+        ])
+        .filter((v) => v[1])
+        .map((v) => v as [string, TamaroCardNode]),
     );
 
     if (data.children.size !== newChildren.size)
