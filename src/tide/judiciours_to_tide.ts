@@ -83,6 +83,8 @@ export function toTideFunction(
     .filter((v) => !v.default)
     .map(toTideParameter);
   const location = { module, name: f.name };
+  if (!f.returnValue)
+    throw new Error(`Could not parse function with no return value ${f.name}`);
   const return_type = toTideType(f.returnValue?.type);
 
   return {

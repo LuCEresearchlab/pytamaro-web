@@ -588,6 +588,11 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
             b.kind === 'function_definition'
               ? allKinds.function.priority
               : allKinds.constant.priority;
+          if (
+            a.kind === 'function_definition' &&
+            b.kind === 'function_definition'
+          )
+            return a.parameters.length - b.parameters.length;
           return v_b - v_a;
         }),
       });
