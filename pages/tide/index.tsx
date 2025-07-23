@@ -495,6 +495,7 @@ import {
   ImportedDefinition,
 } from '../../src/tide/language/definitions';
 import {
+  TideJudiciousMetadata,
   toTideConstant,
   toTideFunction,
 } from '../../src/tide/judiciours_to_tide';
@@ -576,7 +577,7 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
             .filter((v) => v),
         )
         .flat()
-        .map((v) => v as ImportedDefinition);
+        .map((v) => v as ImportedDefinition<TideJudiciousMetadata>);
 
       setConfiguration({
         imported_definitions: result.toSorted((a, b) => {

@@ -23,9 +23,9 @@ export type LocalDefinition<U, B extends boolean = boolean> =
   | LocalConstantDefinition<U, B>
   | LocalFunctionDefinition<U, B>;
 
-export type ImportedDefinition =
-  | ImportedConstantDefinition
-  | ImportedFunctionDefinition;
+export type ImportedDefinition<T = object> =
+  | ImportedConstantDefinition<T>
+  | ImportedFunctionDefinition<T>;
 
 export type EvaluatedFunctionDefinition<U> = Expand<
   FunctionDefinition<U, true>
@@ -76,9 +76,9 @@ export type LocalDefinitionCommon<
     root?: TamaroCard<U>;
   };
 
-export type ImportedDefinitionCommon = Located<true> &
+export type ImportedDefinitionCommon<T = object> = Located<true> &
   Subkind<'imported'> &
-  Evaluated<true, 'type'>;
+  Evaluated<true, 'type'> & { metadata?: T };
 
 export type LocalFunctionDefinition<
   U,
@@ -90,11 +90,11 @@ export type LocalConstantDefinition<
   B extends boolean = boolean,
 > = ConstantDefinitionCommon & LocalDefinitionCommon<U, B>;
 
-export type ImportedFunctionDefinition = FunctionDefinitionCommon &
-  ImportedDefinitionCommon;
+export type ImportedFunctionDefinition<T = object> = FunctionDefinitionCommon &
+  ImportedDefinitionCommon<T>;
 
-export type ImportedConstantDefinition = ConstantDefinitionCommon &
-  ImportedDefinitionCommon;
+export type ImportedConstantDefinition<T = object> = ConstantDefinitionCommon &
+  ImportedDefinitionCommon<T>;
 
 export function get_definition_output_type(v?: EvaluatedDefinition<unknown>) {
   if (!v) return UnsoundType.Bottom;

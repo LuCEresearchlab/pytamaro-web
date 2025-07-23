@@ -1,12 +1,13 @@
 import { StateCreator } from 'zustand';
-import { ImportedDefinition } from '../../src/tide/language/definitions';
+import { ImportedDefinition } from './language/definitions';
+import { TideJudiciousMetadata } from './judiciours_to_tide';
 
 export type ErrorLevels = 'prevent' | 'none' | 'warning' | 'highlight';
 
 export type ConfigurationState = {
   error_level: ErrorLevels;
   local_scale: boolean;
-  imported_definitions: ImportedDefinition[];
+  imported_definitions: ImportedDefinition<TideJudiciousMetadata>[];
   functional_nodes_only: boolean;
   setConfiguration: (value: Partial<ConfigurationState>) => void;
 };

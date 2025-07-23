@@ -13,10 +13,7 @@ import {
 import { create, StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ChangeSliceState, createChangeSlice } from './changes';
-import {
-  ConfigurationState,
-  createConfigurationSlice,
-} from '../../components/tide/configuration';
+import { ConfigurationState, createConfigurationSlice } from './configuration';
 import {
   compute_edge_change,
   compute_node_change,

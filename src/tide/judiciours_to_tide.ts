@@ -1,5 +1,6 @@
 import {
   JudiciousConstant,
+  JudiciousElement,
   JudiciousFunction,
   JudiciousParameter,
 } from '../schemas/documentation';
@@ -44,6 +45,8 @@ const translation_object = {
   },
 };
 
+export type TideJudiciousMetadata = { judicious: JudiciousElement };
+
 export function toTideType(v?: string): ValueType {
   const translated_type = v ? toEnglishName(v) : undefined;
 
@@ -78,7 +81,7 @@ export function toTideParameter(p: JudiciousParameter): FunctionParameter {
 export function toTideFunction(
   f: JudiciousFunction,
   module: string,
-): ImportedFunctionDefinition {
+): ImportedFunctionDefinition<TideJudiciousMetadata> {
   const parameters = f.parameters
     .filter((v) => !v.default)
     .map(toTideParameter);
@@ -94,13 +97,16 @@ export function toTideFunction(
     kind: 'function_definition',
     subkind: 'imported',
     evaluated: true,
+    metadata: {
+      judicious: f,
+    },
   };
 }
 
 export function toTideConstant(
   c: JudiciousConstant,
   module: string,
-): ImportedConstantDefinition {
+): ImportedConstantDefinition<TideJudiciousMetadata> {
   return {
     location: {
       module,
@@ -110,5 +116,8 @@ export function toTideConstant(
     kind: 'constant_definition',
     subkind: 'imported',
     evaluated_type: toTideType(c.type),
+    metadata: {
+      judicious: c,
+    },
   };
 }

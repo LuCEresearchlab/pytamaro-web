@@ -6,7 +6,6 @@ import { check_const_name } from './cards/constant_definition';
 import {
   FunctionNode,
   ConstantNode,
-  TideNodeMetadata,
   TamaroCardNode,
   LiteralNode,
 } from './cards';
@@ -17,15 +16,24 @@ import {
 } from '../../src/tide/language/typing';
 import { TideSyntaxErrorInvalidLiteral_builder } from '../../src/tide/language/error_builders';
 import { INT_REGEX } from '../../src/tide/language/utils';
-import { Definitions } from '../../src/tide/language/definitions';
-import { TideFunctionuse } from './cards/function';
+import {
+  ImportedConstantDefinition,
+  ImportedDefinition,
+  ImportedFunctionDefinition,
+} from '../../src/tide/language/definitions';
 import { TideConstantUse } from './cards/constant_use';
+import { ConstantTamaroCard, FunctionTamaroCard } from '../TamaroCard';
+import { TideJudiciousMetadata } from '../../src/tide/judiciours_to_tide';
+import {
+  JudiciousConstant,
+  JudiciousFunction,
+} from '../../src/schemas/documentation';
 
-interface CardSelectionPaneProps {
-  values: Definitions<TideNodeMetadata>;
-}
-
-export function TidePalettePane({ values }: CardSelectionPaneProps) {
+export function TidePalettePane({
+  values,
+}: {
+  values: ImportedDefinition<TideJudiciousMetadata>[];
+}) {
   const { setDragged, reserved_names } = useStore();
 
   const [filter, setFilter] = useState('');
@@ -96,34 +104,52 @@ export function TidePalettePane({ values }: CardSelectionPaneProps) {
               el.kind === 'constant_definition',
           )
           .filter((v) => v.location.name.toLowerCase().startsWith(filter))
-          .map((el): FunctionNode['data'] | ConstantNode['data'] => {
-            switch (el.kind) {
-              case 'function_definition': {
-                return {
-                  children: new Map(),
-                  evaluated: false,
-                  location: el.location,
-                  kind: 'function_use',
-                  metadata: {
-                    node_id: '',
-                  },
-                } as FunctionNode['data'];
-                break;
+          .map(
+            (
+              el,
+            ):
+              | {
+                  def: ImportedFunctionDefinition<TideJudiciousMetadata>;
+                  el: FunctionNode['data'];
+                }
+              | {
+                  def: ImportedConstantDefinition<TideJudiciousMetadata>;
+                  el: ConstantNode['data'];
+                } => {
+              switch (el.kind) {
+                case 'function_definition': {
+                  return {
+                    def: el,
+                    el: {
+                      children: new Map(),
+                      evaluated: false,
+                      location: el.location,
+                      kind: 'function_use',
+                      metadata: {
+                        node_id: '',
+                      },
+                    } as FunctionNode['data'],
+                  };
+                  break;
+                }
+                case 'constant_definition': {
+                  return {
+                    def: el,
+                    el: {
+                      kind: 'constant_use',
+                      evaluated: false,
+                      location: el.location,
+                      metadata: {
+                        node_id: '',
+                      },
+                    } as ConstantNode['data'],
+                  };
+                  break;
+                }
               }
-              case 'constant_definition': {
-                return {
-                  kind: 'constant_use',
-                  evaluated: false,
-                  location: el.location,
-                  metadata: {
-                    node_id: '',
-                  },
-                } as ConstantNode['data'];
-                break;
-              }
-            }
-          })
-          .map((el) => (
+            },
+          )
+          .map(({ el, def }) => (
             <div
               className='compact_view hide_types hide_labels hide_handles hide_optionals'
               style={{ userSelect: 'none' }}
@@ -133,9 +159,17 @@ export function TidePalettePane({ values }: CardSelectionPaneProps) {
             >
               <div style={{ pointerEvents: 'none' }}>
                 {el.kind === 'function_use' ? (
-                  <TideFunctionuse data={el} show_handles={false} id='' />
+                  <FunctionTamaroCard
+                    el={def.metadata?.judicious as JudiciousFunction}
+                    module={def.location.module}
+                    show_handles={false}
+                  />
                 ) : (
-                  <TideConstantUse data={el} show_handles={false} id='' />
+                  <ConstantTamaroCard
+                    el={def.metadata?.judicious as JudiciousConstant}
+                    module={def.location.module}
+                    show_handles={false}
+                  />
                 )}
               </div>
             </div>
