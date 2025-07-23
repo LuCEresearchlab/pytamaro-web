@@ -126,6 +126,7 @@ export default function TideConstantDefinition(
 
   useEffect(() => {
     const nodes = store.getNodes();
+    if (nodes.find((v) => v.id === id) == null) return;
     const change = updateParent(nodes, id);
 
     const newDim = change.item.data.dimensions!;

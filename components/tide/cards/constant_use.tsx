@@ -254,6 +254,7 @@ export function TideConstantUse({
                 width: `${dimensions.width === 0 ? 20 : dimensions.width + 8}px`,
                 minHeight: `20px`,
                 right: `${dimensions.width === 0 ? 0 : (dimensions.width + 8) / 2}px`,
+                transform: 'translateY(-50%) translateX(-5px)',
                 opacity: '0',
               }}
             />
@@ -266,7 +267,7 @@ export function TideConstantUse({
                 left: '-5px',
                 top: '0px',
                 margin: 'auto',
-                minWidth: `${dimensions.width === 0 ? 0 : dimensions.width + 8}px`,
+                width: `${dimensions.width === 0 ? 0 : dimensions.width + 8}px`,
                 borderBottom: '2px solid black',
               }}
             ></div>

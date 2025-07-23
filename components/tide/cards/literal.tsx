@@ -151,6 +151,7 @@ export function TideLiteral({
                 style={{
                   width: '40px',
                   height: '40px',
+                  transform: 'translateY(-50%) translateX(-5px)',
                   opacity: '0',
                 }}
               />
