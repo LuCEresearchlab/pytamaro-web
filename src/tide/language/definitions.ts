@@ -1,64 +1,29 @@
+import { CodeRepresentation } from '../../../components/tide/cards';
 import { TamaroCard } from './cards';
-import {
-  Kind,
-  Located,
-  Subkind,
-  Metadata,
-  Dependencies,
-  FunctionParameter,
-  Expand,
-} from './types';
-import { Evaluated } from './types';
-import { UnsoundType } from './typing';
+import { Kind, Subkind, FunctionParameter, Location, Expand } from './types';
+import { State, TideAttachment } from './phases';
+import { ValueType } from './typing';
 
-export type FunctionDefinition<U, B extends boolean = boolean> =
-  | LocalFunctionDefinition<U, B>
-  | ImportedFunctionDefinition;
+export type FunctionDefinition<U, T, S extends State = State> =
+  | LocalFunctionDefinition<U, S>
+  | ImportedFunctionDefinition<T, S>;
 
-export type ConstantDefinition<U, B extends boolean = boolean> =
-  | LocalConstantDefinition<U, B>
-  | ImportedConstantDefinition;
+export type ConstantDefinition<U, T, S extends State = State> =
+  | LocalConstantDefinition<U, S>
+  | ImportedConstantDefinition<T, S>;
 
-export type LocalDefinition<U, B extends boolean = boolean> =
-  | LocalConstantDefinition<U, B>
-  | LocalFunctionDefinition<U, B>;
+export type LocalDefinition<U, S extends State = State> =
+  | LocalConstantDefinition<U, S>
+  | LocalFunctionDefinition<U, S>;
 
-export type ImportedDefinition<T = object> =
-  | ImportedConstantDefinition<T>
-  | ImportedFunctionDefinition<T>;
+export type ImportedDefinition<T, S extends State = State> =
+  | ImportedConstantDefinition<T, S>
+  | ImportedFunctionDefinition<T, S>;
 
-export type EvaluatedFunctionDefinition<U> = Expand<
-  FunctionDefinition<U, true>
->;
-
-export type EvaluatedConstantDefinition<U> = Expand<
-  ConstantDefinition<U, true>
->;
-
-export type EvaluatedLocalDefinition<U> = Expand<LocalDefinition<U, true>>;
-
-export type EvaluatedImportedDefinition = Expand<ImportedDefinition>;
-
-export type NonEvaluatedFunctionDefinition<U> = Expand<
-  FunctionDefinition<U, false>
->;
-
-export type NonEvaluatedConstantDefinition<U> = Expand<
-  ConstantDefinition<U, false>
->;
-
-export type NonEvaluatedLocalDefinition<U> = Expand<LocalDefinition<U, false>>;
-
-export type NonEvaluatedImportedDefinition = Expand<ImportedDefinition>;
-
-export type Definition<U> = FunctionDefinition<U> | ConstantDefinition<U>;
-
-export type EvaluatedDefinition<U> =
-  | EvaluatedFunctionDefinition<U>
-  | EvaluatedConstantDefinition<U>;
-
-export type Definitions<U> = Definition<U>[];
-export type EvaluatedDefinitions<U> = EvaluatedDefinition<U>[];
+export type Definition<U, S extends State = State> =
+  | FunctionDefinition<U, S>
+  | ConstantDefinition<U, S>;
+export type Definitions<U, S extends State = State> = Definition<U, S>[];
 
 export type FunctionDefinitionCommon = Kind<'function_definition'> & {
   parameters: FunctionParameter[];
@@ -66,52 +31,73 @@ export type FunctionDefinitionCommon = Kind<'function_definition'> & {
 
 export type ConstantDefinitionCommon = Kind<'constant_definition'>;
 
+export type LocalDefinitionStates<U> = TideAttachment<{
+  unconstructed: {
+    metadata: U;
+  };
+  constructed: {
+    name: string;
+    root?: TamaroCard<U, 'constructed'>;
+  };
+  syntax_checked: {
+    dependencies: Location[];
+    root: TamaroCard<U, 'syntax_checked'>;
+  };
+  name_checked: {
+    location: Location<false>;
+    root: TamaroCard<U, 'name_checked'>;
+  };
+  type_checked: {
+    type: ValueType;
+    root: TamaroCard<U, 'type_checked'>;
+  };
+  code_created: {
+    code: CodeRepresentation;
+    root: TamaroCard<U, 'code_created'>;
+  };
+  evaluated: {
+    root: TamaroCard<U, 'evaluated'>;
+  };
+}>;
+
 export type LocalDefinitionCommon<
   U,
-  B extends boolean = boolean,
-> = Located<false> &
-  Evaluated<B, 'value', Dependencies> &
-  Subkind<'local'> &
-  Metadata<U> & {
-    root?: TamaroCard<U>;
-  };
-
-export type ImportedDefinitionCommon<T = object> = Located<true> &
-  Subkind<'imported'> &
-  Evaluated<true, 'type'> & { metadata?: T };
+  S extends State = State,
+> = Subkind<'local'> & LocalDefinitionStates<U>[S];
 
 export type LocalFunctionDefinition<
   U,
-  B extends boolean = boolean,
-> = FunctionDefinitionCommon & LocalDefinitionCommon<U, B>;
+  S extends State = State,
+> = FunctionDefinitionCommon & LocalDefinitionCommon<U, S>;
 
 export type LocalConstantDefinition<
   U,
-  B extends boolean = boolean,
-> = ConstantDefinitionCommon & LocalDefinitionCommon<U, B>;
+  S extends State = State,
+> = ConstantDefinitionCommon & LocalDefinitionCommon<U, S>;
 
-export type ImportedFunctionDefinition<T = object> = FunctionDefinitionCommon &
-  ImportedDefinitionCommon<T>;
+export type ImportedDefinitionStates<T> = TideAttachment<{
+  unconstructed: {
+    metadata: T;
+  };
+  constructed: {
+    name: string;
+  };
+  name_checked: {
+    location: Location<string>;
+  };
+  type_checked: {
+    type: ValueType;
+  };
+}>;
 
-export type ImportedConstantDefinition<T = object> = ConstantDefinitionCommon &
-  ImportedDefinitionCommon<T>;
+export type ImportedDefinitionCommon<T, S extends State = State> = Expand<
+  Subkind<'imported'> & ImportedDefinitionStates<T>[S]
+>;
 
-export function get_definition_output_type(v?: EvaluatedDefinition<unknown>) {
-  if (!v) return UnsoundType.Bottom;
-  switch (v.subkind) {
-    case 'local':
-      return v.value.type;
-    case 'imported':
-      return v.evaluated_type;
-  }
-}
+export type ImportedFunctionDefinition<T, S extends State = State> = Expand<
+  FunctionDefinitionCommon & ImportedDefinitionCommon<T, S>
+>;
 
-export function get_definition_dependencies(v?: EvaluatedDefinition<unknown>) {
-  if (!v) return [];
-  switch (v.subkind) {
-    case 'imported':
-      return [];
-    case 'local':
-      return v.dependencies;
-  }
-}
+export type ImportedConstantDefinition<T, S extends State = State> = Expand<
+  ConstantDefinitionCommon & ImportedDefinitionCommon<T, S>
+>;

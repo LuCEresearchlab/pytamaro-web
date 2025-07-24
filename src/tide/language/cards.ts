@@ -1,67 +1,93 @@
-import { Evaluated, Expand, Kind, Located, Metadata } from './types';
+import { CodeRepresentation } from '../../../components/tide/cards';
+import { Kind, Location } from './types';
+import { State, TideAttachment } from './phases';
+import { ValueType } from './typing';
+
+export type TamaroCard<U, S extends State = State> =
+  | TamaroCard_FunctionUse<U, S>
+  | TamaroCard_ConstantUse<U, S>
+  | TamaroCard_Literal<U, S>;
+
+export type TamaroCard_ConstantUse_States<U> = TideAttachment<{
+  unconstructed: {
+    metadata: U;
+  };
+  constructed: {
+    input: string;
+  };
+  name: {
+    location: Location;
+  };
+  type_checked: {
+    type: ValueType;
+  };
+  code_created: {
+    code_created: CodeRepresentation;
+  };
+  evaluated: {
+    data: unknown;
+  };
+}>;
 
 export type TamaroCard_ConstantUse<
   U,
-  B extends boolean = boolean,
-> = Kind<'constant_use'> & Evaluated<B> & Located & Metadata<U>;
+  S extends State = State,
+> = Kind<'constant_use'> & TamaroCard_ConstantUse_States<U>[S];
 
-export type TamaroCard_Literal<
-  U,
-  B extends boolean = boolean,
-> = Kind<'literal'> &
-  Metadata<U> & {
-    str_value: string;
-  } & Evaluated<B>;
+export type TamaroCard_Literal_States<U> = TideAttachment<{
+  unconstructed: {
+    metadata: U;
+  };
+  constructed: {
+    input: string;
+  };
+  type_checked: {
+    type: ValueType;
+  };
+  code_created: {
+    code_created: CodeRepresentation;
+  };
+  evaluated: {
+    data: unknown;
+  };
+}>;
+
+export type TamaroCard_Literal<U, S extends State = State> = Kind<'literal'> &
+  TamaroCard_Literal_States<U>[S];
+
+type TamaroCardChildren<U, S extends State> = Map<string, TamaroCard<U, S>>;
+
+export type TamaroCard_Functionuse_States<U> = TideAttachment<{
+  unconstructed: {
+    metadata: U;
+  };
+  constructed: {
+    function_name: string;
+    children: TamaroCardChildren<U, 'constructed'>;
+  };
+  syntax_checked: {
+    children: TamaroCardChildren<U, 'syntax_checked'>;
+  };
+  name_checked: {
+    location: Location;
+    children: TamaroCardChildren<U, 'name_checked'>;
+  };
+  type_checked: {
+    type: ValueType;
+    params: Map<string, ValueType>;
+    children: TamaroCardChildren<U, 'type_checked'>;
+  };
+  code_created: {
+    code_created: CodeRepresentation;
+    children: TamaroCardChildren<U, 'code_created'>;
+  };
+  evaluated: {
+    data: unknown;
+    children: TamaroCardChildren<U, 'evaluated'>;
+  };
+}>;
 
 export type TamaroCard_FunctionUse<
   U,
-  B extends boolean = boolean,
-> = Kind<'function_use'> &
-  Located<boolean> &
-  Metadata<U> &
-  Evaluated<
-    B,
-    'value',
-    {
-      children: Map<string, EvaluatedTamaroCard<U>>;
-    },
-    {
-      children: Map<string, TamaroCard<U>>;
-    }
-  >;
-
-export type EvaluatedTamaroCard_ConstantUse<U> = Expand<
-  TamaroCard_ConstantUse<U, true>
->;
-
-export type EvaluatedTamaroCard_Literal<U> = Expand<
-  TamaroCard_Literal<U, true>
->;
-
-export type EvaluatedTamaroCard_FunctionUse<U> = Expand<
-  TamaroCard_FunctionUse<U, true>
->;
-
-export type NonEvaluatedTamaroCard_ConstantUse<U> = Expand<
-  TamaroCard_ConstantUse<U, false>
->;
-
-export type NonEvaluatedTamaroCard_Literal<U> = Expand<
-  TamaroCard_Literal<U, false>
->;
-
-export type NonEvaluatedTamaroCard_FunctionUse<U> = Expand<
-  TamaroCard_FunctionUse<U, false>
->;
-
-export type NonEvaluatedTamaroCard<U> =
-  | NonEvaluatedTamaroCard_ConstantUse<U>
-  | NonEvaluatedTamaroCard_Literal<U>
-  | NonEvaluatedTamaroCard_FunctionUse<U>;
-
-export type EvaluatedTamaroCard<U> =
-  | EvaluatedTamaroCard_ConstantUse<U>
-  | EvaluatedTamaroCard_Literal<U>
-  | EvaluatedTamaroCard_FunctionUse<U>;
-
-export type TamaroCard<U> = NonEvaluatedTamaroCard<U> | EvaluatedTamaroCard<U>;
+  S extends State = State,
+> = Kind<'function_use'> & TamaroCard_Functionuse_States<U>[S];
