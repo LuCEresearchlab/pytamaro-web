@@ -66,7 +66,6 @@ Special components that can be used:
   This forces learners to think before proceeding.
   The `id` must be unique within an activity, so that we can keep track of which "Do Now" boxes the user has already completed and avoid blurring the content again on subsequent visits.
   Optionally, you can add a `requireAnswer` attribute (e.g., `<DoNow id="..." requireAnswer>...</DoNow>`) to force the user to type an answer before being able to unblur the rest of the activity.
-- `<ReactPlayer url='...' />` (see [more on usage](https://github.com/cookpete/react-player)).
 - Material UI's [Stack](https://mui.com/material-ui/react-stack/). For instance, you might want to display multiple images side by side with some spacing:
   ```
   <Stack direction="row" spacing={2} alignItems="flex-end">

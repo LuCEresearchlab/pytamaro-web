@@ -14,7 +14,6 @@ import { COLORIZE_CLASSNAME } from './editor/utils';
 import ActivityLink from './markdown/ActivityLink';
 import DoNowBox from './markdown/DoNowBox';
 import TaskBox from './markdown/TaskBox';
-import ResponsiveReactPlayer from './ResponsiveReactPlayer';
 
 function imgSourceTransformer(
   src: string,
@@ -130,7 +129,6 @@ export default function MarkdownCellComponent({
       ),
     a: linkComponent,
     code: codeComponent,
-    ReactPlayer: ResponsiveReactPlayer,
     Stack,
     API: ({
       lang,
