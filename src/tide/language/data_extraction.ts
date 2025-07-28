@@ -1,13 +1,23 @@
 import { CompletedExecutionResponse } from '../../codeExecution';
-import { create_code } from './code';
-import {
-  EvaluatedDefinitions,
-  get_definition_dependencies,
-} from './definitions';
-import { executeOnServer } from './evaluation';
 import { ExpressionValue } from './expression';
 import { SoundType } from './typing';
 import { eqLocation } from './utils';
+
+export async function executeOnServer(
+  source: string,
+): Promise<ExecutionResponse> {
+  try {
+    const response = await axios.post('/api/execute', {
+      sources: [source],
+      idx: 0,
+      toolboxFunctions: [],
+      extraPythonFiles: [],
+    });
+    return response.data;
+  } catch {
+    return { type: 'network-error' };
+  }
+}
 
 export function unwrap_local_definition<T>(
   definitions: EvaluatedDefinitions<T>,

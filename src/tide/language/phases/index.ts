@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Attachment } from '@mui/icons-material';
 import { TamaroCard } from '../cards';
 import { ImportedDefinition, LocalDefinition } from '../definitions';
 import {
@@ -6,8 +7,10 @@ import {
   TideNameError,
   TideTypeError,
   TideRuntimeError,
+  TideError,
 } from '../errors';
-import { EmptyObject, Expand, Merge, WrapNonObject } from '../types';
+import { EmptyObject, Identity } from '../types';
+import { ErrorType } from '../typing';
 
 type Invert<
   T extends Record<string, string | number | symbol | undefined | never>,
@@ -15,20 +18,14 @@ type Invert<
   [K in keyof T as T[K] extends string | number | symbol ? T[K] : never]: K;
 };
 
-export type StateToPhase = {
-  unconstructed: never;
-  constructed: 'construction';
-  syntax_checked: 'syntax';
-  name_checked: 'name';
-  type_checked: 'typecheck';
-  code_created: 'code';
-  evaluated: 'evaluation';
-};
-
-export type State = Expand<keyof StateToPhase>;
-export type Phase = Expand<StateToPhase[State]>;
-
-export type PhaseToState = Invert<StateToPhase>;
+export type State =
+  | 'unconstructed'
+  | 'constructed'
+  | 'syntax_checked'
+  | 'name_checked'
+  | 'type_checked'
+  | 'code_created'
+  | 'evaluated';
 
 export type PreviousStateDef = {
   unconstructed: never;
@@ -51,10 +48,12 @@ type _SucceedingStates<P extends State> = P extends keyof NextStateDef
   : P;
 
 export type PreviousStates = {
+  never: never;
+} & {
   [K in State]: _PrecedingStates<K>;
 };
 
-export type NextPhases = {
+export type NextStates = {
   [K in State]: _SucceedingStates<K>;
 };
 
@@ -69,73 +68,98 @@ export type AttachmentUnion<
   [k in State]: T[k] | U[k];
 }>;
 
-type _MergeWithPrecedingStates<
-  P extends State,
-  U extends Attachment<any>,
-> = P extends keyof PreviousStateDef
-  ? PreviousStateDef[P] extends never
-    ? WrapNonObject<U[P]>
-    : Merge<U[P], _MergeWithPrecedingStates<PreviousStateDef[P], U>>
-  : WrapNonObject<U[P]>;
-
-type _MergeWithSucceedingStates<
-  P extends State,
-  U extends Attachment<any>,
-> = P extends keyof NextStateDef
-  ? NextStateDef[P] extends never
-    ? WrapNonObject<U[P]>
-    : Merge<U[P], _MergeWithSucceedingStates<NextStateDef[P], U>>
-  : WrapNonObject<U[P]>;
-
-export type MergeWithPrecedingStates<U extends Attachment<any>> = {
-  [K in State]: _MergeWithPrecedingStates<K, U>;
-};
-
-export type MergeWithSucceedingStates<U extends Attachment<any>> = {
-  [K in State]: _MergeWithSucceedingStates<K, U>;
-};
-
-export type UnionWithPrecedingStates<U extends Attachment<any>> = {
+export type UnionWithPrecedingStates<U extends Partial<Record<State, any>>> = {
   [K in State]: {
-    [o in PreviousStates[K]]: keyof U[o] extends never ? never : U[o];
-  }[PreviousStates[K]];
+    [o in PreviousStates[K] & keyof U]: U[o];
+  }[PreviousStates[K] & keyof U];
 };
 
-export type UnionWithSucceedingStates<U extends Attachment<any>> = {
-  [K in State]: U[NextPhases[K]];
+export type IntersectionWithPrecedingStates<
+  U extends Attachment<any> | Partial<Record<State, any>>,
+> = {
+  unconstructed: U['unconstructed'];
+  constructed: U['unconstructed'] & U['constructed'];
+  syntax_checked: U['unconstructed'] & U['constructed'] & U['syntax_checked'];
+
+  name_checked: U['unconstructed'] &
+    U['constructed'] &
+    U['syntax_checked'] &
+    U['name_checked'];
+
+  type_checked: U['unconstructed'] &
+    U['constructed'] &
+    U['syntax_checked'] &
+    U['name_checked'] &
+    U['type_checked'];
+
+  code_created: U['unconstructed'] &
+    U['constructed'] &
+    U['syntax_checked'] &
+    U['name_checked'] &
+    U['type_checked'] &
+    U['code_created'];
+
+  evaluated: U['unconstructed'] &
+    U['constructed'] &
+    U['syntax_checked'] &
+    U['name_checked'] &
+    U['type_checked'] &
+    U['code_created'] &
+    U['evaluated'];
 };
 
-export type ErrorAttachment = UnionWithPrecedingStates<
-  Attachment<{
-    syntax_checked: { type: TideSyntaxError; error_phase: 'syntax_checked' };
-    name_checked: { type: TideNameError; error_phase: 'name_checked' };
-    type_checked: { type: TideTypeError; error_phase: 'type_checked' };
-    evaluated: { type: TideRuntimeError; error_phase: 'evaluated' };
-  }>
->;
+type _TideError = TideError;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type StuckAttachment<U extends Attachment<any>> = AttachmentUnion<
-  U,
-  ErrorAttachment
->;
+type StateErrorAttachment<
+  T extends Partial<Record<State, any>>,
+  U extends _TideError,
+  Base extends State,
+> = T[PreviousStateDef[Base]] &
+  (U extends Exclude<_TideError, TideRuntimeError>
+    ? {
+        type: ErrorType<U> | false;
+        error_phase: Base;
+      }
+    : {
+        value: U | false;
+        error_phase: Base;
+      });
+
+type _StateErrorAttachment<
+  T extends Partial<Record<State, any>>,
+  U extends _TideError,
+  Base extends State,
+> = StateErrorAttachment<T, U, Base>;
+
+type _TideSyntaxError = TideSyntaxError;
+
+export type ErrorAttachment<T extends Partial<Record<State, any>>> =
+  UnionWithPrecedingStates<{
+    syntax_checked: _StateErrorAttachment<
+      T,
+      Identity<_TideSyntaxError>,
+      'syntax_checked'
+    >;
+
+    name_checked: _StateErrorAttachment<T, TideNameError, 'name_checked'>;
+
+    type_checked: _StateErrorAttachment<T, TideTypeError, 'type_checked'>;
+
+    evaluated: _StateErrorAttachment<T, TideRuntimeError, 'evaluated'>;
+  }>;
 
 export type TideAttachment<
   T extends Attachment<any> | Partial<Record<State, any>>,
-> = StuckAttachment<MergeWithPrecedingStates<Attachment<T>>>;
+> = {
+  [k in State]: Attachment<T>[k] | ErrorAttachment<Attachment<T>>[k];
+};
 
-export abstract class StateConstructor<
-  U,
-  T,
-  Base extends Exclude<State, 'evaluated'>,
-> {
-  abstract imported_definitions(): ImportedDefinition<T>[];
+export type ProgramState<U, T, S extends State> = {
+  imported_definitions: ImportedDefinition<T, S>[];
+  local_definitions: LocalDefinition<U, S>[];
+  expressions: TamaroCard<U, S>[];
+};
 
-  abstract definition_phase(
-    v: LocalDefinition<Base>,
-  ): LocalDefinition<NextStateDef[Base]>;
-
-  abstract expression_phase(
-    v: TamaroCard<U, Base>,
-  ): TamaroCard<U, NextStateDef[Base]>;
-}
+export type Phase<U, T, Base extends Exclude<State, 'evaluated'>> = (
+  base: ProgramState<U, T, Base>,
+) => ProgramState<U, T, NextStateDef[Base]>;

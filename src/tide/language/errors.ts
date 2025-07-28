@@ -2,22 +2,22 @@ export type TideError =
   | TideGenericError
   | TideSyntaxError
   | TideTypeError
-  | TideRuntimeError
-  | TideNameError;
+  | TideNameError
+  | TideRuntimeError;
 
 export type TideSyntaxError =
   | TideSyntaxErrorInvalidConstantIdentifier
   | TideSyntaxErrorInvalidFunctionIdentifier
-  | TideSyntaxErrorMissingParameter
   | TideSyntaxErrorConstantHasNoValue
-  | TideSyntaxErrorInvalidLiteral
-  | TideSyntaxErrorNodeKindMismatch;
+  | TideSyntaxErrorInvalidLiteral;
 
 export type TideNameError =
   | TideNameErrorMultipleDefinition
   | TideNameErrorUnknownConstant
   | TideNameErrorUnknownFunction
-  | TideNameErrorCyclicalDependencies;
+  | TideNameErrorCyclicalDependencies
+  | TideNameErrorMissingParameter
+  | TideNameErrorNodeKindMismatch;
 
 export interface TideSyntaxErrorInvalidConstantIdentifier {
   kind: 'syntax-error';
@@ -31,10 +31,11 @@ export interface TideSyntaxErrorInvalidFunctionIdentifier {
   args: [{ name: 'name'; value: string }];
 }
 
-export interface TideSyntaxErrorNodeKindMismatch {
-  kind: 'syntax-error';
+export interface TideNameErrorNodeKindMismatch {
+  kind: 'name-error';
   subkind: 'node_kind_mismatch';
   args: [
+    { name: 'name'; value: string },
     { name: 'expected_kind'; value: string },
     { name: 'got_kind'; value: string },
   ];
@@ -52,8 +53,8 @@ export interface TideSyntaxErrorConstantHasNoValue {
   args: [{ name: 'name'; value: string }];
 }
 
-export interface TideSyntaxErrorMissingParameter {
-  kind: 'syntax-error';
+export interface TideNameErrorMissingParameter {
+  kind: 'name-error';
   subkind: 'missing_parameter';
   args: [{ name: 'name'; value: string }];
 }

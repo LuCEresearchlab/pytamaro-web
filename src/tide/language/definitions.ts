@@ -1,6 +1,11 @@
-import { CodeRepresentation } from '../../../components/tide/cards';
 import { TamaroCard } from './cards';
-import { Kind, Subkind, FunctionParameter, Location, Expand } from './types';
+import {
+  Kind,
+  Subkind,
+  FunctionParameter,
+  Location,
+  CodeRepresentation,
+} from './types';
 import { State, TideAttachment } from './phases';
 import { ValueType } from './typing';
 
@@ -20,10 +25,11 @@ export type ImportedDefinition<T, S extends State = State> =
   | ImportedConstantDefinition<T, S>
   | ImportedFunctionDefinition<T, S>;
 
-export type Definition<U, S extends State = State> =
-  | FunctionDefinition<U, S>
-  | ConstantDefinition<U, S>;
-export type Definitions<U, S extends State = State> = Definition<U, S>[];
+export type Definition<U, T, S extends State = State> =
+  | FunctionDefinition<U, T, S>
+  | ConstantDefinition<U, T, S>;
+
+export type Definitions<U, T, S extends State = State> = Definition<U, T, S>[];
 
 export type FunctionDefinitionCommon = Kind<'function_definition'> & {
   parameters: FunctionParameter[];
@@ -36,26 +42,43 @@ export type LocalDefinitionStates<U> = TideAttachment<{
     metadata: U;
   };
   constructed: {
-    name: string;
+    metadata: U;
+    location: Location<false>;
     root?: TamaroCard<U, 'constructed'>;
   };
   syntax_checked: {
-    dependencies: Location[];
+    metadata: U;
+    location: Location<false>;
+    dependencies: string[];
     root: TamaroCard<U, 'syntax_checked'>;
   };
   name_checked: {
+    metadata: U;
     location: Location<false>;
+    dependencies: Location[];
     root: TamaroCard<U, 'name_checked'>;
   };
   type_checked: {
+    metadata: U;
+    location: Location<false>;
+    dependencies: Location[];
     type: ValueType;
     root: TamaroCard<U, 'type_checked'>;
   };
   code_created: {
+    metadata: U;
+    location: Location<false>;
+    dependencies: Location[];
+    type: ValueType;
     code: CodeRepresentation;
     root: TamaroCard<U, 'code_created'>;
   };
   evaluated: {
+    metadata: U;
+    location: Location<false>;
+    dependencies: Location[];
+    type: ValueType;
+    code: CodeRepresentation;
     root: TamaroCard<U, 'evaluated'>;
   };
 }>;
@@ -80,24 +103,50 @@ export type ImportedDefinitionStates<T> = TideAttachment<{
     metadata: T;
   };
   constructed: {
-    name: string;
+    metadata: T;
+    location: Location<string>;
+    type: ValueType;
+  };
+  syntax_checked: {
+    metadata: T;
+    location: Location<string>;
+    type: ValueType;
   };
   name_checked: {
+    metadata: T;
     location: Location<string>;
+    type: ValueType;
   };
   type_checked: {
+    metadata: T;
+    location: Location<string>;
     type: ValueType;
+  };
+  code_created: {
+    metadata: T;
+    location: Location<string>;
+    type: ValueType;
+    code: CodeRepresentation & { definition: string };
+  };
+  evaluated: {
+    metadata: T;
+    location: Location<string>;
+    type: ValueType;
+    code: CodeRepresentation & { definition: string };
   };
 }>;
 
-export type ImportedDefinitionCommon<T, S extends State = State> = Expand<
-  Subkind<'imported'> & ImportedDefinitionStates<T>[S]
->;
+export type ImportedDefinitionCommon<
+  T,
+  S extends State = State,
+> = Subkind<'imported'> & ImportedDefinitionStates<T>[S];
 
-export type ImportedFunctionDefinition<T, S extends State = State> = Expand<
-  FunctionDefinitionCommon & ImportedDefinitionCommon<T, S>
->;
+export type ImportedFunctionDefinition<
+  T,
+  S extends State = State,
+> = FunctionDefinitionCommon & ImportedDefinitionCommon<T, S>;
 
-export type ImportedConstantDefinition<T, S extends State = State> = Expand<
-  ConstantDefinitionCommon & ImportedDefinitionCommon<T, S>
->;
+export type ImportedConstantDefinition<
+  T,
+  S extends State = State,
+> = ConstantDefinitionCommon & ImportedDefinitionCommon<T, S>;

@@ -1,6 +1,9 @@
-import { CodeRepresentation } from '../../../components/tide/cards';
-import { Kind, Location } from './types';
-import { State, TideAttachment } from './phases';
+import { CodeRepresentation, FunctionParameter, Kind, Location } from './types';
+import {
+  IntersectionWithPrecedingStates,
+  State,
+  TideAttachment,
+} from './phases';
 import { ValueType } from './typing';
 
 export type TamaroCard<U, S extends State = State> =
@@ -8,26 +11,43 @@ export type TamaroCard<U, S extends State = State> =
   | TamaroCard_ConstantUse<U, S>
   | TamaroCard_Literal<U, S>;
 
-export type TamaroCard_ConstantUse_States<U> = TideAttachment<{
-  unconstructed: {
-    metadata: U;
-  };
-  constructed: {
-    input: string;
-  };
-  name: {
-    location: Location;
-  };
-  type_checked: {
-    type: ValueType;
-  };
-  code_created: {
-    code_created: CodeRepresentation;
-  };
-  evaluated: {
-    data: unknown;
-  };
-}>;
+export type TamaroCard_ConstantUse_States<U> = TideAttachment<
+  IntersectionWithPrecedingStates<{
+    unconstructed: {
+      metadata: U;
+    };
+    constructed: {
+      metadata: U;
+      constant_name: string;
+    };
+    name_checked: {
+      metadata: U;
+      constant_name: string;
+      location: Location;
+    };
+    type_checked: {
+      metadata: U;
+      constant_name: string;
+      location: Location;
+      type: ValueType;
+    };
+    code_created: {
+      metadata: U;
+      constant_name: string;
+      location: Location;
+      type: ValueType;
+      code: CodeRepresentation;
+    };
+    evaluated: {
+      metadata: U;
+      constant_name: string;
+      location: Location;
+      type: ValueType;
+      code: CodeRepresentation;
+      data: unknown;
+    };
+  }>
+>;
 
 export type TamaroCard_ConstantUse<
   U,
@@ -39,15 +59,35 @@ export type TamaroCard_Literal_States<U> = TideAttachment<{
     metadata: U;
   };
   constructed: {
+    metadata: U;
     input: string;
   };
+  syntax_checked: {
+    metadata: U;
+    input: string;
+    type: ValueType;
+  };
+  name_checked: {
+    metadata: U;
+    input: string;
+    type: ValueType;
+  };
   type_checked: {
+    metadata: U;
+    input: string;
     type: ValueType;
   };
   code_created: {
-    code_created: CodeRepresentation;
+    metadata: U;
+    input: string;
+    type: ValueType;
+    code: CodeRepresentation;
   };
   evaluated: {
+    metadata: U;
+    input: string;
+    type: ValueType;
+    code: CodeRepresentation;
     data: unknown;
   };
 }>;
@@ -62,26 +102,42 @@ export type TamaroCard_Functionuse_States<U> = TideAttachment<{
     metadata: U;
   };
   constructed: {
+    metadata: U;
     function_name: string;
     children: TamaroCardChildren<U, 'constructed'>;
   };
   syntax_checked: {
+    metadata: U;
+    function_name: string;
     children: TamaroCardChildren<U, 'syntax_checked'>;
   };
   name_checked: {
+    metadata: U;
     location: Location;
+    parameters: FunctionParameter[];
     children: TamaroCardChildren<U, 'name_checked'>;
   };
   type_checked: {
+    metadata: U;
     type: ValueType;
-    params: Map<string, ValueType>;
+    location: Location;
+    parameters: FunctionParameter[];
     children: TamaroCardChildren<U, 'type_checked'>;
   };
   code_created: {
-    code_created: CodeRepresentation;
+    metadata: U;
+    type: ValueType;
+    location: Location;
+    parameters: FunctionParameter[];
+    code: CodeRepresentation;
     children: TamaroCardChildren<U, 'code_created'>;
   };
   evaluated: {
+    metadata: U;
+    type: ValueType;
+    location: Location;
+    parameters: FunctionParameter[];
+    code: CodeRepresentation;
     data: unknown;
     children: TamaroCardChildren<U, 'evaluated'>;
   };

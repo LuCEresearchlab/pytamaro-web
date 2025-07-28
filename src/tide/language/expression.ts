@@ -29,9 +29,9 @@ export interface OtherExpressionValue extends IExpressionValue {
   data: undefined;
 }
 
-export interface ErrorValue {
+export interface ErrorValue<T extends TideError = TideError> {
   type: UnsoundType.Bottom;
-  error: TideError | TideError[];
+  error: T | T[];
 }
 
 export interface ErrorPropagation {

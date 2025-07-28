@@ -1,4 +1,6 @@
-export type ValueType = SoundType | UnsoundType;
+import { TideError, TideRuntimeError } from './errors';
+
+export type ValueType = SoundType | ErrorType | false;
 
 export type LiteralType =
   | SoundType.Int
@@ -16,6 +18,13 @@ export enum SoundType {
   Graphic,
   Point,
 }
+
+export type ErrorType<
+  T extends Exclude<TideError, TideRuntimeError> = Exclude<
+    TideError,
+    TideRuntimeError
+  >,
+> = { error: T | T[] };
 
 export function type_toString(type: SoundType) {
   switch (type) {
