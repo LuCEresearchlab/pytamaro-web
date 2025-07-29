@@ -6,7 +6,10 @@ import {
 import { getDefaultContext } from './data';
 import { TamaroCard } from '../../../src/tide/language/cards';
 import { ProgramState, State } from '../../../src/tide/language/phases';
-import { LocalDefinition } from '../../../src/tide/language/definitions';
+import {
+  ImportedDefinition,
+  LocalDefinition,
+} from '../../../src/tide/language/definitions';
 
 function removeMetadataFromCard<S extends State>(
   value: TamaroCard<unknown, S>,
@@ -37,10 +40,16 @@ function removeMetadataFromCard<S extends State>(
   }
 }
 
+function removeMetadataFromImport<S extends State>(
+  value: ImportedDefinition<unknown, S>,
+): ImportedDefinition<undefined, S> {
+  return { ...value, metadata: undefined } as ImportedDefinition<undefined, S>;
+}
+
 function removeMetadataFromLocal<S extends State>(
   value: LocalDefinition<unknown, unknown, S>,
 ): LocalDefinition<undefined, undefined, S> {
-  if ('root' in value) {
+  if ('root' in value && value.root) {
     return {
       ...value,
       root: removeMetadataFromCard(value.root as TamaroCard<unknown, S>),
@@ -56,10 +65,7 @@ function removeMetadataFromLocal<S extends State>(
 
 export function create_tree(
   content: string,
-): Omit<
-  ProgramState<undefined, undefined, undefined, 'constructed'>,
-  'imported_definitions'
-> {
+): ProgramState<undefined, undefined, undefined, 'constructed'> {
   const base_state = fromProgramToUnconstructedState(
     Array.from(getDefaultContext().values()),
     parse(content),
@@ -70,5 +76,8 @@ export function create_tree(
   return {
     expressions: state.expressions.map(removeMetadataFromCard),
     local_definitions: state.local_definitions.map(removeMetadataFromLocal),
+    imported_definitions: state.imported_definitions.map(
+      removeMetadataFromImport,
+    ),
   };
 }

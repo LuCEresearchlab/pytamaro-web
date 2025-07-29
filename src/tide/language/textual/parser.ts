@@ -26,6 +26,7 @@ export class Parser {
 
   parseProgram(): Program {
     const definitions = this.parseDefinitions();
+    console.log(definitions);
     const root = this.parseRoot();
     this.consume('EOF');
     return { type: 'Program', definitions, root };
@@ -49,7 +50,7 @@ export class Parser {
       this.consume('COLON_EQ');
       value = this.parseExpression();
       this.consume('SEMICOLON');
-    }
+    } else this.consume('SEMICOLON');
     return { type: 'Definition', name, value };
   }
 

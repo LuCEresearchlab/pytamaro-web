@@ -1,4 +1,19 @@
-import { create_tree } from '../utils';
+import { ProgramState } from '../../../../src/tide/language/phases';
+import { create_tree as phase1 } from '../utils';
+function create_tree(
+  content: string,
+): Omit<
+  ProgramState<undefined, undefined, undefined, 'syntax_checked'>,
+  'imported_definitions'
+> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result = phase1(content) as any;
+  return {
+    expressions: result.expressions,
+    local_definitions: result.local_definitions,
+  };
+}
+
 describe('Literal Card', () => {
   it('float literal', () => {
     expect(create_tree('1.0')).to.deep.equal({

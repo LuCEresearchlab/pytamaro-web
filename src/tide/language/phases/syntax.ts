@@ -94,18 +94,18 @@ function dependencies_extraction<T>(
   }
 }
 
-export default function syntax_phase<U, T>(
-  base: ProgramState<U, T, 'constructed'>,
-): ProgramState<U, T, 'syntax_checked'> {
+export default function syntax_phase<U, Timported, TLocal>(
+  base: ProgramState<U, TLocal, Timported, 'constructed'>,
+): ProgramState<U, TLocal, Timported, 'syntax_checked'> {
   function imported_definition_phase(
-    def: ImportedDefinition<T, 'constructed'>,
-  ): ImportedDefinition<T, 'syntax_checked'> {
+    def: ImportedDefinition<Timported, 'constructed'>,
+  ): ImportedDefinition<Timported, 'syntax_checked'> {
     return def;
   }
 
   function local_definition_phase(
-    def: LocalDefinition<U, 'constructed'>,
-  ): LocalDefinition<U, 'syntax_checked'> {
+    def: LocalDefinition<U, TLocal, 'constructed'>,
+  ): LocalDefinition<U, TLocal, 'syntax_checked'> {
     if (!def.root)
       return {
         ...def,
@@ -124,10 +124,14 @@ export default function syntax_phase<U, T>(
       };
     }
 
+    const dependencies = Array.from(
+      new Set(dependencies_extraction(root)),
+    ).toSorted();
+
     return {
       ...def,
       root,
-      dependencies: dependencies_extraction(root),
+      dependencies,
     };
   }
 
@@ -204,6 +208,6 @@ export default function syntax_phase<U, T>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     local_definitions: (base.local_definitions as any).map((v: any) =>
       local_definition_phase(v),
-    ) as LocalDefinition<U, 'syntax_checked'>[],
+    ) as LocalDefinition<U, TLocal, 'syntax_checked'>[],
   };
 }

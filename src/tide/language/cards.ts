@@ -19,6 +19,7 @@ export type TamaroCard<U, S extends State = State> =
 type BaseConstantUseStates<U> = {
   unconstructed: { metadata: U };
   constructed: { metadata: U; constant_name: string };
+  syntax_checked: { metadata: U; constant_name: string };
   name_checked: { metadata: U; constant_name: string; location: Location };
   type_checked: {
     metadata: U;
