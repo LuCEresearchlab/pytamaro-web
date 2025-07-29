@@ -3,7 +3,7 @@ export type Identifier = string;
 export interface Definition {
   type: 'Definition';
   name: Identifier;
-  value: Expression;
+  value?: Expression;
 }
 
 export type Definitions = Definition[];

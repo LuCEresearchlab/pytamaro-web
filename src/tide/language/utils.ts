@@ -1,5 +1,4 @@
 import {
-  EvaluatedTamaroCard,
   TamaroCard_ConstantUse,
   TamaroCard_FunctionUse,
   TamaroCard_Literal,
@@ -7,32 +6,6 @@ import {
 } from './cards';
 import { Value } from './expression';
 import { Location } from './types';
-import { LiteralType, SoundType, UnsoundType, ValueType } from './typing';
-
-export const BOOL_REGEX = /(True)|(False)/;
-export const INT_REGEX = /^-?[0-9]+$/g;
-export const FLOAT_REGEX = /^-?[0-9]+(\.[0-9]*)?$/g;
-export const STR_REGEX = /^"([^\\"]|(\\")|\\\\)*"$/g;
-
-export function inferRawValueType(v: string): LiteralType {
-  if (v.match(BOOL_REGEX)) return SoundType.Bool;
-  if (v.match(STR_REGEX)) return SoundType.Str;
-  if (v.match(INT_REGEX)) return SoundType.Int;
-  if (v.match(FLOAT_REGEX)) return SoundType.Float;
-  return UnsoundType.Bottom;
-}
-
-export function getCardOutputType<T>(card: TamaroCard<T>): ValueType {
-  if (card.evaluated !== true) return UnsoundType.Bottom;
-  switch (card.kind) {
-    case 'constant_use':
-    case 'literal':
-    case 'function_use':
-      return (card as EvaluatedTamaroCard<T>).value.type;
-    default:
-      return UnsoundType.Bottom;
-  }
-}
 
 export function toFlat<T>(card: TamaroCard<T>): TamaroCard<T>[] {
   switch (card.kind) {

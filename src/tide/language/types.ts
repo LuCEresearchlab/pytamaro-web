@@ -1,6 +1,6 @@
 import { SoundType } from './typing';
 
-export type Identity<T> = T;
+export type Identity<T> = { [K in keyof T]: T[K] } & {};
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type EmptyObject = {};
 

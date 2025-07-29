@@ -1,15 +1,15 @@
 import { FunctionParameter } from '../../../src/tide/language/types';
 import {
-  EvaluatedDefinition,
   ImportedConstantDefinition,
+  ImportedDefinition,
   ImportedFunctionDefinition,
 } from '../../../src/tide/language/definitions';
 import { Location } from '../../../src/tide/language/types';
 import { SoundType } from '../../../src/tide/language/typing';
 
-const context = new Map<Location, EvaluatedDefinition<object>>();
+const context = new Map<Location, ImportedDefinition<object, 'constructed'>>();
 
-function register(def: EvaluatedDefinition<object>) {
+function register(def: ImportedDefinition<object, 'constructed'>) {
   context.set(def.location, def);
   return def;
 }
@@ -20,9 +20,8 @@ function constant_use(name: string, type: SoundType) {
     kind: 'constant_definition',
     subkind: 'imported',
     location: i,
-    evaluated: true,
-    evaluated_type: type,
-  } as ImportedConstantDefinition);
+    type,
+  } as ImportedConstantDefinition<object, 'constructed'>);
 }
 
 function function_use(
@@ -38,11 +37,10 @@ function function_use(
   return register({
     kind: 'function_definition',
     subkind: 'imported',
-    evaluated: true,
-    evaluated_type: type,
+    type,
     location: i,
     parameters: _params,
-  } as ImportedFunctionDefinition);
+  } as ImportedFunctionDefinition<object, 'constructed'>);
 }
 
 function graphic_function_use(

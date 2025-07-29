@@ -154,12 +154,17 @@ export type TideAttachment<
   [k in State]: Attachment<T>[k] | ErrorAttachment<Attachment<T>>[k];
 };
 
-export type ProgramState<U, T, S extends State> = {
-  imported_definitions: ImportedDefinition<T, S>[];
-  local_definitions: LocalDefinition<U, S>[];
+export type ProgramState<U, Tlocal, Timport, S extends State> = {
+  imported_definitions: ImportedDefinition<Timport, S>[];
+  local_definitions: LocalDefinition<U, Tlocal, S>[];
   expressions: TamaroCard<U, S>[];
 };
 
-export type Phase<U, T, Base extends Exclude<State, 'evaluated'>> = (
-  base: ProgramState<U, T, Base>,
-) => ProgramState<U, T, NextStateDef[Base]>;
+export type Phase<
+  U,
+  Tlocal,
+  Timport,
+  Base extends Exclude<State, 'evaluated'>,
+> = (
+  base: ProgramState<U, Tlocal, Timport, Base>,
+) => ProgramState<U, Tlocal, Timport, NextStateDef[Base]>;

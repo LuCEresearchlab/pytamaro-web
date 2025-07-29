@@ -35,7 +35,7 @@ export class Parser {
     const defs: Definitions = [];
     while (
       this.peek().type === 'IDENTIFIER' &&
-      this.peek(1)?.type === 'COLON_EQ'
+      (this.peek(1)?.type === 'COLON_EQ' || this.peek(1)?.type === 'SEMICOLON')
     ) {
       defs.push(this.parseDefinition());
     }
@@ -44,9 +44,12 @@ export class Parser {
 
   private parseDefinition(): Definition {
     const name = this.consume('IDENTIFIER').value!;
-    this.consume('COLON_EQ');
-    const value = this.parseExpression();
-    this.consume('SEMICOLON');
+    let value: undefined | Expression;
+    if (this.peek().type === 'COLON_EQ') {
+      this.consume('COLON_EQ');
+      value = this.parseExpression();
+      this.consume('SEMICOLON');
+    }
     return { type: 'Definition', name, value };
   }
 
