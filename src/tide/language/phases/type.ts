@@ -15,29 +15,43 @@ import {
   ValueType,
 } from '../typing';
 
-type SourceState<U, T> = ProgramState<U, T, 'name_checked'>;
-type DestinationState<U, T> = ProgramState<U, T, 'type_checked'>;
+type SourceState<U, Tlocal, Timport> = ProgramState<
+  U,
+  Tlocal,
+  Timport,
+  'name_checked'
+>;
+type DestinationState<U, Tlocal, Timport> = ProgramState<
+  U,
+  Tlocal,
+  Timport,
+  'type_checked'
+>;
 
-export default function type_pahse<U, T>(
-  base: SourceState<U, T>,
-): DestinationState<U, T> {
+export default function type_pahse<U, Tlocal, Timport>(
+  base: SourceState<U, Tlocal, Timport>,
+): DestinationState<U, Tlocal, Timport> {
   const previous_definitions = base.imported_definitions
-    .map((v) => v as Definition<U, T, 'name_checked'>)
+    .map((v) => v as Definition<U, Tlocal, Timport, 'name_checked'>)
     .concat(base.local_definitions);
 
   const nameToDefinition = new Map(
-    previous_definitions.map((v) => [v.location.name, v]),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (previous_definitions as any).map(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (v: any) => [v.location.name, v] as any,
+    ) as [string, Definition<U, Tlocal, Timport, 'name_checked'>][],
   );
 
   function imported_definition_phase(
-    def: ImportedDefinition<T, 'name_checked'>,
-  ): ImportedDefinition<T, 'type_checked'> {
+    def: ImportedDefinition<Timport, 'name_checked'>,
+  ): ImportedDefinition<Timport, 'type_checked'> {
     return def;
   }
 
   function local_definition_phase(
-    def: LocalDefinition<U, 'name_checked'>,
-  ): LocalDefinition<U, 'type_checked'> {
+    def: LocalDefinition<U, Tlocal, 'name_checked'>,
+  ): LocalDefinition<U, Tlocal, 'type_checked'> {
     if ('error_phase' in def) return def;
 
     const root = expression_phase(def.root);
@@ -57,11 +71,22 @@ export default function type_pahse<U, T>(
     };
   }
 
-  function definition_phase(
-    def: Definition<U, T, 'name_checked'>,
-  ): Definition<U, T, 'type_checked'> {
-    if (def.subkind === 'imported') return imported_definition_phase(def);
-    return local_definition_phase(def);
+  const computed_definition: Map<
+    string,
+    Definition<U, Tlocal, Timport, 'type_checked'>
+  > = new Map();
+
+  function definition_phase_cache(
+    def: Definition<U, Tlocal, Timport, 'name_checked'>,
+  ): Definition<U, Tlocal, Timport, 'type_checked'> {
+    const cached = computed_definition.get(def.location.name);
+    if (cached) return cached;
+    const value =
+      def.subkind === 'local'
+        ? local_definition_phase(def)
+        : imported_definition_phase(def);
+    computed_definition.set(def.location.name, value);
+    return value;
   }
 
   function expression_phase(
@@ -90,19 +115,18 @@ export default function type_pahse<U, T>(
           };
         }
 
-        const function_def = definition_phase(
+        const function_def = definition_phase_cache(
           nameToDefinition.get(exp.location.name)!,
-        ) as FunctionDefinition<U, T, 'type_checked'>;
+        ) as FunctionDefinition<U, Tlocal, Timport, 'type_checked'>;
 
-        const type = function_def.type;
-
-        if ('error_phase' in function_def)
+        if ('error_phase' in function_def && function_def.error_phase)
           return {
             ...exp,
             error_phase: 'type_checked',
             type: false,
           };
 
+        const type = function_def.type;
         const parameters = new Map(
           function_def.parameters.map((v) => [v.name, v.type as ValueType]),
         );
@@ -144,9 +168,9 @@ export default function type_pahse<U, T>(
         };
       }
       case 'constant_use': {
-        const constant_def = definition_phase(
+        const constant_def = definition_phase_cache(
           nameToDefinition.get(exp.location.name)!,
-        ) as ConstantDefinition<U, T, 'type_checked'>;
+        ) as ConstantDefinition<U, Tlocal, Timport, 'type_checked'>;
 
         if ('error_phase' in constant_def)
           return {
