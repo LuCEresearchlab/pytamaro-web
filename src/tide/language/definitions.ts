@@ -87,7 +87,7 @@ export type LocalDefinitionStates<U, T> = Opaque<
       location: Location<false>;
       dependencies: Location[];
       type: ValueType;
-      code: CodeRepresentation;
+      code_element: CodeRepresentation;
       root: TamaroCard<T, 'code_element'>;
     };
     code_created: {
@@ -95,15 +95,16 @@ export type LocalDefinitionStates<U, T> = Opaque<
       location: Location<false>;
       dependencies: Location[];
       type: ValueType;
-      code: CodeRepresentation;
-      root: TamaroCard<T, 'code_element'>;
+      code_element: CodeRepresentation;
+      code: string;
+      root: TamaroCard<T, 'code_created'>;
     };
     evaluated: {
       metadata: U;
       location: Location<false>;
       dependencies: Location[];
       type: ValueType;
-      code: CodeRepresentation;
+      code_element: CodeRepresentation;
       root: TamaroCard<T, 'evaluated'>;
     };
   }>,
@@ -153,19 +154,20 @@ export type ImportedDefinitionStates<T> = Opaque<
       metadata: T;
       location: Location<string>;
       type: ValueType;
-      code: CodeRepresentation & { definition: string };
+      code_element: CodeRepresentation & { definition: string };
     };
     code_created: {
       metadata: T;
       location: Location<string>;
       type: ValueType;
-      code: CodeRepresentation & { definition: string };
+      code: string;
+      code_element: CodeRepresentation & { definition: string };
     };
     evaluated: {
       metadata: T;
       location: Location<string>;
       type: ValueType;
-      code: CodeRepresentation & { definition: string };
+      code_element: CodeRepresentation & { definition: string };
     };
   }>,
   'ImportedDefinitionStates'

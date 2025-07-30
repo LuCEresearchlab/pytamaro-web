@@ -131,6 +131,7 @@ export default function syntax_phase<U, Tlocal, Timported>(
     if ('error_phase' in root) {
       return {
         ...def,
+        root,
         error_phase: 'name_checked',
         type: false,
       };
@@ -180,14 +181,16 @@ export default function syntax_phase<U, Tlocal, Timported>(
         if (children.values().find((v) => 'error_phase' in v)) {
           return {
             ...exp,
+            children,
             error_phase: 'name_checked',
             type: false,
-          };
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } as any;
         }
 
         const definition = nameToDefinition.get(exp.function_name);
 
-        const location = multiply_defined.includes(exp.function_name)
+        const location = !multiply_defined.includes(exp.function_name)
           ? definition?.location
           : undefined;
 

@@ -88,7 +88,7 @@ export default function syntax_phase<U, Tlocal, Timport>(
     }
     return {
       ...def,
-      code: {
+      code_element: {
         definition: `from ${def.location.module} import ${def.location.name}`,
         location: def.location,
         imports: [],
@@ -110,11 +110,11 @@ export default function syntax_phase<U, Tlocal, Timport>(
     return {
       ...def,
       root,
-      code: {
+      code_element: {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        definition: `${def.location.name} = ${(root.code as any).expression}`,
+        definition: `${def.location.name} = ${(root.code_element as any).expression}`,
         location: def.location,
-        imports: [],
+        imports: root.code_element.imports,
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any;
@@ -143,11 +143,11 @@ export default function syntax_phase<U, Tlocal, Timport>(
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const expression = `${exp.location.name}(${exp.parameters.map((v) => (children.get(v.name)! as any).code.expression as string)})`;
+        const expression = `${exp.location.name}(${exp.parameters.map((v) => (children.get(v.name)! as any).code_element.expression as string)})`;
         return {
           ...exp,
           children: children,
-          code: {
+          code_element: {
             expression,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             imports: (dependencies_extraction as any)(exp as any) as Location[],
@@ -157,7 +157,7 @@ export default function syntax_phase<U, Tlocal, Timport>(
       case 'constant_use': {
         return {
           ...exp,
-          code: {
+          code_element: {
             expression: exp.constant_name,
             imports: [exp.location],
           },
@@ -166,7 +166,7 @@ export default function syntax_phase<U, Tlocal, Timport>(
       case 'literal': {
         return {
           ...exp,
-          code: {
+          code_element: {
             expression: exp.input,
             imports: [],
           },

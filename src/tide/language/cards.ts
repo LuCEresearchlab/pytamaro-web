@@ -32,21 +32,23 @@ type BaseConstantUseStates<U> = {
     constant_name: string;
     location: Location;
     type: ValueType;
-    code: CodeRepresentation;
+    code_element: CodeRepresentation;
   };
   code_created: {
     metadata: U;
     constant_name: string;
     location: Location;
     type: ValueType;
-    code: CodeRepresentation;
+    code_element: CodeRepresentation;
+    code: string;
   };
   evaluated: {
     metadata: U;
     constant_name: string;
     location: Location;
     type: ValueType;
-    code: CodeRepresentation;
+    code_element: CodeRepresentation;
+    code: string;
     data: unknown;
   };
 };
@@ -73,19 +75,21 @@ type BaseLiteralStates<U> = {
     metadata: U;
     input: string;
     type: ValueType;
-    code: CodeRepresentation;
+    code_element: CodeRepresentation;
   };
   code_created: {
     metadata: U;
     input: string;
     type: ValueType;
-    code: CodeRepresentation;
+    code_element: CodeRepresentation;
+    code: string;
   };
   evaluated: {
     metadata: U;
     input: string;
     type: ValueType;
-    code: CodeRepresentation;
+    code_element: CodeRepresentation;
+    code: string;
     data: unknown;
   };
 };
@@ -132,7 +136,7 @@ type BaseFunctionUseStates<U> = {
     type: ValueType;
     location: Location;
     parameters: FunctionParameter[];
-    code: CodeRepresentation;
+    code_element: CodeRepresentation;
     children: TamaroCardChildren<U, 'code_element'>;
   };
   code_created: {
@@ -140,15 +144,17 @@ type BaseFunctionUseStates<U> = {
     type: ValueType;
     location: Location;
     parameters: FunctionParameter[];
-    code: CodeRepresentation;
-    children: TamaroCardChildren<U, 'code_element'>;
+    code_element: CodeRepresentation;
+    code: string;
+    children: TamaroCardChildren<U, 'code_created'>;
   };
   evaluated: {
     metadata: U;
     type: ValueType;
     location: Location;
     parameters: FunctionParameter[];
-    code: CodeRepresentation;
+    code_element: CodeRepresentation;
+    code: string;
     data: unknown;
     children: TamaroCardChildren<U, 'evaluated'>;
   };

@@ -50,7 +50,7 @@ describe('Literal Card', () => {
           kind: 'literal',
           type: SoundType.Float,
           metadata: undefined,
-          code: {
+          code_element: {
             expression: '1.',
             imports: [],
           },
@@ -68,7 +68,7 @@ describe('Literal Card', () => {
           kind: 'literal',
           type: SoundType.Int,
           metadata: undefined,
-          code: {
+          code_element: {
             expression: '1',
             imports: [],
           },
@@ -86,7 +86,7 @@ describe('Literal Card', () => {
           kind: 'literal',
           type: SoundType.Str,
           metadata: undefined,
-          code: {
+          code_element: {
             expression: '"Hello World !"',
             imports: [],
           },
@@ -104,7 +104,7 @@ describe('Literal Card', () => {
           kind: 'literal',
           type: SoundType.Bool,
           metadata: undefined,
-          code: {
+          code_element: {
             expression: 'True',
             imports: [],
           },
@@ -122,7 +122,7 @@ describe('Literal Card', () => {
           kind: 'literal',
           type: SoundType.Bool,
           metadata: undefined,
-          code: {
+          code_element: {
             expression: 'False',
             imports: [],
           },
@@ -171,7 +171,7 @@ describe('Constant & Function Use with dependencies', () => {
             module: 'pytamaro',
             name: 'red',
           },
-          code: {
+          code_element: {
             expression: 'red',
             imports: [{ module: 'pytamaro', name: 'red' }],
           },
@@ -193,7 +193,7 @@ describe('Constant & Function Use with dependencies', () => {
             module: false,
             name: 'a',
           },
-          code: {
+          code_element: {
             expression: 'a',
             imports: [
               {
@@ -214,7 +214,7 @@ describe('Constant & Function Use with dependencies', () => {
             module: false,
             name: 'a',
           },
-          code: {
+          code_element: {
             definition: 'a = 1',
             location: {
               module: false,
@@ -227,7 +227,7 @@ describe('Constant & Function Use with dependencies', () => {
             input: '1',
             type: SoundType.Int,
             metadata: undefined,
-            code: {
+            code_element: {
               expression: '1',
               imports: [],
             },
@@ -251,7 +251,7 @@ describe('Constant & Function Use with dependencies', () => {
           },
           metadata: undefined,
           type: SoundType.Color,
-          code: {
+          code_element: {
             expression: 'a',
             imports: [
               {
@@ -280,7 +280,7 @@ describe('Constant & Function Use with dependencies', () => {
             },
             metadata: undefined,
             type: SoundType.Color,
-            code: {
+            code_element: {
               expression: 'red',
               imports: [
                 {
@@ -297,13 +297,18 @@ describe('Constant & Function Use with dependencies', () => {
             },
           ],
           type: SoundType.Color,
-          code: {
+          code_element: {
             definition: 'a = red',
             location: {
               module: false,
               name: 'a',
             },
-            imports: [],
+            imports: [
+              {
+                module: 'pytamaro',
+                name: 'red',
+              },
+            ],
           },
         },
       ],
