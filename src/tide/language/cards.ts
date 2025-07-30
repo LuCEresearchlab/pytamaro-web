@@ -27,6 +27,13 @@ type BaseConstantUseStates<U> = {
     location: Location;
     type: ValueType;
   };
+  code_element: {
+    metadata: U;
+    constant_name: string;
+    location: Location;
+    type: ValueType;
+    code: CodeRepresentation;
+  };
   code_created: {
     metadata: U;
     constant_name: string;
@@ -62,6 +69,12 @@ type BaseLiteralStates<U> = {
   syntax_checked: { metadata: U; input: string; type: ValueType };
   name_checked: { metadata: U; input: string; type: ValueType };
   type_checked: { metadata: U; input: string; type: ValueType };
+  code_element: {
+    metadata: U;
+    input: string;
+    type: ValueType;
+    code: CodeRepresentation;
+  };
   code_created: {
     metadata: U;
     input: string;
@@ -114,13 +127,21 @@ type BaseFunctionUseStates<U> = {
     parameters: FunctionParameter[];
     children: TamaroCardChildren<U, 'type_checked'>;
   };
+  code_element: {
+    metadata: U;
+    type: ValueType;
+    location: Location;
+    parameters: FunctionParameter[];
+    code: CodeRepresentation;
+    children: TamaroCardChildren<U, 'code_element'>;
+  };
   code_created: {
     metadata: U;
     type: ValueType;
     location: Location;
     parameters: FunctionParameter[];
     code: CodeRepresentation;
-    children: TamaroCardChildren<U, 'code_created'>;
+    children: TamaroCardChildren<U, 'code_element'>;
   };
   evaluated: {
     metadata: U;

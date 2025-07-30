@@ -24,6 +24,7 @@ export type State =
   | 'syntax_checked'
   | 'name_checked'
   | 'type_checked'
+  | 'code_element'
   | 'code_created'
   | 'evaluated';
 
@@ -33,7 +34,8 @@ export type PreviousStateDef = {
   syntax_checked: 'constructed';
   name_checked: 'syntax_checked';
   type_checked: 'name_checked';
-  code_created: 'type_checked';
+  code_element: 'type_checked';
+  code_created: 'code_element';
   evaluated: 'code_created';
 };
 
@@ -92,11 +94,19 @@ export type IntersectionWithPrecedingStates<
     U['name_checked'] &
     U['type_checked'];
 
+  code_element: U['unconstructed'] &
+    U['constructed'] &
+    U['syntax_checked'] &
+    U['name_checked'] &
+    U['type_checked'] &
+    U['code_element'];
+
   code_created: U['unconstructed'] &
     U['constructed'] &
     U['syntax_checked'] &
     U['name_checked'] &
     U['type_checked'] &
+    U['code_element'] &
     U['code_created'];
 
   evaluated: U['unconstructed'] &
@@ -104,6 +114,7 @@ export type IntersectionWithPrecedingStates<
     U['syntax_checked'] &
     U['name_checked'] &
     U['type_checked'] &
+    U['code_element'] &
     U['code_created'] &
     U['evaluated'];
 };

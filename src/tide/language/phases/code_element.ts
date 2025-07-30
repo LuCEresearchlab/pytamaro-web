@@ -64,15 +64,25 @@ export function sort_dependencies<T>(
   return topological_order;
 }
 
-type SourceState<U, T> = ProgramState<U, T, 'type_checked'>;
-type DestinationState<U, T> = ProgramState<U, T, 'code_created'>;
+type SourceState<U, Tlocal, Timport> = ProgramState<
+  U,
+  Tlocal,
+  Timport,
+  'type_checked'
+>;
+type DestinationState<U, Tlocal, Timport> = ProgramState<
+  U,
+  Tlocal,
+  Timport,
+  'code_element'
+>;
 
-export default function syntax_phase<U, T>(
-  base: SourceState<U, T>,
-): DestinationState<U, T> {
+export default function syntax_phase<U, Tlocal, Timport>(
+  base: SourceState<U, Tlocal, Timport>,
+): DestinationState<U, Tlocal, Timport> {
   function imported_definition_phase(
-    def: ImportedDefinition<T, 'type_checked'>,
-  ): ImportedDefinition<T, 'code_created'> {
+    def: ImportedDefinition<Timport, 'type_checked'>,
+  ): ImportedDefinition<Timport, 'code_element'> {
     if ('error_phase' in def) {
       return def;
     }
@@ -87,8 +97,8 @@ export default function syntax_phase<U, T>(
   }
 
   function local_definition_phase(
-    def: LocalDefinition<U, 'type_checked'>,
-  ): LocalDefinition<U, 'code_created'> {
+    def: LocalDefinition<U, Tlocal, 'type_checked'>,
+  ): LocalDefinition<U, Tlocal, 'code_element'> {
     if ('error_phase' in def) return def;
 
     const root = expression_phase(def.root);
@@ -101,7 +111,8 @@ export default function syntax_phase<U, T>(
       ...def,
       root,
       code: {
-        definition: `${def.location.name} = ${root.code}`,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        definition: `${def.location.name} = ${(root.code as any).expression}`,
         location: def.location,
         imports: [],
       },
@@ -111,7 +122,7 @@ export default function syntax_phase<U, T>(
 
   function expression_phase(
     exp: TamaroCard<U, 'type_checked'>,
-  ): TamaroCard<U, 'code_created'> {
+  ): TamaroCard<U, 'code_element'> {
     if ('error_phase' in exp) return exp;
 
     switch (exp.kind) {
@@ -122,7 +133,7 @@ export default function syntax_phase<U, T>(
             .entries()
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .map(([k, v]: any) => [k, expression_phase(v)]),
-        ) as Map<string, TamaroCard<U, 'code_created'>>;
+        ) as Map<string, TamaroCard<U, 'code_element'>>;
 
         if (
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -168,7 +179,7 @@ export default function syntax_phase<U, T>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expressions: (base.expressions as any).map(expression_phase) as TamaroCard<
       U,
-      'code_created'
+      'code_element'
     >[],
     imported_definitions: base.imported_definitions.map(
       imported_definition_phase,

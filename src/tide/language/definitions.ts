@@ -82,13 +82,21 @@ export type LocalDefinitionStates<U, T> = Opaque<
       type: ValueType;
       root: TamaroCard<T, 'type_checked'>;
     };
+    code_element: {
+      metadata: U;
+      location: Location<false>;
+      dependencies: Location[];
+      type: ValueType;
+      code: CodeRepresentation;
+      root: TamaroCard<T, 'code_element'>;
+    };
     code_created: {
       metadata: U;
       location: Location<false>;
       dependencies: Location[];
       type: ValueType;
       code: CodeRepresentation;
-      root: TamaroCard<T, 'code_created'>;
+      root: TamaroCard<T, 'code_element'>;
     };
     evaluated: {
       metadata: U;
@@ -140,6 +148,12 @@ export type ImportedDefinitionStates<T> = Opaque<
       metadata: T;
       location: Location<string>;
       type: ValueType;
+    };
+    code_element: {
+      metadata: T;
+      location: Location<string>;
+      type: ValueType;
+      code: CodeRepresentation & { definition: string };
     };
     code_created: {
       metadata: T;
