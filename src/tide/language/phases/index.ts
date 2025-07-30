@@ -117,7 +117,7 @@ type StateErrorAttachment<
 > = T[PreviousStateDef[Base]] &
   (U extends Exclude<_TideError, TideRuntimeError>
     ? {
-        type: ErrorType<U> | false;
+        type: ErrorType | false;
         error_phase: Base;
       }
     : {

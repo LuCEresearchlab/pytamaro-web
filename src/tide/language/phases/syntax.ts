@@ -94,7 +94,7 @@ function dependencies_extraction<T>(
   }
 }
 
-export default function syntax_phase<U, Timported, TLocal>(
+export default function syntax_phase<U, TLocal, Timported>(
   base: ProgramState<U, TLocal, Timported, 'constructed'>,
 ): ProgramState<U, TLocal, Timported, 'syntax_checked'> {
   function imported_definition_phase(

@@ -26,7 +26,6 @@ export class Parser {
 
   parseProgram(): Program {
     const definitions = this.parseDefinitions();
-    console.log(definitions);
     const root = this.parseRoot();
     this.consume('EOF');
     return { type: 'Program', definitions, root };

@@ -18,7 +18,7 @@ import { eqLocation } from '../utils';
 
 function is_cylicaly_defined<T>(
   origin: T,
-  get_location: (v: T) => Location,
+  origin_location: Location,
   get_dependencies: (v: T) => Location[],
   get_element: (v: Location) => T | undefined,
 ): Location[] | undefined {
@@ -29,7 +29,7 @@ function is_cylicaly_defined<T>(
     const is = stack.pop()!;
     const i = is[0];
 
-    if (eqLocation(i, get_location(origin))) return is;
+    if (eqLocation(i, origin_location)) return is;
     if (seen.has(i)) continue;
     seen.add(i);
 
@@ -42,14 +42,24 @@ function is_cylicaly_defined<T>(
   return undefined;
 }
 
-type SourceState<U, T> = ProgramState<U, T, 'syntax_checked'>;
-type DestinationState<U, T> = ProgramState<U, T, 'name_checked'>;
+type SourceState<U, TLocal, Timported> = ProgramState<
+  U,
+  TLocal,
+  Timported,
+  'syntax_checked'
+>;
+type DestinationState<U, TLocal, Timported> = ProgramState<
+  U,
+  TLocal,
+  Timported,
+  'name_checked'
+>;
 
-export default function syntax_phase<U, T>(
-  base: SourceState<U, T>,
-): DestinationState<U, T> {
+export default function syntax_phase<U, Tlocal, Timported>(
+  base: SourceState<U, Tlocal, Timported>,
+): DestinationState<U, Tlocal, Timported> {
   const previous_definitions = base.imported_definitions
-    .map((v) => v as Definition<U, T, 'syntax_checked'>)
+    .map((v) => v as Definition<U, Tlocal, Timported, 'syntax_checked'>)
     .concat(base.local_definitions);
 
   const used_names = Array.from(
@@ -72,18 +82,49 @@ export default function syntax_phase<U, T>(
   const nameToDefinition = new Map(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (previous_definitions as any).map((v: any) => [v.location.name, v]),
-  ) as Map<string, Definition<U, T, 'syntax_checked'>>;
+  ) as Map<string, Definition<U, Tlocal, Timported, 'syntax_checked'>>;
+
+  const computed_definition: Map<
+    string,
+    LocalDefinition<U, Tlocal, 'name_checked'>
+  > = new Map();
 
   function imported_definition_phase(
-    def: ImportedDefinition<T, 'syntax_checked'>,
-  ): ImportedDefinition<T, 'name_checked'> {
+    def: ImportedDefinition<Timported, 'syntax_checked'>,
+  ): ImportedDefinition<Timported, 'name_checked'> {
     return def;
   }
 
   function local_definition_phase(
-    def: LocalDefinition<U, 'syntax_checked'>,
-  ): LocalDefinition<U, 'name_checked'> {
+    def: LocalDefinition<U, Tlocal, 'syntax_checked'>,
+  ): LocalDefinition<U, Tlocal, 'name_checked'> {
     if ('error_phase' in def) return def;
+
+    const cycle = is_cylicaly_defined(
+      def as Definition<U, Tlocal, Timported, 'syntax_checked'>,
+      def.location,
+      (v) =>
+        'dependencies' in v
+          ? v.dependencies
+              .map((v) => nameToDefinition.get(v))
+              .map((v) => (v && 'location' in v ? v.location : undefined))
+              .filter((v) => v)
+              .map((v) => v!)
+              .filter((v) => !multiply_defined.includes(v.name))
+          : [],
+      (v) => nameToDefinition.get(v.name),
+    );
+    if (cycle) {
+      return {
+        ...def,
+        error_phase: 'name_checked',
+        type: {
+          error: TideNameErrorCyclicalDependencies_builder(
+            cycle.map((v) => v.name),
+          ),
+        },
+      };
+    }
 
     const root = expression_phase(def.root);
 
@@ -105,39 +146,24 @@ export default function syntax_phase<U, T>(
       };
     }
 
-    const cycle = is_cylicaly_defined(
-      def as Definition<U, T, 'syntax_checked'>,
-      (v) => v.location,
-      (v) =>
-        'dependencies' in v
-          ? v.dependencies
-              .map(nameToDefinition.get)
-              .filter((v) => v)
-              .map((v) => v!.location)
-              .filter((v) => !multiply_defined.includes(v.name))
-          : [],
-      (v) => nameToDefinition.get(v.name),
-    );
-    if (cycle) {
-      return {
-        ...def,
-        error_phase: 'name_checked',
-        type: {
-          error: TideNameErrorCyclicalDependencies_builder(
-            cycle.map((v) => v.name),
-          ),
-        },
-      };
-    }
-
     return {
       ...def,
       root,
       dependencies: def.dependencies
-        .map(nameToDefinition.get)
+        .map((v) => nameToDefinition.get(v))
         .filter((v) => v)
         .map((v) => v!.location),
     };
+  }
+
+  function local_definition_phase_cache(
+    def: LocalDefinition<U, Tlocal, 'syntax_checked'>,
+  ): LocalDefinition<U, Tlocal, 'name_checked'> {
+    const cached = computed_definition.get(def.location.name);
+    if (cached) return cached;
+    const value = local_definition_phase(def);
+    computed_definition.set(def.location.name, value);
+    return value;
   }
 
   function expression_phase(
@@ -206,6 +232,15 @@ export default function syntax_phase<U, T>(
             },
           };
         }
+
+        if (definition.subkind === 'local') {
+          const computed_def = local_definition_phase_cache(definition);
+
+          if ('error_phase' in computed_def) {
+            return { ...exp, type: false, error_phase: 'name_checked' };
+          }
+        }
+
         return {
           ...exp,
           children: children,
@@ -214,7 +249,7 @@ export default function syntax_phase<U, T>(
         };
       }
       case 'constant_use': {
-        const location = multiply_defined.includes(exp.constant_name)
+        const location = !multiply_defined.includes(exp.constant_name)
           ? nameToDefinition.get(exp.constant_name)?.location
           : undefined;
 
@@ -228,9 +263,8 @@ export default function syntax_phase<U, T>(
           };
         }
 
-        if (
-          nameToDefinition.get(location.name)?.kind !== 'constant_definition'
-        ) {
+        const def = nameToDefinition.get(location.name)!;
+        if (def?.kind !== 'constant_definition') {
           return {
             ...exp,
             error_phase: 'name_checked',
@@ -242,6 +276,14 @@ export default function syntax_phase<U, T>(
               ),
             },
           };
+        }
+
+        if (def.subkind === 'local') {
+          const computed_def = local_definition_phase_cache(def);
+
+          if ('error_phase' in computed_def) {
+            return { ...exp, type: false, error_phase: 'name_checked' };
+          }
         }
 
         return { ...exp, location };
@@ -259,7 +301,7 @@ export default function syntax_phase<U, T>(
     ),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     local_definitions: (base.local_definitions as any).map(
-      local_definition_phase,
-    ) as LocalDefinition<U, 'name_checked'>[],
+      local_definition_phase_cache,
+    ) as LocalDefinition<U, Tlocal, 'name_checked'>[],
   };
 }

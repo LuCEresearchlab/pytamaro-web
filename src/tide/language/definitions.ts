@@ -9,6 +9,7 @@ import {
   FunctionParameter,
   Location,
   CodeRepresentation,
+  Identity,
 } from './types';
 import { State, TideAttachment } from './phases';
 import { ValueType } from './typing';
@@ -101,23 +102,17 @@ export type LocalDefinitionStates<U, T> = Opaque<
   'LocalDefinitionStates'
 >;
 
-export type LocalDefinitionCommon<
-  U,
-  T,
-  S extends State = State,
-> = Subkind<'local'> & LocalDefinitionStates<T, U>[S];
+export type LocalDefinitionCommon<U, T, S extends State = State> = Identity<
+  Subkind<'local'> & LocalDefinitionStates<T, U>[S]
+>;
 
-export type LocalFunctionDefinition<
-  U,
-  T,
-  S extends State = State,
-> = FunctionDefinitionCommon & LocalDefinitionCommon<U, T, S>;
+export type LocalFunctionDefinition<U, T, S extends State = State> = Identity<
+  FunctionDefinitionCommon & LocalDefinitionCommon<U, T, S>
+>;
 
-export type LocalConstantDefinition<
-  U,
-  T,
-  S extends State = State,
-> = ConstantDefinitionCommon & LocalDefinitionCommon<U, T, S>;
+export type LocalConstantDefinition<U, T, S extends State = State> = Identity<
+  ConstantDefinitionCommon & LocalDefinitionCommon<U, T, S>
+>;
 
 // === IMPORTED DEFINITION STATES ===
 
@@ -162,17 +157,14 @@ export type ImportedDefinitionStates<T> = Opaque<
   'ImportedDefinitionStates'
 >;
 
-export type ImportedDefinitionCommon<
-  T,
-  S extends State = State,
-> = Subkind<'imported'> & ImportedDefinitionStates<T>[S];
+export type ImportedDefinitionCommon<T, S extends State = State> = Identity<
+  Subkind<'imported'> & ImportedDefinitionStates<T>[S]
+>;
 
-export type ImportedFunctionDefinition<
-  T,
-  S extends State = State,
-> = FunctionDefinitionCommon & ImportedDefinitionCommon<T, S>;
+export type ImportedFunctionDefinition<T, S extends State = State> = Identity<
+  FunctionDefinitionCommon & ImportedDefinitionCommon<T, S>
+>;
 
-export type ImportedConstantDefinition<
-  T,
-  S extends State = State,
-> = ConstantDefinitionCommon & ImportedDefinitionCommon<T, S>;
+export type ImportedConstantDefinition<T, S extends State = State> = Identity<
+  ConstantDefinitionCommon & ImportedDefinitionCommon<T, S>
+>;
