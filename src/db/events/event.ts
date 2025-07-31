@@ -14,7 +14,7 @@ export async function storeEvent(
     user_uuid,
     experiment_key,
     event_type,
-  });
+  }) as Promise<number>;
 }
 
 export async function storeActivity(

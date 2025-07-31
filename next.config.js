@@ -3,7 +3,6 @@ const { i18n } = require('./next-i18next.config');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   output: 'standalone',
   staticPageGenerationTimeout: 300,
   env: {
@@ -13,6 +12,8 @@ const nextConfig = {
       .trim(),
     BUILD_TIMESTAMP: Date.now().toString(),
   },
+  // Workaround for MUI-NextJS issues https://github.com/mui/material-ui/issues/46181#issuecomment-2894160823 
+  transpilePackages: ["@mui/material-nextjs"], 
   webpack(config, { isServer, dev }) {
     config.experiments = {
       asyncWebAssembly: true,
@@ -36,10 +37,8 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {
-    outputFileTracingIncludes: {
-      '**': ['./**/*.wasm'],
-    },
+  outputFileTracingIncludes: {
+    '**': ['./**/*.wasm'],
   },
   i18n,
   async redirects() {

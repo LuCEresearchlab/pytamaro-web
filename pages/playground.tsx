@@ -6,9 +6,9 @@ import {
   Box,
   Container,
   Typography,
-  styled,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
+import { styled } from '@mui/material/styles';
 import { debounce } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
@@ -37,7 +37,7 @@ import {
   playgroundActivityVariant,
   playgroundInitialSource,
 } from '../src/playground';
-import { PythonName, analyze } from '../src/python-analyzer/python_analyzer';
+import { analyze, PythonName } from '../src/python-analyzer/python_analyzer';
 import { translationProps } from '../src/serverSideTranslationProps';
 import useReset from '../src/useReset';
 

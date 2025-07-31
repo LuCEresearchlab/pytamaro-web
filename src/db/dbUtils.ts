@@ -5,7 +5,7 @@ export async function storeRow(
   table: string,
   columnsvalues: object,
   returnId: boolean = true,
-): Promise<number> {
+): Promise<number | undefined> {
   const rows =
     await sql`INSERT INTO ${sql(table)} ${sql(columnsvalues)} ${returnId ? sql`RETURNING id` : sql``}`;
   return returnId ? rows[0].id : undefined;
@@ -23,7 +23,7 @@ export async function storeOrRetrieveRow(
   sql: postgres.TransactionSql,
   table: string,
   columnsvalues: object,
-) {
+): Promise<number> {
   const clauses = Object.entries(columnsvalues).map(
     ([column, value]) => sql`${sql(column)} = ${value}`,
   );
@@ -32,5 +32,5 @@ export async function storeOrRetrieveRow(
   if (rows.length > 0) {
     return rows[0].id;
   }
-  return storeRow(sql, table, columnsvalues);
+  return storeRow(sql, table, columnsvalues) as Promise<number>;
 }

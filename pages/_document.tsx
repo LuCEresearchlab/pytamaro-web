@@ -2,7 +2,7 @@ import {
   DocumentHeadTags,
   DocumentHeadTagsProps,
   documentGetInitialProps,
-} from '@mui/material-nextjs/v14-pagesRouter';
+} from '@mui/material-nextjs/v15-pagesRouter';
 import {
   DocumentContext,
   DocumentProps,
@@ -19,10 +19,11 @@ export default function MyDocument(
   return (
     <Html lang='en'>
       <Head>
-        <DocumentHeadTags {...props} />
         {/* PWA primary color */}
         <meta name='theme-color' content={theme.palette.primary.main} />
         <link rel='shortcut icon' href='/favicon.ico' />
+        <meta name='emotion-insertion-point' content='' />
+        <DocumentHeadTags {...props} />
       </Head>
       <body style={{ backgroundColor: theme.pytamaro.backgroundColor }}>
         <Main />

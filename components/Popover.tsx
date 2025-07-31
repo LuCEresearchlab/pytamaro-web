@@ -159,6 +159,7 @@ export const PopoverTrigger = React.forwardRef<
       context.getReferenceProps({
         ref,
         ...props,
+        // @ts-expect-error example from https://codesandbox.io/p/sandbox/distracted-swirles-jo1pvu
         ...children.props,
         'data-state': context.open ? 'open' : 'closed',
       }),

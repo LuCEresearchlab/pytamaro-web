@@ -59,7 +59,7 @@ export default function ActivityStatusBadge({
   small = false,
   noInProgress = false,
 }: {
-  children: JSX.Element;
+  children: React.ReactNode;
   status: ActivityStatus;
   locked?: boolean;
   small?: boolean;

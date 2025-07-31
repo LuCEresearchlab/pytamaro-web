@@ -95,7 +95,7 @@ export default function TableOfContents({
   initialized,
   activityVariant = undefined,
 }: {
-  elementRef: RefObject<HTMLElement>;
+  elementRef: RefObject<HTMLElement | null>;
   selector: string;
   titleKey: string;
   initialized: boolean;

@@ -79,6 +79,7 @@ function ScrollAppBarChanges({
   }
 
   return cloneElement(children, {
+    // @ts-expect-error expect children to be a MUI component
     sx: {
       background: scrolled ? theme.pytamaro.backgroundColor : '#ffffffb0',
     },
