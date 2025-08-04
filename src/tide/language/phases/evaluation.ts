@@ -8,7 +8,7 @@ import {
   LocalDefinition,
 } from '../definitions';
 import { CodeRepresentation } from '../types';
-import { SoundType } from '../typing';
+import { EvaluatedValueType, SoundType } from '../typing';
 import { turnCodeElementToCode } from './code_created';
 import { TideRuntimeError_builder } from '../error_builders';
 
@@ -71,16 +71,11 @@ type DestinationState<U, Tlocal, Timport> = ProgramState<
   'evaluated'
 >;
 
-export type ValueType =
-  | string
-  | { red: number; green: number; blue: number; alpha: number }
-  | { error: string };
-
 export async function extract_data(
   code_repr: CodeRepresentation,
   type: SoundType,
   definitions: Definition<unknown, unknown, unknown, 'code_element'>[],
-): Promise<ValueType | undefined> {
+): Promise<EvaluatedValueType[SoundType] | { error: string }> {
   if (!('expression' in code_repr))
     throw new Error('Code should represent an expression');
 

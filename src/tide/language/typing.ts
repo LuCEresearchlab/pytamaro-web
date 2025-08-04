@@ -18,6 +18,14 @@ export enum SoundType {
   Point,
 }
 
+export type EvaluatedValueType = {
+  [k in SoundType]: k extends SoundType.Graphic
+    ? string
+    : k extends SoundType.Color
+      ? { red: number; green: number; blue: number; alpha: number }
+      : undefined;
+};
+
 export type ErrorType<
   T extends Exclude<TideError, TideRuntimeError> = Exclude<
     TideError,
