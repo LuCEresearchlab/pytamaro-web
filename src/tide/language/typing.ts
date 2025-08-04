@@ -1,13 +1,12 @@
 import { TideError, TideRuntimeError } from './errors';
 
-export type ValueType = SoundType | ErrorType | false;
+export type ValueType = SoundType | ErrorType | false | UnsoundType;
 
 export type LiteralType =
   | SoundType.Int
   | SoundType.Float
   | SoundType.Str
-  | SoundType.Bool
-  | UnsoundType;
+  | SoundType.Bool;
 
 export enum SoundType {
   Int,
@@ -52,7 +51,11 @@ export enum UnsoundType {
 export function type_equality_rule(a: ValueType, b: ValueType) {
   return (
     a != UnsoundType.Bottom &&
+    a !== false &&
     b != UnsoundType.Bottom &&
+    b !== false &&
+    typeof a === 'number' &&
+    typeof b === 'number' &&
     (a === b || convert_type(a, b) || convert_type(b, a))
   );
 }

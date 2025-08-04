@@ -6,7 +6,7 @@ import {
   Location,
 } from './types';
 import { State, TideAttachment } from './phases';
-import { ValueType } from './typing';
+import { LiteralType, SoundType } from './typing';
 
 export type TamaroCard<U, S extends State = State> =
   | TamaroCard_FunctionUse<U, S>
@@ -25,20 +25,20 @@ type BaseConstantUseStates<U> = {
     metadata: U;
     constant_name: string;
     location: Location;
-    type: ValueType;
+    type: SoundType;
   };
   code_element: {
     metadata: U;
     constant_name: string;
     location: Location;
-    type: ValueType;
+    type: SoundType;
     code_element: CodeRepresentation;
   };
   code_created: {
     metadata: U;
     constant_name: string;
     location: Location;
-    type: ValueType;
+    type: SoundType;
     code_element: CodeRepresentation;
     code: string;
   };
@@ -46,7 +46,7 @@ type BaseConstantUseStates<U> = {
     metadata: U;
     constant_name: string;
     location: Location;
-    type: ValueType;
+    type: SoundType;
     code_element: CodeRepresentation;
     code: string;
     data: unknown;
@@ -68,26 +68,26 @@ export type TamaroCard_ConstantUse<
 type BaseLiteralStates<U> = {
   unconstructed: { metadata: U };
   constructed: { metadata: U; input: string };
-  syntax_checked: { metadata: U; input: string; type: ValueType };
-  name_checked: { metadata: U; input: string; type: ValueType };
-  type_checked: { metadata: U; input: string; type: ValueType };
+  syntax_checked: { metadata: U; input: string; type: LiteralType };
+  name_checked: { metadata: U; input: string; type: LiteralType };
+  type_checked: { metadata: U; input: string; type: LiteralType };
   code_element: {
     metadata: U;
     input: string;
-    type: ValueType;
+    type: LiteralType;
     code_element: CodeRepresentation;
   };
   code_created: {
     metadata: U;
     input: string;
-    type: ValueType;
+    type: LiteralType;
     code_element: CodeRepresentation;
     code: string;
   };
   evaluated: {
     metadata: U;
     input: string;
-    type: ValueType;
+    type: LiteralType;
     code_element: CodeRepresentation;
     code: string;
     data: unknown;
@@ -126,14 +126,14 @@ type BaseFunctionUseStates<U> = {
   };
   type_checked: {
     metadata: U;
-    type: ValueType;
+    type: SoundType;
     location: Location;
     parameters: FunctionParameter[];
     children: TamaroCardChildren<U, 'type_checked'>;
   };
   code_element: {
     metadata: U;
-    type: ValueType;
+    type: SoundType;
     location: Location;
     parameters: FunctionParameter[];
     code_element: CodeRepresentation;
@@ -141,7 +141,7 @@ type BaseFunctionUseStates<U> = {
   };
   code_created: {
     metadata: U;
-    type: ValueType;
+    type: SoundType;
     location: Location;
     parameters: FunctionParameter[];
     code_element: CodeRepresentation;
@@ -150,7 +150,7 @@ type BaseFunctionUseStates<U> = {
   };
   evaluated: {
     metadata: U;
-    type: ValueType;
+    type: SoundType;
     location: Location;
     parameters: FunctionParameter[];
     code_element: CodeRepresentation;

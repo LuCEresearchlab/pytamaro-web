@@ -22,9 +22,16 @@ describe('Literal Card', () => {
     });
   });
 
-  it('float literal', () => {
+  it('int literal', () => {
     expect(create_tree('1')).to.deep.equal({
       expressions: [{ input: '1', kind: 'literal', metadata: undefined }],
+      local_definitions: [],
+    });
+  });
+
+  it('negative int literal', () => {
+    expect(create_tree('-1')).to.deep.equal({
+      expressions: [{ input: '-1', kind: 'literal', metadata: undefined }],
       local_definitions: [],
     });
   });

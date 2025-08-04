@@ -67,12 +67,12 @@ export const BOOL_REGEX = /(True)|(False)/;
 export const INT_REGEX = /^-?[0-9]+$/g;
 export const FLOAT_REGEX = /^-?[0-9]+(\.[0-9]*)?$/g;
 export const STR_REGEX = /^"([^\\"]|(\\")|\\\\)*"$/g;
-function inferRawValueType(v: string): LiteralType {
+function inferRawValueType(v: string): LiteralType | false {
   if (v.match(BOOL_REGEX)) return SoundType.Bool;
   if (v.match(STR_REGEX)) return SoundType.Str;
   if (v.match(INT_REGEX)) return SoundType.Int;
   if (v.match(FLOAT_REGEX)) return SoundType.Float;
-  return UnsoundType.Bottom;
+  return false;
 }
 
 function dependencies_extraction<T>(
@@ -185,7 +185,7 @@ export default function syntax_phase<U, TLocal, Timported>(
       }
       case 'literal': {
         const literal_type = inferRawValueType(exp.input);
-        if (literal_type === UnsoundType.Bottom) {
+        if (literal_type === false) {
           return {
             ...exp,
             error_phase: 'syntax_checked',

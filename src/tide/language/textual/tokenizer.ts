@@ -20,7 +20,7 @@ export interface Token {
 export function tokenize(input: string): Token[] {
   const tokens: Token[] = [];
   const regex =
-    /\s*([a-zA-Z][a-zA-Z0-9_]*|\d+\.\d*|\d+|"[^"]*"|:=|True|False|[;(),=])/g;
+    /\s*([a-zA-Z][a-zA-Z0-9_]*|\d+\.\d*|\d+|-\d+\.\d*|-\d+|"[^"]*"|:=|True|False|[;(),=])/g;
 
   let match: RegExpExecArray | null;
   while ((match = regex.exec(input)) !== null) {
@@ -36,6 +36,7 @@ export function tokenize(input: string): Token[] {
     else if (value === 'True' || value === 'False')
       tokens.push({ type: 'BOOL', value });
     else if (/^\d/.test(value)) tokens.push({ type: 'NUMBER', value });
+    else if (/^-\d/.test(value)) tokens.push({ type: 'NUMBER', value });
     else if (/^"/.test(value)) tokens.push({ type: 'STRING', value: value });
     else tokens.push({ type: 'IDENTIFIER', value });
   }

@@ -18,6 +18,13 @@ describe('Literal tokenizing', () => {
     ]);
   });
 
+  it('number negative', () => {
+    expect(tokenize('-1129391823.1129391823')).to.deep.equal([
+      { type: 'NUMBER', value: '-1129391823.1129391823' } as Token,
+      { type: 'EOF' } as Token,
+    ]);
+  });
+
   it('number float (2)', () => {
     expect(tokenize('1129391823.')).to.deep.equal([
       { type: 'NUMBER', value: '1129391823.' } as Token,
