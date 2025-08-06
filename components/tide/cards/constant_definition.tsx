@@ -3,20 +3,14 @@ import {
   Handle,
   NodeProps,
   Position,
-  useNodeConnections,
   useReactFlow,
 } from '@xyflow/react';
 import { createRef, RefObject, useCallback, useEffect, useRef } from 'react';
 import { useStore } from '../../../src/tide/store';
 import { updateParent } from '../../../src/tide/graph_toolbox';
 import { ContentEditableDiv } from './literal';
-import {
-  ExtraneousNodeProps,
-  ConstantDefinitionNode,
-  TideNodeMetadata,
-} from '.';
-import { getNode } from '../../../src/tide/utils';
-import { TamaroCard } from '../../../src/tide/language/cards';
+import { ExtraneousNodeProps, ConstantDefinitionNode } from '.';
+import { useShallow } from 'zustand/shallow';
 
 const KEYWORDS: string[] = [
   'False',
@@ -85,12 +79,18 @@ export default function TideConstantDefinition(
   const { id, positionAbsoluteX, positionAbsoluteY, data, show_handles } =
     props;
   const textRef: RefObject<HTMLDivElement> = createRef();
-  const store = useStore();
   const { screenToFlowPosition } = useReactFlow();
-  const { initialized, onNodesChange, updateNodeData } = store;
+  const { initialized, onNodesChange, updateNodeData, getNodes } = useStore(
+    useShallow((state) => ({
+      initialized: state.initialized,
+      onNodesChange: state.onNodesChange,
+      updateNodeData: state.updateNodeData,
+      getNodes: state.getNodes,
+    })),
+  );
   const thisInitialization = useRef(false);
 
-  const name = (data.location.name || '') as string;
+  const name = data.input as string;
 
   const updateDimData = useCallback(() => {
     if (textRef.current) {
@@ -102,30 +102,22 @@ export default function TideConstantDefinition(
         y: rect.y,
       });
 
-      updateNodeData(id, (data) => ({
-        ...data,
+      updateNodeData(id, 'constant_definition', {
         text_width: x1 - x0,
         min_height: y1 - y0,
-      }));
+      });
     }
   }, [id, screenToFlowPosition, textRef, updateNodeData]);
 
   function setName(newName: string) {
-    updateNodeData(id, (data) => ({
-      ...data,
-      location: { module: false, name: newName },
-    }));
+    updateNodeData(id, 'constant_definition', {
+      input: newName,
+    });
     updateDimData();
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const connections = show_handles
-    ? // eslint-disable-next-line react-hooks/rules-of-hooks
-      useNodeConnections({ handleId: 'output' })
-    : [];
-
   useEffect(() => {
-    const nodes = store.getNodes();
+    const nodes = getNodes();
     if (nodes.find((v) => v.id === id) == null) return;
     const change = updateParent(nodes, id);
 
@@ -138,37 +130,24 @@ export default function TideConstantDefinition(
       JSON.stringify(newPos) !==
         JSON.stringify({ x: positionAbsoluteX, y: positionAbsoluteY })
     ) {
-      store.onNodesChange([change]);
+      onNodesChange([change]);
     }
-  }, [data.dimensions, id, positionAbsoluteX, positionAbsoluteY, store]);
+  }, [
+    data.dimensions,
+    getNodes,
+    id,
+    onNodesChange,
+    positionAbsoluteX,
+    positionAbsoluteY,
+  ]);
 
-  useEffect(() => {
-    const newRoot =
-      connections.length === 0
-        ? undefined
-        : (getNode(store.getNodes(), connections[0].source)
-            ?.data as TamaroCard<TideNodeMetadata>);
-
-    if (
-      (newRoot == null && data.root == null) ||
-      (newRoot != null &&
-        data.root != null &&
-        newRoot.metadata.node_id === data.root!.metadata.node_id)
-    )
-      return;
-    updateNodeData(id, (data) => ({
-      ...data,
-      root: newRoot,
-    }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connections, id, store, updateNodeData]);
   useEffect(() => {
     if (initialized === 'done' && !thisInitialization.current) {
       updateDimData();
       thisInitialization.current = true;
-      onNodesChange([updateParent(store.nodes, id)]);
+      onNodesChange([updateParent(getNodes(), id)]);
     }
-  }, [initialized, store, id, onNodesChange, updateDimData]);
+  }, [initialized, id, onNodesChange, updateDimData, getNodes]);
 
   const dimension: Dimensions = (data.dimensions || {
     width: 100,

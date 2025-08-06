@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Value } from '../../src/tide/language/expression';
-import { SoundType } from '../../src/tide/language/typing';
+import { EvaluatedValueType, SoundType } from '../../src/tide/language/typing';
 
 function GraphicIcon({ data }: { data: string | undefined }) {
   const [dimension, setDimension] = useState(
@@ -72,21 +71,13 @@ function ColorIcon({
   );
 }
 
-export default function ResultIcon({ value = undefined }: { value?: Value }) {
-  switch (value?.type) {
-    case SoundType.Color:
-      return (
-        <ColorIcon
-          data={
-            value.data as
-              | { red: number; green: number; blue: number; alpha: number }
-              | undefined
-          }
-        />
-      );
-    case SoundType.Graphic:
-      return <GraphicIcon data={value.data as string | undefined} />;
-    default:
-      return undefined;
-  }
+export default function ResultIcon({
+  value = undefined,
+}: {
+  value?: EvaluatedValueType[SoundType];
+}) {
+  if (!value) return undefined;
+
+  if (typeof value === 'string') return <GraphicIcon data={value} />;
+  if (typeof value === 'object') return <ColorIcon data={value} />;
 }

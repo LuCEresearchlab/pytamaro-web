@@ -1,7 +1,7 @@
 import { Card, CardActions, CardContent, Input } from '@mui/material';
 import { useStore } from '../../src/tide/store';
 import { DragEvent, useEffect, useState } from 'react';
-import { FLOAT_REGEX, STR_REGEX, TideLiteral } from './cards/literal';
+import { TideLiteral } from './cards/literal';
 import { check_const_name } from './cards/constant_definition';
 import {
   FunctionNode,
@@ -9,13 +9,7 @@ import {
   TamaroCardNode,
   LiteralNode,
 } from './cards';
-import {
-  LiteralType,
-  SoundType,
-  UnsoundType,
-} from '../../src/tide/language/typing';
-import { TideSyntaxErrorInvalidLiteral_builder } from '../../src/tide/language/error_builders';
-import { INT_REGEX } from '../../src/tide/language/utils';
+import { LiteralType, SoundType } from '../../src/tide/language/typing';
 import {
   ImportedConstantDefinition,
   ImportedDefinition,
@@ -28,11 +22,16 @@ import {
   JudiciousConstant,
   JudiciousFunction,
 } from '../../src/schemas/documentation';
+import {
+  INT_REGEX,
+  FLOAT_REGEX,
+  STR_REGEX,
+} from '../../src/tide/language/phases/syntax';
 
 export function TidePalettePane({
   values,
 }: {
-  values: ImportedDefinition<TideJudiciousMetadata>[];
+  values: ImportedDefinition<TideJudiciousMetadata, 'evaluated'>[];
 }) {
   const { setDragged, reserved_names } = useStore();
 
@@ -109,11 +108,17 @@ export function TidePalettePane({
               el,
             ):
               | {
-                  def: ImportedFunctionDefinition<TideJudiciousMetadata>;
+                  def: ImportedFunctionDefinition<
+                    TideJudiciousMetadata,
+                    'evaluated'
+                  >;
                   el: FunctionNode['data'];
                 }
               | {
-                  def: ImportedConstantDefinition<TideJudiciousMetadata>;
+                  def: ImportedConstantDefinition<
+                    TideJudiciousMetadata,
+                    'evaluated'
+                  >;
                   el: ConstantNode['data'];
                 } => {
               switch (el.kind) {
@@ -121,13 +126,7 @@ export function TidePalettePane({
                   return {
                     def: el,
                     el: {
-                      children: new Map(),
-                      evaluated: false,
-                      location: el.location,
-                      kind: 'function_use',
-                      metadata: {
-                        node_id: '',
-                      },
+                      input: el.location.name,
                     } as FunctionNode['data'],
                   };
                   break;
@@ -136,12 +135,7 @@ export function TidePalettePane({
                   return {
                     def: el,
                     el: {
-                      kind: 'constant_use',
-                      evaluated: false,
-                      location: el.location,
-                      metadata: {
-                        node_id: '',
-                      },
+                      input: el.location.name,
                     } as ConstantNode['data'],
                   };
                   break;
@@ -155,10 +149,10 @@ export function TidePalettePane({
               style={{ userSelect: 'none' }}
               onDragStart={(e) => onDragStart(e, el)}
               draggable
-              key={el.location.module + '$' + el.location.name}
+              key={el.input}
             >
               <div style={{ pointerEvents: 'none' }}>
-                {el.kind === 'function_use' ? (
+                {def.kind === 'function_definition' ? (
                   <FunctionTamaroCard
                     el={def.metadata?.judicious as JudiciousFunction}
                     module={def.location.module}
@@ -175,28 +169,9 @@ export function TidePalettePane({
             </div>
           ))}
         {literals
-          .map(({ value, type }): LiteralNode['data'] => {
+          .map(({ value }): LiteralNode['data'] => {
             return {
-              evaluated: true,
-              kind: 'literal',
-              metadata: {
-                node_id: '',
-              },
-              str_value: value,
-              value:
-                type === UnsoundType.Bottom
-                  ? {
-                      type: UnsoundType.Bottom,
-                      error: TideSyntaxErrorInvalidLiteral_builder(value),
-                    }
-                  : {
-                      type: type,
-                      data: undefined,
-                      value: {
-                        expression: value,
-                        imports: [],
-                      },
-                    },
+              input: value,
             };
           })
           .map((el) => (
@@ -207,9 +182,9 @@ export function TidePalettePane({
                 onDragStart(e, el);
               }}
               draggable
-              key={el.str_value}
+              key={el.input}
             >
-              <div style={{ pointerEvents: 'none' }} data-dummy={el.str_value}>
+              <div style={{ pointerEvents: 'none' }} data-dummy={el.input}>
                 <TideLiteral data={el} show_handles={false} id='' />
               </div>
             </div>
@@ -221,15 +196,7 @@ export function TidePalettePane({
             style={{ userSelect: 'none' }}
             onDragStart={(e) => {
               onDragStart(e, {
-                evaluated: false,
-                kind: 'constant_use',
-                location: {
-                  module: false,
-                  name: constant_name,
-                },
-                metadata: {
-                  node_id: '',
-                },
+                input: constant_name,
               });
             }}
             draggable

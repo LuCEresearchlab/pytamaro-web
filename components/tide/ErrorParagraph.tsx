@@ -16,14 +16,10 @@ function getRawContent(annotation: TideError): {
           return { title, message: 'Constant identifier *{name}* is invalid.' };
         case 'invalid_function_identifier':
           return { title, message: 'Function identifier *{name}* is invalid.' };
-        case 'missing_parameter':
-          return { title, message: 'Missing argument for parameter *{name}*.' };
         case 'constant_has_no_value':
           return { title, message: 'Constant *{name}* has no value.' };
         case 'invalid_literal':
           return { title, message: 'Literal value *{value}* is invalid.' };
-        case 'node_kind_mismatch':
-          return { title, message: 'Node kind mismatch.' };
         default:
           return { title, message: 'Syntax error.' };
       }
@@ -42,6 +38,10 @@ function getRawContent(annotation: TideError): {
             title,
             message: 'The constant *{name}* is defined multiple times.',
           };
+        case 'missing_parameter':
+          return { title, message: 'Missing argument for parameter *{name}*.' };
+        case 'node_kind_mismatch':
+          return { title, message: 'Node kind mismatch.' };
         case 'cyclical_dependencies':
           return {
             title,

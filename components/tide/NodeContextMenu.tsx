@@ -16,14 +16,8 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
-import {
-  ConstantDefinitionNode,
-  ConstantNode,
-  TideNode,
-  TideNodeMetadata,
-} from './cards';
-import { EvaluatedTamaroCard, TamaroCard } from '../../src/tide/language/cards';
-import { find_dependencies } from '../../src/tide/language/evaluation';
+import { ConstantDefinitionNode, ConstantNode, TideNode } from './cards';
+import { useShallow } from 'zustand/shallow';
 
 export default function NodeContextMenu({
   id,
@@ -43,8 +37,14 @@ export default function NodeContextMenu({
 }) {
   const [openNameModal, setNameModalOpen] = useState(false);
   const { fitView } = useReactFlow();
-  const { getNodes, setNodes, getEdges, setEdges, evaluated_context } =
-    useStore();
+  const { getNodes, setNodes, getEdges, setEdges } = useStore(
+    useShallow((state) => ({
+      getNodes: state.getNodes,
+      setNodes: state.setNodes,
+      getEdges: state.getEdges,
+      setEdges: state.setEdges,
+    })),
+  );
 
   useEffect(() => {
     if (click_outside && !openNameModal) {
@@ -60,42 +60,15 @@ export default function NodeContextMenu({
       const descendants: string[] = getSubTreeFromRoot(nodes, edges, id);
 
       const existing_edge = edges.find((v) => v.source === id);
-      const node = getNode(nodes, id)!;
-      const { data } = node;
 
       const newNodeId = `${new Date().getTime()}-parent`;
 
       const newNode: ConstantDefinitionNode = {
         id: newNodeId,
         type: 'constant_definition',
-        data: (() => {
-          const retyped = data as TamaroCard<TideNodeMetadata>;
-          if (retyped.evaluated) {
-            return {
-              dependencies: find_dependencies(retyped, evaluated_context()),
-              evaluated: true,
-              location: { module: false, name },
-              kind: 'constant_definition',
-              subkind: 'local',
-              metadata: {
-                node_id: newNodeId,
-              },
-              root: retyped,
-              value: (retyped as EvaluatedTamaroCard<unknown>).value,
-            };
-          }
-          return {
-            dependencies: find_dependencies(retyped, evaluated_context()),
-            evaluated: false,
-            location: { module: false, name },
-            kind: 'constant_definition',
-            subkind: 'local',
-            metadata: {
-              node_id: newNodeId,
-            },
-            root: retyped,
-          };
-        })(),
+        data: {
+          input: name,
+        },
         position: { x: 0, y: 0 },
         zIndex: -100,
       };
@@ -105,12 +78,7 @@ export default function NodeContextMenu({
         id: replacedByNodeId,
         type: 'constant',
         data: {
-          kind: 'constant_use',
-          evaluated: false,
-          location: { module: false, name },
-          metadata: {
-            node_id: replacedByNodeId,
-          },
+          input: name,
         },
         position: getNode(nodes, id)!.position,
       };
@@ -154,15 +122,14 @@ export default function NodeContextMenu({
           ),
       );
     },
-    [getNodes, getEdges, id, setNodes, setEdges, evaluated_context],
+    [getNodes, getEdges, id, setNodes, setEdges],
   );
 
   const node = getNode(getNodes(), id);
 
   const constant_reference: string | undefined =
-    node?.type === 'constant' && node.data.location.name
-      ? getConstantDefinition(getNodes(), node?.data?.location.name as string)
-          ?.id
+    node?.type === 'constant'
+      ? getConstantDefinition(getNodes(), node?.data?.input)?.id
       : undefined;
 
   const goToParentDefinition = useCallback(() => {

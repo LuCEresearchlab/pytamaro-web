@@ -1,7 +1,5 @@
 import { NodeProps } from '@xyflow/react';
 import { TideNode } from '.';
-import { Value } from '../../../src/tide/language/expression';
-import { UnsoundType } from '../../../src/tide/language/typing';
 
 export default function TamaroWrapper({
   nodeprops,
@@ -10,19 +8,20 @@ export default function TamaroWrapper({
   nodeprops: NodeProps<TideNode>;
   el: JSX.Element;
 }) {
-  const value = nodeprops.data.evaluated
-    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ((nodeprops.data as any)['value'] as Value)
-    : undefined;
+  const node = nodeprops.data.tide_node;
 
-  const primary_error =
-    value && value.type === UnsoundType.Bottom && value.error !== false;
+  const error =
+    node && 'type' in node
+      ? typeof node.type === 'object' && 'error' in node.type
+        ? node.type.error
+        : node.type === false
+          ? false
+          : undefined
+      : undefined;
 
-  const secondary_error =
-    !primary_error &&
-    value &&
-    value.type === UnsoundType.Bottom &&
-    value.error === false;
+  const primary_error = error !== false;
+  const secondary_error = error === false;
+
   return (
     <div
       className={`${primary_error ? 'error-main-highlight ' : ''}${secondary_error ? 'error-secondary-highlight' : ''}`}

@@ -10,8 +10,8 @@ import {
   TamaroCard_FunctionUse,
   TamaroCard_Literal,
 } from '../../../src/tide/language/cards';
-import { LocalConstantDefinition } from '../../../src/tide/language/definitions';
 import TamaroWrapper from './wrapper';
+import { LocalConstantDefinition } from '../../../src/tide/language/definitions';
 
 export interface ImportReference {
   module: string;
@@ -36,31 +36,40 @@ export interface IImportedCardData extends ITamaroCardData {
 }
 
 export type ExtraneousNodeProps = { show_handles?: boolean };
-export type CommonNodeData = { parent?: string };
+export type CommonNodeData = {
+  parent?: string;
+};
 export type TideNodeMetadata = { node_id: string };
 
 export type FunctionNode = Node<
-  TamaroCard_FunctionUse<TideNodeMetadata> & CommonNodeData,
+  CommonNodeData & { input: string } & {
+    tide_node?: Omit<TamaroCard_FunctionUse<TideNodeMetadata>, 'children'>;
+  },
   'function'
 >;
 
 export type LiteralNode = Node<
-  TamaroCard_Literal<TideNodeMetadata> & CommonNodeData,
+  CommonNodeData & { input: string } & {
+    tide_node?: TamaroCard_Literal<TideNodeMetadata>;
+  },
   'literal'
 >;
 
 export type ConstantNode = Node<
-  TamaroCard_ConstantUse<TideNodeMetadata> & CommonNodeData,
+  CommonNodeData & { input: string } & {
+    tide_node?: TamaroCard_ConstantUse<TideNodeMetadata>;
+  },
   'constant'
 >;
 
 export type ConstantDefinitionNode = Node<
-  LocalConstantDefinition<TideNodeMetadata> &
-    CommonNodeData & {
-      text_width?: number;
-      min_height?: number;
-      dimensions?: Dimensions;
-    },
+  CommonNodeData & { input: string } & {
+    text_width?: number;
+    min_height?: number;
+    dimensions?: Dimensions;
+  } & {
+    tide_node?: LocalConstantDefinition<TideNodeMetadata, TideNodeMetadata>;
+  },
   'constant_definition'
 >;
 

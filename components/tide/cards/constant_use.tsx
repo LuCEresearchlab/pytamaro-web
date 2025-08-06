@@ -16,6 +16,11 @@ import { ReactElement } from 'react-markdown/lib/react-markdown';
 import { Location } from '../../../src/tide/language/types';
 import ResultIcon from '../ResultIcon';
 import { iconPath } from '../../documentation/utils';
+import { useShallow } from 'zustand/shallow';
+import {
+  EvaluatedValueType,
+  SoundType,
+} from '../../../src/tide/language/typing';
 
 const useMutationObserver = (
   ref: RefObject<Node>,
@@ -121,29 +126,32 @@ export function TideConstantUse({
   NodeProps<ConstantNode> & ExtraneousNodeProps,
   'id' | 'show_handles' | 'data'
 >) {
-  const i = data.location;
-  const updateNodeData = useStore((state) => state.updateNodeData);
-  const context = useStore((state) => state.evaluated_context);
+  const { updateNodeData } = useStore(
+    useShallow((state) => ({
+      updateNodeData: state.updateNodeData,
+      judicious: state.judicious,
+    })),
+  );
+
+  const i =
+    data.tide_node && 'location' in data.tide_node
+      ? (data.tide_node.location as Location)
+      : undefined;
 
   const setName = useCallback(
     (newName: string) => {
-      if (newName === i.name) return;
-      updateNodeData(id, (data) => ({
-        ...data,
-        location: {
-          module:
-            context().find((v) => v.location.name === newName)?.location
-              .module || false,
-          name: newName,
-        } as Location,
-      }));
+      if (newName === data.input) return;
+      updateNodeData(id, 'constant', { input: newName });
     },
-    [context, i.name, id, updateNodeData],
+    [data.input, id, updateNodeData],
   );
 
   const returnsIconRef = useRef() as React.MutableRefObject<HTMLDivElement>;
 
-  const value = data.evaluated && 'value' in data ? data.value : undefined;
+  const value =
+    data.tide_node && 'data' in data.tide_node
+      ? (data.tide_node.data as EvaluatedValueType[SoundType])
+      : undefined;
   const returns_icon = useMemo(() => {
     return ResultIcon({ value });
   }, [value]);
@@ -172,7 +180,7 @@ export function TideConstantUse({
     >
       <div className='pane_container drag-handle'>
         <div className='pane tamaro_card constant_card constant_card_pane'>
-          {i.module !== false && (
+          {i && i.module !== false && (
             <img
               className='card_library hovergroup hovergroup_marker'
               data-hovergroup={'library'}
@@ -204,7 +212,7 @@ export function TideConstantUse({
               onBlur={() => setEditing(false)}
             >
               <AutoWidthInput
-                value={i.name}
+                value={data.input}
                 onChange={(e) => setName(e.currentTarget.value)}
                 style={{
                   minWidth: '100%',

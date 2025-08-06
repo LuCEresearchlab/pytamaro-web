@@ -5,10 +5,6 @@ import { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-export const BOOL_REGEX = /(True)|(False)/;
-export const FLOAT_REGEX = /^-?[0-9]+(\.[0-9]*)?$/g;
-export const STR_REGEX = /^"([^\\"]|(\\")|\\\\)*"$/g;
-
 import '../../../style/tamaro_cards.css';
 
 // eslint-disable-next-line react/require-default-props
@@ -54,7 +50,7 @@ export function ContentEditableDiv(props: {
 export function TideLiteral({
   id,
   show_handles,
-  data: { str_value: value },
+  data: { input: value },
 }: Pick<
   NodeProps<LiteralNode> & ExtraneousNodeProps,
   'id' | 'show_handles' | 'data'
@@ -63,13 +59,8 @@ export function TideLiteral({
 
   const setValue = useCallback(
     (newValue: string) => {
-      updateNodeData(id, {
-        evaluated: false,
-        kind: 'literal',
-        metadata: {
-          node_id: id,
-        },
-        str_value: newValue,
+      updateNodeData(id, 'literal', {
+        input: newValue,
       } as LiteralNode['data']);
     },
     [id, updateNodeData],

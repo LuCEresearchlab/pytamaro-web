@@ -10,15 +10,25 @@ import { useStore } from '../../src/tide/store';
 import { getHandleDiv, getNode } from '../../src/tide/utils';
 import { TideNode } from './cards';
 import { useEffect, useState } from 'react';
-import { Value } from '../../src/tide/language/expression';
-import { UnsoundType } from '../../src/tide/language/typing';
+import {
+  ErrorType,
+  EvaluatedValueType,
+  SoundType,
+} from '../../src/tide/language/typing';
 import { getParameterName } from './cards/function';
 
-function getValue(node: TideNode): Value | undefined {
-  return node!.data.evaluated
-    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ((node!.data as any)['value'] as Value)
-    : undefined;
+function getValue(
+  node: TideNode['data'],
+): EvaluatedValueType[SoundType] | ErrorType | false | undefined {
+  const value =
+    node.tide_node && 'type' in node.tide_node
+      ? 'data' in node.tide_node
+        ? (node.tide_node.data as EvaluatedValueType[SoundType])
+        : 'error_phase' in node.tide_node
+          ? (node.tide_node.type as ErrorType | false)
+          : undefined
+      : undefined;
+  return value;
 }
 interface GetSmoothStepWithPaddingPathParams extends GetSmoothStepPathParams {
   padding: { source: number; target: number };
@@ -73,13 +83,14 @@ function CustomEdge({
       return;
     }
 
-    const sourceValue = getValue(sourceNode);
-    const targetValue = getValue(targetNode);
+    const sourceValue = getValue(sourceNode.data);
+    const targetValue = getValue(targetNode.data);
 
     setPrimaryError(
       targetValue != null &&
-        targetValue.type === UnsoundType.Bottom &&
-        targetValue.error !== false &&
+        targetValue !== false &&
+        typeof targetValue === 'object' &&
+        'error' in targetValue &&
         (Array.isArray(targetValue.error)
           ? targetValue.error
           : [targetValue.error]
@@ -90,11 +101,7 @@ function CustomEdge({
         ) != null,
     );
 
-    setSecondaryError(
-      !primary_error &&
-        sourceValue != null &&
-        sourceValue.type === UnsoundType.Bottom,
-    );
+    setSecondaryError(!primary_error && sourceValue != null);
   }, [
     source,
     primary_error,

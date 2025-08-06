@@ -24,6 +24,8 @@ import {
 } from './utils';
 import { updateParent } from './graph_toolbox';
 import {
+  CardType,
+  node_types,
   TamaroCardNode,
   TideNode,
   TideNodeMetadata,
@@ -34,6 +36,7 @@ import {
   EvaluatedDefinitions,
 } from './language/definitions';
 import { getDefaultContext } from '../../cypress/e2e/tide/data';
+import { JudiciousModule } from '../schemas/documentation';
 
 export interface DraggedElementData {
   type: string;
@@ -43,6 +46,8 @@ export interface DraggedElementData {
 let evaluation_timeout: NodeJS.Timeout | undefined = undefined;
 export interface GraphStateSlice {
   dragged: TamaroCardNode['data'] | undefined;
+  judicious: JudiciousModule[];
+  setJudicious(modules: JudiciousModule[]);
   initialized: 'before' | 'wait' | 'done';
   setInitialized: (v: 'before' | 'wait' | 'done') => void;
   evaluated_context: () => EvaluatedDefinitions<TideNodeMetadata>;
@@ -62,11 +67,13 @@ export interface GraphStateSlice {
   getNodes: () => TideNode[];
   getEdges: () => Edge[];
   setDragged: (dragged: TamaroCardNode['data'] | undefined) => void;
-  updateNodeData: (
+  updateNodeData: <
+    C extends TideNode['type'],
+    T extends TideNode & { type: C },
+  >(
     nodeId: string,
-    data:
-      | Record<string, unknown>
-      | ((data: Record<string, unknown>) => Record<string, unknown>),
+    card: C,
+    data: Partial<T['data']> | ((v: T['data']) => T['data']),
   ) => void;
 }
 
@@ -76,6 +83,10 @@ export const createGraphSlice: StateCreator<
   [],
   GraphStateSlice
 > = (set, get) => ({
+  judicious: [],
+  setJudicious: (modules: JudiciousModule[]) => {
+    set({ judicious: modules });
+  },
   fullscreen: false,
   setFullscreen: (value) => {
     set({ fullscreen: value });
@@ -372,7 +383,14 @@ export const createGraphSlice: StateCreator<
     get().onEdgesChange(compute_edge_change(get().edges, new_edges));
   },
   getEdges: () => get().edges,
-  updateNodeData: (nodeId, data) => {
+  updateNodeData: <
+    C extends TideNode['type'],
+    T extends TideNode & { type: C },
+  >(
+    nodeId: string,
+    _card: C,
+    data: Partial<T['data']> | ((v: T['data']) => T['data']),
+  ) => {
     const newData =
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       typeof data === 'function' ? data : (v: any) => ({ ...v, ...data });

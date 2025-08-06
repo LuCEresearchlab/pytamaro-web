@@ -5,8 +5,7 @@ import { StoreType, useStore } from '../../src/tide/store';
 import { getNode } from '../../src/tide/utils';
 import { ErrorBubble } from './Bubble';
 import { ErrorParagraph } from './ErrorParagraph';
-import { TideErrorValue, Value } from '../../src/tide/language/expression';
-import { UnsoundType } from '../../src/tide/language/typing';
+import { ErrorType } from '../../src/tide/language/typing';
 import { getHandleName } from './cards/function';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -65,7 +64,7 @@ export function createAnnotationComponents(
   const { edges, nodes, mousePosition } = store;
 
   const param =
-    (annotation.kind === 'syntax-error'
+    (annotation.kind === 'name-error'
       ? annotation.subkind === 'missing_parameter'
         ? annotation.args[0].value
         : undefined
@@ -202,7 +201,7 @@ export function createAnnotationComponents(
       </div>
     ) : undefined,
 
-    annotation.kind === 'syntax-error' &&
+    annotation.kind === 'name-error' &&
     annotation.subkind === 'missing_parameter' ? (
       <div
         style={{
@@ -225,14 +224,14 @@ export function AnnotationLayer() {
   const store = useStore();
   const { screenToFlowPosition } = useReactFlow();
   const values = store.nodes
-    .filter((v) => v.data.evaluated)
-    .map((v): [TideNodeMetadata, Value] => [
-      v.data.metadata,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (v.data as any).value as Value,
-    ])
-    .filter((v) => v[1].type === UnsoundType.Bottom && v[1].error !== false)
-    .map((v) => v as [TideNodeMetadata, TideErrorValue])
+    .map((v) => v.data.tide_node)
+    .map((v): [TideNodeMetadata, ErrorType | false] | undefined =>
+      v && 'error_phase' in v
+        ? [v!.metadata, v!.type as ErrorType | false]
+        : undefined,
+    )
+    .filter((v) => v)
+    .map((v) => v as [TideNodeMetadata, ErrorType])
     .map((v): [TideNodeMetadata, TideError][] =>
       Array.isArray(v[1].error)
         ? v[1].error.map((o) => [v[0], o])

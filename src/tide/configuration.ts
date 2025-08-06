@@ -7,7 +7,10 @@ export type ErrorLevels = 'prevent' | 'none' | 'warning' | 'highlight';
 export type ConfigurationState = {
   error_level: ErrorLevels;
   local_scale: boolean;
-  imported_definitions: ImportedDefinition<TideJudiciousMetadata>[];
+  imported_definitions: ImportedDefinition<
+    TideJudiciousMetadata,
+    'evaluated'
+  >[];
   functional_nodes_only: boolean;
   setConfiguration: (value: Partial<ConfigurationState>) => void;
 };

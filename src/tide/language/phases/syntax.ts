@@ -7,7 +7,7 @@ import {
   TideSyntaxErrorInvalidFunctionIdentifier_builder,
   TideSyntaxErrorInvalidLiteral_builder,
 } from '../error_builders';
-import { LiteralType, SoundType, UnsoundType } from '../typing';
+import { LiteralType, SoundType } from '../typing';
 
 const KEYWORDS: string[] = [
   'False',
