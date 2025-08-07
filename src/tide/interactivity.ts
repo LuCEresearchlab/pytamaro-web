@@ -1,16 +1,11 @@
-import { Edge, Node } from '@xyflow/react';
-import {
-  getHandleType,
-  getNode,
-  getParents,
-  getSubTreeFromRoot,
-} from './utils';
-import { TideNode, TideNodeMetadata } from '../../components/tide/cards';
+import { Edge } from '@xyflow/react';
+import { getHandleType, getNode, getSubTreeFromRoot } from './utils';
+import { TideNode } from '../../components/tide/cards';
 import { type_equality_rule } from './language/typing';
-import { EvaluatedDefinitions } from './language/definitions';
+import { Definition } from './language/definitions';
 
 export function check_edge_typing(
-  context: EvaluatedDefinitions<TideNodeMetadata>,
+  context: Definition<unknown, unknown, unknown, 'constructed'>[],
   nodes: TideNode[],
   source_id: string,
   source_handle: string,

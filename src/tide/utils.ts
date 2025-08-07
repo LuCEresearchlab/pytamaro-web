@@ -7,20 +7,12 @@ import {
 import { JudiciousFunction } from '../schemas/documentation';
 import {
   CardType,
-  ConstantDefinitionNode,
   FunctionNode,
   ImportReference,
-  node_types,
   TideNode,
-  TideNodeMetadata,
 } from '../../components/tide/cards';
-import {
-  EvaluatedDefinitions,
-  EvaluatedFunctionDefinition,
-} from './language/definitions';
-import { UnsoundType } from './language/typing';
-import { eqCard, eqLocation, getCardOutputType } from './language/utils';
-import { TamaroCard } from './language/cards';
+import { Definition } from './language/definitions';
+import { SoundType, UnsoundType } from './language/typing';
 
 export function getNode(nodes: TideNode[], id: string) {
   return nodes.find((v) => v.id === id);
@@ -107,20 +99,20 @@ export function getFunctionParameterRelative(
 }
 
 export function getHandleType(
-  context: EvaluatedDefinitions<TideNodeMetadata>,
+  definitions: Definition<unknown, unknown, unknown, 'constructed'>[],
   node: TideNode,
   handle: string,
 ) {
   if (handle === 'output')
-    return getCardOutputType(node.data as TamaroCard<unknown>);
+    if ('type' in node.data && typeof node.data.type === 'number') {
+      return node.data.type as SoundType;
+    } else return UnsoundType.Bottom;
 
   switch (node.type as CardType) {
     case 'function': {
       const { data } = node as FunctionNode;
-      const def = context.find((v) => eqLocation(v.location, data.location)) as
-        | EvaluatedFunctionDefinition<unknown>
-        | undefined;
-      if (!def) return UnsoundType.Bottom;
+      const def = definitions.find((v) => v.location.name === data.input);
+      if (!def || def.kind !== 'function_definition') return UnsoundType.Bottom;
       const arg_name = getParameterName(handle);
       const param = def.parameters.find((v) => v.name === arg_name);
       return param ? param.type : UnsoundType.Bottom;
@@ -169,25 +161,6 @@ export function getFunctionHandles(fn: JudiciousFunction) {
     .map((v) => ({ name: v.name, type: v.type }));
 }
 
-export function getAmountOfExpectConnections(node: TideNode) {
-  if (!node.type) return 'Unknown';
-
-  const type = node.type;
-
-  if (!Object.keys(node_types).includes(type)) return 'Unknown';
-
-  switch (node.type as CardType) {
-    case 'function': {
-      const data = (node as FunctionNode).data;
-      return data.children.size + 1;
-    }
-    case 'literal':
-      return 1;
-    case 'constant':
-      return 1;
-  }
-}
-
 export const TRANSPARENT_IMPORT: ImportReference = {
   module: 'pytamaro',
   name: 'transparent',
@@ -198,7 +171,7 @@ export function getConstantDefinition(
   name: string,
 ): TideNode | undefined {
   return nodes.find(
-    (v) => v.type === 'constant_definition' && v.data.location.name === name,
+    (v) => v.type === 'constant_definition' && v.data.input === name,
   );
 }
 
@@ -207,14 +180,12 @@ export function getConstantDefinitions(
   name: string,
 ): TideNode[] {
   return nodes.filter(
-    (v) => v.type === 'constant_definition' && v.data.location.name === name,
+    (v) => v.type === 'constant_definition' && v.data.input === name,
   );
 }
 
 export function getUsages(nodes: TideNode[], name: string): TideNode[] {
-  return nodes.filter(
-    (v) => v.type === 'constant' && v.data.location.name === name,
-  );
+  return nodes.filter((v) => v.type === 'constant' && v.data.input === name);
 }
 
 export function getAscendants(edges: Edge[], source: string): string[] {
@@ -256,7 +227,7 @@ export function arcToEdges(
       if (last.id !== '') edge_ids.push(last.id);
       const last_node = getNode(nodes, last.target);
       if (last_node?.type === 'constant_definition') {
-        const usages = getUsages(nodes, last_node.data.location.name as string);
+        const usages = getUsages(nodes, last_node.data.input as string);
 
         const good_usage = usages.find((v) =>
           inline_search(v.id, target, edge_ids.concat(blacklist)),
@@ -303,7 +274,7 @@ export function getSubTreeFromRootConsideringConstants(
     if (el.type === 'constant') {
       const definitions = getConstantDefinitions(
         nodes,
-        el.data.location.name as string,
+        el.data.input as string,
       );
       if (definitions.length !== 1) continue;
 
@@ -424,84 +395,6 @@ export function getDepth(
   if (!successor) return 0;
 
   return 1 + getDepth(getNode(nodes, successor.target)!, nodes, edges);
-}
-
-export function getUnevalutedChange(
-  nodes: TideNode[],
-  changes: NodeChange<TideNode>[],
-): string[] {
-  return changes
-    .map((v) => {
-      switch (v.type) {
-        case 'remove':
-          return v.id;
-        case 'replace': {
-          const id = v.id;
-          const before = getNode(nodes, id)!;
-          const after = v.item;
-
-          if (
-            before.data.kind !== 'constant_definition' &&
-            after.data.kind !== 'constant_definition'
-          )
-            if (
-              before.data.kind === 'function_use' ||
-              !eqCard(
-                before.data as TamaroCard<TideNodeMetadata>,
-                after.data as TamaroCard<TideNodeMetadata>,
-              )
-            )
-              return id;
-          if (JSON.stringify(before.data) !== JSON.stringify(after.data))
-            return id;
-          break;
-        }
-        case 'add':
-          return v.item.id;
-      }
-      return undefined;
-    })
-    .filter(Boolean)
-    .map((v) => v as string);
-}
-
-export function reconstructChildrenMap(
-  nodes: TideNode[],
-  edges: Edge[],
-): TideNode[] {
-  function aux(node: TideNode): TideNode {
-    switch (node.data.kind) {
-      case 'constant_definition': {
-        if (!node.data.root) return node;
-        const root_node = getNode(nodes, node.data.root.metadata.node_id);
-        return {
-          ...node,
-          data: {
-            ...node.data,
-            root: root_node ? aux(root_node).data : undefined,
-          } as ConstantDefinitionNode['data'],
-        } as ConstantDefinitionNode;
-      }
-      case 'function_use': {
-        const children = new Map(
-          getChildren(nodes, edges, node, true)
-            .entries()
-            .map(([k, v]) => [
-              getParameterName(k)!,
-              aux(v).data as TamaroCard<TideNodeMetadata>,
-            ]),
-        );
-
-        return {
-          ...node,
-          data: { ...node.data, children } as unknown,
-        } as TideNode;
-      }
-      default:
-        return node;
-    }
-  }
-  return nodes.map(aux);
 }
 
 export function getNodeDiv(node: string): HTMLDivElement | undefined {

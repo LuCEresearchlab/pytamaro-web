@@ -19,24 +19,18 @@ import {
   compute_node_change,
   getNode,
   getSubTreeFromRoot,
-  getUnevalutedChange,
-  reconstructChildrenMap,
 } from './utils';
 import { updateParent } from './graph_toolbox';
 import {
-  CardType,
-  node_types,
   TamaroCardNode,
   TideNode,
   TideNodeMetadata,
 } from '../../components/tide/cards';
-import { evaluation, propagate_unevaluation } from './evaluation';
-import {
-  EvaluatedConstantDefinition,
-  EvaluatedDefinitions,
-} from './language/definitions';
-import { getDefaultContext } from '../../cypress/e2e/tide/data';
+import { construct, evaluation, synchronous_phases } from './evaluation';
+import { Definition } from './language/definitions';
 import { JudiciousModule } from '../schemas/documentation';
+import { TideJudiciousMetadata } from './judiciours_to_tide';
+import { toFlat } from './language/utils';
 
 export interface DraggedElementData {
   type: string;
@@ -45,12 +39,17 @@ export interface DraggedElementData {
 
 let evaluation_timeout: NodeJS.Timeout | undefined = undefined;
 export interface GraphStateSlice {
-  dragged: TamaroCardNode['data'] | undefined;
+  dragged: Pick<TamaroCardNode, 'data' | 'type'> | undefined;
   judicious: JudiciousModule[];
-  setJudicious(modules: JudiciousModule[]);
+  setJudicious: (modules: JudiciousModule[]) => void;
   initialized: 'before' | 'wait' | 'done';
   setInitialized: (v: 'before' | 'wait' | 'done') => void;
-  evaluated_context: () => EvaluatedDefinitions<TideNodeMetadata>;
+  evaluated_context: () => Definition<
+    TideNodeMetadata,
+    TideNodeMetadata,
+    TideJudiciousMetadata,
+    'evaluated'
+  >[];
   nodes: TideNode[];
   edges: Edge[];
   mousePosition: XYPosition;
@@ -66,7 +65,9 @@ export interface GraphStateSlice {
   setEdges: (edges: Edge[]) => void;
   getNodes: () => TideNode[];
   getEdges: () => Edge[];
-  setDragged: (dragged: TamaroCardNode['data'] | undefined) => void;
+  setDragged: (
+    dragged: Pick<TamaroCardNode, 'type' | 'data'> | undefined,
+  ) => void;
   updateNodeData: <
     C extends TideNode['type'],
     T extends TideNode & { type: C },
@@ -103,37 +104,39 @@ export const createGraphSlice: StateCreator<
   mousePosition: { x: 0, y: 0 },
   setMousePosition: (v) => set({ mousePosition: v }),
   evaluated_context: () => {
-    return (
-      getDefaultContext() as unknown as EvaluatedConstantDefinition<TideNodeMetadata>[]
-    ).concat(
-      get()
-        .nodes.filter(
-          (v) =>
-            v &&
-            v.data &&
-            v.data.kind === 'constant_definition' &&
-            v.data.evaluated,
-        )
-        .map((v) => v.data as EvaluatedConstantDefinition<TideNodeMetadata>),
-    );
+    return get()
+      .imported_definitions.map(
+        (v) =>
+          v as Definition<
+            TideNodeMetadata,
+            TideNodeMetadata,
+            TideJudiciousMetadata,
+            'evaluated'
+          >,
+      )
+      .concat(
+        get()
+          .nodes.filter(
+            (v) =>
+              v &&
+              v.data &&
+              v.type === 'constant_definition' &&
+              v.data.tide_node &&
+              'code_element' in v.data.tide_node,
+          )
+          .map(
+            (v) =>
+              v.data.tide_node! as Definition<
+                TideNodeMetadata,
+                TideNodeMetadata,
+                TideJudiciousMetadata,
+                'evaluated'
+              >,
+          ),
+      );
   },
   onNodesChange: (raw_changes) => {
-    const { nodes: befores, edges } = get();
-
-    const previous_uneval = befores
-      .filter((v) => !v.data.evaluated)
-      .map((v) => v.id);
-
-    const current_uneval_origin = getUnevalutedChange(
-      befores,
-      raw_changes,
-    ).concat(previous_uneval);
-
-    const current_uneval = propagate_unevaluation(
-      befores,
-      edges,
-      ...current_uneval_origin,
-    );
+    const { nodes: befores } = get();
 
     const parents_to_update: Set<string> = new Set();
 
@@ -195,11 +198,7 @@ export const createGraphSlice: StateCreator<
     );
 
     set({
-      nodes: applyNodeChanges(changes_step_2, befores).map((v) =>
-        !current_uneval.includes(v.id)
-          ? v
-          : ({ ...v, data: { ...v.data, evaluated: false } } as TideNode),
-      ),
+      nodes: applyNodeChanges(changes_step_2, befores),
     });
     const afters = get().nodes;
 
@@ -220,39 +219,77 @@ export const createGraphSlice: StateCreator<
               : afters.find((v) => change.id === v.id),
         });
       });
-    if (
-      true &&
-      ((previous_uneval.length === current_uneval_origin.length &&
-        previous_uneval.length > 0 &&
-        evaluation_timeout == null) ||
-        current_uneval_origin.length > previous_uneval.length)
-    ) {
-      if (evaluation_timeout) clearTimeout(evaluation_timeout);
-      evaluation_timeout = setTimeout(
-        async () => {
-          const prev = evaluation_timeout;
-          const { nodes, edges } = get();
-          const evaluated = new Map(
-            (await evaluation(nodes, edges)).map((v) => [v.id, v.data]),
-          );
-          if (prev !== evaluation_timeout || !evaluation_timeout) return;
-          evaluation_timeout = undefined;
 
-          set((state) => {
-            return {
-              nodes: state.nodes.map(
-                (v) =>
-                  ({
-                    ...v,
-                    data: evaluated.get(v.id),
-                  }) as TideNode,
-              ),
-            };
-          });
-        },
-        get().initialized === 'done' ? 200 : 1000,
+    const constructed = construct(
+      get().imported_definitions,
+      get().nodes,
+      get().edges,
+    );
+
+    const sync = synchronous_phases(constructed);
+
+    const flat_sync = sync.expressions
+      .map(toFlat)
+      .flat()
+      .map((v) => v as { metadata: TideNodeMetadata })
+      .concat(
+        sync.local_definitions.map((v) => (v.root ? [v, v.root] : [v])).flat(),
       );
-    }
+
+    set((state) => {
+      return {
+        nodes: state.nodes.map((node) => {
+          const el = flat_sync.find((v) => v.metadata.node_id === node.id);
+          if (!el) return node;
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              tide_node: el,
+            },
+          } as TideNode;
+        }),
+      };
+    });
+
+    if (evaluation_timeout) clearTimeout(evaluation_timeout);
+
+    evaluation_timeout = setTimeout(
+      async () => {
+        const prev = evaluation_timeout;
+
+        const async = await evaluation(sync);
+        if (prev !== evaluation_timeout || !evaluation_timeout) return;
+        evaluation_timeout = undefined;
+
+        const flat_async = async.expressions
+          .map(toFlat)
+          .flat()
+          .map((v) => v as { metadata: TideNodeMetadata })
+          .concat(
+            async.local_definitions
+              .map((v) => (v.root ? [v, v.root] : [v]))
+              .flat(),
+          );
+
+        set((state) => {
+          return {
+            nodes: state.nodes.map((node) => {
+              const el = flat_async.find((v) => v.metadata.node_id === node.id);
+              if (!el) return node;
+              return {
+                ...node,
+                data: {
+                  ...node.data,
+                  tide_node: el,
+                },
+              } as TideNode;
+            }),
+          };
+        });
+      },
+      get().initialized === 'done' ? 200 : 1000,
+    );
   },
   onEdgesChange: (changes) => {
     const befores = get().edges;
@@ -372,7 +409,7 @@ export const createGraphSlice: StateCreator<
       },
     ]);
   },
-  setDragged: (dragged: TamaroCardNode['data'] | undefined) => {
+  setDragged: (dragged: Pick<TamaroCardNode, 'type' | 'data'> | undefined) => {
     set({ dragged });
   },
   setNodes: (new_nodes) => {
@@ -422,10 +459,6 @@ export const useStore = create<StoreType>()(
           if (!state) return;
 
           state.setInitialized('wait');
-
-          const { nodes, edges } = state!;
-
-          state.setNodes(reconstructChildrenMap(nodes, edges));
 
           state.setInitialized('done');
         };

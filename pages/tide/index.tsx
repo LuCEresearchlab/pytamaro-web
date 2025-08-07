@@ -39,17 +39,6 @@ function View() {
 
   const store = useStore();
 
-  const documentation = useJudiciousDocData(
-    Array.from(
-      new Set(
-        store
-          .evaluated_context()
-          .map((v) => v.location.module)
-          .filter((v) => v !== false),
-      ),
-    ),
-  );
-
   const {
     edges,
     nodes,
@@ -62,6 +51,7 @@ function View() {
     fullscreen,
     setFullscreen,
     mousePosition,
+    judicious: documentation,
   } = store;
 
   const onNodeContextMenu: NodeMouseHandler = useCallback(
@@ -82,53 +72,32 @@ function View() {
     [setMenu],
   );
 
-  type Error = [TideNodeMetadata, TideErrorValue];
+  type Error = [TideNodeMetadata, ErrorType];
   const [availabilities, setAvailabilities] = useState({
-    error: undefined as Error[] | undefined,
+    error: undefined as [TideNodeMetadata, TideError | false][] | undefined,
     documentation: undefined as JudiciousModuleElement | undefined,
   });
 
   useEffect(() => {
     setAvailabilities({
       error: (() => {
-        const errors: Error[] = nodes
-          .map((v) => (v as TideNode).data)
-          .filter((v) => {
-            switch (v.kind) {
-              case 'constant_definition':
-                return (
-                  v.evaluated &&
-                  (v as EvaluatedLocalDefinition<TideNodeMetadata>).value
-                    .type === UnsoundType.Bottom
-                );
-              case 'literal':
-              case 'constant_use':
-              case 'function_use':
-                return (
-                  v.evaluated &&
-                  (v as EvaluatedTamaroCard<TideNodeMetadata>).value.type ===
-                    UnsoundType.Bottom
-                );
-            }
-          })
-          .map((v) => {
-            switch (v.kind) {
-              case 'constant_definition':
-                return [
-                  v.metadata,
-                  (v as EvaluatedLocalDefinition<TideNodeMetadata>)
-                    .value as TideErrorValue,
-                ];
-              case 'literal':
-              case 'constant_use':
-              case 'function_use':
-                return [
-                  v.metadata,
-                  (v as EvaluatedTamaroCard<TideNodeMetadata>)
-                    .value as TideErrorValue,
-                ];
-            }
-          });
+        const errors = nodes
+          .map((v) => v.data.tide_node)
+          .map((v): [TideNodeMetadata, ErrorType | false] | undefined =>
+            v && 'error_phase' in v
+              ? [v!.metadata, v!.type as ErrorType | false]
+              : undefined,
+          )
+          .filter((v) => v)
+          .map((v) => v as [TideNodeMetadata, ErrorType | false])
+          .map((v): [TideNodeMetadata, TideError | false][] =>
+            v[1] === false
+              ? [[v[0], false]]
+              : Array.isArray(v[1].error)
+                ? v[1].error.map((o) => [v[0], o])
+                : [[v[0], v[1].error as TideError]],
+          )
+          .reduce((a, b) => a.concat(b), []);
         return errors.length === 0 ? undefined : errors;
       })(),
       documentation: (() => {
@@ -140,7 +109,7 @@ function View() {
         const data = node.data;
         if (!('location' in data)) return;
 
-        const { module, name } = data.location;
+        const { module, name } = data.location as Location;
         if (module === false) return;
 
         const result = documentation
@@ -325,13 +294,8 @@ function View() {
               }}
             >
               {availabilities.error
-                .filter((v) => v[1].error !== false)
-                .map((v): [TideNodeMetadata, TideError][] =>
-                  Array.isArray(v[1].error)
-                    ? v[1].error.map((o) => [v[0], o])
-                    : [[v[0], v[1].error as TideError]],
-                )
-                .reduce((a, b) => a.concat(b), [])
+                .filter((v) => v[1] !== false)
+                .map((v) => v as [TideNodeMetadata, TideError])
                 .map((v, i) => (
                   <div
                     style={{
@@ -480,9 +444,6 @@ import {
 } from '../../src/schemas/documentation';
 import { translationProps } from '../../src/serverSideTranslationProps';
 import { executeOnServer } from '../../src/useActivity';
-import { TideErrorValue } from '../../src/tide/language/expression';
-import { UnsoundType } from '../../src/tide/language/typing';
-import { EvaluatedTamaroCard } from '../../src/tide/language/cards';
 import { getNode } from '../../src/tide/utils';
 import { ErrorParagraph } from '../../components/tide/ErrorParagraph';
 import { TideError } from '../../src/tide/language/errors';
@@ -490,15 +451,15 @@ import useJudiciousDocData, {
   allKinds,
   modules_keys,
 } from '../../src/documentation';
-import {
-  EvaluatedLocalDefinition,
-  ImportedDefinition,
-} from '../../src/tide/language/definitions';
+import { ImportedDefinition } from '../../src/tide/language/definitions';
 import {
   TideJudiciousMetadata,
   toTideConstant,
   toTideFunction,
 } from '../../src/tide/judiciours_to_tide';
+import { ErrorType } from '../../src/tide/language/typing';
+import { Location } from '../../src/tide/language/types';
+import { evaluation, synchronous_phases } from '../../src/tide/evaluation';
 
 function TidePage() {
   const [source, setSource] = useState('from pytamaro import *');
@@ -577,25 +538,37 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
             .filter((v) => v),
         )
         .flat()
-        .map((v) => v as ImportedDefinition<TideJudiciousMetadata>);
+        .map(
+          (v) => v as ImportedDefinition<TideJudiciousMetadata, 'constructed'>,
+        );
+
+      const sorted = result.toSorted((a, b) => {
+        const v_a =
+          a.kind === 'function_definition'
+            ? allKinds.function.priority
+            : allKinds.constant.priority;
+        const v_b =
+          b.kind === 'function_definition'
+            ? allKinds.function.priority
+            : allKinds.constant.priority;
+        if (
+          a.kind === 'function_definition' &&
+          b.kind === 'function_definition'
+        )
+          return a.parameters.length - b.parameters.length;
+        return v_b - v_a;
+      });
+
+      const imported = await evaluation(
+        synchronous_phases({
+          imported_definitions: sorted,
+          expressions: [],
+          local_definitions: [],
+        }),
+      ).then((v) => v.imported_definitions);
 
       setConfiguration({
-        imported_definitions: result.toSorted((a, b) => {
-          const v_a =
-            a.kind === 'function_definition'
-              ? allKinds.function.priority
-              : allKinds.constant.priority;
-          const v_b =
-            b.kind === 'function_definition'
-              ? allKinds.function.priority
-              : allKinds.constant.priority;
-          if (
-            a.kind === 'function_definition' &&
-            b.kind === 'function_definition'
-          )
-            return a.parameters.length - b.parameters.length;
-          return v_b - v_a;
-        }),
+        imported_definitions: imported,
       });
     },
     [modules, setConfiguration],

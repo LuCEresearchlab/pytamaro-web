@@ -1,204 +1,223 @@
-import { Definitions, EvaluatedDefinition } from './language/definitions';
+import { ImportedDefinition, LocalDefinition } from './language/definitions';
 import {
   ConstantDefinitionNode,
   TamaroCardNode,
   TideNode,
   TideNodeMetadata,
 } from '../../components/tide/cards';
-import { getConstantDefinitions, getNode, getUsages } from './utils';
-import { evaluate_context, evaluate_tree } from './language/evaluation';
-import {
-  EvaluatedTamaroCard_FunctionUse,
-  NonEvaluatedTamaroCard_FunctionUse,
-  TamaroCard,
-} from './language/cards';
+import { getNode } from './utils';
+import { TamaroCard } from './language/cards';
 
-import { toFlat } from './language/utils';
 import { Edge } from '@xyflow/react';
-import { getDefaultContext } from '../../cypress/e2e/tide/data';
+import { ProgramState } from './language/phases';
+import { getParameterName } from '../../components/tide/cards/function';
+import {
+  TideJudiciousMetadata,
+  toTideConstant,
+  toTideFunction,
+} from './judiciours_to_tide';
+import { JudiciousConstant, JudiciousFunction } from '../schemas/documentation';
+import name_checked_phase from './language/phases/name';
+import syntax_checked_phase from './language/phases/syntax';
+import type_checked_phase from './language/phases/type';
+import code_element_phase from './language/phases/code_element';
+import code_created_phase from './language/phases/code_created';
+import evaluated_phase from './language/phases/evaluation';
 
-export function roots(nodes: TideNode[], edges: Edge[]) {
-  const not_roots = new Set(edges.map((v) => v.source));
-  return nodes.filter((v) => !not_roots.has(v.id));
+function nodeToExpression(
+  v: TamaroCardNode,
+): TamaroCard<TideNodeMetadata, 'unconstructed'> {
+  return {
+    kind:
+      v.type === 'constant'
+        ? 'constant_use'
+        : v.type === 'function'
+          ? 'function_use'
+          : 'literal',
+    metadata: { node_id: v.id },
+  };
 }
 
-export function evaluated_context(nodes: TideNode[], edges: Edge[]) {
-  return (
-    getDefaultContext() as unknown as EvaluatedDefinition<TideNodeMetadata>[]
-  ).concat(
-    roots(nodes, edges)
-      .filter((v) => v.type === 'constant_definition')
-      .map((v) => v as ConstantDefinitionNode)
-      .map((v) => v.data)
-      .filter((v) => v.evaluated)
-      .map((v) => v as EvaluatedDefinition<TideNodeMetadata>),
-  );
-}
-
-export function propagate_unevaluation(
+export function tide_unconstructed(
+  imported_definitions: ImportedDefinition<TideJudiciousMetadata>[],
   nodes: TideNode[],
   edges: Edge[],
-  ...ids: string[]
-): string[] {
-  const to_uneval = new Set<string>();
-  const stack: TideNode['data'][] = ids
-    .map((v) => getNode(nodes, v)?.data)
-    .filter((v) => v)
-    .map((v) => v as TideNode['data']);
+): ProgramState<
+  TideNodeMetadata,
+  TideNodeMetadata,
+  TideJudiciousMetadata,
+  'unconstructed'
+> {
+  const not_roots = new Set(edges.map((v) => v.source));
+  const roots = nodes.filter((v) => !not_roots.has(v.id));
 
-  while (stack.length !== 0) {
-    const data = stack.pop()!;
+  const local = roots
+    .filter((v) => v.type === 'constant_definition')
+    .map((v) => v as ConstantDefinitionNode);
 
-    if (to_uneval.has(data.metadata.node_id)) continue;
-    to_uneval.add(data.metadata.node_id);
+  const expressions = roots
+    .filter((v) => v.type !== 'constant_definition')
+    .map((v) => v as TamaroCardNode);
 
-    const successor = edges.find(
-      (v) => v.source === data.metadata.node_id,
-    )?.target;
-
-    if (successor) stack.push(getNode(nodes, successor)!.data);
-    if (data.kind === 'constant_definition') {
-      stack.push(...getUsages(nodes, data.location.name).map((v) => v.data));
-      stack.push(
-        ...getConstantDefinitions(nodes, data.location.name).map((v) => v.data),
-      );
-    }
-  }
-
-  return Array.from(to_uneval);
+  return {
+    imported_definitions,
+    expressions: expressions.map(nodeToExpression),
+    local_definitions: local.map((v) => ({
+      kind: 'constant_definition',
+      subkind: 'local',
+      metadata: { node_id: v.id },
+    })),
+  };
 }
 
-function updateTreeInsideNodes(nodes: TideNode[]) {
-  const updated_map = new Map<string, TideNode>();
-
-  function aux(node: TideNode): TideNode {
-    if (updated_map.has(node.data.metadata.node_id))
-      return updated_map.get(node.data.metadata.node_id)!;
-    switch (node.type) {
-      case 'constant':
-      case 'literal': {
-        updated_map.set(node.id, node);
-        return node;
-      }
-      case 'constant_definition': {
-        const root = node.data.root
-          ? getNode(nodes, node.data.root.metadata.node_id)
-          : undefined;
-        if (!root) {
-          updated_map.set(node.id, node);
-          return node;
-        }
-
-        const root_data: TamaroCard<TideNodeMetadata> | undefined = aux(root)
-          ?.data as TamaroCard<TideNodeMetadata> | undefined;
-
-        const newNode: ConstantDefinitionNode = {
-          ...node,
-          data: {
-            ...node.data,
-            root: root_data,
-          } as ConstantDefinitionNode['data'],
-        };
-        updated_map.set(node.id, newNode);
-
-        return newNode;
-      }
-      case 'function': {
-        const children: Map<string, TamaroCardNode['data']> = new Map(
-          node.data.children
-            .entries()
-            .map(([k, v]): [string, TamaroCardNode['data']] => {
-              const node = getNode(nodes, v.metadata.node_id) as TamaroCardNode;
-              const updated: TamaroCardNode['data'] | undefined = node
-                ? (aux(node)?.data as TamaroCardNode['data'])
-                : undefined;
-
-              if (updated) return [k, updated];
-              return [k, v];
-            }),
-        );
-
-        const children_uneval =
-          children.values().find((v) => !v.evaluated) !== undefined;
-
-        if (node.data.evaluated && !children_uneval) {
-          updated_map.set(node.id, {
-            ...node,
-            type: 'function',
-            data: {
-              ...node.data,
-              evaluated: true,
-              children: children,
-            } as EvaluatedTamaroCard_FunctionUse<TideNodeMetadata>,
-          });
-        } else {
-          updated_map.set(node.id, {
-            ...node,
-            type: 'function',
-            data: {
-              ...node.data,
-              evaluated: false,
-              children: children,
-            } as NonEvaluatedTamaroCard_FunctionUse<TideNodeMetadata>,
-          });
-        }
-        return updated_map.get(node.id)!;
-      }
-    }
-  }
-
-  return nodes.map((v) => aux(v));
-}
-
-export async function evaluation(
-  _nodes: TideNode[],
+function constructed_phase(
+  nodes: TideNode[],
   edges: Edge[],
-): Promise<TideNode[]> {
-  const nodes = updateTreeInsideNodes(_nodes);
+  {
+    expressions,
+    imported_definitions,
+    local_definitions,
+  }: ProgramState<
+    TideNodeMetadata,
+    TideNodeMetadata,
+    TideJudiciousMetadata,
+    'unconstructed'
+  >,
+): ProgramState<
+  TideNodeMetadata,
+  TideNodeMetadata,
+  TideJudiciousMetadata,
+  'constructed'
+> {
+  function construct_local_definitions(
+    card: LocalDefinition<TideNodeMetadata, TideNodeMetadata, 'unconstructed'>,
+  ): LocalDefinition<TideNodeMetadata, TideNodeMetadata, 'constructed'> {
+    const node = getNode(nodes, card.metadata.node_id)!;
+    const local_root = edges
+      .filter((v) => v.target === node.id)
+      .map((v) => getNode(nodes, v.source)! as TamaroCardNode)
+      .map((v) => construct_expression(nodeToExpression(v)))
+      .find(() => true);
 
-  const nodes_context: Definitions<TideNodeMetadata> = (
-    getDefaultContext() as Definitions<TideNodeMetadata>
-  ).concat(
-    nodes
-      .filter((v) => v.data.kind === 'constant_definition')
-      .map((v) => (v as ConstantDefinitionNode).data),
-  );
-
-  const context = await evaluate_context(nodes_context);
-
-  const all_evaluated: TideNode[] = await Promise.all(
-    roots(nodes, edges).map(async (v): Promise<TideNode['data']> => {
-      if (v.data.kind === 'constant_definition') {
-        const context_data = context
-          .filter((v) => v.subkind === 'local')
-          .find((def) => def.metadata.node_id === v.id);
-        return { ...v.data, ...context_data } as ConstantDefinitionNode['data'];
-      }
-      return await evaluate_tree(
-        v.data as TamaroCard<TideNodeMetadata>,
-        context,
-      );
-    }),
-  ).then((array) => {
-    return array
-      .map((v) => v as TideNode['data'])
-      .map((v): TideNode['data'][] => {
-        return v.kind === 'constant_definition'
-          ? (v.root ? (toFlat(v.root) as TideNode['data'][]) : []).concat([v])
-          : toFlat(v as TamaroCard<TideNodeMetadata>);
-      })
-      .reduce((a, b) => a.concat(b), [])
-      .map((v) => {
-        const node = nodes.find((node) => node.id === v.metadata.node_id)!;
+    switch (card.kind) {
+      case 'constant_definition':
         return {
-          ...node,
-          data: {
-            ...node.data,
-            ...v,
-          },
-        } as TideNode;
-      });
-  });
+          ...card,
+          location: { module: false, name: node.data.input },
+          root: local_root,
+        };
+      case 'function_definition': {
+        throw new Error('Not supported yet');
+      }
+    }
+  }
 
-  return all_evaluated;
+  function construct_imported_definitions(
+    def: ImportedDefinition<TideJudiciousMetadata, 'unconstructed'>,
+  ): ImportedDefinition<TideJudiciousMetadata, 'constructed'> {
+    switch (def.kind) {
+      case 'constant_definition': {
+        return toTideConstant(
+          def.metadata.judicious as JudiciousConstant,
+          def.metadata.module,
+        );
+      }
+      case 'function_definition': {
+        return toTideFunction(
+          def.metadata.judicious as JudiciousFunction,
+          def.metadata.module,
+        );
+      }
+    }
+  }
+
+  function construct_expression(
+    card: TamaroCard<TideNodeMetadata, 'unconstructed'>,
+  ): TamaroCard<TideNodeMetadata, 'constructed'> {
+    const node = getNode(nodes, card.metadata.node_id)!;
+    switch (card.kind) {
+      case 'function_use': {
+        return {
+          ...card,
+          function_name: node.data.input,
+          children: new Map(
+            edges
+              .filter((v) => v.target === card.metadata.node_id)
+              .map((v) => [
+                getParameterName(v.targetHandle!)!,
+                construct_expression(
+                  nodeToExpression(getNode(nodes, v.source)! as TamaroCardNode),
+                ),
+              ]),
+          ),
+        };
+      }
+      case 'constant_use': {
+        return {
+          ...card,
+          constant_name: node.data.input,
+        };
+      }
+      case 'literal':
+        return {
+          ...card,
+          input: node.data.input,
+        };
+    }
+  }
+
+  return {
+    expressions: expressions.map(construct_expression),
+    local_definitions: local_definitions.map(construct_local_definitions),
+    imported_definitions: imported_definitions.map(
+      construct_imported_definitions,
+    ),
+  };
+}
+
+export function construct(
+  imported_definitions: ImportedDefinition<TideJudiciousMetadata>[],
+  nodes: TideNode[],
+  edges: Edge[],
+) {
+  const state = tide_unconstructed(imported_definitions, nodes, edges);
+  return constructed_phase(nodes, edges, state);
+}
+
+export function synchronous_phases(
+  state: ProgramState<
+    TideNodeMetadata,
+    TideNodeMetadata,
+    TideJudiciousMetadata,
+    'constructed'
+  >,
+): ProgramState<
+  TideNodeMetadata,
+  TideNodeMetadata,
+  TideJudiciousMetadata,
+  'code_created'
+> {
+  return code_created_phase(
+    code_element_phase(
+      type_checked_phase(name_checked_phase(syntax_checked_phase(state))),
+    ),
+  );
+}
+
+export function evaluation(
+  state: ProgramState<
+    TideNodeMetadata,
+    TideNodeMetadata,
+    TideJudiciousMetadata,
+    'code_created'
+  >,
+): Promise<
+  ProgramState<
+    TideNodeMetadata,
+    TideNodeMetadata,
+    TideJudiciousMetadata,
+    'evaluated'
+  >
+> {
+  return evaluated_phase(state);
 }

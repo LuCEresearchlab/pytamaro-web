@@ -28,7 +28,7 @@ type DestinationState<U, Tlocal, Timport> = ProgramState<
   'type_checked'
 >;
 
-export default function type_pahse<U, Tlocal, Timport>(
+export default function type_checked_phase<U, Tlocal, Timport>(
   base: SourceState<U, Tlocal, Timport>,
 ): DestinationState<U, Tlocal, Timport> {
   const previous_definitions = base.imported_definitions

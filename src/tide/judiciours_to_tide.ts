@@ -9,7 +9,7 @@ import {
   ImportedFunctionDefinition,
 } from './language/definitions';
 import { FunctionParameter } from './language/types';
-import { SoundType, UnsoundType, ValueType } from './language/typing';
+import { SoundType, UnsoundType } from './language/typing';
 
 function toEnglishName(name: string): string | undefined {
   return Object.entries(translation_object).find((v) =>
@@ -45,9 +45,12 @@ const translation_object = {
   },
 };
 
-export type TideJudiciousMetadata = { judicious: JudiciousElement };
+export type TideJudiciousMetadata = {
+  judicious: JudiciousElement;
+  module: string;
+};
 
-export function toTideType(v?: string): ValueType {
+export function toTideType(v?: string): SoundType | UnsoundType {
   const translated_type = v ? toEnglishName(v) : undefined;
 
   return translated_type === 'Graphic'
@@ -68,7 +71,7 @@ export function toTideParameter(p: JudiciousParameter): FunctionParameter {
 
   const translated_type = toEnglishName(type);
 
-  const parsed_type: ValueType | undefined = toTideType(translated_type);
+  const parsed_type: SoundType | UnsoundType = toTideType(translated_type);
 
   if (parsed_type === UnsoundType.Bottom)
     throw new Error(`Could not parse judicious type ${type}`);
@@ -81,7 +84,7 @@ export function toTideParameter(p: JudiciousParameter): FunctionParameter {
 export function toTideFunction(
   f: JudiciousFunction,
   module: string,
-): ImportedFunctionDefinition<TideJudiciousMetadata> {
+): ImportedFunctionDefinition<TideJudiciousMetadata, 'constructed'> {
   const parameters = f.parameters
     .filter((v) => !v.default)
     .map(toTideParameter);
@@ -93,11 +96,11 @@ export function toTideFunction(
   return {
     location,
     parameters,
-    evaluated_type: return_type,
+    type: return_type,
     kind: 'function_definition',
     subkind: 'imported',
-    evaluated: true,
     metadata: {
+      module,
       judicious: f,
     },
   };
@@ -106,17 +109,17 @@ export function toTideFunction(
 export function toTideConstant(
   c: JudiciousConstant,
   module: string,
-): ImportedConstantDefinition<TideJudiciousMetadata> {
+): ImportedConstantDefinition<TideJudiciousMetadata, 'constructed'> {
   return {
     location: {
       module,
       name: c.name,
     },
-    evaluated: true,
     kind: 'constant_definition',
     subkind: 'imported',
-    evaluated_type: toTideType(c.type),
+    type: toTideType(c.type),
     metadata: {
+      module,
       judicious: c,
     },
   };

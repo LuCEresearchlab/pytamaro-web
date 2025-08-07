@@ -55,7 +55,7 @@ type DestinationState<U, TLocal, Timported> = ProgramState<
   'name_checked'
 >;
 
-export default function syntax_phase<U, Tlocal, Timported>(
+export default function name_checked_phase<U, Tlocal, Timported>(
   base: SourceState<U, Tlocal, Timported>,
 ): DestinationState<U, Tlocal, Timported> {
   const previous_definitions = base.imported_definitions

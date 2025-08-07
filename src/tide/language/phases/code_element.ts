@@ -77,7 +77,7 @@ type DestinationState<U, Tlocal, Timport> = ProgramState<
   'code_element'
 >;
 
-export default function syntax_phase<U, Tlocal, Timport>(
+export default function code_element_phase<U, Tlocal, Timport>(
   base: SourceState<U, Tlocal, Timport>,
 ): DestinationState<U, Tlocal, Timport> {
   function imported_definition_phase(

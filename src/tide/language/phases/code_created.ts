@@ -80,7 +80,7 @@ export function turnCodeElementToCode(
   }
 }
 
-export default function syntax_phase<U, Tlocal, Timport>(
+export default function code_created_phase<U, Tlocal, Timport>(
   base: SourceState<U, Tlocal, Timport>,
 ): DestinationState<U, Tlocal, Timport> {
   const previous_definitions = base.imported_definitions

@@ -75,11 +75,12 @@ export function TidePalettePane({
     else setConstantName(undefined);
   }, [filter, reserved_names, setLiterals]);
 
-  const onDragStart = function (
+  const onDragStart = function <T extends TamaroCardNode>(
     event: DragEvent<HTMLDivElement>,
-    data: TamaroCardNode['data'],
+    type: T['type'],
+    data: T['data'],
   ) {
-    setDragged(data);
+    setDragged({ type, data });
     // eslint-disable-next-line no-param-reassign
     event.dataTransfer!.effectAllowed = 'move';
   };
@@ -147,7 +148,13 @@ export function TidePalettePane({
             <div
               className='compact_view hide_types hide_labels hide_handles hide_optionals'
               style={{ userSelect: 'none' }}
-              onDragStart={(e) => onDragStart(e, el)}
+              onDragStart={(e) =>
+                onDragStart(
+                  e,
+                  def.kind === 'function_definition' ? 'function' : 'constant',
+                  el,
+                )
+              }
               draggable
               key={el.input}
             >
@@ -179,7 +186,7 @@ export function TidePalettePane({
               className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
               style={{ userSelect: 'none' }}
               onDragStart={(e) => {
-                onDragStart(e, el);
+                onDragStart(e, 'literal', el);
               }}
               draggable
               key={el.input}
@@ -195,7 +202,7 @@ export function TidePalettePane({
             className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
             style={{ userSelect: 'none' }}
             onDragStart={(e) => {
-              onDragStart(e, {
+              onDragStart(e, 'constant', {
                 input: constant_name,
               });
             }}

@@ -3,10 +3,16 @@ import {
   DragEvent as React_DragEvent,
   MouseEvent as React_MouseEvent,
 } from 'react';
-import { ConstantDefinitionNode, TideNode } from '../../components/tide/cards';
+import {
+  ConstantDefinitionNode,
+  TideNode,
+  TideNodeMetadata,
+} from '../../components/tide/cards';
 import { getNode } from './utils';
 import { check_edge_looping, check_edge_typing } from './interactivity';
 import { StoreType } from './store';
+import { Definition } from './language/definitions';
+import { TideJudiciousMetadata } from './judiciours_to_tide';
 
 type AllStore = StoreType & {
   screenToFlowPosition: (
@@ -135,7 +141,15 @@ export function isValidConnection(
       (error_level !== 'prevent' ||
         targetNode?.type === 'constant_definition' ||
         check_edge_typing(
-          evaluated_context(),
+          evaluated_context().map(
+            (v) =>
+              v as Definition<
+                TideNodeMetadata,
+                TideNodeMetadata,
+                TideJudiciousMetadata,
+                'constructed'
+              >,
+          ),
           nodes,
           source,
           sourceHandle || '',
@@ -178,20 +192,13 @@ export function onDrop(
     y: event.clientY,
   });
 
-  const id = `${dragged.kind}-${Date.now()}`;
-
-  const type =
-    dragged.kind === 'constant_use'
-      ? 'constant'
-      : dragged.kind === 'function_use'
-        ? 'function'
-        : 'literal';
+  const id = `${dragged.type}-${Date.now()}`;
 
   const newNode = {
     id,
-    type: type,
+    type: dragged.type,
     position: topLeftPosition,
-    data: { ...dragged, metadata: { node_id: id } },
+    data: dragged.data,
     dragHandle: '.drag-handle',
     className: 'node_hidden',
   } as TideNode;
@@ -343,9 +350,6 @@ export function onDocumentPasteCatpure(
       position: { x: v.position.x + diff.x, y: v.position.y + diff.y },
       data: {
         ...v.data,
-        metadata: {
-          node_id: getOrCreateNodeMap(v.data.metadata.node_id),
-        },
         parent: v.data.parent
           ? getOrCreateNodeMap(v.data.parent as string)
           : undefined,

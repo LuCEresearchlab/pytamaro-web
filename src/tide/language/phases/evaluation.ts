@@ -149,7 +149,7 @@ export async function extract_data(
   return undefined;
 }
 
-export default async function syntax_phase<U, Tlocal, Timport>(
+export default async function evaluated_phase<U, Tlocal, Timport>(
   base: SourceState<U, Tlocal, Timport>,
 ): Promise<DestinationState<U, Tlocal, Timport>> {
   const definitions = base.imported_definitions
