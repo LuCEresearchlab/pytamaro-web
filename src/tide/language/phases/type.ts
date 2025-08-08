@@ -134,13 +134,14 @@ export default function type_checked_phase<U, Tlocal, Timport>(
         );
 
         const type_checked = Array.from(
-          parameters
-            .keys()
-            .map((v): [ValueType, ValueType, string] => [
+          parameters.keys().map((v): [ValueType, ValueType, string] => {
+            const child_type = children.get(v)?.type;
+            return [
               parameters.get(v)!,
-              children.get(v)?.type || false,
+              child_type != null ? child_type : false,
               v,
-            ]),
+            ];
+          }),
         );
 
         const type_mismatch = type_checked.filter(
