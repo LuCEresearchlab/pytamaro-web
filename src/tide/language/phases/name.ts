@@ -98,7 +98,8 @@ export default function name_checked_phase<U, Tlocal, Timported>(
   function local_definition_phase(
     def: LocalDefinition<U, Tlocal, 'syntax_checked'>,
   ): LocalDefinition<U, Tlocal, 'name_checked'> {
-    if ('error_phase' in def) return def;
+    const root = def.root ? expression_phase(def.root) : undefined;
+    if ('error_phase' in def) return { ...def, root };
 
     const cycle = is_cylicaly_defined(
       def as Definition<U, Tlocal, Timported, 'syntax_checked'>,
@@ -117,6 +118,7 @@ export default function name_checked_phase<U, Tlocal, Timported>(
     if (cycle) {
       return {
         ...def,
+        root,
         error_phase: 'name_checked',
         type: {
           error: TideNameErrorCyclicalDependencies_builder(
@@ -126,9 +128,7 @@ export default function name_checked_phase<U, Tlocal, Timported>(
       };
     }
 
-    const root = expression_phase(def.root);
-
-    if ('error_phase' in root) {
+    if (!root || 'error_phase' in root) {
       return {
         ...def,
         root,
@@ -140,6 +140,7 @@ export default function name_checked_phase<U, Tlocal, Timported>(
     if (multiply_defined.includes(def.location.name)) {
       return {
         ...def,
+        root,
         error_phase: 'name_checked',
         type: {
           error: TideNameErrorMultipleDefinition_builder(def.location.name),
@@ -170,13 +171,13 @@ export default function name_checked_phase<U, Tlocal, Timported>(
   function expression_phase(
     exp: TamaroCard<U, 'syntax_checked'>,
   ): TamaroCard<U, 'name_checked'> {
-    if ('error_phase' in exp) return exp;
-
     switch (exp.kind) {
       case 'function_use': {
         const children = new Map(
           exp.children.entries().map(([k, v]) => [k, expression_phase(v)]),
         );
+
+        if ('error_phase' in exp) return { ...exp, children };
 
         if (children.values().find((v) => 'error_phase' in v)) {
           return {
@@ -197,6 +198,7 @@ export default function name_checked_phase<U, Tlocal, Timported>(
         if (!definition || !location) {
           return {
             ...exp,
+            children,
             error_phase: 'name_checked',
             type: {
               error: TideNameErrorUnknownFunction_builder(exp.function_name),
@@ -207,6 +209,7 @@ export default function name_checked_phase<U, Tlocal, Timported>(
         if (definition.kind !== 'function_definition') {
           return {
             ...exp,
+            children,
             error_phase: 'name_checked',
             type: {
               error: TideNameErrorNodeKindMismatch_builder(
@@ -227,6 +230,7 @@ export default function name_checked_phase<U, Tlocal, Timported>(
         if (missing_paramaeters.length !== 0) {
           return {
             ...exp,
+            children,
             error_phase: 'name_checked',
             type: {
               error: missing_paramaeters.map(
@@ -240,13 +244,18 @@ export default function name_checked_phase<U, Tlocal, Timported>(
           const computed_def = local_definition_phase_cache(definition);
 
           if ('error_phase' in computed_def) {
-            return { ...exp, type: false, error_phase: 'name_checked' };
+            return {
+              ...exp,
+              children,
+              type: false,
+              error_phase: 'name_checked',
+            };
           }
         }
 
         return {
           ...exp,
-          children: children,
+          children,
           parameters,
           location,
         };
@@ -256,6 +265,7 @@ export default function name_checked_phase<U, Tlocal, Timported>(
           ? nameToDefinition.get(exp.constant_name)?.location
           : undefined;
 
+        if ('error_phase' in exp) return exp;
         if (!location) {
           return {
             ...exp,

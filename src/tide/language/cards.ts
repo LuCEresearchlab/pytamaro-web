@@ -5,8 +5,8 @@ import {
   Kind,
   Location,
 } from './types';
-import { State, TideAttachment } from './phases';
-import { LiteralType, SoundType } from './typing';
+import { AttachmentIntersection, State, TideAttachment } from './phases';
+import { LiteralType, ValueType } from './typing';
 
 export type TamaroCard<U, S extends State = State> =
   | TamaroCard_FunctionUse<U, S>
@@ -25,20 +25,20 @@ type BaseConstantUseStates<U> = {
     metadata: U;
     constant_name: string;
     location: Location;
-    type: SoundType;
+    type: ValueType;
   };
   code_element: {
     metadata: U;
     constant_name: string;
     location: Location;
-    type: SoundType;
+    type: ValueType;
     code_element: CodeRepresentation;
   };
   code_created: {
     metadata: U;
     constant_name: string;
     location: Location;
-    type: SoundType;
+    type: ValueType;
     code_element: CodeRepresentation;
     code: string;
   };
@@ -46,7 +46,7 @@ type BaseConstantUseStates<U> = {
     metadata: U;
     constant_name: string;
     location: Location;
-    type: SoundType;
+    type: ValueType;
     code_element: CodeRepresentation;
     code: string;
     data: unknown;
@@ -106,62 +106,63 @@ export type TamaroCard_Literal<U, S extends State = State> = Kind<'literal'> &
 //
 type TamaroCardChildren<U, S extends State> = Map<string, TamaroCard<U, S>>;
 
-type BaseFunctionUseStates<U> = {
-  unconstructed: { metadata: U };
-  constructed: {
-    metadata: U;
-    function_name: string;
-    children: TamaroCardChildren<U, 'constructed'>;
-  };
-  syntax_checked: {
-    metadata: U;
-    function_name: string;
-    children: TamaroCardChildren<U, 'syntax_checked'>;
-  };
-  name_checked: {
-    metadata: U;
-    location: Location;
-    parameters: FunctionParameter[];
-    children: TamaroCardChildren<U, 'name_checked'>;
-  };
-  type_checked: {
-    metadata: U;
-    type: SoundType;
-    location: Location;
-    parameters: FunctionParameter[];
-    children: TamaroCardChildren<U, 'type_checked'>;
-  };
-  code_element: {
-    metadata: U;
-    type: SoundType;
-    location: Location;
-    parameters: FunctionParameter[];
-    code_element: CodeRepresentation;
-    children: TamaroCardChildren<U, 'code_element'>;
-  };
-  code_created: {
-    metadata: U;
-    type: SoundType;
-    location: Location;
-    parameters: FunctionParameter[];
-    code_element: CodeRepresentation;
-    code: string;
-    children: TamaroCardChildren<U, 'code_created'>;
-  };
-  evaluated: {
-    metadata: U;
-    type: SoundType;
-    location: Location;
-    parameters: FunctionParameter[];
-    code_element: CodeRepresentation;
-    code: string;
-    data: unknown;
-    children: TamaroCardChildren<U, 'evaluated'>;
-  };
-};
+type BaseFunctionUseStates<U> = AttachmentIntersection<
+  TideAttachment<{
+    unconstructed: { metadata: U };
+    constructed: {
+      metadata: U;
+      function_name: string;
+    };
+    syntax_checked: {
+      metadata: U;
+      function_name: string;
+    };
+    name_checked: {
+      metadata: U;
+      location: Location;
+      parameters: FunctionParameter[];
+    };
+    type_checked: {
+      metadata: U;
+      type: ValueType;
+      location: Location;
+      parameters: FunctionParameter[];
+    };
+    code_element: {
+      metadata: U;
+      type: ValueType;
+      location: Location;
+      parameters: FunctionParameter[];
+      code_element: CodeRepresentation;
+    };
+    code_created: {
+      metadata: U;
+      type: ValueType;
+      location: Location;
+      parameters: FunctionParameter[];
+      code_element: CodeRepresentation;
+      code: string;
+    };
+    evaluated: {
+      metadata: U;
+      type: ValueType;
+      location: Location;
+      parameters: FunctionParameter[];
+      code_element: CodeRepresentation;
+      code: string;
+      data: unknown;
+    };
+  }>,
+  {
+    [state in State]: state extends 'unconstructed'
+      ? // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+        {}
+      : { children: TamaroCardChildren<U, state> };
+  }
+>;
 
 export type TamaroCard_Functionuse_States<U> = Identity<
-  TideAttachment<BaseFunctionUseStates<U>>
+  BaseFunctionUseStates<U>
 >;
 
 export type TamaroCard_FunctionUse<

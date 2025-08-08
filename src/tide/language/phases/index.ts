@@ -70,6 +70,13 @@ export type AttachmentUnion<
   [k in State]: T[k] | U[k];
 }>;
 
+export type AttachmentIntersection<
+  T extends Attachment<any>,
+  U extends Attachment<any>,
+> = Attachment<{
+  [k in State]: T[k] & U[k];
+}>;
+
 export type UnionWithPrecedingStates<U extends Partial<Record<State, any>>> = {
   [K in State]: {
     [o in PreviousStates[K] & keyof U]: U[o];

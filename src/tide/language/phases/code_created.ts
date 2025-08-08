@@ -101,17 +101,16 @@ export default function code_created_phase<U, Tlocal, Timport>(
   function local_definition_phase(
     def: LocalDefinition<U, Tlocal, 'code_element'>,
   ): LocalDefinition<U, Tlocal, 'code_created'> {
-    if ('error_phase' in def) return def;
+    const root = def.root ? expression_phase(def.root) : undefined;
+    if ('error_phase' in def) return { ...def, root };
 
-    const root = expression_phase(def.root);
-
-    if ('error_phase' in root) {
+    if (!root || 'error_phase' in root) {
       throw new Error('Error should have been recorded previously');
     }
 
     return {
       ...def,
-      root: expression_phase(def.root),
+      root,
       code: turnCodeElementToCode(def.code_element, previous_definitions),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any;
@@ -120,8 +119,6 @@ export default function code_created_phase<U, Tlocal, Timport>(
   function expression_phase(
     exp: TamaroCard<U, 'code_element'>,
   ): TamaroCard<U, 'code_created'> {
-    if ('error_phase' in exp) return exp;
-
     switch (exp.kind) {
       case 'function_use': {
         const children = new Map(
@@ -132,6 +129,7 @@ export default function code_created_phase<U, Tlocal, Timport>(
             .map(([k, v]: any) => [k, expression_phase(v)]),
         ) as Map<string, TamaroCard<U, 'code_created'>>;
 
+        if ('error_phase' in exp) return { ...exp, children };
         if (
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (children.values() as any).find((v: any) => 'error_phase' in v) as any
@@ -146,12 +144,14 @@ export default function code_created_phase<U, Tlocal, Timport>(
         };
       }
       case 'constant_use': {
+        if ('error_phase' in exp) return exp;
         return {
           ...exp,
           code: turnCodeElementToCode(exp.code_element, previous_definitions),
         };
       }
       case 'literal': {
+        if ('error_phase' in exp) return exp;
         return {
           ...exp,
           code: turnCodeElementToCode(exp.code_element, previous_definitions),

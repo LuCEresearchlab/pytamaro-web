@@ -52,13 +52,13 @@ export default function type_checked_phase<U, Tlocal, Timport>(
   function local_definition_phase(
     def: LocalDefinition<U, Tlocal, 'name_checked'>,
   ): LocalDefinition<U, Tlocal, 'type_checked'> {
-    if ('error_phase' in def) return def;
+    const root = def.root ? expression_phase(def.root) : undefined;
+    if ('error_phase' in def) return { ...def, root };
 
-    const root = expression_phase(def.root);
-
-    if ('error_phase' in root) {
+    if (!root || 'error_phase' in root) {
       return {
         ...def,
+        root,
         error_phase: 'type_checked',
         type: false,
       };
@@ -92,8 +92,6 @@ export default function type_checked_phase<U, Tlocal, Timport>(
   function expression_phase(
     exp: TamaroCard<U, 'name_checked'>,
   ): TamaroCard<U, 'type_checked'> {
-    if ('error_phase' in exp) return exp;
-
     switch (exp.kind) {
       case 'function_use': {
         const children = new Map(
@@ -106,10 +104,13 @@ export default function type_checked_phase<U, Tlocal, Timport>(
           ) as [string, TamaroCard<U, 'type_checked'>][],
         );
 
+        if ('error_phase' in exp) return { ...exp, children };
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if ((children.values() as any).find((v: any) => 'error_phase' in v)) {
           return {
             ...exp,
+            children,
             error_phase: 'type_checked',
             type: false,
           };
@@ -122,6 +123,7 @@ export default function type_checked_phase<U, Tlocal, Timport>(
         if ('error_phase' in function_def && function_def.error_phase)
           return {
             ...exp,
+            children,
             error_phase: 'type_checked',
             type: false,
           };
@@ -147,6 +149,7 @@ export default function type_checked_phase<U, Tlocal, Timport>(
         if (type_mismatch.length !== 0) {
           return {
             ...exp,
+            children,
             error_phase: 'type_checked',
             type: {
               error: type_mismatch.map((v) =>
@@ -168,6 +171,7 @@ export default function type_checked_phase<U, Tlocal, Timport>(
         };
       }
       case 'constant_use': {
+        if ('error_phase' in exp) return exp;
         const constant_def = definition_phase_cache(
           nameToDefinition.get(exp.location.name)!,
         ) as ConstantDefinition<U, Tlocal, Timport, 'type_checked'>;
@@ -183,6 +187,7 @@ export default function type_checked_phase<U, Tlocal, Timport>(
         return { ...exp, type };
       }
       case 'literal': {
+        if ('error_phase' in exp) return exp;
         return exp;
       }
     }

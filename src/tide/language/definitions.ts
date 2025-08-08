@@ -11,7 +11,7 @@ import {
   CodeRepresentation,
   Identity,
 } from './types';
-import { State, TideAttachment } from './phases';
+import { AttachmentIntersection, State, TideAttachment } from './phases';
 import { ValueType } from './typing';
 
 // === DEFINITIONS ===
@@ -53,7 +53,7 @@ export type ConstantDefinitionCommon = Kind<'constant_definition'>;
 
 // === LOCAL DEFINITION STATES ===
 
-export type LocalDefinitionStates<U, T> = Opaque<
+export type LocalDefinitionStates<U, T> = AttachmentIntersection<
   TideAttachment<{
     unconstructed: {
       metadata: U;
@@ -61,26 +61,22 @@ export type LocalDefinitionStates<U, T> = Opaque<
     constructed: {
       metadata: U;
       location: Location<false>;
-      root?: TamaroCard<T, 'constructed'>;
     };
     syntax_checked: {
       metadata: U;
       location: Location<false>;
       dependencies: string[];
-      root: TamaroCard<T, 'syntax_checked'>;
     };
     name_checked: {
       metadata: U;
       location: Location<false>;
       dependencies: Location[];
-      root: TamaroCard<T, 'name_checked'>;
     };
     type_checked: {
       metadata: U;
       location: Location<false>;
       dependencies: Location[];
       type: ValueType;
-      root: TamaroCard<T, 'type_checked'>;
     };
     code_element: {
       metadata: U;
@@ -88,7 +84,6 @@ export type LocalDefinitionStates<U, T> = Opaque<
       dependencies: Location[];
       type: ValueType;
       code_element: CodeRepresentation;
-      root: TamaroCard<T, 'code_element'>;
     };
     code_created: {
       metadata: U;
@@ -97,7 +92,6 @@ export type LocalDefinitionStates<U, T> = Opaque<
       type: ValueType;
       code_element: CodeRepresentation;
       code: string;
-      root: TamaroCard<T, 'code_created'>;
     };
     evaluated: {
       metadata: U;
@@ -105,10 +99,14 @@ export type LocalDefinitionStates<U, T> = Opaque<
       dependencies: Location[];
       type: ValueType;
       code_element: CodeRepresentation;
-      root: TamaroCard<T, 'evaluated'>;
     };
   }>,
-  'LocalDefinitionStates'
+  {
+    [state in State]: state extends 'unconstructed'
+      ? // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+        {}
+      : { root?: TamaroCard<T, state> };
+  }
 >;
 
 export type LocalDefinitionCommon<U, T, S extends State = State> = Identity<

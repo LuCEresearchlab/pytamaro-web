@@ -8,7 +8,7 @@ import {
   LocalDefinition,
 } from '../definitions';
 import { CodeRepresentation } from '../types';
-import { EvaluatedValueType, SoundType } from '../typing';
+import { EvaluatedValueType, SoundType, ValueType } from '../typing';
 import { turnCodeElementToCode } from './code_created';
 import { TideRuntimeError_builder } from '../error_builders';
 
@@ -73,7 +73,7 @@ type DestinationState<U, Tlocal, Timport> = ProgramState<
 
 export async function extract_data(
   code_repr: CodeRepresentation,
-  type: SoundType,
+  type: ValueType,
   definitions: Definition<unknown, unknown, unknown, 'code_element'>[],
 ): Promise<EvaluatedValueType[SoundType] | { error: string }> {
   if (!('expression' in code_repr))
@@ -168,11 +168,10 @@ export default async function evaluated_phase<U, Tlocal, Timport>(
   async function local_definition_phase(
     def: LocalDefinition<U, Tlocal, 'code_created'>,
   ): Promise<LocalDefinition<U, Tlocal, 'evaluated'>> {
-    if ('error_phase' in def) return def;
+    const root = def.root ? await expression_phase(def.root) : undefined;
+    if ('error_phase' in def) return { ...def, root };
 
-    const root = await expression_phase(def.root);
-
-    if ('error_phase' in root) {
+    if (!root || 'error_phase' in root) {
       throw new Error('Error should have been recorded previously');
     }
 
@@ -186,8 +185,6 @@ export default async function evaluated_phase<U, Tlocal, Timport>(
   async function expression_phase(
     exp: TamaroCard<U, 'code_created'>,
   ): Promise<TamaroCard<U, 'evaluated'>> {
-    if ('error_phase' in exp) return exp;
-
     switch (exp.kind) {
       case 'function_use': {
         const children = new Map(
@@ -199,6 +196,7 @@ export default async function evaluated_phase<U, Tlocal, Timport>(
               .map(async ([k, v]: any) => [k, await expression_phase(v)]),
           ),
         ) as Map<string, TamaroCard<U, 'evaluated'>>;
+        if ('error_phase' in exp) return { ...exp, children };
 
         if (
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -229,6 +227,7 @@ export default async function evaluated_phase<U, Tlocal, Timport>(
         };
       }
       case 'constant_use': {
+        if ('error_phase' in exp) return exp;
         const data = await extract_data(
           exp.code_element,
           exp.type,
@@ -249,6 +248,7 @@ export default async function evaluated_phase<U, Tlocal, Timport>(
         };
       }
       case 'literal': {
+        if ('error_phase' in exp) return exp;
         const data = await extract_data(
           exp.code_element,
           exp.type,

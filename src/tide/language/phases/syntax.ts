@@ -109,6 +109,7 @@ export default function syntax_checked_phase<U, TLocal, Timported>(
     if (!def.root)
       return {
         ...def,
+        root: undefined,
         error_phase: 'syntax_checked',
         type: {
           error: TideSyntaxErrorConstantHasNoValue_builder(def.location.name),
@@ -119,6 +120,7 @@ export default function syntax_checked_phase<U, TLocal, Timported>(
     if ('error_phase' in root) {
       return {
         ...def,
+        root,
         error_phase: 'syntax_checked',
         type: false,
       };
@@ -140,9 +142,14 @@ export default function syntax_checked_phase<U, TLocal, Timported>(
   ): TamaroCard<U, 'syntax_checked'> {
     switch (exp.kind) {
       case 'function_use': {
+        const children = new Map(
+          exp.children.entries().map(([k, v]) => [k, expression_phase(v)]),
+        );
+
         if (!check_identifier_name(exp.function_name)) {
           return {
             ...exp,
+            children,
             error_phase: 'syntax_checked',
             type: {
               error: TideSyntaxErrorInvalidFunctionIdentifier_builder(
@@ -151,13 +158,10 @@ export default function syntax_checked_phase<U, TLocal, Timported>(
             },
           };
         }
-        const constructed_children = new Map(
-          exp.children.entries().map(([k, v]) => [k, expression_phase(v)]),
-        );
-
-        if (constructed_children.values().find((v) => 'error_phase' in v)) {
+        if (children.values().find((v) => 'error_phase' in v)) {
           return {
             ...exp,
+            children,
             error_phase: 'syntax_checked',
             type: false,
           };
@@ -165,7 +169,7 @@ export default function syntax_checked_phase<U, TLocal, Timported>(
 
         return {
           ...exp,
-          children: constructed_children,
+          children,
         };
       }
       case 'constant_use': {
