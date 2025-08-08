@@ -101,7 +101,13 @@ function CustomEdge({
         ) != null,
     );
 
-    setSecondaryError(!primary_error && sourceValue != null);
+    setSecondaryError(
+      !primary_error &&
+        sourceValue != null &&
+        sourceValue !== false &&
+        typeof sourceValue === 'object' &&
+        'error' in sourceValue,
+    );
   }, [
     source,
     primary_error,

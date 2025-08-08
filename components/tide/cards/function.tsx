@@ -11,6 +11,7 @@ import {
   EvaluatedValueType,
   SoundType,
 } from '../../../src/tide/language/typing';
+import { module_elements } from '../../../src/tide/utils';
 
 export function getHandleName(parameter_name: string) {
   return `input_${parameter_name}`;
@@ -29,18 +30,17 @@ export function TideFunctionuse({
   NodeProps<FunctionNode> & ExtraneousNodeProps,
   'id' | 'data' | 'show_handles'
 >) {
-  const { judicious } = useStore(
-    useShallow((state) => ({
-      updateNodeData: state.updateNodeData,
-      nodes: state.nodes,
-      judicious: state.judicious,
-    })),
-  );
+  const judicious = useStore(useShallow((state) => state.judicious));
+
+  const elements = useMemo(() => module_elements(judicious), [judicious]);
 
   const i =
     data.tide_node && 'location' in data.tide_node
       ? (data.tide_node.location as Location<string>)
-      : undefined;
+      : elements
+          .filter((v) => v.name === data.input)
+          .map((v) => ({ module: v.module, name: v.name }))
+          .find(() => true);
 
   const [el, setEl] = useState(undefined as undefined | JudiciousFunction);
 
@@ -51,13 +51,11 @@ export function TideFunctionuse({
     }
 
     setEl(
-      judicious
-        .find((v) => v.module === i.module)
-        ?.elements.find((o) => o.name === i.name) as
+      elements.find((v) => v.module === i.module && v.name === i.name) as
         | JudiciousFunction
         | undefined,
     );
-  }, [i, judicious]);
+  }, [data.input, i, elements]);
 
   const value =
     data.tide_node && 'data' in data.tide_node

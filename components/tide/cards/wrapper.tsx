@@ -19,7 +19,7 @@ export default function TamaroWrapper({
           : undefined
       : undefined;
 
-  const primary_error = error !== false;
+  const primary_error = error != null && error !== false;
   const secondary_error = error === false;
 
   return (

@@ -1,6 +1,7 @@
 import { StateCreator } from 'zustand';
 import { ImportedDefinition } from './language/definitions';
 import { TideJudiciousMetadata } from './judiciours_to_tide';
+import { StoreType } from './store';
 
 export type ErrorLevels = 'prevent' | 'none' | 'warning' | 'highlight';
 
@@ -16,14 +17,17 @@ export type ConfigurationState = {
 };
 
 export const createConfigurationSlice: StateCreator<
-  ConfigurationState,
+  StoreType,
   [],
   [],
   ConfigurationState
-> = (set) => ({
+> = (set, get) => ({
   error_level: 'highlight',
   local_scale: true,
   functional_nodes_only: true,
   imported_definitions: [],
-  setConfiguration: set,
+  setConfiguration: (value) => {
+    set(value);
+    get().onNodesChange([]);
+  },
 });

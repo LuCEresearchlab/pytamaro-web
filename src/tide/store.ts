@@ -220,81 +220,102 @@ export const createGraphSlice: StateCreator<
         });
       });
 
-    const constructed = construct(
-      get().imported_definitions,
-      get().nodes,
-      get().edges,
-    );
-
-    const sync = synchronous_phases(constructed);
-
-    const flat_sync = sync.expressions
-      .map(toFlat)
-      .flat()
-      .map((v) => v as { metadata: TideNodeMetadata })
-      .concat(
-        sync.local_definitions.map((v) => (v.root ? [v, v.root] : [v])).flat(),
+    if (get().nodes.find((v) => v.data.outdated)) {
+      const constructed = construct(
+        get().imported_definitions,
+        get().nodes,
+        get().edges,
       );
 
-    set((state) => {
-      return {
-        nodes: state.nodes.map((node) => {
-          const el = flat_sync.find((v) => v.metadata.node_id === node.id);
-          if (!el) return node;
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              tide_node: el,
-            },
-          } as TideNode;
-        }),
-      };
-    });
+      const sync = synchronous_phases(constructed);
 
-    if (evaluation_timeout) clearTimeout(evaluation_timeout);
+      const flat_sync = sync.expressions
+        .map(toFlat)
+        .flat()
+        .map((v) => v as { metadata: TideNodeMetadata })
+        .concat(
+          sync.local_definitions
+            .map((v) => (v.root ? [v, v.root] : [v]))
+            .flat(),
+        );
 
-    evaluation_timeout = setTimeout(
-      async () => {
-        const prev = evaluation_timeout;
+      set((state) => {
+        return {
+          nodes: state.nodes.map((node) => {
+            const el = flat_sync.find((v) => v.metadata.node_id === node.id);
+            if (!el) return node;
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                tide_node: el,
+                outdated: undefined,
+              },
+            } as TideNode;
+          }),
+        };
+      });
 
-        const async = await evaluation(sync);
-        if (prev !== evaluation_timeout || !evaluation_timeout) return;
-        evaluation_timeout = undefined;
+      if (evaluation_timeout) clearTimeout(evaluation_timeout);
 
-        const flat_async = async.expressions
-          .map(toFlat)
-          .flat()
-          .map((v) => v as { metadata: TideNodeMetadata })
-          .concat(
-            async.local_definitions
-              .map((v) => (v.root ? [v, v.root] : [v]))
-              .flat(),
-          );
+      evaluation_timeout = setTimeout(
+        async () => {
+          const prev = evaluation_timeout;
 
-        set((state) => {
-          return {
-            nodes: state.nodes.map((node) => {
-              const el = flat_async.find((v) => v.metadata.node_id === node.id);
-              if (!el) return node;
-              return {
-                ...node,
-                data: {
-                  ...node.data,
-                  tide_node: el,
-                },
-              } as TideNode;
-            }),
-          };
-        });
-      },
-      get().initialized === 'done' ? 200 : 1000,
-    );
+          const async = await evaluation(sync);
+          if (prev !== evaluation_timeout || !evaluation_timeout) return;
+          evaluation_timeout = undefined;
+
+          const flat_async = async.expressions
+            .map(toFlat)
+            .flat()
+            .map((v) => v as { metadata: TideNodeMetadata })
+            .concat(
+              async.local_definitions
+                .map((v) => (v.root ? [v, v.root] : [v]))
+                .flat(),
+            );
+
+          set((state) => {
+            return {
+              nodes: state.nodes.map((node) => {
+                const el = flat_async.find(
+                  (v) => v.metadata.node_id === node.id,
+                );
+                if (!el) return node;
+                return {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    tide_node: el,
+                    outdated: undefined,
+                  },
+                } as TideNode;
+              }),
+            };
+          });
+        },
+        get().initialized === 'done' ? 200 : 1000,
+      );
+    }
   },
   onEdgesChange: (changes) => {
     const befores = get().edges;
 
+    const to_update: string[] = [];
     const snd_changes: NodeChange<TideNode>[] = [];
+
+    changes.forEach((v) => {
+      if (v.type === 'add') {
+        to_update.push(v.item.source);
+        to_update.push(v.item.target);
+      } else if (v.type === 'remove') {
+        const { source, target } = befores.find((o) => o.id === v.id)!;
+        to_update.push(source);
+        to_update.push(target);
+      }
+    });
+
     const node_changes = changes
       .map((v): NodeChange<TideNode>[] => {
         if (v.type === 'add') {
@@ -397,6 +418,14 @@ export const createGraphSlice: StateCreator<
               : afters.find((v) => change.item.id === v.id),
         });
       });
+
+    get().setNodes(
+      get().nodes.map((v) =>
+        !to_update.includes(v.id)
+          ? v
+          : ({ ...v, data: { ...v.data, outdated: true } } as TideNode),
+      ),
+    );
   },
   onConnect: (connection) => {
     get().onEdgesChange([
@@ -432,8 +461,10 @@ export const createGraphSlice: StateCreator<
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       typeof data === 'function' ? data : (v: any) => ({ ...v, ...data });
     get().setNodes(
-      get().nodes.map((v) => {
-        return v.id === nodeId ? { ...v, data: newData(v.data) } : v;
+      get().nodes.map((v): TideNode => {
+        return v.id === nodeId
+          ? { ...v, data: { ...newData(v.data), outdated: true } }
+          : v;
       }),
     );
   },

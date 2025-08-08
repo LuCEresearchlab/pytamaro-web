@@ -38,6 +38,7 @@ export interface IImportedCardData extends ITamaroCardData {
 export type ExtraneousNodeProps = { show_handles?: boolean };
 export type CommonNodeData = {
   parent?: string;
+  outdated?: true;
 };
 export type TideNodeMetadata = { node_id: string };
 

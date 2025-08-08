@@ -464,7 +464,7 @@ import { evaluation, synchronous_phases } from '../../src/tide/evaluation';
 function TidePage() {
   const [source, setSource] = useState('from pytamaro import *');
 
-  const { setConfiguration } = useStore();
+  const { setConfiguration, setJudicious } = useStore();
 
   const configuration_timeout = useRef(undefined as NodeJS.Timeout | undefined);
   const cached_modules = useRef([] as string[]);
@@ -576,6 +576,7 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
 
   useEffect(() => {
     if (modules.length === cached_modules.current.length) return;
+    setJudicious(modules);
     cached_modules.current = modules.map((v) => v.module);
     if (configuration_timeout.current)
       clearTimeout(configuration_timeout.current);

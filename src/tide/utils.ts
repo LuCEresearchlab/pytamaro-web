@@ -4,7 +4,7 @@ import {
   getHandleName,
   getParameterName,
 } from '../../components/tide/cards/function';
-import { JudiciousFunction } from '../schemas/documentation';
+import { JudiciousFunction, JudiciousModule } from '../schemas/documentation';
 import {
   CardType,
   FunctionNode,
@@ -419,4 +419,12 @@ export function getHandleDiv(
       | HTMLDivElement
       | undefined;
   return undefined;
+}
+
+export function module_elements(judicious: JudiciousModule[]) {
+  return judicious
+    .map((module) =>
+      module.elements.map((v) => ({ ...v, module: module.module })),
+    )
+    .flat();
 }
