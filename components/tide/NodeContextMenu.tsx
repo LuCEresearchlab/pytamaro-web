@@ -99,15 +99,6 @@ export default function NodeContextMenu({
       setEdges(
         getEdges()
           .filter((v) => v.source !== id)
-          .concat([
-            {
-              id: `${id}-${newNode.id}-edge`,
-              source: id,
-              sourceHandle: 'output',
-              target: newNode.id,
-              targetHandle: 'output',
-            },
-          ])
           .concat(
             existing_edge
               ? [
@@ -120,6 +111,18 @@ export default function NodeContextMenu({
                 ]
               : [],
           ),
+      );
+
+      setEdges(
+        getEdges().concat([
+          {
+            id: `${id}-${newNode.id}-edge`,
+            source: id,
+            sourceHandle: 'output',
+            target: newNode.id,
+            targetHandle: 'output',
+          },
+        ]),
       );
     },
     [getNodes, getEdges, id, setNodes, setEdges],

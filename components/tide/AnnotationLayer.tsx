@@ -237,7 +237,8 @@ export function AnnotationLayer() {
         ? v[1].error.map((o) => [v[0], o])
         : [[v[0], v[1].error as TideError]],
     )
-    .reduce((a, b) => a.concat(b), []);
+    .reduce((a, b) => a.concat(b), [])
+    .filter((v) => v[0] && v[1]);
 
   return (
     <ViewportPortal>
