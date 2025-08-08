@@ -107,17 +107,9 @@ function View() {
 
         const node = toBeDocumentedNodes[0];
         const data = node.data;
-        if (!('location' in data)) return;
+        const elements = module_elements(documentation);
 
-        const { module, name } = data.location as Location;
-        if (module === false) return;
-
-        const result = documentation
-          .find((v) => v.module === module)
-          ?.elements.find((v) => v.name === name);
-
-        if (!result) return;
-        return { ...result, module };
+        return elements.find((v) => v.name === data.input);
       })(),
     });
   }, [documentation, error_level, getNodes, nodes]);
@@ -444,7 +436,7 @@ import {
 } from '../../src/schemas/documentation';
 import { translationProps } from '../../src/serverSideTranslationProps';
 import { executeOnServer } from '../../src/useActivity';
-import { getNode } from '../../src/tide/utils';
+import { getNode, module_elements } from '../../src/tide/utils';
 import { ErrorParagraph } from '../../components/tide/ErrorParagraph';
 import { TideError } from '../../src/tide/language/errors';
 import useJudiciousDocData, { allKinds } from '../../src/documentation';
@@ -455,7 +447,6 @@ import {
   toTideFunction,
 } from '../../src/tide/judiciours_to_tide';
 import { ErrorType } from '../../src/tide/language/typing';
-import { Location } from '../../src/tide/language/types';
 import { evaluation, synchronous_phases } from '../../src/tide/evaluation';
 
 function TidePage() {

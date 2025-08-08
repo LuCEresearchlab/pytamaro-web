@@ -198,7 +198,7 @@ export function onDrop(
     id,
     type: dragged.type,
     position: topLeftPosition,
-    data: dragged.data,
+    data: { ...dragged.data, outdated: true },
     dragHandle: '.drag-handle',
     className: 'node_hidden',
   } as TideNode;

@@ -341,7 +341,7 @@ export function ConstantTamaroCard({
   }, [returns_icon]);
 
   return (
-    <div className='pane_container drag-handle'>
+    <div className='pane_container drag-handle' style={{ display: 'flex' }}>
       <div className='pane tamaro_card constant_card constant_card_pane'>
         <img
           className='card_library hovergroup hovergroup_marker'
