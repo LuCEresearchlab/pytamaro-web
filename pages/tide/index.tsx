@@ -447,10 +447,7 @@ import { executeOnServer } from '../../src/useActivity';
 import { getNode } from '../../src/tide/utils';
 import { ErrorParagraph } from '../../components/tide/ErrorParagraph';
 import { TideError } from '../../src/tide/language/errors';
-import useJudiciousDocData, {
-  allKinds,
-  modules_keys,
-} from '../../src/documentation';
+import useJudiciousDocData, { allKinds } from '../../src/documentation';
 import { ImportedDefinition } from '../../src/tide/language/definitions';
 import {
   TideJudiciousMetadata,
@@ -469,7 +466,7 @@ function TidePage() {
   const configuration_timeout = useRef(undefined as NodeJS.Timeout | undefined);
   const cached_modules = useRef([] as string[]);
 
-  const modules = useJudiciousDocData(modules_keys);
+  const modules = useJudiciousDocData(['pytamaro']);
 
   const extract_names = useCallback(
     async (configuration_code: string) => {

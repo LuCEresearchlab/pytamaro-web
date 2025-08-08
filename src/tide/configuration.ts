@@ -2,6 +2,7 @@ import { StateCreator } from 'zustand';
 import { ImportedDefinition } from './language/definitions';
 import { TideJudiciousMetadata } from './judiciours_to_tide';
 import { StoreType } from './store';
+import { TideNode } from '../../components/tide/cards';
 
 export type ErrorLevels = 'prevent' | 'none' | 'warning' | 'highlight';
 
@@ -28,6 +29,10 @@ export const createConfigurationSlice: StateCreator<
   imported_definitions: [],
   setConfiguration: (value) => {
     set(value);
-    get().onNodesChange([]);
+    get().setNodes(
+      get().nodes.map(
+        (v) => ({ ...v, data: { ...v.data, outdated: true } }) as TideNode,
+      ),
+    );
   },
 });
