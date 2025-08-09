@@ -50,6 +50,7 @@ export interface GraphStateSlice {
     TideJudiciousMetadata,
     'evaluated'
   >[];
+  evaluating: boolean;
   nodes: TideNode[];
   edges: Edge[];
   mousePosition: XYPosition;
@@ -84,6 +85,7 @@ export const createGraphSlice: StateCreator<
   [],
   GraphStateSlice
 > = (set, get) => ({
+  evaluating: false,
   judicious: [],
   setJudicious: (modules: JudiciousModule[]) => {
     set({ judicious: modules });
@@ -253,6 +255,7 @@ export const createGraphSlice: StateCreator<
               },
             } as TideNode;
           }),
+          evaluating: true,
         };
       });
 
@@ -292,6 +295,7 @@ export const createGraphSlice: StateCreator<
                   },
                 } as TideNode;
               }),
+              evaluating: false,
             };
           });
         },
