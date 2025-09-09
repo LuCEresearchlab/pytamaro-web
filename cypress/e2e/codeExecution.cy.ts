@@ -33,6 +33,20 @@ describe('Code Execution', () => {
     cy.get('.output-area').first().find('img').should('have.attr', 'src');
   });
 
+  it('should share globals across code cells', () => {
+    cy.visit(
+      activityVariantPathnameFromParts('luce', 'swiss-flag', 'en', 'v1'),
+    );
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    cy.get('.monaco-editor').first().type('{selectall}{backspace}');
+    cy.get('.monaco-editor').first().type('def f(): return foo');
+    cy.get('.monaco-editor').eq(1).type('{selectall}{backspace}');
+    cy.get('.monaco-editor').eq(1).type('foo = 42{enter}print(f())');
+    cy.get('.run-button').eq(1).click();
+    cy.get('.output-area').first().contains('42');
+  });
+
   it('should save and import a toolbox function', () => {
     // Save function 'f' to the toolbox
     cy.visit(

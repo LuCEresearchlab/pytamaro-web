@@ -36,7 +36,7 @@ export function isExecutionFailed(
  * Update this version at every change to the process below
  * that turns cells into files for execution.
  */
-export const CODE_EXECUTION_CELLS_TO_FILES_VERSION = 7;
+export const CODE_EXECUTION_CELLS_TO_FILES_VERSION = 8;
 
 export const DRIVER_FILE = 'driver';
 export const PREVIOUS_CELLS_FILE = 'previous_cells';
@@ -53,11 +53,15 @@ export interface BareboneToolboxFunction {
 // the current cell is considered.
 const DRIVER_SOURCE = `
 from contextlib import redirect_stdout, redirect_stderr
+from pathlib import Path
+globals_dict = {}
+def run(name):
+    filename = name + ".py"
+    code = compile(Path(filename).read_text(), filename, "exec")
+    exec(code, globals_dict)
 with redirect_stdout(None), redirect_stderr(None):
-    import ${PREVIOUS_CELLS_FILE}
-    import builtins
-    builtins.__dict__.update(vars(${PREVIOUS_CELLS_FILE}))
-import ${CURRENT_CELL_FILE}
+    run("${PREVIOUS_CELLS_FILE}")
+run("${CURRENT_CELL_FILE}")
 `;
 
 function toolboxSingleModuleName(fn: BareboneToolboxFunction) {

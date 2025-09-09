@@ -9,9 +9,11 @@ export const TRACEBACK_TIDLE_DECORATION_CLASSNAME =
 function nicerTraceback(traceback: string) {
   // Hide the "driver" file.
   const hideDriver = (s: string) =>
+    // Remove the line with the driver file, the one after it (source code),
+    // and possibly even the one after if it has only the caret.
     s.replace(
-      /\n {2}File "\/home\/glot\/driver.py", line \d+, in <module>\n.*\n/g,
-      '\n',
+      /^ {2}File "\/home\/glot\/driver.py", line \d+, in \S+\n.*\n(?:\s*~+\^+\s*\n)?/gm,
+      '',
     );
 
   // Hide 'glot' in source paths
