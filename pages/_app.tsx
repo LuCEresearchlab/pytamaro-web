@@ -10,7 +10,13 @@ import { AppProps } from 'next/app';
 import Head from 'next/head';
 import PageFooter from '../components/PageFooter';
 import theme from '../src/theme';
+
+// Global CSS
+import '../style/bubble.css';
+import '../style/graph_options.css';
+import '../style/graph_view.css';
 import '../style/styles.css';
+import '../style/tamaro_cards.css';
 
 // Fonts
 import '@fontsource-variable/fira-code';

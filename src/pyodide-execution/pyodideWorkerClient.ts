@@ -11,6 +11,7 @@ function sendExecutionRequestToWorkerAndWaitForResponse(python_source: string) {
         // eslint-disable-next-line no-console
         console.log('Tamaro initialized');
       } else if (event.data?.type === 'result') {
+        console.log('Received result from pyodide worker', event.data);
         pyodideWorker?.removeEventListener('message', listener);
         resolve(event.data.result);
       }
@@ -44,5 +45,6 @@ export default async function executeWithPyodide(
     extraPythonFiles,
   );
   const source = files.find((f) => f.name === 'cell.py')?.content || '';
+  console.log('Executing with Pyodide', { source });
   return sendExecutionRequestToWorkerAndWaitForResponse(source);
 }

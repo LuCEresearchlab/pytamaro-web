@@ -89,7 +89,7 @@ export class TamaroJs {
       };
     } catch (err) {
       const pythonError = err as PythonError;
-      stderr += pythonError.type;
+      stderr += pythonError;
       return {
         type: 'result',
         result: {
