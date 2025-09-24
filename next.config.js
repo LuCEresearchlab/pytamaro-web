@@ -1,4 +1,5 @@
 const { i18n } = require('./next-i18next.config');
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -18,6 +19,13 @@ const nextConfig = {
     config.experiments = {
       asyncWebAssembly: true,
       layers: true,
+    };
+
+
+    config.resolve.fallback = {
+      fs: false,
+      path: false,
+      os: false,
     };
 
     if (!dev && isServer) {
@@ -60,6 +68,14 @@ const nextConfig = {
       },
     ];
   },
+  turbopack: {
+    resolveAlias: {
+      // Workaround for canvaskit
+      fs: {
+        browser: './src/emptyModule.ts',
+      }
+  }
+}
 };
 
 module.exports = nextConfig;

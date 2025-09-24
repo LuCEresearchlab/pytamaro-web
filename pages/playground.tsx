@@ -61,6 +61,8 @@ export default function Playground({
   const localActivity = useLocalActivity(
     initialStateSingleCell(initialSource),
     playgroundActivityVariant,
+    [],
+    true,
   );
 
   const {
