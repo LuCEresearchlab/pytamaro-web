@@ -2,8 +2,7 @@
   display: flex;
   flex-direction: column;
   margin: auto;
-  gap: 20px;
-  width: 90vw;
+  width: 100%;
 }
 
 .graph_page .editor {
@@ -14,6 +13,7 @@
 .normal.graph_view {
   position: relative;
   height: 70vh;
+  margin: 8px;
 }
 
 .fullscreen.graph_view {
@@ -24,7 +24,7 @@
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 100;
+  z-index: 1500;
 }
 
 .fullscreen.graph_view .card_selection_content .selection_pane_content {

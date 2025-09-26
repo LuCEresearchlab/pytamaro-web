@@ -10,7 +10,6 @@ import {
   toTideFunction,
 } from '../../src/tide/judiciours_to_tide';
 import { ImportedDefinition } from '../../src/tide/language/definitions';
-import CodeEditor from '../CodeEditor';
 
 export default function TideConfigurationCode({
   setConfiguration,
@@ -139,13 +138,12 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modules, source]);
 
-  return (
-    <CodeEditor
-      initialSource=''
-      currentSource={source}
-      onChange={async (v) => {
-        setSource(v);
-      }}
-    />
-  );
+  return <></>;
+  //<CodeEditor
+  //  initialSource=''
+  //  currentSource={source}
+  //  onChange={async (v) => {
+  //    setSource(v);
+  //  }}
+  ///>
 }

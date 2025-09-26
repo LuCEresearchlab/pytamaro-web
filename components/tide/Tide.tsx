@@ -178,12 +178,7 @@ export default function Tide({
   });
 
   return (
-    <Paper
-      className={`${fullscreen ? 'fullscreen' : 'normal'} graph_view `}
-      style={{
-        border: 'solid black 2px',
-      }}
-    >
+    <Paper className={`${fullscreen ? 'fullscreen' : 'normal'} graph_view `}>
       <ReactFlow
         id='graph_element'
         tabIndex={0}
