@@ -64,7 +64,7 @@ export type ComposeSpec = {
 };
 
 export type PinSpec = {
-  pinPoint: Point;
+  pinning_point: Point;
   graphic: GraphicSpec;
   type: 'pin';
 };

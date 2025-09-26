@@ -252,7 +252,7 @@ class Compose extends Graphic {
     const background = fromSpec(ck, fontMgr, spec.background);
 
     const fgPin = foreground.pinPosition;
-    const bgPin = foreground.pinPosition;
+    const bgPin = background.pinPosition;
     const fgOffsetMatrix = [
       1,
       0,
@@ -299,7 +299,7 @@ class Pin extends Graphic {
   constructor(ck: CanvasKit, fontMgr: FontMgr, spec: PinSpec) {
     const graphic = fromSpec(ck, fontMgr, spec.graphic);
     const {
-      pinPoint: { x: pinX, y: pinY },
+      pinning_point: { x: pinX, y: pinY },
     } = spec;
     const bounds = graphic.bounds;
     const x =
@@ -319,7 +319,7 @@ class Pin extends Graphic {
             ? bounds[1]
             : null;
     if (x === null || y === null) {
-      throw new Error(`Invalid pin point ${spec.pinPoint}`);
+      throw new Error(`Invalid pin point ${spec.pinning_point}`);
     }
 
     super(graphic.path, bounds, { x, y });
@@ -332,7 +332,6 @@ class Pin extends Graphic {
   }
 
   destroy(): void {
-    this.graphic.destroy();
     super.destroy();
   }
 }
