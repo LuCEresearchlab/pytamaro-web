@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  Input,
   TextField,
 } from '@mui/material';
 import Image from 'next/image';
@@ -18,10 +19,12 @@ import {
   Download,
   Fullscreen,
   FullscreenExit,
+  Upload,
 } from '@mui/icons-material';
-import { useReactFlow } from '@xyflow/react';
+import { Edge, useReactFlow } from '@xyflow/react';
 import { useState } from 'react';
 import { useStore } from '../../src/tide/store';
+import { TideNode } from './cards';
 
 export function GraphOptionsIcon(props: { onClick: () => void }) {
   return (
@@ -90,6 +93,42 @@ export function GraphOptions() {
           marginLeft: '20px',
         }}
       >
+        <div className='item'>
+          <Button itemType='file' component='label' role={undefined}>
+            Import <Upload />
+            <Input
+              type='file'
+              style={{
+                clip: 'rect(0 0 0 0)',
+                clipPath: 'inset(50%)',
+                height: 1,
+                overflow: 'hidden',
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                whiteSpace: 'nowrap',
+                width: 1,
+              }}
+              onChange={(e) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const file = (e.target as any).files[0] as File;
+
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const content = JSON.parse((e as any).target.result) as {
+                    nodes: TideNode[];
+                    edges: Edge[];
+                  };
+                  setNodes(content.nodes);
+                  setEdges(content.edges);
+                };
+                reader.readAsText(file);
+              }}
+            />
+          </Button>
+        </div>
         <div className='item'>
           <Button onClick={() => setDownloadModalOpen(true)}>
             Export <Download />
