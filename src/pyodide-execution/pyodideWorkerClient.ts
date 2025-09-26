@@ -1,8 +1,11 @@
+import PQueue from 'p-queue';
 import { ExecutionResponse, cellsToFiles } from '../codeExecution';
 import { ToolboxFunction } from '../localStorage/schema';
 import { PythonFile } from '../schemas/activitySchema';
 
 let pyodideWorker: Worker | null = null;
+
+const executionQueue = new PQueue({ concurrency: 1 });
 
 function sendExecutionRequestToWorkerAndWaitForResponse(python_source: string) {
   return new Promise<ExecutionResponse>((resolve) => {
@@ -11,7 +14,6 @@ function sendExecutionRequestToWorkerAndWaitForResponse(python_source: string) {
         // eslint-disable-next-line no-console
         console.log('Tamaro initialized');
       } else if (event.data?.type === 'result') {
-        console.log('Received result from pyodide worker', event.data);
         pyodideWorker?.removeEventListener('message', listener);
         resolve(event.data.result);
       }
@@ -45,6 +47,7 @@ export default async function executeWithPyodide(
     extraPythonFiles,
   );
   const source = files.find((f) => f.name === 'cell.py')?.content || '';
-  console.log('Executing with Pyodide', { source });
-  return sendExecutionRequestToWorkerAndWaitForResponse(source);
+  return (await executionQueue.add(() =>
+    sendExecutionRequestToWorkerAndWaitForResponse(source),
+  )) as ExecutionResponse;
 }
