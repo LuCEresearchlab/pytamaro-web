@@ -4,7 +4,7 @@ import { iconPath } from '../components/documentation/utils';
 
 import { Tooltip } from '@mui/material';
 import { Handle, Position } from '@xyflow/react';
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import {
   JudiciousConstant,
   JudiciousElement,
@@ -143,34 +143,36 @@ export function FunctionTamaroCard({
   el,
   module,
   show_handles = false,
-  //returns_icon = undefined,
+  returns_icon = undefined,
 }: {
   el: JudiciousFunction;
   module: string;
   show_handles?: boolean;
-  //returns_icon?: ReactElement;
+  returns_icon?: ReactElement;
 }) {
   const needed_parameters = el.parameters.filter((v) => v.default == null);
   const parameters = el.parameters;
 
-  // const returnsIconRef = useRef() as React.MutableRefObject<HTMLDivElement>;
+  const returnsIconRef = useRef(
+    null,
+  ) as React.MutableRefObject<HTMLDivElement | null>;
 
-  // const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  //
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
   // useMutationObserver(returnsIconRef, () => {
   //   setDimensions({
   //     width: returnsIconRef.current.clientWidth,
   //     height: returnsIconRef.current.clientHeight,
   //   });
   // });
-  //
-  //useEffect(() => {
-  //  if (returns_icon != null) return;
-  //  setDimensions({
-  //    width: 0,
-  //    height: 0,
-  //  });
-  //}, [returns_icon]);
+
+  useEffect(() => {
+    if (returns_icon != null) return;
+    setDimensions({
+      width: 0,
+      height: 0,
+    });
+  }, [returns_icon]);
 
   return (
     <div className='pane_container function_card_pane'>
@@ -279,19 +281,19 @@ export function FunctionTamaroCard({
       <div
         className='pane output_pane hovergroup'
         data-hovergroup={'output'}
-        // style={
-        //   returnsIconRef
-        //     ? {
-        //         minWidth: `${dimensions.width + 24}px`,
-        //       }
-        //     : undefined
-        // }
+        style={
+          returnsIconRef
+            ? {
+                minWidth: `${dimensions.width + 24}px`,
+              }
+            : undefined
+        }
       >
-        {/*returns_icon && (
+        {returns_icon && (
           <div ref={returnsIconRef} className='returns_icon'>
             {returns_icon && (returns_icon as ReactElement)}
           </div>
-        )*/}
+        )}
         {el.returnValue && (
           <Arrow
             parameter_amount={1}
