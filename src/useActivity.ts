@@ -26,15 +26,12 @@ import {
   getDefaultActivityVariantMetadata,
 } from './localStorage/schema';
 import useLocalToolbox from './localStorage/useLocalToolbox';
-import { initPyodide } from './pyodide-execution/pyodideWorkerClient';
 import {
   ActivityVariant,
   PythonFile,
   activityVariantId,
 } from './schemas/activitySchema';
 import { EventName, storeDbEvent } from './storeDbEvent';
-
-initPyodide();
 
 export function initialCodeExecutionState(): CodeCellExecutionState {
   return {
@@ -106,7 +103,6 @@ export function useActivity(
   setMetadata: Dispatch<SetStateAction<Metadata>>,
   activityVariant: ActivityVariant,
   extraPythonFiles: PythonFile[],
-  pyodide: boolean = false,
   preExecute: () => ToolboxFunction | undefined = () => undefined,
   postExecuteSingleCell: (
     idx: number,
@@ -237,25 +233,12 @@ export function useActivity(
     idx: number,
   ) => {
     executionStarted(idx);
-    let response: ExecutionResponse;
-    if (pyodide) {
-      const executeWithPyodide = await import(
-        './pyodide-execution/pyodideWorkerClient'
-      ).then((m) => m.default);
-      response = await executeWithPyodide(
-        sources,
-        idx,
-        toolboxFunctions,
-        extraPythonFiles,
-      );
-    } else {
-      response = await executeOnServer(
-        sources,
-        idx,
-        toolboxFunctions,
-        extraPythonFiles,
-      );
-    }
+    const response = await executeOnServer(
+      sources,
+      idx,
+      toolboxFunctions,
+      extraPythonFiles,
+    );
     executionFinished(idx, response);
     postExecuteSingleCell(idx, response);
     return response;

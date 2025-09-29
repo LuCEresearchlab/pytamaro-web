@@ -12,7 +12,6 @@ export default function useLocalActivity(
   initialCodeCells: CodeCellState[],
   activityVariant: ActivityVariant,
   extraPythonFiles: PythonFile[] = [],
-  pyodide: boolean = false,
 ) {
   const { metadata, setMetadata } = useLocalProfile();
   const variantId = activityVariantId(activityVariant);
@@ -29,7 +28,6 @@ export default function useLocalActivity(
     setMetadata,
     activityVariant,
     extraPythonFiles,
-    pyodide,
   );
   const localCodeCellsWrongLength =
     codeCells.length !== initialCodeCells.length ||

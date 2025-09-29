@@ -26,7 +26,6 @@ export default function useTemporaryActivity(
     setTemporaryMetadata,
     activityVariant,
     [],
-    false,
     preExecute,
     postExecuteSingleCell,
   );
