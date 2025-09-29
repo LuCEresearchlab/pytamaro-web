@@ -1,6 +1,11 @@
 import { Article, Error, RemoveRedEye } from '@mui/icons-material';
 import { IconButton, Paper } from '@mui/material';
-import { NodeMouseHandler, ReactFlow, useReactFlow } from '@xyflow/react';
+import {
+  Background,
+  NodeMouseHandler,
+  ReactFlow,
+  useReactFlow,
+} from '@xyflow/react';
 import { Ref, useCallback, useEffect, useRef, useState } from 'react';
 import {
   JudiciousConstant,
@@ -424,6 +429,8 @@ export default function Tide({
             })()}
           />
         )}
+
+        <Background />
       </ReactFlow>
     </Paper>
   );
