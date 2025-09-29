@@ -12,25 +12,25 @@ import {
 } from '@xyflow/react';
 import { create, StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
+import {
+  TamaroCardNode,
+  TideNode,
+  TideNodeMetadata,
+} from '../../components/tide/cards';
+import { JudiciousModule } from '../schemas/documentation';
 import { ChangeSliceState, createChangeSlice } from './changes';
 import { ConfigurationState, createConfigurationSlice } from './configuration';
+import { construct, evaluation, synchronous_phases } from './evaluation';
+import { updateParent } from './graph_toolbox';
+import { TideJudiciousMetadata } from './judiciours_to_tide';
+import { Definition } from './language/definitions';
+import { toFlat } from './language/utils';
 import {
   compute_edge_change,
   compute_node_change,
   getNode,
   getSubTreeFromRoot,
 } from './utils';
-import { updateParent } from './graph_toolbox';
-import {
-  TamaroCardNode,
-  TideNode,
-  TideNodeMetadata,
-} from '../../components/tide/cards';
-import { construct, evaluation, synchronous_phases } from './evaluation';
-import { Definition } from './language/definitions';
-import { JudiciousModule } from '../schemas/documentation';
-import { TideJudiciousMetadata } from './judiciours_to_tide';
-import { toFlat } from './language/utils';
 
 export interface DraggedElementData {
   type: string;
@@ -484,7 +484,7 @@ export const useStore = create<StoreType>()(
       ...createConfigurationSlice(...a),
     }),
     {
-      name: 'playground_graph',
+      name: 'tide-storage',
       partialize: (state) => ({
         nodes: state.nodes,
         edges: state.edges,
