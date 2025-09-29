@@ -1,4 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
+import { Schema } from '@mui/icons-material';
 import AccountBalance from '@mui/icons-material/AccountBalance';
 import Hiking from '@mui/icons-material/Hiking';
 import Print from '@mui/icons-material/Print';
@@ -104,9 +105,8 @@ export default function Teaching() {
                   </Grid>
                   <Grid xs={12} md={5} sx={{ background: '#B6A99B' }}>
                     <Box
-                      padding={2}
                       position='relative'
-                      height='12rem'
+                      height='100%'
                       alignItems='center'
                       justifyContent='center'
                       display='flex'
@@ -116,7 +116,60 @@ export default function Teaching() {
                         alt='Use of Tamaro Cards'
                         fill
                         style={{
-                          objectFit: 'contain',
+                          objectFit: 'cover',
+                          padding: theme.spacing(1),
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                </Grid>
+              </CardActionArea>
+            </Card>
+            <Card elevation={4}>
+              <CardActionArea href='/tide'>
+                <Grid container>
+                  <Grid xs={12} md={7}>
+                    <CardHeader
+                      avatar={<Schema color='primary' />}
+                      title='From Unplugged to Plugged TamaroCards With TIDE'
+                      titleTypographyProps={{
+                        variant: 'h5',
+                        color: 'primary',
+                        fontWeight: 'bold',
+                      }}
+                      sx={{ pb: 0 }}
+                    />
+                    <CardContent>
+                      <Typography fontSize='1.1rem' paragraph gutterBottom>
+                        TIDE is a web-based interactive environment for
+                        TamaroCards with live evaluation of graphics and colors.
+                      </Typography>
+                      <Typography fontSize='1.1rem' paragraph gutterBottom>
+                        A teaching sequence can start unplugged, with
+                        paper-based cards that students manually evaluate, and
+                        then transition to TIDE, where students can use the same
+                        notation with live execution.
+                      </Typography>
+                    </CardContent>
+                  </Grid>
+                  <Grid
+                    xs={12}
+                    md={5}
+                    sx={{ background: theme.palette.grey[100] }}
+                  >
+                    <Box
+                      position='relative'
+                      height='100%'
+                      alignItems='center'
+                      justifyContent='center'
+                      display='flex'
+                    >
+                      <Image
+                        src='/tide.png'
+                        alt='A screenshot of TIDE'
+                        fill
+                        style={{
+                          objectFit: 'cover',
                           padding: theme.spacing(1),
                         }}
                       />
@@ -158,7 +211,7 @@ export default function Teaching() {
                     <Box
                       padding={2}
                       position='relative'
-                      height='12rem'
+                      height='100%'
                       alignItems='center'
                       justifyContent='center'
                       display='flex'
@@ -209,7 +262,7 @@ export default function Teaching() {
                     <Box
                       padding={2}
                       position='relative'
-                      height='12rem'
+                      height='100%'
                       alignItems='center'
                       justifyContent='center'
                       display='flex'
@@ -260,7 +313,7 @@ export default function Teaching() {
                     <Box
                       padding={2}
                       position='relative'
-                      height='12rem'
+                      height='100%'
                       alignItems='center'
                       justifyContent='center'
                       display='flex'
@@ -308,7 +361,7 @@ export default function Teaching() {
                     <Box
                       padding={2}
                       position='relative'
-                      height='12rem'
+                      height='100%'
                       alignItems='center'
                       justifyContent='center'
                       display='flex'
