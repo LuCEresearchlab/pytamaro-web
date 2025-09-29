@@ -1,7 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import { Handle, NodeProps, Position } from '@xyflow/react';
-import { ExtraneousNodeProps, ConstantNode } from '.';
-import { useStore } from '../../../src/tide/store';
 import {
   ChangeEvent,
   CSSProperties,
@@ -13,17 +11,19 @@ import {
   useState,
 } from 'react';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
-import { Location } from '../../../src/tide/language/types';
-import ResultIcon from '../ResultIcon';
-import { iconPath } from '../../documentation/utils';
 import { useShallow } from 'zustand/shallow';
+import { ConstantNode, ExtraneousNodeProps } from '.';
+import { Location } from '../../../src/tide/language/types';
 import {
   EvaluatedValueType,
   SoundType,
 } from '../../../src/tide/language/typing';
+import { useStore } from '../../../src/tide/store';
+import { iconPath } from '../../documentation/utils';
+import ResultIcon from '../ResultIcon';
 
 const useMutationObserver = (
-  ref: RefObject<Node>,
+  ref: RefObject<Node | null>,
   callback: () => void,
   options = {
     attributes: true,
@@ -146,7 +146,7 @@ export function TideConstantUse({
     [data.input, id, updateNodeData],
   );
 
-  const returnsIconRef = useRef() as React.MutableRefObject<HTMLDivElement>;
+  const returnsIconRef: RefObject<HTMLDivElement | null> = useRef(null);
 
   const value =
     data.tide_node && 'data' in data.tide_node
@@ -159,8 +159,8 @@ export function TideConstantUse({
 
   useMutationObserver(returnsIconRef, () => {
     setDimensions({
-      width: returnsIconRef.current.clientWidth,
-      height: returnsIconRef.current.clientHeight,
+      width: returnsIconRef.current?.clientWidth || 0,
+      height: returnsIconRef.current?.clientHeight || 0,
     });
   });
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { allKinds } from '../../src/documentation';
 import executeWithPyodide from '../../src/pyodide-execution/pyodideWorkerClient';
 import { JudiciousModule } from '../../src/schemas/documentation';
@@ -18,7 +18,8 @@ export default function TideConfigurationCode({
   setConfiguration: (v: Partial<ConfigurationState>) => void;
   modules: JudiciousModule[];
 }) {
-  const [source, setSource] = useState('from pytamaro import *');
+  // const [source, setSource] = useState('from pytamaro import *');
+  const source = 'from pytamaro import *';
 
   const configuration_timeout = useRef(undefined as NodeJS.Timeout | undefined);
   const cached_modules = useRef([] as string[]);

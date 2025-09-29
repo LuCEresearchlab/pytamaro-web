@@ -1,4 +1,5 @@
 import { NodeProps } from '@xyflow/react';
+import { JSX } from 'react';
 import { TideNode } from '.';
 
 export default function TamaroWrapper({

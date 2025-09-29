@@ -3,7 +3,7 @@
   transform: translateY(-50%) translateY(5px);
   display: flex;
   flex-direction: row;
-  align-items: end;
+  align-items: flex-end;
 }
 
 .arrow_text {
@@ -198,7 +198,7 @@
 
 .card_library {
   position: absolute;
-  width: 16;
+  width: 16px;
   aspect-ratio: 1;
   top: 0;
 }

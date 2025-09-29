@@ -6,11 +6,11 @@ import {
   useReactFlow,
 } from '@xyflow/react';
 import { createRef, RefObject, useCallback, useEffect, useRef } from 'react';
-import { useStore } from '../../../src/tide/store';
-import { updateParent } from '../../../src/tide/graph_toolbox';
-import { ContentEditableDiv } from './literal';
-import { ExtraneousNodeProps, ConstantDefinitionNode } from '.';
 import { useShallow } from 'zustand/shallow';
+import { ConstantDefinitionNode, ExtraneousNodeProps } from '.';
+import { updateParent } from '../../../src/tide/graph_toolbox';
+import { useStore } from '../../../src/tide/store';
+import { ContentEditableDiv } from './literal';
 
 const KEYWORDS: string[] = [
   'False',
@@ -78,7 +78,7 @@ export default function TideConstantDefinition(
 ) {
   const { id, positionAbsoluteX, positionAbsoluteY, data, show_handles } =
     props;
-  const textRef: RefObject<HTMLDivElement> = createRef();
+  const textRef: RefObject<HTMLDivElement | null> = createRef();
   const { screenToFlowPosition } = useReactFlow();
   const { initialized, onNodesChange, updateNodeData, getNodes } = useStore(
     useShallow((state) => ({
