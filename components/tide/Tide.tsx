@@ -275,12 +275,12 @@ export default function Tide({
               border: '#ddd solid 2px',
               padding: '5px',
               borderRadius: '5px',
-              top: '20px',
+              top: '10px',
               background: 'white',
               zIndex: '100',
             }}
           >
-            <h3 style={{ margin: '10px 5px' }}>Errors :</h3>
+            <h3 style={{ margin: '10px 5px' }}>Errors:</h3>
 
             <div
               style={{
@@ -326,7 +326,6 @@ export default function Tide({
                         position: 'absolute',
                         top: '0',
                         right: '0',
-                        margin: '10px',
                       }}
                       onClick={() =>
                         fitView({

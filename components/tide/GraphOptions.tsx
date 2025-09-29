@@ -261,7 +261,7 @@ export function GraphOptions() {
           justifyItems: 'start',
           alignItems: 'center',
           backgroundColor: theme.pytamaro.backgroundColor,
-          border: 'solid black 2px',
+          border: 'solid gray 1px',
           width: '100%',
           borderRadius: '20px 0% 0% 0%',
           userSelect: 'none',

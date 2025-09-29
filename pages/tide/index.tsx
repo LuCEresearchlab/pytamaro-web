@@ -121,7 +121,7 @@ function TidePage() {
   return (
     <div>
       <Head>
-        <title>My Data - PyTamaro</title>
+        <title>TIDE - PyTamaro</title>
       </Head>
       <Box>
         <div className='graph_page'>
@@ -202,10 +202,12 @@ function TidePage() {
           </div>
           <Container>
             <Typography variant='h6' marginTop={12} align='center'>
-              Read the{' '}
-              <Link href='https://doi.org/10.1145/3759534.3762683'>
-                research paper about TIDE
-              </Link>
+              Curious to know more about the design of TIDE? Read the research
+              paper!{' '}
+              <Link href='https://luce.si.usi.ch/assets/publications/bevilacquaTIDEEducationalLive2025.pdf'>
+                [PDF]
+              </Link>{' '}
+              <Link href='https://doi.org/10.1145/3759534.3762683'>[DOI]</Link>
             </Typography>
           </Container>
         </div>
