@@ -128,14 +128,13 @@ export default function Research() {
               PyTamaro’s trade-offs in comparison to coordinate-based libraries.
               The work reported here paves the way for future empirical
               evaluations of PyTamaro and associated teaching practices.'
-              pdf='https://www.chiodini.org/publications/splashe23-pytamaro.pdf'
+              pdf='https://luce.si.usi.ch/assets/publications/chiodiniTeachingProgrammingGraphics2023.pdf'
               video='https://www.youtube.com/watch?v=T0QjwGNYz7A'
               conference='SPLASH-E 2023'
               authors='Luca Chiodini, Juha Sorva, Matthias Hauswirth'
             />
             <ResearchCard
-              title='Two Approaches for Programming Education in the Domain of
-Graphics: An Experiment'
+              title='Two Approaches for Programming Education in the Domain of Graphics: An Experiment'
               abstract='Context Graphics is a popular domain for teaching
               introductory programming in a motivating way, even in text-based
               programming languages. Over the last few decades, a large number
@@ -175,7 +174,7 @@ Graphics: An Experiment'
               This challenges programming educators and researchers to
               investigate further which graphics-based approaches work best and
               how to facilitate transfer'
-              pdf='https://chiodini.org/publications/programming25-pytamaro-turtle.pdf'
+              pdf='https://luce.si.usi.ch/assets/publications/chiodiniTwoApproachesProgramming2025.pdf'
               conference='‹Programming› 2025'
               authors='Luca Chiodini, Juha Sorva, Arto Hellas, Otto Seppälä, Matthias Hauswirth'
             />
@@ -210,7 +209,7 @@ Graphics: An Experiment'
               pinpointing of side effects aim to address known novice
               misconceptions. The system is integrated into a code editor and is
               publicly available as a web platform.'
-              pdf='https://chiodini.org/publications/splashe24-judicious.pdf'
+              pdf='https://luce.si.usi.ch/assets/publications/chiodiniJudiciousAPIDocumentation2024.pdf'
               video='https://www.youtube.com/watch?v=O-A3Anz0Tfw'
               conference='SPLASH-E 2024'
               authors='Luca Chiodini, Simone Piatti, Matthias Hauswirth'
@@ -239,9 +238,33 @@ Graphics: An Experiment'
               000 programs that use the Toolbox of Functions. This initial
               experience suggests the potential of the approach to instill the
               principle of code reuse effectively.'
-              pdf='https://www.chiodini.org/publications/ecsee25-pytamaro-toolbox.pdf'
+              pdf='https://luce.si.usi.ch/assets/publications/chiodiniToolboxFunctionsTeaching2025.pdf'
               conference='ECSEE 2025'
               authors='Luca Chiodini, Joey Bevilacqua, Matthias Hauswirth'
+            />
+            <ResearchCard
+              title='TIDE: An Educational Live Programming Environment to Compose Graphics with PyTamaro'
+              abstract='The PyTamaro approach to introductory programming
+              equates composing a program to composing a graphic. Using the
+              simple PyTamaro library for Python, beginner programmers compose
+              function calls that produce primitive graphics, such as
+              `rectangle(20, 10, red)`, with function calls that combine graphics
+              into composites, such as `above(_, _)`.
+              To ease students into programming, several school teachers have
+              been using TamaroCards, a paper-based visual language that can
+              express the subset of Python needed to compose simple graphics
+              with PyTamaro.
+              This paper introduces TIDE, the TamaroCards IDE, a web-based
+              environment to complement the unplugged, paper-based TamaroCards.
+              Given the constraints imposed by the Python programming language,
+              the PyTamaro library, and the TamaroCards notation, the paper
+              explores the design space for an interactive TamaroCards
+              programming environment, describes a design that satisfies the
+              pedagogical needs, and evaluates the implemented design using the
+              Cognitive Dimensions framework.'
+              pdf='https://luce.si.usi.ch/assets/publications/bevilacquaTIDEEducationalLive2025.pdf'
+              conference='PAINT 2025'
+              authors='Joey Bevilacqua, Nathan Coquerel, Luca Chiodini, Igor Moreno Santos, Matthias Hauswirth'
             />
           </Stack>
         </Container>

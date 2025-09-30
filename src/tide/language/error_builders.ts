@@ -1,0 +1,150 @@
+import {
+  TideGenericError,
+  TideNameErrorCyclicalDependencies,
+  TideNameErrorMultipleDefinition,
+  TideNameErrorUnknownConstant,
+  TideNameErrorUnknownFunction,
+  TideSyntaxErrorConstantHasNoValue,
+  TideSyntaxErrorInvalidConstantIdentifier,
+  TideSyntaxErrorInvalidFunctionIdentifier,
+  TideSyntaxErrorInvalidLiteral,
+  TideNameErrorMissingParameter,
+  TideNameErrorNodeKindMismatch,
+  TideTypeError,
+  TideRuntimeError,
+} from './errors';
+
+export function TideNameErrorNodeKindMismatch_builder(
+  name: string,
+  expected_kind: string,
+  got_kind: string,
+): TideNameErrorNodeKindMismatch {
+  return {
+    kind: 'name-error',
+    subkind: 'node_kind_mismatch',
+    args: [
+      { name: 'name', value: name },
+      { name: 'expected_kind', value: expected_kind },
+      { name: 'got_kind', value: got_kind },
+    ],
+  };
+}
+
+export function TideSyntaxErrorInvalidConstantIdentifier_builder(
+  name: string,
+): TideSyntaxErrorInvalidConstantIdentifier {
+  return {
+    kind: 'syntax-error',
+    subkind: 'invalid_constant_identifier',
+    args: [{ name: 'name', value: name }],
+  };
+}
+
+export function TideSyntaxErrorInvalidFunctionIdentifier_builder(
+  name: string,
+): TideSyntaxErrorInvalidFunctionIdentifier {
+  return {
+    kind: 'syntax-error',
+    subkind: 'invalid_function_identifier',
+    args: [{ name: 'name', value: name }],
+  };
+}
+
+export function TideSyntaxErrorInvalidLiteral_builder(
+  value: string,
+): TideSyntaxErrorInvalidLiteral {
+  return {
+    kind: 'syntax-error',
+    subkind: 'invalid_literal',
+    args: [{ name: 'value', value: value }],
+  };
+}
+
+export function TideSyntaxErrorConstantHasNoValue_builder(
+  name: string,
+): TideSyntaxErrorConstantHasNoValue {
+  return {
+    kind: 'syntax-error',
+    subkind: 'constant_has_no_value',
+    args: [{ name: 'name', value: name }],
+  };
+}
+
+export function TideSyntaxErrorMissingParameter_builder(
+  name: string,
+): TideNameErrorMissingParameter {
+  return {
+    kind: 'name-error',
+    subkind: 'missing_parameter',
+    args: [{ name: 'name', value: name }],
+  };
+}
+
+export function TideTypeError_builder(
+  expected: string,
+  got: string,
+  handle: string,
+): TideTypeError {
+  return {
+    kind: 'type-error',
+    args: [
+      { name: 'expected', value: expected },
+      { name: 'got', value: got },
+      { name: 'handle', value: handle },
+    ],
+  };
+}
+
+export function TideNameErrorUnknownConstant_builder(
+  name: string,
+): TideNameErrorUnknownConstant {
+  return {
+    kind: 'name-error',
+    subkind: 'unknown_constant',
+    args: [{ name: 'name', value: name }],
+  };
+}
+
+export function TideNameErrorUnknownFunction_builder(
+  name: string,
+): TideNameErrorUnknownFunction {
+  return {
+    kind: 'name-error',
+    subkind: 'unknown_function',
+    args: [{ name: 'name', value: name }],
+  };
+}
+
+export function TideNameErrorMultipleDefinition_builder(
+  name: string,
+): TideNameErrorMultipleDefinition {
+  return {
+    kind: 'name-error',
+    subkind: 'multiple_definitions',
+    args: [{ name: 'name', value: name }],
+  };
+}
+
+export function TideNameErrorCyclicalDependencies_builder(
+  names: string[],
+): TideNameErrorCyclicalDependencies {
+  return {
+    kind: 'name-error',
+    subkind: 'cyclical_dependencies',
+    args: [{ name: 'names', value: names }],
+  };
+}
+
+export function TideRuntimeError_builder(error: string): TideRuntimeError {
+  return {
+    kind: 'runtime-error',
+    args: [{ name: 'error', value: error }],
+  };
+}
+
+export function TideGenericError_builder(): TideGenericError {
+  return {
+    kind: 'generic',
+    args: [],
+  };
+}

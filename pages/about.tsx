@@ -13,6 +13,7 @@ import {
   TablePagination,
   Typography,
 } from '@mui/material';
+import { orderBy } from 'lodash';
 import { MDXRemote } from 'next-mdx-remote';
 import Head from 'next/head';
 import { useState } from 'react';
@@ -38,8 +39,22 @@ const collaborators = [
     contribution:
       'PyTamaro library, initial design of the platform, management and contributions throughout',
     title:
-      'PhD student at the Software Institute, Università della Svizzera italiana (USI)',
+      'Postdoctoral researcher at the Software Institute, Università della Svizzera italiana (USI)',
     avatar: 'LucaChiodini.jpg',
+  },
+  {
+    firstname: 'Joey',
+    lastname: 'Bevilacqua',
+    contribution:
+      'Client-side execution of PyTamaro programs, contributions throughout',
+    title:
+      'PhD student at the Software Institute, Università della Svizzera italiana (USI)',
+  },
+  {
+    firstname: 'Nathan',
+    lastname: 'Coquerel',
+    contribution: 'TIDE: a web-based IDE for TamaroCards',
+    title: 'Master student at Rennes University - Research internship',
   },
   {
     firstname: 'Matthias',
@@ -126,7 +141,7 @@ export default function AboutPage({
           </Typography>
           <Typography variant='body1'>Contributors to the platform:</Typography>
           <List>
-            {collaborators.map((person) => (
+            {orderBy(collaborators, ['lastname', 'firstname']).map((person) => (
               <ListItem
                 key={`collaborator_${person.firstname}_${person.lastname}`}
               >

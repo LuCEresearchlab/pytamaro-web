@@ -10,7 +10,12 @@ import { AppProps } from 'next/app';
 import Head from 'next/head';
 import PageFooter from '../components/PageFooter';
 import theme from '../src/theme';
+
+// Global CSS
 import '../style/styles.css';
+import '../style/tide/graph_options.css';
+import '../style/tide/graph_view.css';
+import '../style/tide/tamaro_cards.css';
 
 // Fonts
 import '@fontsource-variable/fira-code';
