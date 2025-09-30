@@ -10,7 +10,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import { ReactElement } from 'react-markdown/lib/react-markdown';
 import { useShallow } from 'zustand/shallow';
 import { ConstantNode, ExtraneousNodeProps } from '.';
 import { Location } from '../../../src/tide/language/types';
@@ -245,7 +244,7 @@ export function TideConstantUse({
           >
             {returns_icon && (
               <div ref={returnsIconRef} className='returns_icon'>
-                {returns_icon && (returns_icon as ReactElement)}
+                {returns_icon}
               </div>
             )}
           </div>
