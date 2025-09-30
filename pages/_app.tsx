@@ -13,7 +13,6 @@ import theme from '../src/theme';
 
 // Global CSS
 import '../style/styles.css';
-import '../style/tide/bubble.css';
 import '../style/tide/graph_options.css';
 import '../style/tide/graph_view.css';
 import '../style/tide/tamaro_cards.css';

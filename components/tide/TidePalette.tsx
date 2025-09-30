@@ -10,9 +10,9 @@ import {
 } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { JudiciousElement } from '../../src/schemas/documentation';
+import { useStore } from '../../src/tide/store';
 import { ImportReference } from './cards';
 import { TidePalettePane } from './TidePalettePane';
-import { useStore } from '../../src/tide/store';
 
 export type JudiciousModuleElement = JudiciousElement & { module: string };
 const N_LIMIT = 10;
@@ -60,7 +60,7 @@ export default function TidePalette() {
     <Card id='card_selection_pane'>
       <CardHeader
         sx={{ gap: '10px', minWidth: '200px' }}
-        subheader='Palette'
+        subheader='Cards Palette'
         action={
           <IconButton onClick={() => setCollasped(!collapsed)}>
             <ExpandMore></ExpandMore>

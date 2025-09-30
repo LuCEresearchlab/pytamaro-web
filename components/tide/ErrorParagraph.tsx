@@ -1,3 +1,4 @@
+import theme from '../../src/theme';
 import {
   TideError,
   TideNameError,
@@ -84,16 +85,24 @@ export function ErrorParagraph(props: { annotation: TideError }) {
   }, raw_message);
 
   return (
-    <div className='error-paragraph'>
-      <p className='error-title'>{title}</p>
-      <div className='error-body'>
+    <div>
+      <p style={{ fontSize: '1.5em', fontWeight: 'bold', margin: 0 }}>
+        {title}
+      </p>
+      <div style={{ fontSize: '1.25em' }}>
         {message.split('\n').map((line, i) => (
           <div key={i}>
             {line.split('*').map((v, i) =>
               i % 2 === 0 ? (
                 <span key={i}>{v}</span>
               ) : (
-                <span className='error_highlight' key={i}>
+                <span
+                  key={i}
+                  style={{
+                    fontFamily: theme.pytamaro.monospaceFontFamily,
+                    color: theme.pytamaro.redColor,
+                  }}
+                >
                   {v}
                 </span>
               ),

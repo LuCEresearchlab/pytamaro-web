@@ -201,7 +201,12 @@ function TidePage() {
             </ReactFlowProvider>
           </div>
           <Container>
-            <Typography variant='h6' marginTop={12} align='center'>
+            <Typography
+              variant='body1'
+              marginTop={8}
+              align='center'
+              fontSize={'1.3em'}
+            >
               Curious to know more about the design of TIDE? Read the research
               paper!{' '}
               <Link href='https://luce.si.usi.ch/assets/publications/bevilacquaTIDEEducationalLive2025.pdf'>

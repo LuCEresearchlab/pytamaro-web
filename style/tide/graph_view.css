@@ -89,24 +89,6 @@
     drop-shadow(0px var(--radius) var(--spread) var(--color));
 }
 
-.error-paragraph * {
-  font-size: x-large;
-}
-
-.error-paragraph .error_highlight {
-  color: #e68232;
-}
-
-.error-paragraph .error-title {
-  font-weight: bold;
-  font-size: xx-large;
-  margin: 0;
-}
-
-.error-paragraph .error-body {
-  margin: 0px;
-}
-
 .react-flow__node-constant_definition {
   z-index: -100 !important;
 }
