@@ -36,7 +36,7 @@ async function loadPyodideWithPytamaro() {
   }
   await pyodide.loadPackage('micropip');
   const microPip = pyodide.pyimport('micropip');
-  await microPip.install(assetUrl('pytamaro_headless-0.7.3-py3-none-any.whl'));
+  await microPip.install(assetUrl('pytamaro-1.1.4-py3-none-any.whl'));
 }
 
 async function loadCanvasKit() {
@@ -111,11 +111,9 @@ async function loadFontMgr(ck: CanvasKit): Promise<FontMgr> {
 }
 
 function installPytamaroFfi() {
-  pyodide?.registerJsModule('pytamaro_renderer', {
-    render_image: (graphic: GraphicSpec, debug: boolean) =>
+  pyodide?.registerJsModule('pytamaro_ffi', {
+    show_graphic: (graphic: GraphicSpec, debug: boolean) =>
       draw(unProxy<GraphicSpec>(() => graphic)(), debug),
-    render_animation: () => {},
-    run_interact: () => {},
     rendered_height: (graphic: GraphicSpec) =>
       renderedSize(unProxy<GraphicSpec>(() => graphic)()).height,
     rendered_width: (graphic: GraphicSpec) =>
