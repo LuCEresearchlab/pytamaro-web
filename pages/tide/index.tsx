@@ -8,17 +8,22 @@ import { translationProps } from '../../src/serverSideTranslationProps';
 import { ConfigurationState } from '../../src/tide/configuration';
 import { useStore } from '../../src/tide/store';
 
-import { Box, Container, Link, Paper, Typography } from '@mui/material';
+import { Alert, Box, Container, Link, Paper, Typography } from '@mui/material';
 import anime from 'animejs';
 import Head from 'next/head';
 import { useShallow } from 'zustand/shallow';
 import PageTitle from '../../components/PageTitle';
 import NavigationBar from '../../components/navbar/NavigationBar';
 import { initPyodide } from '../../src/pyodide-execution/pyodideWorkerClient';
+import { exceptions, jspi, referenceTypes } from 'wasm-feature-detect';
 
 initPyodide();
 
 const LOADING_DEBOUNCE_TIME = 2000;
+
+async function detectEvalSupport(): Promise<boolean> {
+  return (await exceptions()) && (await jspi()) && (await referenceTypes());
+}
 
 function TidePage() {
   const [configuration, setConfiguration] = useState(
@@ -28,6 +33,14 @@ function TidePage() {
   const loading_debounche_timer = useRef(
     undefined as NodeJS.Timeout | undefined,
   );
+
+  const [evalSupported, setEvalSupported] = useState(true);
+
+  useEffect(() => {
+    detectEvalSupport()
+      .then(setEvalSupported)
+      .catch(() => setEvalSupported(false));
+  }, [setEvalSupported]);
 
   const [loaded, setLoaded] = useState(false);
 
@@ -127,6 +140,20 @@ function TidePage() {
         <div className='graph_page'>
           <NavigationBar />
           <PageTitle>TIDE: An IDE for TamaroCards</PageTitle>
+          <Container>
+            <Alert severity='warning'>
+              TIDE is currently available in early preview for evaluation and
+              testing purposes.
+            </Alert>
+            {evalSupported === false ? (
+              <Alert severity='error'>
+                Evaluation of graphic values is not supported by your browser.
+              </Alert>
+            ) : (
+              <div />
+            )}
+          </Container>
+
           <div className='editor'>
             <TideConfigurationCode
               setConfiguration={setConfiguration}
