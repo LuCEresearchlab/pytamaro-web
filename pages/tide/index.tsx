@@ -8,14 +8,16 @@ import { translationProps } from '../../src/serverSideTranslationProps';
 import { ConfigurationState } from '../../src/tide/configuration';
 import { useStore } from '../../src/tide/store';
 
+import { FeedbackOutlined } from '@mui/icons-material';
 import { Alert, Box, Container, Link, Paper, Typography } from '@mui/material';
 import anime from 'animejs';
 import Head from 'next/head';
+import { exceptions, jspi, referenceTypes } from 'wasm-feature-detect';
 import { useShallow } from 'zustand/shallow';
 import PageTitle from '../../components/PageTitle';
 import NavigationBar from '../../components/navbar/NavigationBar';
 import { initPyodide } from '../../src/pyodide-execution/pyodideWorkerClient';
-import { exceptions, jspi, referenceTypes } from 'wasm-feature-detect';
+import theme from '../../src/theme';
 
 initPyodide();
 
@@ -141,13 +143,31 @@ function TidePage() {
           <NavigationBar />
           <PageTitle>TIDE: An IDE for TamaroCards</PageTitle>
           <Container>
-            <Alert severity='warning'>
-              TIDE is currently available in early preview for evaluation and
-              testing purposes.
+            <Alert
+              icon={<FeedbackOutlined />}
+              severity='info'
+              sx={{
+                fontSize: theme.typography.body1.fontSize,
+                fontWeight: 'normal',
+                backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                marginBottom: 2,
+              }}
+            >
+              TIDE is currently available in early preview. If you encounter any
+              error, send us feedback using the button at the top right of the
+              page.
             </Alert>
             {evalSupported === false ? (
-              <Alert severity='error'>
-                Evaluation of graphic values is not supported by your browser.
+              <Alert
+                severity='error'
+                sx={{
+                  fontSize: theme.typography.body1.fontSize,
+                  fontWeight: 'normal',
+                  marginBottom: 2,
+                }}
+              >
+                Your browser does not support the evaluation of graphics. Please
+                try with a different browser.
               </Alert>
             ) : (
               <div />
