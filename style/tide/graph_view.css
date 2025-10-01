@@ -45,10 +45,13 @@
   --spread: 10px;
   --radius: 2px;
 
-  filter: drop-shadow(var(--radius) 0 var(--spread) var(--color))
-    drop-shadow(calc(-1 * var(--radius)) 0 var(--spread) var(--color))
-    drop-shadow(0px calc(-1 * var(--radius)) var(--spread) var(--color))
-    drop-shadow(0px var(--radius) var(--spread) var(--color));
+  transform: translateZ(0);
+
+  filter: 
+    drop-shadow(var(--radius)            0                        var(--spread) var(--color))
+    drop-shadow(calc(-1 * var(--radius)) 0                        var(--spread) var(--color))
+    drop-shadow(0px                      calc(-1 * var(--radius)) var(--spread) var(--color))
+    drop-shadow(0px                      var(--radius)            var(--spread) var(--color));
 }
 
 .react-flow__edge.selected path {
