@@ -267,8 +267,8 @@ class Compose extends Graphic {
 
     // Stub path for bounds
     const boundsPath = new ck.Path()
-      .addRect(foreground.bounds)
-      .addPath(new ck.Path().addRect(background.bounds), fgOffsetMatrix, true)!;
+      .addRect(background.bounds)
+      .addPath(new ck.Path().addRect(foreground.bounds), fgOffsetMatrix, true)!;
     super(boundsPath, boundsPath?.computeTightBounds(), bgPin);
     this.background = background;
     this.foreground = foreground;
