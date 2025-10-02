@@ -95,4 +95,19 @@ describe('Code Execution Errors', () => {
     cy.get('.output-area').should('contain.text', 'out');
     cy.get('.output-area').parent().should('contain.text', 'err');
   });
+
+  it('should show the error when a cell calls a function from a previous cell that has an error', () => {
+    cy.visit(
+      activityVariantPathnameFromParts('luce', 'swiss-flag', 'en', 'v2'),
+    );
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    cy.get('.monaco-editor').first().type('{selectall}{backspace}');
+    cy.get('.monaco-editor').first().type('def f(): print(a)');
+    cy.get('.monaco-editor').eq(1).type('{selectall}{backspace}');
+    cy.get('.monaco-editor').eq(1).type('f()');
+    cy.get('.run-button').eq(1).click();
+    cy.get('.peekview-widget').should('be.visible').contains('NameError');
+    cy.get('.output-area').parent().contains('NameError');
+  });
 });
