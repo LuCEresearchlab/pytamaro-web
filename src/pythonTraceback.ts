@@ -1,6 +1,10 @@
 import { Monaco } from '@monaco-editor/react';
 import { type editor as EditorNamespace } from 'monaco-editor';
-import { CompletedExecutionResponse } from './codeExecution';
+import {
+  CompletedExecutionResponse,
+  CURRENT_CELL_FILE,
+  PREVIOUS_CELLS_FILE,
+} from './codeExecution';
 import { splitLines } from './sourceUtils';
 
 export const TRACEBACK_TIDLE_DECORATION_CLASSNAME =
@@ -27,8 +31,8 @@ function nicerTraceback(traceback: string) {
   return replaceEllipsis(hideGlot(hideDriver(traceback)));
 }
 
-function lineNumOfErrorThisCell(traceback: string[]) {
-  const regex = / {2}File "cell.py", line (\d+)/;
+function lineNumOfError(traceback: string[], filename: string) {
+  const regex = new RegExp(` {2}File "${filename}", line (\\d+)`);
   const idxTracebackLine = traceback.findLastIndex((line) => regex.test(line));
   return idxTracebackLine !== -1
     ? {
@@ -36,6 +40,14 @@ function lineNumOfErrorThisCell(traceback: string[]) {
         lineNum: parseInt(traceback[idxTracebackLine].match(regex)![1], 10),
       }
     : undefined;
+}
+
+function lineNumOfErrorThisCell(traceback: string[]) {
+  return lineNumOfError(traceback, `${CURRENT_CELL_FILE}.py`);
+}
+
+function lineNumOfErrorPreviousCells(traceback: string[]) {
+  return lineNumOfError(traceback, `${PREVIOUS_CELLS_FILE}.py`);
 }
 
 export function addMarkers(
@@ -147,5 +159,5 @@ export function isErrorInvolvingToolbox(content: string) {
 }
 
 export function isErrorPreviousCells(content: string) {
-  return lineNumOfErrorThisCell(stderrLines(content)) === undefined;
+  return lineNumOfErrorPreviousCells(stderrLines(content)) !== undefined;
 }
