@@ -341,8 +341,10 @@ export default function ExecutionOutputArea({
         ...sx,
       }}
     >
-      {isErrorInvolvingToolbox(stderr) && <ToolboxErrorAlert />}
-      {stderr && isErrorPreviousCells(stderr) ? (
+      {executionError && isErrorInvolvingToolbox(stderr) && (
+        <ToolboxErrorAlert />
+      )}
+      {executionError && stderr && isErrorPreviousCells(stderr) ? (
         <PreviousCellsErrorAlert buttonDisabled={dimmed} />
       ) : (
         <Box sx={{ px: 2 }}>
