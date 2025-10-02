@@ -82,4 +82,17 @@ describe('Code Execution Errors', () => {
         expect(rect.top).to.be.greaterThan(0);
       });
   });
+
+  it('should show the stderr output', () => {
+    cy.visit(playgroundPathname());
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    cy.get('.monaco-editor').first().type('{selectall}{backspace}');
+    cy.get('.monaco-editor')
+      .first()
+      .type('import sys\nprint("out")\nprint("err", file=sys.stderr)');
+    cy.get('.run-button').first().click();
+    cy.get('.output-area').should('contain.text', 'out');
+    cy.get('.output-area').parent().should('contain.text', 'err');
+  });
 });
