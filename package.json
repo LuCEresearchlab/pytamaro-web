@@ -62,7 +62,6 @@
     "use-local-storage-state": "^18.3.3",
     "use-session-storage-state": "^18.2.0",
     "uuid": "^9.0.0",
-    "wasm-feature-detect": "^1.8.0",
     "web-worker": "^1.2.0",
     "zustand": "^5.0.8"
   },
