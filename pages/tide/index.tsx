@@ -12,20 +12,16 @@ import { FeedbackOutlined } from '@mui/icons-material';
 import { Alert, Box, Container, Link, Paper, Typography } from '@mui/material';
 import anime from 'animejs';
 import Head from 'next/head';
-import { exceptions, jspi, referenceTypes } from 'wasm-feature-detect';
 import { useShallow } from 'zustand/shallow';
 import PageTitle from '../../components/PageTitle';
 import NavigationBar from '../../components/navbar/NavigationBar';
 import { initPyodide } from '../../src/pyodide-execution/pyodideWorkerClient';
 import theme from '../../src/theme';
+import makeFfi from '../../src/pyodide-execution/ffi';
 
-initPyodide();
+makeFfi().then(initPyodide);
 
 const LOADING_DEBOUNCE_TIME = 2000;
-
-async function detectEvalSupport(): Promise<boolean> {
-  return (await exceptions()) && (await jspi()) && (await referenceTypes());
-}
 
 function TidePage() {
   const [configuration, setConfiguration] = useState(
@@ -35,14 +31,6 @@ function TidePage() {
   const loading_debounche_timer = useRef(
     undefined as NodeJS.Timeout | undefined,
   );
-
-  const [evalSupported, setEvalSupported] = useState(true);
-
-  useEffect(() => {
-    detectEvalSupport()
-      .then(setEvalSupported)
-      .catch(() => setEvalSupported(false));
-  }, [setEvalSupported]);
 
   const [loaded, setLoaded] = useState(false);
 
@@ -157,21 +145,6 @@ function TidePage() {
               error, send us feedback using the button at the top right of the
               page.
             </Alert>
-            {evalSupported === false ? (
-              <Alert
-                severity='error'
-                sx={{
-                  fontSize: theme.typography.body1.fontSize,
-                  fontWeight: 'normal',
-                  marginBottom: 2,
-                }}
-              >
-                Your browser does not support the evaluation of graphics. Please
-                try with a different browser.
-              </Alert>
-            ) : (
-              <div />
-            )}
           </Container>
 
           <div className='editor'>

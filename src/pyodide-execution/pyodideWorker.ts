@@ -1,29 +1,44 @@
-import CanvasKitInit, { CanvasKit, FontMgr } from 'canvaskit-wasm';
 import { PyodideAPI } from 'pyodide';
 import { PyProxy, PythonError } from 'pyodide/ffi';
-import { fromSpec } from './graphics';
 import { GraphicSpec, Sized } from './spec';
 
-// The worker listens for messages from the main thread
-addEventListener('message', async (event: MessageEvent) => {
-  if (event.data?.type === 'init') {
-    // Initialize Pyodide with PyTamaro and CanvasKit
-    await loadPyodideWithPytamaro();
-    await loadCanvasKit();
-    installPytamaroFfi();
-    self.postMessage({ type: 'ready' });
-  } else {
-    // Run the provided Python code
-    const { source } = event.data;
-    self.postMessage(await run(source));
-  }
-});
+let ctlBuffer: Int32Array;
+let sizeBuffer: Int32Array;
+let pyodide: PyodideAPI;
 
 const stillPyProxies: PyProxy[] = [];
-let pyodide: PyodideAPI | null = null;
-let ck: CanvasKit | null = null;
-let fontMgr: FontMgr | null = null;
-let canvas: OffscreenCanvas | null = null;
+
+function decodeSharedBuffer(sharedBuffer: SharedArrayBuffer): string {
+  const decoder = new TextDecoder();
+  const len = sharedBuffer.byteLength;
+  const sharedView = new Uint8Array(sharedBuffer);
+  const tmpBuffer = new ArrayBuffer(len);
+  const tmpView = new Uint8Array(tmpBuffer);
+  tmpView.set(sharedView);
+  return decoder.decode(tmpBuffer);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mainThreadProcedure(type: string, data: any): SharedArrayBuffer {
+  const uuid = crypto.randomUUID();
+  // Perform procedure on the main thread
+  self.postMessage({
+    ...data,
+    type,
+    uuid,
+  });
+  Atomics.wait(ctlBuffer, 0, 0);
+  // Read size of result and create shared array buffer to transfer it
+  const sizeInBytes = Atomics.load(sizeBuffer, 0);
+  const resultBuffer = new SharedArrayBuffer(sizeInBytes);
+  self.postMessage({
+    type,
+    uuid,
+    resultBuffer,
+  });
+  Atomics.wait(ctlBuffer, 0, 0);
+  return resultBuffer;
+}
 
 async function loadPyodideWithPytamaro() {
   // @ts-expect-error importScripts is available in web workers
@@ -37,15 +52,6 @@ async function loadPyodideWithPytamaro() {
   await pyodide.loadPackage('micropip');
   const microPip = pyodide.pyimport('micropip');
   await microPip.install(assetUrl('pytamaro-1.1.4-py3-none-any.whl'));
-}
-
-async function loadCanvasKit() {
-  ck = await CanvasKitInit({
-    locateFile: (file: string): string =>
-      `https://unpkg.com/canvaskit-wasm@0.40.0/bin/${file}`,
-  });
-  canvas = new OffscreenCanvas(1, 1);
-  fontMgr = await loadFontMgr(ck);
 }
 
 async function run(code: string) {
@@ -72,7 +78,7 @@ async function run(code: string) {
     },
   });
   try {
-    await pyodide.runPythonAsync(code, { globals: ns });
+    await pyodide.runPython(code, { globals: ns });
     return {
       type: 'result',
       result: {
@@ -97,82 +103,29 @@ async function run(code: string) {
   }
 }
 
-function assetUrl(path: string): string {
-  return `${location.origin}/pyodide/${path}`;
+function ffiRenderGraphic(graphic: GraphicSpec, debug: boolean): string {
+  const res = mainThreadProcedure('draw', { graphic, debug });
+  return decodeSharedBuffer(res);
 }
 
-async function loadFontMgr(ck: CanvasKit): Promise<FontMgr> {
-  const fonts = await Promise.all(
-    ['NotoSerif', 'NotoSansMono', 'NotoSans'].map((f) =>
-      fetch(assetUrl(`font/${f}-Regular.ttf`)).then((res) => res.arrayBuffer()),
-    ),
-  );
-  return ck.FontMgr.FromData(...fonts)!;
+function ffiRenderedSize(graphic: GraphicSpec): Sized {
+  const res = mainThreadProcedure('size', { graphic });
+  const resultArray = new Int32Array(res);
+  return {
+    width: resultArray[0],
+    height: resultArray[1],
+  };
 }
 
 function installPytamaroFfi() {
   pyodide?.registerJsModule('pytamaro_ffi', {
-    show_graphic: (graphic: GraphicSpec, debug: boolean) =>
-      draw(unProxy<GraphicSpec>(() => graphic)(), debug),
-    rendered_height: (graphic: GraphicSpec) =>
-      renderedSize(unProxy<GraphicSpec>(() => graphic)()).height,
-    rendered_width: (graphic: GraphicSpec) =>
-      renderedSize(unProxy<GraphicSpec>(() => graphic)()).width,
+    show_graphic: (graphic: PyProxy, debug: boolean) =>
+      ffiRenderGraphic(unProxy<GraphicSpec>(() => graphic)(), debug),
+    rendered_height: (graphic: PyProxy) =>
+      ffiRenderedSize(unProxy<GraphicSpec>(() => graphic)()).height,
+    rendered_width: (graphic: PyProxy) =>
+      ffiRenderedSize(unProxy<GraphicSpec>(() => graphic)()).width,
   });
-}
-
-async function draw(spec: GraphicSpec, debug: boolean): Promise<string> {
-  if (!ck || !fontMgr || !canvas) {
-    throw new Error('Worker not initialized yet');
-  }
-  const graphic = fromSpec(ck, fontMgr, spec);
-  // Debug
-  let debugPaint = undefined;
-  if (debug) {
-    debugPaint = new ck.Paint();
-    debugPaint.setAntiAlias(true);
-    debugPaint.setStrokeWidth(5);
-    debugPaint.setStyle(ck.PaintStyle.Stroke);
-  }
-
-  // Need to set the size before the CK surface is initialized
-  canvas.width = graphic.size.width;
-  canvas.height = graphic.size.height;
-
-  const surface = ck.MakeSWCanvasSurface(canvas);
-  surface?.drawOnce((ckCanvas) => {
-    // ckCanvas.clear(this.ck.TRANSPARENT);
-    // Align the graphic to the top-left of the canvas
-    ckCanvas.translate(
-      -Math.min(graphic.bounds[0], 0),
-      -Math.min(graphic.bounds[1], 0),
-    );
-    graphic.draw(ckCanvas, debugPaint);
-    // Immediately destroy the graphic object
-    graphic.destroy();
-  });
-  return new Promise<string>((resolve) => {
-    requestAnimationFrame(() => {
-      canvas?.convertToBlob().then((b) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(b);
-        reader.onloadend = async () => {
-          const base64_result = reader.result as string;
-          resolve(base64_result);
-        };
-      });
-    });
-  });
-}
-
-function renderedSize(spec: GraphicSpec): Sized {
-  if (!ck || !fontMgr) {
-    throw new Error('Worker not initialized yet');
-  }
-  const graphic = fromSpec(ck, fontMgr, spec);
-  const size = { ...graphic.size };
-  graphic.destroy();
-  return size;
 }
 
 /**
@@ -180,7 +133,7 @@ function renderedSize(spec: GraphicSpec): Sized {
  * JS object.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function unProxy<T>(fn: (...args: any) => any): (...args: any) => T {
+function unProxy<T>(fn: (...args: any) => PyProxy): (...args: any) => T {
   const pyproxies = stillPyProxies;
   return function (...args) {
     const result = fn(...args);
@@ -200,3 +153,37 @@ function destroyLeftoverProxies() {
     stillPyProxies.pop()?.destroy();
   }
 }
+
+function assetUrl(path: string): string {
+  return `${location.origin}/pyodide/${path}`;
+}
+
+// The worker listens for messages from the main thread
+addEventListener('message', async (event: MessageEvent) => {
+  const { data } = event;
+  if (!data) {
+    return;
+  }
+
+  switch (data.type) {
+    case 'init':
+      {
+        // Initialize Pyodide with PyTamaro and CanvasKit
+        await loadPyodideWithPytamaro();
+        installPytamaroFfi();
+
+        ctlBuffer = new Int32Array(data.ctlBuffer);
+        sizeBuffer = new Int32Array(data.sizeBuffer);
+
+        self.postMessage({ type: 'ready' });
+      }
+      break;
+    case 'run':
+      {
+        // Run the provided Python code
+        const { source } = event.data;
+        self.postMessage(await run(source));
+      }
+      break;
+  }
+});
