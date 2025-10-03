@@ -1,5 +1,9 @@
 import { TamaroCard } from './cards';
+import { Definition } from './definitions';
+import { TideRuntimeError } from './errors';
+import { State } from './phases';
 import { Location } from './types';
+import { ErrorType } from './typing';
 
 export function toFlat<T>(card: TamaroCard<T>): TamaroCard<T>[] {
   switch (card.kind) {
@@ -28,4 +32,18 @@ export function compareLocation(a: Location, b: Location) {
     return 1;
   }
   return -1;
+}
+
+export function extract_error(
+  value:
+    | TamaroCard<unknown, State>
+    | Definition<unknown, unknown, unknown, State>,
+): ErrorType | { error: TideRuntimeError } | false | undefined {
+  if ('error_phase' in value) {
+    if (value.error_phase === 'evaluated') {
+      return value.value === false ? false : { error: value.value };
+    }
+    return value.type;
+  }
+  return undefined;
 }

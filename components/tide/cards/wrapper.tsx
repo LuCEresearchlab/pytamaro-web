@@ -1,6 +1,7 @@
 import { NodeProps } from '@xyflow/react';
 import { JSX } from 'react';
 import { TideNode } from '.';
+import { extract_error } from '../../../src/tide/language/utils';
 
 export default function TamaroWrapper({
   nodeprops,
@@ -11,14 +12,7 @@ export default function TamaroWrapper({
 }) {
   const node = nodeprops.data.tide_node;
 
-  const error =
-    node && 'type' in node
-      ? typeof node.type === 'object' && 'error' in node.type
-        ? node.type.error
-        : node.type === false
-          ? false
-          : undefined
-      : undefined;
+  const error = extract_error(node as any);
 
   const primary_error = error != null && error !== false;
   const secondary_error = error === false;

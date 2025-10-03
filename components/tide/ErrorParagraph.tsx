@@ -55,6 +55,12 @@ function getRawContent(annotation: TideError): {
           return { title, message: 'Name error.' };
       }
     }
+    case 'runtime-error': {
+      const [title, message] = annotation.args[0].value
+        .replaceAll('`', '*')
+        .split(':', 2);
+      return { title, message };
+    }
     default:
       // eslint-disable-next-line no-console
       console.error(JSON.stringify(annotation));

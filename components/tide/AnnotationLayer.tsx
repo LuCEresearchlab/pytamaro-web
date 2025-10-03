@@ -1,6 +1,6 @@
 import { useReactFlow, ViewportPortal, XYPosition } from '@xyflow/react';
 import { JSX } from 'react';
-import { TideError } from '../../src/tide/language/errors';
+import { TideError, TideRuntimeError } from '../../src/tide/language/errors';
 import { ErrorType } from '../../src/tide/language/typing';
 import { StoreType, useStore } from '../../src/tide/store';
 import { getNode } from '../../src/tide/utils';
@@ -8,6 +8,7 @@ import { ErrorBubble } from './Bubble';
 import { TideNodeMetadata } from './cards';
 import { getHandleName } from './cards/function';
 import { ErrorParagraph } from './ErrorParagraph';
+import { extract_error } from '../../src/tide/language/utils';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const MISSING_PARAMETER = (
@@ -226,20 +227,36 @@ export function AnnotationLayer() {
   const { screenToFlowPosition } = useReactFlow();
   const values = store.nodes
     .map((v) => v.data.tide_node)
-    .map((v): [TideNodeMetadata, ErrorType | false] | undefined =>
-      v && 'error_phase' in v
-        ? [v!.metadata, v!.type as ErrorType | false]
-        : undefined,
+    .map(
+      (
+        v,
+      ):
+        | [
+            TideNodeMetadata,
+            (
+              | false
+              | ErrorType
+              | {
+                  error: TideRuntimeError;
+                }
+            ),
+          ]
+        | undefined => {
+        const error = extract_error(v as any);
+        return error ? [v!.metadata, error] : undefined;
+      },
     )
     .filter((v) => v)
-    .map((v) => v as [TideNodeMetadata, ErrorType])
-    .map((v): [TideNodeMetadata, TideError][] =>
-      Array.isArray(v[1].error)
+    .map((v): [TideNodeMetadata, false | TideError][] => {
+      v = v!;
+      if (v[1] === false) return [[v[0], false]];
+      return Array.isArray(v[1].error)
         ? v[1].error.map((o) => [v[0], o])
-        : [[v[0], v[1].error as TideError]],
-    )
+        : [[v[0], v[1].error as TideError]];
+    })
     .reduce((a, b) => a.concat(b), [])
-    .filter((v) => v[0] && v[1]);
+    .filter((v) => v[1] !== false)
+    .map((v) => [v[0], v[1]] as [TideNodeMetadata, TideError]);
 
   return (
     <ViewportPortal>

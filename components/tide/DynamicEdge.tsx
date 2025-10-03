@@ -16,8 +16,9 @@ import {
   SoundType,
 } from '../../src/tide/language/typing';
 import { getParameterName } from './cards/function';
+import { extract_error } from '../../src/tide/language/utils';
 
-function getValue(
+export function getValue(
   node: TideNode['data'],
 ): EvaluatedValueType[SoundType] | ErrorType | false | undefined {
   const value =
@@ -83,17 +84,17 @@ function CustomEdge({
       return;
     }
 
-    const sourceValue = getValue(sourceNode.data);
-    const targetValue = getValue(targetNode.data);
+    const sourceError = extract_error(sourceNode.data.tide_node as any);
+    const targetError = extract_error(targetNode.data.tide_node as any);
 
     setPrimaryError(
-      targetValue != null &&
-        targetValue !== false &&
-        typeof targetValue === 'object' &&
-        'error' in targetValue &&
-        (Array.isArray(targetValue.error)
-          ? targetValue.error
-          : [targetValue.error]
+      sourceError != null &&
+        targetError != null &&
+        typeof targetError === 'object' &&
+        'error' in targetError &&
+        (Array.isArray(targetError.error)
+          ? targetError.error
+          : [targetError.error]
         ).find(
           (v) =>
             v.kind === 'type-error' &&
@@ -102,11 +103,7 @@ function CustomEdge({
     );
 
     setSecondaryError(
-      !primary_error &&
-        sourceValue != null &&
-        sourceValue !== false &&
-        typeof sourceValue === 'object' &&
-        'error' in sourceValue,
+      !primary_error && sourceError != null && targetError != null,
     );
   }, [
     source,

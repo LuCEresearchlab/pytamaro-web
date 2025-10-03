@@ -22,7 +22,7 @@ import {
   onMouseDown,
   onMouseUp,
 } from '../../src/tide/graph_toolbox';
-import { TideError } from '../../src/tide/language/errors';
+import { TideError, TideRuntimeError } from '../../src/tide/language/errors';
 import { ErrorType } from '../../src/tide/language/typing';
 import { useStore } from '../../src/tide/store';
 import { getNode, module_elements } from '../../src/tide/utils';
@@ -38,6 +38,7 @@ import TidePalette, { JudiciousModuleElement } from './TidePalette';
 
 import '@xyflow/react/dist/style.css';
 import { ConfigurationState } from '../../src/tide/configuration';
+import { extract_error } from '../../src/tide/language/utils';
 
 export default function Tide({
   configuration = undefined,
@@ -112,20 +113,33 @@ export default function Tide({
       error: (() => {
         const errors = nodes
           .map((v) => v.data.tide_node)
-          .map((v): [TideNodeMetadata, ErrorType | false] | undefined =>
-            v && 'error_phase' in v
-              ? [v!.metadata, v!.type as ErrorType | false]
-              : undefined,
+          .map(
+            (
+              v,
+            ):
+              | [
+                  TideNodeMetadata,
+                  (
+                    | false
+                    | ErrorType
+                    | {
+                        error: TideRuntimeError;
+                      }
+                  ),
+                ]
+              | undefined => {
+              const error = extract_error(v as any);
+              return error ? [v!.metadata, error] : undefined;
+            },
           )
           .filter((v) => v)
-          .map((v) => v as [TideNodeMetadata, ErrorType | false])
-          .map((v): [TideNodeMetadata, TideError | false][] =>
-            v[1] === false
-              ? [[v[0], false]]
-              : Array.isArray(v[1].error)
-                ? v[1].error.map((o) => [v[0], o])
-                : [[v[0], v[1].error as TideError]],
-          )
+          .map((v): [TideNodeMetadata, false | TideError][] => {
+            v = v!;
+            if (v[1] === false) return [[v[0], false]];
+            return Array.isArray(v[1].error)
+              ? v[1].error.map((o) => [v[0], o])
+              : [[v[0], v[1].error as TideError]];
+          })
           .reduce((a, b) => a.concat(b), []);
         return errors.length === 0 ? undefined : errors;
       })(),
