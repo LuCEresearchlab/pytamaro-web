@@ -40,7 +40,7 @@ export type EllipseSpec = Colored &
 export type CircularSectorSpec = Colored & {
   radius: number;
   angle: number;
-  type: 'circularSector';
+  type: 'circular_sector';
 };
 
 export type TriangleSpec = Colored & {

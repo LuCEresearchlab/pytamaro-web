@@ -34,7 +34,7 @@ export function fromSpec(
       return new Rectangle(ck, spec);
     case 'ellipse':
       return new Ellipse(ck, spec);
-    case 'circularSector':
+    case 'circular_sector':
       return new CircularSector(ck, spec);
     case 'triangle':
       return new Triangle(ck, spec);
@@ -157,16 +157,26 @@ class Ellipse extends Primitive {
 
 class CircularSector extends Primitive {
   constructor(ck: CanvasKit, spec: CircularSectorSpec) {
-    const diameter = 2 * spec.radius;
-    const rect = ck.XYWHRect(0, 0, diameter, diameter);
+    const rect = ck.LTRBRect(
+      -spec.radius,
+      -spec.radius,
+      spec.radius,
+      spec.radius,
+    );
     const path =
-      spec.angle === 360
-        ? new ck.Path().addOval(rect)
-        : new ck.Path()
-            .moveTo(spec.radius, spec.radius)
-            .arcToOval(rect, 0, -spec.angle, false)
-            .close();
-    super(ck, path, spec.color);
+      spec.angle == 0
+        ? new ck.Path()
+        : spec.angle === 360
+          ? new ck.Path().addOval(rect)
+          : new ck.Path()
+              .moveTo(0, 0)
+              .arcToOval(rect, 0, -spec.angle, false)
+              .close();
+    const pin = {
+      x: spec.radius,
+      y: spec.radius,
+    };
+    super(ck, path, spec.color, pin);
   }
 }
 
