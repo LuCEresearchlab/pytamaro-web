@@ -2,13 +2,13 @@ import { useReactFlow, ViewportPortal, XYPosition } from '@xyflow/react';
 import { JSX } from 'react';
 import { TideError, TideRuntimeError } from '../../src/tide/language/errors';
 import { ErrorType } from '../../src/tide/language/typing';
+import { extract_error } from '../../src/tide/language/utils';
 import { StoreType, useStore } from '../../src/tide/store';
 import { getNode } from '../../src/tide/utils';
 import { ErrorBubble } from './Bubble';
 import { TideNodeMetadata } from './cards';
 import { getHandleName } from './cards/function';
 import { ErrorParagraph } from './ErrorParagraph';
-import { extract_error } from '../../src/tide/language/utils';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const MISSING_PARAMETER = (
@@ -242,12 +242,14 @@ export function AnnotationLayer() {
             ),
           ]
         | undefined => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const error = extract_error(v as any);
         return error ? [v!.metadata, error] : undefined;
       },
     )
     .filter((v) => v)
     .map((v): [TideNodeMetadata, false | TideError][] => {
+      // eslint-disable-next-line no-param-reassign
       v = v!;
       if (v[1] === false) return [[v[0], false]];
       return Array.isArray(v[1].error)

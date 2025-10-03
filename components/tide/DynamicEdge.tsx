@@ -6,17 +6,17 @@ import {
   GetSmoothStepPathParams,
   Position,
 } from '@xyflow/react';
-import { useStore } from '../../src/tide/store';
-import { getHandleDiv, getNode } from '../../src/tide/utils';
-import { TideNode } from './cards';
 import { useEffect, useState } from 'react';
 import {
   ErrorType,
   EvaluatedValueType,
   SoundType,
 } from '../../src/tide/language/typing';
-import { getParameterName } from './cards/function';
 import { extract_error } from '../../src/tide/language/utils';
+import { useStore } from '../../src/tide/store';
+import { getHandleDiv, getNode } from '../../src/tide/utils';
+import { TideNode } from './cards';
+import { getParameterName } from './cards/function';
 
 export function getValue(
   node: TideNode['data'],
@@ -84,7 +84,9 @@ function CustomEdge({
       return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sourceError = extract_error(sourceNode.data.tide_node as any);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const targetError = extract_error(targetNode.data.tide_node as any);
 
     setPrimaryError(

@@ -12,6 +12,7 @@ export default function TamaroWrapper({
 }) {
   const node = nodeprops.data.tide_node;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const error = extract_error(node as any);
 
   const primary_error = error != null && error !== false;

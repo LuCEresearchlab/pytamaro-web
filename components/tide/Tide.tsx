@@ -128,12 +128,14 @@ export default function Tide({
                   ),
                 ]
               | undefined => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const error = extract_error(v as any);
               return error ? [v!.metadata, error] : undefined;
             },
           )
           .filter((v) => v)
           .map((v): [TideNodeMetadata, false | TideError][] => {
+            // eslint-disable-next-line no-param-reassign
             v = v!;
             if (v[1] === false) return [[v[0], false]];
             return Array.isArray(v[1].error)
