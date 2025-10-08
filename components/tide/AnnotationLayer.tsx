@@ -181,7 +181,7 @@ export function createAnnotationComponents(
       <div
         style={{
           position: 'absolute',
-          transform: `translate(${target_position.x - 30}px, ${target_position.y}px) translate(-100%, -100%)`,
+          transform: `translate(${target_position.x}px, ${target_position.y}px) translate(-100%, -100%)`,
         }}
         className='error_text_highlight'
         key={`${key}_type_target`}
@@ -194,7 +194,7 @@ export function createAnnotationComponents(
       <div
         style={{
           position: 'absolute',
-          transform: `translate(${source_position.x + 10}px, ${source_position.y - 5}px) translate(0%, -100%)`,
+          transform: `translate(${source_position.x + 30}px, ${source_position.y}px) translate(0%, -100%)`,
         }}
         className='error_text_highlight'
         key={`${key}_type_source`}
