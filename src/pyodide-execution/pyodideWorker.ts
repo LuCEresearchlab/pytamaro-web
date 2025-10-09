@@ -130,10 +130,8 @@ function installPytamaroFfi() {
   pyodide?.registerJsModule('pytamaro_ffi', {
     show_graphic: (graphic: PyProxy, debug: boolean) =>
       ffiRenderGraphic(unProxy<GraphicSpec>(() => graphic)(), debug),
-    rendered_height: (graphic: PyProxy) =>
-      ffiSizeWhenRendered(unProxy<GraphicSpec>(() => graphic)()).height,
-    rendered_width: (graphic: PyProxy) =>
-      ffiSizeWhenRendered(unProxy<GraphicSpec>(() => graphic)()).width,
+    graphic_size: (graphic: PyProxy) =>
+      ffiSizeWhenRendered(unProxy<GraphicSpec>(() => graphic)()),
   });
 }
 
