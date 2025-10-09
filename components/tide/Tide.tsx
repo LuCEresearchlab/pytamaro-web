@@ -37,6 +37,7 @@ import NodeContextMenu from './NodeContextMenu';
 import TidePalette, { JudiciousModuleElement } from './TidePalette';
 
 import '@xyflow/react/dist/style.css';
+import theme from '../../src/theme';
 import { ConfigurationState } from '../../src/tide/configuration';
 import { extract_error } from '../../src/tide/language/utils';
 
@@ -446,7 +447,7 @@ export default function Tide({
           />
         )}
 
-        <Background />
+        <Background bgColor={theme.palette.grey[50]} gap={15} />
       </ReactFlow>
     </Paper>
   );
