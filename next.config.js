@@ -21,7 +21,6 @@ const nextConfig = {
       layers: true,
     };
 
-
     config.resolve.fallback = {
       fs: false,
       path: false,
@@ -68,6 +67,8 @@ const nextConfig = {
       },
     ];
   },
+  // Cross-origin isolation is a required security policy to enable SharedArrayBuffer.
+  // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer
   async headers() {
     return [
       {

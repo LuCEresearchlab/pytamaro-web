@@ -1,4 +1,4 @@
-import {
+import type {
   Canvas,
   CanvasKit,
   FontMgr,
@@ -6,7 +6,7 @@ import {
   Paragraph,
   Path,
   Rect,
-} from 'canvaskit-wasm';
+} from '../canvaskit-wasm/canvaskit.d.ts';
 import {
   CircularSectorSpec,
   Color,
@@ -212,12 +212,7 @@ class Text extends Graphic {
           spec.color.blue / 255,
           spec.color.alpha,
         ),
-        fontFamilies: [
-          spec.font_name,
-          'Noto Sans',
-          'Noto Sans JP',
-          'Noto Sans Emoji',
-        ],
+        fontFamilies: [spec.font_name, 'Noto Sans'],
         fontSize: spec.text_size,
       },
     });

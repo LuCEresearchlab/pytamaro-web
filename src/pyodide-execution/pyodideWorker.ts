@@ -1,12 +1,19 @@
 import { PyodideAPI } from 'pyodide';
 import { PyProxy, PythonError } from 'pyodide/ffi';
+import {
+  DrawRequestData,
+  Message,
+  ResultMessage,
+  SizeRequestData,
+  WorkerClientMessage,
+} from './messagesTypes';
 import { GraphicSpec, Sized } from './spec';
 
-let ctlBuffer: Int32Array;
-let sizeBuffer: Int32Array;
+let syncBuffer: Int32Array;
+let resultSizeBuffer: Int32Array;
 let pyodide: PyodideAPI;
 
-const stillPyProxies: PyProxy[] = [];
+const remainingPyProxies: PyProxy[] = [];
 
 function decodeSharedBuffer(sharedBuffer: SharedArrayBuffer): string {
   const decoder = new TextDecoder();
@@ -18,8 +25,10 @@ function decodeSharedBuffer(sharedBuffer: SharedArrayBuffer): string {
   return decoder.decode(tmpBuffer);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mainThreadProcedure(type: string, data: any): SharedArrayBuffer {
+function executeOnMainThread(
+  type: Message,
+  data: DrawRequestData | SizeRequestData,
+): SharedArrayBuffer {
   const uuid = crypto.randomUUID();
   // Perform procedure on the main thread
   self.postMessage({
@@ -27,16 +36,16 @@ function mainThreadProcedure(type: string, data: any): SharedArrayBuffer {
     type,
     uuid,
   });
-  Atomics.wait(ctlBuffer, 0, 0);
+  Atomics.wait(syncBuffer, 0, 0);
   // Read size of result and create shared array buffer to transfer it
-  const sizeInBytes = Atomics.load(sizeBuffer, 0);
+  const sizeInBytes = Atomics.load(resultSizeBuffer, 0);
   const resultBuffer = new SharedArrayBuffer(sizeInBytes);
   self.postMessage({
     type,
     uuid,
     resultBuffer,
   });
-  Atomics.wait(ctlBuffer, 0, 0);
+  Atomics.wait(syncBuffer, 0, 0);
   return resultBuffer;
 }
 
@@ -54,7 +63,7 @@ async function loadPyodideWithPytamaro() {
   await microPip.install(assetUrl('pytamaro-1.1.4-py3-none-any.whl'));
 }
 
-async function run(code: string) {
+async function run(code: string): Promise<ResultMessage> {
   destroyLeftoverProxies();
 
   if (!pyodide) {
@@ -80,7 +89,7 @@ async function run(code: string) {
   try {
     await pyodide.runPython(code, { globals: ns });
     return {
-      type: 'result',
+      type: Message.RESULT,
       result: {
         type: 'success',
         stdout,
@@ -91,7 +100,7 @@ async function run(code: string) {
     const pythonError = err as PythonError;
     stderr += pythonError;
     return {
-      type: 'result',
+      type: Message.RESULT,
       result: {
         type: 'error',
         stdout,
@@ -104,12 +113,12 @@ async function run(code: string) {
 }
 
 function ffiRenderGraphic(graphic: GraphicSpec, debug: boolean): string {
-  const res = mainThreadProcedure('draw', { graphic, debug });
+  const res = executeOnMainThread(Message.DRAW, { graphic, debug });
   return decodeSharedBuffer(res);
 }
 
-function ffiRenderedSize(graphic: GraphicSpec): Sized {
-  const res = mainThreadProcedure('size', { graphic });
+function ffiSizeWhenRendered(graphic: GraphicSpec): Sized {
+  const res = executeOnMainThread(Message.SIZE, { graphic });
   const resultArray = new Int32Array(res);
   return {
     width: resultArray[0],
@@ -122,9 +131,9 @@ function installPytamaroFfi() {
     show_graphic: (graphic: PyProxy, debug: boolean) =>
       ffiRenderGraphic(unProxy<GraphicSpec>(() => graphic)(), debug),
     rendered_height: (graphic: PyProxy) =>
-      ffiRenderedSize(unProxy<GraphicSpec>(() => graphic)()).height,
+      ffiSizeWhenRendered(unProxy<GraphicSpec>(() => graphic)()).height,
     rendered_width: (graphic: PyProxy) =>
-      ffiRenderedSize(unProxy<GraphicSpec>(() => graphic)()).width,
+      ffiSizeWhenRendered(unProxy<GraphicSpec>(() => graphic)()).width,
   });
 }
 
@@ -134,7 +143,7 @@ function installPytamaroFfi() {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function unProxy<T>(fn: (...args: any) => PyProxy): (...args: any) => T {
-  const pyproxies = stillPyProxies;
+  const pyproxies = remainingPyProxies;
   return function (...args) {
     const result = fn(...args);
     if (typeof result === 'object' && typeof result.toJs === 'function') {
@@ -149,8 +158,8 @@ function unProxy<T>(fn: (...args: any) => PyProxy): (...args: any) => T {
 }
 
 function destroyLeftoverProxies() {
-  while (stillPyProxies.length > 0) {
-    stillPyProxies.pop()?.destroy();
+  while (remainingPyProxies.length > 0) {
+    remainingPyProxies.pop()?.destroy();
   }
 }
 
@@ -159,31 +168,33 @@ function assetUrl(path: string): string {
 }
 
 // The worker listens for messages from the main thread
-addEventListener('message', async (event: MessageEvent) => {
-  const { data } = event;
-  if (!data) {
-    return;
-  }
+addEventListener(
+  'message',
+  async (event: MessageEvent<WorkerClientMessage>) => {
+    const { data } = event;
+    if (!data) {
+      return;
+    }
 
-  switch (data.type) {
-    case 'init':
-      {
-        // Initialize Pyodide with PyTamaro and CanvasKit
-        await loadPyodideWithPytamaro();
-        installPytamaroFfi();
+    switch (data.type) {
+      case Message.INIT:
+        {
+          // Initialize Pyodide with PyTamaro and CanvasKit
+          await loadPyodideWithPytamaro();
+          installPytamaroFfi();
 
-        ctlBuffer = new Int32Array(data.ctlBuffer);
-        sizeBuffer = new Int32Array(data.sizeBuffer);
+          syncBuffer = new Int32Array(data.syncBuffer);
+          resultSizeBuffer = new Int32Array(data.resultSizeBuffer);
 
-        self.postMessage({ type: 'ready' });
-      }
-      break;
-    case 'run':
-      {
-        // Run the provided Python code
-        const { source } = event.data;
-        self.postMessage(await run(source));
-      }
-      break;
-  }
-});
+          self.postMessage({ type: Message.READY });
+        }
+        break;
+      case Message.RUN:
+        {
+          // Run the provided Python code
+          self.postMessage(await run(data.source));
+        }
+        break;
+    }
+  },
+);
