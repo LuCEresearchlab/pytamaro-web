@@ -2,60 +2,70 @@ import PQueue from 'p-queue';
 import { ExecutionResponse, cellsToFiles } from '../codeExecution';
 import { ToolboxFunction } from '../localStorage/schema';
 import { PythonFile } from '../schemas/activitySchema';
-import { Sized } from './spec';
 import { PyTamaroFFI } from './ffi';
+import {
+  ExecutionRequestMessage,
+  ExecutionResultRequestMessage,
+  Message,
+  WorkerMessage,
+} from './messagesTypes';
+import { Sized } from './spec';
 
 type ClientResult =
-  | Uint8Array // render_graphic
-  | Sized; // rendered_size
+  | Uint8Array // array for rendering result
+  | Sized; // object for size result
 
 let pyodideWorker: Worker | null = null;
 let ffiImpl: PyTamaroFFI | null = null;
 
 const pendingResults = new Map<string, ClientResult>();
 
-const sharedCtlBuffer = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT);
-const ctlBuffer = new Int32Array(sharedCtlBuffer);
-const sharedSizeBuffer = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT);
-const sizeBuffer = new Int32Array(sharedSizeBuffer);
+const sharedSyncBuffer = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT);
+const syncBuffer = new Int32Array(sharedSyncBuffer);
+const sharedResultSizeBuffer = new SharedArrayBuffer(
+  Int32Array.BYTES_PER_ELEMENT,
+);
+const resultSizeBuffer = new Int32Array(sharedResultSizeBuffer);
 
 const executionQueue = new PQueue({ concurrency: 1 });
 
-function sendExecutionRequestToWorkerAndWaitForResponse(python_source: string) {
+function sendExecutionRequestToWorkerAndWaitForResponse(
+  python_source: string,
+): Promise<ExecutionResponse> {
   return new Promise<ExecutionResponse>((resolve) => {
-    const listener = (event: MessageEvent) => {
-      if (event.data?.type === 'result') {
-        pyodideWorker?.removeEventListener('message', listener);
+    const resultListener = (event: MessageEvent<WorkerMessage>) => {
+      if (event.data?.type === Message.RESULT) {
+        pyodideWorker?.removeEventListener('message', resultListener);
         resolve(event.data.result);
       }
     };
-    pyodideWorker?.addEventListener('message', listener);
+    pyodideWorker?.addEventListener('message', resultListener);
     pyodideWorker?.postMessage({
-      type: 'run',
+      type: Message.RUN,
       source: python_source,
     });
   });
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function deliverPendingResult(uuid: string, data: any) {
+function deliverPendingResult(
+  uuid: string,
+  data: ExecutionResultRequestMessage,
+) {
   const { type } = data;
   const toDeliver = pendingResults.get(uuid);
   switch (type) {
-    case 'draw':
-    case 'input':
+    case Message.DRAW:
+    case Message.INPUT:
       {
         const src = toDeliver as Uint8Array;
         const resultBuffer = new Uint8Array(data.resultBuffer);
         const n = src.byteLength / Uint8Array.BYTES_PER_ELEMENT;
-        let i = 0;
-        while (i < n) {
+        for (let i = 0; i < n; i++) {
           Atomics.store(resultBuffer, i, Atomics.load(src, i));
-          i += 1;
         }
       }
       break;
-    case 'size': {
+    case Message.SIZE: {
       const src = toDeliver as Sized;
       const resultBuffer = new Int32Array(data.resultBuffer);
       Atomics.store(resultBuffer, 0, src.width);
@@ -63,40 +73,39 @@ function deliverPendingResult(uuid: string, data: any) {
     }
   }
   pendingResults.delete(uuid);
-  Atomics.notify(ctlBuffer, 0);
+  Atomics.notify(syncBuffer, 0);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function invokeProcedure(uuid: string, data: any) {
+function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
   switch (data.type) {
-    case 'draw':
+    case Message.DRAW:
       {
         const { graphic, debug } = data;
         ffiImpl!.draw(graphic, debug).then((result: string) => {
           const encoded = new Uint8Array(Buffer.from(result));
           pendingResults.set(uuid, encoded);
-          Atomics.store(sizeBuffer, 0, encoded.byteLength);
-          Atomics.notify(ctlBuffer, 0);
+          Atomics.store(resultSizeBuffer, 0, encoded.byteLength);
+          Atomics.notify(syncBuffer, 0);
         });
       }
       break;
-    case 'size':
+    case Message.SIZE:
       {
         const { graphic } = data;
-        const result = ffiImpl!.renderedSize(graphic);
+        const result = ffiImpl!.sizeWhenRendered(graphic);
         pendingResults.set(uuid, result);
-        Atomics.store(sizeBuffer, 0, Int32Array.BYTES_PER_ELEMENT * 2);
-        Atomics.notify(ctlBuffer, 0);
+        Atomics.store(resultSizeBuffer, 0, Int32Array.BYTES_PER_ELEMENT * 2);
+        Atomics.notify(syncBuffer, 0);
       }
       break;
-    case 'input':
+    case Message.INPUT:
       {
         const { message } = data;
         const result = prompt(message) || '';
         const encoded = new Uint8Array(Buffer.from(result));
         pendingResults.set(uuid, encoded);
-        Atomics.store(sizeBuffer, 0, encoded.byteLength);
-        Atomics.notify(ctlBuffer, 0);
+        Atomics.store(resultSizeBuffer, 0, encoded.byteLength);
+        Atomics.notify(syncBuffer, 0);
       }
       break;
   }
@@ -113,24 +122,36 @@ export function initPyodide(ffi: PyTamaroFFI) {
     name: 'Pyodide Worker',
   });
 
-  pyodideWorker.addEventListener('message', (event: MessageEvent) => {
-    const { data } = event;
-    if (!data) {
-      return;
-    }
-
-    const { uuid } = data;
-    if (pendingResults.has(uuid)) {
-      deliverPendingResult(uuid, data);
-    } else {
-      invokeProcedure(uuid, data);
-    }
-  });
+  pyodideWorker.addEventListener(
+    'message',
+    (event: MessageEvent<WorkerMessage>) => {
+      const { data } = event;
+      if (data.type === Message.READY) {
+        // Worker is ready. For now, we don't do anything special here.
+        return;
+      }
+      // In this listener, we only process execution requests (messages with an uuid).
+      // Messages with the execution result are received by a specific listener in
+      // sendExecutionRequestToWorkerAndWaitForResponse.
+      if (!('uuid' in data)) {
+        return;
+      }
+      const { uuid } = data;
+      if (pendingResults.has(uuid)) {
+        // If we have already received the execution request message,
+        // this should be an message with the request for the result.
+        deliverPendingResult(uuid, data as ExecutionResultRequestMessage);
+      } else {
+        // Otherwise, this should be the execution request message.
+        invokeProcedure(uuid, data as ExecutionRequestMessage);
+      }
+    },
+  );
 
   pyodideWorker.postMessage({
-    type: 'init',
-    ctlBuffer: sharedCtlBuffer,
-    sizeBuffer: sharedSizeBuffer,
+    type: Message.INIT,
+    syncBuffer: sharedSyncBuffer,
+    resultSizeBuffer: sharedResultSizeBuffer,
   });
 }
 
@@ -146,6 +167,8 @@ export default async function executeWithPyodide(
     toolboxFunctions,
     extraPythonFiles,
   );
+  // So far this only deals with one cell
+  // (and no toolbox functions or extra files)
   const source = files.find((f) => f.name === 'cell.py')?.content || '';
   return (await executionQueue.add(() =>
     sendExecutionRequestToWorkerAndWaitForResponse(source),

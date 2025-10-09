@@ -1,6 +1,7 @@
-import CanvasKitInit, { CanvasKit, FontMgr } from 'canvaskit-wasm';
-import { GraphicSpec, Sized } from './spec';
+import CanvasKitInit from '../canvaskit-wasm/canvaskit';
+import type { CanvasKit, FontMgr } from '../canvaskit-wasm/canvaskit.d.ts';
 import { fromSpec } from './graphics';
+import { GraphicSpec, Sized } from './spec';
 
 async function draw(
   ck: CanvasKit,
@@ -50,7 +51,7 @@ async function draw(
   });
 }
 
-function renderedSize(
+function sizeWhenRendered(
   ck: CanvasKit,
   fontMgr: FontMgr,
   spec: GraphicSpec,
@@ -70,13 +71,12 @@ function assetUrl(path: string): string {
 
 export type PyTamaroFFI = {
   draw: (specs: GraphicSpec, debug: boolean) => Promise<string>;
-  renderedSize: (specs: GraphicSpec) => Sized;
+  sizeWhenRendered: (specs: GraphicSpec) => Sized;
 };
 
-export default async function makeFfi(): Promise<PyTamaroFFI> {
+export default async function initFfi(): Promise<PyTamaroFFI> {
   const ck = await CanvasKitInit({
-    locateFile: (file: string): string =>
-      `https://unpkg.com/canvaskit-wasm@0.40.0/bin/${file}`,
+    locateFile: assetUrl,
   });
   const fontMgr = ck.FontMgr.FromData(
     ...(await Promise.all(
@@ -92,6 +92,7 @@ export default async function makeFfi(): Promise<PyTamaroFFI> {
   return {
     draw: (specs: GraphicSpec, debug: boolean) =>
       draw(ck, fontMgr, canvas, specs, debug),
-    renderedSize: (specs: GraphicSpec) => renderedSize(ck, fontMgr, specs),
+    sizeWhenRendered: (specs: GraphicSpec) =>
+      sizeWhenRendered(ck, fontMgr, specs),
   };
 }

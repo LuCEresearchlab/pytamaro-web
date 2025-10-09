@@ -15,11 +15,13 @@ import Head from 'next/head';
 import { useShallow } from 'zustand/shallow';
 import PageTitle from '../../components/PageTitle';
 import NavigationBar from '../../components/navbar/NavigationBar';
+import initFfi from '../../src/pyodide-execution/ffi';
 import { initPyodide } from '../../src/pyodide-execution/pyodideWorkerClient';
 import theme from '../../src/theme';
-import makeFfi from '../../src/pyodide-execution/ffi';
 
-makeFfi().then(initPyodide);
+if (typeof window !== 'undefined') {
+  initFfi().then(initPyodide);
+}
 
 const LOADING_DEBOUNCE_TIME = 2000;
 

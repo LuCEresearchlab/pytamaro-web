@@ -41,7 +41,10 @@
       "extends": ["plugin:cypress/recommended"]
     }
   ],
-  "ignorePatterns": ["src/python-analyzer/**"],
+  "ignorePatterns": [
+    "src/python-analyzer/**",
+    "src/canvaskit-wasm/**"
+  ],
   "parserOptions": {
     "project": "./tsconfig.json"
   }
