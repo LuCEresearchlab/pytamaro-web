@@ -109,19 +109,20 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
 }
 
 export function initPyodide(ffi: PyTamaroFFI) {
-  if (typeof Worker === 'undefined') {
+  if (typeof window === 'undefined') {
     // Only in the browser
     return;
   }
   ffiImpl = ffi;
-  pyodideWorker = new Worker(new URL('./pyodideWorker.ts', import.meta.url), {
-    type: 'module',
-    name: 'Pyodide Worker',
-  });
   sharedSyncBuffer = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT);
   syncBuffer = new Int32Array(sharedSyncBuffer);
   sharedResultSizeBuffer = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT);
   resultSizeBuffer = new Int32Array(sharedResultSizeBuffer);
+
+  pyodideWorker = new Worker(new URL('./pyodideWorker.ts', import.meta.url), {
+    type: 'module',
+    name: 'Pyodide Worker',
+  });
 
   pyodideWorker.addEventListener(
     'message',
