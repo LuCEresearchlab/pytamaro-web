@@ -72,7 +72,7 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/tide',
+        source: '/(.*)',
         headers: [
           {
             key: 'Cross-Origin-Embedder-Policy',
