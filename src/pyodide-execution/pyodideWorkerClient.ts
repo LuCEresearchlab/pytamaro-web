@@ -17,15 +17,12 @@ type ClientResult =
 
 let pyodideWorker: Worker | null = null;
 let ffiImpl: PyTamaroFFI | null = null;
+let sharedSyncBuffer: SharedArrayBuffer | null = null;
+let syncBuffer: Int32Array | null = null;
+let sharedResultSizeBuffer: SharedArrayBuffer | null = null;
+let resultSizeBuffer: Int32Array | null = null;
 
 const pendingResults = new Map<string, ClientResult>();
-
-const sharedSyncBuffer = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT);
-const syncBuffer = new Int32Array(sharedSyncBuffer);
-const sharedResultSizeBuffer = new SharedArrayBuffer(
-  Int32Array.BYTES_PER_ELEMENT,
-);
-const resultSizeBuffer = new Int32Array(sharedResultSizeBuffer);
 
 const executionQueue = new PQueue({ concurrency: 1 });
 
@@ -73,7 +70,7 @@ function deliverPendingResult(
     }
   }
   pendingResults.delete(uuid);
-  Atomics.notify(syncBuffer, 0);
+  Atomics.notify(syncBuffer!, 0);
 }
 
 function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
@@ -84,8 +81,8 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
         ffiImpl!.draw(graphic, debug).then((result: string) => {
           const encoded = new Uint8Array(Buffer.from(result));
           pendingResults.set(uuid, encoded);
-          Atomics.store(resultSizeBuffer, 0, encoded.byteLength);
-          Atomics.notify(syncBuffer, 0);
+          Atomics.store(resultSizeBuffer!, 0, encoded.byteLength);
+          Atomics.notify(syncBuffer!, 0);
         });
       }
       break;
@@ -94,8 +91,8 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
         const { graphic } = data;
         const result = ffiImpl!.sizeWhenRendered(graphic);
         pendingResults.set(uuid, result);
-        Atomics.store(resultSizeBuffer, 0, Int32Array.BYTES_PER_ELEMENT * 2);
-        Atomics.notify(syncBuffer, 0);
+        Atomics.store(resultSizeBuffer!, 0, Int32Array.BYTES_PER_ELEMENT * 2);
+        Atomics.notify(syncBuffer!, 0);
       }
       break;
     case Message.INPUT:
@@ -104,8 +101,8 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
         const result = prompt(message) || '';
         const encoded = new Uint8Array(Buffer.from(result));
         pendingResults.set(uuid, encoded);
-        Atomics.store(resultSizeBuffer, 0, encoded.byteLength);
-        Atomics.notify(syncBuffer, 0);
+        Atomics.store(resultSizeBuffer!, 0, encoded.byteLength);
+        Atomics.notify(syncBuffer!, 0);
       }
       break;
   }
@@ -121,6 +118,10 @@ export function initPyodide(ffi: PyTamaroFFI) {
     type: 'module',
     name: 'Pyodide Worker',
   });
+  sharedSyncBuffer = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT);
+  syncBuffer = new Int32Array(sharedSyncBuffer);
+  sharedResultSizeBuffer = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT);
+  resultSizeBuffer = new Int32Array(sharedResultSizeBuffer);
 
   pyodideWorker.addEventListener(
     'message',
