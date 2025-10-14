@@ -1,5 +1,6 @@
 import CanvasKitInit from '../canvaskit-wasm/canvaskit';
 import type { CanvasKit, FontMgr } from '../canvaskit-wasm/canvaskit.d.ts';
+import { FONTS_FILENAME_PREFIX } from './fonts.ts';
 import { fromSpec } from './graphics';
 import { GraphicSpec, Sized } from './spec';
 
@@ -80,8 +81,8 @@ export default async function initFfi(): Promise<PyTamaroFFI> {
   });
   const fontMgr = ck.FontMgr.FromData(
     ...(await Promise.all(
-      ['NotoSerif', 'NotoSansMono', 'NotoSans'].map((f) =>
-        fetch(assetUrl(`font/${f}-Regular.ttf`)).then((res) =>
+      FONTS_FILENAME_PREFIX.map((f) =>
+        fetch(assetUrl(`fonts/${f}-Regular.ttf`)).then((res) =>
           res.arrayBuffer(),
         ),
       ),

@@ -212,7 +212,7 @@ class Text extends Graphic {
           spec.color.blue / 255,
           spec.color.alpha,
         ),
-        fontFamilies: [spec.font_name, 'Noto Sans'],
+        fontFamilies: [spec.font_name, 'Fira Sans'],
         fontSize: spec.text_size,
       },
     });
