@@ -31,7 +31,7 @@ async function draw(
   surface?.drawOnce((ckCanvas) => {
     // ckCanvas.clear(this.ck.TRANSPARENT);
     // Align the graphic to the top-left of the canvas
-    ckCanvas.translate(-graphic.bounds[0], -Math.min(graphic.bounds[1], 0));
+    ckCanvas.translate(-graphic.bounds[0], -graphic.bounds[1]);
     graphic.draw(ckCanvas, debugPaint);
     // Immediately destroy the graphic object
     graphic.destroy();
