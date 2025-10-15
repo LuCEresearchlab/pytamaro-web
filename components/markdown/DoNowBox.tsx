@@ -7,6 +7,7 @@ import {
   Collapse,
   TextField,
 } from '@mui/material';
+import { slug } from 'github-slugger';
 import { useCallback, useEffect, useState } from 'react';
 import logAnalyticsEvent, {
   AnalyticsEventName,
@@ -29,7 +30,7 @@ function domElementId(id: string) {
 }
 
 export default function DoNowBox({
-  id,
+  id: idBeforeSlug,
   requireAnswer,
   children,
   activityVariant,
@@ -39,6 +40,10 @@ export default function DoNowBox({
   children: React.ReactNode;
   activityVariant: ActivityVariant;
 }) {
+  // Use a slugged version of the id (preserving case) to ensure it is a valid DOM id.
+  // Duplicate ids are prevented at build time, so we don't need to use the stateful Slugger here.
+  const id = slug(idBeforeSlug, true);
+
   const { metadata, getActivityMetadata, setActivityMetadata } =
     useLocalProfile();
   const currentActivity = getActivityMetadata(activityVariant);
