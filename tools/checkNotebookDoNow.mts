@@ -1,3 +1,4 @@
+import { slug } from 'github-slugger';
 import { isMarkdownCell } from '../src/notebook';
 import { JupyterCell } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
@@ -14,8 +15,9 @@ async function main() {
             joinLines(cell.source).matchAll(/<DoNow id="([^"]+)">/g),
           );
         })
-        .map((match: RegExpMatchArray) => match[1]);
-      // Check no duplicate DoNow ids
+        .map((match: RegExpMatchArray) => match[1])
+        .map((id) => slug(id, true));
+      // Check that there are no duplicate DoNow ids (after slugging)
       const uniqueDoNowIds = new Set(doNowIds);
       if (uniqueDoNowIds.size !== doNowIds.length) {
         console.error(
