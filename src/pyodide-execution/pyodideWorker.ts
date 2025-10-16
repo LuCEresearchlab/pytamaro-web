@@ -4,6 +4,7 @@ import {
   DrawRequestData,
   Message,
   ResultMessage,
+  RunPythonFile,
   SizeRequestData,
   WorkerClientMessage,
 } from './messagesTypes';
@@ -63,14 +64,14 @@ async function loadPyodideWithPytamaro() {
   await microPip.install(assetUrl('pytamaro-1.1.4-py3-none-any.whl'));
 }
 
-async function run(code: string): Promise<ResultMessage> {
+async function run(files: RunPythonFile[]): Promise<ResultMessage> {
   destroyLeftoverProxies();
 
   if (!pyodide) {
     throw new Error('Pyodide not loaded');
   }
 
-  const ns = pyodide.toPy({});
+  // Setup outputs
   let stdout = '';
   let stderr = '';
   const decoder = new TextDecoder('utf-8');
@@ -86,8 +87,24 @@ async function run(code: string): Promise<ResultMessage> {
       return buf.length;
     },
   });
+
+  // Setup FileSystem
+  const fs = pyodide.FS;
+  const basePath = '/tmp/run';
+  fs.mkdirTree(basePath);
+  files.forEach((file) => {
+    fs.writeFile(`${basePath}/${file.name}`, file.content);
+  });
+
+  const driverCode = files.filter((f) => f.name === 'driver.py')[0].content;
+
+  const ns = pyodide.toPy({});
   try {
-    await pyodide.runPython(code, { globals: ns });
+    await pyodide.runPython(
+      // Set working directory and then run the driver
+      `import os\nos.chdir('${basePath}')\n${driverCode}`,
+      { globals: ns },
+    );
     return {
       type: Message.RESULT,
       result: {
@@ -190,7 +207,7 @@ addEventListener(
       case Message.RUN:
         {
           // Run the provided Python code
-          self.postMessage(await run(data.source));
+          self.postMessage(await run(data.files));
         }
         break;
     }
