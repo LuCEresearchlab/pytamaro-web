@@ -7,6 +7,7 @@ import {
   ExecutionRequestMessage,
   ExecutionResultRequestMessage,
   Message,
+  RunPythonFile,
   WorkerMessage,
 } from './messagesTypes';
 import { Sized } from './spec';
@@ -27,7 +28,7 @@ const pendingResults = new Map<string, ClientResult>();
 const executionQueue = new PQueue({ concurrency: 1 });
 
 function sendExecutionRequestToWorkerAndWaitForResponse(
-  python_source: string,
+  files: RunPythonFile[],
 ): Promise<ExecutionResponse> {
   return new Promise<ExecutionResponse>((resolve) => {
     const resultListener = (event: MessageEvent<WorkerMessage>) => {
@@ -39,7 +40,7 @@ function sendExecutionRequestToWorkerAndWaitForResponse(
     pyodideWorker?.addEventListener('message', resultListener);
     pyodideWorker?.postMessage({
       type: Message.RUN,
-      source: python_source,
+      files,
     });
   });
 }
@@ -170,10 +171,7 @@ export default async function executeWithPyodide(
     toolboxFunctions,
     extraPythonFiles,
   );
-  // So far this only deals with one cell
-  // (and no toolbox functions or extra files)
-  const source = files.find((f) => f.name === 'cell.py')?.content || '';
   return (await executionQueue.add(() =>
-    sendExecutionRequestToWorkerAndWaitForResponse(source),
+    sendExecutionRequestToWorkerAndWaitForResponse(files),
   )) as ExecutionResponse;
 }

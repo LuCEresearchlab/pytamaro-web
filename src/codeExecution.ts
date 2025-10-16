@@ -4,6 +4,7 @@ import { ToolboxFunction } from './localStorage/schema';
 import { findImportedNames } from './python-analyzer/python_analyzer';
 import { PythonFile } from './schemas/activitySchema';
 import { countLines, emptyLines, joinLines } from './sourceUtils';
+import { RunPythonFile } from './pyodide-execution/messagesTypes';
 
 const { uniq } = lodash;
 
@@ -54,14 +55,23 @@ export interface BareboneToolboxFunction {
 const DRIVER_SOURCE = `
 from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
-globals_dict = {}
-def run(name):
-    filename = name + ".py"
-    code = compile(Path(filename).read_text(), filename, "exec")
-    exec(code, globals_dict)
-with redirect_stdout(None), redirect_stderr(None):
-    run("${PREVIOUS_CELLS_FILE}")
-run("${CURRENT_CELL_FILE}")
+from os import chdir, getcwd, path
+from shutil import rmtree
+
+try:
+  globals_dict = {}
+  def run(name):
+      filename = name + ".py"
+      code = compile(Path(filename).read_text(), filename, "exec")
+      exec(code, globals_dict)
+
+  with redirect_stdout(None), redirect_stderr(None):
+      run("${PREVIOUS_CELLS_FILE}")
+  run("${CURRENT_CELL_FILE}")
+finally:
+  cwd = Path(getcwd())
+  chdir(cwd.parent.absolute())
+  rmtree(cwd.absolute())
 `;
 
 function toolboxSingleModuleName(fn: BareboneToolboxFunction) {
@@ -131,7 +141,7 @@ export function cellsToFiles(
   idx: number,
   toolboxFunctions: BareboneToolboxFunction[],
   extraPythonFiles: PythonFile[],
-) {
+): Promise<RunPythonFile[]> {
   // Get the concatenated source of all the previous cells.
   const previousCellsSource = joinLines(sources.slice(0, idx));
   // Get the source of the current cell, padded before with empty lines

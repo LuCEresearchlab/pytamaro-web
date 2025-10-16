@@ -26,13 +26,13 @@ import {
   getDefaultActivityVariantMetadata,
 } from './localStorage/schema';
 import useLocalToolbox from './localStorage/useLocalToolbox';
+import executeWithPyodide from './pyodide-execution/pyodideWorkerClient';
 import {
   ActivityVariant,
   PythonFile,
   activityVariantId,
 } from './schemas/activitySchema';
 import { EventName, storeDbEvent } from './storeDbEvent';
-import executeWithPyodide from './pyodide-execution/pyodideWorkerClient';
 
 export function initialCodeExecutionState(): CodeCellExecutionState {
   return {

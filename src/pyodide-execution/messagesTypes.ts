@@ -13,9 +13,13 @@ export enum Message {
 
 // Types for messages sent by the client (to the worker).
 export type WorkerClientMessage = InitMessage | RunMessage;
+export type RunPythonFile = {
+  name: string;
+  content: string;
+};
 export type RunMessage = {
   type: Message.RUN;
-  source: string;
+  files: RunPythonFile[];
 };
 export type InitMessage = {
   type: Message.INIT;
