@@ -108,7 +108,7 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
   }
 }
 
-export function initPyodide(ffi: PyTamaroFFI) {
+export function initPyodide(ffi: PyTamaroFFI, onReady: () => void) {
   if (typeof window === 'undefined') {
     // Only in the browser
     return;
@@ -129,7 +129,8 @@ export function initPyodide(ffi: PyTamaroFFI) {
     (event: MessageEvent<WorkerMessage>) => {
       const { data } = event;
       if (data.type === Message.READY) {
-        // Worker is ready. For now, we don't do anything special here.
+        // Worker is ready!
+        onReady();
         return;
       }
       // In this listener, we only process execution requests (messages with an uuid).
