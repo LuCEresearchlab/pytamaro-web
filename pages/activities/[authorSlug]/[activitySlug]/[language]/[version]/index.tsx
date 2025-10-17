@@ -35,6 +35,8 @@ import { CodeCellState } from '../../../../../../src/localStorage/schema';
 import useLocalProfile from '../../../../../../src/localStorage/useLocalProfile';
 import useMonacoColorizer from '../../../../../../src/monacoColorizer';
 import getNotebookContent from '../../../../../../src/notebook';
+import initFfi from '../../../../../../src/pyodide-execution/ffi';
+import { initPyodide } from '../../../../../../src/pyodide-execution/pyodideWorkerClient';
 import {
   Activity,
   ActivityVariant,
@@ -66,6 +68,7 @@ function NotebookCells({
   cellsRef,
   resetCounter,
   originalIdxToCodeCellIdx,
+  runEnabled,
 }: {
   activity: Activity;
   initialCodeCells: CodeCellState[];
@@ -74,6 +77,7 @@ function NotebookCells({
   cellsRef: RefObject<HTMLDivElement | null>;
   resetCounter: number;
   originalIdxToCodeCellIdx: Map<number, number>;
+  runEnabled: boolean;
 }) {
   const { metadata } = useLocalProfile();
   const { wideEditor } = metadata;
@@ -110,6 +114,7 @@ function NotebookCells({
               platformConfig={activity.platformConfig}
               activityResetCounter={resetCounter}
               pythonAnalyzer={pythonAnalyzer}
+              runEnabled={runEnabled}
             />
           </Container>
         ),
@@ -154,6 +159,7 @@ export default function NotebookPage({
 
   const isMounted = useIsMounted();
   const [headingsReady, setHeadingsReady] = useState(false);
+  const [execReady, setExecReady] = useState(false);
 
   useEffect(() => {
     if (isMounted) {
@@ -171,6 +177,10 @@ export default function NotebookPage({
       setHeadingsReady(false);
     };
   }, [isMounted, cells]);
+
+  useEffect(() => {
+    initFfi().then((ffi) => initPyodide(ffi, () => setExecReady(true)));
+  }, []);
 
   return (
     <div key={activityVariantId(activityVariant)}>
@@ -220,6 +230,7 @@ export default function NotebookPage({
               cellsRef={cellsRef}
               resetCounter={resetCounter}
               originalIdxToCodeCellIdx={originalIdxToCodeCellIdx}
+              runEnabled={execReady}
             />
             <Container maxWidth='md'>
               {!isSpecialActivity(activityVariant) && (

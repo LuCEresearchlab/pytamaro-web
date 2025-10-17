@@ -50,6 +50,7 @@ export default function ActivityCodeCell({
   platformConfig,
   activityResetCounter,
   pythonAnalyzer,
+  runEnabled = true,
 }: {
   activityVariant: ActivityVariant;
   initialCodeCells: CodeCellState[];
@@ -58,6 +59,7 @@ export default function ActivityCodeCell({
   platformConfig: PlatformConfiguration;
   activityResetCounter: number;
   pythonAnalyzer: PythonAnalyzer | null;
+  runEnabled?: boolean;
 }) {
   const {
     codeCells,
@@ -99,6 +101,7 @@ export default function ActivityCodeCell({
         extraPythonFiles={extraPythonFiles}
         pythonAnalyzer={pythonAnalyzer}
         cellIdx={cellIdx}
+        runEnabled={runEnabled}
         extraActions={
           <>
             <SaveToToolboxButton

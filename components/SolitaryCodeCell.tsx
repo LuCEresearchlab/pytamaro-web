@@ -22,6 +22,7 @@ export default function SolitaryCodeCell({
   activityVariant,
   resetCounter = 0,
   readOnly = false,
+  runEnabled = true,
   requireNewExecution = false,
   allowToolboxSave = false,
   postSourceChange = () => {},
@@ -33,6 +34,7 @@ export default function SolitaryCodeCell({
   activityVariant: ActivityVariant;
   resetCounter?: number;
   readOnly?: boolean;
+  runEnabled?: boolean;
   requireNewExecution?: boolean;
   allowToolboxSave?: boolean;
   postSourceChange?: (newSource: string) => void;
@@ -73,6 +75,7 @@ export default function SolitaryCodeCell({
       firstLineNumber={1}
       activityVariant={activityVariant}
       readOnly={readOnly}
+      runEnabled={runEnabled}
       platformConfig={platformConfigWithDefaults()}
       extraActions={
         <>

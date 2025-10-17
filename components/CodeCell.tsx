@@ -45,6 +45,7 @@ export default function CodeCell({
   extraPythonFiles = [],
   extraActions = null,
   readOnly = false,
+  runEnabled = true,
 }: {
   initialSource: string;
   currentSource: string;
@@ -60,6 +61,7 @@ export default function CodeCell({
   extraPythonFiles?: PythonFile[];
   extraActions?: React.ReactNode;
   readOnly?: boolean;
+  runEnabled?: boolean;
 }) {
   const { t } = useLocalTranslation(['common']);
   const { executionResponse } = codeCellExecutionState;
@@ -164,6 +166,7 @@ export default function CodeCell({
         <CardActions disableSpacing sx={{ paddingLeft: 2, display: 'flex' }}>
           <RunButton
             onExecutionRequested={handleExecutionRequest}
+            enabled={runEnabled}
             executing={executing}
             executionFinished={executionFinished}
             executionError={executionError}
