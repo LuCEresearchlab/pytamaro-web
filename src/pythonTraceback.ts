@@ -20,23 +20,39 @@ function nicerTraceback(traceback: string) {
     // Remove the line with the driver file, the one after it (source code),
     // and possibly even the one after if it has only the caret.
     s.replace(
-      /^ {2}File "\/home\/glot\/driver.py", line \d+, in \S+\n.*\n(?:\s*~+\^+\s*\n)?/gm,
+      /^ {2}File "((\/home\/glot\/driver.py)|(<exec>))", line \d+, in \S+\n.*\n(?:\s*~+\^+\s*\n)?/gm,
       '',
     );
 
-  // Hide 'glot' in source paths
-  const hideGlot = (s: string) => s.replace(/File "\/home\/glot\//g, 'File "');
+  // Hide /lib/python*/_pyodide/_base.py
+  const hidePyodideBase = (s: string) =>
+    // Remove the line with the driver file, the one after it (source code),
+    // and possibly even the one after if it has only the caret.
+    s.replace(
+      /^ {2}File "\/lib\/python\d+\.zip\/_pyodide\/_base.py", line \d+, in \S+\n.*\n(?:\s*~+\^+\s*\n)?/gm,
+      '',
+    );
+
+    // Hide pyodide run folder
+  const hidePyodideRunFolder = (s: string) =>
+    s.replace(/File "\/tmp\/run\//g, 'File "');
 
   // Shorten library paths
   const shortenLibraryPaths = (s: string) =>
-    s.replaceAll('/usr/local/lib/python3.13/site-packages/', LIBRARY_PATH);
+    s.replaceAll('/lib/python3.13/site-packages/', LIBRARY_PATH);
 
   // Replace the word ellipsis within backticks or quotes with three dots,
   // to avoid confusion with the ellipse function and to match the source code.
   const replaceEllipsis = (s: string) =>
     s.replace(/`ellipsis`/g, '`...`').replace(/'ellipsis'/g, "'...'");
 
-  return replaceEllipsis(shortenLibraryPaths(hideGlot(hideDriver(traceback))));
+  return [
+    hideDriver,
+    hidePyodideBase,
+    hidePyodideRunFolder,
+    shortenLibraryPaths,
+    replaceEllipsis,
+  ].reduce((acc, fn) => fn(acc), traceback);
 }
 
 function lineNumOfErrorThisCell(traceback: string[]) {
