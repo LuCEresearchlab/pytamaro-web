@@ -24,55 +24,73 @@ export type Sized = {
 /* Graphics */
 
 export type EmptySpec = {
-  type: 'empty';
+  type: 'Empty';
 };
 
 export type RectangleSpec = Colored &
   Sized & {
-    type: 'rectangle';
+    type: 'Rectangle';
   };
 
 export type EllipseSpec = Colored &
   Sized & {
-    type: 'ellipse';
+    type: 'Ellipse';
   };
 
 export type CircularSectorSpec = Colored & {
   radius: number;
   angle: number;
-  type: 'circular_sector';
+  type: 'CircularSector';
 };
 
 export type TriangleSpec = Colored & {
   side1: number;
   side2: number;
   angle: number;
-  type: 'triangle';
+  type: 'Triangle';
 };
 
 export type TextSpec = Colored & {
   text: string;
   font_name: string;
   text_size: number;
-  type: 'text';
+  type: 'Text';
 };
 
 export type ComposeSpec = {
   foreground: GraphicSpec;
   background: GraphicSpec;
-  type: 'compose';
+  type: 'Compose';
 };
 
 export type PinSpec = {
   pinning_point: Point;
   graphic: GraphicSpec;
-  type: 'pin';
+  type: 'Pin';
 };
 
 export type RotateSpec = {
   angle: number;
   graphic: GraphicSpec;
-  type: 'rotate';
+  type: 'Rotate';
+};
+
+export type BesideSpec = {
+  left_graphic: GraphicSpec;
+  right_graphic: GraphicSpec;
+  type: 'Beside';
+};
+
+export type AboveSpec = {
+  top_graphic: GraphicSpec;
+  bottom_graphic: GraphicSpec;
+  type: 'Above';
+};
+
+export type OverlaySpec = {
+  front_graphic: GraphicSpec;
+  back_graphic: GraphicSpec;
+  type: 'Overlay';
 };
 
 export type GraphicSpec =
@@ -84,4 +102,7 @@ export type GraphicSpec =
   | TextSpec
   | ComposeSpec
   | PinSpec
-  | RotateSpec;
+  | RotateSpec
+  | BesideSpec
+  | AboveSpec
+  | OverlaySpec;

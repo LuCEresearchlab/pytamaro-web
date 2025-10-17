@@ -28,24 +28,51 @@ export function fromSpec(
   spec: GraphicSpec,
 ): Graphic {
   switch (spec.type) {
-    case 'empty':
+    case 'Empty':
       return new Empty(ck);
-    case 'rectangle':
+    case 'Rectangle':
       return new Rectangle(ck, spec);
-    case 'ellipse':
+    case 'Ellipse':
       return new Ellipse(ck, spec);
-    case 'circular_sector':
+    case 'CircularSector':
       return new CircularSector(ck, spec);
-    case 'triangle':
+    case 'Triangle':
       return new Triangle(ck, spec);
-    case 'text':
+    case 'Text':
       return new Text(ck, fontMgr, spec);
-    case 'compose':
+    case 'Compose':
       return new Compose(ck, fontMgr, spec);
-    case 'pin':
+    case 'Pin':
       return new Pin(ck, fontMgr, spec);
-    case 'rotate':
+    case 'Rotate':
       return new Rotate(ck, fontMgr, spec);
+    case 'Beside':
+      return new SimpleCompose(
+        ck,
+        fontMgr,
+        spec.left_graphic,
+        spec.right_graphic,
+        { x: 1, y: 0 },
+        { x: -1, y: 0 },
+      );
+    case 'Above':
+      return new SimpleCompose(
+        ck,
+        fontMgr,
+        spec.top_graphic,
+        spec.bottom_graphic,
+        { x: 0, y: -1 },
+        { x: 0, y: 1 },
+      );
+    case 'Overlay':
+      return new SimpleCompose(
+        ck,
+        fontMgr,
+        spec.front_graphic,
+        spec.back_graphic,
+        { x: 0, y: 0 },
+        { x: 0, y: 0 },
+      );
   }
 }
 
@@ -375,5 +402,45 @@ class Rotate extends Graphic {
   destroy(): void {
     this.graphic.destroy();
     super.destroy();
+  }
+}
+
+class SimpleCompose extends Graphic {
+  private readonly graphic: Graphic;
+  constructor(
+    ck: CanvasKit,
+    fontMgr: FontMgr,
+    firstGraphic: GraphicSpec,
+    secondGraphic: GraphicSpec,
+    firstPoint: Point,
+    secondPoint: Point,
+  ) {
+    const firstPin: PinSpec = {
+      pinning_point: firstPoint,
+      graphic: firstGraphic,
+      type: 'Pin',
+    };
+    const secondPin: PinSpec = {
+      pinning_point: secondPoint,
+      graphic: secondGraphic,
+      type: 'Pin',
+    };
+    const composed: ComposeSpec = {
+      foreground: firstPin,
+      background: secondPin,
+      type: 'Compose',
+    };
+    const composedCenter: PinSpec = {
+      pinning_point: { x: 0, y: 0 },
+      graphic: composed,
+      type: 'Pin',
+    };
+    const graphic = fromSpec(ck, fontMgr, composedCenter);
+    super(graphic.path, graphic.bounds, graphic.pinPosition);
+    this.graphic = graphic;
+  }
+  draw(canvas: Canvas, debugPaint?: Paint): void {
+    this.graphic.draw(canvas, debugPaint);
+    super.draw(canvas, debugPaint);
   }
 }

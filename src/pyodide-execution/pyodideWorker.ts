@@ -144,8 +144,8 @@ function ffiSizeWhenRendered(graphic: GraphicSpec): Sized {
 }
 
 function installPytamaroFfi() {
-  pyodide?.registerJsModule('pytamaro_ffi', {
-    show_graphic: (graphic: PyProxy, debug: boolean) =>
+  pyodide?.registerJsModule('pytamaro_js_ffi', {
+    render_graphic: (graphic: PyProxy, debug: boolean) =>
       ffiRenderGraphic(unProxy<GraphicSpec>(() => graphic)(), debug),
     graphic_size: (graphic: PyProxy) =>
       ffiSizeWhenRendered(unProxy<GraphicSpec>(() => graphic)()),
