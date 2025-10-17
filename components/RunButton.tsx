@@ -5,11 +5,13 @@ import { Button, Stack, Tooltip } from '@mui/material';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 
 export default function RunButton({
+  enabled,
   onExecutionRequested,
   executing,
   executionFinished,
   executionError,
 }: {
+  enabled: boolean;
   onExecutionRequested: () => Promise<void>;
   executing: boolean;
   executionFinished: boolean;
@@ -24,7 +26,7 @@ export default function RunButton({
         loading={executing}
         loadingPosition='end'
         variant='contained'
-        disabled={executing}
+        disabled={!enabled || executing}
         className='run-button'
         sx={{
           px: 3,

@@ -32,6 +32,7 @@ import {
   activityVariantId,
 } from './schemas/activitySchema';
 import { EventName, storeDbEvent } from './storeDbEvent';
+import executeWithPyodide from './pyodide-execution/pyodideWorkerClient';
 
 export function initialCodeExecutionState(): CodeCellExecutionState {
   return {
@@ -72,6 +73,8 @@ export async function transitivelyImportedToolboxFunctions(
   return [...newlyImportedFunctions, ...importsOfImports.flat()];
 }
 
+// We don't want to remove server-side execution yet
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function executeOnServer(
   sources: string[],
   idx: number,
@@ -238,7 +241,7 @@ export function useActivity(
     idx: number,
   ) => {
     executionStarted(idx);
-    const response = await executeOnServer(
+    const response = await executeWithPyodide(
       sources,
       idx,
       toolboxFunctions,

@@ -38,6 +38,8 @@ import {
   playgroundActivityVariant,
   playgroundInitialSource,
 } from '../src/playground';
+import initFfi from '../src/pyodide-execution/ffi';
+import { initPyodide } from '../src/pyodide-execution/pyodideWorkerClient';
 import {
   findImportedNames,
   PythonName,
@@ -91,11 +93,13 @@ function PlaygroundReset({
 function PlaygroundCodeCell({
   initialCodeCells,
   resetCounter,
+  runEnabled,
   newReset,
   setInitialSource,
 }: {
   initialCodeCells: CodeCellState[];
   resetCounter: number;
+  runEnabled: boolean;
   newReset: () => void;
   setInitialSource: (newSource: string) => void;
 }) {
@@ -111,6 +115,7 @@ function PlaygroundCodeCell({
     handleResetSingleCell,
     handleResetAllCellsNoConfirm,
   } = localActivity;
+
   const confirm = useConfirm();
   const { query } = useRouter();
   const codeFromQuery = query?.code;
@@ -168,6 +173,7 @@ function PlaygroundCodeCell({
         activityVariant={playgroundActivityVariant}
         postSourceChange={updateQueryString}
         allowToolboxSave={true}
+        runEnabled={runEnabled}
         extraActions={
           <MoreOptionsButton
             codeCellState={codeCells[0]}
@@ -284,6 +290,14 @@ export default function Playground({
 
   const { metadata } = useLocalProfile();
 
+  const [execReady, setExecReady] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      initFfi().then((ffi) => initPyodide(ffi, () => setExecReady(true)));
+    }
+  }, []);
+
   return (
     <div>
       <Head>
@@ -308,6 +322,7 @@ export default function Playground({
                 initialCodeCells={initialCodeCells}
                 resetCounter={resetCounter}
                 newReset={newReset}
+                runEnabled={execReady}
                 setInitialSource={setInitialSource}
               />
             </Container>
