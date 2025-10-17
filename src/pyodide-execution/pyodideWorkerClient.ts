@@ -159,6 +159,13 @@ export function initPyodide(ffi: PyTamaroFFI, onReady: () => void) {
   });
 }
 
+export function restartWorker(): Promise<null> {
+  return new Promise<null>((resolve) => {
+    pyodideWorker?.terminate();
+    initPyodide(ffiImpl!, () => resolve(null));
+  });
+}
+
 export default async function executeWithPyodide(
   sources: string[],
   idx: number,
