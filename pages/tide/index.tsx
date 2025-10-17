@@ -19,20 +19,11 @@ import initFfi from '../../src/pyodide-execution/ffi';
 import { initPyodide } from '../../src/pyodide-execution/pyodideWorkerClient';
 import theme from '../../src/theme';
 
-if (typeof window !== 'undefined') {
-  initFfi().then(initPyodide);
-}
-
-const LOADING_DEBOUNCE_TIME = 2000;
-
 function TidePage() {
   const [configuration, setConfiguration] = useState(
     undefined as Partial<ConfigurationState> | undefined,
   );
-  const [loading_debounce, setLoadingDebounche] = useState(false);
-  const loading_debounche_timer = useRef(
-    undefined as NodeJS.Timeout | undefined,
-  );
+  const [execReady, setExecReady] = useState(false);
 
   const [loaded, setLoaded] = useState(false);
 
@@ -66,19 +57,9 @@ function TidePage() {
     [configuration, evaluating, modules.length, nodes],
   );
 
-  useEffect(() => {
-    if (loading_step1) {
-      if (loading_debounche_timer.current)
-        clearTimeout(loading_debounche_timer.current);
-      loading_debounche_timer.current = setTimeout(() => {
-        setLoadingDebounche(true);
-      }, LOADING_DEBOUNCE_TIME);
-    }
-  }, [loading_step1]);
-
   const loading = useMemo(
-    () => !(loaded || (loading_step1 && loading_debounce)),
-    [loaded, loading_step1, loading_debounce],
+    () => !(loaded || (loading_step1 && execReady)),
+    [loaded, loading_step1, execReady],
   );
 
   useEffect(() => {
@@ -86,6 +67,9 @@ function TidePage() {
   }, [loading]);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      initFfi().then((ffi) => initPyodide(ffi, () => setExecReady(true)));
+    }
     const tl = anime.timeline({
       easing: 'easeOutCirc',
       duration: 750,
