@@ -189,11 +189,11 @@ class CircularSector extends Primitive {
     const rect = ck.XYWHRect(0, 0, diameter, diameter);
     const path =
       spec.angle == 360
-          ? new ck.Path().addOval(rect)
-          : new ck.Path()
+        ? new ck.Path().addOval(rect)
+        : new ck.Path()
             .moveTo(radius, radius)
-              .arcToOval(rect, 0, -spec.angle, false)
-              .close();
+            .arcToOval(rect, 0, -spec.angle, false)
+            .close();
     const pin = {
       x: radius,
       y: radius,
@@ -369,18 +369,18 @@ class Rotate extends Graphic {
   constructor(ck: CanvasKit, fontMgr: FontMgr, spec: RotateSpec) {
     const graphic = fromSpec(ck, fontMgr, spec.graphic);
     const rotMatrix = ck.Matrix.rotated(
-      (spec.angle / -180) * Math.PI,
+      (-spec.angle / 180) * Math.PI,
       graphic.pinPosition.x,
       graphic.pinPosition.y,
     );
     // We must use the actual path of the child unlike in other graphics with
     // child(ren) because the bounds are affected by rotation
-    const boundsPath = new ck.Path()
+    const rotatedPath = new ck.Path()
       .addPath(graphic.path)!
       .transform(rotMatrix);
     // Preserve the child's pin position since it's the origin point for the
     // rotation
-    super(boundsPath, boundsPath.computeTightBounds(), graphic.pinPosition);
+    super(rotatedPath, rotatedPath.computeTightBounds(), graphic.pinPosition);
     this.graphic = graphic;
     this.rotMatrix = rotMatrix;
   }
