@@ -91,8 +91,8 @@ function deliverPendingResult(
       {
         const src = toDeliver as Sized;
         const resultBuffer = new Int32Array(data.resultBuffer);
-        Atomics.store(resultBuffer, 0, src.width);
-        Atomics.store(resultBuffer, 1, src.height);
+        Atomics.store(resultBuffer, 0, Math.round(src.width));
+        Atomics.store(resultBuffer, 1, Math.round(src.height));
       }
       break;
   }
