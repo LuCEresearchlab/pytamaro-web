@@ -1,6 +1,6 @@
 import PQueue from 'p-queue';
 import { createContext, ReactNode, useEffect, useState } from 'react';
-import { ExecutionResponse, cellsToFiles } from '../codeExecution';
+import { cellsToFiles, ExecutionResponse } from '../codeExecution';
 import { ToolboxFunction } from '../localStorage/schema';
 import { PythonFile } from '../schemas/activitySchema';
 import initFfi, { PyTamaroFFI } from './ffi';
@@ -154,27 +154,24 @@ function initPyodide(ffi: PyTamaroFFI): Promise<void> {
     name: 'Pyodide Worker',
   });
   pyodideWorker = worker;
-  worker.addEventListener(
-    'message',
-    (event: MessageEvent<WorkerMessage>) => {
-      const { data } = event;
-      // In this listener, we only process execution requests (messages with an uuid).
-      // Messages with the execution result are received by a specific listener in
-      // sendExecutionRequestToWorkerAndWaitForResponse.
-      if (!('uuid' in data)) {
-        return;
-      }
-      const { uuid } = data;
-      if (pendingResults.has(uuid)) {
-        // If we have already received the execution request message,
-        // this should be an message with the request for the result.
-        deliverPendingResult(uuid, data as ExecutionResultRequestMessage);
-      } else {
-        // Otherwise, this should be the execution request message.
-        invokeProcedure(uuid, data as ExecutionRequestMessage);
-      }
-    },
-  );
+  worker.addEventListener('message', (event: MessageEvent<WorkerMessage>) => {
+    const { data } = event;
+    // In this listener, we only process execution requests (messages with an uuid).
+    // Messages with the execution result are received by a specific listener in
+    // sendExecutionRequestToWorkerAndWaitForResponse.
+    if (!('uuid' in data)) {
+      return;
+    }
+    const { uuid } = data;
+    if (pendingResults.has(uuid)) {
+      // If we have already received the execution request message,
+      // this should be an message with the request for the result.
+      deliverPendingResult(uuid, data as ExecutionResultRequestMessage);
+    } else {
+      // Otherwise, this should be the execution request message.
+      invokeProcedure(uuid, data as ExecutionRequestMessage);
+    }
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   return new Promise((resolve, _reject) => {
@@ -185,12 +182,12 @@ function initPyodide(ffi: PyTamaroFFI): Promise<void> {
         worker.removeEventListener('message', listener);
         resolve();
       }
-    }
+    };
     worker.addEventListener('message', listener);
     worker.postMessage({
       type: Message.INIT,
       syncBuffer: sharedSyncBuffer,
-      resultSizeBuffer: sharedResultLengthBuffer,
+      resultLengthBuffer: sharedResultLengthBuffer,
     });
   });
 }
@@ -230,28 +227,37 @@ interface PyodideWorkerClientInterface {
   restart: () => Promise<void>;
 }
 
-export const PyodideWorkerClientContext = createContext<PyodideWorkerClientInterface>({
-  isReady: false,
-  execute,
-  restart,
-});
+export const PyodideWorkerClientContext =
+  createContext<PyodideWorkerClientInterface>({
+    isReady: false,
+    execute,
+    restart,
+  });
 
-export function PyodideWorkerClientProvider({ children }: ({ children: ReactNode })) {
+export function PyodideWorkerClientProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const [isReady, setReady] = useState(false);
 
   useEffect(() => {
     if (typeof SharedArrayBuffer !== 'undefined') {
-      initFfi().then(initPyodide).then(() => setReady(true));
+      initFfi()
+        .then(initPyodide)
+        .then(() => setReady(true));
     }
   }, []);
 
   return (
-    <PyodideWorkerClientContext value={{
-      isReady,
-      execute,
-      restart
-    }}>
+    <PyodideWorkerClientContext
+      value={{
+        isReady,
+        execute,
+        restart,
+      }}
+    >
       {children}
     </PyodideWorkerClientContext>
-  )
+  );
 }
