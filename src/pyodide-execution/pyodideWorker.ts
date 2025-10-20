@@ -11,7 +11,7 @@ import {
 import { GraphicSpec, Sized } from './spec';
 
 let syncBuffer: Int32Array;
-let resultSizeBuffer: Int32Array;
+let resultLengthBuffer: Int32Array;
 let pyodide: PyodideAPI;
 
 const remainingPyProxies: PyProxy[] = [];
@@ -38,9 +38,9 @@ function executeOnMainThread(
     uuid,
   });
   Atomics.wait(syncBuffer, 0, 0);
-  // Read size of result and create shared array buffer to transfer it
-  const sizeInBytes = resultSizeBuffer[0];
-  const resultBuffer = new SharedArrayBuffer(sizeInBytes);
+  // Read length of result and create shared array buffer to transfer it
+  const lenInBytes = resultLengthBuffer[0];
+  const resultBuffer = new SharedArrayBuffer(lenInBytes);
   self.postMessage({
     type,
     uuid,
@@ -199,7 +199,7 @@ addEventListener(
           installPytamaroFfi();
 
           syncBuffer = new Int32Array(data.syncBuffer);
-          resultSizeBuffer = new Int32Array(data.resultSizeBuffer);
+          resultLengthBuffer = new Int32Array(data.resultLengthBuffer);
 
           self.postMessage({ type: Message.READY });
         }
