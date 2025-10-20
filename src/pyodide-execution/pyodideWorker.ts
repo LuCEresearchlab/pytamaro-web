@@ -1,7 +1,9 @@
 import { PyodideAPI } from 'pyodide';
 import { PyProxy, PythonError } from 'pyodide/ffi';
+import { joinLines } from '../sourceUtils';
 import {
   DrawRequestData,
+  InputRequestData,
   Message,
   ResultMessage,
   RunPythonFile,
@@ -28,7 +30,7 @@ function decodeSharedBuffer(sharedBuffer: SharedArrayBuffer): string {
 
 function executeOnMainThread(
   type: Message,
-  data: DrawRequestData | SizeRequestData,
+  data: DrawRequestData | SizeRequestData | InputRequestData,
 ): SharedArrayBuffer {
   const uuid = crypto.randomUUID();
   // Perform procedure on the main thread
@@ -75,6 +77,11 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
   let stdout = '';
   let stderr = '';
   const decoder = new TextDecoder('utf-8');
+  pyodide.setStdin({
+    stdin: () => {
+      return ffiInput('Input requested by Python code: ');
+    },
+  });
   pyodide.setStdout({
     write: (buf) => {
       stdout += decoder.decode(buf);
@@ -102,7 +109,7 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
   try {
     await pyodide.runPython(
       // Set working directory and then run the driver
-      `import os\nos.chdir('${basePath}')\n${driverCode}`,
+      joinLines(['import os', `os.chdir('${basePath}')`, driverCode]),
       { globals: ns },
     );
     return {
@@ -141,6 +148,11 @@ function ffiSizeWhenRendered(graphic: GraphicSpec): Sized {
     width: resultArray[0],
     height: resultArray[1],
   };
+}
+
+function ffiInput(message: string): string {
+  const res = executeOnMainThread(Message.INPUT, { message });
+  return decodeSharedBuffer(res);
 }
 
 function installPytamaroFfi() {

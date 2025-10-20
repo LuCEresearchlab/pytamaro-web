@@ -19,7 +19,7 @@ import {
 } from '../src/schemas/activitySchema';
 import useAnalysisResult from '../src/useAnalysisResult';
 import { PythonAnalyzer } from '../src/usePythonAnalyzer';
-import { EllipsisTip, InputTip, NoOutputTip } from './CodeCellTips';
+import { EllipsisTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
 import DocumentationStripe from './documentation/DocumentationStripe';
 import ExecutionOutputArea from './OutputArea';
@@ -85,9 +85,6 @@ export default function CodeCell({
     }));
   }, [pythonAnalyzer, extraPythonFiles]);
 
-  const inputFunctionCalled =
-    analysisResult?.called_names.map((info) => info.name).includes('input') ??
-    false;
   const ellipsis = (analysisResult?.ellipsis.length ?? 0) > 0;
 
   const confirm = useConfirm();
@@ -183,7 +180,6 @@ export default function CodeCell({
             />
           </StaleOutputBadge>
         )}
-        {inputFunctionCalled && <InputTip />}
         {ellipsis && <EllipsisTip />}
         <Collapse
           in={codeCellExecutionState.outputAreaVisible}
