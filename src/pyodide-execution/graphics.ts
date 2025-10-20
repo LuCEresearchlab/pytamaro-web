@@ -184,24 +184,19 @@ class Ellipse extends Primitive {
 
 class CircularSector extends Primitive {
   constructor(ck: CanvasKit, spec: CircularSectorSpec) {
-    const rect = ck.LTRBRect(
-      -spec.radius,
-      -spec.radius,
-      spec.radius,
-      spec.radius,
-    );
+    const radius = spec.radius;
+    const diameter = radius * 2;
+    const rect = ck.XYWHRect(0, 0, diameter, diameter);
     const path =
-      spec.angle == 0
-        ? new ck.Path()
-        : spec.angle === 360
+      spec.angle == 360
           ? new ck.Path().addOval(rect)
           : new ck.Path()
-              .moveTo(0, 0)
+            .moveTo(radius, radius)
               .arcToOval(rect, 0, -spec.angle, false)
               .close();
     const pin = {
-      x: spec.radius,
-      y: spec.radius,
+      x: radius,
+      y: radius,
     };
     super(ck, path, spec.color, pin);
   }
