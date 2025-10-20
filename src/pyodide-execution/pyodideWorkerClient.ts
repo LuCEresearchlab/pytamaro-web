@@ -20,8 +20,8 @@ let pyodideWorker: Worker | null = null;
 let ffiImpl: PyTamaroFFI | null = null;
 let sharedSyncBuffer: SharedArrayBuffer | null = null;
 let syncBuffer: Int32Array | null = null;
-let sharedResultSizeBuffer: SharedArrayBuffer | null = null;
-let resultSizeBuffer: Int32Array | null = null;
+let sharedResultLengthBuffer: SharedArrayBuffer | null = null;
+let resultLengthBuffer: Int32Array | null = null;
 
 const pendingResults = new Map<string, ClientResult>();
 
@@ -105,7 +105,7 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
         ffiImpl!.draw(graphic, debug).then((result: string) => {
           const encoded = new Uint8Array(Buffer.from(result));
           pendingResults.set(uuid, encoded);
-          resultSizeBuffer![0] = encoded.byteLength;
+          resultLengthBuffer![0] = encoded.byteLength;
           notifyWorkerUsingSyncBuffer();
         });
       }
@@ -115,7 +115,7 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
         const { graphic } = data;
         const result = ffiImpl!.sizeWhenRendered(graphic);
         pendingResults.set(uuid, result);
-        resultSizeBuffer![0] = Int32Array.BYTES_PER_ELEMENT * 2;
+        resultLengthBuffer![0] = Int32Array.BYTES_PER_ELEMENT * 2;
         notifyWorkerUsingSyncBuffer();
       }
       break;
@@ -125,7 +125,7 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
         const result = prompt(message) || '';
         const encoded = new Uint8Array(Buffer.from(result));
         pendingResults.set(uuid, encoded);
-        resultSizeBuffer![0] = encoded.byteLength;
+        resultLengthBuffer![0] = encoded.byteLength;
       }
       break;
   }
@@ -139,8 +139,10 @@ export function initPyodide(ffi: PyTamaroFFI, onReady: () => void) {
   ffiImpl = ffi;
   sharedSyncBuffer = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT);
   syncBuffer = new Int32Array(sharedSyncBuffer);
-  sharedResultSizeBuffer = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT);
-  resultSizeBuffer = new Int32Array(sharedResultSizeBuffer);
+  sharedResultLengthBuffer = new SharedArrayBuffer(
+    Int32Array.BYTES_PER_ELEMENT,
+  );
+  resultLengthBuffer = new Int32Array(sharedResultLengthBuffer);
 
   pyodideWorker = new Worker(new URL('./pyodideWorker.ts', import.meta.url), {
     type: 'module',
@@ -177,7 +179,7 @@ export function initPyodide(ffi: PyTamaroFFI, onReady: () => void) {
   pyodideWorker.postMessage({
     type: Message.INIT,
     syncBuffer: sharedSyncBuffer,
-    resultSizeBuffer: sharedResultSizeBuffer,
+    resultLengthBuffer: sharedResultLengthBuffer,
   });
 }
 

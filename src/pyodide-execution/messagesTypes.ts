@@ -24,7 +24,7 @@ export type RunMessage = {
 export type InitMessage = {
   type: Message.INIT;
   syncBuffer: SharedArrayBuffer;
-  resultSizeBuffer: SharedArrayBuffer;
+  resultLengthBuffer: SharedArrayBuffer;
 };
 
 // Types for messages sent by the worker (to the client).
