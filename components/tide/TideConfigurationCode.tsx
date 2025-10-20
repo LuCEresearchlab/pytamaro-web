@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useContext, useEffect, useRef } from 'react';
 import { allKinds } from '../../src/documentation';
-import executeWithPyodide from '../../src/pyodide-execution/pyodideWorkerClient';
+import { PyodideWorkerClientContext } from '../../src/pyodide-execution/pyodideWorkerClient';
 import { JudiciousModule } from '../../src/schemas/documentation';
 import { ConfigurationState } from '../../src/tide/configuration';
 import { evaluation, synchronous_phases } from '../../src/tide/evaluation';
@@ -23,6 +23,7 @@ export default function TideConfigurationCode({
 
   const configuration_timeout = useRef(undefined as NodeJS.Timeout | undefined);
   const cached_modules = useRef([] as string[]);
+  const { execute } = useContext(PyodideWorkerClientContext);
 
   const extract_names = useCallback(
     async (configuration_code: string) => {
@@ -35,7 +36,7 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
 [print("IMPORT", v.module, o.name) for v in imports for o in v.names]
 `;
       configuration_timeout.current = undefined;
-      const results = await executeWithPyodide([code], 0, [], [])
+      const results = await execute([code], 0, [], [])
         .catch(() => undefined)
         .then((v) => {
           return v?.type === 'success' ? v.stdout : undefined;
@@ -124,7 +125,7 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
         imported_definitions: imported,
       });
     },
-    [modules, setConfiguration],
+    [modules, execute, setConfiguration],
   );
 
   useEffect(() => {

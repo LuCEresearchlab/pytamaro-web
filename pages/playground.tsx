@@ -13,7 +13,7 @@ import { debounce } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import ActivitiesStripe from '../components/ActivitiesStripe';
 import DownloadCodeButton from '../components/CodeDownloadButton';
 import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDialog';
@@ -38,8 +38,7 @@ import {
   playgroundActivityVariant,
   playgroundInitialSource,
 } from '../src/playground';
-import initFfi from '../src/pyodide-execution/ffi';
-import { initPyodide } from '../src/pyodide-execution/pyodideWorkerClient';
+import { PyodideWorkerClientContext } from '../src/pyodide-execution/pyodideWorkerClient';
 import {
   findImportedNames,
   PythonName,
@@ -290,13 +289,7 @@ export default function Playground({
 
   const { metadata } = useLocalProfile();
 
-  const [execReady, setExecReady] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      initFfi().then((ffi) => initPyodide(ffi, () => setExecReady(true)));
-    }
-  }, []);
+  const { isReady: execReady } = useContext(PyodideWorkerClientContext);
 
   return (
     <div>

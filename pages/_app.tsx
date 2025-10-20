@@ -25,6 +25,7 @@ import '@fontsource/fira-sans/500.css';
 import '@fontsource/fira-sans/700.css';
 // Icon font
 import '@fontsource/material-icons';
+import { PyodideWorkerClientProvider } from '../src/pyodide-execution/pyodideWorkerClient';
 
 function MyApp(props: AppProps) {
   const { Component, pageProps } = props;
@@ -36,33 +37,35 @@ function MyApp(props: AppProps) {
         <title>PyTamaro</title>
         <meta name='viewport' content='initial-scale=1, width=device-width' />
       </Head>
-      <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <PlausibleProvider
-          domain={process.env.NEXT_PUBLIC_DOMAIN as string}
-          customDomain={process.env.NEXT_PUBLIC_PLAUSIBLE_URL}
-          selfHosted
-        >
-          <ConfirmProvider>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                minHeight: '100vh',
-                justifyContent: 'flex-start',
-              }}
-            >
-              <QueryClientProvider client={queryClient}>
-                <Component // eslint-disable-next-line react/jsx-props-no-spreading
-                  {...pageProps}
-                />
-                <PageFooter />
-              </QueryClientProvider>
-            </Box>
-          </ConfirmProvider>
-        </PlausibleProvider>
-      </ThemeProvider>
+      <PyodideWorkerClientProvider>
+        <ThemeProvider theme={theme}>
+          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline />
+          <PlausibleProvider
+            domain={process.env.NEXT_PUBLIC_DOMAIN as string}
+            customDomain={process.env.NEXT_PUBLIC_PLAUSIBLE_URL}
+            selfHosted
+          >
+            <ConfirmProvider>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  minHeight: '100vh',
+                  justifyContent: 'flex-start',
+                }}
+              >
+                <QueryClientProvider client={queryClient}>
+                  <Component // eslint-disable-next-line react/jsx-props-no-spreading
+                    {...pageProps}
+                  />
+                  <PageFooter />
+                </QueryClientProvider>
+              </Box>
+            </ConfirmProvider>
+          </PlausibleProvider>
+        </ThemeProvider>
+      </PyodideWorkerClientProvider>
     </AppCacheProvider>
   );
 }
