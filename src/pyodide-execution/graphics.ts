@@ -292,11 +292,10 @@ class Compose extends Graphic {
       1,
     ];
 
-    // Stub path for bounds
-    const boundsPath = new ck.Path()
-      .addRect(background.bounds)
-      .addPath(new ck.Path().addRect(foreground.bounds), fgOffsetMatrix, true)!;
-    super(boundsPath, boundsPath?.computeTightBounds(), bgPin);
+    const composedPath = new ck.Path()
+      .addPath(background.path)!
+      .addPath(foreground.path, fgOffsetMatrix, true)!;
+    super(composedPath, composedPath?.computeTightBounds(), bgPin);
     this.background = background;
     this.foreground = foreground;
   }
