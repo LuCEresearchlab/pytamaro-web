@@ -39,7 +39,7 @@ function executeOnMainThread(
   });
   Atomics.wait(syncBuffer, 0, 0);
   // Read size of result and create shared array buffer to transfer it
-  const sizeInBytes = Atomics.load(resultSizeBuffer, 0);
+  const sizeInBytes = resultSizeBuffer[0];
   const resultBuffer = new SharedArrayBuffer(sizeInBytes);
   self.postMessage({
     type,
