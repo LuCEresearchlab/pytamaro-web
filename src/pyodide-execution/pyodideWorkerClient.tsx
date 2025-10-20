@@ -1,8 +1,10 @@
+/* eslint-disable prettier/prettier */
 import PQueue from 'p-queue';
+import { createContext, ReactNode, useEffect, useState } from 'react';
 import { ExecutionResponse, cellsToFiles } from '../codeExecution';
 import { ToolboxFunction } from '../localStorage/schema';
 import { PythonFile } from '../schemas/activitySchema';
-import { PyTamaroFFI } from './ffi';
+import initFfi, { PyTamaroFFI } from './ffi';
 import {
   ExecutionRequestMessage,
   ExecutionResultRequestMessage,
@@ -131,11 +133,12 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
   }
 }
 
-export function initPyodide(ffi: PyTamaroFFI, onReady: () => void) {
+function initPyodide(ffi: PyTamaroFFI): Promise<void> {
   if (typeof window === 'undefined') {
     // Only in the browser
-    return;
+    return new Promise((resolve) => resolve());
   }
+
   ffiImpl = ffi;
   sharedSyncBuffer = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT);
   syncBuffer = new Int32Array(sharedSyncBuffer);
@@ -144,20 +147,15 @@ export function initPyodide(ffi: PyTamaroFFI, onReady: () => void) {
   );
   resultLengthBuffer = new Int32Array(sharedResultLengthBuffer);
 
-  pyodideWorker = new Worker(new URL('./pyodideWorker.ts', import.meta.url), {
+  const worker = new Worker(new URL('./pyodideWorker.ts', import.meta.url), {
     type: 'module',
     name: 'Pyodide Worker',
   });
-
-  pyodideWorker.addEventListener(
+  pyodideWorker = worker;
+  worker.addEventListener(
     'message',
     (event: MessageEvent<WorkerMessage>) => {
       const { data } = event;
-      if (data.type === Message.READY) {
-        // Worker is ready!
-        onReady();
-        return;
-      }
       // In this listener, we only process execution requests (messages with an uuid).
       // Messages with the execution result are received by a specific listener in
       // sendExecutionRequestToWorkerAndWaitForResponse.
@@ -176,21 +174,26 @@ export function initPyodide(ffi: PyTamaroFFI, onReady: () => void) {
     },
   );
 
-  pyodideWorker.postMessage({
-    type: Message.INIT,
-    syncBuffer: sharedSyncBuffer,
-    resultLengthBuffer: sharedResultLengthBuffer,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  return new Promise((resolve, _reject) => {
+    const listener = (event: MessageEvent<WorkerMessage>) => {
+      const { data } = event;
+      if (data.type === Message.READY) {
+        // Worker is ready!
+        worker.removeEventListener('message', listener);
+        resolve();
+      }
+    }
+    worker.addEventListener('message', listener);
+    worker.postMessage({
+      type: Message.INIT,
+      syncBuffer: sharedSyncBuffer,
+      resultSizeBuffer: sharedResultLengthBuffer,
+    });
   });
 }
 
-export function restartWorker(): Promise<null> {
-  return new Promise<null>((resolve) => {
-    pyodideWorker?.terminate();
-    initPyodide(ffiImpl!, () => resolve(null));
-  });
-}
-
-export default async function executeWithPyodide(
+export async function execute(
   sources: string[],
   idx: number,
   toolboxFunctions: ToolboxFunction[],
@@ -205,4 +208,48 @@ export default async function executeWithPyodide(
   return (await executionQueue.add(() =>
     sendExecutionRequestToWorkerAndWaitForResponse(files),
   )) as ExecutionResponse;
+}
+
+export function restart(): Promise<void> {
+  return new Promise((resolve) => {
+    pyodideWorker?.terminate();
+    initPyodide(ffiImpl!).then(resolve);
+  });
+}
+
+interface PyodideWorkerClientInterface {
+  isReady: boolean;
+  execute: (
+    sources: string[],
+    idx: number,
+    toolboxFunctions: ToolboxFunction[],
+    extraPythonFiles: PythonFile[],
+  ) => Promise<ExecutionResponse>;
+  restart: () => Promise<void>;
+}
+
+export const PyodideWorkerClientContext = createContext<PyodideWorkerClientInterface>({
+  isReady: false,
+  execute,
+  restart,
+});
+
+export function PyodideWorkerClientProvider({ children }: ({ children: ReactNode })) {
+  const [isReady, setReady] = useState(false);
+
+  useEffect(() => {
+    if (typeof SharedArrayBuffer !== 'undefined') {
+      initFfi().then(initPyodide).then(() => setReady(true));
+    }
+  }, []);
+
+  return (
+    <PyodideWorkerClientContext value={{
+      isReady,
+      execute,
+      restart
+    }}>
+      {children}
+    </PyodideWorkerClientContext>
+  )
 }

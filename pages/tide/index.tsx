@@ -1,5 +1,5 @@
 import { ReactFlowProvider } from '@xyflow/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import Tide from '../../components/tide/Tide';
 import TideConfigurationCode from '../../components/tide/TideConfigurationCode';
@@ -15,15 +15,13 @@ import Head from 'next/head';
 import { useShallow } from 'zustand/shallow';
 import PageTitle from '../../components/PageTitle';
 import NavigationBar from '../../components/navbar/NavigationBar';
-import initFfi from '../../src/pyodide-execution/ffi';
-import { initPyodide } from '../../src/pyodide-execution/pyodideWorkerClient';
+import { PyodideWorkerClientContext } from '../../src/pyodide-execution/pyodideWorkerClient';
 import theme from '../../src/theme';
 
 function TidePage() {
   const [configuration, setConfiguration] = useState(
     undefined as Partial<ConfigurationState> | undefined,
   );
-  const [execReady, setExecReady] = useState(false);
 
   const [loaded, setLoaded] = useState(false);
 
@@ -32,6 +30,8 @@ function TidePage() {
   const cached_modules = useRef([] as string[]);
 
   const modules = useJudiciousDocData(['pytamaro']);
+
+  const { isReady: execReady } = useContext(PyodideWorkerClientContext);
 
   useEffect(() => {
     if (modules.length === cached_modules.current.length) return;
@@ -67,9 +67,6 @@ function TidePage() {
   }, [loading]);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      initFfi().then((ffi) => initPyodide(ffi, () => setExecReady(true)));
-    }
     const tl = anime.timeline({
       easing: 'easeOutCirc',
       duration: 750,

@@ -3,7 +3,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import GithubSlugger from 'github-slugger';
 import Head from 'next/head';
-import { RefObject, useEffect, useMemo, useRef, useState } from 'react';
+import { RefObject, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import ActivityCodeCell from '../../../../../../components/ActivityCodeCell';
 import ActivityFooter from '../../../../../../components/ActivityFooter';
 import ActivityResetButton from '../../../../../../components/ActivityResetButton';
@@ -35,8 +35,7 @@ import { CodeCellState } from '../../../../../../src/localStorage/schema';
 import useLocalProfile from '../../../../../../src/localStorage/useLocalProfile';
 import useMonacoColorizer from '../../../../../../src/monacoColorizer';
 import getNotebookContent from '../../../../../../src/notebook';
-import initFfi from '../../../../../../src/pyodide-execution/ffi';
-import { initPyodide } from '../../../../../../src/pyodide-execution/pyodideWorkerClient';
+import { PyodideWorkerClientContext } from '../../../../../../src/pyodide-execution/pyodideWorkerClient';
 import {
   Activity,
   ActivityVariant,
@@ -159,7 +158,6 @@ export default function NotebookPage({
 
   const isMounted = useIsMounted();
   const [headingsReady, setHeadingsReady] = useState(false);
-  const [execReady, setExecReady] = useState(false);
 
   useEffect(() => {
     if (isMounted) {
@@ -178,9 +176,7 @@ export default function NotebookPage({
     };
   }, [isMounted, cells]);
 
-  useEffect(() => {
-    initFfi().then((ffi) => initPyodide(ffi, () => setExecReady(true)));
-  }, []);
+  const { isReady: execReady } = useContext(PyodideWorkerClientContext);
 
   return (
     <div key={activityVariantId(activityVariant)}>

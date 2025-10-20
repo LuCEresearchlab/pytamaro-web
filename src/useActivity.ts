@@ -6,6 +6,7 @@ import {
   Dispatch,
   SetStateAction,
   useCallback,
+  useContext,
   useEffect,
   useState,
 } from 'react';
@@ -26,15 +27,13 @@ import {
   getDefaultActivityVariantMetadata,
 } from './localStorage/schema';
 import useLocalToolbox from './localStorage/useLocalToolbox';
-import executeWithPyodide, {
-  restartWorker,
-} from './pyodide-execution/pyodideWorkerClient';
 import {
   ActivityVariant,
   PythonFile,
   activityVariantId,
 } from './schemas/activitySchema';
 import { EventName, storeDbEvent } from './storeDbEvent';
+import { PyodideWorkerClientContext } from './pyodide-execution/pyodideWorkerClient';
 
 export function initialCodeExecutionState(): CodeCellExecutionState {
   return {
@@ -117,6 +116,8 @@ export function useActivity(
   const { getFunction } = useLocalToolbox();
   const variantId = activityVariantId(activityVariant);
   const variantMetadata = metadata.activities.find((a) => a.id === variantId);
+
+  const { execute, restart } = useContext(PyodideWorkerClientContext);
 
   const initialCodeExecutionStates = () =>
     Array(initialCodeCells.length)
@@ -243,7 +244,7 @@ export function useActivity(
     idx: number,
   ) => {
     executionStarted(idx);
-    const response = await executeWithPyodide(
+    const response = await execute(
       sources,
       idx,
       toolboxFunctions,
@@ -318,7 +319,7 @@ export function useActivity(
 
   const confirm = useConfirm();
   const handleResetAllCellsNoConfirm = () => {
-    restartWorker().then(() => {
+    restart().then(() => {
       setCodeCells(initialCodeCells);
       setCodeExecutionStates(initialCodeExecutionStates());
     });
@@ -330,7 +331,7 @@ export function useActivity(
         'You are about to reset the code in this cell. Other cells will be left unchanged. This action cannot be undone! ⚠️',
       confirmationText: 'Ok, delete my code',
     })
-      .then(() => restartWorker())
+      .then(restart)
       .then(() => {
         setCodeCells((currentCodeCells) =>
           produce(currentCodeCells, (draft) => {

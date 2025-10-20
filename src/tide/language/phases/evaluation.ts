@@ -1,5 +1,4 @@
 import { ProgramState } from '.';
-import executeWithPyodide from '../../../pyodide-execution/pyodideWorkerClient';
 import { TamaroCard } from '../cards';
 import {
   Definition,
@@ -11,6 +10,7 @@ import { TideRuntimeError_builder } from '../error_builders';
 import { CodeRepresentation } from '../types';
 import { EvaluatedValueType, SoundType, ValueType } from '../typing';
 import { turnCodeElementToCode } from './code_created';
+import { execute } from '../../../pyodide-execution/pyodideWorkerClient';
 
 export type ExecutionResponse = CompletedExecutionResponse | FailedExecution;
 
@@ -75,7 +75,7 @@ export async function extract_data(
         definitions.concat(show_graphic_definition),
       );
 
-      return await executeWithPyodide([code], 0, [], [])
+      return await execute([code], 0, [], [])
         .then((v) => v as CompletedExecutionResponse)
         .then(({ stdout, stderr }) => {
           if (stderr.trim().length !== 0) {
@@ -104,7 +104,7 @@ export async function extract_data(
       };
       const code = turnCodeElementToCode(new_code, definitions.concat());
 
-      return await executeWithPyodide([code], 0, [], [])
+      return await execute([code], 0, [], [])
         .then((v) => v as CompletedExecutionResponse)
         .then(({ stdout, stderr }) => {
           if (stderr.trim().length !== 0) {
