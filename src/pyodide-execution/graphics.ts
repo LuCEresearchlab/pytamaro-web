@@ -76,20 +76,6 @@ export function fromSpec(
   }
 }
 
-function coloredPaint(ck: CanvasKit, color: Color, antiAlias: boolean): Paint {
-  const paint = new ck.Paint();
-  paint.setColor(
-    ck.Color4f(
-      color.red / 255,
-      color.green / 255,
-      color.blue / 255,
-      color.alpha,
-    ),
-  );
-  paint.setAntiAlias(antiAlias);
-  return paint;
-}
-
 export abstract class Graphic {
   readonly pinPosition: Point;
   readonly path: Path;
@@ -133,8 +119,7 @@ class Empty extends Graphic {
 }
 
 abstract class Primitive extends Graphic {
-  private readonly fillPaint: Paint;
-  private readonly strokePaint: Paint;
+  private readonly paint: Paint;
 
   constructor(ck: CanvasKit, path: Path, color: Color, pinPosition?: Point) {
     const bounds = path.computeTightBounds();
@@ -144,20 +129,25 @@ abstract class Primitive extends Graphic {
     };
     super(path, bounds, pinPoint);
 
-    this.fillPaint = coloredPaint(ck, color, false);
-    this.strokePaint = coloredPaint(ck, color, true);
+    const paint = new ck.Paint();
+    paint.setColor(
+      ck.Color4f(
+        color.red / 255,
+        color.green / 255,
+        color.blue / 255,
+        color.alpha,
+      ),
+    );
+    this.paint = paint;
   }
 
   draw(canvas: Canvas, debugPaint?: Paint): void {
-    canvas.drawPath(this.path, this.fillPaint);
-    // TODO: double check this guy
-    canvas.drawPath(this.path, this.strokePaint);
+    canvas.drawPath(this.path, this.paint);
     super.draw(canvas, debugPaint);
   }
 
   destroy(): void {
-    this.fillPaint.delete();
-    this.strokePaint.delete();
+    this.paint.delete();
     super.destroy();
   }
 }
