@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import PQueue from 'p-queue';
 import { createContext, ReactNode, useEffect, useState } from 'react';
 import { ExecutionResponse, cellsToFiles } from '../codeExecution';
@@ -81,6 +80,7 @@ function deliverPendingResult(
     case Message.DRAW:
     case Message.INPUT:
       {
+        console.log(toDeliver, data);
         const src = toDeliver as Uint8Array;
         const resultBuffer = new Uint8Array(data.resultBuffer);
         resultBuffer.set(src);
@@ -128,6 +128,8 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
         const encoded = new Uint8Array(Buffer.from(result));
         pendingResults.set(uuid, encoded);
         resultLengthBuffer![0] = encoded.byteLength;
+        console.log(result, encoded, encoded.byteLength)
+        notifyWorkerUsingSyncBuffer();
       }
       break;
   }

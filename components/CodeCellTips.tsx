@@ -1,6 +1,6 @@
 import Assignment from '@mui/icons-material/Assignment';
 import TipsAndUpdates from '@mui/icons-material/TipsAndUpdates';
-import { Alert, AlertTitle } from '@mui/material';
+import { Alert } from '@mui/material';
 import { Trans } from 'react-i18next';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { PythonName } from '../src/python-analyzer/python_analyzer';
@@ -46,20 +46,6 @@ export function NoOutputTip({
           />
         </>
       )}
-    </Alert>
-  );
-}
-
-export function InputTip() {
-  return (
-    <Alert severity='warning'>
-      <AlertTitle>
-        Using the <code>input</code> function is currently not supported on this
-        platform.
-      </AlertTitle>
-      This might be improved in the future. However, consider this general
-      remark: mixing user interface aspects (input and output) with computations
-      is not a good idea.
     </Alert>
   );
 }
