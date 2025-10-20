@@ -87,9 +87,9 @@ function deliverPendingResult(
     case Message.SIZE:
       {
         const src = toDeliver as Sized;
-        const resultBuffer = new Int32Array(data.resultBuffer);
-        resultBuffer[0] = Math.round(src.width);
-        resultBuffer[1] = Math.round(src.height);
+        const resultBuffer = new Float32Array(data.resultBuffer);
+        resultBuffer[0] = src.width;
+        resultBuffer[1] = src.height;
       }
       break;
   }

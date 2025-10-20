@@ -136,7 +136,7 @@ function ffiRenderGraphic(graphic: GraphicSpec, debug: boolean): string {
 
 function ffiSizeWhenRendered(graphic: GraphicSpec): Sized {
   const res = executeOnMainThread(Message.SIZE, { graphic });
-  const resultArray = new Int32Array(res);
+  const resultArray = new Float32Array(res);
   return {
     width: resultArray[0],
     height: resultArray[1],
