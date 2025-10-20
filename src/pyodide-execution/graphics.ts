@@ -245,14 +245,14 @@ class Text extends Graphic {
     builder.delete();
 
     p.layout(Number.MAX_VALUE);
-    const isEmpty = spec.text.length > 0;
-    const pinPosition = isEmpty
-      ? { x: 0, y: 0 }
-      : { x: 0, y: p.getAlphabeticBaseline() };
+    const isEmpty = spec.text.length == 0;
+    const pinPosition = { x: 0, y: isEmpty ? 0 : p.getAlphabeticBaseline() };
     const bounds = isEmpty
-      ? ck.XYWHRect(0, 0, p.getMaxIntrinsicWidth(), p.getHeight())
-      : ck.XYWHRect(0, 0, 0, 0);
+      ? ck.XYWHRect(0, 0, 0, 0)
+      : ck.XYWHRect(0, 0, p.getMaxIntrinsicWidth(), p.getHeight());
     // Stub path for bounds computations
+    // TODO: Here we should use th actual text path, instead of the bounding box.
+    // However, CanvasKit does not provide an easy way to get the path.
     const boundsPath = new ck.Path().addRect(bounds);
     super(boundsPath, bounds, pinPosition);
 
