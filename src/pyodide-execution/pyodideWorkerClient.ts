@@ -27,6 +27,30 @@ const pendingResults = new Map<string, ClientResult>();
 
 const executionQueue = new PQueue({ concurrency: 1 });
 
+/**
+ * Notify the worker that a result is ready in the shared buffer.
+ * There are rare cases in which we might attempt to notify the worker
+ * before it is waiting on the sync buffer. In that case, we retry
+ * until the worker is successfully notified.
+ * Log an error message every million unsuccessful attempts.
+ */
+function notifyWorkerUsingSyncBuffer() {
+  let notified = false;
+  let tries = 0;
+  while (!notified) {
+    const awoken = Atomics.notify(syncBuffer!, 0);
+    if (awoken > 0) {
+      notified = true;
+    } else {
+      tries++;
+      if (tries % 1_000_000 === 0) {
+        // eslint-disable-next-line no-console
+        console.error(`${tries} unsuccessful attempts to notify worker`);
+      }
+    }
+  }
+}
+
 function sendExecutionRequestToWorkerAndWaitForResponse(
   files: RunPythonFile[],
 ): Promise<ExecutionResponse> {
@@ -63,15 +87,17 @@ function deliverPendingResult(
         }
       }
       break;
-    case Message.SIZE: {
-      const src = toDeliver as Sized;
-      const resultBuffer = new Int32Array(data.resultBuffer);
-      Atomics.store(resultBuffer, 0, src.width);
-      Atomics.store(resultBuffer, 1, src.height);
-    }
+    case Message.SIZE:
+      {
+        const src = toDeliver as Sized;
+        const resultBuffer = new Int32Array(data.resultBuffer);
+        Atomics.store(resultBuffer, 0, src.width);
+        Atomics.store(resultBuffer, 1, src.height);
+      }
+      break;
   }
   pendingResults.delete(uuid);
-  Atomics.notify(syncBuffer!, 0);
+  notifyWorkerUsingSyncBuffer();
 }
 
 function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
@@ -83,7 +109,7 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
           const encoded = new Uint8Array(Buffer.from(result));
           pendingResults.set(uuid, encoded);
           Atomics.store(resultSizeBuffer!, 0, encoded.byteLength);
-          Atomics.notify(syncBuffer!, 0);
+          notifyWorkerUsingSyncBuffer();
         });
       }
       break;
@@ -93,7 +119,7 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
         const result = ffiImpl!.sizeWhenRendered(graphic);
         pendingResults.set(uuid, result);
         Atomics.store(resultSizeBuffer!, 0, Int32Array.BYTES_PER_ELEMENT * 2);
-        Atomics.notify(syncBuffer!, 0);
+        notifyWorkerUsingSyncBuffer();
       }
       break;
     case Message.INPUT:
@@ -103,7 +129,7 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
         const encoded = new Uint8Array(Buffer.from(result));
         pendingResults.set(uuid, encoded);
         Atomics.store(resultSizeBuffer!, 0, encoded.byteLength);
-        Atomics.notify(syncBuffer!, 0);
+        notifyWorkerUsingSyncBuffer();
       }
       break;
   }
