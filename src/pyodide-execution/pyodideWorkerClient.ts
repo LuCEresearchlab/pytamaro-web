@@ -81,18 +81,15 @@ function deliverPendingResult(
       {
         const src = toDeliver as Uint8Array;
         const resultBuffer = new Uint8Array(data.resultBuffer);
-        const n = src.byteLength / Uint8Array.BYTES_PER_ELEMENT;
-        for (let i = 0; i < n; i++) {
-          Atomics.store(resultBuffer, i, Atomics.load(src, i));
-        }
+        resultBuffer.set(src);
       }
       break;
     case Message.SIZE:
       {
         const src = toDeliver as Sized;
         const resultBuffer = new Int32Array(data.resultBuffer);
-        Atomics.store(resultBuffer, 0, Math.round(src.width));
-        Atomics.store(resultBuffer, 1, Math.round(src.height));
+        resultBuffer[0] = Math.round(src.width);
+        resultBuffer[1] = Math.round(src.height);
       }
       break;
   }
@@ -108,7 +105,7 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
         ffiImpl!.draw(graphic, debug).then((result: string) => {
           const encoded = new Uint8Array(Buffer.from(result));
           pendingResults.set(uuid, encoded);
-          Atomics.store(resultSizeBuffer!, 0, encoded.byteLength);
+          resultSizeBuffer![0] = encoded.byteLength;
           notifyWorkerUsingSyncBuffer();
         });
       }
@@ -118,7 +115,7 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
         const { graphic } = data;
         const result = ffiImpl!.sizeWhenRendered(graphic);
         pendingResults.set(uuid, result);
-        Atomics.store(resultSizeBuffer!, 0, Int32Array.BYTES_PER_ELEMENT * 2);
+        resultSizeBuffer![0] = Int32Array.BYTES_PER_ELEMENT * 2;
         notifyWorkerUsingSyncBuffer();
       }
       break;
@@ -128,8 +125,7 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
         const result = prompt(message) || '';
         const encoded = new Uint8Array(Buffer.from(result));
         pendingResults.set(uuid, encoded);
-        Atomics.store(resultSizeBuffer!, 0, encoded.byteLength);
-        notifyWorkerUsingSyncBuffer();
+        resultSizeBuffer![0] = encoded.byteLength;
       }
       break;
   }
