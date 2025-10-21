@@ -9,6 +9,7 @@ export enum Message {
   DRAW = 'draw',
   SIZE = 'size',
   INPUT = 'input',
+  PARTIAL_RESULT = 'partial_result',
 }
 
 // Types for messages sent by the client (to the worker).
@@ -33,7 +34,10 @@ export type WorkerMessage =
   | ResultMessage
   | MainThreadExecutionMessage;
 export type ReadyMessage = { type: Message.READY };
-export type ResultMessage = { type: Message.RESULT; result: ExecutionResponse };
+export type ResultMessage = {
+  type: Message.RESULT | Message.PARTIAL_RESULT;
+  result: ExecutionResponse;
+};
 export type MainThreadExecutionMessage = { uuid: string } & (
   | ExecutionRequestMessage
   | ExecutionResultRequestMessage
@@ -49,9 +53,7 @@ export type DrawRequestData = {
 export type SizeRequestData = {
   graphic: GraphicSpec;
 };
-export type InputRequestData = {
-  message: string;
-};
+export type InputRequestData = object;
 export type ExecutionResultRequestMessage = {
   type: Message.INPUT | Message.DRAW | Message.SIZE;
   resultBuffer: SharedArrayBuffer;

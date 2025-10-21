@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { ToolboxFunction } from '../src/localStorage/schema';
 import {
   ActivityVariant,
@@ -7,6 +7,7 @@ import {
 import { useActivity } from '../src/useActivity';
 import usePythonAnalyzer from '../src/usePythonAnalyzer';
 import CodeCell from './CodeCell';
+import { OutputAreaRef } from './OutputArea';
 import SaveToToolboxButton from './SaveToToolboxButton';
 
 export function initialStateSingleCell(source: string) {
@@ -42,6 +43,7 @@ export default function SolitaryCodeCell({
   extraActions?: React.ReactNode;
   extraToolboxFunctions?: ToolboxFunction[];
 }) {
+  const outputAreaRef = useRef<OutputAreaRef>(null);
   const {
     initialCodeCells,
     codeCells,
@@ -70,7 +72,7 @@ export default function SolitaryCodeCell({
       }}
       onExecutionRequested={() => {
         onExecutionRequest();
-        return handleExecute(0);
+        return handleExecute(0, outputAreaRef);
       }}
       firstLineNumber={1}
       activityVariant={activityVariant}
@@ -92,6 +94,7 @@ export default function SolitaryCodeCell({
       resetCounter={resetCounter}
       pythonAnalyzer={pythonAnalyzer}
       cellIdx={0}
+      outputAreaRef={outputAreaRef}
     />
   );
 }

@@ -4,6 +4,7 @@ import { debounce, uniqBy } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import {
   Dispatch,
+  RefObject,
   SetStateAction,
   useCallback,
   useContext,
@@ -11,6 +12,7 @@ import {
   useState,
 } from 'react';
 import useSessionStorageState from 'use-session-storage-state';
+import { OutputAreaRef } from '../components/OutputArea';
 import logAnalyticsEvent, { AnalyticsEventName } from './analyticsEvent';
 import {
   ExecutionResponse,
@@ -27,13 +29,13 @@ import {
   getDefaultActivityVariantMetadata,
 } from './localStorage/schema';
 import useLocalToolbox from './localStorage/useLocalToolbox';
+import { PyodideWorkerClientContext } from './pyodide-execution/pyodideWorkerClient';
 import {
   ActivityVariant,
   PythonFile,
   activityVariantId,
 } from './schemas/activitySchema';
 import { EventName, storeDbEvent } from './storeDbEvent';
-import { PyodideWorkerClientContext } from './pyodide-execution/pyodideWorkerClient';
 
 export function initialCodeExecutionState(): CodeCellExecutionState {
   return {
@@ -238,9 +240,24 @@ export function useActivity(
     );
   };
 
+  const newPartialExecutionResult =
+    (idx: number) => (executionResponse: ExecutionResponse | undefined) => {
+      setCodeExecutionStates((currentCodeExecutionStates) =>
+        produce(currentCodeExecutionStates, (draft) => {
+          if (executionResponse && !isExecutionFailed(executionResponse)) {
+            draft[idx].executionResponse = executionResponse;
+            draft[idx].outputSynced = true;
+            draft[idx].outputAreaVisible =
+              executionResponse?.stdout?.length > 0;
+          }
+        }),
+      );
+    };
+
   const handleExecuteSingleCell = async (
     sources: string[],
     toolboxFunctions: ToolboxFunction[],
+    outputAreaRef: RefObject<OutputAreaRef | null>,
     idx: number,
   ) => {
     executionStarted(idx);
@@ -249,13 +266,18 @@ export function useActivity(
       idx,
       toolboxFunctions,
       extraPythonFiles,
+      newPartialExecutionResult(idx),
+      outputAreaRef,
     );
     executionFinished(idx, response);
     postExecuteSingleCell(idx, response);
     return response;
   };
 
-  const handleExecute = async (idx: number) => {
+  const handleExecute = async (
+    idx: number,
+    outputAreaRef: RefObject<OutputAreaRef | null>,
+  ) => {
     const extraToolboxFn = getExtraToolboxFunction();
 
     const functionLookup = (name: string) => {
@@ -299,7 +321,9 @@ export function useActivity(
     );
     const responses = [];
     for (let i = 0; i <= idx; i += 1) {
-      responses.push(handleExecuteSingleCell(sources, toolboxFunctions, i));
+      responses.push(
+        handleExecuteSingleCell(sources, toolboxFunctions, outputAreaRef, i),
+      );
     }
     const failedResponses = (await Promise.all(responses)).filter(
       isExecutionFailed,

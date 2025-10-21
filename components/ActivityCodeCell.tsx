@@ -1,6 +1,6 @@
 import { Alert, AlertTitle, Box, Typography } from '@mui/material';
 import { sum } from 'lodash';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import {
@@ -14,6 +14,7 @@ import useReset from '../src/useReset';
 import CodeCell from './CodeCell';
 import FailedExecutionSnackbar from './FailedExecutionSnackbar';
 import MoreOptionsButton from './MoreOptionsButton';
+import { OutputAreaRef } from './OutputArea';
 import SaveToToolboxButton from './SaveToToolboxButton';
 
 function InconsistencyMessage() {
@@ -71,6 +72,7 @@ export default function ActivityCodeCell({
     handleResetSingleCell,
     localCodeCellsWrongLength,
   } = useLocalActivity(initialCodeCells, activityVariant, extraPythonFiles);
+  const outputAreaRef = useRef<OutputAreaRef | null>(null);
 
   const { resetCounter, newReset } = useReset();
   useEffect(() => {
@@ -93,7 +95,7 @@ export default function ActivityCodeCell({
         currentSource={currentCodeCell.source}
         codeCellExecutionState={codeExecutionStates[cellIdx]}
         onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
-        onExecutionRequested={() => handleExecute(cellIdx)}
+        onExecutionRequested={() => handleExecute(cellIdx, outputAreaRef)}
         firstLineNumber={1 + precedingLines}
         activityVariant={activityVariant}
         platformConfig={platformConfig}
@@ -102,6 +104,7 @@ export default function ActivityCodeCell({
         pythonAnalyzer={pythonAnalyzer}
         cellIdx={cellIdx}
         runEnabled={runEnabled}
+        outputAreaRef={outputAreaRef}
         extraActions={
           <>
             <SaveToToolboxButton
