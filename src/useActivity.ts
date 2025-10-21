@@ -343,10 +343,9 @@ export function useActivity(
 
   const confirm = useConfirm();
   const handleResetAllCellsNoConfirm = () => {
-    restart().then(() => {
-      setCodeCells(initialCodeCells);
-      setCodeExecutionStates(initialCodeExecutionStates());
-    });
+    setCodeCells(initialCodeCells);
+    setCodeExecutionStates(initialCodeExecutionStates());
+    restart();
   };
 
   const handleResetSingleCell = (idx: number, postReset: () => void) => {
@@ -354,21 +353,20 @@ export function useActivity(
       description:
         'You are about to reset the code in this cell. Other cells will be left unchanged. This action cannot be undone! ⚠️',
       confirmationText: 'Ok, delete my code',
-    })
-      .then(restart)
-      .then(() => {
-        setCodeCells((currentCodeCells) =>
-          produce(currentCodeCells, (draft) => {
-            draft[idx] = initialCodeCells[idx];
-          }),
-        );
-        setCodeExecutionStates((currentCodeExecutionStates) =>
-          produce(currentCodeExecutionStates, (draft) => {
-            draft[idx] = initialCodeExecutionState();
-          }),
-        );
-        postReset();
-      });
+    }).then(() => {
+      setCodeCells((currentCodeCells) =>
+        produce(currentCodeCells, (draft) => {
+          draft[idx] = initialCodeCells[idx];
+        }),
+      );
+      setCodeExecutionStates((currentCodeExecutionStates) =>
+        produce(currentCodeExecutionStates, (draft) => {
+          draft[idx] = initialCodeExecutionState();
+        }),
+      );
+      restart();
+      postReset();
+    });
   };
 
   return {
