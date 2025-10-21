@@ -20,7 +20,15 @@ import {
   Tooltip,
 } from '@mui/material';
 import { isEmpty, negate } from 'lodash';
-import { CSSProperties, useEffect, useRef, useState } from 'react';
+import {
+  CSSProperties,
+  Ref,
+  RefObject,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { CompletedExecutionResponse } from '../src/codeExecution';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import {
@@ -30,6 +38,7 @@ import {
 } from '../src/pythonTraceback';
 import { joinLines, splitLines } from '../src/sourceUtils';
 import theme from '../src/theme';
+import InputArea from './InputArea';
 
 function dataURIPrefix(mime: string) {
   return `data:${mime};base64,`;
@@ -197,7 +206,9 @@ function SinglePreElement({
   lines: string[];
 }) {
   return (
-    <pre style={{ ...OUTPUT_ELEMENT_STYLE, ...style }}>{joinLines(lines)}</pre>
+    <pre style={{ ...OUTPUT_ELEMENT_STYLE, display: 'inline-block', ...style }}>
+      {joinLines(lines)}
+    </pre>
   );
 }
 
@@ -236,6 +247,7 @@ function CodeElement({ content }: { content: string }) {
         <SinglePreElement
           style={{
             fontWeight: 'bold',
+            display: 'block',
           }}
           lines={errorLines}
         />
@@ -244,17 +256,40 @@ function CodeElement({ content }: { content: string }) {
   );
 }
 
+export type OutputAreaRef = {
+  getInput: () => Promise<string>;
+  activateInputField: () => void;
+};
+
 export function OutputArea({
   data,
   disabled = false,
   sx = {},
   preStyle = {},
+  ref = undefined,
 }: {
   data: string;
   disabled?: boolean;
   sx?: CSSProperties;
   preStyle?: CSSProperties;
+  ref?: Ref<OutputAreaRef>;
 }) {
+  const resolveInputPromiseRef = useRef<((value: string) => void) | undefined>(
+    undefined,
+  );
+  const [inputFieldActive, setInputFieldActive] = useState(false);
+  useImperativeHandle(ref, () => {
+    return {
+      getInput() {
+        return new Promise<string>((resolve) => {
+          resolveInputPromiseRef.current = resolve;
+        });
+      },
+      activateInputField() {
+        setInputFieldActive(true);
+      },
+    };
+  }, []);
   const pytamaroDataUriRegex =
     /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
   return (
@@ -273,6 +308,16 @@ export function OutputArea({
             />
           ),
         )}
+      {inputFieldActive && (
+        <InputArea
+          onSubmit={(result) => {
+            if (resolveInputPromiseRef.current) {
+              setInputFieldActive(false);
+              resolveInputPromiseRef.current(result);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -329,11 +374,13 @@ function PreviousCellsErrorAlert({
 export default function ExecutionOutputArea({
   executionError,
   executionResponse,
+  outputAreaRef,
   dimmed = false,
   sx = {},
 }: {
   executionError: boolean;
   executionResponse: CompletedExecutionResponse;
+  outputAreaRef: RefObject<OutputAreaRef | null>;
   dimmed?: boolean;
   sx?: CSSProperties;
 }) {
@@ -362,7 +409,7 @@ export default function ExecutionOutputArea({
               paddingX={3}
               paddingY={1}
             >
-              <OutputArea data={stdout} disabled={dimmed} />
+              <OutputArea data={stdout} disabled={dimmed} ref={outputAreaRef} />
             </Box>
           )}
           {stderr && (

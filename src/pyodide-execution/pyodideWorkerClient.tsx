@@ -1,5 +1,12 @@
 import PQueue from 'p-queue';
-import { createContext, ReactNode, useEffect, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  RefObject,
+  useEffect,
+  useState,
+} from 'react';
+import { OutputAreaRef } from '../../components/OutputArea';
 import { cellsToFiles, ExecutionResponse } from '../codeExecution';
 import { ToolboxFunction } from '../localStorage/schema';
 import { PythonFile } from '../schemas/activitySchema';
@@ -24,9 +31,11 @@ let syncBuffer: Int32Array | null = null;
 let sharedResultLengthBuffer: SharedArrayBuffer | null = null;
 let resultLengthBuffer: Int32Array | null = null;
 
+let outputAreaGlobalRef: RefObject<OutputAreaRef | null>;
+
 const pendingResults = new Map<string, ClientResult>();
 
-const executionQueue = new PQueue({ concurrency: 1 });
+let executionQueue = null;
 
 /**
  * Notify the worker that a result is ready in the shared buffer.
@@ -54,9 +63,13 @@ function notifyWorkerUsingSyncBuffer() {
 
 function sendExecutionRequestToWorkerAndWaitForResponse(
   files: RunPythonFile[],
+  updateExecutionResult: (response: ExecutionResponse) => void,
 ): Promise<ExecutionResponse> {
   return new Promise<ExecutionResponse>((resolve) => {
     const resultListener = (event: MessageEvent<WorkerMessage>) => {
+      if (event.data?.type === Message.PARTIAL_RESULT) {
+        updateExecutionResult(event.data.result);
+      }
       if (event.data?.type === Message.RESULT) {
         pyodideWorker?.removeEventListener('message', resultListener);
         resolve(event.data.result);
@@ -80,7 +93,6 @@ function deliverPendingResult(
     case Message.DRAW:
     case Message.INPUT:
       {
-        console.log(toDeliver, data);
         const src = toDeliver as Uint8Array;
         const resultBuffer = new Uint8Array(data.resultBuffer);
         resultBuffer.set(src);
@@ -123,13 +135,13 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
       break;
     case Message.INPUT:
       {
-        const { message } = data;
-        const result = prompt(message) || '';
-        const encoded = new Uint8Array(Buffer.from(result));
-        pendingResults.set(uuid, encoded);
-        resultLengthBuffer![0] = encoded.byteLength;
-        console.log(result, encoded, encoded.byteLength)
-        notifyWorkerUsingSyncBuffer();
+        outputAreaGlobalRef.current?.activateInputField();
+        outputAreaGlobalRef.current?.getInput().then((value: string) => {
+          const encoded = new Uint8Array(Buffer.from(value));
+          pendingResults.set(uuid, encoded);
+          resultLengthBuffer![0] = encoded.byteLength;
+          notifyWorkerUsingSyncBuffer();
+        });
       }
       break;
   }
@@ -148,6 +160,7 @@ function initPyodide(ffi: PyTamaroFFI): Promise<void> {
     Int32Array.BYTES_PER_ELEMENT,
   );
   resultLengthBuffer = new Int32Array(sharedResultLengthBuffer);
+  executionQueue = new PQueue({ concurrency: 1 });
 
   const worker = new Worker(new URL('./pyodideWorker.ts', import.meta.url), {
     type: 'module',
@@ -197,6 +210,8 @@ export async function execute(
   idx: number,
   toolboxFunctions: ToolboxFunction[],
   extraPythonFiles: PythonFile[],
+  updateExecutionResult: (response: ExecutionResponse) => void,
+  outputAreaRef: RefObject<OutputAreaRef | null>,
 ): Promise<ExecutionResponse> {
   const files = await cellsToFiles(
     sources,
@@ -204,9 +219,13 @@ export async function execute(
     toolboxFunctions,
     extraPythonFiles,
   );
-  return (await executionQueue.add(() =>
-    sendExecutionRequestToWorkerAndWaitForResponse(files),
-  )) as ExecutionResponse;
+  return (await executionQueue!.add(() => {
+    outputAreaGlobalRef = outputAreaRef;
+    return sendExecutionRequestToWorkerAndWaitForResponse(
+      files,
+      updateExecutionResult,
+    );
+  })) as ExecutionResponse;
 }
 
 export function restart(): Promise<void> {
@@ -223,6 +242,8 @@ interface PyodideWorkerClientInterface {
     idx: number,
     toolboxFunctions: ToolboxFunction[],
     extraPythonFiles: PythonFile[],
+    updateExecutionResult: (response: ExecutionResponse) => void,
+    outputAreaRef: RefObject<OutputAreaRef | null>,
   ) => Promise<ExecutionResponse>;
   restart: () => Promise<void>;
 }

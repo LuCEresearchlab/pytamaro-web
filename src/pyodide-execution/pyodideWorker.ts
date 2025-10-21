@@ -77,20 +77,34 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
   let stdout = '';
   let stderr = '';
   const decoder = new TextDecoder('utf-8');
+
+  const sendPartialResult = () => {
+    self.postMessage({
+      type: Message.PARTIAL_RESULT,
+      result: { type: 'success', stdout, stderr },
+    });
+  };
+
   pyodide.setStdin({
     stdin: () => {
-      return ffiInput('Input requested by Python code: ');
+      const input = ffiInput();
+      // Add back to stdout (including the <enter>) so that the user can see what they typed
+      stdout += input + '\n';
+      sendPartialResult();
+      return input;
     },
   });
   pyodide.setStdout({
     write: (buf) => {
       stdout += decoder.decode(buf);
+      sendPartialResult();
       return buf.length;
     },
   });
   pyodide.setStderr({
     write: (buf) => {
       stderr += decoder.decode(buf);
+      sendPartialResult();
       return buf.length;
     },
   });
@@ -150,8 +164,8 @@ function ffiSizeWhenRendered(graphic: GraphicSpec): Sized {
   };
 }
 
-function ffiInput(message: string): string {
-  const res = executeOnMainThread(Message.INPUT, { message });
+function ffiInput(): string {
+  const res = executeOnMainThread(Message.INPUT, {});
   return decodeSharedBuffer(res);
 }
 
