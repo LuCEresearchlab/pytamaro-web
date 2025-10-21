@@ -275,7 +275,11 @@ export function PyodideWorkerClientProvider({
       value={{
         isReady,
         execute,
-        restart,
+        restart: async () => {
+          setReady(false);
+          await restart();
+          setReady(true);
+        },
       }}
     >
       {children}
