@@ -1,5 +1,6 @@
 import { Keyboard } from '@mui/icons-material';
 import { Badge } from '@mui/material';
+import { useEffect, useRef } from 'react';
 import theme from '../src/theme';
 
 export default function InputArea({
@@ -7,6 +8,10 @@ export default function InputArea({
 }: {
   onSubmit: (input: string) => void;
 }) {
+  const inputRef = useRef<HTMLPreElement | null>(null);
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
   return (
     <Badge
       badgeContent={
@@ -22,6 +27,7 @@ export default function InputArea({
       sx={{ display: 'inline-block' }}
     >
       <pre
+        ref={inputRef}
         style={{
           margin: theme.spacing(0.5),
           padding: theme.spacing(0.5),
