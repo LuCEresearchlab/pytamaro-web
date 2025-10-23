@@ -2,6 +2,7 @@ import CanvasKitInit from '../canvaskit-wasm/canvaskit';
 import type { CanvasKit, FontMgr } from '../canvaskit-wasm/canvaskit.d.ts';
 import { FONTS_FILENAME_PREFIX } from './fonts.ts';
 import { fromSpec } from './graphics';
+import { addDebugInfo } from './graphicsDebug.ts';
 import { GraphicSpec, Sized } from './spec';
 
 async function draw(
@@ -12,28 +13,29 @@ async function draw(
   debug: boolean,
 ): Promise<string> {
   const graphic = fromSpec(ck, fontMgr, spec);
-
-  // Debug
-  let debugPaint = undefined;
-  if (debug) {
-    debugPaint = new ck.Paint();
-    debugPaint.setAntiAlias(true);
-    debugPaint.setStrokeWidth(5);
-    debugPaint.setStyle(ck.PaintStyle.Stroke);
-  }
+  const extraSpace = debug
+    ? Math.min(graphic.size.width, graphic.size.height, 10) / 2
+    : 0;
 
   // Need to set the size before the CK surface is initialized
   // eslint-disable-next-line no-param-reassign
-  canvas.width = graphic.size.width;
+  canvas.width = Math.round(graphic.size.width + extraSpace * 2);
   // eslint-disable-next-line no-param-reassign
-  canvas.height = graphic.size.height;
+  canvas.height = Math.round(graphic.size.height + extraSpace * 2);
 
   const surface = ck.MakeSWCanvasSurface(canvas);
   surface?.drawOnce((ckCanvas) => {
-    // ckCanvas.clear(this.ck.TRANSPARENT);
     // Align the graphic to the top-left of the canvas
-    ckCanvas.translate(-graphic.bounds[0], -graphic.bounds[1]);
-    graphic.draw(ckCanvas, debugPaint);
+    ckCanvas.translate(
+      extraSpace - graphic.bounds[0],
+      extraSpace - graphic.bounds[1],
+    );
+    // Draw the graphic
+    graphic.draw(ckCanvas);
+    if (debug) {
+      addDebugInfo(ck, graphic, ckCanvas, extraSpace);
+    }
+
     // Immediately destroy the graphic object
     graphic.destroy();
   });
