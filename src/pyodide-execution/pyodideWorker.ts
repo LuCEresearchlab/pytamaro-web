@@ -1,5 +1,6 @@
 import { PyodideAPI } from 'pyodide';
 import { PyProxy, PythonError } from 'pyodide/ffi';
+import { INPUT_BEGIN, INPUT_END } from '../../components/InputArea';
 import { joinLines } from '../sourceUtils';
 import {
   DrawRequestData,
@@ -89,7 +90,7 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
     stdin: () => {
       const input = ffiInput();
       // Add back to stdout (including the <enter>) so that the user can see what they typed
-      stdout += input + '\n';
+      stdout += INPUT_BEGIN + input + INPUT_END + '\n';
       sendPartialResult();
       return input;
     },

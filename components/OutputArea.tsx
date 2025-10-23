@@ -39,7 +39,7 @@ import {
 } from '../src/pythonTraceback';
 import { splitLines } from '../src/sourceUtils';
 import theme from '../src/theme';
-import InputArea from './InputArea';
+import InputArea, { INPUT_BEGIN, INPUT_END } from './InputArea';
 
 function dataURIPrefix(mime: string) {
   return `data:${mime};base64,`;
@@ -202,35 +202,49 @@ function ImgElement({
 function PreElement({
   style = {},
   lines,
-  input = undefined,
+  activeInput: input = undefined,
 }: {
   style?: CSSProperties;
   lines: string[];
-  input?: ReactElement | undefined;
+  activeInput?: ReactElement | undefined;
 }) {
   return (
     <span style={OUTPUT_ELEMENT_STYLE}>
       {lines.map((line, idx, lines) => {
-        const needsInput = idx === lines.length - 1 && input;
-        const lineElement = (
-          <pre
-            key={line}
-            style={{
-              margin: 0,
-              display: needsInput ? 'inline-block' : 'block',
-              ...style,
-            }}
-          >
-            {line}
-          </pre>
+        const needsActiveInput = idx === lines.length - 1 && input;
+        const inputRegex = new RegExp(
+          '(' + INPUT_BEGIN + '.*?' + INPUT_END + ')',
+          'g',
         );
-        return needsInput ? (
-          <>
-            {lineElement}
-            {input}
-          </>
-        ) : (
-          lineElement
+        const chunks = line.split(inputRegex).filter(negate(isEmpty));
+        return (
+          <span style={{ display: 'block' }} key={idx}>
+            {chunks.map((chunk, chunkIdx) => {
+              if (inputRegex.test(chunk)) {
+                const inputContent = chunk.slice(
+                  INPUT_BEGIN.length,
+                  chunk.length - INPUT_END.length,
+                );
+                return (
+                  <InputArea initialContent={inputContent} key={chunkIdx} />
+                );
+              } else {
+                return (
+                  <pre
+                    key={chunkIdx}
+                    style={{
+                      margin: 0,
+                      display: 'inline-block',
+                      ...style,
+                    }}
+                  >
+                    {chunk}
+                  </pre>
+                );
+              }
+            })}
+            {needsActiveInput && input}
+          </span>
         );
       })}
     </span>
@@ -330,7 +344,7 @@ export function OutputArea({
               key={idx}
               lines={splitLines(chunk)}
               style={preStyle}
-              input={
+              activeInput={
                 idx === chunks.length - 1 && inputFieldActive ? (
                   <InputArea
                     onSubmit={(result) => {
