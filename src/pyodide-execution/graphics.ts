@@ -391,6 +391,7 @@ class Rotate extends Graphic {
 
 class SimpleCompose extends Graphic {
   private readonly graphic: Graphic;
+
   constructor(
     ck: CanvasKit,
     fontMgr: FontMgr,
@@ -426,5 +427,9 @@ class SimpleCompose extends Graphic {
   draw(canvas: Canvas, debugPaint?: Paint): void {
     this.graphic.draw(canvas, debugPaint);
     super.draw(canvas, debugPaint);
+  }
+
+  override destroy(): void {
+    this.graphic.destroy();
   }
 }
