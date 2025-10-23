@@ -1,5 +1,5 @@
 import { Keyboard } from '@mui/icons-material';
-import { Badge, Box } from '@mui/material';
+import { Badge, Box, Tooltip } from '@mui/material';
 import { useEffect, useRef } from 'react';
 import theme from '../src/theme';
 import { OUTPUT_AREA_BACKGROUND_COLOR } from './OutputArea';
@@ -21,60 +21,62 @@ export default function InputArea({
   }, []);
   return (
     <Box sx={{ display: 'inline-block' }}>
-      <Badge
-        sx={{
-          verticalAlign: 'baseline',
-          '& .MuiBadge-badge': {
-            right: 0,
-            bottom: 2,
-          },
-        }}
-        badgeContent={
-          <Box
-            sx={{
-              position: 'absolute',
-            }}
-          >
-            <Box
-              sx={{
-                position: 'absolute',
-                top: 4,
-                width: 24,
-                height: 16,
-                bgcolor: OUTPUT_AREA_BACKGROUND_COLOR,
-                zIndex: 0,
-              }}
-            />
-            <Keyboard sx={{ position: 'relative', zIndex: 1 }} />
-          </Box>
-        }
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      <Tooltip
+        arrow
+        placement='right'
+        title={editable ? 'Type your input and press Enter' : 'User input'}
       >
-        <pre
-          ref={inputRef}
-          style={{
-            border: `1px dashed ${theme.palette.grey[600]}`,
-            margin: 0,
-            paddingLeft: theme.spacing(0.5),
-            paddingRight: theme.spacing(2),
-            minWidth: '5ch',
+        <Badge
+          sx={{
+            verticalAlign: 'baseline',
+            '& .MuiBadge-badge': {
+              right: 0,
+              bottom: 2,
+            },
           }}
-          contentEditable={editable}
-          onKeyDown={
-            editable
-              ? (e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const inputText = e.currentTarget.innerText;
-                    onSubmit(inputText);
-                  }
-                }
-              : undefined
+          badgeContent={
+            <Box>
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 4,
+                  width: 24,
+                  height: 16,
+                  bgcolor: OUTPUT_AREA_BACKGROUND_COLOR,
+                  zIndex: 0,
+                }}
+              />
+              <Keyboard sx={{ position: 'relative', zIndex: 1 }} />
+            </Box>
           }
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         >
-          {initialContent}
-        </pre>
-      </Badge>
+          <pre
+            ref={inputRef}
+            style={{
+              border: `1px dashed ${theme.palette.grey[600]}`,
+              margin: 0,
+              paddingLeft: theme.spacing(0.5),
+              paddingRight: theme.spacing(2),
+              minWidth: '5ch',
+            }}
+            contentEditable={editable}
+            onKeyDown={
+              editable
+                ? (e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      const inputText = e.currentTarget.innerText;
+                      onSubmit(inputText);
+                    }
+                  }
+                : undefined
+            }
+          >
+            {initialContent}
+          </pre>
+        </Badge>
+      </Tooltip>
     </Box>
   );
 }
