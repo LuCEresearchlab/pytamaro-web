@@ -22,6 +22,7 @@ import {
 import { isEmpty, negate } from 'lodash';
 import {
   CSSProperties,
+  ReactElement,
   Ref,
   RefObject,
   useEffect,
@@ -36,7 +37,7 @@ import {
   isErrorPreviousCells,
   processTraceback,
 } from '../src/pythonTraceback';
-import { joinLines, splitLines } from '../src/sourceUtils';
+import { splitLines } from '../src/sourceUtils';
 import theme from '../src/theme';
 import InputArea from './InputArea';
 
@@ -198,23 +199,47 @@ function ImgElement({
   );
 }
 
-function SinglePreElement({
+function PreElement({
   style = {},
   lines,
+  input = undefined,
 }: {
   style?: CSSProperties;
   lines: string[];
+  input?: ReactElement | undefined;
 }) {
   return (
-    <pre style={{ ...OUTPUT_ELEMENT_STYLE, display: 'inline-block', ...style }}>
-      {joinLines(lines)}
-    </pre>
+    <span style={OUTPUT_ELEMENT_STYLE}>
+      {lines.map((line, idx, lines) => {
+        const needsInput = idx === lines.length - 1 && input;
+        const lineElement = (
+          <pre
+            key={line}
+            style={{
+              margin: 0,
+              display: needsInput ? 'inline-block' : 'block',
+              ...style,
+            }}
+          >
+            {line}
+          </pre>
+        );
+        return needsInput ? (
+          <>
+            {lineElement}
+            {input}
+          </>
+        ) : (
+          lineElement
+        );
+      })}
+    </span>
   );
 }
 
 export const ERROR_MESSAGE_CLASSNAME = 'traceback-error-message';
 
-function CodeElement({ content }: { content: string }) {
+function StderrElement({ content }: { content: string }) {
   const [showAllStackFrames, setShowAllStackFrames] = useState(false);
 
   const { errorLines, userTracebackLines, libraryTracebackLines, collapsed } =
@@ -222,7 +247,7 @@ function CodeElement({ content }: { content: string }) {
 
   return (
     <div>
-      <SinglePreElement lines={userTracebackLines} />
+      <PreElement lines={userTracebackLines} />
       {collapsed && (
         <div>
           <ToggleButton
@@ -239,12 +264,12 @@ function CodeElement({ content }: { content: string }) {
             {`${showAllStackFrames ? 'Hide' : 'Show All '} Stack Frames`}
           </ToggleButton>
           <Collapse in={showAllStackFrames} timeout='auto' unmountOnExit>
-            <SinglePreElement lines={libraryTracebackLines} />
+            <PreElement lines={libraryTracebackLines} />
           </Collapse>
         </div>
       )}
       <div className={ERROR_MESSAGE_CLASSNAME}>
-        <SinglePreElement
+        <PreElement
           style={{
             fontWeight: 'bold',
             display: 'block',
@@ -297,27 +322,29 @@ export function OutputArea({
       {data
         .split(pytamaroDataUriRegex)
         .filter(negate(isEmpty))
-        .map((chunk, idx) =>
+        .map((chunk, idx, chunks) =>
           isPngData(chunk) || isGifData(chunk) ? (
             <ImgElement key={idx} dataURI={chunk} disabled={disabled} />
           ) : (
-            <SinglePreElement
+            <PreElement
               key={idx}
               lines={splitLines(chunk)}
               style={preStyle}
+              input={
+                idx === chunks.length - 1 && inputFieldActive ? (
+                  <InputArea
+                    onSubmit={(result) => {
+                      if (resolveInputPromiseRef.current) {
+                        setInputFieldActive(false);
+                        resolveInputPromiseRef.current(result);
+                      }
+                    }}
+                  />
+                ) : undefined
+              }
             />
           ),
         )}
-      {inputFieldActive && (
-        <InputArea
-          onSubmit={(result) => {
-            if (resolveInputPromiseRef.current) {
-              setInputFieldActive(false);
-              resolveInputPromiseRef.current(result);
-            }
-          }}
-        />
-      )}
     </div>
   );
 }
@@ -421,7 +448,7 @@ export default function ExecutionOutputArea({
               paddingX={3}
               paddingY={1}
             >
-              <CodeElement content={stderr} />
+              <StderrElement content={stderr} />
             </Box>
           )}
         </Stack>
