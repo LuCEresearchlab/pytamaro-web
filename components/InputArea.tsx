@@ -1,49 +1,72 @@
 import { Keyboard } from '@mui/icons-material';
-import { Badge } from '@mui/material';
+import { Badge, Box } from '@mui/material';
 import { useEffect, useRef } from 'react';
 import theme from '../src/theme';
+import { OUTPUT_AREA_BACKGROUND_COLOR } from './OutputArea';
 
 export default function InputArea({
-  onSubmit,
+  initialContent = '',
+  onSubmit = undefined,
 }: {
-  onSubmit: (input: string) => void;
+  initialContent?: string;
+  onSubmit?: (input: string) => void | undefined;
 }) {
+  const editable = onSubmit !== undefined;
   const inputRef = useRef<HTMLPreElement | null>(null);
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
   return (
-    <Badge
-      badgeContent={
-        <Keyboard
-          sx={{
-            position: 'absolute',
-            bottom: theme.spacing(1),
-            right: theme.spacing(-1),
+    <Box sx={{ display: 'inline-block' }}>
+      <Badge
+        badgeContent={
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: 0,
+              right: -8,
+            }}
+          >
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 4,
+                width: 24,
+                height: 16,
+                bgcolor: OUTPUT_AREA_BACKGROUND_COLOR,
+                zIndex: 0,
+              }}
+            />
+            <Keyboard sx={{ position: 'relative', zIndex: 1 }} />
+          </Box>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <pre
+          ref={inputRef}
+          style={{
+            border: `1px dashed ${theme.palette.grey[600]}`,
+            margin: 0,
+            paddingLeft: theme.spacing(0.5),
+            paddingRight: '2ch',
+            minWidth: '6ch',
           }}
-        />
-      }
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      sx={{ display: 'inline-block' }}
-    >
-      <pre
-        ref={inputRef}
-        style={{
-          margin: 0,
-          padding: theme.spacing(0.5),
-          border: `1px dashed ${theme.palette.grey[600]}`,
-          paddingRight: '2ch',
-          minWidth: '6ch',
-        }}
-        contentEditable={true}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            const inputText = e.currentTarget.innerText;
-            onSubmit(inputText);
+          contentEditable={editable}
+          onKeyDown={
+            editable
+              ? (e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const inputText = e.currentTarget.innerText;
+                    onSubmit(inputText);
+                  }
+                }
+              : undefined
           }
-        }}
-      />
-    </Badge>
+        >
+          {initialContent}
+        </pre>
+      </Badge>
+    </Box>
   );
 }

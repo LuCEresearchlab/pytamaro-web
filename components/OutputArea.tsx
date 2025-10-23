@@ -53,7 +53,7 @@ function isGifData(data: string) {
   return data.startsWith(dataURIPrefix('image/gif'));
 }
 
-const BACKGROUND_COLOR = theme.palette.grey[100];
+export const OUTPUT_AREA_BACKGROUND_COLOR = theme.palette.grey[100];
 
 const OUTPUT_ELEMENT_STYLE = {
   display: 'block',
@@ -159,7 +159,7 @@ function ImgElement({
             <Card
               variant='outlined'
               sx={{
-                backgroundColor: BACKGROUND_COLOR,
+                backgroundColor: OUTPUT_AREA_BACKGROUND_COLOR,
                 padding: theme.spacing(1),
                 ...CHECKERED_PATTERN,
               }}
@@ -432,7 +432,7 @@ export default function ExecutionOutputArea({
         <Stack sx={{ width: 'fit-content', minWidth: '100%' }}>
           {stdout && (
             <Box
-              sx={{ backgroundColor: BACKGROUND_COLOR }}
+              sx={{ backgroundColor: OUTPUT_AREA_BACKGROUND_COLOR }}
               paddingX={3}
               paddingY={1}
             >
