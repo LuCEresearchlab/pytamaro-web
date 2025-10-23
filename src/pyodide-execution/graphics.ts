@@ -92,20 +92,7 @@ export abstract class Graphic {
     };
   }
 
-  draw(canvas: Canvas, debugPaint?: Paint): void {
-    if (debugPaint) {
-      debugPaint.setColor([0.94, 0.06, 0.06, 1]);
-      canvas.drawRect(this.bounds, debugPaint);
-      const pinSize = Math.min(this.size.width, this.size.height, 100) / 10;
-      debugPaint.setColor([0.98, 0.78, 0, 1]);
-      canvas.drawCircle(
-        this.pinPosition.x,
-        this.pinPosition.y,
-        pinSize,
-        debugPaint,
-      );
-    }
-  }
+  abstract draw(canvas: Canvas): void;
 
   destroy(): void {
     this.path.delete();
@@ -115,6 +102,11 @@ export abstract class Graphic {
 class Empty extends Graphic {
   constructor(ck: CanvasKit) {
     super(new ck.Path(), ck.XYWHRect(0, 0, 0, 0), { x: 0, y: 0 });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  override draw(canvas: Canvas): void {
+    // Do nothing
   }
 }
 
@@ -141,12 +133,11 @@ abstract class Primitive extends Graphic {
     this.paint = paint;
   }
 
-  draw(canvas: Canvas, debugPaint?: Paint): void {
+  override draw(canvas: Canvas): void {
     canvas.drawPath(this.path, this.paint);
-    super.draw(canvas, debugPaint);
   }
 
-  destroy(): void {
+  override destroy(): void {
     this.paint.delete();
     super.destroy();
   }
@@ -249,12 +240,11 @@ class Text extends Graphic {
     this.p = p;
   }
 
-  draw(canvas: Canvas, debugPaint?: Paint): void {
+  override draw(canvas: Canvas): void {
     canvas.drawParagraph(this.p, 0, 0);
-    super.draw(canvas, debugPaint);
   }
 
-  destroy(): void {
+  override destroy(): void {
     this.p.delete();
     super.destroy();
   }
@@ -290,7 +280,7 @@ class Compose extends Graphic {
     this.foreground = foreground;
   }
 
-  draw(canvas: Canvas, debugPaint?: Paint): void {
+  override draw(canvas: Canvas): void {
     canvas.save();
     this.background.draw(canvas);
     canvas.translate(
@@ -299,10 +289,9 @@ class Compose extends Graphic {
     );
     this.foreground.draw(canvas);
     canvas.restore();
-    super.draw(canvas, debugPaint);
   }
 
-  destroy(): void {
+  override destroy(): void {
     this.foreground.destroy();
     this.background.destroy();
     super.destroy();
@@ -342,12 +331,11 @@ class Pin extends Graphic {
     this.graphic = graphic;
   }
 
-  draw(canvas: Canvas, debugPaint?: Paint): void {
+  override draw(canvas: Canvas): void {
     this.graphic.draw(canvas);
-    super.draw(canvas, debugPaint);
   }
 
-  destroy(): void {
+  override destroy(): void {
     super.destroy();
   }
 }
@@ -375,15 +363,14 @@ class Rotate extends Graphic {
     this.rotMatrix = rotMatrix;
   }
 
-  draw(canvas: Canvas, debugPaint?: Paint): void {
+  override draw(canvas: Canvas): void {
     canvas.save();
     canvas.concat(this.rotMatrix);
     this.graphic.draw(canvas);
     canvas.restore();
-    super.draw(canvas, debugPaint);
   }
 
-  destroy(): void {
+  override destroy(): void {
     this.graphic.destroy();
     super.destroy();
   }
@@ -424,9 +411,9 @@ class SimpleCompose extends Graphic {
     super(graphic.path, graphic.bounds, graphic.pinPosition);
     this.graphic = graphic;
   }
-  draw(canvas: Canvas, debugPaint?: Paint): void {
-    this.graphic.draw(canvas, debugPaint);
-    super.draw(canvas, debugPaint);
+
+  override draw(canvas: Canvas): void {
+    this.graphic.draw(canvas);
   }
 
   override destroy(): void {
