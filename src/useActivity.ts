@@ -153,10 +153,12 @@ export function useActivity(
     }
   }, [codeCells, completed, markAsCompleted]);
 
+  const initialCodeCellsSerialized = JSON.stringify(initialCodeCells);
+  const codeCellsSerialized = JSON.stringify(codeCells);
+
   /* Check if code cells have been modified (compared to their initial state) */
   useEffect(() => {
-    const newCellsModified =
-      JSON.stringify(codeCells) !== JSON.stringify(initialCodeCells);
+    const newCellsModified = codeCellsSerialized !== initialCodeCellsSerialized;
     setMetadata(
       produce((draft) => {
         const draftVariantMetadata = draft.activities.find(
@@ -172,7 +174,7 @@ export function useActivity(
         }
       }),
     );
-  }, [codeCells, initialCodeCells, variantId, setMetadata]);
+  }, [codeCellsSerialized, initialCodeCellsSerialized, variantId, setMetadata]);
 
   const handleSourceChanged = (newSource: string, idx: number) => {
     setCodeCells((currentCodeCells) =>
