@@ -29,7 +29,7 @@ export default function InputArea({
       <pre
         ref={inputRef}
         style={{
-          margin: theme.spacing(0.5),
+          margin: 0,
           padding: theme.spacing(0.5),
           border: `1px dashed ${theme.palette.grey[600]}`,
           paddingRight: '2ch',
