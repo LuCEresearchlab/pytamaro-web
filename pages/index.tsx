@@ -24,13 +24,13 @@ import anime from 'animejs';
 import { shuffle } from 'lodash';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import ActivityCardMedia from '../components/ActivityCardMedia';
 import Carousel from '../components/Carousel';
 import DocElement from '../components/documentation/DocElement';
 import { STRICT_PYTHON3_LANG_ID } from '../components/editor/strictPython3';
 import NavigationBar from '../components/navbar/NavigationBar';
-import ExecutionOutputArea from '../components/OutputArea';
+import ExecutionOutputArea from '../components/input_output/ExecutionOutputArea';
 import { useDocumentationElements } from '../src/documentation';
 import {
   basicActivities,
@@ -239,6 +239,7 @@ function PythonCodeCard() {
           stderr: '',
           type: 'success',
         }}
+        outputAreaRef={useRef(null)}
         sx={{
           border: 0,
           height: '100%',

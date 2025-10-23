@@ -1,7 +1,7 @@
 import { Keyboard } from '@mui/icons-material';
 import { Badge, Box, Tooltip } from '@mui/material';
 import { useEffect, useRef } from 'react';
-import theme from '../src/theme';
+import theme from '../../src/theme';
 import { OUTPUT_AREA_BACKGROUND_COLOR } from './OutputArea';
 
 export const INPUT_BEGIN = '@@@PYTAMARO_INPUT_BEGIN@@@';
@@ -32,21 +32,24 @@ export default function InputArea({
             '& .MuiBadge-badge': {
               right: 0,
               bottom: 2,
+              paddingLeft: 0.75,
+              paddingRight: 0.75,
             },
           }}
           badgeContent={
-            <Box>
+            <Box sx={{
+              padding: 0.25,
+            }}>
               <Box
                 sx={{
                   position: 'absolute',
                   top: 4,
                   width: 24,
                   height: 16,
-                  bgcolor: OUTPUT_AREA_BACKGROUND_COLOR,
                   zIndex: 0,
                 }}
               />
-              <Keyboard sx={{ position: 'relative', zIndex: 1 }} />
+              <Keyboard fontSize='small' sx={{ position: 'relative', zIndex: 1, }} />
             </Box>
           }
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}

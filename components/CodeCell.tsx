@@ -22,9 +22,10 @@ import { PythonAnalyzer } from '../src/usePythonAnalyzer';
 import { EllipsisTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
 import DocumentationStripe from './documentation/DocumentationStripe';
-import ExecutionOutputArea, { OutputAreaRef } from './OutputArea';
 import RunButton from './RunButton';
 import StaleOutputBadge from './StaleOutputBadge';
+import ExecutionOutputArea from './input_output/ExecutionOutputArea';
+import { OutputAreaRef } from './input_output/OutputArea';
 
 export function isExecutionError(response: ExecutionResponse | undefined) {
   return response?.type === 'error';

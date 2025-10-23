@@ -6,8 +6,8 @@ import useMonacoColorizer, {
 import { JudiciousExample } from '../../src/schemas/documentation';
 import theme from '../../src/theme';
 import { STRICT_PYTHON3_LANG_ID } from '../editor/strictPython3';
-import InputArea from '../InputArea';
-import { OutputArea } from '../OutputArea';
+import InputArea from '../input_output/InputArea';
+import { OutputArea } from '../input_output/OutputArea';
 
 function RotatedHeading({
   children,

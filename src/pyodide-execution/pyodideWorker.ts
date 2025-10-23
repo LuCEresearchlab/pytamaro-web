@@ -1,6 +1,9 @@
 import { PyodideAPI } from 'pyodide';
 import { PyProxy, PythonError } from 'pyodide/ffi';
-import { INPUT_BEGIN, INPUT_END } from '../../components/InputArea';
+import {
+  INPUT_BEGIN,
+  INPUT_END,
+} from '../../components/input_output/InputArea';
 import { joinLines } from '../sourceUtils';
 import {
   DrawRequestData,

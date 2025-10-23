@@ -3,7 +3,7 @@ import { isExecutionCompleted } from '../src/codeExecution';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import { PythonFile } from '../src/schemas/activitySchema';
 import DownloadCodeButton from './CodeDownloadButton';
-import ExecutionOutputArea from './OutputArea';
+import ExecutionOutputArea from './input_output/ExecutionOutputArea';
 
 export default function HourOfCodeCastle({
   language,
