@@ -4,6 +4,9 @@ import { useEffect, useRef } from 'react';
 import theme from '../src/theme';
 import { OUTPUT_AREA_BACKGROUND_COLOR } from './OutputArea';
 
+export const INPUT_BEGIN = '@@@PYTAMARO_INPUT_BEGIN@@@';
+export const INPUT_END = '@@@PYTAMARO_INPUT_END@@@';
+
 export default function InputArea({
   initialContent = '',
   onSubmit = undefined,
@@ -19,12 +22,17 @@ export default function InputArea({
   return (
     <Box sx={{ display: 'inline-block' }}>
       <Badge
+        sx={{
+          verticalAlign: 'baseline',
+          '& .MuiBadge-badge': {
+            right: 0,
+            bottom: 2,
+          },
+        }}
         badgeContent={
           <Box
             sx={{
               position: 'absolute',
-              bottom: 0,
-              right: -8,
             }}
           >
             <Box
@@ -48,8 +56,8 @@ export default function InputArea({
             border: `1px dashed ${theme.palette.grey[600]}`,
             margin: 0,
             paddingLeft: theme.spacing(0.5),
-            paddingRight: '2ch',
-            minWidth: '6ch',
+            paddingRight: theme.spacing(2),
+            minWidth: '5ch',
           }}
           contentEditable={editable}
           onKeyDown={
