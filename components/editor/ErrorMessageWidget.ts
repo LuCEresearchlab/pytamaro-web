@@ -6,7 +6,7 @@ import type {
 } from 'monaco-editor';
 import { TFunction } from 'next-i18next';
 import theme from '../../src/theme';
-import { ERROR_MESSAGE_CLASSNAME } from '../OutputArea';
+import { ERROR_MESSAGE_CLASSNAME } from '../input_output/OutputArea';
 import {
   convertMarkdownToCodeTag,
   displayErrorCategory,

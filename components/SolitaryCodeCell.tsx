@@ -7,8 +7,8 @@ import {
 import { useActivity } from '../src/useActivity';
 import usePythonAnalyzer from '../src/usePythonAnalyzer';
 import CodeCell from './CodeCell';
-import { OutputAreaRef } from './OutputArea';
 import SaveToToolboxButton from './SaveToToolboxButton';
+import { OutputAreaRef } from './input_output/OutputArea';
 
 export function initialStateSingleCell(source: string) {
   return [{ source, originalIndex: 0 }];

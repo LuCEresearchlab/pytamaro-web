@@ -13,8 +13,8 @@ import { PythonAnalyzer } from '../src/usePythonAnalyzer';
 import useReset from '../src/useReset';
 import CodeCell from './CodeCell';
 import FailedExecutionSnackbar from './FailedExecutionSnackbar';
+import { OutputAreaRef } from './input_output/OutputArea';
 import MoreOptionsButton from './MoreOptionsButton';
-import { OutputAreaRef } from './OutputArea';
 import SaveToToolboxButton from './SaveToToolboxButton';
 
 function InconsistencyMessage() {

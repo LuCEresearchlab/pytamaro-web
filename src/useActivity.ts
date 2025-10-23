@@ -12,7 +12,7 @@ import {
   useState,
 } from 'react';
 import useSessionStorageState from 'use-session-storage-state';
-import { OutputAreaRef } from '../components/OutputArea';
+import { OutputAreaRef } from '../components/input_output/OutputArea';
 import logAnalyticsEvent, { AnalyticsEventName } from './analyticsEvent';
 import {
   ExecutionResponse,

@@ -6,7 +6,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { OutputAreaRef } from '../../components/OutputArea';
+import { OutputAreaRef } from '../../components/input_output/OutputArea';
 import { cellsToFiles, ExecutionResponse } from '../codeExecution';
 import { ToolboxFunction } from '../localStorage/schema';
 import { PythonFile } from '../schemas/activitySchema';
@@ -210,8 +210,8 @@ export async function execute(
   idx: number,
   toolboxFunctions: ToolboxFunction[],
   extraPythonFiles: PythonFile[],
-  updateExecutionResult: (response: ExecutionResponse) => void,
-  outputAreaRef: RefObject<OutputAreaRef | null>,
+  updateExecutionResult: (response: ExecutionResponse) => void = () => {},
+  outputAreaRef: RefObject<OutputAreaRef | null> | undefined = undefined,
 ): Promise<ExecutionResponse> {
   const files = await cellsToFiles(
     sources,
@@ -220,7 +220,9 @@ export async function execute(
     extraPythonFiles,
   );
   return (await executionQueue!.add(() => {
-    outputAreaGlobalRef = outputAreaRef;
+    if (outputAreaRef) {
+      outputAreaGlobalRef = outputAreaRef;
+    }
     return sendExecutionRequestToWorkerAndWaitForResponse(
       files,
       updateExecutionResult,
@@ -242,8 +244,8 @@ interface PyodideWorkerClientInterface {
     idx: number,
     toolboxFunctions: ToolboxFunction[],
     extraPythonFiles: PythonFile[],
-    updateExecutionResult: (response: ExecutionResponse) => void,
-    outputAreaRef: RefObject<OutputAreaRef | null>,
+    updateExecutionResult?: (response: ExecutionResponse) => void,
+    outputAreaRef?: RefObject<OutputAreaRef | null>,
   ) => Promise<ExecutionResponse>;
   restart: () => Promise<void>;
 }
