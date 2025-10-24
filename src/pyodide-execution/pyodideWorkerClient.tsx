@@ -20,9 +20,16 @@ import {
 } from './messagesTypes';
 import { Sized } from './spec';
 
-type ClientResult =
+enum ResultStatus {
+  Computing,
+  Ready,
+}
+type ClientResultValue =
   | Uint8Array // array for rendering result
   | Sized; // object for size result
+type ClientResult =
+  | { status: ResultStatus.Computing }
+  | { status: ResultStatus.Ready; value: ClientResultValue };
 
 let pyodideWorker: Worker | null = null;
 let ffiImpl: PyTamaroFFI | null = null;
@@ -63,6 +70,27 @@ function notifyWorkerUsingSyncBuffer() {
   }
 }
 
+function notifyWorkerResultReady(
+  uuid: string,
+  length: number,
+  result: ClientResultValue,
+) {
+  const curr = pendingResults.get(uuid);
+  if (curr === undefined) {
+    // This guard is necessary due to potential concurrency issues
+    return;
+  }
+  if (curr.status !== ResultStatus.Computing) {
+    throw Error(
+      `Trying to deliver notification of work completion multiple times for ${uuid}`,
+    );
+  }
+
+  pendingResults.set(uuid, { status: ResultStatus.Ready, value: result });
+  resultLengthBuffer![0] = length;
+  notifyWorkerUsingSyncBuffer();
+}
+
 function sendExecutionRequestToWorkerAndWaitForResponse(
   files: RunPythonFile[],
   updateExecutionResult: (response: ExecutionResponse) => void,
@@ -90,7 +118,12 @@ function deliverPendingResult(
   data: ExecutionResultRequestMessage,
 ) {
   const { type } = data;
-  const toDeliver = pendingResults.get(uuid);
+  const result = pendingResults.get(uuid);
+  if (!result || result?.status === ResultStatus.Computing) {
+    // This guard is necessary due to potential concurrency issues
+    return;
+  }
+  const toDeliver = result.value;
   switch (type) {
     case Message.DRAW:
     case Message.INPUT:
@@ -114,15 +147,14 @@ function deliverPendingResult(
 }
 
 function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
+  pendingResults.set(uuid, { status: ResultStatus.Computing });
   switch (data.type) {
     case Message.DRAW:
       {
         const { graphic, debug } = data;
         ffiImpl!.draw(graphic, debug).then((result: string) => {
           const encoded = new Uint8Array(Buffer.from(result));
-          pendingResults.set(uuid, encoded);
-          resultLengthBuffer![0] = encoded.byteLength;
-          notifyWorkerUsingSyncBuffer();
+          notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
         });
       }
       break;
@@ -130,9 +162,7 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
       {
         const { graphic } = data;
         const result = ffiImpl!.sizeWhenRendered(graphic);
-        pendingResults.set(uuid, result);
-        resultLengthBuffer![0] = Int32Array.BYTES_PER_ELEMENT * 2;
-        notifyWorkerUsingSyncBuffer();
+        notifyWorkerResultReady(uuid, Int32Array.BYTES_PER_ELEMENT * 2, result);
       }
       break;
     case Message.INPUT:
@@ -140,9 +170,7 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
         outputAreaGlobalRef.current?.activateInputField();
         outputAreaGlobalRef.current?.getInput().then((value: string) => {
           const encoded = new Uint8Array(Buffer.from(value));
-          pendingResults.set(uuid, encoded);
-          resultLengthBuffer![0] = encoded.byteLength;
-          notifyWorkerUsingSyncBuffer();
+          notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
         });
       }
       break;
@@ -239,6 +267,7 @@ export async function execute(
 export function restart(): Promise<void> {
   return new Promise((resolve) => {
     outputAreaGlobalRef?.current?.deactivatePossibleInputField();
+    pendingResults.clear();
     pyodideWorker?.terminate();
     initPyodide(ffiImpl!).then(resolve);
   });
