@@ -70,6 +70,7 @@ export default function ActivityCodeCell({
     handleExecute,
     handleToggleOutputArea,
     handleResetSingleCell,
+    handleRestartPyodide,
     localCodeCellsWrongLength,
   } = useLocalActivity(initialCodeCells, activityVariant, extraPythonFiles);
   const outputAreaRef = useRef<OutputAreaRef | null>(null);
@@ -117,6 +118,7 @@ export default function ActivityCodeCell({
               codeCellExecutionState={codeExecutionStates[cellIdx]}
               onShowHideOutput={() => handleToggleOutputArea(cellIdx)}
               onReset={() => handleResetSingleCell(cellIdx, newReset)}
+              onRestart={() => handleRestartPyodide()}
             />
           </>
         }

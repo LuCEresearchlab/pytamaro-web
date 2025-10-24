@@ -323,7 +323,6 @@ export function useActivity(
   const handleResetAllCellsNoConfirm = () => {
     setCodeCells(initialCodeCells);
     setCodeExecutionStates(initialCodeExecutionStates());
-    restart();
   };
 
   const handleResetSingleCell = (idx: number, postReset: () => void) => {
@@ -342,10 +341,25 @@ export function useActivity(
           draft[idx] = initialCodeExecutionState();
         }),
       );
-      restart();
       postReset();
     });
   };
+
+  const handleRestartPyodide = () =>
+    confirm({
+      description:
+        'You are about to restart the Python environment. All active code executions will be terminated.',
+      confirmationText: 'Ok, restart',
+    }).then(() => {
+      setCodeExecutionStates((currentCodeExecutionStates) =>
+        produce(currentCodeExecutionStates, (draft) => {
+          for (let idx = 0; idx < draft.length; idx += 1) {
+            draft[idx].executionInProgress = false;
+          }
+        }),
+      );
+      restart();
+    });
 
   return {
     initialCodeCells,
@@ -360,5 +374,6 @@ export function useActivity(
     handleToggleOutputArea,
     handleResetAllCellsNoConfirm,
     handleResetSingleCell,
+    handleRestartPyodide,
   };
 }
