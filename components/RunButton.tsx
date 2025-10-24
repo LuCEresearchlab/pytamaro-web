@@ -18,7 +18,7 @@ function StatusIndicator({
 }) {
   const { t } = useLocalTranslation(['common']);
   let tooltipTitle = '';
-  let icon = <></>;
+  let icon = <span />;
   if (executing) {
     tooltipTitle = t('runningCode');
     // CircularProgress is not an icon, but we set it to be the same size as actual icons
