@@ -238,6 +238,7 @@ export async function execute(
 
 export function restart(): Promise<void> {
   return new Promise((resolve) => {
+    outputAreaGlobalRef?.current?.deactivatePossibleInputField();
     pyodideWorker?.terminate();
     initPyodide(ffiImpl!).then(resolve);
   });

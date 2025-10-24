@@ -113,6 +113,7 @@ function PlaygroundCodeCell({
     handleToggleOutputArea,
     handleResetSingleCell,
     handleResetAllCellsNoConfirm,
+    handleRestartPyodide,
   } = localActivity;
 
   const confirm = useConfirm();
@@ -165,7 +166,7 @@ function PlaygroundCodeCell({
 
   return (
     <>
-      {executionFailed && <FailedExecutionSnackbar res={executionFailed} />}
+      {executionFailed && <FailedExecutionSnackbar />}
       <SolitaryCodeCell
         resetCounter={resetCounter}
         activity={localActivity}
@@ -179,6 +180,7 @@ function PlaygroundCodeCell({
             codeCellExecutionState={codeExecutionStates[0]}
             onShowHideOutput={() => handleToggleOutputArea(0)}
             onReset={() => handleResetSingleCell(0, newReset)}
+            onRestart={() => handleRestartPyodide()}
           />
         }
       />
@@ -289,7 +291,7 @@ export default function Playground({
 
   const { metadata } = useLocalProfile();
 
-  const { isReady: execReady } = useContext<PyodideWorkerClientContext>(PyodideWorkerClientContext);
+  const { isReady: execReady } = useContext(PyodideWorkerClientContext);
 
   return (
     <div>

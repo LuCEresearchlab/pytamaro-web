@@ -17,6 +17,7 @@
     "errorPreviousCell": "Si è verificato un errore in una cella di codice precedente. Risolvilo prima di eseguire questa cella di codice.",
     "goToError": "Vai all'errore",
     "resetCell": "Reset Cella",
+    "restartPythonEnvironment": "Riavvia ambiente Python",
     "copyCode": "Copia Codice",
     "hideOutput": "Nascondi Output",
     "showOutput": "Mostra Output",
