@@ -1,4 +1,3 @@
-import axios from 'axios';
 import produce from 'immer';
 import { debounce, uniqBy } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
@@ -16,7 +15,7 @@ import { OutputAreaRef } from '../components/input_output/OutputArea';
 import logAnalyticsEvent, { AnalyticsEventName } from './analyticsEvent';
 import {
   ExecutionResponse,
-  FailedExecution,
+  FailedExecutionResponse,
   importedToolboxNames,
   isExecutionCompleted,
   isExecutionFailed,
@@ -76,27 +75,6 @@ export async function transitivelyImportedToolboxFunctions(
   return [...newlyImportedFunctions, ...importsOfImports.flat()];
 }
 
-// We don't want to remove server-side execution yet
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function executeOnServer(
-  sources: string[],
-  idx: number,
-  toolboxFunctions: ToolboxFunction[],
-  extraPythonFiles: PythonFile[],
-): Promise<ExecutionResponse> {
-  try {
-    const response = await axios.post('/api/execute', {
-      sources,
-      idx,
-      toolboxFunctions,
-      extraPythonFiles,
-    });
-    return response.data;
-  } catch {
-    return { type: 'network-error' };
-  }
-}
-
 export function sourceFromCell(cell: CodeCellState) {
   return cell.source;
 }
@@ -131,7 +109,7 @@ export function useActivity(
     { defaultValue: initialCodeExecutionStates() },
   );
   const [executionFailed, setExecutionFailed] = useState<
-    FailedExecution | undefined
+    FailedExecutionResponse | undefined
   >(undefined);
 
   const completed = !!variantMetadata?.completed;

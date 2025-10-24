@@ -237,6 +237,7 @@ function PythonCodeCard() {
         executionResponse={{
           stdout: EXAMPLE_STDOUT,
           stderr: '',
+          completed: true,
           type: 'success',
         }}
         outputAreaRef={useRef(null)}

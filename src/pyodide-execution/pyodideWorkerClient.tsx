@@ -26,10 +26,12 @@ type ClientResult =
 
 let pyodideWorker: Worker | null = null;
 let ffiImpl: PyTamaroFFI | null = null;
+
 let sharedSyncBuffer: SharedArrayBuffer | null = null;
 let syncBuffer: Int32Array | null = null;
 let sharedResultLengthBuffer: SharedArrayBuffer | null = null;
 let resultLengthBuffer: Int32Array | null = null;
+let interruptBuffer: Uint8Array | null = null;
 
 let outputAreaGlobalRef: RefObject<OutputAreaRef | null>;
 
@@ -160,6 +162,9 @@ function initPyodide(ffi: PyTamaroFFI): Promise<void> {
     Int32Array.BYTES_PER_ELEMENT,
   );
   resultLengthBuffer = new Int32Array(sharedResultLengthBuffer);
+  interruptBuffer = new Uint8Array(
+    new SharedArrayBuffer(Uint8Array.BYTES_PER_ELEMENT),
+  );
   executionQueue = new PQueue({ concurrency: 1 });
 
   const worker = new Worker(new URL('./pyodideWorker.ts', import.meta.url), {
@@ -201,6 +206,7 @@ function initPyodide(ffi: PyTamaroFFI): Promise<void> {
       type: Message.INIT,
       syncBuffer: sharedSyncBuffer,
       resultLengthBuffer: sharedResultLengthBuffer,
+      interruptBuffer: interruptBuffer,
     });
   });
 }
@@ -213,7 +219,7 @@ export async function execute(
   updateExecutionResult: (response: ExecutionResponse) => void = () => {},
   outputAreaRef: RefObject<OutputAreaRef | null> | undefined = undefined,
 ): Promise<ExecutionResponse> {
-  const files = await cellsToFiles(
+  const files = cellsToFiles(
     sources,
     idx,
     toolboxFunctions,
@@ -237,6 +243,11 @@ export function restart(): Promise<void> {
   });
 }
 
+export function interruptExecution() {
+  interruptBuffer![0] = 2; // 2 for SIGINT
+  outputAreaGlobalRef.current?.deactivatePossibleInputField();
+}
+
 interface PyodideWorkerClientInterface {
   isReady: boolean;
   execute: (
@@ -247,6 +258,7 @@ interface PyodideWorkerClientInterface {
     updateExecutionResult?: (response: ExecutionResponse) => void,
     outputAreaRef?: RefObject<OutputAreaRef | null>,
   ) => Promise<ExecutionResponse>;
+  interruptExecution: () => void;
   restart: () => Promise<void>;
 }
 
@@ -254,6 +266,7 @@ export const PyodideWorkerClientContext =
   createContext<PyodideWorkerClientInterface>({
     isReady: false,
     execute,
+    interruptExecution,
     restart,
   });
 
@@ -277,6 +290,7 @@ export function PyodideWorkerClientProvider({
       value={{
         isReady,
         execute,
+        interruptExecution,
         restart: async () => {
           setReady(false);
           await restart();

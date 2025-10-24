@@ -20,7 +20,11 @@ import {
 import { Trans } from 'next-i18next';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
-import { ExecutionResponse, TOOLBOX_FILE } from '../src/codeExecution';
+import {
+  ExecutionResponse,
+  isExecutionError,
+  TOOLBOX_FILE,
+} from '../src/codeExecution';
 import { CodeCellState, ToolboxFunction } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
@@ -37,7 +41,6 @@ import useAnalysisResult, {
 } from '../src/useAnalysisResult';
 import usePythonAnalyzer from '../src/usePythonAnalyzer';
 import useTemporaryActivity from '../src/useTemporaryActivity';
-import { isExecutionError } from './CodeCell';
 import CodeEditor from './CodeEditor';
 import SolitaryCodeCell, { initialStateSingleCell } from './SolitaryCodeCell';
 

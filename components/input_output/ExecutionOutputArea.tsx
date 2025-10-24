@@ -12,7 +12,7 @@ import {
   ToggleButton,
 } from '@mui/material';
 import { CSSProperties, RefObject, useState } from 'react';
-import { CompletedExecutionResponse } from '../../src/codeExecution';
+import { NominalExecutionResponse } from '../../src/codeExecution';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import {
   isErrorInvolvingToolbox,
@@ -127,7 +127,7 @@ export default function ExecutionOutputArea({
   sx = {},
 }: {
   executionError: boolean;
-  executionResponse: CompletedExecutionResponse;
+  executionResponse: NominalExecutionResponse;
   outputAreaRef: RefObject<OutputAreaRef | null>;
   dimmed?: boolean;
   sx?: CSSProperties;

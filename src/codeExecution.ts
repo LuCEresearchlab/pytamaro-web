@@ -1,35 +1,50 @@
 import Topo from '@hapi/topo';
 import lodash from 'lodash';
 import { ToolboxFunction } from './localStorage/schema';
+import { RunPythonFile } from './pyodide-execution/messagesTypes';
 import { findImportedNames } from './python-analyzer/python_analyzer';
 import { PythonFile } from './schemas/activitySchema';
 import { countLines, emptyLines, joinLines } from './sourceUtils';
-import { RunPythonFile } from './pyodide-execution/messagesTypes';
 
 const { uniq } = lodash;
 
-export type ExecutionResponse = CompletedExecutionResponse | FailedExecution;
+export type ExecutionResponse =
+  | NominalExecutionResponse
+  | FailedExecutionResponse;
 
-export interface CompletedExecutionResponse {
+export interface NominalExecutionResponse {
   type: 'success' | 'error';
+  completed: boolean;
   stdout: string;
   stderr: string;
 }
 
-export interface FailedExecution {
-  type: 'time-limit-exceeded' | 'output-limit-exceeded' | 'network-error';
+export interface FailedExecutionResponse {
+  type: 'failure';
+}
+
+export function isExecutionNominal(
+  res: ExecutionResponse | undefined,
+): res is NominalExecutionResponse {
+  return res?.type === 'success' || res?.type === 'error';
 }
 
 export function isExecutionCompleted(
-  res: ExecutionResponse,
-): res is CompletedExecutionResponse {
-  return res.type === 'success' || res.type === 'error';
+  res: ExecutionResponse | undefined,
+): res is NominalExecutionResponse {
+  return isExecutionNominal(res) && res.completed;
+}
+
+export function isExecutionError(
+  res: ExecutionResponse | undefined,
+): res is NominalExecutionResponse {
+  return res?.type === 'error';
 }
 
 export function isExecutionFailed(
-  res: ExecutionResponse,
-): res is FailedExecution {
-  return !isExecutionCompleted(res);
+  res: ExecutionResponse | undefined,
+): res is FailedExecutionResponse {
+  return res?.type === 'failure';
 }
 
 /**
@@ -141,7 +156,7 @@ export function cellsToFiles(
   idx: number,
   toolboxFunctions: BareboneToolboxFunction[],
   extraPythonFiles: PythonFile[],
-): Promise<RunPythonFile[]> {
+): RunPythonFile[] {
   // Get the concatenated source of all the previous cells.
   const previousCellsSource = joinLines(sources.slice(0, idx));
   // Get the source of the current cell, padded before with empty lines

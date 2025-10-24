@@ -3,8 +3,8 @@ import { type editor as EditorNamespace } from 'monaco-editor';
 import { TFunction } from 'next-i18next';
 import { ErrorMessageWidget } from '../components/editor/ErrorMessageWidget';
 import { runtimeErrorMessageCategory } from '../components/editor/errors';
-import { CompletedExecutionResponse } from './codeExecution';
 import { splitLines } from './sourceUtils';
+import { NominalExecutionResponse } from './codeExecution';
 
 export const TRACEBACK_TIDLE_DECORATION_CLASSNAME =
   'squiggly-warning traceback-tilde';
@@ -73,7 +73,7 @@ function lineNumOfErrorThisCell(traceback: string[]) {
 export function addErrorAnnotationsFromExecution(
   monaco: Monaco,
   editor: EditorNamespace.IStandaloneCodeEditor,
-  executionResponse: CompletedExecutionResponse,
+  executionResponse: NominalExecutionResponse,
   firstLineNumber: number,
   t: TFunction,
 ): {
@@ -110,7 +110,7 @@ export function addErrorAnnotationsFromExecution(
         : sourceLineContent.length - 1;
     // Extract the error message
     const errorMessage = Array.from(
-      traceback.matchAll(/ {2}.*\n(.*:.*)\n/g),
+      traceback.matchAll(/ {2}.*\n(.*)\n/g),
     ).pop();
     const message = errorMessage?.at(1) || 'Error (check the traceback)';
     const lineNumber = currentCellLineIdx;

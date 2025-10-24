@@ -1,19 +1,9 @@
 import { useState } from 'react';
-import { FailedExecution } from '../src/codeExecution';
 import CustomSnackbar from './CustomSnackbar';
 
-export default function FailedExecutionSnackbar({
-  res,
-}: {
-  res: FailedExecution;
-}) {
+export default function FailedExecutionSnackbar() {
   const [visible, setVisible] = useState(true);
-  let message = 'Network error';
-  if (res.type === 'time-limit-exceeded') {
-    message = 'Execution time limit exceeded';
-  } else if (res.type === 'output-limit-exceeded') {
-    message = 'Output size limit exceeded';
-  }
+  const message = 'Execution error';
   return (
     <CustomSnackbar
       visible={visible}

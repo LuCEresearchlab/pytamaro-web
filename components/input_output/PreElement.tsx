@@ -52,6 +52,7 @@ export default function PreElement({
           </span>
         );
       })}
+      {lines.length === 0 && input}
     </span>
   );
 }

@@ -289,7 +289,7 @@ export default function Playground({
 
   const { metadata } = useLocalProfile();
 
-  const { isReady: execReady } = useContext(PyodideWorkerClientContext);
+  const { isReady: execReady } = useContext<PyodideWorkerClientContext>(PyodideWorkerClientContext);
 
   return (
     <div>

@@ -26,6 +26,7 @@ export type InitMessage = {
   type: Message.INIT;
   syncBuffer: SharedArrayBuffer;
   resultLengthBuffer: SharedArrayBuffer;
+  interruptBuffer: Uint8Array;
 };
 
 // Types for messages sent by the worker (to the client).

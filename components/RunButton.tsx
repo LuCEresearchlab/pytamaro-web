@@ -1,8 +1,43 @@
+import { StopCircle } from '@mui/icons-material';
 import Done from '@mui/icons-material/Done';
 import ErrorOutline from '@mui/icons-material/ErrorOutline';
 import PlayCircleFilled from '@mui/icons-material/PlayCircleFilled';
-import { Button, Stack, Tooltip } from '@mui/material';
+import { Button, CircularProgress, Stack, Tooltip } from '@mui/material';
+import { useContext } from 'react';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
+import { PyodideWorkerClientContext } from '../src/pyodide-execution/pyodideWorkerClient';
+
+function StatusIndicator({
+  executing,
+  executionFinished,
+  executionError,
+}: {
+  executing: boolean;
+  executionFinished: boolean;
+  executionError: boolean;
+}) {
+  const { t } = useLocalTranslation(['common']);
+  let tooltipTitle = '';
+  let icon = <></>;
+  if (executing) {
+    tooltipTitle = t('runningCode');
+    // CircularProgress is not an icon, but we set it to be the same size as actual icons
+    icon = <CircularProgress size='35px' />;
+  } else if (executionFinished) {
+    if (executionError) {
+      tooltipTitle = t('executionCompletedWithErrors');
+      icon = <ErrorOutline fontSize='large' color='error' />;
+    } else {
+      tooltipTitle = t('executionCompletedSuccessfully');
+      icon = <Done fontSize='large' color='success' />;
+    }
+  }
+  return (
+    <Tooltip arrow title={tooltipTitle} placement='right'>
+      {icon}
+    </Tooltip>
+  );
+}
 
 export default function RunButton({
   enabled,
@@ -18,41 +53,24 @@ export default function RunButton({
   executionError: boolean;
 }) {
   const { t } = useLocalTranslation(['common']);
+  const { interruptExecution } = useContext(PyodideWorkerClientContext);
   return (
     <Stack direction='row' spacing={2} alignItems='center'>
       <Button
-        onClick={onExecutionRequested}
-        endIcon={!executing && <PlayCircleFilled />}
-        loading={executing}
-        loadingPosition='end'
+        onClick={executing ? interruptExecution : onExecutionRequested}
+        endIcon={executing ? <StopCircle /> : <PlayCircleFilled />}
         variant='contained'
-        disabled={!enabled || executing}
+        color={executing ? 'warning' : 'primary'}
+        disabled={!enabled}
         className='run-button'
-        sx={{
-          px: 3,
-        }}
       >
         <span>{t('runCode')}</span>
       </Button>
-      {!executing &&
-        executionFinished &&
-        (executionError ? (
-          <Tooltip
-            arrow
-            title={t('executionCompletedWithErrors')}
-            placement='right'
-          >
-            <ErrorOutline fontSize='large' color='error' />
-          </Tooltip>
-        ) : (
-          <Tooltip
-            arrow
-            title={t('executionCompletedSuccessfully')}
-            placement='right'
-          >
-            <Done fontSize='large' color='success' />
-          </Tooltip>
-        ))}
+      <StatusIndicator
+        executing={executing}
+        executionFinished={executionFinished}
+        executionError={executionError}
+      />
     </Stack>
   );
 }
