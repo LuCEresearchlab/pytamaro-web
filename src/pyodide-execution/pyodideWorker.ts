@@ -43,7 +43,14 @@ function executeOnMainThread(
     type,
     uuid,
   });
-  Atomics.wait(syncBuffer, 0, 0);
+  // Wait on syncBuffer but check every 50ms for interrupts
+  let receivedResultLength = false;
+  while (!receivedResultLength) {
+    if (Atomics.wait(syncBuffer, 0, 0, 50) === 'ok') {
+      receivedResultLength = true;
+    }
+    pyodide.checkInterrupt();
+  }
   // Read length of result and create shared array buffer to transfer it
   const lenInBytes = resultLengthBuffer[0];
   const resultBuffer = new SharedArrayBuffer(lenInBytes);
@@ -85,12 +92,16 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
   const sendPartialResult = () => {
     self.postMessage({
       type: Message.PARTIAL_RESULT,
-      result: { type: 'success', stdout, stderr },
+      result: { type: 'success', completed: false, stdout, stderr },
     });
   };
 
   pyodide.setStdin({
     stdin: () => {
+      // Send partial result before blocking for input
+      // (this signals that the output is up to date for the current execution,
+      // even if there was no output before the input request)
+      sendPartialResult();
       const input = ffiInput();
       // Add back to stdout (including the <enter>) so that the user can see what they typed
       stdout += INPUT_BEGIN + input + INPUT_END + '\n';
@@ -134,6 +145,7 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
       type: Message.RESULT,
       result: {
         type: 'success',
+        completed: true,
         stdout,
         stderr,
       },
@@ -145,6 +157,7 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
       type: Message.RESULT,
       result: {
         type: 'error',
+        completed: true,
         stdout,
         stderr,
       },
@@ -227,6 +240,7 @@ addEventListener(
           // Initialize Pyodide with PyTamaro and CanvasKit
           await loadPyodideWithPytamaro();
           installPytamaroFfi();
+          pyodide.setInterruptBuffer(data.interruptBuffer);
 
           syncBuffer = new Int32Array(data.syncBuffer);
           resultLengthBuffer = new Int32Array(data.resultLengthBuffer);

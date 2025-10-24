@@ -39,6 +39,7 @@ export const ERROR_MESSAGE_CLASSNAME = 'traceback-error-message';
 export type OutputAreaRef = {
   getInput: () => Promise<string>;
   activateInputField: () => void;
+  deactivatePossibleInputField: () => void;
 };
 
 export function OutputArea({
@@ -68,38 +69,50 @@ export function OutputArea({
       activateInputField() {
         setInputFieldActive(true);
       },
+      deactivatePossibleInputField() {
+        setInputFieldActive(false);
+      },
     };
   }, []);
   const pytamaroDataUriRegex =
     /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
+  const inputArea = (
+    <InputArea
+      onSubmit={(result) => {
+        if (resolveInputPromiseRef.current) {
+          setInputFieldActive(false);
+          resolveInputPromiseRef.current(result);
+        }
+      }}
+    />
+  );
+  const graphicOrTextChunks = data
+    .split(pytamaroDataUriRegex)
+    .filter(negate(isEmpty));
   return (
     <div className='output-area' translate='no' style={sx}>
-      {data
-        .split(pytamaroDataUriRegex)
-        .filter(negate(isEmpty))
-        .map((chunk, idx, chunks) =>
-          isPngData(chunk) || isGifData(chunk) ? (
-            <ImgElement key={idx} dataURI={chunk} disabled={disabled} />
-          ) : (
-            <PreElement
-              key={idx}
-              lines={splitLines(chunk)}
-              style={preStyle}
-              activeInput={
-                idx === chunks.length - 1 && inputFieldActive ? (
-                  <InputArea
-                    onSubmit={(result) => {
-                      if (resolveInputPromiseRef.current) {
-                        setInputFieldActive(false);
-                        resolveInputPromiseRef.current(result);
-                      }
-                    }}
-                  />
-                ) : undefined
-              }
-            />
-          ),
-        )}
+      {graphicOrTextChunks.map((chunk, idx, chunks) =>
+        isPngData(chunk) || isGifData(chunk) ? (
+          <ImgElement key={idx} dataURI={chunk} disabled={disabled} />
+        ) : (
+          <PreElement
+            key={idx}
+            lines={splitLines(chunk)}
+            style={preStyle}
+            activeInput={
+              idx === chunks.length - 1 && inputFieldActive
+                ? inputArea
+                : undefined
+            }
+          />
+        ),
+      )}
+      {
+        /* As a special case, render a lone input area if it is active and there is no other output */
+        inputFieldActive && graphicOrTextChunks.length === 0 && (
+          <PreElement lines={[]} style={preStyle} activeInput={inputArea} />
+        )
+      }
     </div>
   );
 }

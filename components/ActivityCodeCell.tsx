@@ -89,7 +89,7 @@ export default function ActivityCodeCell({
     <InconsistencyMessage />
   ) : (
     <Box marginY={2}>
-      {executionFailed && <FailedExecutionSnackbar res={executionFailed} />}
+      {executionFailed && <FailedExecutionSnackbar />}
       <CodeCell
         initialSource={initialCodeCells[cellIdx].source}
         currentSource={currentCodeCell.source}

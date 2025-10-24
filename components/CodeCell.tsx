@@ -9,8 +9,11 @@ import {
 } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
 import { RefObject, useMemo } from 'react';
-import { ExecutionResponse, isExecutionCompleted } from '../src/codeExecution';
-import { CodeCellExecutionState } from '../src/localStorage/schema';
+import {
+  isExecutionCompleted,
+  isExecutionError,
+  isExecutionNominal,
+} from '../src/codeExecution';import { CodeCellExecutionState } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import {
   ActivityVariant,
@@ -26,10 +29,6 @@ import RunButton from './RunButton';
 import StaleOutputBadge from './StaleOutputBadge';
 import ExecutionOutputArea from './input_output/ExecutionOutputArea';
 import { OutputAreaRef } from './input_output/OutputArea';
-
-export function isExecutionError(response: ExecutionResponse | undefined) {
-  return response?.type === 'error';
-}
 
 export default function CodeCell({
   initialSource,
@@ -70,9 +69,10 @@ export default function CodeCell({
   const { executionResponse } = codeCellExecutionState;
   const executionError = isExecutionError(executionResponse);
   const executing = codeCellExecutionState.executionInProgress;
-  const executionFinished = codeCellExecutionState.outputSynced;
+  const executionFinished =
+    codeCellExecutionState.outputSynced &&
+    isExecutionCompleted(executionResponse);
   const noOutput =
-    executionResponse &&
     isExecutionCompleted(executionResponse) &&
     (executionResponse.stdout + executionResponse.stderr).length === 0;
 
@@ -152,8 +152,8 @@ export default function CodeCell({
             initialSource={initialSource}
             currentSource={currentSource}
             onChange={onSourceChanged}
-            onExecutionRequested={handleExecutionRequest}
-            executionAllowed={!executing}
+            onExecutionRequested={onExecutionRequested}
+            executionAllowed={runEnabled}
             executionFinished={executionFinished}
             firstLineNumber={firstLineNumber}
             readOnly={readOnly}
@@ -185,12 +185,12 @@ export default function CodeCell({
         )}
         {ellipsis && <EllipsisTip />}
         <Collapse
-          in={codeCellExecutionState.outputAreaVisible}
+          in={codeCellExecutionState.outputAreaVisible || executing}
           timeout='auto'
           unmountOnExit
         >
           <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
-            {executionResponse && isExecutionCompleted(executionResponse) && (
+            {isExecutionNominal(executionResponse) && (
               <ExecutionOutputArea
                 executionError={executionError}
                 executionResponse={executionResponse}
