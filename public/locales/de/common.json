@@ -14,6 +14,7 @@
     "documentation": "Dokumentation",
     "myToolbox": "Meine Toolbox",
     "runCode": "Ausführen",
+    "stopExecution": "Stoppen",
     "executionCompletedWithErrors": "Ausführung mit Fehlern abgeschlossen",
     "executionCompletedSuccessfully": "Ausführung erfolgreich abgeschlossen",
     "errorInvolvesToolbox": "Dieser Fehler betrifft eine Funktion aus der Toolbox.",

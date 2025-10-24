@@ -10,6 +10,7 @@
     "documentation": "Documentazione",
     "myToolbox": "La mia Toolbox",
     "runCode": "Esegui",
+    "stopExecution": "Stop",
     "executionCompletedWithErrors": "Esecuzione completata con errori",
     "executionCompletedSuccessfully": "Esecuzione completata con successo",
     "errorInvolvesToolbox": "Questo errore coinvolge una funzione dalla toolbox.",
