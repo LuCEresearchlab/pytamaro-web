@@ -1,11 +1,10 @@
 import type {
   Canvas,
   CanvasKit,
-  FontMgr,
   Paint,
-  Paragraph,
   Path,
   Rect,
+  Typeface,
 } from '../canvaskit-wasm/canvaskit.d.ts';
 import {
   CircularSectorSpec,
@@ -24,7 +23,7 @@ import {
 
 export function fromSpec(
   ck: CanvasKit,
-  fontMgr: FontMgr,
+  typefaces: Map<string, Typeface>,
   spec: GraphicSpec,
 ): Graphic {
   switch (spec.type) {
@@ -39,17 +38,17 @@ export function fromSpec(
     case 'Triangle':
       return new Triangle(ck, spec);
     case 'Text':
-      return new Text(ck, fontMgr, spec);
+      return new Text(ck, typefaces, spec);
     case 'Compose':
-      return new Compose(ck, fontMgr, spec);
+      return new Compose(ck, typefaces, spec);
     case 'Pin':
-      return new Pin(ck, fontMgr, spec);
+      return new Pin(ck, typefaces, spec);
     case 'Rotate':
-      return new Rotate(ck, fontMgr, spec);
+      return new Rotate(ck, typefaces, spec);
     case 'Beside':
       return new SimpleCompose(
         ck,
-        fontMgr,
+        typefaces,
         spec.left_graphic,
         spec.right_graphic,
         { x: 1, y: 0 },
@@ -58,7 +57,7 @@ export function fromSpec(
     case 'Above':
       return new SimpleCompose(
         ck,
-        fontMgr,
+        typefaces,
         spec.top_graphic,
         spec.bottom_graphic,
         { x: 0, y: -1 },
@@ -67,7 +66,7 @@ export function fromSpec(
     case 'Overlay':
       return new SimpleCompose(
         ck,
-        fontMgr,
+        typefaces,
         spec.front_graphic,
         spec.back_graphic,
         { x: 0, y: 0 },
@@ -203,50 +202,41 @@ class Triangle extends Primitive {
 }
 
 class Text extends Graphic {
-  private readonly p: Paragraph;
+  private readonly paint: Paint;
 
-  constructor(ck: CanvasKit, fontMgr: FontMgr, spec: TextSpec) {
-    const paragraphStyle = new ck.ParagraphStyle({
-      textAlign: ck.TextAlign.Left,
-      textStyle: {
-        color: ck.Color4f(
-          spec.color.red / 255,
-          spec.color.green / 255,
-          spec.color.blue / 255,
-          spec.color.alpha,
-        ),
-        fontFamilies: [spec.font_name, 'Fira Sans'],
-        fontSize: spec.text_size,
-      },
-    });
-    const builder = ck.ParagraphBuilder.Make(paragraphStyle, fontMgr);
-    builder.addText(spec.text);
-    const p = builder.build();
-    // Destroy builder object, we don't need it anymore
-    builder.delete();
+  constructor(ck: CanvasKit, typefaces: Map<string, Typeface>, spec: TextSpec) {
+    const typeface = // Fallback to Fira Sans
+      typefaces.get(spec.font_name) || typefaces.get('Fira Sans')!;
+    const font = new ck.Font(typeface, spec.text_size);
+    const glyphIDs = font.getGlyphIDs(spec.text);
+    const offsets = font.getXPos(glyphIDs);
+    const textPath = new ck.Path();
+    for (let i = 0; i < glyphIDs.length; i++) {
+      const glyphID = glyphIDs[i];
+      const offset = offsets[i];
+      const glyphPath = font.getPath(glyphID);
+      if (glyphPath != null) {
+        glyphPath.offset(offset, 0);
+        textPath.addPath(glyphPath);
+      }
+    }
 
-    p.layout(Number.MAX_VALUE);
-    const isEmpty = spec.text.length == 0;
-    const pinPosition = { x: 0, y: isEmpty ? 0 : p.getAlphabeticBaseline() };
-    const bounds = isEmpty
-      ? ck.XYWHRect(0, 0, 0, 0)
-      : ck.XYWHRect(0, 0, p.getMaxIntrinsicWidth(), p.getHeight());
-    // Stub path for bounds computations
-    // TODO: Here we should use th actual text path, instead of the bounding box.
-    // However, CanvasKit does not provide an easy way to get the path.
-    const boundsPath = new ck.Path().addRect(bounds);
-    super(boundsPath, bounds, pinPosition);
-
-    this.p = p;
+    const paint = new ck.Paint();
+    paint.setAntiAlias(true);
+    paint.setColor(
+      ck.Color4f(
+        spec.color.red / 255,
+        spec.color.green / 255,
+        spec.color.blue / 255,
+        spec.color.alpha,
+      ),
+    );
+    super(textPath, textPath.computeTightBounds(), { x: 0, y: 0 });
+    this.paint = paint;
   }
 
   override draw(canvas: Canvas): void {
-    canvas.drawParagraph(this.p, 0, 0);
-  }
-
-  override destroy(): void {
-    this.p.delete();
-    super.destroy();
+    canvas.drawPath(this.path, this.paint);
   }
 }
 
@@ -254,9 +244,13 @@ class Compose extends Graphic {
   private readonly foreground: Graphic;
   private readonly background: Graphic;
 
-  constructor(ck: CanvasKit, fontMgr: FontMgr, spec: ComposeSpec) {
-    const foreground = fromSpec(ck, fontMgr, spec.foreground);
-    const background = fromSpec(ck, fontMgr, spec.background);
+  constructor(
+    ck: CanvasKit,
+    typefaces: Map<string, Typeface>,
+    spec: ComposeSpec,
+  ) {
+    const foreground = fromSpec(ck, typefaces, spec.foreground);
+    const background = fromSpec(ck, typefaces, spec.background);
 
     const fgPin = foreground.pinPosition;
     const bgPin = background.pinPosition;
@@ -301,8 +295,8 @@ class Compose extends Graphic {
 class Pin extends Graphic {
   private readonly graphic: Graphic;
 
-  constructor(ck: CanvasKit, fontMgr: FontMgr, spec: PinSpec) {
-    const graphic = fromSpec(ck, fontMgr, spec.graphic);
+  constructor(ck: CanvasKit, typefaces: Map<string, Typeface>, spec: PinSpec) {
+    const graphic = fromSpec(ck, typefaces, spec.graphic);
     const {
       pinning_point: { x: pinX, y: pinY },
     } = spec;
@@ -344,8 +338,12 @@ class Rotate extends Graphic {
   private readonly graphic: Graphic;
   private readonly rotMatrix: number[];
 
-  constructor(ck: CanvasKit, fontMgr: FontMgr, spec: RotateSpec) {
-    const graphic = fromSpec(ck, fontMgr, spec.graphic);
+  constructor(
+    ck: CanvasKit,
+    typefaces: Map<string, Typeface>,
+    spec: RotateSpec,
+  ) {
+    const graphic = fromSpec(ck, typefaces, spec.graphic);
     const rotMatrix = ck.Matrix.rotated(
       (-spec.angle / 180) * Math.PI,
       graphic.pinPosition.x,
@@ -381,7 +379,7 @@ class SimpleCompose extends Graphic {
 
   constructor(
     ck: CanvasKit,
-    fontMgr: FontMgr,
+    typefaces: Map<string, Typeface>,
     firstGraphic: GraphicSpec,
     secondGraphic: GraphicSpec,
     firstPoint: Point,
@@ -407,7 +405,7 @@ class SimpleCompose extends Graphic {
       graphic: composed,
       type: 'Pin',
     };
-    const graphic = fromSpec(ck, fontMgr, composedCenter);
+    const graphic = fromSpec(ck, typefaces, composedCenter);
     super(graphic.path, graphic.bounds, graphic.pinPosition);
     this.graphic = graphic;
   }
