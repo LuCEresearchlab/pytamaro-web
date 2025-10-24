@@ -19,6 +19,12 @@ export default function InputArea({
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+  // When this inputArea is non-editable, we need to ensure that the string is not empty
+  // to avoid collapsing the pre element and keep the alignment on the baseline.
+  let shownContent = initialContent;
+  if (!editable && !shownContent) {
+    shownContent = '\u200B'; // zero-width space
+  }
   return (
     <Box sx={{ display: 'inline-block' }}>
       <Tooltip
@@ -76,7 +82,7 @@ export default function InputArea({
                 : undefined
             }
           >
-            {initialContent}
+            {shownContent}
           </pre>
         </Badge>
       </Tooltip>
