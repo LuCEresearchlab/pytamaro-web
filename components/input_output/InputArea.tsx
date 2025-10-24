@@ -8,10 +8,10 @@ export const INPUT_BEGIN = '@@@PYTAMARO_INPUT_BEGIN@@@';
 export const INPUT_END = '@@@PYTAMARO_INPUT_END@@@';
 
 export default function InputArea({
-  initialContent = '',
+  initialContent = null,
   onSubmit = undefined,
 }: {
-  initialContent?: string;
+  initialContent?: string | null;
   onSubmit?: (input: string) => void | undefined;
 }) {
   const editable = onSubmit !== undefined;
