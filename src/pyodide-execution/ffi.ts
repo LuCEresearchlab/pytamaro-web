@@ -1,5 +1,5 @@
 import CanvasKitInit from '../canvaskit-wasm/canvaskit';
-import type { CanvasKit, FontMgr } from '../canvaskit-wasm/canvaskit.d.ts';
+import type { CanvasKit, Typeface } from '../canvaskit-wasm/canvaskit.d.ts';
 import { FONTS_FILENAME_PREFIX } from './fonts.ts';
 import { fromSpec } from './graphics';
 import { addDebugInfo } from './graphicsDebug.ts';
@@ -7,12 +7,12 @@ import { GraphicSpec, Sized } from './spec';
 
 async function draw(
   ck: CanvasKit,
-  fontMgr: FontMgr,
+  typefaces: Map<string, Typeface>,
   canvas: OffscreenCanvas,
   spec: GraphicSpec,
   debug: boolean,
 ): Promise<string> {
-  const graphic = fromSpec(ck, fontMgr, spec);
+  const graphic = fromSpec(ck, typefaces, spec);
   const extraSpace = debug
     ? Math.min(graphic.size.width, graphic.size.height, 10) / 2
     : 0;
@@ -56,13 +56,13 @@ async function draw(
 
 function sizeWhenRendered(
   ck: CanvasKit,
-  fontMgr: FontMgr,
+  typefaces: Map<string, Typeface>,
   spec: GraphicSpec,
 ): Sized {
-  if (!ck || !fontMgr) {
+  if (!ck) {
     throw new Error('Worker not initialized yet');
   }
-  const graphic = fromSpec(ck, fontMgr, spec);
+  const graphic = fromSpec(ck, typefaces, spec);
   const size = { ...graphic.size };
   graphic.destroy();
   return size;
@@ -81,21 +81,23 @@ export default async function initFfi(): Promise<PyTamaroFFI> {
   const ck = await CanvasKitInit({
     locateFile: assetUrl,
   });
-  const fontMgr = ck.FontMgr.FromData(
-    ...(await Promise.all(
-      FONTS_FILENAME_PREFIX.map((f) =>
-        fetch(assetUrl(`fonts/${f}-Regular.ttf`)).then((res) =>
-          res.arrayBuffer(),
-        ),
+  const typefaces: Map<string, Typeface> = new Map();
+  for (const name of FONTS_FILENAME_PREFIX) {
+    const typeface = ck.Typeface.MakeTypefaceFromData(
+      await fetch(assetUrl(`fonts/${name}-Regular.ttf`)).then((res) =>
+        res.arrayBuffer(),
       ),
-    )),
-  )!;
+    );
+    if (typeface != null) {
+      typefaces.set(typeface.getFamilyName(), typeface);
+    }
+  }
   const canvas = new OffscreenCanvas(1, 1);
 
   return {
     draw: (specs: GraphicSpec, debug: boolean) =>
-      draw(ck, fontMgr, canvas, specs, debug),
+      draw(ck, typefaces, canvas, specs, debug),
     sizeWhenRendered: (specs: GraphicSpec) =>
-      sizeWhenRendered(ck, fontMgr, specs),
+      sizeWhenRendered(ck, typefaces, specs),
   };
 }
