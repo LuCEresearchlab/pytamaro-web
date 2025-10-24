@@ -54,6 +54,7 @@ export default function RunButton({
 }) {
   const { t } = useLocalTranslation(['common']);
   const { interruptExecution } = useContext(PyodideWorkerClientContext);
+
   return (
     <Stack direction='row' spacing={2} alignItems='center'>
       <Button
@@ -64,7 +65,7 @@ export default function RunButton({
         disabled={!enabled}
         className='run-button'
       >
-        <span>{t('runCode')}</span>
+        <span>{t(executing ? 'stopExecution' : 'runCode')}</span>
       </Button>
       <StatusIndicator
         executing={executing}
