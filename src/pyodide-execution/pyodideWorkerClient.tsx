@@ -40,7 +40,7 @@ let sharedResultLengthBuffer: SharedArrayBuffer | null = null;
 let resultLengthBuffer: Int32Array | null = null;
 let interruptBuffer: Uint8Array | null = null;
 
-let outputAreaGlobalRef: RefObject<OutputAreaRef | null>;
+let outputAreaGlobalRef: RefObject<OutputAreaRef | null> | null = null;
 
 const pendingResults = new Map<string, ClientResult>();
 
@@ -167,8 +167,9 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
       break;
     case Message.INPUT:
       {
-        outputAreaGlobalRef.current?.activateInputField();
-        outputAreaGlobalRef.current?.getInput().then((value: string) => {
+        const outputArea = outputAreaGlobalRef?.current;
+        outputArea?.activateInputField();
+        outputArea?.getInput().then((value: string) => {
           const encoded = new Uint8Array(Buffer.from(value));
           notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
         });
@@ -275,7 +276,7 @@ export function restart(): Promise<void> {
 
 export function interruptExecution() {
   interruptBuffer![0] = 2; // 2 for SIGINT
-  outputAreaGlobalRef.current?.deactivatePossibleInputField();
+  outputAreaGlobalRef?.current?.deactivatePossibleInputField();
 }
 
 interface PyodideWorkerClientInterface {
