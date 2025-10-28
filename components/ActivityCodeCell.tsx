@@ -1,9 +1,8 @@
 import { Alert, AlertTitle, Box, Typography } from '@mui/material';
 import { sum } from 'lodash';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
-import { analyze } from '../src/python-analyzer/python_analyzer';
 import {
   ActivityVariant,
   PlatformConfiguration,
@@ -12,10 +11,6 @@ import {
 import { countLines } from '../src/sourceUtils';
 import useReset from '../src/useReset';
 import CodeCell from './CodeCell';
-import {
-  definedConstantToJudiciousConstant,
-  definedFnToJudiciousFunction,
-} from './documentation/utils';
 import FailedExecutionSnackbar from './FailedExecutionSnackbar';
 import MoreOptionsButton from './MoreOptionsButton';
 import SaveToToolboxButton from './SaveToToolboxButton';
@@ -77,25 +72,6 @@ export default function ActivityCodeCell({
     localCodeCellsWrongLength,
   } = useLocalActivity(initialCodeCells, activityVariant, extraPythonFiles);
 
-  const extraDocumentation = useMemo(
-    () =>
-      extraPythonFiles.map((file) => {
-        const analysisResult = analyze(file.content);
-        return {
-          module: file.name.replace(/\.py$/, ''),
-          elements: [
-            ...analysisResult.defined_functions.map(
-              definedFnToJudiciousFunction,
-            ),
-            ...analysisResult.defined_constants.map(
-              definedConstantToJudiciousConstant,
-            ),
-          ],
-        };
-      }),
-    [extraPythonFiles],
-  );
-
   const { resetCounter, newReset } = useReset();
   useEffect(() => {
     if (activityResetCounter > 0) {
@@ -123,7 +99,7 @@ export default function ActivityCodeCell({
         sourcesUpTo={sourcesUpTo(cellIdx)}
         platformConfig={platformConfig}
         resetCounter={resetCounter}
-        extraDocumentation={extraDocumentation}
+        extraPythonFiles={extraPythonFiles}
         extraActions={
           <>
             <SaveToToolboxButton

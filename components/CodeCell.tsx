@@ -22,8 +22,8 @@ import {
 import {
   ActivityVariant,
   PlatformConfiguration,
+  PythonFile,
 } from '../src/schemas/activitySchema';
-import { JudiciousElement } from '../src/schemas/documentation';
 import { joinLines } from '../src/sourceUtils';
 import { EllipsisTip, InputTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
@@ -55,7 +55,7 @@ export default function CodeCell({
   sourcesUpTo,
   platformConfig,
   resetCounter,
-  extraDocumentation = [],
+  extraPythonFiles = [],
   extraActions = null,
   readOnly = false,
 }: {
@@ -70,7 +70,7 @@ export default function CodeCell({
   sourcesUpTo: string[];
   platformConfig: PlatformConfiguration;
   resetCounter: number;
-  extraDocumentation?: { module: string; elements: JudiciousElement[] }[];
+  extraPythonFiles?: PythonFile[];
   extraActions?: React.ReactNode;
   readOnly?: boolean;
 }) {
@@ -106,7 +106,7 @@ export default function CodeCell({
         <DocumentationStripe
           sources={sourcesUpTo}
           activityVariant={activityVariant}
-          extraDocumentation={extraDocumentation}
+          extraPythonFiles={extraPythonFiles}
         />
       )}
       {/* Overflow to allow for overflowed widgets in a CodeEditor */}

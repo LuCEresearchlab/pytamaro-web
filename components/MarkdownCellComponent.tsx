@@ -6,6 +6,7 @@ import {
   ActivityVariant,
   MarkdownCell,
   NotebookCell,
+  PythonFile,
 } from '../src/schemas/activitySchema';
 import { activityAssetPathname } from '../src/urlUtils';
 import InlineAPI from './documentation/InlineAPI';
@@ -73,6 +74,7 @@ function InlineAPIComponent(
   activityVariant: ActivityVariant,
   lang?: string,
   module?: string,
+  extraPythonFiles?: PythonFile[],
 ) {
   return (
     <InlineAPI
@@ -80,6 +82,7 @@ function InlineAPIComponent(
       activityVariant={activityVariant}
       language={lang}
       module={module}
+      extraPythonFiles={extraPythonFiles}
     />
   );
 }
@@ -115,9 +118,11 @@ function linkComponent(props: any) {
 export default function MarkdownCellComponent({
   cell,
   activityVariant,
+  extraPythonFiles,
 }: {
   cell: MarkdownCell;
   activityVariant: ActivityVariant;
+  extraPythonFiles: PythonFile[];
 }) {
   const adHocComponents = {
     img: (props: any) =>
@@ -138,7 +143,8 @@ export default function MarkdownCellComponent({
       lang?: string;
       module?: string;
       children: string;
-    }) => InlineAPIComponent(name, activityVariant, lang, module),
+    }) =>
+      InlineAPIComponent(name, activityVariant, lang, module, extraPythonFiles),
     Activity: ActivityLink,
     DoNow: ({
       id,

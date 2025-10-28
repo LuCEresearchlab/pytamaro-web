@@ -1,5 +1,5 @@
-import useJudiciousDocData from '../../src/documentation';
-import { ActivityVariant } from '../../src/schemas/activitySchema';
+import { useDocumentationElements } from '../../src/documentation';
+import { ActivityVariant, PythonFile } from '../../src/schemas/activitySchema';
 import DocElement from './DocElement';
 
 export default function InlineAPI({
@@ -7,11 +7,13 @@ export default function InlineAPI({
   language = undefined,
   module = undefined,
   activityVariant,
+  extraPythonFiles = [],
 }: {
   name: string;
   language?: string | undefined;
   module?: string | undefined;
   activityVariant: ActivityVariant;
+  extraPythonFiles?: PythonFile[];
 }) {
   // When not provided explicitly, the language is inferred from the activity variant.
   const bestLanguage = language || activityVariant.language;
@@ -21,15 +23,24 @@ export default function InlineAPI({
   const moduleName =
     module || (bestLanguage === 'en' ? 'pytamaro' : `pytamaro.${bestLanguage}`);
 
-  const modulesData = useJudiciousDocData([moduleName]);
-  const element =
-    modulesData.length === 1 &&
-    modulesData[0].elements?.find((el) => el.name === name);
+  const elements = useDocumentationElements(
+    [
+      {
+        module: moduleName,
+        name,
+      },
+    ],
+    [],
+    extraPythonFiles,
+  );
+  const elementWithModule = elements.find(
+    (el) => el.module === moduleName && el.element.name === name,
+  );
 
-  return element ? (
+  return elementWithModule ? (
     <DocElement
       module={moduleName}
-      element={element}
+      element={elementWithModule.element}
       activityVariant={activityVariant}
       smallerFont={false}
     />

@@ -158,6 +158,7 @@ export default function NotebookPage({
                     <MarkdownCellComponent
                       cell={cell as MarkdownCell}
                       activityVariant={activityVariant}
+                      extraPythonFiles={activity.extraPythonFiles}
                     />
                   </Container>
                 ) : (

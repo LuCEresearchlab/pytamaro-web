@@ -57,6 +57,10 @@ Special components that can be used:
 
   For selected modules from the standard library, you can use the `module` attribute to specify the module name (e.g., `<API module="math">sqrt</API>`).
   Use the module `builtins` for built-in functions (e.g., `<API module="builtins">print</API>`).
+  Use the module `toolbox` for functions from the user's toolbox (e.g., `<API module="toolbox">square</API>`).
+  You can also refer to functions and constants from the activity's library (e.g, `<API module="my_library">my_function</API>`).
+
+  When the documentation is not found (e.g., a user does not have a function in their toolbox), the name is simply rendered without any special style or popup.
 
 - `<Activity id="luce/sliced-pitaya/en/v1" fragment="ring-of-seeds">Sliced Pitaya activity</Activity>` to render a link to another activity.
   You can optionally specify a fragment to link to a specific section of the activity. The `id` should refer to a fully qualified activity variant identifier,

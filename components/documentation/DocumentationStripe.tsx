@@ -4,8 +4,7 @@ import { Box, Chip, Stack, Tooltip } from '@mui/material';
 import { flatten, isEqual, reverse, slice, uniqWith } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
-import useJudiciousDocData from '../../src/documentation';
-import useLocalToolbox from '../../src/localStorage/useLocalToolbox';
+import { useDocumentationElements } from '../../src/documentation';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import {
   AnalysisResult,
@@ -13,14 +12,9 @@ import {
   PythonFunction,
   PythonName,
 } from '../../src/python-analyzer/python_analyzer';
-import { ActivityVariant } from '../../src/schemas/activitySchema';
-import { JudiciousElement } from '../../src/schemas/documentation';
+import { ActivityVariant, PythonFile } from '../../src/schemas/activitySchema';
 import theme from '../../src/theme';
 import DocElement from './DocElement';
-import {
-  definedFnToJudiciousFunction,
-  toolboxToJudiciousFunction,
-} from './utils';
 
 function reverseUniq<T>(array: T[][]): T[] {
   return uniqWith(flatten(reverse(slice(array))), isEqual);
@@ -31,14 +25,13 @@ const COLLAPSED_HEIGHT = 1.5 * theme.typography.htmlFontSize;
 export default function DocumentationStripe({
   sources,
   activityVariant,
-  extraDocumentation = [],
+  extraPythonFiles = [],
 }: {
   sources: string[];
   activityVariant: ActivityVariant;
-  extraDocumentation?: { module: string; elements: JudiciousElement[] }[];
+  extraPythonFiles?: PythonFile[];
 }) {
   const { t } = useLocalTranslation();
-  const { list } = useLocalToolbox();
   const [importedNamesPerCell, setImportedNamesPerCell] = useState<
     PythonName[][]
   >([]);
@@ -82,68 +75,11 @@ export default function DocumentationStripe({
   const allImportedNames = reverseUniq(importedNamesPerCell);
   const allDefinedFunctions = reverseUniq(functionsPerCell);
 
-  const extraDocumentationModules = extraDocumentation.map(
-    (file) => file.module,
+  const namesToDocElement = useDocumentationElements(
+    allImportedNames,
+    allDefinedFunctions,
+    extraPythonFiles,
   );
-
-  const modulesToFetch = uniqWith(
-    allImportedNames.map(({ module }) => module),
-    isEqual,
-  ).filter(
-    (module) =>
-      !(module === 'toolbox' || extraDocumentationModules.includes(module)),
-  );
-
-  const toolboxFunctions = list();
-
-  const modulesData = useJudiciousDocData(modulesToFetch);
-
-  const namesToShow = allDefinedFunctions
-    .map(({ name }) => ({ module: '.', name }))
-    .concat(allImportedNames);
-
-  const namesToDocElement = namesToShow
-    .flatMap(({ module, name }) => {
-      if (module === 'toolbox') {
-        const toolboxFunction = toolboxFunctions.find((fn) => fn.name === name);
-        return (
-          toolboxFunction && [
-            {
-              module: 'toolbox',
-              element: toolboxToJudiciousFunction(toolboxFunction),
-            },
-          ]
-        );
-      }
-      if (module === '.') {
-        const definedFunction = allDefinedFunctions.find(
-          (fn) => fn.name === name,
-        );
-        return (
-          definedFunction && [
-            {
-              module: '.',
-              element: definedFnToJudiciousFunction(definedFunction),
-            },
-          ]
-        );
-      }
-      if (extraDocumentation.find((file) => file.module === module)) {
-        const element = extraDocumentation
-          .find((file) => file.module === module)
-          ?.elements.find((el) => el.name === name);
-        if (element) {
-          return [{ module, element }];
-        }
-      }
-      const moduleData = modulesData.find((data) => data?.module === module);
-      if (name === '*') {
-        return moduleData?.elements.map((element) => ({ module, element }));
-      }
-      const element = moduleData?.elements?.find((el) => el.name === name);
-      return element && [{ module, element }];
-    })
-    .filter((element) => element !== undefined);
 
   if (namesToDocElement.length === 0) {
     return null;

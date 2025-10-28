@@ -40,7 +40,7 @@ export default function DocElement({
   };
 
   return element ? (
-    <div
+    <span
       style={{
         display: 'inline-flex',
         alignItems: 'baseline',
@@ -52,31 +52,33 @@ export default function DocElement({
       onMouseLeave={() => setHover(false)}
     >
       <Popover placement='right'>
-        <PopoverTrigger onClick={handleClick}>
-          <img
-            src={iconPath(module)}
-            style={{
-              height: smallerFont ? '0.8em' : '1em',
-              width: 'auto',
-              display: 'inline-block',
-              transform: `translateY(.${smallerFont ? '1' : '2'}em)`,
-              marginRight: '0.1em',
-            }}
-            alt='Module logo'
-          />
-          <Typography
-            component='span'
-            style={{
-              color: theme.pytamaro.redColor,
-              fontSize: smallerFont
-                ? '0.8em'
-                : `${theme.pytamaro.monospaceFontSizeRatio}em`,
-              fontFamily: theme.pytamaro.monospaceFontFamily,
-            }}
-            translate='no'
-          >
-            {element.name}
-          </Typography>
+        <PopoverTrigger onClick={handleClick} asChild>
+          <span>
+            <img
+              src={iconPath(module)}
+              style={{
+                height: smallerFont ? '0.8em' : '1em',
+                width: 'auto',
+                display: 'inline-block',
+                transform: `translateY(.${smallerFont ? '1' : '2'}em)`,
+                marginRight: '0.1em',
+              }}
+              alt='Module logo'
+            />
+            <Typography
+              component='span'
+              style={{
+                color: theme.pytamaro.redColor,
+                fontSize: smallerFont
+                  ? '0.8em'
+                  : `${theme.pytamaro.monospaceFontSizeRatio}em`,
+                fontFamily: theme.pytamaro.monospaceFontFamily,
+              }}
+              translate='no'
+            >
+              {element.name}
+            </Typography>
+          </span>
         </PopoverTrigger>
         <PopoverContent>
           <DocElementCard
@@ -86,6 +88,6 @@ export default function DocElement({
           />
         </PopoverContent>
       </Popover>
-    </div>
+    </span>
   ) : null;
 }
