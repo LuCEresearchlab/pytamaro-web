@@ -63,6 +63,7 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
     message.style.backgroundColor = theme.palette.error.main;
     message.style.color = theme.palette.error.contrastText;
     message.style.borderRadius = '3px';
+    message.style.boxShadow = theme.shadows[1];
     message.style.fontFamily = theme.pytamaro.monospaceFontFamily;
     message.style.fontSize = `${theme.pytamaro.monospaceFontSizeRatio}em`;
     message.style.fontWeight = theme.typography.fontWeightMedium as string;
