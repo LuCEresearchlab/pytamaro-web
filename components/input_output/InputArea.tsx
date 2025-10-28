@@ -49,9 +49,9 @@ export default function InputArea({
               <Box
                 sx={{
                   position: 'absolute',
-                  top: 4,
+                  top: 1,
                   width: 24,
-                  height: 16,
+                  height: 14,
                   zIndex: 0,
                 }}
               />
