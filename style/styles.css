@@ -144,3 +144,8 @@ pre:has(code) {
   /* Support for IE. */
   font-feature-settings: 'liga';
 }
+
+/* Input box size in Firefox and Safari: https://stackoverflow.com/a/23530317 */
+[contenteditable = 'true']:before {
+  content: '\feff ';
+}
