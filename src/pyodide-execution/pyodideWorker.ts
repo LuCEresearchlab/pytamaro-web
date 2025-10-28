@@ -131,14 +131,29 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
   files.forEach((file) => {
     fs.writeFile(`${basePath}/${file.name}`, file.content);
   });
+  const modulesToClear = files
+    .map((file) => file.name)
+    .filter((name) => name.endsWith('.py'))
+    .map((name) => name.replaceAll('/', '.').replace(/\.py$/, ''));
 
   const driverCode = files.filter((f) => f.name === 'driver.py')[0].content;
 
   const ns = pyodide.toPy({});
   try {
     await pyodide.runPython(
-      // Set working directory and then run the driver
-      joinLines(['import os', `os.chdir('${basePath}')`, driverCode]),
+      joinLines([
+        // Clear cached modules
+        'import sys',
+        ...modulesToClear.flatMap((module) => [
+          `if '${module}' in sys.modules:`,
+          `  del sys.modules['${module}']`,
+        ]),
+        // Set CWD to $basePath
+        'import os',
+        `os.chdir('${basePath}')`,
+        // Run code
+        driverCode,
+      ]),
       { globals: ns },
     );
     return {
