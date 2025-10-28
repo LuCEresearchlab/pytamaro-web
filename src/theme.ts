@@ -23,6 +23,7 @@ declare module '@mui/material/styles' {
 
 const theme = responsiveFontSizes(
   createTheme({
+    cssVariables: true,
     palette: {
       primary: {
         main: '#008BCB',

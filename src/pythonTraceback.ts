@@ -1,10 +1,14 @@
 import { Monaco } from '@monaco-editor/react';
 import { type editor as EditorNamespace } from 'monaco-editor';
+import { ErrorMessageWidget } from '../components/editor/ErrorMessageWidget';
 import { CompletedExecutionResponse } from './codeExecution';
 import { splitLines } from './sourceUtils';
 
 export const TRACEBACK_TIDLE_DECORATION_CLASSNAME =
   'squiggly-warning traceback-tilde';
+
+export const TRACEBACK_MESSAGE_DECORATION_CLASSNAME =
+  'squiggly-error traceback-message';
 
 function nicerTraceback(traceback: string) {
   // Hide the "driver" file.
@@ -38,12 +42,16 @@ function lineNumOfErrorThisCell(traceback: string[]) {
     : undefined;
 }
 
-export function addMarkers(
+/**
+ * Adds error annotations as decorations and a content widget.
+ * This function already adds the decorations and the widget to the editor.
+ */
+export function addErrorAnnotations(
   monaco: Monaco,
   editor: EditorNamespace.IStandaloneCodeEditor,
   executionResponse: CompletedExecutionResponse,
   firstLineNumber: number,
-): boolean {
+): ErrorMessageWidget | null {
   const traceback = nicerTraceback(executionResponse.stderr);
   const tracebackLines = splitLines(traceback);
   const lineNumberInfo = lineNumOfErrorThisCell(tracebackLines);
@@ -61,7 +69,7 @@ export function addMarkers(
     const validCaret =
       caretData !== undefined &&
       Array.from(caretData).every((c) => c === ' ' || c === '^' || c === '~');
-    // Create a marker for the ^^^ part
+    // Create a widget for the ^^^ part
     const firstCaret = validCaret ? caretData.indexOf('^') : undefined;
     const lastCaret = validCaret ? caretData.lastIndexOf('^') : undefined;
     const caretBegin =
@@ -76,13 +84,16 @@ export function addMarkers(
     const errorMessage = Array.from(
       traceback.matchAll(/ {2}.*\n(.*:.*)\n/g),
     ).pop();
-    const marker = {
-      message: errorMessage?.at(1) || 'Error (check the traceback)',
-      severity: monaco.MarkerSeverity.Error,
-      startLineNumber: currentCellLineIdx,
-      startColumn: caretBegin + 1,
-      endLineNumber: currentCellLineIdx,
-      endColumn: caretEnd + 2,
+    const message = errorMessage?.at(1) || 'Error (check the traceback)';
+    const lineNumber = currentCellLineIdx;
+    const startColumn = caretBegin + 1;
+    const endColumn = caretEnd + 2;
+    const mainDecoration = {
+      range: new monaco.Range(lineNumber, startColumn, lineNumber, endColumn),
+      options: {
+        className: TRACEBACK_MESSAGE_DECORATION_CLASSNAME,
+        hoverMessage: { value: message },
+      },
     };
     // Create decorations for each possible ~~~ chunk.
     const decorations = Array.from((caretData || '').matchAll(/~+/g)).map(
@@ -91,9 +102,9 @@ export function addMarkers(
         const end = begin + match[0].length;
         return {
           range: new monaco.Range(
-            currentCellLineIdx,
+            lineNumber,
             begin + leadingSpaces + 1,
-            currentCellLineIdx,
+            lineNumber,
             end + leadingSpaces + 1,
           ),
           options: {
@@ -102,11 +113,17 @@ export function addMarkers(
         };
       },
     );
-    editor.createDecorationsCollection(decorations);
-    monaco.editor.setModelMarkers(model, 'owner', [marker]);
-    return true;
+    editor.createDecorationsCollection([mainDecoration, ...decorations]);
+    const widget = new ErrorMessageWidget(
+      monaco,
+      editor,
+      lineNumber,
+      startColumn,
+      message,
+    );
+    return widget;
   }
-  return false;
+  return null;
 }
 
 function stderrLines(content: string) {

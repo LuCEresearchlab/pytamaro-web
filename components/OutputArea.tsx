@@ -200,6 +200,8 @@ function SinglePreElement({
   );
 }
 
+export const ERROR_MESSAGE_CLASSNAME = 'traceback-error-message';
+
 function CodeElement({ content }: { content: string }) {
   const [showAllStackFrames, setShowAllStackFrames] = useState(false);
 
@@ -229,7 +231,14 @@ function CodeElement({ content }: { content: string }) {
           </Collapse>
         </div>
       )}
-      <SinglePreElement style={{ fontWeight: 'bold' }} lines={errorLines} />
+      <div className={ERROR_MESSAGE_CLASSNAME}>
+        <SinglePreElement
+          style={{
+            fontWeight: 'bold',
+          }}
+          lines={errorLines}
+        />
+      </div>
     </div>
   );
 }
@@ -300,7 +309,7 @@ function PreviousCellsErrorAlert({
           onClick={() => {
             document
               .querySelector(
-                '.pytamaro-web-code-cell:has(.monaco-editor .zone-widget)',
+                '.pytamaro-web-code-cell:has(.monaco-editor-overlaymessage)',
               )
               ?.scrollIntoView({
                 behavior: 'smooth',

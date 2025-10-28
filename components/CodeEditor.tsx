@@ -11,11 +11,13 @@ import {
 } from '../src/monacoSuggestions';
 import { analyze, ParseError } from '../src/python-analyzer/python_analyzer';
 import {
-  addMarkers,
+  addErrorAnnotations,
+  TRACEBACK_MESSAGE_DECORATION_CLASSNAME,
   TRACEBACK_TIDLE_DECORATION_CLASSNAME,
 } from '../src/pythonTraceback';
 import scrollToAnchor from '../src/scrollToAnchor';
 import theme from '../src/theme';
+import { ErrorMessageWidget } from './editor/ErrorMessageWidget';
 import {
   registerCustomPythonLanguage,
   STRICT_PYTHON3_LANG_ID,
@@ -40,7 +42,6 @@ export default function CodeEditor({
   executionFinished = false,
   firstLineNumber = 1,
   readOnly = false,
-  collapsedErrorMarkers = false,
   resetCounter = 0,
 }: {
   initialSource: string;
@@ -52,7 +53,6 @@ export default function CodeEditor({
   executionFinished?: boolean;
   firstLineNumber?: number;
   readOnly?: boolean;
-  collapsedErrorMarkers?: boolean;
   resetCounter?: number;
 }) {
   const { list } = useLocalToolbox();
@@ -66,7 +66,7 @@ export default function CodeEditor({
   const [executionAllowedCondition, setExecutionAllowedCondition] =
     useState<EditorNamespace.IContextKey<boolean> | null>(null);
   const toolboxFunctions = list();
-  const [executionMarkers, setExecutionMarkers] = useState(false);
+  const errorWidgetRef = useRef<ErrorMessageWidget | null>(null);
 
   const handleEditorMount = (
     editor: EditorNamespace.IStandaloneCodeEditor,
@@ -119,14 +119,10 @@ export default function CodeEditor({
     }
   };
 
-  const clearMarkers = useCallback(() => {
-    if (monacoInstance && editorInstance && executionMarkers) {
-      // Delete all the markers
-      monacoInstance.editor.setModelMarkers(
-        editorInstance.getModel(),
-        'owner',
-        [],
-      );
+  const clearAnnotations = useCallback(() => {
+    if (monacoInstance && editorInstance && errorWidgetRef.current) {
+      // Dispose the error widget
+      errorWidgetRef.current.dispose();
       // Delete all the decorations
       const entireRange = editorInstance.getModel()?.getFullModelRange();
       const decorations = entireRange
@@ -134,24 +130,14 @@ export default function CodeEditor({
             .getDecorationsInRange(entireRange)
             ?.filter(
               (d) =>
-                d.options.className === TRACEBACK_TIDLE_DECORATION_CLASSNAME,
+                d.options.className === TRACEBACK_TIDLE_DECORATION_CLASSNAME ||
+                d.options.className === TRACEBACK_MESSAGE_DECORATION_CLASSNAME,
             )
             .map((d) => d.id)
         : [];
       editorInstance.removeDecorations(decorations || []);
-      // Close any open markers
-      // We do this using MarkerController directly to explicitly avoid focusing the editor,
-      // as another editor might have the focus and should not lose it.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const markerController: any = editorInstance.getContribution(
-        'editor.contrib.markerController',
-      );
-      if (markerController?.close) {
-        markerController.close(false); // false: do not focus
-      }
-      setExecutionMarkers(false);
     }
-  }, [monacoInstance, editorInstance, executionMarkers]);
+  }, [monacoInstance, editorInstance]);
 
   // Effect to update the condition that determines whether the code execution is allowed or not.
   useEffect(() => {
@@ -221,28 +207,16 @@ export default function CodeEditor({
   // Effect to react to changes in the execution response.
   useEffect(() => {
     if (monacoInstance && editorInstance) {
-      clearMarkers();
+      clearAnnotations();
       if (executionResponse?.type === 'error' && executionFinished) {
-        const markersAdded = addMarkers(
+        const errorWidget = addErrorAnnotations(
           monacoInstance,
           editorInstance,
           executionResponse,
           firstLineNumber,
         );
-        if (markersAdded) {
-          setExecutionMarkers(true);
-          // Some (other) editor could have the focus. Do not trigger the "go to
-          // next marker" action in that case, as it would steal the cursor from
-          // the other editor where the user is typing.
-          const someEditorFocused = document.activeElement?.classList.contains(
-            'monaco-mouse-cursor-text',
-          );
-          const otherEditorFocused =
-            someEditorFocused &&
-            !containerRef.current?.contains(document.activeElement);
-          if (!collapsedErrorMarkers && !otherEditorFocused) {
-            editorInstance.trigger('', 'editor.action.marker.next', {});
-          }
+        if (errorWidget) {
+          errorWidgetRef.current = errorWidget;
         }
       }
     }
@@ -250,10 +224,9 @@ export default function CodeEditor({
     executionResponse,
     editorInstance,
     monacoInstance,
-    clearMarkers,
+    clearAnnotations,
     executionFinished,
     firstLineNumber,
-    collapsedErrorMarkers,
   ]);
 
   // Effect to reset the editor when resetCounter changes.
@@ -290,7 +263,7 @@ export default function CodeEditor({
   const handleSourceChanged = debounce((newSource: string | undefined) => {
     if (newSource !== undefined) {
       onChange(newSource);
-      clearMarkers();
+      clearAnnotations();
       setParseErrorMarkers(analyze(newSource).parse_errors);
     }
   }, 50);
@@ -312,7 +285,6 @@ export default function CodeEditor({
           renderLineHighlight: 'none',
           overviewRulerLanes: 0,
           scrollBeyondLastLine: false,
-          fixedOverflowWidgets: true,
           scrollbar: {
             vertical: 'hidden',
             handleMouseWheel: false,

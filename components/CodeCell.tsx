@@ -109,7 +109,8 @@ export default function CodeCell({
           extraDocumentation={extraDocumentation}
         />
       )}
-      <Card>
+      {/* Overflow to allow for overflowed widgets in a CodeEditor */}
+      <Card sx={{ overflow: 'visible' }}>
         <CardContent>
           <CodeEditor
             initialSource={initialSource}
@@ -121,7 +122,6 @@ export default function CodeCell({
             firstLineNumber={firstLineNumber}
             readOnly={readOnly}
             executionResponse={executionResponse}
-            collapsedErrorMarkers={outputHidden}
             resetCounter={resetCounter}
           />
         </CardContent>

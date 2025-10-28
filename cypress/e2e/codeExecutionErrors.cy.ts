@@ -8,31 +8,35 @@ import {
 } from '../support/utils';
 
 describe('Code Execution Errors', () => {
-  it('should show errors with monaco marker', () => {
+  it('should show error with a monaco widget', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();
     cy.get('.monaco-editor').first().type('{selectall}{backspace}');
     cy.get('.monaco-editor').first().type('print(a)');
     cy.get('.run-button').first().click();
-    cy.get('.peekview-widget').should('be.visible').contains('NameError');
+    cy.get('.monaco-editor-overlaymessage')
+      .should('be.visible')
+      .contains('NameError');
     cy.get('.squiggly-error').should('be.visible');
     cy.get('.output-area').should('be.empty');
     cy.get('.output-area').parent().contains('NameError');
   });
 
-  it('should hide markers when the code changes', () => {
+  it('should hide annotations when the code changes', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();
     cy.get('.monaco-editor').first().type('{selectall}{backspace}');
     cy.get('.monaco-editor').first().type('print(a)');
     cy.get('.run-button').first().click();
-    cy.get('.peekview-widget').should('be.visible').contains('NameError');
+    cy.get('.monaco-editor-overlaymessage')
+      .should('be.visible')
+      .contains('NameError');
     cy.get('.squiggly-error').should('be.visible');
-    // Cursor will be before `a`
-    cy.get('.monaco-editor textarea:first').type('{rightarrow}{backspace}');
-    cy.get('.peekview-widget').should('not.exist');
+    cy.get('.monaco-editor textarea:first').focus();
+    cy.get('.monaco-editor').first().type('{leftarrow}{backspace}');
+    cy.get('.monaco-editor-overlaymessage').should('not.exist');
     cy.get('.squiggly-error').should('not.exist');
   });
 
@@ -67,7 +71,9 @@ describe('Code Execution Errors', () => {
     cy.get('.monaco-editor').eq(1).type('{selectall}{backspace}');
     cy.get('.monaco-editor').eq(1).type('print(b)');
     cy.get('.run-button').eq(1).click();
-    cy.get('.peekview-widget').should('be.visible').contains('NameError');
+    cy.get('.monaco-editor-overlaymessage')
+      .should('be.visible')
+      .contains('NameError');
     cy.get('.monaco-editor')
       .first()
       .should((editor) => {
@@ -107,7 +113,9 @@ describe('Code Execution Errors', () => {
     cy.get('.monaco-editor').eq(1).type('{selectall}{backspace}');
     cy.get('.monaco-editor').eq(1).type('f()');
     cy.get('.run-button').eq(1).click();
-    cy.get('.peekview-widget').should('be.visible').contains('NameError');
+    cy.get('.monaco-editor-overlaymessage')
+      .should('be.visible')
+      .contains('NameError');
     cy.get('.output-area').parent().contains('NameError');
   });
 });
