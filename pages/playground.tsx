@@ -32,6 +32,7 @@ import SolitaryCodeCell, {
 import getActivitiesWithAPIs, {
   ActivityVariantWithNames,
 } from '../src/activitiesAPIs';
+import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import {
   playgroundActivityVariant,
@@ -51,41 +52,18 @@ const FullWidthAlert = styled(Alert)<AlertProps>(() => ({
   },
 }));
 
-export default function Playground({
-  activitiesWithNames,
+function PlaygroundReset({
+  initialCodeCells,
+  newReset,
 }: {
-  activitiesWithNames: ActivityVariantWithNames[];
+  initialCodeCells: CodeCellState[];
+  newReset: () => void;
 }) {
-  const [initialSource, setInitialSource] = useState(playgroundInitialSource);
-
-  const localActivity = useLocalActivity(
-    initialStateSingleCell(initialSource),
+  const { handleResetAllCellsNoConfirm, cellsModified } = useLocalActivity(
+    initialCodeCells,
     playgroundActivityVariant,
   );
-
-  const {
-    codeCells,
-    codeExecutionStates,
-    cellsModified,
-    executionFailed,
-    sourcesUpTo,
-    handleResetAllCellsNoConfirm,
-    handleToggleOutputArea,
-    handleResetSingleCell,
-  } = localActivity;
-  const { outputSynced } = codeExecutionStates[0];
-
-  const [recommendedActivities, setRecommendedActivities] = useState<
-    ActivityVariantWithNames[]
-  >([]);
-
-  const [showRecommendedActivities, setShowRecommendedActivities] =
-    useState(true);
-
   const confirm = useConfirm();
-
-  const { resetCounter, newReset } = useReset();
-
   const handleReset = () => {
     confirm({
       description:
@@ -97,6 +75,44 @@ export default function Playground({
     });
   };
 
+  return (
+    <ResetButton
+      enabled={cellsModified}
+      onReset={handleReset}
+      tooltip='Reset Playground'
+    />
+  );
+}
+
+function PlaygroundCodeCell({
+  initialCodeCells,
+  resetCounter,
+  newReset,
+  fullWidthCell,
+  setFullWidthCell,
+  setInitialSource,
+}: {
+  initialCodeCells: CodeCellState[];
+  resetCounter: number;
+  newReset: () => void;
+  fullWidthCell: boolean;
+  setFullWidthCell: (fullWidth: boolean) => void;
+  setInitialSource: (newSource: string) => void;
+}) {
+  const localActivity = useLocalActivity(
+    initialCodeCells,
+    playgroundActivityVariant,
+  );
+  const {
+    codeCells,
+    codeExecutionStates,
+    executionFailed,
+    sourcesUpTo,
+    handleToggleOutputArea,
+    handleResetSingleCell,
+    handleResetAllCellsNoConfirm,
+  } = localActivity;
+  const confirm = useConfirm();
   const { query } = useRouter();
   const codeFromQuery = query?.code;
   useEffect(
@@ -130,8 +146,68 @@ export default function Playground({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [codeFromQuery],
   );
+  const updateQueryString = useMemo(
+    () =>
+      debounce((newSource: string) => {
+        const newCode = Buffer.from(newSource, 'utf-8').toString('base64');
+        const newQuery = { ...query, code: newCode };
+        window.history.replaceState(
+          {},
+          '',
+          `?${new URLSearchParams(newQuery)}`,
+        );
+      }, 1000),
+    [query],
+  );
 
-  const [fullWidthCell, setFullWidthCell] = useState(false);
+  return (
+    <>
+      {executionFailed && <FailedExecutionSnackbar res={executionFailed} />}
+      <SolitaryCodeCell
+        resetCounter={resetCounter}
+        activity={localActivity}
+        activityVariant={playgroundActivityVariant}
+        postSourceChange={updateQueryString}
+        extraActions={
+          <>
+            <SaveToToolboxButton
+              sources={sourcesUpTo(0)}
+              originalActivity={playgroundActivityVariant}
+            />
+            <MoreOptionsButton
+              codeCellState={codeCells[0]}
+              codeCellExecutionState={codeExecutionStates[0]}
+              onShowHideOutput={() => handleToggleOutputArea(0)}
+              onReset={() => handleResetSingleCell(0, newReset)}
+              fullWidthCell={fullWidthCell}
+              onFullWidthToggle={() => setFullWidthCell(!fullWidthCell)}
+            />
+          </>
+        }
+      />
+    </>
+  );
+}
+
+function RecommendedActivities({
+  activitiesWithNames,
+  initialCodeCells,
+}: {
+  activitiesWithNames: ActivityVariantWithNames[];
+  initialCodeCells: CodeCellState[];
+}) {
+  const [recommendedActivities, setRecommendedActivities] = useState<
+    ActivityVariantWithNames[]
+  >([]);
+
+  const [showRecommendedActivities, setShowRecommendedActivities] =
+    useState(true);
+
+  const { codeCells, codeExecutionStates } = useLocalActivity(
+    initialCodeCells,
+    playgroundActivityVariant,
+  );
+  const { outputSynced } = codeExecutionStates[0];
 
   useEffect(() => {
     if (outputSynced) {
@@ -161,19 +237,60 @@ export default function Playground({
     }
   }, [outputSynced, activitiesWithNames, codeCells]);
 
-  const updateQueryString = useMemo(
-    () =>
-      debounce((newSource: string) => {
-        const newCode = Buffer.from(newSource, 'utf-8').toString('base64');
-        const newQuery = { ...query, code: newCode };
-        window.history.replaceState(
-          {},
-          '',
-          `?${new URLSearchParams(newQuery)}`,
-        );
-      }, 1000),
-    [query],
+  return (
+    showRecommendedActivities &&
+    recommendedActivities.length > 0 && (
+      <FullWidthAlert
+        icon={<TipsAndUpdatesIcon fontSize='inherit' />}
+        onClose={() => {
+          setShowRecommendedActivities(false);
+        }}
+        severity='info'
+        sx={{
+          marginTop: 8,
+          backgroundColor: 'rgba(255, 255, 255, 0.5)',
+        }}
+      >
+        <AlertTitle>Try out these activities!</AlertTitle>
+        <Typography variant='body1' gutterBottom>
+          Based on your code, these are recommended activites you can try to do
+          next:
+        </Typography>
+        <ActivitiesStripe activities={recommendedActivities} />
+      </FullWidthAlert>
+    )
   );
+}
+
+function PlaygroundCodeDownloadButton({
+  initialCodeCells,
+}: {
+  initialCodeCells: CodeCellState[];
+}) {
+  const localActivity = useLocalActivity(
+    initialCodeCells,
+    playgroundActivityVariant,
+  );
+  const { codeCells } = localActivity;
+  return (
+    <Box sx={{ display: 'flex', marginTop: 12 }} justifyContent='center'>
+      <DownloadCodeButton codeCells={codeCells} />
+    </Box>
+  );
+}
+
+export default function Playground({
+  activitiesWithNames,
+}: {
+  activitiesWithNames: ActivityVariantWithNames[];
+}) {
+  const [initialSource, setInitialSource] = useState(playgroundInitialSource);
+
+  const initialCodeCells = initialStateSingleCell(initialSource);
+
+  const { resetCounter, newReset } = useReset();
+
+  const [fullWidthCell, setFullWidthCell] = useState(false);
 
   return (
     <div>
@@ -182,13 +299,11 @@ export default function Playground({
       </Head>
       <Box>
         <NavigationBar>
-          <ResetButton
-            enabled={cellsModified}
-            onReset={handleReset}
-            tooltip='Reset Playground'
+          <PlaygroundReset
+            initialCodeCells={initialCodeCells}
+            newReset={newReset}
           />
         </NavigationBar>
-        {executionFailed && <FailedExecutionSnackbar res={executionFailed} />}
         <DataSharingPreferenceDialog />
         <Grid container>
           <Sidebar side='left'>
@@ -197,57 +312,23 @@ export default function Playground({
           <CentralContent>
             <PageTitle>Playground</PageTitle>
             <Container maxWidth={fullWidthCell ? false : 'md'}>
-              <SolitaryCodeCell
+              <PlaygroundCodeCell
+                initialCodeCells={initialCodeCells}
                 resetCounter={resetCounter}
-                activity={localActivity}
-                activityVariant={playgroundActivityVariant}
-                postSourceChange={updateQueryString}
-                extraActions={
-                  <>
-                    <SaveToToolboxButton
-                      sources={sourcesUpTo(0)}
-                      originalActivity={playgroundActivityVariant}
-                    />
-                    <MoreOptionsButton
-                      codeCellState={codeCells[0]}
-                      codeCellExecutionState={codeExecutionStates[0]}
-                      onShowHideOutput={() => handleToggleOutputArea(0)}
-                      onReset={() => handleResetSingleCell(0, newReset)}
-                      fullWidthCell={fullWidthCell}
-                      onFullWidthToggle={() => setFullWidthCell(!fullWidthCell)}
-                    />
-                  </>
-                }
+                newReset={newReset}
+                fullWidthCell={fullWidthCell}
+                setFullWidthCell={setFullWidthCell}
+                setInitialSource={setInitialSource}
               />
             </Container>
             <Container maxWidth='md'>
-              <Box
-                sx={{ display: 'flex', marginTop: 12 }}
-                justifyContent='center'
-              >
-                <DownloadCodeButton codeCells={codeCells} />
-              </Box>
-              {showRecommendedActivities &&
-                recommendedActivities.length > 0 && (
-                  <FullWidthAlert
-                    icon={<TipsAndUpdatesIcon fontSize='inherit' />}
-                    onClose={() => {
-                      setShowRecommendedActivities(false);
-                    }}
-                    severity='info'
-                    sx={{
-                      marginTop: 8,
-                      backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                    }}
-                  >
-                    <AlertTitle>Try out these activities!</AlertTitle>
-                    <Typography variant='body1' gutterBottom>
-                      Based on your code, these are recommended activites you
-                      can try to do next:
-                    </Typography>
-                    <ActivitiesStripe activities={recommendedActivities} />
-                  </FullWidthAlert>
-                )}
+              <PlaygroundCodeDownloadButton
+                initialCodeCells={initialCodeCells}
+              />
+              <RecommendedActivities
+                activitiesWithNames={activitiesWithNames}
+                initialCodeCells={initialCodeCells}
+              />
             </Container>
           </CentralContent>
           <Sidebar side='right' />
