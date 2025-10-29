@@ -5,12 +5,12 @@ import {
   CardActions,
   CardContent,
   Container,
+  Link,
   Stack,
   Typography,
 } from '@mui/material';
 import Head from 'next/head';
 import Image from 'next/image';
-import Link from 'next/link';
 import ActivityConcepts from '../../../../components/ActivityConcepts';
 import ActivityAuthorInfo from '../../../../components/AttributionInfo';
 import CurriculaList from '../../../../components/CurriculaList';
