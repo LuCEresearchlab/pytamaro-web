@@ -83,7 +83,7 @@ export default function ActivityInfoPage({
               }}
             />
           </div>
-          <Typography variant='h4' marginY={3}>
+          <Typography variant='h4' marginTop={4} marginBottom={2}>
             Author & License
           </Typography>
           <ActivityAuthorInfo
@@ -93,16 +93,16 @@ export default function ActivityInfoPage({
           />
           {activity.concepts.length > 0 && (
             <>
-              <Typography variant='h4' marginY={3}>
+              <Typography variant='h4' marginTop={4} marginBottom={2}>
                 Concepts
               </Typography>
               <ActivityConcepts concepts={activity.concepts} />
             </>
           )}
-          <Typography variant='h4' marginY={3}>
+          <Typography variant='h4' marginTop={4} marginBottom={2}>
             Languages
           </Typography>
-          <Typography variant='body1' marginTop={3}>
+          <Typography variant='body1'>
             This activity is
             {activity.visibility === 'draft'
               ? ' under development '
@@ -132,10 +132,10 @@ export default function ActivityInfoPage({
           </ul>
           {includingCurricula.length > 0 && (
             <>
-              <Typography variant='h4' marginY={3}>
+              <Typography variant='h4' marginTop={4} marginBottom={2}>
                 Curricula
               </Typography>
-              <Typography variant='body1' marginY={3}>
+              <Typography variant='body1' marginBottom={2}>
                 {`${format(includingCurricula.length, 'curriculum includes', 'curricula include')} this activity:`}
               </Typography>
               <CurriculaList curricula={includingCurricula} />
@@ -143,10 +143,10 @@ export default function ActivityInfoPage({
           )}
           {uses.length > 0 && (
             <>
-              <Typography variant='h4' marginY={3}>
+              <Typography variant='h4' marginTop={4} marginBottom={2}>
                 Uses
               </Typography>
-              <Typography variant='body1' marginY={3}>
+              <Typography variant='body1' marginBottom={3}>
                 {`This activity has been used in ${format(uses.length, 'course', 'courses')}:`}
               </Typography>
               <Stack spacing={2}>
