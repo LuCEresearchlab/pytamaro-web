@@ -141,17 +141,11 @@ export default function ActivityInfoPage({
               <CurriculaList curricula={includingCurricula} />
             </>
           )}
-          <Typography variant='h4' marginY={3}>
-            Uses
-          </Typography>
-          {uses.length === 0 && (
-            <Typography variant='body1' marginY={3}>
-              We do not currently have information about courses using this
-              activity.
-            </Typography>
-          )}
           {uses.length > 0 && (
             <>
+              <Typography variant='h4' marginY={3}>
+                Uses
+              </Typography>
               <Typography variant='body1' marginY={3}>
                 {`This activity has been used in ${format(uses.length, 'course', 'courses')}:`}
               </Typography>
