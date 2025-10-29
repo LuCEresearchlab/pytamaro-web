@@ -58,8 +58,8 @@
     "redis": "^4.5.1",
     "remark-gfm": "^4.0.1",
     "sharp": "^0.32.6",
-    "use-local-storage-state": "^18.3.3",
-    "use-session-storage-state": "^18.2.0",
+    "use-local-storage-state": "^19.5.0",
+    "use-session-storage-state": "^19.0.1",
     "uuid": "^9.0.0",
     "web-worker": "^1.2.0",
     "zustand": "^5.0.8"
