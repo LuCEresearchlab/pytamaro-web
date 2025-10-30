@@ -60,6 +60,8 @@ export type TextSpec = Colored & {
 export type ComposeSpec = {
   foreground: GraphicSpec;
   background: GraphicSpec;
+  foreground_pin?: Point;
+  background_pin?: Point;
   type: 'Compose';
 };
 
@@ -75,24 +77,6 @@ export type RotateSpec = {
   type: 'Rotate';
 };
 
-export type BesideSpec = {
-  left_graphic: GraphicSpec;
-  right_graphic: GraphicSpec;
-  type: 'Beside';
-};
-
-export type AboveSpec = {
-  top_graphic: GraphicSpec;
-  bottom_graphic: GraphicSpec;
-  type: 'Above';
-};
-
-export type OverlaySpec = {
-  front_graphic: GraphicSpec;
-  back_graphic: GraphicSpec;
-  type: 'Overlay';
-};
-
 export type GraphicSpec =
   | EmptySpec
   | RectangleSpec
@@ -102,7 +86,4 @@ export type GraphicSpec =
   | TextSpec
   | ComposeSpec
   | PinSpec
-  | RotateSpec
-  | BesideSpec
-  | AboveSpec
-  | OverlaySpec;
+  | RotateSpec;
