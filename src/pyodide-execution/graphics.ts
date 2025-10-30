@@ -45,34 +45,33 @@ export function fromSpec(
       return new Pin(ck, typefaces, spec);
     case 'Rotate':
       return new Rotate(ck, typefaces, spec);
-    case 'Beside':
-      return new SimpleCompose(
-        ck,
-        typefaces,
-        spec.left_graphic,
-        spec.right_graphic,
-        { x: 1, y: 0 },
-        { x: -1, y: 0 },
-      );
-    case 'Above':
-      return new SimpleCompose(
-        ck,
-        typefaces,
-        spec.top_graphic,
-        spec.bottom_graphic,
-        { x: 0, y: -1 },
-        { x: 0, y: 1 },
-      );
-    case 'Overlay':
-      return new SimpleCompose(
-        ck,
-        typefaces,
-        spec.front_graphic,
-        spec.back_graphic,
-        { x: 0, y: 0 },
-        { x: 0, y: 0 },
-      );
+    default:
+      throw { spec };
   }
+}
+
+function relativeToAbsolutePoint(relPoint: Point, bounds: Rect): Point {
+  const { x: relX, y: relY } = relPoint;
+  const absX =
+    relX === -1
+      ? bounds[0]
+      : relX === 0
+        ? (bounds[0] + bounds[2]) / 2
+        : relX === 1
+          ? bounds[2]
+          : null;
+  const absY =
+    relY === -1
+      ? bounds[3]
+      : relY === 0
+        ? (bounds[3] + bounds[1]) / 2
+        : relY === 1
+          ? bounds[1]
+          : null;
+  if (absX === null || absY === null) {
+    throw new Error(`Invalid point ${relPoint}`);
+  }
+  return { x: absX, y: absY };
 }
 
 export abstract class Graphic {
@@ -243,6 +242,8 @@ class Text extends Graphic {
 class Compose extends Graphic {
   private readonly foreground: Graphic;
   private readonly background: Graphic;
+  private readonly fgPinPosition: Point;
+  private readonly bgPinPosition: Point;
 
   constructor(
     ck: CanvasKit,
@@ -252,15 +253,19 @@ class Compose extends Graphic {
     const foreground = fromSpec(ck, typefaces, spec.foreground);
     const background = fromSpec(ck, typefaces, spec.background);
 
-    const fgPin = foreground.pinPosition;
-    const bgPin = background.pinPosition;
+    const fgPinPosition = spec.foreground_pin
+      ? relativeToAbsolutePoint(spec.foreground_pin, foreground.bounds)
+      : foreground.pinPosition;
+    const bgPinPosition = spec.background_pin
+      ? relativeToAbsolutePoint(spec.background_pin, background.bounds)
+      : background.pinPosition;
     const fgOffsetMatrix = [
       1,
       0,
-      bgPin.x - fgPin.x,
+      bgPinPosition.x - fgPinPosition.x,
       0,
       1,
-      bgPin.y - fgPin.y,
+      bgPinPosition.y - fgPinPosition.y,
       0,
       0,
       1,
@@ -269,17 +274,19 @@ class Compose extends Graphic {
     const composedPath = new ck.Path()
       .addPath(background.path)!
       .addPath(foreground.path, fgOffsetMatrix, true)!;
-    super(composedPath, composedPath?.computeTightBounds(), bgPin);
+    super(composedPath, composedPath?.computeTightBounds(), bgPinPosition);
     this.background = background;
     this.foreground = foreground;
+    this.fgPinPosition = fgPinPosition;
+    this.bgPinPosition = bgPinPosition;
   }
 
   override draw(canvas: Canvas): void {
     canvas.save();
     this.background.draw(canvas);
     canvas.translate(
-      this.background.pinPosition.x - this.foreground.pinPosition.x,
-      this.background.pinPosition.y - this.foreground.pinPosition.y,
+      this.bgPinPosition.x - this.fgPinPosition.x,
+      this.bgPinPosition.y - this.fgPinPosition.y,
     );
     this.foreground.draw(canvas);
     canvas.restore();
@@ -297,31 +304,11 @@ class Pin extends Graphic {
 
   constructor(ck: CanvasKit, typefaces: Map<string, Typeface>, spec: PinSpec) {
     const graphic = fromSpec(ck, typefaces, spec.graphic);
-    const {
-      pinning_point: { x: pinX, y: pinY },
-    } = spec;
+    const { pinning_point } = spec;
     const bounds = graphic.bounds;
-    const x =
-      pinX === -1
-        ? bounds[0]
-        : pinX === 0
-          ? (bounds[0] + bounds[2]) / 2
-          : pinX === 1
-            ? bounds[2]
-            : null;
-    const y =
-      pinY === -1
-        ? bounds[3]
-        : pinY === 0
-          ? (bounds[1] + bounds[3]) / 2
-          : pinY === 1
-            ? bounds[1]
-            : null;
-    if (x === null || y === null) {
-      throw new Error(`Invalid pin point ${spec.pinning_point}`);
-    }
+    const pinPosition = relativeToAbsolutePoint(pinning_point, bounds);
 
-    super(graphic.path, bounds, { x, y });
+    super(graphic.path, bounds, pinPosition);
     this.graphic = graphic;
   }
 
@@ -371,50 +358,5 @@ class Rotate extends Graphic {
   override destroy(): void {
     this.graphic.destroy();
     super.destroy();
-  }
-}
-
-class SimpleCompose extends Graphic {
-  private readonly graphic: Graphic;
-
-  constructor(
-    ck: CanvasKit,
-    typefaces: Map<string, Typeface>,
-    firstGraphic: GraphicSpec,
-    secondGraphic: GraphicSpec,
-    firstPoint: Point,
-    secondPoint: Point,
-  ) {
-    const firstPin: PinSpec = {
-      pinning_point: firstPoint,
-      graphic: firstGraphic,
-      type: 'Pin',
-    };
-    const secondPin: PinSpec = {
-      pinning_point: secondPoint,
-      graphic: secondGraphic,
-      type: 'Pin',
-    };
-    const composed: ComposeSpec = {
-      foreground: firstPin,
-      background: secondPin,
-      type: 'Compose',
-    };
-    const composedCenter: PinSpec = {
-      pinning_point: { x: 0, y: 0 },
-      graphic: composed,
-      type: 'Pin',
-    };
-    const graphic = fromSpec(ck, typefaces, composedCenter);
-    super(graphic.path, graphic.bounds, graphic.pinPosition);
-    this.graphic = graphic;
-  }
-
-  override draw(canvas: Canvas): void {
-    this.graphic.draw(canvas);
-  }
-
-  override destroy(): void {
-    this.graphic.destroy();
   }
 }
