@@ -51,33 +51,21 @@ impl PythonName {
     }
 }
 
-struct ImportedNamesCollector {
+struct ImportsInfoCollector {
+    ranges: Vec<TextRange>,
     names: Vec<PythonName>,
 }
-impl StatementVisitor<'_> for ImportedNamesCollector {
+impl StatementVisitor<'_> for ImportsInfoCollector {
     fn visit_stmt(&mut self, node: &Stmt) {
         if let Stmt::ImportFrom(importnode) = node {
+            self.ranges.push(TextRange::from(importnode.range));
             if let Some(module) = &importnode.module {
-                for alias in &importnode.names {
-                    self.names.push(PythonName {
+                self.names
+                    .extend(importnode.names.iter().map(|alias| PythonName {
                         module: module.to_string(),
                         name: alias.name.to_string(),
-                    });
-                }
+                    }))
             }
-        }
-    }
-}
-
-#[derive(Clone, Eq, PartialEq, Debug)]
-pub struct ImportRangesVisitor {
-    pub ranges: Vec<TextRange>,
-}
-
-impl StatementVisitor<'_> for ImportRangesVisitor {
-    fn visit_stmt(&mut self, node: &Stmt) {
-        if let Stmt::ImportFrom(importnode) = node {
-            self.ranges.push(TextRange::from(importnode.range()));
         }
     }
 }
@@ -157,13 +145,13 @@ impl<'a> StatementVisitor<'a> for FunctionDefinitionsCollector<'a> {
                     .first()
                     .and_then(|stmt| {
                         if let Stmt::Expr(expr) = stmt {
-                            if let Expr::StringLiteral(strliteralnode) = expr.value.as_ref() {
-                                return Some(strliteralnode.value.to_str().to_string());
+                            if let Some(docstring) = extract_string_literal(expr.value.as_ref()) {
+                                return Some(docstring);
                             }
                         }
                         None
                     })
-                    .unwrap_or(String::new()),
+                    .unwrap_or_default(),
                 explicit_return: fndefnode
                     .body
                     .iter()
@@ -181,13 +169,21 @@ pub struct PythonConstant {
     pub docstring: String,
 }
 
-fn extract_docstring_from_next_stmt(stmt: Option<&Stmt>) -> String {
+fn extract_string_literal(expr: &Expr) -> Option<String> {
+    if let Expr::StringLiteral(str_lit) = expr {
+        Some(str_lit.value.to_str().to_string())
+    } else {
+        None
+    }
+}
+
+fn extract_docstring_from_next_stmt(stmt: Option<&Stmt>) -> Option<String> {
     if let Some(Stmt::Expr(StmtExpr { value, .. })) = stmt {
-        if let Expr::StringLiteral(strliteralnode) = value.as_ref() {
-            return strliteralnode.value.to_str().to_string();
+        if let Some(docstring) = extract_string_literal(value.as_ref()) {
+            return Some(docstring);
         }
     }
-    String::new()
+    None
 }
 
 struct ConstantDefinitionsCollector<'a> {
@@ -203,7 +199,8 @@ impl<'a> StatementVisitor<'a> for ConstantDefinitionsCollector<'a> {
                         self.constants.push(PythonConstant {
                             name: namenode.id.to_string(),
                             type_str: String::new(),
-                            docstring: extract_docstring_from_next_stmt(body.get(i + 1)),
+                            docstring: extract_docstring_from_next_stmt(body.get(i + 1))
+                                .unwrap_or_default(),
                         });
                     }
                 }
@@ -213,7 +210,8 @@ impl<'a> StatementVisitor<'a> for ConstantDefinitionsCollector<'a> {
                     self.constants.push(PythonConstant {
                         name: namenode.id.to_string(),
                         type_str: expr_source(&annassignnode.annotation, self.source),
-                        docstring: extract_docstring_from_next_stmt(body.get(i + 1)),
+                        docstring: extract_docstring_from_next_stmt(body.get(i + 1))
+                            .unwrap_or_default(),
                     });
                 }
             }
@@ -221,27 +219,19 @@ impl<'a> StatementVisitor<'a> for ConstantDefinitionsCollector<'a> {
     }
 }
 
-struct CalledNamesCollector {
-    names: Vec<String>,
+struct ExprInfoCollector {
+    called_names: Vec<String>,
+    ellipsis_found: bool,
 }
-impl Visitor<'_> for CalledNamesCollector {
-    fn visit_expr(&mut self, node: &Expr) {
-        if let Expr::Call(callnode) = node {
-            if let Expr::Name(name) = &*callnode.func {
-                self.names.push(name.id.to_string());
-            }
-        }
-        visitor::walk_expr(self, node);
-    }
-}
-
-struct EllipsisFinder {
-    found: bool,
-}
-impl Visitor<'_> for EllipsisFinder {
+impl Visitor<'_> for ExprInfoCollector {
     fn visit_expr(&mut self, node: &Expr) {
         if node.is_ellipsis_literal_expr() {
-            self.found = true;
+            self.ellipsis_found = true;
+        }
+        if let Expr::Call(callnode) = node {
+            if let Expr::Name(name) = &*callnode.func {
+                self.called_names.push(name.id.to_string());
+            }
         }
         visitor::walk_expr(self, node);
     }
@@ -278,10 +268,13 @@ pub fn analyze(python_source: &str) -> AnalysisResult {
         })
         .collect();
     let stmts = parsed.into_syntax().expect_module().body;
-    let imported_names = {
-        let mut collector = ImportedNamesCollector { names: Vec::new() };
+    let imports_info = {
+        let mut collector = ImportsInfoCollector {
+            ranges: Vec::new(),
+            names: Vec::new(),
+        };
         collector.visit_body(&stmts);
-        collector.names
+        collector
     };
     let defined_functions = {
         let mut collector = FunctionDefinitionsCollector {
@@ -299,28 +292,21 @@ pub fn analyze(python_source: &str) -> AnalysisResult {
         collector.visit_body(&stmts);
         collector.constants
     };
-    let called_names = {
-        let mut collector = CalledNamesCollector { names: Vec::new() };
+    let expressions_info = {
+        let mut collector = ExprInfoCollector {
+            called_names: Vec::new(),
+            ellipsis_found: false,
+        };
         collector.visit_body(&stmts);
-        collector.names
-    };
-    let has_ellipsis = {
-        let mut finder = EllipsisFinder { found: false };
-        finder.visit_body(&stmts);
-        finder.found
-    };
-    let import_ranges = {
-        let mut visitor = ImportRangesVisitor { ranges: Vec::new() };
-        visitor.visit_body(&stmts);
-        visitor.ranges
+        collector
     };
     AnalysisResult {
-        imported_names,
+        import_ranges: imports_info.ranges,
+        imported_names: imports_info.names,
         defined_functions,
         defined_constants,
-        called_names,
-        has_ellipsis,
-        import_ranges,
+        called_names: expressions_info.called_names,
+        has_ellipsis: expressions_info.ellipsis_found,
         parse_errors,
     }
 }
