@@ -11,7 +11,7 @@ import {
   displayErrorCategory,
   ErrorCategory,
   removeRedundantCategory,
-  simplifyLiterals,
+  simplifyTypes,
 } from './errors';
 
 const STATIC_ERROR_MESSAGE_ID = 'static-error-message-widget';
@@ -108,7 +108,7 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
 
     const messageContent = document.createElement('span');
     messageContent.innerHTML = convertMarkdownToCodeTag(
-      removeRedundantCategory(simplifyLiterals(content)),
+      removeRedundantCategory(simplifyTypes(content)),
     );
     message.appendChild(messageContent);
 

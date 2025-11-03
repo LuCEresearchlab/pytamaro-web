@@ -1,4 +1,4 @@
-export function simplifyLiterals(message: string) {
+export function simplifyTypes(message: string) {
   // Ty supports IntLiteral, BooleanLiteral, StringLiteral, BytesLiteral, EnumLiteral.
   // See https://github.com/astral-sh/ruff/blob/bff32a41dc440b30764e9414767794e01d25c265/crates/ty_python_semantic/src/types/display.rs#L252-L258
   // The first three are common even in student code, so we simplify them here
@@ -11,6 +11,8 @@ export function simplifyLiterals(message: string) {
       .replaceAll(/`Literal\[(True|False)\]`/g, '`bool`')
       // StringLiteral (`Literal['abc']` -> `str`)
       .replaceAll(/`Literal\["(.*?)"\]`/g, '`str`')
+      // Moreover, we simplify `EllipsisType` to `...` to avoid confusion with PyTamaro's ellipse function and match the source code.
+      .replaceAll(/`EllipsisType`/g, '`...`')
   );
 }
 
