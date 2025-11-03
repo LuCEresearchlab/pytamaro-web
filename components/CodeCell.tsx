@@ -25,6 +25,7 @@ import {
   PythonFile,
 } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
+import usePythonAnalyzer from '../src/usePythonAnalyzer';
 import { EllipsisTip, InputTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
 import ExecutionOutputArea from './OutputArea';
@@ -55,6 +56,7 @@ export default function CodeCell({
   sourcesUpTo,
   platformConfig,
   resetCounter,
+  pythonAnalyzer,
   extraPythonFiles = [],
   extraActions = null,
   readOnly = false,
@@ -70,6 +72,7 @@ export default function CodeCell({
   sourcesUpTo: string[];
   platformConfig: PlatformConfiguration;
   resetCounter: number;
+  pythonAnalyzer: ReturnType<typeof usePythonAnalyzer>;
   extraPythonFiles?: PythonFile[];
   extraActions?: React.ReactNode;
   readOnly?: boolean;
@@ -123,6 +126,7 @@ export default function CodeCell({
             readOnly={readOnly}
             executionResponse={executionResponse}
             resetCounter={resetCounter}
+            pythonAnalyzer={pythonAnalyzer}
           />
         </CardContent>
         <CardActions disableSpacing sx={{ paddingLeft: 2, display: 'flex' }}>

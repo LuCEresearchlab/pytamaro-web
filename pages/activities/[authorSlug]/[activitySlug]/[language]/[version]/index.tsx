@@ -32,6 +32,7 @@ import {
   listCurriculaAllAuthors,
 } from '../../../../../../src/fs-content/authors';
 import { CodeCellState } from '../../../../../../src/localStorage/schema';
+import useLocalProfile from '../../../../../../src/localStorage/useLocalProfile';
 import getNotebookContent from '../../../../../../src/notebook';
 import {
   Activity,
@@ -82,7 +83,8 @@ export default function NotebookPage({
 
   const cellsRef = useRef<HTMLDivElement>(null);
 
-  const [fullWidthCell, setFullWidthCell] = useState(false);
+  const { metadata } = useLocalProfile();
+  const { wideEditor } = metadata;
 
   const curriculumId = useCurriculumFromQuery();
   const curriculum = curricula.find((c) => curriculumToId(c) === curriculumId);
@@ -162,18 +164,13 @@ export default function NotebookPage({
                     />
                   </Container>
                 ) : (
-                  <Container
-                    maxWidth={fullWidthCell ? false : 'md'}
-                    key={cell.id}
-                  >
+                  <Container maxWidth={wideEditor ? false : 'md'} key={cell.id}>
                     <ActivityCodeCell
                       activityVariant={activityVariant}
                       initialCodeCells={initialCodeCells}
                       cellIdx={originalIdxToCodeCellIdx.get(idx) as number}
                       extraPythonFiles={activity.extraPythonFiles}
-                      fullWidthCell={fullWidthCell}
                       platformConfig={activity.platformConfig}
-                      onFullWidthToggle={() => setFullWidthCell(!fullWidthCell)}
                       activityResetCounter={resetCounter}
                     />
                   </Container>

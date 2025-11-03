@@ -3,7 +3,7 @@ import { changelogEntries } from '../../components/ChangelogList';
 import { type ExecutionResponse } from '../codeExecution';
 import { ActivityVariant } from '../schemas/activitySchema';
 
-export const CURRENT_VERSION = '7';
+export const CURRENT_VERSION = '8';
 
 export interface Metadata {
   dataModelVersion: string;
@@ -16,6 +16,8 @@ export interface Metadata {
   platformLocale: string | null; // null means not explicitly chosen
   docs: DocsMetadata;
   lastNotificationSeen: number;
+  semanticChecksEnabled: boolean;
+  wideEditor: boolean;
 }
 
 export interface DocsMetadata {
@@ -110,5 +112,7 @@ export function getDefaultMetadata(): Metadata {
     platformLocale: null,
     docs: defaultDocsMetadata(),
     lastNotificationSeen: changelogEntries.length - 1,
+    semanticChecksEnabled: false,
+    wideEditor: false,
   };
 }

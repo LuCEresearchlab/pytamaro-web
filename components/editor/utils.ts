@@ -1,7 +1,8 @@
 import { loader, useMonaco } from '@monaco-editor/react';
+import { type editor as EditorNamespace } from 'monaco-editor';
 
 export const themeName = 'luce';
-export const luceTheme = {
+export const luceTheme: EditorNamespace.IStandaloneThemeData = {
   base: 'vs', // use vscode light as base theme
   inherit: true,
   rules: [],

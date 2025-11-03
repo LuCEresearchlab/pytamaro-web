@@ -24,8 +24,8 @@ import {
 import ToolboxListSidebar from '../sidebar/ToolboxListSidebar';
 import FeedbackButton from './FeedbackButton';
 import NotificationsButton from './NotificationsButton';
-import PlatformLanguageButton from './PlatformLanguageButton';
 import RapidPlaygroundButton from './RapidPlaygroundButton';
+import SettingsButton from './SettingsButton';
 
 const navItems = [
   {
@@ -229,7 +229,7 @@ export default function NavigationBar({
                 <RapidPlaygroundButton />
                 <FeedbackButton />
                 <NotificationsButton />
-                <PlatformLanguageButton />
+                <SettingsButton />
               </>
             )}
           </Stack>

@@ -103,7 +103,7 @@ export function useActivity(
   setMetadata: Dispatch<SetStateAction<Metadata>>,
   activityVariant: ActivityVariant,
   extraPythonFiles: PythonFile[],
-  preExecute: () => ToolboxFunction | undefined = () => undefined,
+  getExtraToolboxFunction: () => ToolboxFunction | undefined = () => undefined,
   postExecuteSingleCell: (
     idx: number,
     executionResponse: ExecutionResponse,
@@ -247,7 +247,7 @@ export function useActivity(
   };
 
   const handleExecute = async (idx: number) => {
-    const extraToolboxFn = preExecute();
+    const extraToolboxFn = getExtraToolboxFunction();
 
     const functionLookup = (name: string) => {
       if (extraToolboxFn && extraToolboxFn.name === name) {

@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
+import { ToolboxFunction } from '../src/localStorage/schema';
 import {
   ActivityVariant,
   platformConfigWithDefaults,
 } from '../src/schemas/activitySchema';
 import { useActivity } from '../src/useActivity';
+import usePythonAnalyzer from '../src/usePythonAnalyzer';
 import CodeCell from './CodeCell';
 
 export function initialStateSingleCell(source: string) {
@@ -23,6 +25,7 @@ export default function SolitaryCodeCell({
   postSourceChange = () => {},
   onExecutionRequest = () => {},
   extraActions = null,
+  extraToolboxFunctions = [],
 }: {
   activity: ReturnType<typeof useActivity>;
   activityVariant: ActivityVariant;
@@ -32,6 +35,7 @@ export default function SolitaryCodeCell({
   postSourceChange?: (newSource: string) => void;
   onExecutionRequest?: () => void;
   extraActions?: React.ReactNode;
+  extraToolboxFunctions?: ToolboxFunction[];
 }) {
   const {
     initialCodeCells,
@@ -40,12 +44,21 @@ export default function SolitaryCodeCell({
     handleSourceChanged,
     handleExecute,
   } = activity;
+  const source = codeCells[0].source;
+  const pythonAnalyzer = usePythonAnalyzer(
+    [source],
+    0,
+    [],
+    extraToolboxFunctions,
+  );
+
   useEffect(() => {
     if (requireNewExecution) {
       // Simulate a change in the source code to invalidate an eventual previous execution
-      handleSourceChanged(codeCells[0].source, 0);
+      handleSourceChanged(source, 0);
     }
   });
+
   return (
     <CodeCell
       initialSource={initialCodeCells[0].source}
@@ -64,8 +77,9 @@ export default function SolitaryCodeCell({
       readOnly={readOnly}
       platformConfig={platformConfigWithDefaults()}
       extraActions={extraActions}
-      sourcesUpTo={[codeCells[0].source]}
+      sourcesUpTo={[source]}
       resetCounter={resetCounter}
+      pythonAnalyzer={pythonAnalyzer}
     />
   );
 }

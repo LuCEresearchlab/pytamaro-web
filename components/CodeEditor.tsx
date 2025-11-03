@@ -1,23 +1,21 @@
-import Editor from '@monaco-editor/react';
+import Editor, { Monaco } from '@monaco-editor/react';
 import { debounce } from 'lodash';
-import { type editor as EditorNamespace } from 'monaco-editor';
+import { editor, type editor as EditorNamespace } from 'monaco-editor';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ExecutionResponse } from '../src/codeExecution';
+import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import {
   moduleImportCompletionProvider,
   pytamaroImportCompletionProvider,
   toolboxImportCompletionProvider,
 } from '../src/monacoSuggestions';
-import { analyze, ParseError } from '../src/python-analyzer/python_analyzer';
-import {
-  addErrorAnnotations,
-  TRACEBACK_MESSAGE_DECORATION_CLASSNAME,
-  TRACEBACK_TIDLE_DECORATION_CLASSNAME,
-} from '../src/pythonTraceback';
+import { addErrorAnnotationsFromExecution } from '../src/pythonTraceback';
 import scrollToAnchor from '../src/scrollToAnchor';
 import theme from '../src/theme';
+import usePythonAnalyzer, { CustomDiagnostic } from '../src/usePythonAnalyzer';
 import { ErrorMessageWidget } from './editor/ErrorMessageWidget';
+import { ErrorCategory } from './editor/errors';
 import {
   registerCustomPythonLanguage,
   STRICT_PYTHON3_LANG_ID,
@@ -32,6 +30,11 @@ import {
 
 configureEditor();
 
+type MonacoForPyTamaro = Monaco & {
+  pytamaroCompletionProvidersRegistered?: boolean;
+  pytamaroColorized?: boolean;
+};
+
 export default function CodeEditor({
   initialSource,
   currentSource,
@@ -43,6 +46,7 @@ export default function CodeEditor({
   firstLineNumber = 1,
   readOnly = false,
   resetCounter = 0,
+  pythonAnalyzer,
 }: {
   initialSource: string;
   currentSource: string;
@@ -54,27 +58,34 @@ export default function CodeEditor({
   firstLineNumber?: number;
   readOnly?: boolean;
   resetCounter?: number;
+  pythonAnalyzer: ReturnType<typeof usePythonAnalyzer>;
 }) {
   const { list } = useLocalToolbox();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const monacoRef = useRef<any>(null);
+  const { metadata } = useLocalProfile();
+  const { semanticChecksEnabled } = metadata;
+
+  const monacoRef = useRef<MonacoForPyTamaro | null>(null);
   const editorRef = useRef<EditorNamespace.IStandaloneCodeEditor | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const monacoInstance = monacoRef.current;
-  const editorInstance = editorRef.current;
+  let monacoInstance = monacoRef.current;
+  let editorInstance = editorRef.current;
   const [executionAllowedCondition, setExecutionAllowedCondition] =
     useState<EditorNamespace.IContextKey<boolean> | null>(null);
   const toolboxFunctions = list();
-  const errorWidgetRef = useRef<ErrorMessageWidget | null>(null);
+  const runtimeErrorWidgetRef = useRef<ErrorMessageWidget | null>(null);
+  const staticErrorWidgetRef = useRef<ErrorMessageWidget | null>(null);
+  const decorationsCollectionRef = useRef<
+    editor.IEditorDecorationsCollection[]
+  >([]);
+  const customDiagnosticsRef = useRef<CustomDiagnostic[]>([]);
 
   const handleEditorMount = (
     editor: EditorNamespace.IStandaloneCodeEditor,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    monaco: any,
+    monaco: MonacoForPyTamaro,
   ) => {
-    monacoRef.current = monaco;
-    editorRef.current = editor;
+    monacoRef.current = monacoInstance = monaco;
+    editorRef.current = editorInstance = editor;
 
     registerCustomPythonLanguage(monaco);
 
@@ -120,22 +131,17 @@ export default function CodeEditor({
   };
 
   const clearAnnotations = useCallback(() => {
-    if (monacoInstance && editorInstance && errorWidgetRef.current) {
-      // Dispose the error widget
-      errorWidgetRef.current.dispose();
-      // Delete all the decorations
-      const entireRange = editorInstance.getModel()?.getFullModelRange();
-      const decorations = entireRange
-        ? editorInstance
-            .getDecorationsInRange(entireRange)
-            ?.filter(
-              (d) =>
-                d.options.className === TRACEBACK_TIDLE_DECORATION_CLASSNAME ||
-                d.options.className === TRACEBACK_MESSAGE_DECORATION_CLASSNAME,
-            )
-            .map((d) => d.id)
-        : [];
-      editorInstance.removeDecorations(decorations || []);
+    if (monacoInstance && editorInstance) {
+      // Remove possible widgets
+      runtimeErrorWidgetRef.current?.dispose();
+      runtimeErrorWidgetRef.current = null;
+      staticErrorWidgetRef.current?.dispose();
+      staticErrorWidgetRef.current = null;
+      // Remove possible collections of decorations
+      decorationsCollectionRef.current.forEach((collection) => {
+        collection.clear();
+      });
+      decorationsCollectionRef.current = [];
     }
   }, [monacoInstance, editorInstance]);
 
@@ -181,20 +187,62 @@ export default function CodeEditor({
         pytamaroImportCompletionProvider(monacoInstance),
       ];
       const disposers = providers.map((provider) =>
-        monacoInstance.languages.registerCompletionItemProvider(
+        monacoInstance?.languages.registerCompletionItemProvider(
           STRICT_PYTHON3_LANG_ID,
           provider,
         ),
       );
       monacoInstance.pytamaroCompletionProvidersRegistered = true;
       return () => {
-        disposers.forEach((disposer) => disposer.dispose());
-        monacoInstance.pytamaroCompletionProvidersRegistered = false;
+        disposers.forEach((disposer) => disposer?.dispose());
+        if (monacoInstance)
+          monacoInstance.pytamaroCompletionProvidersRegistered = false;
       };
     }
     return () => {};
   }, [monacoInstance, toolboxFunctions]);
 
+  useEffect(() => {
+    const handleMouseMoved = (e: EditorNamespace.IEditorMouseEvent) => {
+      if (runtimeErrorWidgetRef.current) {
+        // If there is a runtime error widget shown, do not show static error widgets.
+        return;
+      }
+      // Find position under mouse
+      // Check if there is a diagnostic at that position
+      const position = e.target.position;
+      if (!position) {
+        staticErrorWidgetRef.current?.dispose();
+        return;
+      }
+      const matchingDiagnostics = customDiagnosticsRef.current.filter((diag) =>
+        monacoInstance?.Range.containsPosition(diag.range, position),
+      );
+      staticErrorWidgetRef.current?.dispose();
+      if (matchingDiagnostics.length > 0) {
+        const diag = matchingDiagnostics[0];
+        const widget = new ErrorMessageWidget(
+          monacoInstance!,
+          editorInstance!,
+          diag.range,
+          diag.message,
+          false,
+          diag.category,
+        );
+        staticErrorWidgetRef.current = widget;
+      }
+    };
+    editorInstance?.onMouseMove(
+      debounce((e) => {
+        handleMouseMoved(e);
+      }, 50),
+    );
+    editorInstance?.onMouseLeave(
+      debounce(() => {
+        staticErrorWidgetRef.current?.dispose();
+      }, 50),
+    );
+  }, [monacoInstance, editorInstance]);
   // Effect to trigger remeasurement of fonts after they have been loaded.
   useEffect(() => {
     document.fonts.ready.then(() => {
@@ -207,16 +255,18 @@ export default function CodeEditor({
   // Effect to react to changes in the execution response.
   useEffect(() => {
     if (monacoInstance && editorInstance) {
-      clearAnnotations();
       if (executionResponse?.type === 'error' && executionFinished) {
-        const errorWidget = addErrorAnnotations(
+        clearAnnotations();
+        const annotations = addErrorAnnotationsFromExecution(
           monacoInstance,
           editorInstance,
           executionResponse,
           firstLineNumber,
         );
-        if (errorWidget) {
-          errorWidgetRef.current = errorWidget;
+        if (annotations !== null) {
+          const { widget, decorationsCollection } = annotations;
+          runtimeErrorWidgetRef.current = widget;
+          decorationsCollectionRef.current.push(decorationsCollection);
         }
       }
     }
@@ -236,35 +286,45 @@ export default function CodeEditor({
     }
   }, [editorInstance, initialSource, resetCounter]);
 
-  const setParseErrorMarkers = (parseErrors: ParseError[]) => {
-    if (monacoInstance && editorInstance) {
-      const model = editorInstance.getModel();
-      if (model) {
-        monacoInstance.editor.setModelMarkers(
-          model,
-          'owner',
-          parseErrors.map((error) => {
-            const startPosition = model.getPositionAt(error.location[0]);
-            const endPosition = model.getPositionAt(error.location[1]);
-            return {
-              startLineNumber: startPosition.lineNumber,
-              startColumn: startPosition.column,
-              endLineNumber: endPosition.lineNumber,
-              endColumn: endPosition.column,
-              message: error.message,
-              severity: monacoInstance.MarkerSeverity.Error,
-            };
-          }),
-        );
-      }
+  const addDiagnosticsFromAnalyzer = useCallback(() => {
+    if (!monacoInstance || !editorInstance) {
+      return;
     }
-  };
+    const diagnostics = pythonAnalyzer.customDiagnostics(
+      monacoInstance,
+      editorInstance,
+    );
+    const visibleDiagnostics = diagnostics.filter(
+      (diag) =>
+        diag.category === ErrorCategory.SyntaxError || semanticChecksEnabled,
+    );
+    customDiagnosticsRef.current = visibleDiagnostics;
+    decorationsCollectionRef.current.push(
+      editorInstance.createDecorationsCollection(visibleDiagnostics),
+    );
+  }, [editorInstance, monacoInstance, pythonAnalyzer, semanticChecksEnabled]);
+
+  const analyzeSource = useCallback(
+    (source: string) => {
+      pythonAnalyzer.updateSource(source);
+      addDiagnosticsFromAnalyzer();
+    },
+    [pythonAnalyzer, addDiagnosticsFromAnalyzer],
+  );
+
+  // Effect to react to change in preferences for semantic checks.
+  // Trigger re-analysis of the current source.
+  useEffect(() => {
+    if (editorInstance) {
+      editorInstance.setValue(editorInstance.getValue());
+    }
+  }, [semanticChecksEnabled, editorInstance]);
 
   const handleSourceChanged = debounce((newSource: string | undefined) => {
     if (newSource !== undefined) {
       onChange(newSource);
       clearAnnotations();
-      setParseErrorMarkers(analyze(newSource).parse_errors);
+      analyzeSource(newSource);
     }
   }, 50);
 

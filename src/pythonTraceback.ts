@@ -1,6 +1,7 @@
 import { Monaco } from '@monaco-editor/react';
 import { type editor as EditorNamespace } from 'monaco-editor';
 import { ErrorMessageWidget } from '../components/editor/ErrorMessageWidget';
+import { runtimeErrorMessageCategory } from '../components/editor/errors';
 import { CompletedExecutionResponse } from './codeExecution';
 import { splitLines } from './sourceUtils';
 
@@ -46,12 +47,15 @@ function lineNumOfErrorThisCell(traceback: string[]) {
  * Adds error annotations as decorations and a content widget.
  * This function already adds the decorations and the widget to the editor.
  */
-export function addErrorAnnotations(
+export function addErrorAnnotationsFromExecution(
   monaco: Monaco,
   editor: EditorNamespace.IStandaloneCodeEditor,
   executionResponse: CompletedExecutionResponse,
   firstLineNumber: number,
-): ErrorMessageWidget | null {
+): {
+  widget: ErrorMessageWidget;
+  decorationsCollection: EditorNamespace.IEditorDecorationsCollection;
+} | null {
   const traceback = nicerTraceback(executionResponse.stderr);
   const tracebackLines = splitLines(traceback);
   const lineNumberInfo = lineNumOfErrorThisCell(tracebackLines);
@@ -92,7 +96,7 @@ export function addErrorAnnotations(
       range: new monaco.Range(lineNumber, startColumn, lineNumber, endColumn),
       options: {
         className: TRACEBACK_MESSAGE_DECORATION_CLASSNAME,
-        hoverMessage: { value: message },
+        // hoverMessage: { value: message },
       },
     };
     // Create decorations for each possible ~~~ chunk.
@@ -113,15 +117,22 @@ export function addErrorAnnotations(
         };
       },
     );
-    editor.createDecorationsCollection([mainDecoration, ...decorations]);
+    const decorationsCollection = editor.createDecorationsCollection([
+      mainDecoration,
+      ...decorations,
+    ]);
     const widget = new ErrorMessageWidget(
       monaco,
       editor,
-      lineNumber,
-      startColumn,
+      mainDecoration.range,
       message,
+      true,
+      runtimeErrorMessageCategory(message),
     );
-    return widget;
+    return {
+      widget,
+      decorationsCollection,
+    };
   }
   return null;
 }

@@ -20,18 +20,20 @@ export default function EditToolboxFunctionButton({
       <Button color='warning' variant='contained' onClick={() => setOpen(true)}>
         {t('toolbox.editFunction')}
       </Button>
-      <SaveToToolboxDialog
-        open={open}
-        onClose={() => setOpen(false)}
-        replaceExistingFunction
-        externalImplementation={toolboxFunction.source}
-        initialName={toolboxFunction.name}
-        initialDescription={toolboxFunction.description}
-        initialUsage={toolboxFunction.usage}
-        originalActivity={toolboxFunction.originalActivity}
-        setSavingSuccess={setSavingSuccess}
-        setSavingError={setSavingError}
-      />
+      {open && (
+        <SaveToToolboxDialog
+          open={open}
+          onClose={() => setOpen(false)}
+          replaceExistingFunction
+          externalImplementation={toolboxFunction.source}
+          initialName={toolboxFunction.name}
+          initialDescription={toolboxFunction.description}
+          initialUsage={toolboxFunction.usage}
+          originalActivity={toolboxFunction.originalActivity}
+          setSavingSuccess={setSavingSuccess}
+          setSavingError={setSavingError}
+        />
+      )}
       <CustomSnackbar
         visible={savingSuccess}
         setVisible={setSavingSuccess}

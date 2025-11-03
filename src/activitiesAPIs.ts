@@ -1,3 +1,4 @@
+import { uniq } from 'lodash';
 import { listVisibleActivities } from './fs-content/activities';
 import { readNotebookContent } from './fs-content/notebooks';
 import { cellsVisibleToUser, isCodeCell } from './notebook';
@@ -8,7 +9,7 @@ import { joinLines } from './sourceUtils';
 export interface ActivityVariantWithNames {
   activity: Activity;
   variant: ActivityVariant;
-  importedNames: PythonName[];
+  importedNames: string[];
 }
 
 async function importedAPIs(variant: ActivityVariant): Promise<PythonName[]> {
@@ -42,7 +43,11 @@ export default async function getActivitiesWithAPIs(
             return {
               activity,
               variant,
-              importedNames: await importedAPIs(variant),
+              importedNames: uniq(
+                (await importedAPIs(variant)).map(
+                  (pythonName) => pythonName.module + '.' + pythonName.name,
+                ),
+              ),
             };
           }),
         ),

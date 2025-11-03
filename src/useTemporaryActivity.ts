@@ -10,7 +10,7 @@ export default function useTemporaryActivity(
   codeCells: CodeCellState[],
   setCodeCells: Dispatch<SetStateAction<CodeCellState[]>>,
   activityVariant: ActivityVariant,
-  preExecute: () => ToolboxFunction | undefined = () => undefined,
+  getExtraToolboxFunction: () => ToolboxFunction | undefined = () => undefined,
   postExecuteSingleCell: (
     idx: number,
     response: ExecutionResponse | undefined,
@@ -26,7 +26,7 @@ export default function useTemporaryActivity(
     setTemporaryMetadata,
     activityVariant,
     [],
-    preExecute,
+    getExtraToolboxFunction,
     postExecuteSingleCell,
   );
 }

@@ -1,4 +1,5 @@
 import { useDocumentationElements } from '../../src/documentation';
+import { PythonName } from '../../src/python-analyzer/python_analyzer';
 import { ActivityVariant, PythonFile } from '../../src/schemas/activitySchema';
 import DocElement from './DocElement';
 
@@ -24,12 +25,7 @@ export default function InlineAPI({
     module || (bestLanguage === 'en' ? 'pytamaro' : `pytamaro.${bestLanguage}`);
 
   const elements = useDocumentationElements(
-    [
-      {
-        module: moduleName,
-        name,
-      },
-    ],
+    [new PythonName(moduleName, name)],
     [],
     extraPythonFiles,
   );

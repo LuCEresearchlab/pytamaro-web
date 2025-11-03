@@ -1,8 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { type Monaco } from '@monaco-editor/react';
 import { isNull, negate } from 'lodash';
 import type {
   editor as EditorNamespace,
   IRange,
+  languages,
   Position,
 } from 'monaco-editor';
 import { TOOLBOX_FILE } from './codeExecution';
@@ -10,8 +11,8 @@ import { ToolboxFunction } from './localStorage/schema';
 import PyTamaroNames from './pytamaroNames';
 import { AnalysisResult, analyze } from './python-analyzer/python_analyzer';
 
-function kind(monacoInstance: any, type: string) {
-  const map: Record<string, any> = {
+function kind(monacoInstance: Monaco, type: string) {
+  const map: Record<string, languages.CompletionItemKind> = {
     function: monacoInstance.languages.CompletionItemKind.Function,
     class: monacoInstance.languages.CompletionItemKind.Class,
     value: monacoInstance.languages.CompletionItemKind.Value,
@@ -46,7 +47,7 @@ function getRangeLastWord(
 }
 
 export function toolboxImportCompletionProvider(
-  monacoInstance: any,
+  monacoInstance: Monaco,
   toolboxFunctions: ToolboxFunction[],
 ) {
   return {
@@ -82,7 +83,7 @@ const PYTAMARO_MODULES: Record<string, string> = {
 
 const KNOWN_MODULES = [TOOLBOX_FILE, ...Object.keys(PYTAMARO_MODULES)];
 
-export function moduleImportCompletionProvider(monacoInstance: any) {
+export function moduleImportCompletionProvider(monacoInstance: Monaco) {
   return {
     provideCompletionItems(
       model: EditorNamespace.ITextModel,
@@ -105,7 +106,7 @@ export function moduleImportCompletionProvider(monacoInstance: any) {
   };
 }
 
-export function pytamaroImportCompletionProvider(monacoInstance: any) {
+export function pytamaroImportCompletionProvider(monacoInstance: Monaco) {
   return {
     provideCompletionItems(
       model: EditorNamespace.ITextModel,
@@ -114,11 +115,11 @@ export function pytamaroImportCompletionProvider(monacoInstance: any) {
       const analysisResult: AnalysisResult = analyze(model.getValue());
       const offset = model.getOffsetAt(position);
       const importStmt = analysisResult.import_ranges.find(
-        ([start, end]) => start <= offset && offset <= end,
+        (range) => range.start <= offset && offset <= range.end,
       );
       if (!importStmt) return { suggestions: [] };
-      const startPosition = model.getPositionAt(importStmt[0]);
-      const endPosition = model.getPositionAt(importStmt[1]);
+      const startPosition = model.getPositionAt(importStmt.start);
+      const endPosition = model.getPositionAt(importStmt.end);
       const text = model.getValueInRange({
         startLineNumber: startPosition.lineNumber,
         startColumn: startPosition.column,

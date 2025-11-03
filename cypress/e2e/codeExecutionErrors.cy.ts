@@ -2,6 +2,7 @@ import {
   activityVariantPathnameFromParts,
   playgroundPathname,
 } from '../../src/urlUtils';
+
 import {
   dismissDataCollectionModal,
   waitForMonacoEditor,
@@ -17,7 +18,7 @@ describe('Code Execution Errors', () => {
     cy.get('.run-button').first().click();
     cy.get('.monaco-editor-overlaymessage')
       .should('be.visible')
-      .contains('NameError');
+      .contains('Name Error');
     cy.get('.squiggly-error').should('be.visible');
     cy.get('.output-area').should('be.empty');
     cy.get('.output-area').parent().contains('NameError');
@@ -30,9 +31,7 @@ describe('Code Execution Errors', () => {
     cy.get('.monaco-editor').first().type('{selectall}{backspace}');
     cy.get('.monaco-editor').first().type('print(a)');
     cy.get('.run-button').first().click();
-    cy.get('.monaco-editor-overlaymessage')
-      .should('be.visible')
-      .contains('NameError');
+    cy.get('.monaco-editor-overlaymessage').should('be.visible');
     cy.get('.squiggly-error').should('be.visible');
     cy.get('.monaco-editor textarea:first').focus();
     cy.get('.monaco-editor').first().type('{leftarrow}{backspace}');
@@ -47,6 +46,59 @@ describe('Code Execution Errors', () => {
     cy.get('.monaco-editor').first().type('{selectall}{backspace}');
     cy.get('.monaco-editor').first().type('from');
     cy.get('.squiggly-error').should('be.visible');
+  });
+
+  it('should show a name error when semantic checks are enabled', () => {
+    cy.visit(playgroundPathname());
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    cy.get('[data-testid="SettingsOutlinedIcon"]').click();
+    cy.get('button').contains('semantic').click();
+    cy.get('[data-testid="SettingsOutlinedIcon"]').click();
+    cy.get('.monaco-editor').first().type('{selectall}{backspace}');
+    cy.get('.monaco-editor').first().type('print(a)');
+    cy.get('.squiggly-error').should('be.visible');
+    cy.get('.monaco-editor-overlaymessage').should('not.exist');
+    cy.get('.squiggly-error')
+      .first()
+      .then((element) => {
+        const pos = element[0].getBoundingClientRect();
+        cy.get('body').trigger('mousemove', pos.left, pos.top);
+        cy.get('.monaco-editor-overlaymessage').should('be.visible');
+        cy.get('.monaco-editor-overlaymessage').contains(
+          'used when not defined',
+        );
+        cy.get('.monaco-editor-overlaymessage').contains('Name Error');
+        cy.get('.monaco-editor-overlaymessage code').contains('a');
+      });
+  });
+
+  it('should show a type error when semantic checks are enabled', () => {
+    cy.visit(playgroundPathname());
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    cy.get('[data-testid="SettingsOutlinedIcon"]').click();
+    cy.get('button').contains('semantic').click();
+    cy.get('[data-testid="SettingsOutlinedIcon"]').click();
+    cy.get('.monaco-editor').first().type('{selectall}{backspace}');
+    cy.get('.monaco-editor').first().type('1 + "a"');
+    cy.get('.squiggly-error').should('be.visible');
+    cy.get('.monaco-editor-overlaymessage').should('not.exist');
+    cy.get('.squiggly-error')
+      .first()
+      .then((element) => {
+        const pos = element[0].getBoundingClientRect();
+        cy.get('body').trigger('mousemove', pos.left, pos.top);
+        cy.get('.monaco-editor-overlaymessage').should('be.visible');
+        cy.get('.monaco-editor-overlaymessage').contains(
+          'unsupported between objects of type',
+        );
+        cy.get('.monaco-editor-overlaymessage').contains('Type Error');
+        // 1st should contain +, 2nd and 3rd the simplified types
+        cy.get('.monaco-editor-overlaymessage code').eq(0).contains('+');
+        cy.get('.monaco-editor-overlaymessage code').eq(1).contains('int');
+        cy.get('.monaco-editor-overlaymessage code').eq(2).contains('str');
+      });
   });
 
   it('should show warning squiggly lines for fine-grained errors', () => {
@@ -71,9 +123,7 @@ describe('Code Execution Errors', () => {
     cy.get('.monaco-editor').eq(1).type('{selectall}{backspace}');
     cy.get('.monaco-editor').eq(1).type('print(b)');
     cy.get('.run-button').eq(1).click();
-    cy.get('.monaco-editor-overlaymessage')
-      .should('be.visible')
-      .contains('NameError');
+    cy.get('.monaco-editor-overlaymessage').should('be.visible');
     cy.get('.monaco-editor')
       .first()
       .should((editor) => {
@@ -115,7 +165,7 @@ describe('Code Execution Errors', () => {
     cy.get('.run-button').eq(1).click();
     cy.get('.monaco-editor-overlaymessage')
       .should('be.visible')
-      .contains('NameError');
+      .contains('Name Error');
     cy.get('.output-area').parent().contains('NameError');
   });
 });
