@@ -94,14 +94,9 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
     const categoryContent = displayErrorCategory(category);
     if (categoryContent !== '') {
       const categorySpan = document.createElement('span');
-      categorySpan.style.border = `1px solid white`;
-      categorySpan.style.borderRadius = '16px';
-      categorySpan.style.paddingLeft = '4px';
-      categorySpan.style.paddingRight = '4px';
-      categorySpan.style.marginTop = '2px';
-      categorySpan.style.marginBottom = '2px';
-      categorySpan.style.marginRight = '8px';
+      categorySpan.style.marginRight = '12px';
       categorySpan.style.fontWeight = 'bold';
+      categorySpan.style.opacity = '0.7';
       categorySpan.textContent = categoryContent;
       message.appendChild(categorySpan);
     }

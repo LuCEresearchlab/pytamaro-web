@@ -78,6 +78,11 @@ pre:has(code) {
   font-weight: 500 !important;
 }
 
+.monaco-editor-overlaymessage code {
+  background-color: #00000028;
+  padding: 0px 2px;
+}
+
 /* Nicer Markdown tables, partially inspired by https://github.com/micromark/micromark-extension-gfm-table#css */
 
 .activity-content table {

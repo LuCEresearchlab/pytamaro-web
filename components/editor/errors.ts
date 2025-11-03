@@ -19,10 +19,7 @@ export function simplifyTypes(message: string) {
 export function convertMarkdownToCodeTag(message: string) {
   // Content may include backticks for code spans, find them and replace with <code> elements.
   // Non-greedy match to find all code spans.
-  return message.replaceAll(
-    /`(.*?)`/g,
-    '<code style="background-color: #ffffff38;">$1</code>',
-  );
+  return message.replaceAll(/`(.*?)`/g, `<code>$1</code>`);
 }
 
 export function removeRedundantCategory(message: string): string {
