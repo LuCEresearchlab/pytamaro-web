@@ -60,6 +60,7 @@ async function storeEventCodeExecution(
   docker_image_id: number,
   activity_id: number,
   requested_cell_seq_number: number,
+  semantic_checks_enabled: boolean,
 ) {
   return storeRow(sql, eventTableName(EventName.CodeExecution), {
     id: event_id,
@@ -67,6 +68,7 @@ async function storeEventCodeExecution(
     activity_id,
     requested_cell_seq_number,
     cells_to_files_version: CODE_EXECUTION_CELLS_TO_FILES_VERSION,
+    semantic_checks_enabled,
   });
 }
 
@@ -80,6 +82,7 @@ export default async function saveCodeExecutionEvent(
   requested_cell_seq_number: number,
   toolboxFunctions: ToolboxFunction[],
   extraPythonFiles: PythonFile[],
+  semanticChecksEnabled: boolean,
 ): Promise<boolean> {
   try {
     await conn.begin(async (sql) => {
@@ -97,6 +100,7 @@ export default async function saveCodeExecutionEvent(
         await pDockerImageId,
         await pActivityId,
         requested_cell_seq_number,
+        semanticChecksEnabled,
       );
       await Promise.all(
         [

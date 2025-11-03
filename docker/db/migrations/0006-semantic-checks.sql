@@ -1,0 +1,1 @@
+ALTER TABLE events_code_execution ADD COLUMN semantic_checks_enabled BOOLEAN NOT NULL DEFAULT FALSE;
