@@ -81,15 +81,20 @@ export function staticErrorMessageCategory(ty_code: string): ErrorCategory {
     case 'duplicate-base':
     case 'inconsistent-mro':
     case 'instance-layout-conflict':
+    case 'invalid-argument-type':
+    case 'invalid-assignment':
+    case 'invalid-attribute-access':
     case 'invalid-await':
     case 'invalid-base':
     case 'invalid-context-manager':
+    case 'invalid-declaration':
     case 'invalid-exception-caught':
     case 'invalid-metaclass':
     case 'invalid-named-tuple':
+    case 'invalid-parameter-default':
     case 'invalid-protocol':
-    case 'invalid-range':
     case 'invalid-raise':
+    case 'invalid-return-type':
     case 'invalid-super-argument':
     case 'missing-argument':
     case 'no-matching-overload':
