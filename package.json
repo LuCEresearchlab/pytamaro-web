@@ -80,7 +80,7 @@
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-cypress": "^3.6.0",
     "eslint-plugin-prettier": "^5.2.5",
-    "monaco-editor": "^0.46.0",
+    "monaco-editor": "^0.52.0",
     "prettier": "^3.5.3",
     "pyodide": "^0.28.3",
     "simple-git": "^3.14.1",
