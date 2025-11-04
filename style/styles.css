@@ -83,6 +83,11 @@ pre:has(code) {
   padding: 0px 2px;
 }
 
+.monaco-editor .analyzer-diagnostic-code-highlight {
+  background-color: var(--mui-palette-error-main);
+  opacity: 0.2;
+}
+
 /* Nicer Markdown tables, partially inspired by https://github.com/micromark/micromark-extension-gfm-table#css */
 
 .activity-content table {

@@ -29,6 +29,8 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
   private readonly _editor: EditorNamespace.ICodeEditor;
   private readonly _position: IPosition;
   private readonly _domNode: HTMLDivElement;
+  private readonly _categoryNode: HTMLSpanElement | null;
+  private readonly _arrowNode: HTMLDivElement;
   private readonly _isRuntimeError: boolean;
 
   constructor(
@@ -53,7 +55,7 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
 
     this._domNode = document.createElement('div');
     this._domNode.classList.add('monaco-editor-overlaymessage');
-    this._domNode.style.marginLeft = '-30px';
+    this._domNode.style.marginLeft = '-6px';
     this._domNode.style.zIndex = '1000';
 
     if (isRuntimeError) {
@@ -70,12 +72,6 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
       };
       this._domNode.appendChild(closeIcon);
     }
-
-    const anchorTop = document.createElement('div');
-    anchorTop.classList.add('anchor', 'top');
-    anchorTop.style.borderBottomColor = theme.palette.error.main;
-    anchorTop.style.left = '26px';
-    this._domNode.appendChild(anchorTop);
 
     const message = document.createElement('div');
     message.style.width = 'max-content';
@@ -99,6 +95,9 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
       categorySpan.style.opacity = '0.7';
       categorySpan.textContent = categoryContent;
       message.appendChild(categorySpan);
+      this._categoryNode = categorySpan;
+    } else {
+      this._categoryNode = null;
     }
 
     const messageContent = document.createElement('span');
@@ -114,11 +113,12 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
 
     this._domNode.appendChild(message);
 
-    const anchorBottom = document.createElement('div');
-    anchorBottom.classList.add('anchor', 'below');
-    anchorBottom.style.borderTopColor = theme.palette.error.main;
-    anchorBottom.style.left = '26px';
-    this._domNode.appendChild(anchorBottom);
+    const arrow = document.createElement('div');
+    arrow.style.position = 'absolute';
+    arrow.style.border = '8px solid transparent';
+    arrow.style.borderTopColor = theme.palette.error.main;
+    this._domNode.appendChild(arrow);
+    this._arrowNode = arrow;
 
     this._editor.addContentWidget(this);
   }
@@ -153,12 +153,9 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
     };
   }
 
-  afterRender(
-    position: EditorNamespace.ContentWidgetPositionPreference | null,
-  ): void {
-    this._domNode.classList.toggle(
-      'below',
-      position === this._monaco.editor.ContentWidgetPositionPreference.BELOW,
-    );
+  afterRender() {
+    const categoryWidthWithPadding = (this._categoryNode?.offsetWidth ?? 0) + 8;
+    this._domNode.style.marginLeft = `-${6 + categoryWidthWithPadding}px`; // 6px is the default from Monaco
+    this._arrowNode.style.left = `${categoryWidthWithPadding}px`;
   }
 }

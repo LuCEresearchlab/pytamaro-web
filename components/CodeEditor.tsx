@@ -1,5 +1,5 @@
 import Editor, { Monaco } from '@monaco-editor/react';
-import { debounce } from 'lodash';
+import { debounce, throttle } from 'lodash';
 import { editor, type editor as EditorNamespace } from 'monaco-editor';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ExecutionResponse } from '../src/codeExecution';
@@ -78,6 +78,8 @@ export default function CodeEditor({
   const decorationsCollectionRef = useRef<
     editor.IEditorDecorationsCollection[]
   >([]);
+  const hoveredStaticErrorDecorationRef =
+    useRef<editor.IEditorDecorationsCollection>(null);
   const customDiagnosticsRef = useRef<CustomDiagnostic[]>([]);
 
   const handleEditorMount = (
@@ -130,18 +132,25 @@ export default function CodeEditor({
     }
   };
 
+  const clearStaticAnnotations = () => {
+    staticErrorWidgetRef.current?.dispose();
+    staticErrorWidgetRef.current = null;
+    hoveredStaticErrorDecorationRef.current?.clear();
+    hoveredStaticErrorDecorationRef.current = null;
+  };
+
   const clearAnnotations = useCallback(() => {
     if (monacoInstance && editorInstance) {
       // Remove possible widgets
       runtimeErrorWidgetRef.current?.dispose();
       runtimeErrorWidgetRef.current = null;
-      staticErrorWidgetRef.current?.dispose();
-      staticErrorWidgetRef.current = null;
       // Remove possible collections of decorations
       decorationsCollectionRef.current.forEach((collection) => {
         collection.clear();
       });
       decorationsCollectionRef.current = [];
+      // Remove static error annotations
+      clearStaticAnnotations();
     }
   }, [monacoInstance, editorInstance]);
 
@@ -208,17 +217,16 @@ export default function CodeEditor({
         // If there is a runtime error widget shown, do not show static error widgets.
         return;
       }
+      clearStaticAnnotations();
       // Find position under mouse
       // Check if there is a diagnostic at that position
       const position = e.target.position;
       if (!position) {
-        staticErrorWidgetRef.current?.dispose();
         return;
       }
       const matchingDiagnostics = customDiagnosticsRef.current.filter((diag) =>
         monacoInstance?.Range.containsPosition(diag.range, position),
       );
-      staticErrorWidgetRef.current?.dispose();
       if (matchingDiagnostics.length > 0) {
         const diag = matchingDiagnostics[0];
         const widget = new ErrorMessageWidget(
@@ -229,18 +237,28 @@ export default function CodeEditor({
           false,
           diag.category,
         );
+        hoveredStaticErrorDecorationRef.current =
+          editorInstance!.createDecorationsCollection([
+            {
+              range: diag.range,
+              options: {
+                className: 'analyzer-diagnostic-code-highlight',
+                showIfCollapsed: true,
+              },
+            },
+          ]);
         staticErrorWidgetRef.current = widget;
       }
     };
     editorInstance?.onMouseMove(
-      debounce((e) => {
+      throttle((e) => {
         handleMouseMoved(e);
-      }, 50),
+      }, 200),
     );
     editorInstance?.onMouseLeave(
-      debounce(() => {
-        staticErrorWidgetRef.current?.dispose();
-      }, 50),
+      throttle(() => {
+        clearStaticAnnotations();
+      }, 200),
     );
   }, [monacoInstance, editorInstance]);
   // Effect to trigger remeasurement of fonts after they have been loaded.
