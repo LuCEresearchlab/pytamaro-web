@@ -171,6 +171,10 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
     };
   } catch (err) {
     const pythonError = err as PythonError;
+
+    // eslint-disable-next-line no-console
+    console.error(pythonError);
+
     stderr += pythonError;
     return {
       type: Message.RESULT,
