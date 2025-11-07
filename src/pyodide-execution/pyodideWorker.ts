@@ -151,7 +151,7 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
           `  del sys.modules['${module}']`,
         ]),
         // Set max recursion depth
-        'sys.setrecursionlimit(100000)',
+        'sys.setrecursionlimit(2000)',
         // Set CWD to $basePath
         'import os',
         `os.chdir('${basePath}')`,
