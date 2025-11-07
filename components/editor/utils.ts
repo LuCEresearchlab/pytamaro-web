@@ -1,11 +1,33 @@
-import { loader, useMonaco } from '@monaco-editor/react';
+import { loader, Monaco } from '@monaco-editor/react';
 import { type editor as EditorNamespace } from 'monaco-editor';
 
-export const themeName = 'luce';
+export const luceThemeName = 'luce';
 export const luceTheme: EditorNamespace.IStandaloneThemeData = {
   base: 'vs', // use vscode light as base theme
   inherit: true,
-  rules: [],
+  rules: [
+    // Colors manually extracted from https://github.com/microsoft/vscode/blob/4ce6f26ef7a68b49140abc02cf221c86370b6c57/extensions/theme-defaults/themes/light_plus.json
+    {
+      foreground: '#0070C1',
+      token: 'builtinConstant',
+    },
+    {
+      token: 'method',
+      foreground: '#795E26',
+    },
+    {
+      token: 'function',
+      foreground: '#795E26',
+    },
+    {
+      token: 'class',
+      foreground: '#267f99',
+    },
+    {
+      token: 'typeParameter',
+      foreground: '#267f99',
+    },
+  ],
   colors: {
     'editorLineNumber.foreground': '#60bcd9',
     'editorLineNumber.activeForeground': '#60bcd9',
@@ -26,10 +48,10 @@ export function configureEditor() {
   });
 }
 
-export function colorizeElements(monaco: ReturnType<typeof useMonaco>) {
+export function colorizeElements(monaco: Monaco) {
   document
     .querySelectorAll<HTMLElement>(`.${COLORIZE_CLASSNAME}:not(.vs)`)
     .forEach((element) => {
-      monaco?.editor.colorizeElement(element, {});
+      monaco.editor.colorizeElement(element, {});
     });
 }

@@ -191,8 +191,10 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
   const monaco = useMonaco();
 
   useEffect(() => {
-    registerCustomPythonLanguage(monaco);
-    colorizeElements(monaco);
+    if (monaco) {
+      registerCustomPythonLanguage(monaco);
+      colorizeElements(monaco);
+    }
   }, [monaco]);
 
   return (

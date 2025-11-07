@@ -1,6 +1,6 @@
 import axios from 'axios';
 import produce from 'immer';
-import { uniqBy } from 'lodash';
+import { debounce, uniqBy } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import {
   Dispatch,
@@ -176,7 +176,10 @@ export function useActivity(
     );
   }, [codeCellsSerialized, initialCodeCellsSerialized, variantId, setMetadata]);
 
-  const handleSourceChanged = (newSource: string, idx: number) => {
+  // Small debounce because this is potentially called on every keystroke.
+  // The setters persist data on Local/Session Storage
+  // and we don't want to write synchronously too often.
+  const handleSourceChanged = debounce((newSource: string, idx: number) => {
     setCodeCells((currentCodeCells) =>
       produce(currentCodeCells, (draft) => {
         draft[idx].source = newSource;
@@ -190,7 +193,7 @@ export function useActivity(
         }
       }),
     );
-  };
+  }, 50);
 
   const sourcesUpTo = (idx: number) =>
     codeCells.slice(0, idx + 1).map(sourceFromCell);

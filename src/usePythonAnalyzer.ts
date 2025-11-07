@@ -1,6 +1,12 @@
 import type { Monaco } from '@monaco-editor/react';
-import { editor, type editor as EditorNamespace } from 'monaco-editor';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  editor,
+  IRange,
+  languages,
+  Range,
+  type editor as EditorNamespace,
+} from 'monaco-editor';
+import { useCallback, useEffect, useRef } from 'react';
 import {
   ErrorCategory,
   staticErrorMessageCategory,
@@ -12,10 +18,13 @@ import {
   FileHandle,
   installPytamaro,
   PositionEncoding,
+  SemanticToken,
+  Position as TyPosition,
+  Range as TyRange,
   Workspace,
 } from './python-analyzer/python_analyzer';
 import { PythonFile } from './schemas/activitySchema';
-import { countLines, joinLines } from './sourceUtils';
+import { joinLines } from './sourceUtils';
 
 export type CustomDiagnostic = EditorNamespace.IModelDeltaDecoration & {
   category: ErrorCategory;
@@ -25,15 +34,32 @@ export type CustomDiagnostic = EditorNamespace.IModelDeltaDecoration & {
 export const ANALYZER_DIAGNOSTIC_CLASSNAME =
   'squiggly-error analyzer-diagnostic';
 
+interface CustomModel extends editor.ITextModel {
+  _previousLinesCount: number;
+}
+
+export function countPreviousLines(model: editor.ITextModel): number {
+  return (model as CustomModel)._previousLinesCount;
+}
+
+export function setPreviousLinesCount(
+  editorInstance: editor.IStandaloneCodeEditor,
+  previousLinesCount: number,
+): void {
+  const model = editorInstance.getModel() as CustomModel;
+  model._previousLinesCount = previousLinesCount;
+}
+
 function initWorkspace(): Workspace {
   const workspace = new Workspace('/', PositionEncoding.Utf16, {});
   installPytamaro(workspace);
   return workspace;
 }
 
+export type PythonAnalyzer = ReturnType<typeof usePythonAnalyzer>;
+
 export default function usePythonAnalyzer(
   sources: string[],
-  cellIdx: number,
   extraPythonFiles: PythonFile[] = [],
   extraToolboxFunctions: ToolboxFunction[] = [],
 ) {
@@ -42,7 +68,7 @@ export default function usePythonAnalyzer(
   const toolboxFunctions = list();
 
   let workspace = workspaceRef.current;
-  const [fileHandles, setFileHandles] = useState<Map<string, FileHandle>>(
+  const fileHandles = useRef<Map<string, FileHandle>>(
     new Map<string, FileHandle>(),
   );
 
@@ -52,7 +78,7 @@ export default function usePythonAnalyzer(
     // All cells are joined together
     const initialFiles = cellsToFiles(
       [joinLines(sources)],
-      0,
+      0, // Pretend that all code is in the first (and only) cell
       [],
       extraPythonFiles,
     );
@@ -63,17 +89,17 @@ export default function usePythonAnalyzer(
         newFileHandles.set(file.name, handle);
       }
     });
-    setFileHandles(newFileHandles);
+    fileHandles.current = newFileHandles;
   }
 
   const getCurrentCellFileHandle = () => {
     if (workspace === null) {
       return undefined;
     }
-    return fileHandles.get(`${CURRENT_CELL_FILE}.py`);
+    return fileHandles.current.get(`${CURRENT_CELL_FILE}.py`);
   };
 
-  const updateSource = (newSource: string) => {
+  const updateSource = (cellIdx: number, newSource: string) => {
     const currentCellFileHandle = getCurrentCellFileHandle();
     if (workspace !== null && currentCellFileHandle !== undefined) {
       const fileContent = joinLines(
@@ -86,16 +112,13 @@ export default function usePythonAnalyzer(
   const addOrUpdateFile = useCallback(
     (file: PythonFile) => {
       if (workspace !== null) {
-        setFileHandles((curHandles) => {
-          const handle = curHandles.get(file.name);
-          if (handle) {
-            workspace.updateFile(handle, file.content);
-            return curHandles;
-          } else {
-            const newFileHandle = workspace.openFile(file.name, file.content);
-            return new Map(curHandles).set(file.name, newFileHandle);
-          }
-        });
+        const handle = fileHandles.current.get(file.name);
+        if (handle) {
+          workspace.updateFile(handle, file.content);
+        } else {
+          const newFileHandle = workspace.openFile(file.name, file.content);
+          fileHandles.current.set(file.name, newFileHandle);
+        }
       }
     },
     [workspace],
@@ -152,12 +175,13 @@ export default function usePythonAnalyzer(
       };
     });
 
-    const linesBefore = sources
-      .slice(0, cellIdx)
-      .map((source) => countLines(source))
-      .reduce((a, b) => a + b, 0);
+    const model = editorInstance.getModel();
+    if (model === null) {
+      return [];
+    }
 
-    const lineCurrent = countLines(editorInstance.getValue());
+    const linesBefore = countPreviousLines(model);
+    const lineCurrent = model.getLineCount();
 
     // Only keep the markers for the current cell
     const currentCellMarkers = decorations.filter(
@@ -179,9 +203,98 @@ export default function usePythonAnalyzer(
     }));
   };
 
+  function tyRangeToMonacoRange(
+    range: TyRange,
+    previousLinesCount: number,
+  ): IRange {
+    return {
+      startLineNumber: range.start.line - previousLinesCount,
+      startColumn: range.start.column,
+      endLineNumber: range.end.line - previousLinesCount,
+      endColumn: range.end.column,
+    };
+  }
+
+  function monacoRangeToTyRange(
+    range: IRange,
+    previousLinesCount: number,
+  ): TyRange {
+    const actualStartLineNumber = range.startLineNumber + previousLinesCount;
+    const actualEndLineNumber = range.endLineNumber + previousLinesCount;
+    return new TyRange(
+      new TyPosition(actualStartLineNumber, range.startColumn),
+      new TyPosition(actualEndLineNumber, range.endColumn),
+    );
+  }
+
+  function generateMonacoTokens(
+    semantic: SemanticToken[],
+    model: editor.ITextModel,
+    previousLinesCount: number,
+  ): languages.SemanticTokens {
+    const result = [];
+
+    let prevLine = 0;
+    let prevChar = 0;
+
+    for (const token of semantic) {
+      // Convert from 1-based to 0-based indexing for Monaco
+      const line = token.range.start.line - 1;
+      const char = token.range.start.column - 1;
+
+      const length = model.getValueLengthInRange(
+        tyRangeToMonacoRange(token.range, previousLinesCount),
+      );
+
+      result.push(
+        line - prevLine,
+        prevLine === line ? char - prevChar : char,
+        length,
+        token.kind,
+        token.modifiers,
+      );
+
+      prevLine = line;
+      prevChar = char;
+    }
+
+    if (result.length > 0) {
+      // Adjust the line number to account for previous lines.
+      // Note that result[5*ith_token] is the line *difference* for the ith token,
+      // so we must adjust only the first token (the only "absolute" one)
+      // to correctly position all the tokens.
+      result[0] -= previousLinesCount;
+    }
+
+    return { data: Uint32Array.from(result) };
+  }
+
+  const documentRangeSemanticTokens = (
+    model: editor.ITextModel,
+    range: Range,
+  ): languages.SemanticTokens | null => {
+    const fileHandle = getCurrentCellFileHandle();
+    if (!fileHandle) {
+      return null;
+    }
+    const previousLinesCount = countPreviousLines(model);
+    const tyRange = monacoRangeToTyRange(range, previousLinesCount);
+    const tokens = workspace.semanticTokensInRange(fileHandle, tyRange);
+    return generateMonacoTokens(tokens, model, previousLinesCount);
+  };
+
+  const semanticTokensLegend = (): languages.SemanticTokensLegend => {
+    return {
+      tokenTypes: SemanticToken.kinds(),
+      tokenModifiers: SemanticToken.modifiers(),
+    };
+  };
+
   return {
     addOrUpdateFile,
     updateSource,
     customDiagnostics,
+    documentRangeSemanticTokens,
+    semanticTokensLegend,
   };
 }

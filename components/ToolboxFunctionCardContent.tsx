@@ -39,7 +39,7 @@ export default function ToolboxFunctionCardContent({
   const toggleShowUsage = () => setShowUsage(!showUsage);
   const usageCodeCells = initialStateSingleCell(fn.usage);
   const activityVariant = toolboxActivityVariant(fn.name);
-  const fnPythonAnalyzer = usePythonAnalyzer([fn.source], 0);
+  const fnPythonAnalyzer = usePythonAnalyzer([fn.source]);
   const activity = useReadOnlyTemporaryActivity(
     usageCodeCells,
     activityVariant,
@@ -93,6 +93,7 @@ export default function ToolboxFunctionCardContent({
               currentSource={fn.source}
               readOnly
               pythonAnalyzer={fnPythonAnalyzer}
+              cellIdx={0}
             />
           )}
         </Box>

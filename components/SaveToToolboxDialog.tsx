@@ -199,11 +199,7 @@ export default function SaveToToolboxDialog({
     return newToolboxFunction;
   };
 
-  const implementationPythonAnalyzer = usePythonAnalyzer(
-    [implementation],
-    0,
-    [],
-  );
+  const implementationPythonAnalyzer = usePythonAnalyzer([implementation]);
 
   const postExecuteSingleCell = (
     idx: number,
@@ -336,6 +332,7 @@ export default function SaveToToolboxDialog({
           currentSource={implementation}
           onChange={handleImplementationChange}
           pythonAnalyzer={implementationPythonAnalyzer}
+          cellIdx={0}
         />
         <Box marginTop={4} />
         {functions.length > 0 ? (

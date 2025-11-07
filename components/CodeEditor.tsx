@@ -1,5 +1,5 @@
 import Editor, { Monaco } from '@monaco-editor/react';
-import { debounce, throttle } from 'lodash';
+import { throttle } from 'lodash';
 import { editor, type editor as EditorNamespace } from 'monaco-editor';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ExecutionResponse } from '../src/codeExecution';
@@ -13,7 +13,11 @@ import {
 import { addErrorAnnotationsFromExecution } from '../src/pythonTraceback';
 import scrollToAnchor from '../src/scrollToAnchor';
 import theme from '../src/theme';
-import usePythonAnalyzer, { CustomDiagnostic } from '../src/usePythonAnalyzer';
+import {
+  CustomDiagnostic,
+  PythonAnalyzer,
+  setPreviousLinesCount,
+} from '../src/usePythonAnalyzer';
 import { ErrorMessageWidget } from './editor/ErrorMessageWidget';
 import { ErrorCategory } from './editor/errors';
 import {
@@ -24,14 +28,14 @@ import {
   colorizeElements,
   configureEditor,
   luceTheme,
+  luceThemeName,
   RUN_CODE_CONDITION_KEY,
-  themeName,
 } from './editor/utils';
 
 configureEditor();
 
 type MonacoForPyTamaro = Monaco & {
-  pytamaroCompletionProvidersRegistered?: boolean;
+  customProvidersRegistered?: boolean;
   pytamaroColorized?: boolean;
 };
 
@@ -47,6 +51,7 @@ export default function CodeEditor({
   readOnly = false,
   resetCounter = 0,
   pythonAnalyzer,
+  cellIdx,
 }: {
   initialSource: string;
   currentSource: string;
@@ -58,7 +63,8 @@ export default function CodeEditor({
   firstLineNumber?: number;
   readOnly?: boolean;
   resetCounter?: number;
-  pythonAnalyzer: ReturnType<typeof usePythonAnalyzer>;
+  pythonAnalyzer: PythonAnalyzer;
+  cellIdx: number;
 }) {
   const { list } = useLocalToolbox();
   const { metadata } = useLocalProfile();
@@ -91,8 +97,8 @@ export default function CodeEditor({
 
     registerCustomPythonLanguage(monaco);
 
-    monaco.editor.defineTheme(themeName, luceTheme);
-    monaco.editor.setTheme(themeName);
+    monaco.editor.defineTheme(luceThemeName, luceTheme);
+    monaco.editor.setTheme(luceThemeName);
 
     setExecutionAllowedCondition(
       editor.createContextKey(RUN_CODE_CONDITION_KEY, executionAllowed),
@@ -154,6 +160,13 @@ export default function CodeEditor({
     }
   }, [monacoInstance, editorInstance]);
 
+  // Effect to update the previous lines count stored inside the model (to be used, e.g., by the semantic tokens provider).
+  useEffect(() => {
+    if (editorInstance) {
+      setPreviousLinesCount(editorInstance, firstLineNumber - 1);
+    }
+  }, [firstLineNumber, editorInstance]);
+
   // Effect to update the condition that determines whether the code execution is allowed or not.
   useEffect(() => {
     if (executionAllowedCondition) {
@@ -184,12 +197,9 @@ export default function CodeEditor({
     return () => {};
   }, [editorInstance, monacoInstance, onExecutionRequested]);
 
-  // Effect to register the completion providers.
+  // Effect to register various providers (e.g, completion, semantic tokens).
   useEffect(() => {
-    if (
-      monacoInstance &&
-      !monacoInstance.pytamaroCompletionProvidersRegistered
-    ) {
+    if (monacoInstance && !monacoInstance.customProvidersRegistered) {
       const providers = [
         toolboxImportCompletionProvider(monacoInstance, toolboxFunctions),
         moduleImportCompletionProvider(monacoInstance),
@@ -201,15 +211,26 @@ export default function CodeEditor({
           provider,
         ),
       );
-      monacoInstance.pytamaroCompletionProvidersRegistered = true;
+      disposers.push(
+        monacoInstance.languages.registerDocumentRangeSemanticTokensProvider(
+          STRICT_PYTHON3_LANG_ID,
+          {
+            provideDocumentRangeSemanticTokens:
+              pythonAnalyzer.documentRangeSemanticTokens,
+            getLegend: pythonAnalyzer.semanticTokensLegend,
+          },
+        ),
+      );
+      // eslint-disable-next-line no-param-reassign
+      monacoInstance.customProvidersRegistered = true;
       return () => {
         disposers.forEach((disposer) => disposer?.dispose());
-        if (monacoInstance)
-          monacoInstance.pytamaroCompletionProvidersRegistered = false;
+        if (monacoInstance) monacoInstance.customProvidersRegistered = false;
       };
     }
     return () => {};
-  }, [monacoInstance, toolboxFunctions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [monacoInstance, toolboxFunctions, firstLineNumber]);
 
   useEffect(() => {
     const handleMouseMoved = (e: EditorNamespace.IEditorMouseEvent) => {
@@ -324,10 +345,10 @@ export default function CodeEditor({
 
   const analyzeSource = useCallback(
     (source: string) => {
-      pythonAnalyzer.updateSource(source);
+      pythonAnalyzer.updateSource(cellIdx, source);
       addDiagnosticsFromAnalyzer();
     },
-    [pythonAnalyzer, addDiagnosticsFromAnalyzer],
+    [cellIdx, pythonAnalyzer, addDiagnosticsFromAnalyzer],
   );
 
   // Effect to react to change in preferences for semantic checks.
@@ -338,19 +359,19 @@ export default function CodeEditor({
     }
   }, [semanticChecksEnabled, editorInstance]);
 
-  const handleSourceChanged = debounce((newSource: string | undefined) => {
+  const handleSourceChanged = (newSource: string | undefined) => {
     if (newSource !== undefined) {
-      onChange(newSource);
       clearAnnotations();
       analyzeSource(newSource);
+      onChange(newSource);
     }
-  }, 50);
+  };
 
   return (
     <div ref={containerRef} translate='no'>
       <Editor
         language={STRICT_PYTHON3_LANG_ID}
-        theme='luce'
+        theme={luceThemeName}
         defaultValue={currentSource}
         onMount={handleEditorMount}
         onChange={handleSourceChanged}
@@ -369,6 +390,7 @@ export default function CodeEditor({
             useShadows: false,
           },
           readOnly,
+          'semanticHighlighting.enabled': semanticChecksEnabled,
         }}
       />
     </div>

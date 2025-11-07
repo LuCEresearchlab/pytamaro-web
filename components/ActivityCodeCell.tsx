@@ -9,7 +9,7 @@ import {
   PythonFile,
 } from '../src/schemas/activitySchema';
 import { countLines } from '../src/sourceUtils';
-import usePythonAnalyzer from '../src/usePythonAnalyzer';
+import { PythonAnalyzer } from '../src/usePythonAnalyzer';
 import useReset from '../src/useReset';
 import CodeCell from './CodeCell';
 import FailedExecutionSnackbar from './FailedExecutionSnackbar';
@@ -49,6 +49,7 @@ export default function ActivityCodeCell({
   extraPythonFiles,
   platformConfig,
   activityResetCounter,
+  pythonAnalyzer,
 }: {
   activityVariant: ActivityVariant;
   initialCodeCells: CodeCellState[];
@@ -56,6 +57,7 @@ export default function ActivityCodeCell({
   extraPythonFiles: PythonFile[];
   platformConfig: PlatformConfiguration;
   activityResetCounter: number;
+  pythonAnalyzer: PythonAnalyzer;
 }) {
   const {
     codeCells,
@@ -68,12 +70,6 @@ export default function ActivityCodeCell({
     handleResetSingleCell,
     localCodeCellsWrongLength,
   } = useLocalActivity(initialCodeCells, activityVariant, extraPythonFiles);
-
-  const pythonAnalyzer = usePythonAnalyzer(
-    codeCells.map((cell) => cell.source),
-    cellIdx,
-    extraPythonFiles,
-  );
 
   const { resetCounter, newReset } = useReset();
   useEffect(() => {
@@ -104,6 +100,7 @@ export default function ActivityCodeCell({
         resetCounter={resetCounter}
         extraPythonFiles={extraPythonFiles}
         pythonAnalyzer={pythonAnalyzer}
+        cellIdx={cellIdx}
         extraActions={
           <>
             <SaveToToolboxButton

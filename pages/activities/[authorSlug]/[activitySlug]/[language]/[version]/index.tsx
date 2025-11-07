@@ -3,7 +3,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import GithubSlugger from 'github-slugger';
 import Head from 'next/head';
-import { useEffect, useRef, useState } from 'react';
+import { RefObject, useEffect, useRef, useState } from 'react';
 import ActivityCodeCell from '../../../../../../components/ActivityCodeCell';
 import ActivityFooter from '../../../../../../components/ActivityFooter';
 import ActivityResetButton from '../../../../../../components/ActivityResetButton';
@@ -32,6 +32,7 @@ import {
   listCurriculaAllAuthors,
 } from '../../../../../../src/fs-content/authors';
 import { CodeCellState } from '../../../../../../src/localStorage/schema';
+import useLocalActivity from '../../../../../../src/localStorage/useLocalActivity';
 import useLocalProfile from '../../../../../../src/localStorage/useLocalProfile';
 import getNotebookContent from '../../../../../../src/notebook';
 import {
@@ -52,9 +53,65 @@ import { isSpecialActivity } from '../../../../../../src/specialActivities';
 import { activityVariantPathnameFromParts } from '../../../../../../src/urlUtils';
 import useCurriculumFromQuery from '../../../../../../src/useCurriculumFromQuery';
 import useIsMounted from '../../../../../../src/useIsMounted';
+import usePythonAnalyzer from '../../../../../../src/usePythonAnalyzer';
 import useReset from '../../../../../../src/useReset';
 
 const userType = 'student';
+
+function NotebookCells({
+  activity,
+  initialCodeCells,
+  activityVariant,
+  cells,
+  cellsRef,
+  resetCounter,
+  originalIdxToCodeCellIdx,
+}: {
+  activity: Activity;
+  initialCodeCells: CodeCellState[];
+  activityVariant: ActivityVariant;
+  cells: NotebookCell[];
+  cellsRef: RefObject<HTMLDivElement | null>;
+  resetCounter: number;
+  originalIdxToCodeCellIdx: Map<number, number>;
+}) {
+  const { metadata } = useLocalProfile();
+  const { wideEditor } = metadata;
+  const { codeCells } = useLocalActivity(initialCodeCells, activityVariant);
+
+  const pythonAnalyzer = usePythonAnalyzer(
+    codeCells.map((cell) => cell.source),
+    activity.extraPythonFiles,
+  );
+
+  return (
+    <Box ref={cellsRef} className='activity-content'>
+      {cells.map((cell, idx) =>
+        cell.cell_type === 'markdown' ? (
+          <Container maxWidth='md' key={cell.id}>
+            <MarkdownCellComponent
+              cell={cell as MarkdownCell}
+              activityVariant={activityVariant}
+              extraPythonFiles={activity.extraPythonFiles}
+            />
+          </Container>
+        ) : (
+          <Container maxWidth={wideEditor ? false : 'md'} key={cell.id}>
+            <ActivityCodeCell
+              activityVariant={activityVariant}
+              initialCodeCells={initialCodeCells}
+              cellIdx={originalIdxToCodeCellIdx.get(idx) as number}
+              extraPythonFiles={activity.extraPythonFiles}
+              platformConfig={activity.platformConfig}
+              activityResetCounter={resetCounter}
+              pythonAnalyzer={pythonAnalyzer}
+            />
+          </Container>
+        ),
+      )}
+    </Box>
+  );
+}
 
 export default function NotebookPage({
   activity,
@@ -82,9 +139,6 @@ export default function NotebookPage({
   );
 
   const cellsRef = useRef<HTMLDivElement>(null);
-
-  const { metadata } = useLocalProfile();
-  const { wideEditor } = metadata;
 
   const curriculumId = useCurriculumFromQuery();
   const curriculum = curricula.find((c) => curriculumToId(c) === curriculumId);
@@ -153,30 +207,15 @@ export default function NotebookPage({
               </Typography>
               {!curriculum && <GoToCurriculaBanner curricula={curricula} />}
             </Container>
-            <Box ref={cellsRef} className='activity-content'>
-              {cells.map((cell: NotebookCell, idx) =>
-                cell.cell_type === 'markdown' ? (
-                  <Container maxWidth='md' key={cell.id}>
-                    <MarkdownCellComponent
-                      cell={cell as MarkdownCell}
-                      activityVariant={activityVariant}
-                      extraPythonFiles={activity.extraPythonFiles}
-                    />
-                  </Container>
-                ) : (
-                  <Container maxWidth={wideEditor ? false : 'md'} key={cell.id}>
-                    <ActivityCodeCell
-                      activityVariant={activityVariant}
-                      initialCodeCells={initialCodeCells}
-                      cellIdx={originalIdxToCodeCellIdx.get(idx) as number}
-                      extraPythonFiles={activity.extraPythonFiles}
-                      platformConfig={activity.platformConfig}
-                      activityResetCounter={resetCounter}
-                    />
-                  </Container>
-                ),
-              )}
-            </Box>
+            <NotebookCells
+              activity={activity}
+              initialCodeCells={initialCodeCells}
+              activityVariant={activityVariant}
+              cells={cells}
+              cellsRef={cellsRef}
+              resetCounter={resetCounter}
+              originalIdxToCodeCellIdx={originalIdxToCodeCellIdx}
+            />
             <Container maxWidth='md'>
               {!isSpecialActivity(activityVariant) && (
                 <ActivityFooter

@@ -45,12 +45,7 @@ export default function SolitaryCodeCell({
     handleExecute,
   } = activity;
   const source = codeCells[0].source;
-  const pythonAnalyzer = usePythonAnalyzer(
-    [source],
-    0,
-    [],
-    extraToolboxFunctions,
-  );
+  const pythonAnalyzer = usePythonAnalyzer([source], [], extraToolboxFunctions);
 
   useEffect(() => {
     if (requireNewExecution) {
@@ -80,6 +75,7 @@ export default function SolitaryCodeCell({
       sourcesUpTo={[source]}
       resetCounter={resetCounter}
       pythonAnalyzer={pythonAnalyzer}
+      cellIdx={0}
     />
   );
 }
