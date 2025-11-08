@@ -1024,7 +1024,9 @@
             "type": "ass",
             "description": {
                 "p": [
-                    "Python raises a value error when an operation receives an argument that has the right type but an inappropriate value."
+                    "Python raises a value error when an operation receives an argument that has the right type but an inappropriate value.",
+                    "Some situations that look like value errors are not reported as value errors, but as other kinds of errors. For example, a divison by zero is reported as a zero division error.",
+                    "Note that the text of the error message depends on the implementation. Different versions of Python and different checking tools will give slightly different messages."
                 ]
             },
             "examples": [
