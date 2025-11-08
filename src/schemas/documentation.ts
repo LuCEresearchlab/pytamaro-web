@@ -64,6 +64,7 @@ export type JudiciousSimpleElement = {
 export type JudiciousExample = {
   code: string;
   result?: string;
+  error?: string;
   stdin?: string;
   stdout?: string;
   usesOptional?: boolean;

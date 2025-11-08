@@ -90,7 +90,8 @@
     "output": "Ausgabe",
     "codeTooltip": "Python-Code",
     "outputTooltip": "Ausgabe der Codeausführung",
-    "resultTooltip": "Ergebnis der Code-Bewertung",
+    "resultTooltip": "Ergebnis der Code-Auswertung",
+    "errorTooltip": "Fehler während der Code-Auswertung",
     "restartAnimation": "Animation neu starten",
     "findName": "Finde einen Namen",
     "toolbox": {

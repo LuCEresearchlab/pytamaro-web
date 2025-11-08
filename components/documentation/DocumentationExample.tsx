@@ -160,6 +160,28 @@ export default function DocumentationExample({
             />
           </Box>
         )}
+        {example.error && (
+          <Box
+            display='flex'
+            alignItems='center'
+            sx={{
+              // HACK: What's the proper way to introduce new colors?
+              //.      (theme.palette.error.light looks bad)
+              color: 'rgb(255, 0, 0)',
+              backgroundColor: 'rgb(255, 245, 245)',
+            }}
+          >
+            <RotatedHeading tooltip={t('errorTooltip')}>
+              {t('error')}
+            </RotatedHeading>
+            <OutputArea
+              data={example.error}
+              sx={{
+                display: 'inline-block',
+              }}
+            />
+          </Box>
+        )}
       </CardContent>
     </Card>
   );

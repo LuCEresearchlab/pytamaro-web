@@ -829,6 +829,214 @@
                 }
             ],
             "urlSuffix": "#any"
+        },
+        {
+            "kind": "type",
+            "name": "SyntaxError",
+            "type": "ass",
+            "description": {
+                "p": [
+                    "Python raises a syntax error when it encounters source code that cannot be be parsed following the rules of the Python grammar.",
+                    "Note that the text of the error message depends on the implementation. Different versions of Python and different checking tools will give slightly different messages."
+                ]
+            },
+            "examples": [
+                {
+                    "code": "print(2 x)",
+                    "error": "SyntaxError: invalid syntax. Perhaps you forgot a comma?"
+                },
+                {
+                    "code": "print(x + 1) * 2)",
+                    "error": "SyntaxError: unmatched ')'"
+                },
+                {
+                    "code": "2 * (3 + )",
+                    "error": "SyntaxError: invalid syntax"
+                },
+                {
+                    "code": "print(\"Hello World!)",
+                    "error": "SyntaxError: unterminated string literal"
+                },
+                {
+                    "code": "from pytamaro import rectangle,",
+                    "error": "SyntaxError: trailing comma not allowed without surrounding parentheses"
+                }
+            ]
+        },
+        {
+            "kind": "type",
+            "name": "NameError",
+            "type": "ass",
+            "description": {
+                "p": [
+                    "Python raises a name error, for example, when it encounters a name that has not previously been defined (and so it does not know what that name means).",
+                    "Note that the text of the error message depends on the implementation. Different versions of Python and different checking tools will give slightly different messages."
+                ]
+            },
+            "examples": [
+                {
+                    "code": "pring(42)",
+                    "error": "NameError: name 'pring' is not defined. Did you mean: 'print'?"
+                }
+            ]
+        },
+        {
+            "kind": "type",
+            "name": "TypeError",
+            "type": "ass",
+            "description": {
+                "p": [
+                    "Python raises a type error when an operation is applied to a value of inappropriate type.",
+                    "Note that the text of the error message depends on the implementation. Different versions of Python and different checking tools will give slightly different messages."
+                ]
+            },
+            "examples": [
+                {
+                    "code": "\"Age: \" + 18",
+                    "error": "TypeError: can only concatenate str (not \"int\") to str"
+                },
+                {
+                    "code": "abs(\"Hello\")",
+                    "error": "TypeError: bad operand type for abs(): 'str'"
+                },
+                {
+                    "code": "rectangle(100, 20, \"red\")",
+                    "error": "TypeError: Invalid type for parameter `color`: expected `Color`, got `str`"
+                }
+            ]
+        },
+        {
+            "kind": "type",
+            "name": "ZeroDivisionError",
+            "type": "ass",
+            "description": {
+                "p": [
+                    "Python raises a zero division error when when the second argument of a division or modulo operation is zero.",
+                    "Note that the text of the error message depends on the implementation. Different versions of Python and different checking tools will give slightly different messages."
+                ]
+            },
+            "examples": [
+                {
+                    "code": "width / 0",
+                    "error": "ZeroDivisionError: division by zero"
+                },
+                {
+                    "code": "5 % 0",
+                    "error": "ZeroDivisionError: integer modulo by zero"
+                }
+            ]
+        },
+        {
+            "kind": "type",
+            "name": "ModuleNotFoundError",
+            "type": "ass",
+            "description": {
+                "p": [
+                    "Python raises a module not found error when it cannot find the library (i.e., the module) mentioned in an import statement.",
+                    "A module not found error is a special kind of import error.",
+                    "Note that the text of the error message depends on the implementation. Different versions of Python and different checking tools will give slightly different messages."
+                ]
+            },
+            "examples": [
+                {
+                    "code": "from pitamaro import rectangle",
+                    "error": "ModuleNotFoundError: No module named 'pitamaro'"
+                },
+                {
+                    "code": "import maths",
+                    "error": "ModuleNotFoundError: No module named 'maths'"
+                }
+            ]
+        },
+        {
+            "kind": "type",
+            "name": "ImportError",
+            "type": "ass",
+            "description": {
+                "p": [
+                    "Python raises an import error when a name to be imported is not defined in the module it is to be imported from.",
+                    "Note that the text of the error message depends on the implementation. Different versions of Python and different checking tools will give slightly different messages."
+                ]
+            },
+            "examples": [
+                {
+                    "code": "from pytamaro import elipse",
+                    "error": "ImportError: cannot import name 'elipse' from 'pytamaro'. Did you mean: 'ellipse'?"
+                },
+                {
+                    "code": "from math import py",
+                    "error": "ImportError: cannot import name 'py' from 'math'. Did you mean: 'pi'?"
+                },
+                {
+                    "code": "from math import randint",
+                    "error": "ImportError: cannot import name 'randint' from 'math'."
+                }
+            ]
+        },
+        {
+            "kind": "type",
+            "name": "IndexError",
+            "type": "ass",
+            "description": {
+                "p": [
+                    "Python raises an index error when indexing into a list — my_list[index] — and the index is out of range.",
+                    "Note that the text of the error message depends on the implementation. Different versions of Python and different checking tools will give slightly different messages."
+                ]
+            },
+            "examples": [
+                {
+                    "code": "sizes = [\"S\", \"M\", \"L\"]\nchosen = sizes[3]",
+                    "error": "IndexError: list index out of range"
+                },
+                {
+                    "code": "sizes = [\"S\", \"M\", \"L\"]\nsizes[3] = \"XL\"",
+                    "error": "IndexError: list index out of range"
+                },
+                {
+                    "code": "sizes = [\"S\", \"M\", \"L\"]\nchosen = sizes[-4]",
+                    "error": "IndexError: list index out of range"
+                }
+            ]
+        },
+        {
+            "kind": "type",
+            "name": "AssertionError",
+            "type": "ass",
+            "description": {
+                "p": [
+                    "Python raises an assertion error when an assert statement fails (when the condition in the assert statement evaluates to False)."
+                ]
+            },
+            "examples": [
+                {
+                    "code": "size = -2\nassert size >= 0, \"Size must be 0 or positive\"",
+                    "error": "AssertionError: Size must be 0 or positive"
+                },
+                {
+                    "code": "assert False",
+                    "error": "AssertionError"
+                }
+            ]
+        },
+        {
+            "kind": "type",
+            "name": "ValueError",
+            "type": "ass",
+            "description": {
+                "p": [
+                    "Python raises a value error when an operation receives an argument that has the right type but an inappropriate value."
+                ]
+            },
+            "examples": [
+                {
+                    "code": "rectangle(-10, 10, red)",
+                    "error": "ValueError: Invalid length for parameter `width`"
+                },
+                {
+                    "code": "triangle(200, 50, 50, red)",
+                    "error": "ValueError: Value for parameter `angle` out of the allowed range [0, 180]"
+                }
+            ]
         }
     ]
 }

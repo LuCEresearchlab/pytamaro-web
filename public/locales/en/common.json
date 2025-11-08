@@ -92,6 +92,7 @@
     "codeTooltip": "Python code",
     "outputTooltip": "Output of running code",
     "resultTooltip": "Result of evaluating code",
+    "errorTooltip": "Error when evaluating code",
     "restartAnimation": "Restart animation",
     "findName": "Find a name",
     "toolbox": {
