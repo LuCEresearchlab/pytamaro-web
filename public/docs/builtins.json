@@ -1035,6 +1035,10 @@
                 {
                     "code": "triangle(200, 50, 50, red)",
                     "error": "ValueError: Value for parameter `angle` out of the allowed range [0, 180]"
+                },
+                {
+                    "code": "sqrt(-1)",
+                    "error": "ValueError: math domain error"
                 }
             ]
         }
