@@ -29,7 +29,7 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
   private readonly _editor: EditorNamespace.ICodeEditor;
   private readonly _position: IPosition;
   private readonly _domNode: HTMLDivElement;
-  private readonly _categoryNode: HTMLSpanElement | null;
+  private readonly _prefixNode: HTMLSpanElement | null;
   private readonly _arrowNode: HTMLDivElement;
   private readonly _isRuntimeError: boolean;
 
@@ -87,18 +87,26 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
     message.style.fontFamily = theme.typography.fontFamily as string;
     message.style.fontSize = theme.typography.body1.fontSize as string;
 
+    const prefixNode = document.createElement('span');
+    prefixNode.style.opacity = '0.75';
+    if (isRuntimeError) {
+      const runtimeIcon = document.createElement('span');
+      runtimeIcon.style.verticalAlign = 'bottom';
+      runtimeIcon.style.fontFamily = 'Material Icons';
+      runtimeIcon.textContent = 'electric_bolt';
+      runtimeIcon.style.marginRight = '4px';
+      prefixNode.appendChild(runtimeIcon);
+    }
     const categoryContent = displayErrorCategory(category);
     if (categoryContent !== '') {
       const categorySpan = document.createElement('span');
       categorySpan.style.marginRight = '12px';
       categorySpan.style.fontWeight = 'bold';
-      categorySpan.style.opacity = '0.7';
       categorySpan.textContent = categoryContent;
-      message.appendChild(categorySpan);
-      this._categoryNode = categorySpan;
-    } else {
-      this._categoryNode = null;
+      prefixNode.appendChild(categorySpan);
     }
+    this._prefixNode = prefixNode;
+    message.appendChild(prefixNode);
 
     const messageContent = document.createElement('span');
     messageContent.innerHTML = convertMarkdownToCodeTag(
@@ -154,8 +162,8 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
   }
 
   afterRender() {
-    const categoryWidthWithPadding = (this._categoryNode?.offsetWidth ?? 0) + 8;
-    this._domNode.style.marginLeft = `-${6 + categoryWidthWithPadding}px`; // 6px is the default from Monaco
-    this._arrowNode.style.left = `${categoryWidthWithPadding}px`;
+    const prefixWidthWithPadding = (this._prefixNode?.offsetWidth ?? 0) + 8;
+    this._domNode.style.marginLeft = `-${6 + prefixWidthWithPadding}px`; // 6px is the default from Monaco
+    this._arrowNode.style.left = `${prefixWidthWithPadding}px`;
   }
 }
