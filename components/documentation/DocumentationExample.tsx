@@ -165,10 +165,8 @@ export default function DocumentationExample({
             display='flex'
             alignItems='center'
             sx={{
-              // HACK: What's the proper way to introduce new colors?
-              //.      (theme.palette.error.light looks bad)
-              color: 'rgb(255, 0, 0)',
-              backgroundColor: 'rgb(255, 245, 245)',
+              color: 'red',
+              backgroundColor: theme.pytamaro.errorBackgroundRed,
             }}
           >
             <RotatedHeading tooltip={t('errorTooltip')}>

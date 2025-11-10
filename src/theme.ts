@@ -7,6 +7,7 @@ declare module '@mui/material/styles' {
       monospaceFontFamily: string;
       monospaceFontSizeRatio: number;
       redColor: string;
+      errorBackgroundRed: string;
       backgroundColor: string;
     };
   }
@@ -16,6 +17,7 @@ declare module '@mui/material/styles' {
       monospaceFontFamily?: string;
       monospaceFontSizeRatio: number;
       redColor?: string;
+      errorBackgroundRed?: string;
       backgroundColor?: string;
     };
   }
@@ -39,6 +41,7 @@ const theme = responsiveFontSizes(
       monospaceFontFamily: "'Fira Code Variable', monospace",
       monospaceFontSizeRatio: 0.9625,
       redColor: '#D2071D',
+      errorBackgroundRed: 'rgba(255, 245, 245)',
       backgroundColor: '#E1F5FD',
     },
     typography: {
