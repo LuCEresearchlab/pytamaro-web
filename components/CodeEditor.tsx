@@ -265,6 +265,14 @@ export default function CodeEditor({
       const matchingDiagnostics = customDiagnosticsRef.current.filter((diag) =>
         monacoInstance?.Range.containsPosition(diag.range, position),
       );
+      // Sort diagnostics by range length (shorter ranges first, i.e., more specific diagnostics first).
+      matchingDiagnostics.sort((d1, d2) => {
+        return monacoInstance!.Range.containsRange(d1.range, d2.range)
+          ? 1
+          : monacoInstance!.Range.containsRange(d2.range, d1.range)
+            ? -1
+            : 0;
+      });
       const selectedDiagnosticToShow = matchingDiagnostics[0];
       if (selectedDiagnosticToShow === undefined) {
         clearStaticWidget();
