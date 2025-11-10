@@ -35,7 +35,8 @@ export default function TypeConstantDocumentation({
   if (hasExamplesUsingOptional) {
     availableOptions.push(SHOW_OPTIONAL_KEY);
   }
-  if (element.kind === 'constant') {
+  const isConstant = element.kind === 'constant';
+  if (isConstant) {
     const hasType = element.type !== '';
     if (hasType) {
       availableOptions.push(SHOW_TYPES_KEY);
@@ -47,8 +48,12 @@ export default function TypeConstantDocumentation({
       <Box mb={1}>
         <Box sx={{ display: 'flex' }} minHeight='2em'>
           <span>
-            <Typography color='primary' fontWeight='bold' component='span'>
-              {t(element.kind === 'constant' ? 'Constant' : 'Type')}
+            <Typography
+              color={isConstant ? 'primary' : 'warning'}
+              fontWeight='bold'
+              component='span'
+            >
+              {t(isConstant ? 'Constant' : 'Type')}
             </Typography>
             &nbsp;
             <Typography
@@ -67,7 +72,7 @@ export default function TypeConstantDocumentation({
           <span {...hoverProps(nameId(), hoverElement, setHoverElement)}>
             <CodeElement bold>{name}</CodeElement>
           </span>
-          {element.kind === 'constant' && docsMetadata.showTypes && (
+          {isConstant && docsMetadata.showTypes && (
             <>
               <CodeElement>:</CodeElement>
               <CodeElement>&nbsp;</CodeElement>
@@ -76,7 +81,7 @@ export default function TypeConstantDocumentation({
           )}
         </Typography>
       </Box>
-      {element.kind === 'constant' && docsMetadata.showDiagram && (
+      {isConstant && docsMetadata.showDiagram && (
         <ConstantDiagram
           constant={element}
           module={module}
