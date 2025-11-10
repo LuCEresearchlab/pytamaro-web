@@ -40,7 +40,9 @@ function RotatedHeading({
       }}
     >
       <Tooltip arrow title={tooltip} placement='left'>
-        <span style={{ userSelect: 'none' }}>{children}</span>
+        <span style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
+          {children}
+        </span>
       </Tooltip>
     </Box>
   );
