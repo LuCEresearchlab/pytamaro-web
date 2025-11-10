@@ -111,6 +111,7 @@ export default function DocumentationExample({
                   display: 'inline-block',
                   width: example.stdin ? 'auto' : '100%',
                   marginRight: example.stdin ? 0 : theme.spacing(1),
+                  overflowX: 'auto',
                 }}
               />
             )}
@@ -133,6 +134,7 @@ export default function DocumentationExample({
                   sx={{
                     paddingLeft: theme.spacing(0.25),
                     paddingRight: theme.spacing(0.25),
+                    overflowX: 'auto',
                   }}
                   preStyle={{
                     marginTop: theme.spacing(0.5),
@@ -158,6 +160,7 @@ export default function DocumentationExample({
               data={example.result}
               sx={{
                 display: 'inline-block',
+                overflowX: 'auto',
               }}
             />
           </Box>
@@ -178,6 +181,7 @@ export default function DocumentationExample({
               data={example.error}
               sx={{
                 display: 'inline-block',
+                overflowX: 'auto',
               }}
             />
           </Box>
