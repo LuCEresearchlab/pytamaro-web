@@ -4,11 +4,7 @@
     "curricula": "Curricula",
     "my-progress": "My Progress",
     "about": "About",
-    "selectPlatformLanguage": "Select a language for the platform:",
     "selectActivityVariant": "Select a variant (language or version) for this activity:",
-    "selectEditorPreferences": "Select preferences for the editor:",
-    "onlySyntaxErrors": "Show only syntax errors",
-    "alsoSemanticErrors": "Show also semantic errors",
     "playground": "Playground",
     "rapidPlayground": "Rapid Playground",
     "documentation": "Documentation",
@@ -137,5 +133,11 @@
     },
     "sendFeedback": "Send Feedback",
     "notifications": "Notifications",
-    "platformLanguage": "Platform Language"
+    "platformLanguage": "Platform Language",
+    "editorSize": "Editor Size",
+    "editorLiveStaticChecks": "Editor Live Static Checks",
+    "noneChecks": "None",
+    "syntaxChecks": "Syntax",
+    "syntaxSemanticsChecks": "Syntax & Semantics",
+    "learnMoreChecks": "Learn more about errors and checks"
 }

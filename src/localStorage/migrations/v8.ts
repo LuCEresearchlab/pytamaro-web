@@ -20,10 +20,10 @@ export interface MetadataV7 {
 }
 
 export default function migrateToV8(metadata: MetadataV7): Metadata {
-  const newMetadata = {
+  const newMetadata: Metadata = {
     ...metadata,
     dataModelVersion: '8',
-    semanticChecksEnabled: false,
+    liveChecks: 'syntax',
     wideEditor: false,
   };
   return newMetadata;

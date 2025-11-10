@@ -10,6 +10,7 @@ import capitalizedLocalizedLanguageDisplayName from '../../src/internationalizat
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 
 import config from '../../next-i18next.config';
+import theme from '../../src/theme';
 
 export default function PlatformLanguageControl() {
   const { i18n, t, setPlatformLocale } = useLocalTranslation();
@@ -24,7 +25,9 @@ export default function PlatformLanguageControl() {
 
   return (
     <Stack>
-      <Typography gutterBottom>{t('selectPlatformLanguage')}</Typography>
+      <Typography sx={{ ...theme.typography.button }} gutterBottom>
+        {t('platformLanguage')}
+      </Typography>
       <FormControl>
         <Select
           id='locale-select'

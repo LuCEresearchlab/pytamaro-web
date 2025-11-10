@@ -136,5 +136,11 @@
     },
     "sendFeedback": "Feedback senden",
     "notifications": "Benachrichtigungen",
-    "platformLanguage": "Plattformsprache"
+    "platformLanguage": "Plattformsprache",
+    "editorSize": "Editorgröße",
+    "editorLiveStaticChecks": "Live-Statikprüfungen im Editor",
+    "noneChecks": "Keine",
+    "syntaxChecks": "Syntax",
+    "syntaxSemanticsChecks": "Syntax & Semantik",
+    "learnMoreChecks": "Erfahre mehr über Fehler und Prüfungen"
 }

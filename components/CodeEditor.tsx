@@ -68,7 +68,7 @@ export default function CodeEditor({
 }) {
   const { list } = useLocalToolbox();
   const { metadata } = useLocalProfile();
-  const { semanticChecksEnabled } = metadata;
+  const { liveChecks } = metadata;
 
   const monacoRef = useRef<MonacoForPyTamaro | null>(null);
   const editorRef = useRef<EditorNamespace.IStandaloneCodeEditor | null>(null);
@@ -325,39 +325,45 @@ export default function CodeEditor({
     }
   }, [editorInstance, initialSource, resetCounter]);
 
-  const addDiagnosticsFromAnalyzer = useCallback(() => {
-    if (!monacoInstance || !editorInstance) {
-      return;
-    }
-    const diagnostics = pythonAnalyzer.customDiagnostics(
-      monacoInstance,
-      editorInstance,
-    );
-    const visibleDiagnostics = diagnostics.filter(
-      (diag) =>
-        diag.category === ErrorCategory.SyntaxError || semanticChecksEnabled,
-    );
-    customDiagnosticsRef.current = visibleDiagnostics;
-    decorationsCollectionRef.current.push(
-      editorInstance.createDecorationsCollection(visibleDiagnostics),
-    );
-  }, [editorInstance, monacoInstance, pythonAnalyzer, semanticChecksEnabled]);
+  const addDiagnosticsFromAnalyzer = useCallback(
+    (semanticsEnabled: boolean) => {
+      if (!monacoInstance || !editorInstance) {
+        return;
+      }
+      const diagnostics = pythonAnalyzer.customDiagnostics(
+        monacoInstance,
+        editorInstance,
+      );
+      const visibleDiagnostics = diagnostics.filter(
+        (diag) =>
+          diag.category === ErrorCategory.SyntaxError || semanticsEnabled,
+      );
+      customDiagnosticsRef.current = visibleDiagnostics;
+      decorationsCollectionRef.current.push(
+        editorInstance.createDecorationsCollection(visibleDiagnostics),
+      );
+    },
+    [editorInstance, monacoInstance, pythonAnalyzer],
+  );
 
   const analyzeSource = useCallback(
     (source: string) => {
       pythonAnalyzer.updateSource(cellIdx, source);
-      addDiagnosticsFromAnalyzer();
+      if (liveChecks !== 'none') {
+        addDiagnosticsFromAnalyzer(liveChecks === 'syntax-semantics');
+      }
     },
-    [cellIdx, pythonAnalyzer, addDiagnosticsFromAnalyzer],
+    [cellIdx, liveChecks, pythonAnalyzer, addDiagnosticsFromAnalyzer],
   );
 
-  // Effect to react to change in preferences for semantic checks.
+  // Effect to react to change in preferences for live checks.
   // Trigger re-analysis of the current source.
   useEffect(() => {
     if (editorInstance) {
-      editorInstance.setValue(editorInstance.getValue());
+      clearAnnotations();
+      analyzeSource(editorInstance.getValue());
     }
-  }, [semanticChecksEnabled, editorInstance]);
+  }, [liveChecks, editorInstance, analyzeSource, clearAnnotations]);
 
   const handleSourceChanged = (newSource: string | undefined) => {
     if (newSource !== undefined) {
@@ -390,7 +396,7 @@ export default function CodeEditor({
             useShadows: false,
           },
           readOnly,
-          'semanticHighlighting.enabled': semanticChecksEnabled,
+          'semanticHighlighting.enabled': liveChecks === 'syntax-semantics',
         }}
       />
     </div>

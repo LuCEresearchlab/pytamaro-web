@@ -16,9 +16,11 @@ export interface Metadata {
   platformLocale: string | null; // null means not explicitly chosen
   docs: DocsMetadata;
   lastNotificationSeen: number;
-  semanticChecksEnabled: boolean;
+  liveChecks: LiveChecksStatus;
   wideEditor: boolean;
 }
+
+export type LiveChecksStatus = 'none' | 'syntax' | 'syntax-semantics';
 
 export interface DocsMetadata {
   showOptional: boolean;
@@ -112,7 +114,7 @@ export function getDefaultMetadata(): Metadata {
     platformLocale: null,
     docs: defaultDocsMetadata(),
     lastNotificationSeen: changelogEntries.length - 1,
-    semanticChecksEnabled: false,
+    liveChecks: 'syntax',
     wideEditor: false,
   };
 }

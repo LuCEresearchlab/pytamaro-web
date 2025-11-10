@@ -20,7 +20,6 @@ export async function alwaysStoreDbEvent(
     await axios.post(`/api/events/${event_name}`, {
       uuid: metadata.userUuid,
       experimentKey: metadata.experimentKey,
-      semanticChecksEnabled: metadata.semanticChecksEnabled,
       ...payload,
     });
     return true;
