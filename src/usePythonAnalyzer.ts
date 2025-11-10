@@ -6,7 +6,7 @@ import {
   Range,
   type editor as EditorNamespace,
 } from 'monaco-editor';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   ErrorCategory,
   staticErrorMessageCategory,
@@ -67,6 +67,16 @@ export default function usePythonAnalyzer(
   const { list } = useLocalToolbox();
   const toolboxFunctions = list();
 
+  // A bit of a hack, I am not sure how to do this more cleanly.
+  // We need to have an updated references to the sources to figure out the sources
+  // of the other cells when calling updateSource().
+  // But we would like updateSource to be stable, so that the clients of this hook
+  // do not get constant updates.
+  const sourcesRef = useRef(sources);
+  useEffect(() => {
+    sourcesRef.current = sources;
+  }, [sources]);
+
   let workspace = workspaceRef.current;
   const fileHandles = useRef<Map<string, FileHandle>>(
     new Map<string, FileHandle>(),
@@ -92,22 +102,27 @@ export default function usePythonAnalyzer(
     fileHandles.current = newFileHandles;
   }
 
-  const getCurrentCellFileHandle = () => {
+  const getCurrentCellFileHandle = useCallback(() => {
     if (workspace === null) {
       return undefined;
     }
     return fileHandles.current.get(`${CURRENT_CELL_FILE}.py`);
-  };
+  }, [workspace, fileHandles]);
 
-  const updateSource = (cellIdx: number, newSource: string) => {
-    const currentCellFileHandle = getCurrentCellFileHandle();
-    if (workspace !== null && currentCellFileHandle !== undefined) {
-      const fileContent = joinLines(
-        sources.map((source, idx) => (idx === cellIdx ? newSource : source)),
-      );
-      workspace.updateFile(currentCellFileHandle, fileContent);
-    }
-  };
+  const updateSource = useCallback(
+    (cellIdx: number, newSource: string) => {
+      const currentCellFileHandle = getCurrentCellFileHandle();
+      if (workspace !== null && currentCellFileHandle !== undefined) {
+        const fileContent = joinLines(
+          sourcesRef.current.map((source, idx) =>
+            idx === cellIdx ? newSource : source,
+          ),
+        );
+        workspace.updateFile(currentCellFileHandle, fileContent);
+      }
+    },
+    [workspace, getCurrentCellFileHandle],
+  );
 
   const addOrUpdateFile = useCallback(
     (file: PythonFile) => {
@@ -137,71 +152,74 @@ export default function usePythonAnalyzer(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allToolboxFunctionsStatus, workspace, addOrUpdateFile]);
 
-  const customDiagnostics = (
-    monacoInstance: Monaco,
-    editorInstance: editor.IStandaloneCodeEditor,
-  ): CustomDiagnostic[] => {
-    const currentCellFileHandle = getCurrentCellFileHandle();
-    if (workspace === null || currentCellFileHandle === undefined) {
-      return [];
-    }
-    const diagnostics = workspace.checkFile(currentCellFileHandle);
-    // Eagerly convert the diagnostic to avoid out of bound errors
-    // when the diagnostics are "deferred".
-    const serializedDiagnostics = diagnostics.map((diagnostic) => ({
-      id: diagnostic.id(),
-      message: diagnostic.message(),
-      //severity: diagnostic.severity(),
-      range: diagnostic.toRange(workspace) ?? null,
-      //textRange: diagnostic.textRange() ?? null,
-    }));
+  const customDiagnostics = useCallback(
+    (
+      monacoInstance: Monaco,
+      editorInstance: editor.IStandaloneCodeEditor,
+    ): CustomDiagnostic[] => {
+      const currentCellFileHandle = getCurrentCellFileHandle();
+      if (workspace === null || currentCellFileHandle === undefined) {
+        return [];
+      }
+      const diagnostics = workspace.checkFile(currentCellFileHandle);
+      // Eagerly convert the diagnostic to avoid out of bound errors
+      // when the diagnostics are "deferred".
+      const serializedDiagnostics = diagnostics.map((diagnostic) => ({
+        id: diagnostic.id(),
+        message: diagnostic.message(),
+        //severity: diagnostic.severity(),
+        range: diagnostic.toRange(workspace) ?? null,
+        //textRange: diagnostic.textRange() ?? null,
+      }));
 
-    const decorations = serializedDiagnostics.map((diagnostic) => {
-      const range = diagnostic.range;
+      const decorations = serializedDiagnostics.map((diagnostic) => {
+        const range = diagnostic.range;
 
-      return {
+        return {
+          range: new monacoInstance.Range(
+            range?.start.line ?? 0,
+            range?.start.column ?? 0,
+            range?.end.line ?? 0,
+            range?.end.column ?? 0,
+          ),
+          options: {
+            className: ANALYZER_DIAGNOSTIC_CLASSNAME,
+            showIfCollapsed: true,
+          },
+          message: diagnostic.message,
+          category: staticErrorMessageCategory(diagnostic.id),
+        };
+      });
+
+      const model = editorInstance.getModel();
+      if (model === null) {
+        return [];
+      }
+
+      const linesBefore = countPreviousLines(model);
+      const lineCurrent = model.getLineCount();
+
+      // Only keep the markers for the current cell
+      const currentCellMarkers = decorations.filter(
+        (marker) =>
+          marker.range.startLineNumber > linesBefore &&
+          marker.range.endLineNumber <= linesBefore + lineCurrent,
+      );
+
+      // Subtract the number of lines before the current cell
+      // to get the correct line number in the editor
+      return currentCellMarkers.map((marker) => ({
+        ...marker,
         range: new monacoInstance.Range(
-          range?.start.line ?? 0,
-          range?.start.column ?? 0,
-          range?.end.line ?? 0,
-          range?.end.column ?? 0,
+          marker.range.startLineNumber - linesBefore,
+          marker.range.startColumn,
+          marker.range.endLineNumber - linesBefore,
+          marker.range.endColumn,
         ),
-        options: {
-          className: ANALYZER_DIAGNOSTIC_CLASSNAME,
-          showIfCollapsed: true,
-        },
-        message: diagnostic.message,
-        category: staticErrorMessageCategory(diagnostic.id),
-      };
-    });
-
-    const model = editorInstance.getModel();
-    if (model === null) {
-      return [];
-    }
-
-    const linesBefore = countPreviousLines(model);
-    const lineCurrent = model.getLineCount();
-
-    // Only keep the markers for the current cell
-    const currentCellMarkers = decorations.filter(
-      (marker) =>
-        marker.range.startLineNumber > linesBefore &&
-        marker.range.endLineNumber <= linesBefore + lineCurrent,
-    );
-
-    // Subtract the number of lines before the current cell
-    // to get the correct line number in the editor
-    return currentCellMarkers.map((marker) => ({
-      ...marker,
-      range: new monacoInstance.Range(
-        marker.range.startLineNumber - linesBefore,
-        marker.range.startColumn,
-        marker.range.endLineNumber - linesBefore,
-        marker.range.endColumn,
-      ),
-    }));
-  };
+      }));
+    },
+    [getCurrentCellFileHandle, workspace],
+  );
 
   function tyRangeToMonacoRange(
     range: TyRange,
@@ -227,74 +245,89 @@ export default function usePythonAnalyzer(
     );
   }
 
-  function generateMonacoTokens(
-    semantic: SemanticToken[],
-    model: editor.ITextModel,
-    previousLinesCount: number,
-  ): languages.SemanticTokens {
-    const result = [];
+  const generateMonacoTokens = useCallback(
+    (
+      semantic: SemanticToken[],
+      model: editor.ITextModel,
+      previousLinesCount: number,
+    ): languages.SemanticTokens => {
+      const result = [];
 
-    let prevLine = 0;
-    let prevChar = 0;
+      let prevLine = 0;
+      let prevChar = 0;
 
-    for (const token of semantic) {
-      // Convert from 1-based to 0-based indexing for Monaco
-      const line = token.range.start.line - 1;
-      const char = token.range.start.column - 1;
+      for (const token of semantic) {
+        // Convert from 1-based to 0-based indexing for Monaco
+        const line = token.range.start.line - 1;
+        const char = token.range.start.column - 1;
 
-      const length = model.getValueLengthInRange(
-        tyRangeToMonacoRange(token.range, previousLinesCount),
-      );
+        const length = model.getValueLengthInRange(
+          tyRangeToMonacoRange(token.range, previousLinesCount),
+        );
 
-      result.push(
-        line - prevLine,
-        prevLine === line ? char - prevChar : char,
-        length,
-        token.kind,
-        token.modifiers,
-      );
+        result.push(
+          line - prevLine,
+          prevLine === line ? char - prevChar : char,
+          length,
+          token.kind,
+          token.modifiers,
+        );
 
-      prevLine = line;
-      prevChar = char;
-    }
+        prevLine = line;
+        prevChar = char;
+      }
 
-    if (result.length > 0) {
-      // Adjust the line number to account for previous lines.
-      // Note that result[5*ith_token] is the line *difference* for the ith token,
-      // so we must adjust only the first token (the only "absolute" one)
-      // to correctly position all the tokens.
-      result[0] -= previousLinesCount;
-    }
+      if (result.length > 0) {
+        // Adjust the line number to account for previous lines.
+        // Note that result[5*ith_token] is the line *difference* for the ith token,
+        // so we must adjust only the first token (the only "absolute" one)
+        // to correctly position all the tokens.
+        result[0] -= previousLinesCount;
+      }
 
-    return { data: Uint32Array.from(result) };
-  }
+      return { data: Uint32Array.from(result) };
+    },
+    [],
+  );
 
-  const documentRangeSemanticTokens = (
-    model: editor.ITextModel,
-    range: Range,
-  ): languages.SemanticTokens | null => {
-    const fileHandle = getCurrentCellFileHandle();
-    if (!fileHandle) {
-      return null;
-    }
-    const previousLinesCount = countPreviousLines(model);
-    const tyRange = monacoRangeToTyRange(range, previousLinesCount);
-    const tokens = workspace.semanticTokensInRange(fileHandle, tyRange);
-    return generateMonacoTokens(tokens, model, previousLinesCount);
-  };
+  const documentRangeSemanticTokens = useCallback(
+    (
+      model: editor.ITextModel,
+      range: Range,
+    ): languages.SemanticTokens | null => {
+      const fileHandle = getCurrentCellFileHandle();
+      if (!fileHandle) {
+        return null;
+      }
+      const previousLinesCount = countPreviousLines(model);
+      const tyRange = monacoRangeToTyRange(range, previousLinesCount);
+      const tokens = workspace.semanticTokensInRange(fileHandle, tyRange);
+      return generateMonacoTokens(tokens, model, previousLinesCount);
+    },
+    [getCurrentCellFileHandle, workspace, generateMonacoTokens],
+  );
 
-  const semanticTokensLegend = (): languages.SemanticTokensLegend => {
+  const semanticTokensLegend =
+    useCallback((): languages.SemanticTokensLegend => {
+      return {
+        tokenTypes: SemanticToken.kinds(),
+        tokenModifiers: SemanticToken.modifiers(),
+      };
+    }, []);
+
+  return useMemo(() => {
     return {
-      tokenTypes: SemanticToken.kinds(),
-      tokenModifiers: SemanticToken.modifiers(),
+      addOrUpdateFile,
+      updateSource,
+      customDiagnostics,
+      documentRangeSemanticTokens,
+      semanticTokensLegend,
     };
-  };
-
-  return {
+  }, [
     addOrUpdateFile,
     updateSource,
     customDiagnostics,
     documentRangeSemanticTokens,
     semanticTokensLegend,
-  };
+  ]);
 }

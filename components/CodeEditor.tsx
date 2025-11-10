@@ -1,5 +1,5 @@
 import Editor, { Monaco } from '@monaco-editor/react';
-import { throttle } from 'lodash';
+import { debounce, DebouncedFunc, throttle } from 'lodash';
 import { editor, type editor as EditorNamespace } from 'monaco-editor';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ExecutionResponse } from '../src/codeExecution';
@@ -81,12 +81,17 @@ export default function CodeEditor({
   const toolboxFunctions = list();
   const runtimeErrorWidgetRef = useRef<ErrorMessageWidget | null>(null);
   const staticErrorWidgetRef = useRef<ErrorMessageWidget | null>(null);
-  const decorationsCollectionRef = useRef<
-    editor.IEditorDecorationsCollection[]
-  >([]);
+  const runtimeDecorationsCollectionRef =
+    useRef<editor.IEditorDecorationsCollection | null>(null);
+  const staticDecorationsCollectionRef =
+    useRef<editor.IEditorDecorationsCollection | null>(null);
   const hoveredStaticErrorDecorationRef =
     useRef<editor.IEditorDecorationsCollection>(null);
   const customDiagnosticsRef = useRef<CustomDiagnostic[]>([]);
+  const shownDiagnosticRef = useRef<CustomDiagnostic | null>(null);
+  const debouncedShowDiagnosticOnHover = useRef<DebouncedFunc<
+    () => void
+  > | null>(null);
 
   const handleEditorMount = (
     editor: EditorNamespace.IStandaloneCodeEditor,
@@ -138,12 +143,26 @@ export default function CodeEditor({
     }
   };
 
-  const clearStaticAnnotations = () => {
+  const clearStaticWidget = useCallback(() => {
+    // Clear the possible static error widget
     staticErrorWidgetRef.current?.dispose();
     staticErrorWidgetRef.current = null;
+    // And its possible decoration on hover
     hoveredStaticErrorDecorationRef.current?.clear();
     hoveredStaticErrorDecorationRef.current = null;
-  };
+    // And the shown diagnostic
+    shownDiagnosticRef.current = null;
+    // Also cancel possible pending showing of a diagnostic widget/decorations
+    debouncedShowDiagnosticOnHover.current?.cancel();
+  }, []);
+
+  const clearStaticAnnotations = useCallback(() => {
+    // Clear a possible static widget and related decoration
+    clearStaticWidget();
+    // And finally all the other possible static decorations
+    staticDecorationsCollectionRef.current?.clear();
+    staticDecorationsCollectionRef.current = null;
+  }, [clearStaticWidget]);
 
   const clearAnnotations = useCallback(() => {
     if (monacoInstance && editorInstance) {
@@ -151,14 +170,12 @@ export default function CodeEditor({
       runtimeErrorWidgetRef.current?.dispose();
       runtimeErrorWidgetRef.current = null;
       // Remove possible collections of decorations
-      decorationsCollectionRef.current.forEach((collection) => {
-        collection.clear();
-      });
-      decorationsCollectionRef.current = [];
+      runtimeDecorationsCollectionRef.current?.clear();
+      runtimeDecorationsCollectionRef.current = null;
       // Remove static error annotations
       clearStaticAnnotations();
     }
-  }, [monacoInstance, editorInstance]);
+  }, [monacoInstance, editorInstance, clearStaticAnnotations]);
 
   // Effect to update the previous lines count stored inside the model (to be used, e.g., by the semantic tokens provider).
   useEffect(() => {
@@ -238,30 +255,41 @@ export default function CodeEditor({
         // If there is a runtime error widget shown, do not show static error widgets.
         return;
       }
-      clearStaticAnnotations();
       // Find position under mouse
       // Check if there is a diagnostic at that position
       const position = e.target.position;
       if (!position) {
+        clearStaticWidget();
         return;
       }
       const matchingDiagnostics = customDiagnosticsRef.current.filter((diag) =>
         monacoInstance?.Range.containsPosition(diag.range, position),
       );
-      if (matchingDiagnostics.length > 0) {
-        const diag = matchingDiagnostics[0];
+      const selectedDiagnosticToShow = matchingDiagnostics[0];
+      if (selectedDiagnosticToShow === undefined) {
+        clearStaticWidget();
+        return;
+      }
+      if (selectedDiagnosticToShow === shownDiagnosticRef.current) {
+        // The widget for the diagnostic is already shown
+        // (and we don't want to re-create it).
+        return;
+      }
+      clearStaticWidget();
+      debouncedShowDiagnosticOnHover.current = debounce(() => {
+        shownDiagnosticRef.current = selectedDiagnosticToShow;
         const widget = new ErrorMessageWidget(
           monacoInstance!,
           editorInstance!,
-          diag.range,
-          diag.message,
+          selectedDiagnosticToShow.range,
+          selectedDiagnosticToShow.message,
           false,
-          diag.category,
+          selectedDiagnosticToShow.category,
         );
         hoveredStaticErrorDecorationRef.current =
           editorInstance!.createDecorationsCollection([
             {
-              range: diag.range,
+              range: selectedDiagnosticToShow.range,
               options: {
                 className: 'analyzer-diagnostic-code-highlight',
                 showIfCollapsed: true,
@@ -269,19 +297,28 @@ export default function CodeEditor({
             },
           ]);
         staticErrorWidgetRef.current = widget;
-      }
+      }, 150);
+      debouncedShowDiagnosticOnHover.current();
     };
-    editorInstance?.onMouseMove(
-      throttle((e) => {
-        handleMouseMoved(e);
-      }, 200),
+    const mouseMoveDisposer = editorInstance?.onMouseMove(
+      throttle((e) => handleMouseMoved(e), 100, {
+        // Invoke on the leading edge to make it occur before any mouse leave event.
+        leading: true,
+        trailing: false,
+      }),
     );
-    editorInstance?.onMouseLeave(
+    const mouseLeaveDisposer = editorInstance?.onMouseLeave(
       throttle(() => {
-        clearStaticAnnotations();
-      }, 200),
+        clearStaticWidget();
+      }),
+      100,
     );
-  }, [monacoInstance, editorInstance]);
+    return () => {
+      mouseMoveDisposer?.dispose();
+      mouseLeaveDisposer?.dispose();
+    };
+  }, [monacoInstance, editorInstance, clearStaticWidget]);
+
   // Effect to trigger remeasurement of fonts after they have been loaded.
   useEffect(() => {
     document.fonts.ready.then(() => {
@@ -305,7 +342,7 @@ export default function CodeEditor({
         if (annotations !== null) {
           const { widget, decorationsCollection } = annotations;
           runtimeErrorWidgetRef.current = widget;
-          decorationsCollectionRef.current.push(decorationsCollection);
+          runtimeDecorationsCollectionRef.current = decorationsCollection;
         }
       }
     }
@@ -339,9 +376,8 @@ export default function CodeEditor({
           diag.category === ErrorCategory.SyntaxError || semanticsEnabled,
       );
       customDiagnosticsRef.current = visibleDiagnostics;
-      decorationsCollectionRef.current.push(
-        editorInstance.createDecorationsCollection(visibleDiagnostics),
-      );
+      staticDecorationsCollectionRef.current =
+        editorInstance.createDecorationsCollection(visibleDiagnostics);
     },
     [editorInstance, monacoInstance, pythonAnalyzer],
   );
