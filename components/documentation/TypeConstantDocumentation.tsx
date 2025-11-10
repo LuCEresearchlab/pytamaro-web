@@ -45,7 +45,7 @@ export default function TypeConstantDocumentation({
   return (
     <>
       <Box mb={1}>
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex' }} minHeight='2em'>
           <span>
             <Typography color='primary' fontWeight='bold' component='span'>
               {t(element.kind === 'constant' ? 'Constant' : 'Type')}
