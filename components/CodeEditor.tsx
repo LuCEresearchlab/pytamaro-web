@@ -16,7 +16,9 @@ import theme from '../src/theme';
 import {
   CustomDiagnostic,
   PythonAnalyzer,
-  setPreviousLinesCount,
+  retrievePythonAnalyzer,
+  storePreviousLinesCount,
+  storePythonAnalyzer,
 } from '../src/usePythonAnalyzer';
 import { ErrorMessageWidget } from './editor/ErrorMessageWidget';
 import { ErrorCategory } from './editor/errors';
@@ -177,12 +179,22 @@ export default function CodeEditor({
     }
   }, [monacoInstance, editorInstance, clearStaticAnnotations]);
 
-  // Effect to update the previous lines count stored inside the model (to be used, e.g., by the semantic tokens provider).
+  // Effects to update the previous lines count and the reference to the PythonAnalyzer
+  // stored inside the model (to be used, e.g., by the semantic tokens provider).
+  // If Monaco allowed registering the semantic tokens provider per editor instance, this terrible hack would not be necessary.
+  // Unfortunately, Monaco only allows registering the provider per language,
+  // so we need to inject stuff inside the model (which gets passed to the provider) to make it work correctly
+  // for all our cases with multiple editors and multiple analyzers (e.g., in the "SaveToToolbox" dialog).
   useEffect(() => {
     if (editorInstance) {
-      setPreviousLinesCount(editorInstance, firstLineNumber - 1);
+      storePreviousLinesCount(editorInstance, firstLineNumber - 1);
     }
   }, [firstLineNumber, editorInstance]);
+  useEffect(() => {
+    if (editorInstance && pythonAnalyzer) {
+      storePythonAnalyzer(editorInstance, pythonAnalyzer);
+    }
+  }, [editorInstance, pythonAnalyzer]);
 
   // Effect to update the condition that determines whether the code execution is allowed or not.
   useEffect(() => {
@@ -237,7 +249,10 @@ export default function CodeEditor({
           STRICT_PYTHON3_LANG_ID,
           {
             provideDocumentRangeSemanticTokens: (model, range) =>
-              pythonAnalyzer.documentRangeSemanticTokens(model, range),
+              retrievePythonAnalyzer(model).documentRangeSemanticTokens(
+                model,
+                range,
+              ),
             getLegend: pythonAnalyzer.semanticTokensLegend,
           },
         ),

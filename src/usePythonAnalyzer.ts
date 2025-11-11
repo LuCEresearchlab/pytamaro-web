@@ -34,22 +34,6 @@ export type CustomDiagnostic = EditorNamespace.IModelDeltaDecoration & {
 export const ANALYZER_DIAGNOSTIC_CLASSNAME =
   'squiggly-error analyzer-diagnostic';
 
-interface CustomModel extends editor.ITextModel {
-  _previousLinesCount: number;
-}
-
-export function countPreviousLines(model: editor.ITextModel): number {
-  return (model as CustomModel)._previousLinesCount;
-}
-
-export function setPreviousLinesCount(
-  editorInstance: editor.IStandaloneCodeEditor,
-  previousLinesCount: number,
-): void {
-  const model = editorInstance.getModel() as CustomModel;
-  model._previousLinesCount = previousLinesCount;
-}
-
 export class PythonAnalyzer {
   private workspace: Workspace;
   private fileHandles: Map<string, FileHandle>;
@@ -275,4 +259,36 @@ export default function usePythonAnalyzer(
   }, [allToolboxFunctionsStatus, pythonAnalyzer]);
 
   return pythonAnalyzer;
+}
+
+interface CustomModel extends editor.ITextModel {
+  _previousLinesCount: number;
+  _pythonAnalyzer: PythonAnalyzer;
+}
+
+export function countPreviousLines(model: editor.ITextModel): number {
+  return (model as CustomModel)._previousLinesCount;
+}
+
+export function storePreviousLinesCount(
+  editorInstance: editor.IStandaloneCodeEditor,
+  previousLinesCount: number,
+): void {
+  const model = editorInstance.getModel() as CustomModel;
+  model._previousLinesCount = previousLinesCount;
+}
+
+export function storePythonAnalyzer(
+  editorInstance: editor.IStandaloneCodeEditor,
+  pythonAnalyzer: PythonAnalyzer,
+): void {
+  const model = editorInstance.getModel() as CustomModel;
+  model._pythonAnalyzer = pythonAnalyzer;
+}
+
+export function retrievePythonAnalyzer(
+  model: editor.ITextModel,
+): PythonAnalyzer {
+  const customModel = model as CustomModel;
+  return customModel._pythonAnalyzer;
 }
