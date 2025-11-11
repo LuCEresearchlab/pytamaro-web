@@ -1,7 +1,14 @@
 import Editor, { Monaco } from '@monaco-editor/react';
 import { debounce, DebouncedFunc, throttle } from 'lodash';
 import { editor, type editor as EditorNamespace } from 'monaco-editor';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { ExecutionResponse } from '../src/codeExecution';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
@@ -54,6 +61,7 @@ export default function CodeEditor({
   resetCounter = 0,
   pythonAnalyzer,
   cellIdx,
+  setStaticErrorCount = undefined,
 }: {
   initialSource: string;
   currentSource: string;
@@ -67,6 +75,7 @@ export default function CodeEditor({
   resetCounter?: number;
   pythonAnalyzer: PythonAnalyzer | null;
   cellIdx: number;
+  setStaticErrorCount?: Dispatch<SetStateAction<number>>;
 }) {
   const { list } = useLocalToolbox();
   const { metadata } = useLocalProfile();
@@ -402,11 +411,14 @@ export default function CodeEditor({
         (diag) =>
           diag.category === ErrorCategory.SyntaxError || semanticsEnabled,
       );
+      if (setStaticErrorCount) {
+        setStaticErrorCount(visibleDiagnostics.length);
+      }
       customDiagnosticsRef.current = visibleDiagnostics;
       staticDecorationsCollectionRef.current =
         editorInstance.createDecorationsCollection(visibleDiagnostics);
     },
-    [editorInstance, monacoInstance, pythonAnalyzer],
+    [editorInstance, monacoInstance, pythonAnalyzer, setStaticErrorCount],
   );
 
   const analyzeSource = useCallback(

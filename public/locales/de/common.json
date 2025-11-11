@@ -142,5 +142,12 @@
     "noneChecks": "Keine",
     "syntaxChecks": "Syntax",
     "syntaxSemanticsChecks": "Syntax & Semantik",
-    "learnMoreChecks": "Erfahre mehr über Fehler und Prüfungen"
+    "learnMoreChecks": "Erfahre mehr über Fehler und Prüfungen",
+    "confirmExecutionWithErrors": {
+        "title": "Bist Du sicher, dass Du dieses Programm ausführen möchtest?",
+        "description_one": "Der Quellcode hat {{count}} Fehler. Erwäge, ihn zu beheben, bevor Du das Programm ausführst.",
+        "description_other": "Der Quellcode hat {{count}} Fehler. Erwäge, sie zu beheben, bevor Du das Programm ausführst.",
+        "confirmationText": "Programm trotzdem ausführen",
+        "cancellationText": "Abbrechen"
+    }
 }

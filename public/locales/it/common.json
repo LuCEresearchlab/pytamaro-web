@@ -128,7 +128,7 @@
         "deleteWarningBreak": "Eliminare la funzione <code>{{name}}</code> interromperà ogni attività e ogni altra funzione della toolbox che la importa.",
         "deleteWarningFine": "Se nessuna attività e nessun'altra funzione della toolbox la utilizza, puoi tranquillamente eliminarla.",
         "deleteWarningEdit": "Se hai bisogno di cambiare qualcosa in questa funzione (eccetto il suo nome), puoi invece modificarla.",
-        "deleteAreYouSure": "Sei sicuro di voler eliminare questa funzione?",
+        "deleteAreYouSure": "Sei sicuro/a di voler eliminare questa funzione?",
         "deleteConfirm": "Ho capito, elimina"
     },
     "sendFeedback": "Invia feedback",
@@ -139,5 +139,12 @@
     "noneChecks": "Nessuno",
     "syntaxChecks": "Sintassi",
     "syntaxSemanticsChecks": "Sintassi & semantica",
-    "learnMoreChecks": "Scopri di più su errori e controlli"
+    "learnMoreChecks": "Scopri di più su errori e controlli",
+    "confirmExecutionWithErrors": {
+        "title": "Sei sicuro/a di voler eseguire questo programma?",
+        "description_one": "Il codice sorgente ha {{count}} errore. Considera di correggerlo prima di eseguire il programma.",
+        "description_other": "Il codice sorgente ha {{count}} errori. Considera di correggerli prima di eseguire il programma.",
+        "confirmationText": "Esegui comunque il programma",
+        "cancellationText": "Annulla"
+    }
 }

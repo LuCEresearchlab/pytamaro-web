@@ -139,5 +139,12 @@
     "noneChecks": "None",
     "syntaxChecks": "Syntax",
     "syntaxSemanticsChecks": "Syntax & Semantics",
-    "learnMoreChecks": "Learn more about errors and checks"
+    "learnMoreChecks": "Learn more about errors and checks",
+    "confirmExecutionWithErrors": {
+        "title": "Are you sure you want to run this program?",
+        "description_one": "The source code has {{count}} error. Consider fixing it before running the program.",
+        "description_other": "The source code has {{count}} errors. Consider fixing them before running the program.",
+        "confirmationText": "Run Program Anyway",
+        "cancellationText": "Cancel"
+    }
 }

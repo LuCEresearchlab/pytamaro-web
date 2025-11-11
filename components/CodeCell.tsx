@@ -11,9 +11,11 @@ import {
   Tooltip,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useConfirm } from 'material-ui-confirm';
 import { useEffect, useState } from 'react';
 import { ExecutionResponse, isExecutionCompleted } from '../src/codeExecution';
 import { CodeCellExecutionState } from '../src/localStorage/schema';
+import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import {
   AnalysisResult,
@@ -66,8 +68,7 @@ export default function CodeCell({
   currentSource: string;
   codeCellExecutionState: CodeCellExecutionState;
   onSourceChanged: (newSource: string) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onExecutionRequested: () => Promise<any>;
+  onExecutionRequested: () => Promise<void>;
   firstLineNumber: number;
   activityVariant: ActivityVariant;
   sourcesUpTo: string[];
@@ -92,6 +93,7 @@ export default function CodeCell({
   const [inputFunctionCalled, setInputFunctionCalled] = useState(false);
   const [ellipsis, setEllipsis] = useState(false);
   const outputHidden = noOutput || inputFunctionCalled;
+  const [staticErrorCount, setStaticErrorCount] = useState(0);
 
   useEffect(() => {
     const analyzeSource = async () => {
@@ -101,6 +103,26 @@ export default function CodeCell({
     };
     analyzeSource();
   }, [currentSource]);
+
+  const confirm = useConfirm();
+  const { metadata } = useLocalProfile();
+  const { liveChecks } = metadata;
+
+  const handleExecutionRequest = async () => {
+    if (liveChecks === 'none' || staticErrorCount === 0) {
+      return onExecutionRequested();
+    }
+    return confirm({
+      title: t('confirmExecutionWithErrors.title'),
+      description: t('confirmExecutionWithErrors.description', {
+        count: staticErrorCount,
+      }),
+      confirmationText: t('confirmExecutionWithErrors.confirmationText'),
+      cancellationText: t('confirmExecutionWithErrors.cancellationText'),
+    }).then(() => {
+      return onExecutionRequested();
+    });
+  };
 
   return (
     <Paper
@@ -121,7 +143,7 @@ export default function CodeCell({
             initialSource={initialSource}
             currentSource={currentSource}
             onChange={onSourceChanged}
-            onExecutionRequested={onExecutionRequested}
+            onExecutionRequested={handleExecutionRequest}
             executionAllowed={!executing && !executionFinished}
             executionFinished={executionFinished}
             firstLineNumber={firstLineNumber}
@@ -130,11 +152,12 @@ export default function CodeCell({
             resetCounter={resetCounter}
             pythonAnalyzer={pythonAnalyzer}
             cellIdx={cellIdx}
+            setStaticErrorCount={setStaticErrorCount}
           />
         </CardContent>
         <CardActions disableSpacing sx={{ paddingLeft: 2, display: 'flex' }}>
           <RunButton
-            onExecutionRequested={onExecutionRequested}
+            onExecutionRequested={handleExecutionRequest}
             executing={executing}
             executionFinished={executionFinished}
             executionError={executionError}
