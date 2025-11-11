@@ -44,6 +44,11 @@ let outputAreaGlobalRef: RefObject<OutputAreaRef | null> | null = null;
 
 const pendingResults = new Map<string, ClientResult>();
 
+// Initialization deferred to initPyodide so that when we restart the worker
+// we can "forcibly clear" the queue without waiting for promises that will
+// never be resolved (because the worker had been killed).
+// Unfortunately the PQueue class itself does not offer any proper way to
+// cancel "running events", so we have to let the GC do the dirty job for us.
 let executionQueue = null;
 
 /**
