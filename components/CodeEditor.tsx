@@ -63,7 +63,7 @@ export default function CodeEditor({
   firstLineNumber?: number;
   readOnly?: boolean;
   resetCounter?: number;
-  pythonAnalyzer: PythonAnalyzer;
+  pythonAnalyzer: PythonAnalyzer | null;
   cellIdx: number;
 }) {
   const { list } = useLocalToolbox();
@@ -216,7 +216,11 @@ export default function CodeEditor({
 
   // Effect to register various providers (e.g, completion, semantic tokens).
   useEffect(() => {
-    if (monacoInstance && !monacoInstance.customProvidersRegistered) {
+    if (
+      monacoInstance &&
+      !monacoInstance.customProvidersRegistered &&
+      pythonAnalyzer
+    ) {
       const providers = [
         toolboxImportCompletionProvider(monacoInstance, toolboxFunctions),
         moduleImportCompletionProvider(monacoInstance),
@@ -232,8 +236,8 @@ export default function CodeEditor({
         monacoInstance.languages.registerDocumentRangeSemanticTokensProvider(
           STRICT_PYTHON3_LANG_ID,
           {
-            provideDocumentRangeSemanticTokens:
-              pythonAnalyzer.documentRangeSemanticTokens,
+            provideDocumentRangeSemanticTokens: (model, range) =>
+              pythonAnalyzer.documentRangeSemanticTokens(model, range),
             getLegend: pythonAnalyzer.semanticTokensLegend,
           },
         ),
@@ -372,7 +376,7 @@ export default function CodeEditor({
 
   const addDiagnosticsFromAnalyzer = useCallback(
     (semanticsEnabled: boolean) => {
-      if (!monacoInstance || !editorInstance) {
+      if (!monacoInstance || !editorInstance || !pythonAnalyzer) {
         return;
       }
       const diagnostics = pythonAnalyzer.customDiagnostics(
@@ -392,6 +396,9 @@ export default function CodeEditor({
 
   const analyzeSource = useCallback(
     (source: string) => {
+      if (!pythonAnalyzer) {
+        return;
+      }
       pythonAnalyzer.updateSource(cellIdx, source);
       if (liveChecks !== 'none') {
         addDiagnosticsFromAnalyzer(liveChecks === 'syntax-semantics');

@@ -45,7 +45,7 @@ export default function SolitaryCodeCell({
     handleExecute,
   } = activity;
   const source = codeCells[0].source;
-  const pythonAnalyzer = usePythonAnalyzer([source], [], extraToolboxFunctions);
+  const pythonAnalyzer = usePythonAnalyzer([], extraToolboxFunctions);
 
   useEffect(() => {
     if (requireNewExecution) {

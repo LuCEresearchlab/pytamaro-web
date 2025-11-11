@@ -32,7 +32,6 @@ import {
   listCurriculaAllAuthors,
 } from '../../../../../../src/fs-content/authors';
 import { CodeCellState } from '../../../../../../src/localStorage/schema';
-import useLocalActivity from '../../../../../../src/localStorage/useLocalActivity';
 import useLocalProfile from '../../../../../../src/localStorage/useLocalProfile';
 import getNotebookContent from '../../../../../../src/notebook';
 import {
@@ -77,12 +76,7 @@ function NotebookCells({
 }) {
   const { metadata } = useLocalProfile();
   const { wideEditor } = metadata;
-  const { codeCells } = useLocalActivity(initialCodeCells, activityVariant);
-
-  const pythonAnalyzer = usePythonAnalyzer(
-    codeCells.map((cell) => cell.source),
-    activity.extraPythonFiles,
-  );
+  const pythonAnalyzer = usePythonAnalyzer(activity.extraPythonFiles);
 
   return (
     <Box ref={cellsRef} className='activity-content'>

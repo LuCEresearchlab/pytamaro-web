@@ -57,7 +57,7 @@ export default function ActivityCodeCell({
   extraPythonFiles: PythonFile[];
   platformConfig: PlatformConfiguration;
   activityResetCounter: number;
-  pythonAnalyzer: PythonAnalyzer;
+  pythonAnalyzer: PythonAnalyzer | null;
 }) {
   const {
     codeCells,

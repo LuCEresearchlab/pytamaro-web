@@ -199,7 +199,7 @@ export default function SaveToToolboxDialog({
     return newToolboxFunction;
   };
 
-  const implementationPythonAnalyzer = usePythonAnalyzer([implementation]);
+  const implementationPythonAnalyzer = usePythonAnalyzer();
 
   const postExecuteSingleCell = (
     idx: number,

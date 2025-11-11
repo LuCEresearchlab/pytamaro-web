@@ -73,7 +73,7 @@ export default function CodeCell({
   sourcesUpTo: string[];
   platformConfig: PlatformConfiguration;
   resetCounter: number;
-  pythonAnalyzer: PythonAnalyzer;
+  pythonAnalyzer: PythonAnalyzer | null;
   cellIdx: number;
   extraPythonFiles?: PythonFile[];
   extraActions?: React.ReactNode;
