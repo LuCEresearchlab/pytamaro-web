@@ -27,16 +27,6 @@ export function convertMarkdownToCodeTag(message: string) {
   return message.replaceAll(/`(.*?)`/g, `<code>$1</code>`);
 }
 
-export function removeRedundantCategory(message: string): string {
-  // If the message already starts with the category name, remove it to avoid redundancy.
-  const colonIdx = message.indexOf(':');
-  const possiblePrefix = colonIdx !== -1 ? message.substring(0, colonIdx) : '';
-  if (['SyntaxError', 'NameError', 'TypeError'].includes(possiblePrefix)) {
-    return message.substring(colonIdx + 1).trimStart();
-  }
-  return message;
-}
-
 export enum ErrorCategory {
   SyntaxError,
   NameError,
@@ -47,13 +37,13 @@ export enum ErrorCategory {
 export function displayErrorCategory(category: ErrorCategory): string {
   switch (category) {
     case ErrorCategory.SyntaxError:
-      return 'Syntax Error';
+      return 'Syntax';
     case ErrorCategory.NameError:
-      return 'Name Error';
+      return 'Name';
     case ErrorCategory.TypeError:
-      return 'Type Error';
-    default:
-      return '';
+      return 'Type';
+    case ErrorCategory.Other:
+      return 'Error';
   }
 }
 
@@ -61,8 +51,12 @@ export function runtimeErrorMessageCategory(message: string): ErrorCategory {
   const prefix = message.split(':')[0];
   switch (prefix) {
     case 'SyntaxError':
+    case 'IndentationError':
+    case 'TabError':
       return ErrorCategory.SyntaxError;
     case 'NameError':
+    case 'ImportError':
+    case 'UnboundLocalError':
       return ErrorCategory.NameError;
     case 'TypeError':
       return ErrorCategory.TypeError;
@@ -80,6 +74,7 @@ export function staticErrorMessageCategory(ty_code: string): ErrorCategory {
     case 'undefined-reveal':
     case 'unresolved-reference':
     case 'possibly-unresolved-reference':
+    case 'unresolved-import':
       return ErrorCategory.NameError;
     case 'call-non-callable':
     case 'conflicting-metaclass':

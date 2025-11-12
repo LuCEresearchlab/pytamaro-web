@@ -10,7 +10,6 @@ import {
   convertMarkdownToCodeTag,
   displayErrorCategory,
   ErrorCategory,
-  removeRedundantCategory,
   simplifyTypes,
 } from './errors';
 
@@ -76,10 +75,7 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
     const message = document.createElement('div');
     message.style.width = 'max-content';
     message.style.maxWidth = 'min(90vw, 100ch)';
-    message.style.paddingTop = '2px';
     message.style.paddingRight = `${isRuntimeError ? 24 : 12}px`;
-    message.style.paddingBottom = '2px';
-    message.style.paddingLeft = '12px';
     message.style.backgroundColor = theme.palette.error.main;
     message.style.color = theme.palette.error.contrastText;
     message.style.borderRadius = '3px';
@@ -88,7 +84,10 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
     message.style.fontSize = theme.typography.body1.fontSize as string;
 
     const prefixNode = document.createElement('span');
-    prefixNode.style.opacity = '0.75';
+    prefixNode.style.paddingTop = '2px';
+    prefixNode.style.paddingBottom = '2px';
+    prefixNode.style.paddingLeft = '10px';
+    prefixNode.style.backgroundColor = theme.palette.error.dark;
     if (isRuntimeError) {
       const runtimeIcon = document.createElement('span');
       runtimeIcon.style.verticalAlign = 'bottom';
@@ -98,20 +97,17 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
       prefixNode.appendChild(runtimeIcon);
     }
     const categoryContent = displayErrorCategory(category);
-    if (categoryContent !== '') {
-      const categorySpan = document.createElement('span');
-      categorySpan.style.marginRight = '12px';
-      categorySpan.style.fontWeight = 'bold';
-      categorySpan.textContent = categoryContent;
-      prefixNode.appendChild(categorySpan);
-    }
+    const categorySpan = document.createElement('span');
+    categorySpan.style.paddingRight = '10px';
+    categorySpan.style.fontWeight = 'bold';
+    categorySpan.textContent = categoryContent;
+    prefixNode.appendChild(categorySpan);
     this._prefixNode = prefixNode;
     message.appendChild(prefixNode);
 
     const messageContent = document.createElement('span');
-    messageContent.innerHTML = convertMarkdownToCodeTag(
-      removeRedundantCategory(simplifyTypes(content)),
-    );
+    messageContent.style.paddingLeft = '12px';
+    messageContent.innerHTML = convertMarkdownToCodeTag(simplifyTypes(content));
     message.appendChild(messageContent);
 
     if (isRuntimeError) {
