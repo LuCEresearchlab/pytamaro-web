@@ -170,7 +170,9 @@ export default function CodeEditor({
   const clearStaticAnnotations = useCallback(() => {
     // Clear a possible static widget and related decoration
     clearStaticWidget();
-    // And finally all the other possible static decorations
+    // Clear the memorized diagnostics
+    customDiagnosticsRef.current = [];
+    // And finally also clear other possible static decorations
     staticDecorationsCollectionRef.current?.clear();
     staticDecorationsCollectionRef.current = null;
   }, [clearStaticWidget]);
