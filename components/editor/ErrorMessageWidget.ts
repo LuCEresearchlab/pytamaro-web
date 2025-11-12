@@ -84,6 +84,8 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
     message.style.fontSize = theme.typography.body1.fontSize as string;
 
     const prefixNode = document.createElement('span');
+    prefixNode.style.borderTopLeftRadius = '3px';
+    prefixNode.style.borderBottomLeftRadius = '3px';
     prefixNode.style.paddingTop = '2px';
     prefixNode.style.paddingBottom = '2px';
     prefixNode.style.paddingLeft = '10px';
