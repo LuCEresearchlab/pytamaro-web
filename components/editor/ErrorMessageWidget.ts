@@ -109,6 +109,8 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
 
     const messageContent = document.createElement('span');
     messageContent.style.paddingLeft = '12px';
+    messageContent.style.paddingTop = '2px';
+    messageContent.style.paddingBottom = '2px';
     messageContent.innerHTML = convertMarkdownToCodeTag(simplifyTypes(content));
     message.appendChild(messageContent);
 
