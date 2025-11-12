@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/no-array-index-key */
-import { Box, Chip, Divider, Stack, Typography } from '@mui/material';
+import { Box, Chip, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
@@ -14,6 +14,7 @@ import ConfigButtons, {
 } from './ConfigButtons';
 import DocumentationExample from './DocumentationExample';
 import FunctionDiagram from './FunctionDiagram';
+import SectionDivider from './SectionDivider';
 import {
   hoverProps,
   moduleId,
@@ -175,10 +176,9 @@ export default function FunctionDocumentation({
       {params.length > 0 &&
         params.some((param) => param.description.length > 0) && (
           <>
-            <Divider sx={{ mt: 3, mb: 1 }}>{t('parameters')}</Divider>
+            <SectionDivider title={t('parameters')} />
             {params.map((param, i) => (
               <Typography
-                gutterBottom
                 key={i}
                 {...hoverProps(paramId(i), hoverElement, setHoverElement)}
               >
@@ -192,7 +192,7 @@ export default function FunctionDocumentation({
         )}
       {returnValue && returnValue.description.length > 0 && (
         <>
-          <Divider sx={{ mt: 3, mb: 1 }}>{t('return')}</Divider>
+          <SectionDivider title={t('return')} />
           <Typography
             color='text.secondary'
             component='span'
@@ -204,7 +204,7 @@ export default function FunctionDocumentation({
       )}
       {shownExamples.length > 0 && (
         <>
-          <Divider sx={{ mt: 3, mb: 1 }}>{t('examples')}</Divider>
+          <SectionDivider title={t('examples')} />
           <Stack spacing={2}>
             {shownExamples.map((example, idx) => (
               <DocumentationExample example={example} key={idx} />

@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/no-array-index-key */
-import { Box, Divider, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
@@ -16,6 +16,7 @@ import ConfigButtons, {
 } from './ConfigButtons';
 import ConstantDiagram from './ConstantDiagram';
 import DocumentationExample from './DocumentationExample';
+import SectionDivider from './SectionDivider';
 import { hoverProps, moduleId, nameId, sentence } from './utils';
 
 export default function TypeConstantDocumentation({
@@ -96,7 +97,7 @@ export default function TypeConstantDocumentation({
       ))}
       {examples && examples.length > 0 && (
         <>
-          <Divider sx={{ mt: 3, mb: 1 }}>{t('examples')}</Divider>
+          <SectionDivider title={t('examples')} />
           <Stack spacing={2}>
             {examples.map((example, idx) => (
               <DocumentationExample example={example} key={idx} />
