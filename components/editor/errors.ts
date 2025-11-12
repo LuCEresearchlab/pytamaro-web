@@ -3,16 +3,21 @@ export function simplifyTypes(message: string) {
   // See https://github.com/astral-sh/ruff/blob/bff32a41dc440b30764e9414767794e01d25c265/crates/ty_python_semantic/src/types/display.rs#L252-L258
   // The first three are common even in student code, so we simplify them here
   // to their "base" type.
-  return (
-    message
-      // IntLiteral (`Literal[123]` -> `int`)
-      .replaceAll(/`Literal\[([-+]?\d+)\]`/g, '`int`')
-      // BooleanLiteral (`Literal[True]` -> `bool`)
-      .replaceAll(/`Literal\[(True|False)\]`/g, '`bool`')
-      // StringLiteral (`Literal['abc']` -> `str`)
-      .replaceAll(/`Literal\["(.*?)"\]`/g, '`str`')
-      // Moreover, we simplify `EllipsisType` to `...` to avoid confusion with PyTamaro's ellipse function and match the source code.
-      .replaceAll(/`EllipsisType`/g, '`...`')
+  // Note that they may also appear nested, e.g., `list[Literal[123]]` -> `list[int]`
+  // or `list[EllipsisType | Graphic] -> `list[... | Graphic]`.
+  return message.replaceAll(
+    // First, only replace inside backticks
+    /`([^`]*)`/g,
+    (_, insideBackticks) =>
+      `\`${insideBackticks
+        // IntLiteral (`Literal[123]` -> `int`)
+        .replaceAll(/Literal\[([-+]?\d+)\]/g, 'int')
+        // BooleanLiteral (`Literal[True]` -> `bool`)
+        .replaceAll(/Literal\[(True|False)\]/g, 'bool')
+        // StringLiteral (`Literal['abc']` -> `str`)
+        .replaceAll(/Literal\["(.*?)"\]/g, 'str')
+        // Moreover, we simplify `EllipsisType` to `...` to avoid confusion with PyTamaro's ellipse function and match the source code.
+        .replaceAll(/EllipsisType/g, '...')}\``,
   );
 }
 
