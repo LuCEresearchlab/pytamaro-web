@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, Link, Stack } from '@mui/material';
 import { MDXRemote } from 'next-mdx-remote';
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 import {
   ActivityVariant,
   MarkdownCell,
@@ -124,45 +124,54 @@ export default function MarkdownCellComponent({
   activityVariant: ActivityVariant;
   extraPythonFiles: PythonFile[];
 }) {
-  const adHocComponents = {
-    img: (props: any) =>
-      imgComponent(
-        props,
-        cell,
-        activityVariant.authorSlug,
-        activityVariant.activitySlug,
-      ),
-    a: linkComponent,
-    code: codeComponent,
-    Stack,
-    API: ({
-      lang,
-      module,
-      children: name,
-    }: {
-      lang?: string;
-      module?: string;
-      children: string;
-    }) =>
-      InlineAPIComponent(name, activityVariant, lang, module, extraPythonFiles),
-    Activity: ActivityLink,
-    DoNow: ({
-      id,
-      requireAnswer = false,
-      children,
-    }: {
-      id: string;
-      requireAnswer?: boolean;
-      children: ReactNode;
-    }) =>
-      DoNowBox({
+  const adHocComponents = useMemo(
+    () => ({
+      img: (props: any) =>
+        imgComponent(
+          props,
+          cell,
+          activityVariant.authorSlug,
+          activityVariant.activitySlug,
+        ),
+      a: linkComponent,
+      code: codeComponent,
+      Stack,
+      API: ({
+        lang,
+        module,
+        children: name,
+      }: {
+        lang?: string;
+        module?: string;
+        children: string;
+      }) =>
+        InlineAPIComponent(
+          name,
+          activityVariant,
+          lang,
+          module,
+          extraPythonFiles,
+        ),
+      Activity: ActivityLink,
+      DoNow: ({
         id,
-        requireAnswer,
+        requireAnswer = false,
         children,
-        activityVariant,
-      }),
-    Task: ({ children }: { children: ReactNode }) => TaskBox({ children }),
-  };
+      }: {
+        id: string;
+        requireAnswer?: boolean;
+        children: ReactNode;
+      }) =>
+        DoNowBox({
+          id,
+          requireAnswer,
+          children,
+          activityVariant,
+        }),
+      Task: ({ children }: { children: ReactNode }) => TaskBox({ children }),
+    }),
+    [activityVariant, cell, extraPythonFiles],
+  );
   return (
     <MDXRemote
       // eslint-disable-next-line react/jsx-props-no-spreading
