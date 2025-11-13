@@ -1,6 +1,10 @@
 import { loader, Monaco } from '@monaco-editor/react';
 import { type editor as EditorNamespace } from 'monaco-editor';
 
+const FUNCTION_COLOR = '#795E26';
+const VARIABLE_COLOR = '#001080';
+const TYPE_COLOR = '#267f99';
+
 export const luceThemeName = 'luce';
 export const luceTheme: EditorNamespace.IStandaloneThemeData = {
   base: 'vs', // use vscode light as base theme
@@ -13,19 +17,57 @@ export const luceTheme: EditorNamespace.IStandaloneThemeData = {
     },
     {
       token: 'method',
-      foreground: '#795E26',
+      foreground: FUNCTION_COLOR,
+    },
+    {
+      token: 'method.definition',
+      foreground: FUNCTION_COLOR,
+      fontStyle: 'bold',
     },
     {
       token: 'function',
-      foreground: '#795E26',
+      foreground: FUNCTION_COLOR,
+    },
+    {
+      token: 'function.definition',
+      foreground: FUNCTION_COLOR,
+      fontStyle: 'bold',
     },
     {
       token: 'class',
-      foreground: '#267f99',
+      foreground: TYPE_COLOR,
+    },
+    {
+      token: 'class.definition',
+      foreground: TYPE_COLOR,
+      fontStyle: 'bold',
     },
     {
       token: 'typeParameter',
-      foreground: '#267f99',
+      foreground: TYPE_COLOR,
+    },
+    {
+      token: 'typeParameter.definition',
+      foreground: TYPE_COLOR,
+      fontStyle: 'bold',
+    },
+    {
+      token: 'parameter',
+      foreground: VARIABLE_COLOR,
+    },
+    {
+      token: 'parameter.definition',
+      foreground: VARIABLE_COLOR,
+      fontStyle: 'bold',
+    },
+    {
+      token: 'variable',
+      foreground: VARIABLE_COLOR,
+    },
+    {
+      token: 'variable.definition',
+      foreground: VARIABLE_COLOR,
+      fontStyle: 'bold',
     },
   ],
   colors: {
