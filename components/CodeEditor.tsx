@@ -237,6 +237,8 @@ export default function CodeEditor({
     return () => {};
   }, [editorInstance, monacoInstance, onExecutionRequested]);
 
+  const toolboxFunctionsStatus = JSON.stringify(toolboxFunctions);
+
   // Effect to register various providers (e.g, completion, semantic tokens).
   useEffect(() => {
     if (
@@ -277,7 +279,7 @@ export default function CodeEditor({
     }
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [monacoInstance, toolboxFunctions, firstLineNumber]);
+  }, [monacoInstance, pythonAnalyzer, toolboxFunctionsStatus]);
 
   useEffect(() => {
     const handleMouseMoved = (e: EditorNamespace.IEditorMouseEvent) => {
