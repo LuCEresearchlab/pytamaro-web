@@ -22,7 +22,7 @@ export const luceTheme: EditorNamespace.IStandaloneThemeData = {
     {
       token: 'method.definition',
       foreground: FUNCTION_COLOR,
-      fontStyle: 'bold',
+      fontStyle: 'underline',
     },
     {
       token: 'function',
@@ -31,7 +31,7 @@ export const luceTheme: EditorNamespace.IStandaloneThemeData = {
     {
       token: 'function.definition',
       foreground: FUNCTION_COLOR,
-      fontStyle: 'bold',
+      fontStyle: 'underline',
     },
     {
       token: 'class',
@@ -40,7 +40,7 @@ export const luceTheme: EditorNamespace.IStandaloneThemeData = {
     {
       token: 'class.definition',
       foreground: TYPE_COLOR,
-      fontStyle: 'bold',
+      fontStyle: 'underline',
     },
     {
       token: 'typeParameter',
@@ -49,7 +49,7 @@ export const luceTheme: EditorNamespace.IStandaloneThemeData = {
     {
       token: 'typeParameter.definition',
       foreground: TYPE_COLOR,
-      fontStyle: 'bold',
+      fontStyle: 'underline',
     },
     {
       token: 'parameter',
@@ -58,7 +58,7 @@ export const luceTheme: EditorNamespace.IStandaloneThemeData = {
     {
       token: 'parameter.definition',
       foreground: VARIABLE_COLOR,
-      fontStyle: 'bold',
+      fontStyle: 'underline',
     },
     {
       token: 'variable',
@@ -67,7 +67,7 @@ export const luceTheme: EditorNamespace.IStandaloneThemeData = {
     {
       token: 'variable.definition',
       foreground: VARIABLE_COLOR,
-      fontStyle: 'bold',
+      fontStyle: 'underline',
     },
   ],
   colors: {
