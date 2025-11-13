@@ -94,6 +94,8 @@ export function colorizeElements(monaco: Monaco) {
   document
     .querySelectorAll<HTMLElement>(`.${COLORIZE_CLASSNAME}:not(.vs)`)
     .forEach((element) => {
-      monaco.editor.colorizeElement(element, {});
+      monaco.editor.colorizeElement(element, {
+        theme: luceThemeName,
+      });
     });
 }
