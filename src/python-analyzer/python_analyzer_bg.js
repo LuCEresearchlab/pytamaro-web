@@ -223,23 +223,6 @@ function getArrayJsValueFromWasm0(ptr, len) {
     }
     return result;
 }
-/**
- * @param {Workspace} workspace
- */
-export function installPytamaro(workspace) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        _assertClass(workspace, Workspace);
-        wasm.installPytamaro(retptr, workspace.__wbg_ptr);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        if (r1) {
-            throw takeObject(r0);
-        }
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-}
 
 function passArrayJsValueToWasm0(array, malloc) {
     const ptr = malloc(array.length * 4, 4) >>> 0;
@@ -259,6 +242,24 @@ export function analyze(python_source) {
     const len0 = WASM_VECTOR_LEN;
     const ret = wasm.analyze(ptr0, len0);
     return AnalysisResult.__wrap(ret);
+}
+
+/**
+ * @param {Workspace} workspace
+ */
+export function installPytamaro(workspace) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        _assertClass(workspace, Workspace);
+        wasm.installPytamaro(retptr, workspace.__wbg_ptr);
+        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+        if (r1) {
+            throw takeObject(r0);
+        }
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
 }
 
 /**
