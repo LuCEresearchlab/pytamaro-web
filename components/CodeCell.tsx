@@ -1,3 +1,4 @@
+import { PlayCircleFilled } from '@mui/icons-material';
 import SyncProblemIcon from '@mui/icons-material/SyncProblem';
 import {
   Badge,
@@ -119,6 +120,10 @@ export default function CodeCell({
       }),
       confirmationText: t('confirmExecutionWithErrors.confirmationText'),
       cancellationText: t('confirmExecutionWithErrors.cancellationText'),
+      confirmationButtonProps: {
+        endIcon: <PlayCircleFilled />,
+        variant: 'contained',
+      },
     }).then(() => {
       return onExecutionRequested();
     });
