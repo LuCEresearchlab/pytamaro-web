@@ -12,6 +12,8 @@ export const TRACEBACK_TIDLE_DECORATION_CLASSNAME =
 export const TRACEBACK_MESSAGE_DECORATION_CLASSNAME =
   'squiggly-error traceback-message';
 
+const LIBRARY_PATH = '/lib/';
+
 function nicerTraceback(traceback: string) {
   // Hide the "driver" file.
   const hideDriver = (s: string) =>
@@ -25,12 +27,16 @@ function nicerTraceback(traceback: string) {
   // Hide 'glot' in source paths
   const hideGlot = (s: string) => s.replace(/File "\/home\/glot\//g, 'File "');
 
+  // Shorten library paths
+  const shortenLibraryPaths = (s: string) =>
+    s.replaceAll('/usr/local/lib/python3.13/site-packages/', LIBRARY_PATH);
+
   // Replace the word ellipsis within backticks or quotes with three dots,
   // to avoid confusion with the ellipse function and to match the source code.
   const replaceEllipsis = (s: string) =>
     s.replace(/`ellipsis`/g, '`...`').replace(/'ellipsis'/g, "'...'");
 
-  return replaceEllipsis(hideGlot(hideDriver(traceback)));
+  return replaceEllipsis(shortenLibraryPaths(hideGlot(hideDriver(traceback))));
 }
 
 function lineNumOfErrorThisCell(traceback: string[]) {
@@ -155,9 +161,9 @@ export function processTraceback(content: string) {
   const errorLines = contentLines.slice(startErrorLine);
   const tracebackLines = contentLines.slice(0, startErrorLine);
   // The first part (stack frames) can be divided in two: frames from "user code" (to be shown)
-  // and frames from "libraries" (files in /usr) that can be collapsed.
+  // and frames from "libraries" that can be collapsed.
   const firstLibraryLine = tracebackLines.findIndex((line) =>
-    line.startsWith('  File "/usr'),
+    line.startsWith('  File "' + LIBRARY_PATH),
   );
   const collapsed = firstLibraryLine !== -1;
   const userTracebackLines = collapsed
