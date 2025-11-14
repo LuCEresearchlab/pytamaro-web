@@ -11,7 +11,7 @@ import {
   ErrorCategory,
   staticErrorMessageCategory,
 } from '../components/editor/errors';
-import { cellsToFiles, CURRENT_CELL_FILE, toolboxFiles } from './codeExecution';
+import { CURRENT_CELL_FILE, toolboxFiles } from './codeExecution';
 import { ToolboxFunction } from './localStorage/schema';
 import useLocalToolbox from './localStorage/useLocalToolbox';
 import {
@@ -44,15 +44,7 @@ export class PythonAnalyzer {
     installPytamaro(this.workspace);
     this.fileHandles = new Map<string, FileHandle>();
     this.sources = [];
-
-    // All cells are joined together in a virtual single cell.
-    const initialFiles = cellsToFiles(
-      [joinLines(this.sources)],
-      0,
-      [],
-      extraPythonFiles,
-    );
-    initialFiles.forEach((file) => {
+    extraPythonFiles.forEach((file) => {
       const handle = this.workspace?.openFile(file.name, file.content);
       if (handle) {
         this.fileHandles.set(file.name, handle);
@@ -60,17 +52,21 @@ export class PythonAnalyzer {
     });
   }
 
-  getCurrentCellFileHandle(): FileHandle | undefined {
-    return this.fileHandles.get(`${CURRENT_CELL_FILE}.py`);
+  currentCellFileName(cellIdx: number): string {
+    return `${CURRENT_CELL_FILE}_${cellIdx}.py`;
+  }
+
+  getCurrentCellFileHandle(cellIdx: number): FileHandle | undefined {
+    return this.fileHandles.get(this.currentCellFileName(cellIdx));
   }
 
   updateSource(cellIdx: number, newSource: string) {
-    const currentCellFileHandle = this.getCurrentCellFileHandle();
-    if (currentCellFileHandle !== undefined) {
-      this.sources[cellIdx] = newSource;
-      const fileContent = joinLines(this.sources);
-      this.workspace.updateFile(currentCellFileHandle, fileContent);
-    }
+    this.sources[cellIdx] = newSource;
+    const fileContent = joinLines(this.sources.slice(0, cellIdx + 1));
+    this.addOrUpdateFile({
+      name: this.currentCellFileName(cellIdx),
+      content: fileContent,
+    });
   }
 
   addOrUpdateFile(file: PythonFile) {
@@ -147,7 +143,7 @@ export class PythonAnalyzer {
     model: editor.ITextModel,
     range: Range,
   ): languages.SemanticTokens | null {
-    const fileHandle = this.getCurrentCellFileHandle();
+    const fileHandle = this.getCurrentCellFileHandle(retrieveCellIdx(model));
     if (!fileHandle) {
       return null;
     }
@@ -167,8 +163,9 @@ export class PythonAnalyzer {
   customDiagnostics(
     monacoInstance: Monaco,
     editorInstance: editor.IStandaloneCodeEditor,
+    cellIdx: number,
   ): CustomDiagnostic[] {
-    const currentCellFileHandle = this.getCurrentCellFileHandle();
+    const currentCellFileHandle = this.getCurrentCellFileHandle(cellIdx);
     if (currentCellFileHandle === undefined) {
       return [];
     }
@@ -261,34 +258,75 @@ export default function usePythonAnalyzer(
   return pythonAnalyzer;
 }
 
+/* ---------------------------------------------------------
+   Hack to store custom properties in the Monaco Editor models,
+   so that they can be retrieved later (e.g., by the semantic tokens provider,
+   which only receives the model as argument).
+*/
+
 interface CustomModel extends editor.ITextModel {
+  _cellIdx: number;
   _previousLinesCount: number;
   _pythonAnalyzer: PythonAnalyzer;
 }
 
+function storeCustomPropertyInModel<T>(
+  editorInstance: editor.IStandaloneCodeEditor,
+  propertyName: string,
+  value: T,
+): void {
+  const model = editorInstance.getModel() as CustomModel;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (model as any)[propertyName] = value;
+}
+
+function retrieveCustomPropertyFromModel<T>(
+  model: editor.ITextModel,
+  propertyName: string,
+): T {
+  const customModel = model as CustomModel;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (customModel as any)[propertyName] as T;
+}
+
+export function storeCellIdx(
+  editorInstance: editor.IStandaloneCodeEditor,
+  cellIdx: number,
+): void {
+  storeCustomPropertyInModel(editorInstance, '_cellIdx', cellIdx);
+}
+
+export function retrieveCellIdx(model: editor.ITextModel): number {
+  return retrieveCustomPropertyFromModel<number>(model, '_cellIdx');
+}
+
 export function countPreviousLines(model: editor.ITextModel): number {
-  return (model as CustomModel)._previousLinesCount;
+  return retrieveCustomPropertyFromModel<number>(model, '_previousLinesCount');
 }
 
 export function storePreviousLinesCount(
   editorInstance: editor.IStandaloneCodeEditor,
   previousLinesCount: number,
 ): void {
-  const model = editorInstance.getModel() as CustomModel;
-  model._previousLinesCount = previousLinesCount;
+  storeCustomPropertyInModel(
+    editorInstance,
+    '_previousLinesCount',
+    previousLinesCount,
+  );
 }
 
 export function storePythonAnalyzer(
   editorInstance: editor.IStandaloneCodeEditor,
   pythonAnalyzer: PythonAnalyzer,
 ): void {
-  const model = editorInstance.getModel() as CustomModel;
-  model._pythonAnalyzer = pythonAnalyzer;
+  storeCustomPropertyInModel(editorInstance, '_pythonAnalyzer', pythonAnalyzer);
 }
 
 export function retrievePythonAnalyzer(
   model: editor.ITextModel,
 ): PythonAnalyzer {
-  const customModel = model as CustomModel;
-  return customModel._pythonAnalyzer;
+  return retrieveCustomPropertyFromModel<PythonAnalyzer>(
+    model,
+    '_pythonAnalyzer',
+  );
 }

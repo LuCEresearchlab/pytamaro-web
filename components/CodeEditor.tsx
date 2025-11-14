@@ -24,6 +24,7 @@ import {
   CustomDiagnostic,
   PythonAnalyzer,
   retrievePythonAnalyzer,
+  storeCellIdx,
   storePreviousLinesCount,
   storePythonAnalyzer,
 } from '../src/usePythonAnalyzer';
@@ -206,6 +207,11 @@ export default function CodeEditor({
       storePythonAnalyzer(editorInstance, pythonAnalyzer);
     }
   }, [editorInstance, pythonAnalyzer]);
+  useEffect(() => {
+    if (editorInstance) {
+      storeCellIdx(editorInstance, cellIdx);
+    }
+  }, [cellIdx, editorInstance]);
 
   // Effect to update the condition that determines whether the code execution is allowed or not.
   useEffect(() => {
@@ -410,6 +416,7 @@ export default function CodeEditor({
       const diagnostics = pythonAnalyzer.customDiagnostics(
         monacoInstance,
         editorInstance,
+        cellIdx,
       );
       const visibleDiagnostics = diagnostics.filter(
         (diag) =>
@@ -422,7 +429,13 @@ export default function CodeEditor({
       staticDecorationsCollectionRef.current =
         editorInstance.createDecorationsCollection(visibleDiagnostics);
     },
-    [editorInstance, monacoInstance, pythonAnalyzer, setStaticErrorCount],
+    [
+      editorInstance,
+      monacoInstance,
+      pythonAnalyzer,
+      setStaticErrorCount,
+      cellIdx,
+    ],
   );
 
   const analyzeSource = useCallback(
