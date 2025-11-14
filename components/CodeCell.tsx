@@ -16,7 +16,6 @@ import { useConfirm } from 'material-ui-confirm';
 import { useEffect, useState } from 'react';
 import { ExecutionResponse, isExecutionCompleted } from '../src/codeExecution';
 import { CodeCellExecutionState } from '../src/localStorage/schema';
-import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import {
   AnalysisResult,
@@ -94,7 +93,6 @@ export default function CodeCell({
   const [inputFunctionCalled, setInputFunctionCalled] = useState(false);
   const [ellipsis, setEllipsis] = useState(false);
   const outputHidden = noOutput || inputFunctionCalled;
-  const [staticErrorCount, setStaticErrorCount] = useState(0);
 
   useEffect(() => {
     const analyzeSource = async () => {
@@ -106,18 +104,37 @@ export default function CodeCell({
   }, [currentSource]);
 
   const confirm = useConfirm();
-  const { metadata } = useLocalProfile();
-  const { liveChecks } = metadata;
 
   const handleExecutionRequest = async () => {
-    if (liveChecks === 'none' || staticErrorCount === 0) {
+    // Check for static errors before executing
+    const diagnosticsUpToCurrentCell =
+      pythonAnalyzer!.getDiagnosticsCountUpTo(cellIdx);
+    const diagnosticsUpToPreviousCells =
+      pythonAnalyzer!.getDiagnosticsCountUpTo(cellIdx - 1);
+    const currentCellDiagnostics =
+      diagnosticsUpToCurrentCell - diagnosticsUpToPreviousCells;
+    if (diagnosticsUpToCurrentCell === 0) {
       return onExecutionRequested();
+    }
+
+    let message;
+    if (currentCellDiagnostics > 0 && diagnosticsUpToPreviousCells === 0) {
+      message = t('confirmExecutionWithErrors.descriptionOnlyCurrentCell', {
+        count: currentCellDiagnostics,
+      });
+    } else if (currentCellDiagnostics === 0) {
+      message = t('confirmExecutionWithErrors.descriptionOnlyPreviousCells', {
+        count: diagnosticsUpToPreviousCells,
+      });
+    } else {
+      message = t('confirmExecutionWithErrors.descriptionWithPreviousCells', {
+        currentCount: currentCellDiagnostics,
+        previousCount: diagnosticsUpToPreviousCells,
+      });
     }
     return confirm({
       title: t('confirmExecutionWithErrors.title'),
-      description: t('confirmExecutionWithErrors.description', {
-        count: staticErrorCount,
-      }),
+      description: message,
       confirmationText: t('confirmExecutionWithErrors.confirmationText'),
       cancellationText: t('confirmExecutionWithErrors.cancellationText'),
       confirmationButtonProps: {
@@ -157,7 +174,6 @@ export default function CodeCell({
             resetCounter={resetCounter}
             pythonAnalyzer={pythonAnalyzer}
             cellIdx={cellIdx}
-            setStaticErrorCount={setStaticErrorCount}
           />
         </CardContent>
         <CardActions disableSpacing sx={{ paddingLeft: 2, display: 'flex' }}>

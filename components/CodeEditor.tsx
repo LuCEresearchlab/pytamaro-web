@@ -1,15 +1,9 @@
 import Editor, { Monaco } from '@monaco-editor/react';
 import { debounce, DebouncedFunc, throttle } from 'lodash';
 import { editor, type editor as EditorNamespace } from 'monaco-editor';
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ExecutionResponse } from '../src/codeExecution';
+import { LiveChecksStatus } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import {
@@ -29,7 +23,6 @@ import {
   storePythonAnalyzer,
 } from '../src/usePythonAnalyzer';
 import { ErrorMessageWidget } from './editor/ErrorMessageWidget';
-import { ErrorCategory } from './editor/errors';
 import {
   registerCustomPythonLanguage,
   STRICT_PYTHON3_LANG_ID,
@@ -62,7 +55,6 @@ export default function CodeEditor({
   resetCounter = 0,
   pythonAnalyzer,
   cellIdx,
-  setStaticErrorCount = undefined,
 }: {
   initialSource: string;
   currentSource: string;
@@ -76,7 +68,6 @@ export default function CodeEditor({
   resetCounter?: number;
   pythonAnalyzer: PythonAnalyzer | null;
   cellIdx: number;
-  setStaticErrorCount?: Dispatch<SetStateAction<number>>;
 }) {
   const { list } = useLocalToolbox();
   const { metadata } = useLocalProfile();
@@ -408,35 +399,45 @@ export default function CodeEditor({
     }
   }, [editorInstance, initialSource, resetCounter]);
 
-  const addDiagnosticsFromAnalyzer = useCallback(
-    (semanticsEnabled: boolean) => {
-      if (!monacoInstance || !editorInstance || !pythonAnalyzer) {
-        return;
-      }
-      const diagnostics = pythonAnalyzer.customDiagnostics(
-        monacoInstance,
-        editorInstance,
-        cellIdx,
-      );
-      const visibleDiagnostics = diagnostics.filter(
-        (diag) =>
-          diag.category === ErrorCategory.SyntaxError || semanticsEnabled,
-      );
-      if (setStaticErrorCount) {
-        setStaticErrorCount(visibleDiagnostics.length);
-      }
-      customDiagnosticsRef.current = visibleDiagnostics;
-      staticDecorationsCollectionRef.current =
-        editorInstance.createDecorationsCollection(visibleDiagnostics);
-    },
-    [
-      editorInstance,
+  const addDiagnosticsFromAnalyzer = useCallback(() => {
+    if (!monacoInstance || !editorInstance || !pythonAnalyzer) {
+      return;
+    }
+    const diagnostics = pythonAnalyzer.customDiagnostics(
       monacoInstance,
-      pythonAnalyzer,
-      setStaticErrorCount,
       cellIdx,
-    ],
-  );
+      liveChecks,
+    );
+    const diagnosticsCurrentCell = diagnostics.filter(
+      (diag) => diag.range.startLineNumber >= firstLineNumber,
+    );
+    const diagnosticsCurrentCellAdjusted = diagnosticsCurrentCell.map(
+      (diag) => {
+        const previousLines = firstLineNumber - 1;
+        return {
+          ...diag,
+          range: new monacoInstance!.Range(
+            diag.range.startLineNumber - previousLines,
+            diag.range.startColumn,
+            diag.range.endLineNumber - previousLines,
+            diag.range.endColumn,
+          ),
+        };
+      },
+    );
+    customDiagnosticsRef.current = diagnosticsCurrentCellAdjusted;
+    staticDecorationsCollectionRef.current =
+      editorInstance.createDecorationsCollection(
+        diagnosticsCurrentCellAdjusted,
+      );
+  }, [
+    editorInstance,
+    monacoInstance,
+    pythonAnalyzer,
+    cellIdx,
+    liveChecks,
+    firstLineNumber,
+  ]);
 
   const analyzeSource = useCallback(
     (source: string) => {
@@ -444,11 +445,9 @@ export default function CodeEditor({
         return;
       }
       pythonAnalyzer.updateSource(cellIdx, source);
-      if (liveChecks !== 'none') {
-        addDiagnosticsFromAnalyzer(liveChecks === 'syntax-semantics');
-      }
+      addDiagnosticsFromAnalyzer();
     },
-    [cellIdx, liveChecks, pythonAnalyzer, addDiagnosticsFromAnalyzer],
+    [cellIdx, pythonAnalyzer, addDiagnosticsFromAnalyzer],
   );
 
   // Effect to react to change in preferences for live checks.
@@ -491,7 +490,8 @@ export default function CodeEditor({
             useShadows: false,
           },
           readOnly,
-          'semanticHighlighting.enabled': liveChecks === 'syntax-semantics',
+          'semanticHighlighting.enabled':
+            liveChecks === LiveChecksStatus.SyntaxSemantics,
         }}
       />
     </div>

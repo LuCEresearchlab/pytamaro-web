@@ -12,7 +12,7 @@ import {
   staticErrorMessageCategory,
 } from '../components/editor/errors';
 import { CURRENT_CELL_FILE, toolboxFiles } from './codeExecution';
-import { ToolboxFunction } from './localStorage/schema';
+import { LiveChecksStatus, ToolboxFunction } from './localStorage/schema';
 import useLocalToolbox from './localStorage/useLocalToolbox';
 import {
   FileHandle,
@@ -38,12 +38,14 @@ export class PythonAnalyzer {
   private workspace: Workspace;
   private fileHandles: Map<string, FileHandle>;
   private sources: string[];
+  private diagnosticsCounts: number[];
 
   constructor(extraPythonFiles: PythonFile[] = []) {
     this.workspace = new Workspace('/', PositionEncoding.Utf16, {});
     installPytamaro(this.workspace);
     this.fileHandles = new Map<string, FileHandle>();
     this.sources = [];
+    this.diagnosticsCounts = [];
     extraPythonFiles.forEach((file) => {
       const handle = this.workspace?.openFile(file.name, file.content);
       if (handle) {
@@ -162,14 +164,19 @@ export class PythonAnalyzer {
 
   customDiagnostics(
     monacoInstance: Monaco,
-    editorInstance: editor.IStandaloneCodeEditor,
     cellIdx: number,
+    liveChecks: LiveChecksStatus,
   ): CustomDiagnostic[] {
     const currentCellFileHandle = this.getCurrentCellFileHandle(cellIdx);
-    if (currentCellFileHandle === undefined) {
+    if (
+      currentCellFileHandle === undefined ||
+      liveChecks === LiveChecksStatus.None
+    ) {
+      this.diagnosticsCounts[cellIdx] = 0;
       return [];
     }
     const diagnostics = this.workspace.checkFile(currentCellFileHandle);
+
     // Eagerly convert the diagnostic to avoid out of bound errors
     // when the diagnostics are "deferred".
     const serializedDiagnostics = diagnostics.map((diagnostic) => ({
@@ -198,33 +205,24 @@ export class PythonAnalyzer {
         category: staticErrorMessageCategory(diagnostic.id),
       };
     });
-
-    const model = editorInstance.getModel();
-    if (model === null) {
-      return [];
+    const visibleDecorations = decorations.filter(
+      (diag) =>
+        diag.category === ErrorCategory.SyntaxError ||
+        liveChecks === LiveChecksStatus.SyntaxSemantics,
+    );
+    // Update counts for all cells
+    const previousCountThisCell = this.diagnosticsCounts[cellIdx] || 0;
+    this.diagnosticsCounts[cellIdx] = visibleDecorations.length;
+    const delta = this.diagnosticsCounts[cellIdx] - previousCountThisCell;
+    for (let i = cellIdx + 1; i < this.diagnosticsCounts.length; i++) {
+      this.diagnosticsCounts[i] += delta;
     }
 
-    const linesBefore = countPreviousLines(model);
-    const lineCurrent = model.getLineCount();
+    return visibleDecorations;
+  }
 
-    // Only keep the markers for the current cell
-    const currentCellMarkers = decorations.filter(
-      (marker) =>
-        marker.range.startLineNumber > linesBefore &&
-        marker.range.endLineNumber <= linesBefore + lineCurrent,
-    );
-
-    // Subtract the number of lines before the current cell
-    // to get the correct line number in the editor
-    return currentCellMarkers.map((marker) => ({
-      ...marker,
-      range: new monacoInstance.Range(
-        marker.range.startLineNumber - linesBefore,
-        marker.range.startColumn,
-        marker.range.endLineNumber - linesBefore,
-        marker.range.endColumn,
-      ),
-    }));
+  getDiagnosticsCountUpTo(cellIdx: number): number {
+    return this.diagnosticsCounts[cellIdx] || 0;
   }
 }
 

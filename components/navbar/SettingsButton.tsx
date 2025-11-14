@@ -15,6 +15,7 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
+import { LiveChecksStatus } from '../../src/localStorage/schema';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import theme from '../../src/theme';
@@ -86,13 +87,13 @@ export default function SettingsButton() {
                   size='small'
                   fullWidth
                 >
-                  <ToggleButton value='none'>
+                  <ToggleButton value={LiveChecksStatus.None}>
                     <ReportOff sx={{ mr: 1 }} /> {t('noneChecks')}
                   </ToggleButton>
-                  <ToggleButton value='syntax'>
+                  <ToggleButton value={LiveChecksStatus.Syntax}>
                     <Report sx={{ mr: 1 }} /> {t('syntaxChecks')}
                   </ToggleButton>
-                  <ToggleButton value='syntax-semantics'>
+                  <ToggleButton value={LiveChecksStatus.SyntaxSemantics}>
                     <PlaylistAddCheck sx={{ mr: 1 }} />{' '}
                     {t('syntaxSemanticsChecks')}
                   </ToggleButton>

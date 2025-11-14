@@ -142,9 +142,14 @@
     "learnMoreChecks": "Learn more about errors and checks",
     "confirmExecutionWithErrors": {
         "title": "Are you sure you want to run this program?",
-        "description_one": "The source code has {{count}} error. Consider fixing it before running the program.",
-        "description_other": "The source code has {{count}} errors. Consider fixing them before running the program.",
+        "descriptionOnlyCurrentCell_one": "This code cell has $t(errors, {\"count\": {{count}} }). Consider fixing it before running the program.",
+        "descriptionOnlyCurrentCell_other": "This code cell has $t(errors, {\"count\": {{count}} }). Consider fixing them before running the program.",
+        "descriptionOnlyPreviousCells_one": "Code cells above have $t(errors, {\"count\": {{count}} }). Consider fixing it before running the program.",
+        "descriptionOnlyPreviousCells_other": "Code cells above have $t(errors, {\"count\": {{count}} }). Consider fixing them before running the program.",
+        "descriptionWithPreviousCells": "This code cell has $t(errors, {\"count\": {{currentCount}} }) and code cells above have $t(errors, {\"count\": {{previousCount}} }). Consider fixing them before running the program.",
         "confirmationText": "Run Program Anyway",
         "cancellationText": "Cancel"
-    }
+    },
+    "errors_one": "one error",
+    "errors_other": "{{count}} errors"
 }

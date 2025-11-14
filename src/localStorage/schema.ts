@@ -20,7 +20,11 @@ export interface Metadata {
   wideEditor: boolean;
 }
 
-export type LiveChecksStatus = 'none' | 'syntax' | 'syntax-semantics';
+export enum LiveChecksStatus {
+  None = 'none',
+  Syntax = 'syntax',
+  SyntaxSemantics = 'syntax-semantics',
+}
 
 export interface DocsMetadata {
   showOptional: boolean;
@@ -114,7 +118,7 @@ export function getDefaultMetadata(): Metadata {
     platformLocale: null,
     docs: defaultDocsMetadata(),
     lastNotificationSeen: changelogEntries.length - 1,
-    liveChecks: 'syntax',
+    liveChecks: LiveChecksStatus.Syntax,
     wideEditor: false,
   };
 }

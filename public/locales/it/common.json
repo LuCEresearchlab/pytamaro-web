@@ -142,9 +142,14 @@
     "learnMoreChecks": "Scopri di più su errori e controlli",
     "confirmExecutionWithErrors": {
         "title": "Sei sicuro/a di voler eseguire questo programma?",
-        "description_one": "Il codice sorgente ha {{count}} errore. Considera di correggerlo prima di eseguire il programma.",
-        "description_other": "Il codice sorgente ha {{count}} errori. Considera di correggerli prima di eseguire il programma.",
+        "descriptionOnlyCurrentCell_one": "Questa cella di codice ha $t(errors, {\"count\": {{count}} }). Considera di correggerlo prima di eseguire il programma.",
+        "descriptionOnlyCurrentCell_other": "Questa cella di codice ha $t(errors, {\"count\": {{count}} }). Considera di correggerli prima di eseguire il programma.",
+        "descriptionOnlyPreviousCells_one": "Le celle di codice sopra hanno $t(errors, {\"count\": {{count}} }). Considera di correggerlo prima di eseguire il programma.",
+        "descriptionOnlyPreviousCells_other": "Le celle di codice sopra hanno $t(errors, {\"count\": {{count}} }). Considera di correggerli prima di eseguire il programma.",
+        "descriptionWithPreviousCells": "Questa cella di codice ha $t(errors, {\"count\": {{currentCount}} }) e le celle di codice sopra hanno $t(errors, {\"count\": {{previousCount}} }). Considera di correggerli prima di eseguire il programma.",
         "confirmationText": "Esegui comunque il programma",
         "cancellationText": "Annulla"
-    }
+    },
+    "errors_one": "un errore",
+    "errors_other": "{{count}} errori"
 }
