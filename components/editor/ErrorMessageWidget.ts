@@ -77,6 +77,8 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
     const message = document.createElement('div');
     message.style.width = 'max-content';
     message.style.maxWidth = 'min(90vw, 100ch)';
+    message.style.display = 'flex';
+    message.style.alignItems = 'stretch';
     message.style.paddingRight = `${isRuntimeError ? 24 : 12}px`;
     message.style.backgroundColor = theme.palette.error.main;
     message.style.color = theme.palette.error.contrastText;
@@ -86,6 +88,8 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
     message.style.fontSize = theme.typography.body1.fontSize as string;
 
     const prefixNode = document.createElement('span');
+    prefixNode.style.display = 'flex';
+    prefixNode.style.alignItems = 'center';
     prefixNode.style.borderTopLeftRadius = '3px';
     prefixNode.style.borderBottomLeftRadius = '3px';
     prefixNode.style.paddingTop = '2px';
