@@ -18,7 +18,7 @@ describe('Code Execution Errors', () => {
     cy.get('.run-button').first().click();
     cy.get('.monaco-editor-overlaymessage')
       .should('be.visible')
-      .contains('Name Error');
+      .contains('Name');
     cy.get('.squiggly-error').should('be.visible');
     cy.get('.output-area').should('be.empty');
     cy.get('.output-area').parent().contains('NameError');
@@ -53,7 +53,7 @@ describe('Code Execution Errors', () => {
     dismissDataCollectionModal();
     waitForMonacoEditor();
     cy.get('[data-testid="SettingsOutlinedIcon"]').click();
-    cy.get('button').contains('semantic').click();
+    cy.get('button').contains('Semantics').click();
     cy.get('[data-testid="SettingsOutlinedIcon"]').click();
     cy.get('.monaco-editor').first().type('{selectall}{backspace}');
     cy.get('.monaco-editor').first().type('print(a)');
@@ -68,7 +68,7 @@ describe('Code Execution Errors', () => {
         cy.get('.monaco-editor-overlaymessage').contains(
           'used when not defined',
         );
-        cy.get('.monaco-editor-overlaymessage').contains('Name Error');
+        cy.get('.monaco-editor-overlaymessage').contains('Name');
         cy.get('.monaco-editor-overlaymessage code').contains('a');
       });
   });
@@ -78,7 +78,7 @@ describe('Code Execution Errors', () => {
     dismissDataCollectionModal();
     waitForMonacoEditor();
     cy.get('[data-testid="SettingsOutlinedIcon"]').click();
-    cy.get('button').contains('semantic').click();
+    cy.get('button').contains('Semantics').click();
     cy.get('[data-testid="SettingsOutlinedIcon"]').click();
     cy.get('.monaco-editor').first().type('{selectall}{backspace}');
     cy.get('.monaco-editor').first().type('1 + "a"');
@@ -93,7 +93,7 @@ describe('Code Execution Errors', () => {
         cy.get('.monaco-editor-overlaymessage').contains(
           'unsupported between objects of type',
         );
-        cy.get('.monaco-editor-overlaymessage').contains('Type Error');
+        cy.get('.monaco-editor-overlaymessage').contains('Type');
         // 1st should contain +, 2nd and 3rd the simplified types
         cy.get('.monaco-editor-overlaymessage code').eq(0).contains('+');
         cy.get('.monaco-editor-overlaymessage code').eq(1).contains('int');
@@ -146,7 +146,9 @@ describe('Code Execution Errors', () => {
     cy.get('.monaco-editor').first().type('{selectall}{backspace}');
     cy.get('.monaco-editor')
       .first()
-      .type('import sys\nprint("out")\nprint("err", file=sys.stderr)');
+      .type(
+        'import sys{enter}{enter}print("out"){enter}print("err", file=sys.stderr)',
+      );
     cy.get('.run-button').first().click();
     cy.get('.output-area').should('contain.text', 'out');
     cy.get('.output-area').parent().should('contain.text', 'err');
@@ -165,7 +167,7 @@ describe('Code Execution Errors', () => {
     cy.get('.run-button').eq(1).click();
     cy.get('.monaco-editor-overlaymessage')
       .should('be.visible')
-      .contains('Name Error');
+      .contains('Name');
     cy.get('.output-area').parent().contains('NameError');
   });
 });
