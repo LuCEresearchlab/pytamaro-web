@@ -1,5 +1,6 @@
 import { Monaco } from '@monaco-editor/react';
 import { type editor as EditorNamespace } from 'monaco-editor';
+import { TFunction } from 'next-i18next';
 import { ErrorMessageWidget } from '../components/editor/ErrorMessageWidget';
 import { runtimeErrorMessageCategory } from '../components/editor/errors';
 import { CompletedExecutionResponse } from './codeExecution';
@@ -52,6 +53,7 @@ export function addErrorAnnotationsFromExecution(
   editor: EditorNamespace.IStandaloneCodeEditor,
   executionResponse: CompletedExecutionResponse,
   firstLineNumber: number,
+  t: TFunction,
 ): {
   widget: ErrorMessageWidget;
   decorationsCollection: EditorNamespace.IEditorDecorationsCollection;
@@ -128,6 +130,7 @@ export function addErrorAnnotationsFromExecution(
       message,
       true,
       runtimeErrorMessageCategory(message),
+      t,
     );
     return {
       widget,

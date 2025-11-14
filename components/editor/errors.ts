@@ -1,3 +1,5 @@
+import { TFunction } from 'next-i18next';
+
 export function simplifyTypes(message: string) {
   // Ty supports IntLiteral, BooleanLiteral, StringLiteral, BytesLiteral, EnumLiteral.
   // See https://github.com/astral-sh/ruff/blob/bff32a41dc440b30764e9414767794e01d25c265/crates/ty_python_semantic/src/types/display.rs#L252-L258
@@ -34,16 +36,19 @@ export enum ErrorCategory {
   Other,
 }
 
-export function displayErrorCategory(category: ErrorCategory): string {
+export function displayErrorCategory(
+  category: ErrorCategory,
+  t: TFunction,
+): string {
   switch (category) {
     case ErrorCategory.SyntaxError:
-      return 'Syntax';
+      return t('errorCategory.syntax');
     case ErrorCategory.NameError:
-      return 'Name';
+      return t('errorCategory.name');
     case ErrorCategory.TypeError:
-      return 'Type';
+      return t('errorCategory.type');
     case ErrorCategory.Other:
-      return 'Error';
+      return t('errorCategory.other');
   }
 }
 

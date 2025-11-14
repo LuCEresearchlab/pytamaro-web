@@ -4,6 +4,7 @@ import type {
   IPosition,
   IRange,
 } from 'monaco-editor';
+import { TFunction } from 'next-i18next';
 import theme from '../../src/theme';
 import { ERROR_MESSAGE_CLASSNAME } from '../OutputArea';
 import {
@@ -39,6 +40,7 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
     content: string,
     isRuntimeError: boolean,
     category: ErrorCategory,
+    t: TFunction,
   ) {
     this._monaco = monaco;
     this._editor = editor;
@@ -98,7 +100,7 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
       runtimeIcon.style.marginRight = '4px';
       prefixNode.appendChild(runtimeIcon);
     }
-    const categoryContent = displayErrorCategory(category);
+    const categoryContent = displayErrorCategory(category, t);
     const categorySpan = document.createElement('span');
     categorySpan.style.paddingRight = '10px';
     categorySpan.style.fontWeight = 'bold';

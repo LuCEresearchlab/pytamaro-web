@@ -154,5 +154,11 @@
         "cancellationText": "Abbrechen"
     },
     "errors_one": "ein Fehler",
-    "errors_other": "{{count}} Fehler"
+    "errors_other": "{{count}} Fehler",
+    "errorCategory": {
+        "syntax": "Syntax",
+        "name": "Name",
+        "type": "Typ",
+        "other": "Fehler"
+    }
 }

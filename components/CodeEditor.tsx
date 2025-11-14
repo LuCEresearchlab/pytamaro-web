@@ -6,6 +6,7 @@ import { ExecutionResponse } from '../src/codeExecution';
 import { LiveChecksStatus } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import {
   moduleImportCompletionProvider,
   pytamaroImportCompletionProvider,
@@ -95,6 +96,8 @@ export default function CodeEditor({
   const debouncedShowDiagnosticOnHover = useRef<DebouncedFunc<
     () => void
   > | null>(null);
+
+  const { t } = useLocalTranslation();
 
   const handleEditorMount = (
     editor: EditorNamespace.IStandaloneCodeEditor,
@@ -322,6 +325,7 @@ export default function CodeEditor({
           selectedDiagnosticToShow.message,
           false,
           selectedDiagnosticToShow.category,
+          t,
         );
         hoveredStaticErrorDecorationRef.current =
           editorInstance!.createDecorationsCollection([
@@ -354,7 +358,7 @@ export default function CodeEditor({
       mouseMoveDisposer?.dispose();
       mouseLeaveDisposer?.dispose();
     };
-  }, [monacoInstance, editorInstance, clearStaticWidget]);
+  }, [monacoInstance, editorInstance, clearStaticWidget, t]);
 
   // Effect to trigger remeasurement of fonts after they have been loaded.
   useEffect(() => {
@@ -375,6 +379,7 @@ export default function CodeEditor({
           editorInstance,
           executionResponse,
           firstLineNumber,
+          t,
         );
         if (annotations !== null) {
           const { widget, decorationsCollection } = annotations;
@@ -390,6 +395,7 @@ export default function CodeEditor({
     clearAnnotations,
     executionFinished,
     firstLineNumber,
+    t,
   ]);
 
   // Effect to reset the editor when resetCounter changes.

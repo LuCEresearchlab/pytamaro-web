@@ -151,5 +151,11 @@
         "cancellationText": "Cancel"
     },
     "errors_one": "one error",
-    "errors_other": "{{count}} errors"
+    "errors_other": "{{count}} errors",
+    "errorCategory": {
+        "syntax": "Syntax",
+        "name": "Name",
+        "type": "Type",
+        "other": "Error"
+    }
 }
