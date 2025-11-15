@@ -55,15 +55,22 @@ export const strictPython3Language = <languages.IMonarchLanguage>{
   defaultToken: '',
   tokenPostfix: '.python',
 
-  keywords: [
-    // This section is the result of running
-    // > import keyword
-    // > for k in sorted(keyword.kwlist + keyword.softkwlist): print("  '" + k + "',")
-    // in a Python 3.13 REPL.
+  // The next list is the result of running
+  // > import keyword
+  // > for k in sorted(keyword.kwlist + keyword.softkwlist): print("  '" + k + "',")
+  // in a Python 3.13 REPL.
 
-    'False',
-    'None',
-    'True',
+  // We exclude 'False', 'None', and 'True' from keywords to
+  // classify them as literals instead.
+  // For a historical account on why they are both "keywords" from the POV of the parser,
+  // and "literals" when classifying expressions,
+  // see https://python-history.blogspot.com/2013/11/story-of-none-true-false.html
+
+  // 'False',
+  // 'None',
+  // 'True',
+
+  keywords: [
     '_',
     'and',
     'as',
@@ -102,6 +109,8 @@ export const strictPython3Language = <languages.IMonarchLanguage>{
     'yield',
   ],
 
+  literals: ['True', 'False', 'None'],
+
   brackets: [
     { open: '{', close: '}', token: 'delimiter.curly' },
     { open: '[', close: ']', token: 'delimiter.bracket' },
@@ -122,6 +131,7 @@ export const strictPython3Language = <languages.IMonarchLanguage>{
         /[a-zA-Z_]\w*/,
         {
           cases: {
+            '@literals': 'literal',
             '@keywords': 'keyword',
             '@default': 'identifier',
           },
