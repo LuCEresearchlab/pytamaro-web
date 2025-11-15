@@ -850,10 +850,6 @@
                     "error": "SyntaxError: unmatched ')'"
                 },
                 {
-                    "code": "2 * (3 + )",
-                    "error": "SyntaxError: invalid syntax"
-                },
-                {
                     "code": "print(\"Hello World!)",
                     "error": "SyntaxError: unterminated string literal"
                 },
