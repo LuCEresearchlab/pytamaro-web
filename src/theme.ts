@@ -13,6 +13,7 @@ declare module '@mui/material/styles' {
         green: string;
         orange: string;
         gold: string;
+        darkerBlue: string;
       };
       errorBackgroundRed: string;
       backgroundColor: string;
@@ -30,6 +31,7 @@ declare module '@mui/material/styles' {
         green?: string;
         orange?: string;
         gold?: string;
+        darkerBlue?: string;
       };
       errorBackgroundRed?: string;
       backgroundColor?: string;
@@ -61,6 +63,7 @@ const theme = responsiveFontSizes(
         green: '#038A36',
         orange: '#FF8021',
         gold: '#B58200',
+        darkerBlue: '#2B6694',
       },
       errorBackgroundRed: 'rgba(255, 245, 245)',
       backgroundColor: '#E1F5FD',

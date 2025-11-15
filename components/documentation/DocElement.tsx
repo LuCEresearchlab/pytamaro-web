@@ -68,7 +68,7 @@ export default function DocElement({
             <Typography
               component='span'
               style={{
-                color: theme.pytamaro.redColor,
+                color: theme.pytamaro.palette.darkerBlue,
                 fontSize: smallerFont
                   ? '0.8em'
                   : `${theme.pytamaro.monospaceFontSizeRatio}em`,
