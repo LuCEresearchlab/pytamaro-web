@@ -31,8 +31,8 @@ import {
 import {
   colorizeElements,
   configureEditor,
-  luceTheme,
-  luceThemeName,
+  LUCE_THEME,
+  LUCE_THEME_NAME,
   RUN_CODE_CONDITION_KEY,
 } from './editor/utils';
 
@@ -108,8 +108,8 @@ export default function CodeEditor({
 
     registerCustomPythonLanguage(monaco);
 
-    monaco.editor.defineTheme(luceThemeName, luceTheme);
-    monaco.editor.setTheme(luceThemeName);
+    monaco.editor.defineTheme(LUCE_THEME_NAME, LUCE_THEME);
+    monaco.editor.setTheme(LUCE_THEME_NAME);
 
     setExecutionAllowedCondition(
       editor.createContextKey(RUN_CODE_CONDITION_KEY, executionAllowed),
@@ -477,7 +477,7 @@ export default function CodeEditor({
     <div ref={containerRef} translate='no'>
       <Editor
         language={STRICT_PYTHON3_LANG_ID}
-        theme={luceThemeName}
+        theme={LUCE_THEME_NAME}
         defaultValue={currentSource}
         onMount={handleEditorMount}
         onChange={handleSourceChanged}

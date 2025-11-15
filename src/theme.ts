@@ -6,7 +6,14 @@ declare module '@mui/material/styles' {
     pytamaro: {
       monospaceFontFamily: string;
       monospaceFontSizeRatio: number;
-      redColor: string;
+      palette: {
+        red: string;
+        blue: string;
+        brown: string;
+        green: string;
+        orange: string;
+        gold: string;
+      };
       errorBackgroundRed: string;
       backgroundColor: string;
     };
@@ -16,7 +23,14 @@ declare module '@mui/material/styles' {
     pytamaro?: {
       monospaceFontFamily?: string;
       monospaceFontSizeRatio: number;
-      redColor?: string;
+      palette?: {
+        red?: string;
+        blue?: string;
+        brown?: string;
+        green?: string;
+        orange?: string;
+        gold?: string;
+      };
       errorBackgroundRed?: string;
       backgroundColor?: string;
     };
@@ -40,7 +54,14 @@ const theme = responsiveFontSizes(
     pytamaro: {
       monospaceFontFamily: "'Fira Code Variable', monospace",
       monospaceFontSizeRatio: 0.9625,
-      redColor: '#D2071D',
+      palette: {
+        red: '#D2071D',
+        blue: '#008BCB',
+        brown: '#93604C',
+        green: '#038A36',
+        orange: '#FF8021',
+        gold: '#B58200',
+      },
       errorBackgroundRed: 'rgba(255, 245, 245)',
       backgroundColor: '#E1F5FD',
     },

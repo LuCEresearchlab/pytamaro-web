@@ -1,19 +1,21 @@
 import { loader, Monaco } from '@monaco-editor/react';
 import { type editor as EditorNamespace } from 'monaco-editor';
+import theme from '../../src/theme';
 
-const FUNCTION_COLOR = '#795E26';
-const VARIABLE_COLOR = '#001080';
-const TYPE_COLOR = '#267f99';
+const FUNCTION_COLOR = theme.pytamaro.palette.brown;
+const VARIABLE_COLOR = theme.pytamaro.palette.blue;
+const TYPE_COLOR = theme.pytamaro.palette.orange;
+const LITERAL_COLOR = theme.pytamaro.palette.green;
+const STRING_LITERAL_COLOR = theme.pytamaro.palette.gold;
 
-export const luceThemeName = 'luce';
-export const luceTheme: EditorNamespace.IStandaloneThemeData = {
-  base: 'vs', // use vscode light as base theme
+export const LUCE_THEME_NAME = 'luce';
+export const LUCE_THEME: EditorNamespace.IStandaloneThemeData = {
+  base: 'vs', // vscode light as base theme
   inherit: true,
   rules: [
-    // Colors manually extracted from https://github.com/microsoft/vscode/blob/4ce6f26ef7a68b49140abc02cf221c86370b6c57/extensions/theme-defaults/themes/light_plus.json
     {
-      foreground: '#0070C1',
       token: 'builtinConstant',
+      foreground: LITERAL_COLOR,
     },
     {
       token: 'method',
@@ -69,6 +71,28 @@ export const luceTheme: EditorNamespace.IStandaloneThemeData = {
       foreground: VARIABLE_COLOR,
       fontStyle: 'underline',
     },
+    {
+      token: 'keyword',
+      foreground: '#000000',
+      fontStyle: 'bold',
+    },
+    {
+      token: 'comment',
+      foreground: '#909090',
+      fontStyle: 'italic',
+    },
+    {
+      token: 'number',
+      foreground: LITERAL_COLOR,
+    },
+    {
+      token: 'literal',
+      foreground: LITERAL_COLOR,
+    },
+    {
+      token: 'string',
+      foreground: STRING_LITERAL_COLOR,
+    },
   ],
   colors: {
     'editorLineNumber.foreground': '#60bcd9',
@@ -95,7 +119,7 @@ export function colorizeElements(monaco: Monaco) {
     .querySelectorAll<HTMLElement>(`.${COLORIZE_CLASSNAME}:not(.vs)`)
     .forEach((element) => {
       monaco.editor.colorizeElement(element, {
-        theme: luceThemeName,
+        theme: LUCE_THEME_NAME,
       });
     });
 }

@@ -67,6 +67,10 @@ pre:has(code) {
   display: none;
 }
 
+.monaco-editor .mtkb {
+  font-weight: 550 !important;
+}
+
 .peekview-title > .filename {
   display: none;
 }
