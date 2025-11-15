@@ -10,7 +10,7 @@ import {
   nameId,
 } from './utils';
 
-const DARK_COLOR = '#008bcb';
+const DARK_COLOR = theme.pytamaro.palette.blue;
 const LIGHT_COLOR = '#d1f0ff';
 
 export default function ConstantDiagram({

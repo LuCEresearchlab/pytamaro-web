@@ -66,7 +66,7 @@ export default function FunctionDocumentation({
         <Box sx={{ display: 'flex' }}>
           <span>
             <Typography
-              color={theme.pytamaro.redColor}
+              color={theme.pytamaro.palette.red}
               fontWeight='bold'
               component='span'
             >

@@ -106,7 +106,7 @@ export function ErrorParagraph(props: { annotation: TideError }) {
                   key={i}
                   style={{
                     fontFamily: theme.pytamaro.monospaceFontFamily,
-                    color: theme.pytamaro.redColor,
+                    color: theme.pytamaro.palette.red,
                   }}
                 >
                   {v}

@@ -294,7 +294,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
             variant='h3'
             fontWeight='bold'
             component='span'
-            color={theme.pytamaro.redColor}
+            color={theme.pytamaro.palette.red}
           >
             Graphics
           </Typography>
