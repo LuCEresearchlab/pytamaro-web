@@ -9,6 +9,23 @@ import {
   JudiciousParameter,
 } from '../../src/schemas/documentation';
 
+/* IMPORTANT!
+ * This list must be kept up to date with the modules publicly available as JSON files inside `public/docs`.
+ * It would be possible to automate this, but the cost (compexity of passing the props down from the main component for essentially all pages)
+ * seems higher than the benefit (not having to update this list on the rare occasion a new module is added).
+ */
+export const KNOWN_JUDICIOUS_MODULES = [
+  'builtins',
+  'functools',
+  'math',
+  'pytamaro.de',
+  'pytamaro.fr',
+  'pytamaro.it',
+  'pytamaro',
+  'random',
+  'string',
+];
+
 export const HOVER_COLOR = '#c2ecff';
 export const DARK_HOVER_COLOR = '#0eb4ff';
 
@@ -44,15 +61,19 @@ export function moduleId() {
 
 export function iconPath(module: string) {
   if (module === '.') {
-    return '/codeblock-icon.svg';
+    return '/icons/codeblock.svg';
   }
   if (module === 'toolbox') {
-    return '/toolbox-logo.svg';
+    return '/icons/toolbox-logo.svg';
   }
   if (module === 'pytamaro' || module.startsWith('pytamaro.')) {
     return '/favicon.ico';
   }
-  return '/python-logo.svg';
+  if (KNOWN_JUDICIOUS_MODULES.includes(module)) {
+    return `/icons/python-logo.svg`;
+  }
+  // Otherwise, it's an external library (e.g., via `extraPythonFiles`)
+  return '/icons/library_books.svg';
 }
 
 export function sentence(s: string) {

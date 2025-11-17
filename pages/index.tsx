@@ -85,7 +85,7 @@ function PythonCodeCard({
           // eslint-disable-next-line @next/next/no-img-element
           <div>
             <img
-              src='/python-logo.svg'
+              src='/icons/python-logo.svg'
               style={{
                 height: '2em',
                 width: 'auto',
