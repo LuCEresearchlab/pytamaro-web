@@ -133,11 +133,19 @@ export default function DoNowBox({
       sx={{ fontSize: theme.typography.body1.fontSize, marginY: 2 }}
     >
       <AlertTitle sx={{ fontSize: '1rem' }}>{t('doNow')}</AlertTitle>
-      {children}
-      <Box sx={{ mt: 1 }}>
+      <Box
+        sx={{
+          '& > p:last-child': {
+            marginBottom: 0,
+          },
+        }}
+      >
+        {children}
+      </Box>
+      <Box>
         {requireAnswer && (
           <TextField
-            sx={{ mb: alreadyDidIt ? 0 : 2 }}
+            sx={{ mt: 2, mb: 0 }}
             size='small'
             label={t('yourAnswer')}
             variant='outlined'
@@ -150,6 +158,7 @@ export default function DoNowBox({
         )}
         <Collapse in={!alreadyDidIt}>
           <Button
+            sx={{ mt: 2 }}
             variant='outlined'
             color='warning'
             onClick={handleDidIt}
