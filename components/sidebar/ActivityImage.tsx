@@ -37,7 +37,7 @@ export default function ActivityImage({
               <ActivityCardMedia
                 activity={activity}
                 variant={variant}
-                height='auto'
+                height={(0.9 * window.innerHeight).toString()}
               />
             </Dialog>
             <Button
