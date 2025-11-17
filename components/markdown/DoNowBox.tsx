@@ -69,9 +69,8 @@ export default function DoNowBox({
       let nextElementsHolder = document.getElementById(domElementId(id))
         ?.parentElement?.nextElementSibling;
       while (nextElementsHolder) {
-        allNextElements.push(
-          ...Array.from(nextElementsHolder.querySelectorAll('*')),
-        );
+        // Only consider the direct children (to avoid blurring recursively).
+        allNextElements.push(...Array.from(nextElementsHolder.children));
         nextElementsHolder = nextElementsHolder.nextElementSibling;
       }
       // Blur all the elements, possibly until another subsequent Do Now box is found.
