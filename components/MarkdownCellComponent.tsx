@@ -70,12 +70,22 @@ function imgComponent(
 }
 
 function InlineAPIComponent(
-  name: string,
+  name: string | undefined,
   activityVariant: ActivityVariant,
   lang?: string,
   module?: string,
   extraPythonFiles?: PythonFile[],
 ) {
+  // Error on
+  if (!name) {
+    if (typeof window === 'undefined') {
+      // eslint-disable-next-line no-console
+      console.error(
+        'An <API> markdown component is missing the name (correct usage: <API>name</API>)',
+      );
+    }
+    return <span></span>;
+  }
   return (
     <InlineAPI
       name={name}
@@ -143,7 +153,7 @@ export default function MarkdownCellComponent({
       }: {
         lang?: string;
         module?: string;
-        children: string;
+        children: string | undefined;
       }) =>
         InlineAPIComponent(
           name,
