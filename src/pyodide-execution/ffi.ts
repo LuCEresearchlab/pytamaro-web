@@ -1,43 +1,45 @@
 import CanvasKitInit from '../canvaskit-wasm/canvaskit';
 import type { CanvasKit, Typeface } from '../canvaskit-wasm/canvaskit.d.ts';
 import { FONTS_FILENAME_PREFIX } from './fonts.ts';
-import { fromSpec } from './graphics';
-import { addDebugInfo } from './graphicsDebug.ts';
+import { computeBoundsAndPin } from './graphic/bounds.ts';
+import { addDebugInfo } from './graphic/debug.ts';
+import { renderOnCanvas } from './graphic/rendering.ts';
+import { freeStack, processSpecs } from './graphic/specs_processing.ts';
 import { GraphicSpec, Sized } from './spec';
 
 async function draw(
   ck: CanvasKit,
   typefaces: Map<string, Typeface>,
   canvas: OffscreenCanvas,
-  spec: GraphicSpec,
+  specs: GraphicSpec[],
   debug: boolean,
 ): Promise<string> {
-  const graphic = fromSpec(ck, typefaces, spec);
-  const extraSpace = debug
-    ? Math.min(graphic.size.width, graphic.size.height, 10) / 2
-    : 0;
+  const instructions = processSpecs(ck, typefaces, specs);
+
+  const { bounds, pinPosition } = computeBoundsAndPin(instructions);
+  const size = {
+    width: Math.abs(bounds[0] - bounds[2]),
+    height: Math.abs(bounds[1] - bounds[3]),
+  };
+
+  const extraSpace = debug ? Math.min(size.width, size.height, 10) / 2 : 0;
 
   // Need to set the size before the CK surface is initialized
   // eslint-disable-next-line no-param-reassign
-  canvas.width = Math.round(graphic.size.width + extraSpace * 2);
+  canvas.width = Math.round(size.width + extraSpace * 2);
   // eslint-disable-next-line no-param-reassign
-  canvas.height = Math.round(graphic.size.height + extraSpace * 2);
+  canvas.height = Math.round(size.height + extraSpace * 2);
 
   const surface = ck.MakeSWCanvasSurface(canvas);
   surface?.drawOnce((ckCanvas) => {
     // Align the graphic to the top-left of the canvas
-    ckCanvas.translate(
-      extraSpace - graphic.bounds[0],
-      extraSpace - graphic.bounds[1],
-    );
-    // Draw the graphic
-    graphic.draw(ckCanvas);
+    ckCanvas.translate(extraSpace - bounds[0], extraSpace - bounds[1]);
+    // Draw the graphic (this consumes the instructions)
+    renderOnCanvas(ckCanvas, instructions);
+    // Optionally draw debug info
     if (debug) {
-      addDebugInfo(ck, graphic, ckCanvas, extraSpace);
+      addDebugInfo(ck, bounds, pinPosition, ckCanvas, extraSpace);
     }
-
-    // Immediately destroy the graphic object
-    graphic.destroy();
   });
 
   return new Promise<string>((resolve) => {
@@ -57,15 +59,19 @@ async function draw(
 function sizeWhenRendered(
   ck: CanvasKit,
   typefaces: Map<string, Typeface>,
-  spec: GraphicSpec,
+  specs: GraphicSpec[],
 ): Sized {
   if (!ck) {
     throw new Error('Worker not initialized yet');
   }
-  const graphic = fromSpec(ck, typefaces, spec);
-  const size = { ...graphic.size };
-  graphic.destroy();
-  return size;
+  const instructions = processSpecs(ck, typefaces, specs);
+  const { bounds } = computeBoundsAndPin(instructions);
+  freeStack(instructions);
+
+  return {
+    width: Math.abs(bounds[0] - bounds[2]),
+    height: Math.abs(bounds[1] - bounds[3]),
+  };
 }
 
 function assetUrl(path: string): string {
@@ -73,8 +79,8 @@ function assetUrl(path: string): string {
 }
 
 export type PyTamaroFFI = {
-  draw: (specs: GraphicSpec, debug: boolean) => Promise<string>;
-  sizeWhenRendered: (specs: GraphicSpec) => Sized;
+  draw: (specs: GraphicSpec[], debug: boolean) => Promise<string>;
+  sizeWhenRendered: (specs: GraphicSpec[]) => Sized;
 };
 
 export default async function initFfi(): Promise<PyTamaroFFI> {
@@ -95,9 +101,9 @@ export default async function initFfi(): Promise<PyTamaroFFI> {
   const canvas = new OffscreenCanvas(1, 1);
 
   return {
-    draw: (specs: GraphicSpec, debug: boolean) =>
+    draw: (specs: GraphicSpec[], debug: boolean) =>
       draw(ck, typefaces, canvas, specs, debug),
-    sizeWhenRendered: (specs: GraphicSpec) =>
+    sizeWhenRendered: (specs: GraphicSpec[]) =>
       sizeWhenRendered(ck, typefaces, specs),
   };
 }

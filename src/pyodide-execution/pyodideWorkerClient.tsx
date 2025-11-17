@@ -156,8 +156,8 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
   switch (data.type) {
     case Message.DRAW:
       {
-        const { graphic, debug } = data;
-        ffiImpl!.draw(graphic, debug).then((result: string) => {
+        const { specs, debug } = data;
+        ffiImpl!.draw(specs, debug).then((result: string) => {
           const encoded = new Uint8Array(Buffer.from(result));
           notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
         });
@@ -165,8 +165,8 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
       break;
     case Message.SIZE:
       {
-        const { graphic } = data;
-        const result = ffiImpl!.sizeWhenRendered(graphic);
+        const { specs } = data;
+        const result = ffiImpl!.sizeWhenRendered(specs);
         notifyWorkerResultReady(uuid, Int32Array.BYTES_PER_ELEMENT * 2, result);
       }
       break;
