@@ -95,7 +95,7 @@ export default function DocumentationStripe({
   }
 
   return (
-    <Box>
+    <Box bgcolor={theme.pytamaro.palette.background.light}>
       <Stack
         direction='row'
         columnGap={0.7}
@@ -108,8 +108,9 @@ export default function DocumentationStripe({
             sx={{
               fontSize: '1em',
               transform: 'translateY(0.15em)',
+              marginX: theme.spacing(0.5),
             }}
-            color='action'
+            color='primary'
           />
         </Tooltip>
         <Stack

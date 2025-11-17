@@ -25,7 +25,9 @@ export default function MyDocument(
         <meta name='emotion-insertion-point' content='' />
         <DocumentHeadTags {...props} />
       </Head>
-      <body style={{ backgroundColor: theme.pytamaro.backgroundColor }}>
+      <body
+        style={{ backgroundColor: theme.pytamaro.palette.background.default }}
+      >
         <Main />
         <NextScript />
       </body>

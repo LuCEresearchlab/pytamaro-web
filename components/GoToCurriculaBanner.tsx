@@ -2,6 +2,7 @@ import Route from '@mui/icons-material/Route';
 import { Alert, AlertTitle, Typography } from '@mui/material';
 import visibleCurricula from '../src/curricula';
 import { Curriculum } from '../src/schemas/curriculumSchema';
+import theme from '../src/theme';
 import CurriculaList from './CurriculaList';
 
 export default function GoToCurriculaBanner({
@@ -15,7 +16,7 @@ export default function GoToCurriculaBanner({
     <Alert
       icon={<Route />}
       severity='info'
-      sx={{ my: 2, backgroundColor: 'rgba(255, 255, 255, 0.5)' }}
+      sx={{ my: 2, backgroundColor: theme.pytamaro.palette.background.light }}
     >
       <AlertTitle>
         {`This activity is part of ${single ? 'a curriculum' : 'multiple curricula'}.`}

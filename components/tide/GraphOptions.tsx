@@ -260,7 +260,7 @@ export function GraphOptions() {
           flexDirection: 'row',
           justifyItems: 'start',
           alignItems: 'center',
-          backgroundColor: theme.pytamaro.backgroundColor,
+          backgroundColor: theme.pytamaro.palette.background.default,
           border: 'solid gray 1px',
           width: '100%',
           borderRadius: '20px 0% 0% 0%',

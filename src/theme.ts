@@ -14,9 +14,12 @@ declare module '@mui/material/styles' {
         orange: string;
         gold: string;
         darkerBlue: string;
+        background: {
+          errorRed: string;
+          default: string;
+          light: string;
+        };
       };
-      errorBackgroundRed: string;
-      backgroundColor: string;
     };
   }
   // allow configuration using `createTheme`
@@ -32,9 +35,12 @@ declare module '@mui/material/styles' {
         orange?: string;
         gold?: string;
         darkerBlue?: string;
+        background?: {
+          errorRed?: string;
+          default?: string;
+          light?: string;
+        };
       };
-      errorBackgroundRed?: string;
-      backgroundColor?: string;
     };
   }
 }
@@ -64,9 +70,12 @@ const theme = responsiveFontSizes(
         orange: '#FF8021',
         gold: '#B58200',
         darkerBlue: '#2B6694',
+        background: {
+          errorRed: 'rgb(255, 245, 245)',
+          default: '#E1F5FD',
+          light: 'rgb(240, 250, 254)', // 50% white on top of `default`
+        },
       },
-      errorBackgroundRed: 'rgba(255, 245, 245)',
-      backgroundColor: '#E1F5FD',
     },
     typography: {
       fontFamily: "'Fira Sans', sans-serif",

@@ -171,7 +171,7 @@ export default function DocumentationExample({
             alignItems='center'
             sx={{
               color: 'red',
-              backgroundColor: theme.pytamaro.errorBackgroundRed,
+              backgroundColor: theme.pytamaro.palette.background.errorRed,
             }}
           >
             <RotatedHeading tooltip={t('errorTooltip')}>

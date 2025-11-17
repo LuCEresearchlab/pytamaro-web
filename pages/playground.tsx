@@ -41,6 +41,7 @@ import {
 } from '../src/playground';
 import { analyze, PythonName } from '../src/python-analyzer/python_analyzer';
 import { translationProps } from '../src/serverSideTranslationProps';
+import theme from '../src/theme';
 import useReset from '../src/useReset';
 
 function uniqueNames(names: PythonName[]): Set<string> {
@@ -243,7 +244,7 @@ function RecommendedActivities({
         severity='info'
         sx={{
           marginTop: 8,
-          backgroundColor: 'rgba(255, 255, 255, 0.5)',
+          backgroundColor: theme.pytamaro.palette.background.light,
         }}
       >
         <AlertTitle>Try out these activities!</AlertTitle>

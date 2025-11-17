@@ -81,7 +81,9 @@ function ScrollAppBarChanges({
   return cloneElement(children, {
     // @ts-expect-error expect children to be a MUI component
     sx: {
-      background: scrolled ? theme.pytamaro.backgroundColor : '#ffffffb0',
+      background: scrolled
+        ? theme.pytamaro.palette.background.default
+        : '#ffffffb0',
     },
   });
 }
@@ -131,7 +133,7 @@ export default function NavigationBar({
         position='sticky'
         elevation={0}
         sx={{
-          background: theme.pytamaro.backgroundColor,
+          background: theme.pytamaro.palette.background.default,
         }}
       >
         <Toolbar>
@@ -165,7 +167,7 @@ export default function NavigationBar({
               }}
               PaperProps={{
                 style: {
-                  backgroundColor: theme.pytamaro.backgroundColor,
+                  backgroundColor: theme.pytamaro.palette.background.default,
                 },
               }}
             >
