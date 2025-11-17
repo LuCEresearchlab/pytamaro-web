@@ -1,5 +1,5 @@
-import { Canvas, CanvasKit, Paint } from '../canvaskit-wasm/canvaskit';
-import { Graphic } from './graphics';
+import { Canvas, CanvasKit, Paint, Rect } from '../../canvaskit-wasm/canvaskit';
+import { Point } from '../spec';
 
 function circle(
   ck: CanvasKit,
@@ -47,14 +47,15 @@ function pinIndicator(
 function border(
   ck: CanvasKit,
   canvas: Canvas,
-  graphic: Graphic,
+  graphicBounds: Rect,
   unitSize: number,
   darkPaint: Paint,
   lightPaint: Paint,
 ) {
-  const baseX = graphic.bounds[0];
-  const baseY = graphic.bounds[1];
-  const { width, height } = graphic.size;
+  const baseX = graphicBounds[0];
+  const baseY = graphicBounds[1];
+  const width = Math.abs(graphicBounds[0] - graphicBounds[2]);
+  const height = Math.abs(graphicBounds[1] - graphicBounds[3]);
   // Border rectangle
   darkPaint.setStyle(ck.PaintStyle.Stroke);
   rectangle(
@@ -71,8 +72,8 @@ function border(
   darkPaint.setStyle(ck.PaintStyle.Fill);
   for (let x = -1; x < 2; x++) {
     for (let y = -1; y < 2; y++) {
-      const dotX = graphic.bounds[0] + graphic.size.width * ((x + 1) / 2);
-      const dotY = graphic.bounds[1] + graphic.size.height * ((y + 1) / 2);
+      const dotX = graphicBounds[0] + width * ((x + 1) / 2);
+      const dotY = graphicBounds[1] + height * ((y + 1) / 2);
       circle(ck, canvas, dotX, dotY, unitSize, darkPaint);
       circle(ck, canvas, dotX, dotY, (4 / 5) * unitSize, lightPaint);
     }
@@ -81,12 +82,11 @@ function border(
 
 export function addDebugInfo(
   ck: CanvasKit,
-  graphic: Graphic,
+  graphicBounds: Rect,
+  graphicPinPosition: Point,
   canvas: Canvas,
   size: number,
 ) {
-  graphic.draw(canvas);
-
   const whitePaint = new ck.Paint();
   whitePaint.setColor(ck.Color4f(0xeb / 255, 0xeb / 255, 0xeb / 255, 1));
   whitePaint.setAntiAlias(true);
@@ -97,10 +97,10 @@ export function addDebugInfo(
   bluePaint.setColor(ck.Color4f(0x29 / 255, 0x62 / 255, 0xc1 / 255, 1));
   bluePaint.setAntiAlias(true);
 
-  border(ck, canvas, graphic, size, bluePaint, whitePaint);
+  border(ck, canvas, graphicBounds, size, bluePaint, whitePaint);
 
   // Pin indicator
-  const { x, y } = graphic.pinPosition;
+  const { x, y } = graphicPinPosition;
   pinIndicator(ck, canvas, x, y, whitePaint, 3);
   pinIndicator(ck, canvas, x, y, blackPaint);
 }

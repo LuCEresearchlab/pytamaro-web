@@ -48,11 +48,11 @@ export type ExecutionRequestMessage =
   | ({ type: Message.SIZE } & SizeRequestData)
   | ({ type: Message.INPUT } & InputRequestData);
 export type DrawRequestData = {
-  graphic: GraphicSpec;
+  specs: GraphicSpec[];
   debug: boolean;
 };
 export type SizeRequestData = {
-  graphic: GraphicSpec;
+  specs: GraphicSpec[];
 };
 export type InputRequestData = object;
 export type ExecutionResultRequestMessage = {

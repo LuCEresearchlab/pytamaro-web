@@ -58,31 +58,31 @@ export type TextSpec = Colored & {
 };
 
 export type ComposeSpec = {
-  foreground: GraphicSpec;
-  background: GraphicSpec;
   foreground_pin?: Point;
   background_pin?: Point;
+  own_pin?: Point;
   type: 'Compose';
 };
 
 export type PinSpec = {
   pinning_point: Point;
-  graphic: GraphicSpec;
   type: 'Pin';
 };
 
 export type RotateSpec = {
   angle: number;
-  graphic: GraphicSpec;
   type: 'Rotate';
 };
 
-export type GraphicSpec =
-  | EmptySpec
+export type PrimitiveSpec =
   | RectangleSpec
   | EllipseSpec
   | CircularSectorSpec
-  | TriangleSpec
+  | TriangleSpec;
+
+export type GraphicSpec =
+  | EmptySpec
+  | PrimitiveSpec
   | TextSpec
   | ComposeSpec
   | PinSpec

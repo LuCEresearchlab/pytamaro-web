@@ -20,10 +20,10 @@ let syncBuffer: Int32Array;
 let resultLengthBuffer: Int32Array;
 let pyodide: PyodideAPI;
 
+const decoder = new TextDecoder();
 const remainingPyProxies: PyProxy[] = [];
 
 function decodeSharedBuffer(sharedBuffer: SharedArrayBuffer): string {
-  const decoder = new TextDecoder();
   const len = sharedBuffer.byteLength;
   const sharedView = new Uint8Array(sharedBuffer);
   const tmpBuffer = new ArrayBuffer(len);
@@ -190,13 +190,13 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
   }
 }
 
-function ffiRenderGraphic(graphic: GraphicSpec, debug: boolean): string {
-  const res = executeOnMainThread(Message.DRAW, { graphic, debug });
+function ffiRenderGraphic(specs: GraphicSpec[], debug: boolean): string {
+  const res = executeOnMainThread(Message.DRAW, { specs, debug });
   return decodeSharedBuffer(res);
 }
 
-function ffiSizeWhenRendered(graphic: GraphicSpec): Sized {
-  const res = executeOnMainThread(Message.SIZE, { graphic });
+function ffiSizeWhenRendered(specs: GraphicSpec[]): Sized {
+  const res = executeOnMainThread(Message.SIZE, { specs });
   const resultArray = new Float32Array(res);
   return {
     width: resultArray[0],
@@ -211,10 +211,10 @@ function ffiInput(): string {
 
 function installPytamaroFfi() {
   pyodide?.registerJsModule('pytamaro_js_ffi', {
-    render_graphic: (graphic: PyProxy, debug: boolean) =>
-      ffiRenderGraphic(unProxy<GraphicSpec>(() => graphic)(), debug),
-    graphic_size: (graphic: PyProxy) =>
-      ffiSizeWhenRendered(unProxy<GraphicSpec>(() => graphic)()),
+    render_graphic: (specs: PyProxy, debug: boolean) =>
+      ffiRenderGraphic(unProxy<GraphicSpec[]>(() => specs)(), debug),
+    graphic_size: (specs: PyProxy) =>
+      ffiSizeWhenRendered(unProxy<GraphicSpec[]>(() => specs)()),
   });
 }
 
