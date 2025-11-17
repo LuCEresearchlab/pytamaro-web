@@ -14,7 +14,7 @@ async function draw(
   specs: GraphicSpec[],
   debug: boolean,
 ): Promise<string> {
-  const instructions = processSpecs(ck, typefaces, specs);
+  const instructions = processSpecs(ck, typefaces, specs, true);
 
   const { bounds, pinPosition } = computeBoundsAndPin(instructions);
   const size = {
