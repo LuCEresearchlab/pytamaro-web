@@ -18,23 +18,24 @@ export function NoOutputTip({
     'pytamaro.fr': 'montre_graphique',
   };
   // Pick the language based on the first import from one of the pytamaro modules.
-  // Default to English ("pytamaro") if we do not find a suitable module.
-  const moduleName =
-    importedNames.find(({ module }) => module in showGraphicNames)?.module ||
-    'pytamaro';
-  const apiName = showGraphicNames[moduleName];
+  const moduleName = importedNames.find(
+    ({ module }) => module in showGraphicNames,
+  )?.module;
   return (
     <Alert
       iconMapping={{
         success: <TipsAndUpdates fontSize='inherit' />,
       }}
     >
-      <Trans
-        t={t}
-        i18nKey='noOutputTip'
-        values={{ apiName }}
-        components={{ code: <code /> }}
-      />
+      {t('noOutputTip')}
+      {moduleName && (
+        <Trans
+          t={t}
+          i18nKey='useShowGraphicTip'
+          values={{ apiName: showGraphicNames[moduleName] }}
+          components={{ code: <code /> }}
+        />
+      )}
     </Alert>
   );
 }
