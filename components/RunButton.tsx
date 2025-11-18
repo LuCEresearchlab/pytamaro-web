@@ -16,41 +16,31 @@ export default function RunButton({
   executionError: boolean;
 }) {
   const { t } = useLocalTranslation(['common']);
-  let buttonMessage = t('runCode');
-  let buttonTooltip = ''; // Empty tooltips are not displayed
-  if (executing) {
-    buttonMessage = t('runningCode');
-  } else if (executionFinished) {
-    buttonMessage = t('doneRunningCode');
-    buttonTooltip = t('alreadyExecuted');
-  }
-  const showPlayIcon = !executing && !executionFinished;
   return (
     <Stack direction='row' spacing={2} alignItems='center'>
-      <Tooltip arrow title={buttonTooltip} placement='left'>
-        <span>
-          <Button
-            onClick={onExecutionRequested}
-            endIcon={showPlayIcon && <PlayCircleFilled />}
-            loading={executing}
-            loadingPosition={showPlayIcon || executing ? 'end' : undefined}
-            variant='contained'
-            sx={{ minWidth: '10rem' }}
-            disabled={executing || executionFinished}
-            className='run-button'
-          >
-            <span>{buttonMessage}</span>
-          </Button>
-        </span>
-      </Tooltip>
-      {executionFinished &&
+      <Button
+        onClick={onExecutionRequested}
+        endIcon={!executing && <PlayCircleFilled />}
+        loading={executing}
+        loadingPosition='end'
+        variant='contained'
+        disabled={executing}
+        className='run-button'
+        sx={{
+          px: 3,
+        }}
+      >
+        <span>{t('runCode')}</span>
+      </Button>
+      {!executing &&
+        executionFinished &&
         (executionError ? (
           <Tooltip
             arrow
             title={t('executionCompletedWithErrors')}
             placement='right'
           >
-            <ErrorOutline color='error' />
+            <ErrorOutline fontSize='large' color='error' />
           </Tooltip>
         ) : (
           <Tooltip
@@ -58,7 +48,7 @@ export default function RunButton({
             title={t('executionCompletedSuccessfully')}
             placement='right'
           >
-            <Done color='success' />
+            <Done fontSize='large' color='success' />
           </Tooltip>
         ))}
     </Stack>

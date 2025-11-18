@@ -1,12 +1,6 @@
 import axios from 'axios';
-import crypto from 'crypto';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { createClient } from 'redis';
-import {
-  CODE_EXECUTION_CELLS_TO_FILES_VERSION,
-  ExecutionResponse,
-  cellsToFiles,
-} from '../../src/codeExecution';
+import { ExecutionResponse, cellsToFiles } from '../../src/codeExecution';
 import { ToolboxFunction } from '../../src/localStorage/schema';
 import { PythonFile } from '../../src/schemas/activitySchema';
 
@@ -15,44 +9,6 @@ const dummySuccessfulResponse: ExecutionResponse = {
   stdout: 'Hello, world!',
   stderr: '(Demo output - Only shown in development mode)',
 };
-
-const redisClient = createClient({
-  socket: {
-    host: process.env.REDIS_HOST,
-  },
-  password: process.env.REDIS_PASSWORD,
-});
-
-async function connectToRedisIfNeeded() {
-  if (!redisClient.isReady) {
-    try {
-      await redisClient.connect();
-    } catch (e) {
-      // could not connect to redis, ignore (as we can execute anyway),
-      // but log this error for easier inspection
-      // eslint-disable-next-line no-console
-      console.log('Could not connect to redis', e);
-    }
-  }
-}
-
-async function retrieveFromCache(key: string) {
-  await connectToRedisIfNeeded();
-  if (redisClient.isReady) {
-    const found = await redisClient.exists(key);
-    if (found) {
-      return redisClient.get(key);
-    }
-  }
-  return null;
-}
-
-async function saveToCache(key: string, value: string) {
-  await connectToRedisIfNeeded();
-  if (redisClient.isReady) {
-    await redisClient.set(key, value);
-  }
-}
 
 async function doExecution(
   sources: string[],
@@ -105,54 +61,22 @@ async function doExecution(
   }
 }
 
-async function computeKey(text: string) {
-  const msgUint8 = new TextEncoder().encode(text);
-  const hashBuffer = await crypto.webcrypto.subtle.digest('SHA-256', msgUint8);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-}
-
-function dataForKey(data: object) {
-  return JSON.stringify({
-    ...data,
-    image: process.env.GLOT_IMAGE_TAG,
-    cellsToFilesVersion: CODE_EXECUTION_CELLS_TO_FILES_VERSION,
-  });
-}
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ExecutionResponse>,
 ) {
   const { sources, idx, toolboxFunctions, extraPythonFiles } = req.body;
-  const key = await computeKey(
-    dataForKey({
-      sources,
-      idx,
-      toolboxFunctions,
-      extraPythonFiles,
-    }),
+  let response = await doExecution(
+    sources,
+    idx,
+    toolboxFunctions,
+    extraPythonFiles,
   );
-  const cacheResult = await retrieveFromCache(key);
-  let response;
-  if (cacheResult) {
-    response = JSON.parse(cacheResult);
-  } else {
-    response = await doExecution(
-      sources,
-      idx,
-      toolboxFunctions,
-      extraPythonFiles,
-    );
-    if (
-      response.type === 'network-error' &&
-      process.env.NODE_ENV === 'development'
-    ) {
-      response = dummySuccessfulResponse;
-    }
-    if (response.type !== 'network-error') {
-      saveToCache(key, JSON.stringify(response));
-    }
+  if (
+    response.type === 'network-error' &&
+    process.env.NODE_ENV === 'development'
+  ) {
+    response = dummySuccessfulResponse;
   }
   res.status(200).json(response);
 }

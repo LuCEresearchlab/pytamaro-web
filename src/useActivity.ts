@@ -283,6 +283,14 @@ export function useActivity(
     });
     setExecutionFailed(undefined);
     // (Re-)Execute all cells from the first one to the current one, included.
+    // Before starting, we mark the output of these cells as not synced.
+    setCodeExecutionStates((currentCodeExecutionStates) =>
+      produce(currentCodeExecutionStates, (draft) => {
+        for (let i = 0; i <= idx; i += 1) {
+          draft[i].outputSynced = false;
+        }
+      }),
+    );
     const responses = [];
     for (let i = 0; i <= idx; i += 1) {
       responses.push(handleExecuteSingleCell(sources, toolboxFunctions, i));
