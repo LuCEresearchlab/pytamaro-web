@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import { useMonaco } from '@monaco-editor/react';
 import Download from '@mui/icons-material/Download';
 import PlayCircle from '@mui/icons-material/PlayCircle';
 import Route from '@mui/icons-material/Route';
@@ -28,15 +27,7 @@ import Image from 'next/image';
 import { useEffect } from 'react';
 import ActivityCardMedia from '../components/ActivityCardMedia';
 import Carousel from '../components/Carousel';
-import {
-  registerCustomPythonLanguage,
-  STRICT_PYTHON3_LANG_ID,
-} from '../components/editor/strictPython3';
-import {
-  COLORIZE_CLASSNAME,
-  colorizeElements,
-  configureEditor,
-} from '../components/editor/utils';
+import { STRICT_PYTHON3_LANG_ID } from '../components/editor/strictPython3';
 import NavigationBar from '../components/navbar/NavigationBar';
 import ExecutionOutputArea from '../components/OutputArea';
 import PanoramaAlpeFoppa from '../public/AlpeFoppa.jpg';
@@ -44,6 +35,7 @@ import {
   basicActivities,
   listVisibleActivities,
 } from '../src/fs-content/activities';
+import useMonacoColorizer, { COLORIZE_CLASSNAME } from '../src/monacoColorizer';
 import { BasicActivity } from '../src/schemas/activitySchema';
 import { translationProps } from '../src/serverSideTranslationProps';
 import { joinLines } from '../src/sourceUtils';
@@ -55,8 +47,6 @@ import {
   playgroundPathname,
   teachingResourcesPathname,
 } from '../src/urlUtils';
-
-configureEditor();
 
 const PythonBadge = styled(Badge)<BadgeProps>(() => ({
   '& .MuiBadge-badge': {
@@ -188,14 +178,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
     });
   }, []);
 
-  const monaco = useMonaco();
-
-  useEffect(() => {
-    if (monaco) {
-      registerCustomPythonLanguage(monaco);
-      colorizeElements(monaco);
-    }
-  }, [monaco]);
+  useMonacoColorizer();
 
   return (
     <div>

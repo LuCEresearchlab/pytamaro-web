@@ -1,4 +1,4 @@
-import Editor, { Monaco } from '@monaco-editor/react';
+import Editor from '@monaco-editor/react';
 import { debounce, DebouncedFunc, throttle } from 'lodash';
 import { editor, type editor as EditorNamespace } from 'monaco-editor';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -24,24 +24,16 @@ import {
   storePythonAnalyzer,
 } from '../src/usePythonAnalyzer';
 import { ErrorMessageWidget } from './editor/ErrorMessageWidget';
+import { STRICT_PYTHON3_LANG_ID } from './editor/strictPython3';
 import {
-  registerCustomPythonLanguage,
-  STRICT_PYTHON3_LANG_ID,
-} from './editor/strictPython3';
-import {
-  colorizeElements,
   configureEditor,
-  LUCE_THEME,
   LUCE_THEME_NAME,
+  MonacoForPyTamaro,
+  registerPyTamaroLanguageAndTheme,
   RUN_CODE_CONDITION_KEY,
 } from './editor/utils';
 
 configureEditor();
-
-type MonacoForPyTamaro = Monaco & {
-  customProvidersRegistered?: boolean;
-  pytamaroColorized?: boolean;
-};
 
 export default function CodeEditor({
   initialSource,
@@ -106,10 +98,7 @@ export default function CodeEditor({
     monacoRef.current = monacoInstance = monaco;
     editorRef.current = editorInstance = editor;
 
-    registerCustomPythonLanguage(monaco);
-
-    monaco.editor.defineTheme(LUCE_THEME_NAME, LUCE_THEME);
-    monaco.editor.setTheme(LUCE_THEME_NAME);
+    registerPyTamaroLanguageAndTheme(monaco);
 
     setExecutionAllowedCondition(
       editor.createContextKey(RUN_CODE_CONDITION_KEY, executionAllowed),
@@ -141,12 +130,6 @@ export default function CodeEditor({
       contentWidth: editor.getContentWidth(),
       contentWidthChanged: true,
     });
-
-    if (monaco.pytamaroColorized === undefined) {
-      colorizeElements(monaco);
-      // eslint-disable-next-line no-param-reassign
-      monaco.pytamaroColorized = true;
-    }
   };
 
   const clearStaticWidget = useCallback(() => {
@@ -243,7 +226,7 @@ export default function CodeEditor({
   useEffect(() => {
     if (
       monacoInstance &&
-      !monacoInstance.customProvidersRegistered &&
+      !monacoInstance._pytamaroCustomProvidersRegistered &&
       pythonAnalyzer
     ) {
       const providers = [
@@ -271,10 +254,11 @@ export default function CodeEditor({
         ),
       );
       // eslint-disable-next-line no-param-reassign
-      monacoInstance.customProvidersRegistered = true;
+      monacoInstance._pytamaroCustomProvidersRegistered = true;
       return () => {
         disposers.forEach((disposer) => disposer?.dispose());
-        if (monacoInstance) monacoInstance.customProvidersRegistered = false;
+        if (monacoInstance)
+          monacoInstance._pytamaroCustomProvidersRegistered = false;
       };
     }
     return () => {};

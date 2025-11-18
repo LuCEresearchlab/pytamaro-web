@@ -1,23 +1,14 @@
 /* eslint-disable no-nested-ternary */
-import { useMonaco } from '@monaco-editor/react';
 import Keyboard from '@mui/icons-material/Keyboard';
 import { Badge, Box, Card, CardContent, Tooltip } from '@mui/material';
-import { useEffect } from 'react';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
+import useMonacoColorizer, {
+  COLORIZE_CLASSNAME,
+} from '../../src/monacoColorizer';
 import { JudiciousExample } from '../../src/schemas/documentation';
 import theme from '../../src/theme';
-import {
-  registerCustomPythonLanguage,
-  STRICT_PYTHON3_LANG_ID,
-} from '../editor/strictPython3';
-import {
-  COLORIZE_CLASSNAME,
-  colorizeElements,
-  configureEditor,
-} from '../editor/utils';
+import { STRICT_PYTHON3_LANG_ID } from '../editor/strictPython3';
 import { OutputArea } from '../OutputArea';
-
-configureEditor();
 
 function RotatedHeading({
   children,
@@ -53,16 +44,9 @@ export default function DocumentationExample({
 }: {
   example: JudiciousExample;
 }) {
-  const monaco = useMonaco();
-
   const { t } = useLocalTranslation();
 
-  useEffect(() => {
-    if (monaco) {
-      registerCustomPythonLanguage(monaco);
-      colorizeElements(monaco);
-    }
-  }, [monaco]);
+  useMonacoColorizer();
 
   return (
     <Card sx={{ height: '100%' }} variant='outlined'>

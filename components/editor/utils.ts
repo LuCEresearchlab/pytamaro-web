@@ -1,6 +1,7 @@
-import { loader, Monaco } from '@monaco-editor/react';
+import { loader, type Monaco } from '@monaco-editor/react';
 import { type editor as EditorNamespace } from 'monaco-editor';
 import theme from '../../src/theme';
+import { registerCustomPythonLanguage } from './strictPython3';
 
 const FUNCTION_COLOR = theme.pytamaro.palette.brown;
 const VARIABLE_COLOR = theme.pytamaro.palette.blue;
@@ -102,7 +103,6 @@ export const LUCE_THEME: EditorNamespace.IStandaloneThemeData = {
 };
 
 export const RUN_CODE_CONDITION_KEY = 'executionAllowedCondition';
-export const COLORIZE_CLASSNAME = 'monaco-colorize';
 
 export function configureEditor() {
   // Load the same version of monaco-editor specified in the package.json from a
@@ -114,12 +114,18 @@ export function configureEditor() {
   });
 }
 
-export function colorizeElements(monaco: Monaco) {
-  document
-    .querySelectorAll<HTMLElement>(`.${COLORIZE_CLASSNAME}:not(.vs)`)
-    .forEach((element) => {
-      monaco.editor.colorizeElement(element, {
-        theme: LUCE_THEME_NAME,
-      });
-    });
+export type MonacoForPyTamaro = Monaco & {
+  _pytamaroCustomProvidersRegistered?: boolean;
+  _pytamaroLanguageAndThemeRegistered?: boolean;
+};
+
+export function registerPyTamaroLanguageAndTheme(monaco: MonacoForPyTamaro) {
+  if (monaco._pytamaroLanguageAndThemeRegistered) {
+    return;
+  }
+  registerCustomPythonLanguage(monaco);
+  monaco.editor.defineTheme(LUCE_THEME_NAME, LUCE_THEME);
+  monaco.editor.setTheme(LUCE_THEME_NAME);
+  // eslint-disable-next-line no-param-reassign
+  monaco._pytamaroLanguageAndThemeRegistered = true;
 }

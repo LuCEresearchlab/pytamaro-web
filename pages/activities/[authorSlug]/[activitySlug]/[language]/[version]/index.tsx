@@ -33,6 +33,7 @@ import {
 } from '../../../../../../src/fs-content/authors';
 import { CodeCellState } from '../../../../../../src/localStorage/schema';
 import useLocalProfile from '../../../../../../src/localStorage/useLocalProfile';
+import useMonacoColorizer from '../../../../../../src/monacoColorizer';
 import getNotebookContent from '../../../../../../src/notebook';
 import {
   Activity,
@@ -77,6 +78,7 @@ function NotebookCells({
   const { metadata } = useLocalProfile();
   const { wideEditor } = metadata;
   const pythonAnalyzer = usePythonAnalyzer(activity.extraPythonFiles);
+  useMonacoColorizer();
 
   return (
     <Box ref={cellsRef} className='activity-content'>
