@@ -234,17 +234,6 @@ function passArrayJsValueToWasm0(array, malloc) {
     return ptr;
 }
 /**
- * @param {string} python_source
- * @returns {AnalysisResult}
- */
-export function analyze(python_source) {
-    const ptr0 = passStringToWasm0(python_source, wasm.__wbindgen_export, wasm.__wbindgen_export2);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.analyze(ptr0, len0);
-    return AnalysisResult.__wrap(ret);
-}
-
-/**
  * @param {Workspace} workspace
  */
 export function installPytamaro(workspace) {
@@ -260,6 +249,17 @@ export function installPytamaro(workspace) {
     } finally {
         wasm.__wbindgen_add_to_stack_pointer(16);
     }
+}
+
+/**
+ * @param {string} python_source
+ * @returns {AnalysisResult}
+ */
+export function analyze(python_source) {
+    const ptr0 = passStringToWasm0(python_source, wasm.__wbindgen_export, wasm.__wbindgen_export2);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.analyze(ptr0, len0);
+    return AnalysisResult.__wrap(ret);
 }
 
 /**

@@ -1,7 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
-export function analyze(python_source: string): AnalysisResult;
 export function installPytamaro(workspace: Workspace): void;
+export function analyze(python_source: string): AnalysisResult;
 export enum CompletionKind {
   Text = 0,
   Method = 1,
