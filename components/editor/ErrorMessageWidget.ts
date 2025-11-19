@@ -59,27 +59,11 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
     this._domNode.style.marginLeft = '-6px';
     this._domNode.style.zIndex = '1000';
 
-    if (isRuntimeError) {
-      const closeIcon = document.createElement('div');
-      closeIcon.style.fontFamily = 'Material Icons';
-      closeIcon.textContent = 'cancel';
-      closeIcon.style.position = 'absolute';
-      closeIcon.style.top = '-3px';
-      closeIcon.style.right = '1px';
-      closeIcon.style.cursor = 'pointer';
-      closeIcon.style.color = theme.palette.error.contrastText;
-      closeIcon.onclick = () => {
-        this.dispose();
-      };
-      this._domNode.appendChild(closeIcon);
-    }
-
     const message = document.createElement('div');
     message.style.width = 'max-content';
     message.style.maxWidth = 'min(90vw, 100ch)';
     message.style.display = 'flex';
     message.style.alignItems = 'stretch';
-    message.style.paddingRight = `${isRuntimeError ? 24 : 12}px`;
     message.style.backgroundColor = theme.palette.error.main;
     message.style.color = theme.palette.error.contrastText;
     message.style.borderRadius = '3px';
@@ -115,10 +99,26 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
 
     const messageContent = document.createElement('span');
     messageContent.style.paddingLeft = '12px';
+    messageContent.style.paddingRight = '12px';
     messageContent.style.paddingTop = '2px';
     messageContent.style.paddingBottom = '2px';
     messageContent.innerHTML = convertMarkdownToCodeTag(simplifyTypes(content));
     message.appendChild(messageContent);
+
+    if (isRuntimeError) {
+      const closeIcon = document.createElement('span');
+      closeIcon.style.fontFamily = 'Material Icons';
+      closeIcon.style.paddingRight = '4px';
+      closeIcon.style.display = 'flex';
+      closeIcon.style.alignItems = 'center';
+      closeIcon.textContent = 'cancel';
+      closeIcon.style.cursor = 'pointer';
+      closeIcon.style.color = theme.palette.error.contrastText;
+      closeIcon.onclick = () => {
+        this.dispose();
+      };
+      message.appendChild(closeIcon);
+    }
 
     if (isRuntimeError) {
       message.onmouseover = () => this.highlightCorrespondingError(true);
