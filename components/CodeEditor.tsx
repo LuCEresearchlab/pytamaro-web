@@ -457,10 +457,17 @@ export default function CodeEditor({
     }
   };
 
+  // Use an inexistent language if live checks are completely disabled.
+  // This way, Monaco doesn't use even the basic tokenizer for coloring Python.
+  const language =
+    liveChecks === LiveChecksStatus.None
+      ? 'python-none'
+      : STRICT_PYTHON3_LANG_ID;
+
   return (
     <div ref={containerRef} translate='no'>
       <Editor
-        language={STRICT_PYTHON3_LANG_ID}
+        language={language}
         theme={LUCE_THEME_NAME}
         defaultValue={currentSource}
         onMount={handleEditorMount}
