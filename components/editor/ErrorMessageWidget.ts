@@ -103,6 +103,10 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
     messageContent.style.paddingTop = '2px';
     messageContent.style.paddingBottom = '2px';
     messageContent.innerHTML = convertMarkdownToCodeTag(simplifyTypes(content));
+    if (isRuntimeError) {
+      messageContent.onmouseover = () => this.highlightCorrespondingError(true);
+      messageContent.onmouseout = () => this.highlightCorrespondingError(false);
+    }
     message.appendChild(messageContent);
 
     if (isRuntimeError) {
@@ -118,11 +122,6 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
         this.dispose();
       };
       message.appendChild(closeIcon);
-    }
-
-    if (isRuntimeError) {
-      message.onmouseover = () => this.highlightCorrespondingError(true);
-      message.onmouseout = () => this.highlightCorrespondingError(false);
     }
 
     this._domNode.appendChild(message);
