@@ -269,29 +269,27 @@ fn test_pytamaro_call_wrong_argument_type() {
     );
 }
 
-// This still doesn't work (Colore is not understood as a type alias for Color)
-//
-// #[wasm_bindgen_test]
-// fn test_pytamaro_call_wrong_argument_type_alias() {
-//     let mut workspace = Workspace::new(
-//         "/",
-//         PositionEncoding::Utf32,
-//         js_sys::JSON::parse("{}").unwrap(),
-//     )
-//     .unwrap();
-//     install_pytamaro(&mut workspace).expect("PyTamaro to be installed");
-//     workspace
-//         .open_file(
-//             "main.py",
-//             "from pytamaro.it import rettangolo\nrettangolo(100, 100, 'rosso')",
-//         )
-//         .unwrap();
-//     let result = workspace.check().unwrap();
-//     assert_eq!(result.len(), 1);
-//     let diagnostic = &result[0];
-//     assert_eq!(
-//         diagnostic.message(),
-//         "Argument to function `rettangolo` is incorrect: Expected `Colore`, found `Literal[\"rosso\"]`"
-//     );
-// }
-//
+#[wasm_bindgen_test]
+fn test_pytamaro_call_wrong_argument_type_alias() {
+    let mut workspace = Workspace::new(
+        "/",
+        PositionEncoding::Utf32,
+        js_sys::JSON::parse("{}").unwrap(),
+    )
+    .unwrap();
+    install_pytamaro(&mut workspace).expect("PyTamaro to be installed");
+    workspace
+        .open_file(
+            "main.py",
+            "from pytamaro.it import rettangolo\nrettangolo(100, 100, 'rosso')",
+        )
+        .unwrap();
+    let result = workspace.check().unwrap();
+    assert_eq!(result.len(), 1);
+    let diagnostic = &result[0];
+    assert_eq!(
+        diagnostic.message(),
+        // Ideally this would say "Expected `Colore`", but the type alias is resolved to the original name.
+        "Argument to function `rettangolo` is incorrect: Expected `Color`, found `Literal[\"rosso\"]`"
+    );
+}
