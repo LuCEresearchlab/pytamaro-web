@@ -137,6 +137,9 @@ export function addErrorAnnotationsFromExecution(
       true,
       runtimeErrorMessageCategory(message),
       t,
+      () => {
+        decorationsCollection.clear();
+      },
     );
     return {
       widget,

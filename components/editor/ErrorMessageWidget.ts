@@ -32,6 +32,7 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
   private readonly _prefixNode: HTMLSpanElement | null;
   private readonly _arrowNode: HTMLDivElement;
   private readonly _isRuntimeError: boolean;
+  private readonly _onClose: () => void;
 
   constructor(
     monaco: Monaco,
@@ -41,6 +42,7 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
     isRuntimeError: boolean,
     category: ErrorCategory,
     t: TFunction,
+    onClose?: () => void,
   ) {
     this._monaco = monaco;
     this._editor = editor;
@@ -53,6 +55,7 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
       this._position,
       monaco.editor.ScrollType.Smooth,
     );
+    this._onClose = onClose || (() => {});
 
     this._domNode = document.createElement('div');
     this._domNode.classList.add('monaco-editor-overlaymessage');
@@ -153,6 +156,7 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
   }
 
   dispose() {
+    this._onClose();
     if (this._isRuntimeError) {
       this.highlightCorrespondingError(false);
     }
