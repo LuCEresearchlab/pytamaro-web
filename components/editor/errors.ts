@@ -19,7 +19,9 @@ export function simplifyTypes(message: string) {
         // StringLiteral (`Literal['abc']` -> `str`)
         .replaceAll(/Literal\["(.*?)"\]/g, 'str')
         // Moreover, we simplify `EllipsisType` to `...` to avoid confusion with PyTamaro's ellipse function and match the source code.
-        .replaceAll(/EllipsisType/g, '...')}\``,
+        .replaceAll(/EllipsisType/g, '...')}\``
+        // Several functions in `math` use `SupportsFloat | SupportsIndex`, simplify to `int | float
+        .replaceAll(/SupportsFloat \| SupportsIndex/g, 'int | float'),
   );
 }
 
