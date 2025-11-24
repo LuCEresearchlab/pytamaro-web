@@ -104,7 +104,7 @@ export function addErrorAnnotationsFromExecution(
       range: new monaco.Range(lineNumber, startColumn, lineNumber, endColumn),
       options: {
         className: TRACEBACK_MESSAGE_DECORATION_CLASSNAME,
-        // hoverMessage: { value: message },
+        showIfCollapsed: true,
       },
     };
     // Create decorations for each possible ~~~ chunk.
