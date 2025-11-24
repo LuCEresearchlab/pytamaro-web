@@ -133,7 +133,7 @@
     "notifications": "Notifiche",
     "platformLanguage": "Lingua della piattaforma",
     "editorSize": "Dimensione editor",
-    "editorLiveStaticChecks": "Controlli statici live nell'editor",
+    "editorLiveStaticChecks": "Analisi statica degli errori in tempo reale",
     "noneChecks": "Nessuno",
     "syntaxChecks": "Sintassi",
     "syntaxSemanticsChecks": "Sintassi & semantica",

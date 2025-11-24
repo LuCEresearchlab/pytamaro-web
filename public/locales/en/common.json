@@ -133,7 +133,7 @@
     "notifications": "Notifications",
     "platformLanguage": "Platform Language",
     "editorSize": "Editor Size",
-    "editorLiveStaticChecks": "Editor Live Static Checks",
+    "editorLiveStaticChecks": "Static Error Analysis in Real Time",
     "noneChecks": "None",
     "syntaxChecks": "Syntax",
     "syntaxSemanticsChecks": "Syntax & Semantics",
