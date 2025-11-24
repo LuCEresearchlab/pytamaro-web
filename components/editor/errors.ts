@@ -64,6 +64,7 @@ export function runtimeErrorMessageCategory(message: string): ErrorCategory {
     case 'NameError':
     case 'ImportError':
     case 'UnboundLocalError':
+    case 'ModuleNotFoundError':
       return ErrorCategory.NameError;
     case 'TypeError':
       return ErrorCategory.TypeError;
