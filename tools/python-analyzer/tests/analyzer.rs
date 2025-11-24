@@ -1,8 +1,8 @@
 use std::vec;
 
 use python_analyzer::{
-    ParseError, PositionEncoding, PythonConstant, PythonFunction, PythonFunctionArgument,
-    PythonName, TextRange, Workspace, analyze, install_pytamaro,
+    ParseError, PythonConstant, PythonFunction, PythonFunctionArgument, PythonName, TextRange,
+    analyze, init_workspace,
 };
 use wasm_bindgen_test::*;
 
@@ -173,12 +173,7 @@ fn test_defined_constants() {
 
 #[wasm_bindgen_test]
 fn test_check_type_error() {
-    let mut workspace = Workspace::new(
-        "/",
-        PositionEncoding::Utf32,
-        js_sys::JSON::parse("{}").unwrap(),
-    )
-    .unwrap();
+    let mut workspace = init_workspace().expect("Workspace to be initialized");
     workspace.open_file("main.py", "1 + 'a'").unwrap();
     let result = workspace.check().unwrap();
     assert_eq!(result.len(), 1);
@@ -191,13 +186,7 @@ fn test_check_type_error() {
 
 #[wasm_bindgen_test]
 fn test_pytamaro_success_import() {
-    let mut workspace = Workspace::new(
-        "/",
-        PositionEncoding::Utf32,
-        js_sys::JSON::parse("{}").unwrap(),
-    )
-    .unwrap();
-    install_pytamaro(&mut workspace).expect("PyTamaro to be installed");
+    let mut workspace = init_workspace().expect("Workspace to be initialized");
     workspace
         .open_file(
             "main.py",
@@ -210,13 +199,7 @@ fn test_pytamaro_success_import() {
 
 #[wasm_bindgen_test]
 fn test_pytamaro_submodule_success_import() {
-    let mut workspace = Workspace::new(
-        "/",
-        PositionEncoding::Utf32,
-        js_sys::JSON::parse("{}").unwrap(),
-    )
-    .unwrap();
-    install_pytamaro(&mut workspace).expect("PyTamaro to be installed");
+    let mut workspace = init_workspace().expect("Workspace to be initialized");
     workspace
         .open_file(
             "main.py",
@@ -229,13 +212,7 @@ fn test_pytamaro_submodule_success_import() {
 
 #[wasm_bindgen_test]
 fn test_pytamaro_fail_import() {
-    let mut workspace = Workspace::new(
-        "/",
-        PositionEncoding::Utf32,
-        js_sys::JSON::parse("{}").unwrap(),
-    )
-    .unwrap();
-    install_pytamaro(&mut workspace).expect("PyTamaro to be installed");
+    let mut workspace = init_workspace().expect("Workspace to be initialized");
     workspace
         .open_file("main.py", "from pytamaro import _")
         .unwrap();
@@ -247,13 +224,7 @@ fn test_pytamaro_fail_import() {
 
 #[wasm_bindgen_test]
 fn test_pytamaro_call_wrong_argument_type() {
-    let mut workspace = Workspace::new(
-        "/",
-        PositionEncoding::Utf32,
-        js_sys::JSON::parse("{}").unwrap(),
-    )
-    .unwrap();
-    install_pytamaro(&mut workspace).expect("PyTamaro to be installed");
+    let mut workspace = init_workspace().expect("Workspace to be initialized");
     workspace
         .open_file(
             "main.py",
@@ -271,13 +242,7 @@ fn test_pytamaro_call_wrong_argument_type() {
 
 #[wasm_bindgen_test]
 fn test_pytamaro_call_wrong_argument_type_alias() {
-    let mut workspace = Workspace::new(
-        "/",
-        PositionEncoding::Utf32,
-        js_sys::JSON::parse("{}").unwrap(),
-    )
-    .unwrap();
-    install_pytamaro(&mut workspace).expect("PyTamaro to be installed");
+    let mut workspace = init_workspace().expect("Workspace to be initialized");
     workspace
         .open_file(
             "main.py",
@@ -291,5 +256,23 @@ fn test_pytamaro_call_wrong_argument_type_alias() {
         diagnostic.message(),
         // Ideally this would say "Expected `Colore`", but the type alias is resolved to the original name.
         "Argument to function `rettangolo` is incorrect: Expected `Color`, found `Literal[\"rosso\"]`"
+    );
+}
+
+#[wasm_bindgen_test]
+fn test_possibly_unresolved_reference() {
+    let mut workspace = init_workspace().expect("Workspace to be initialized");
+    workspace
+        .open_file(
+            "main.py",
+            "from random import randint\nif randint(0, 1) == 0: a = 1\na",
+        )
+        .unwrap();
+    let result = workspace.check().unwrap();
+    assert_eq!(result.len(), 1);
+    let diagnostic = &result[0];
+    assert_eq!(
+        diagnostic.message(),
+        "Name `a` used when possibly not defined"
     );
 }

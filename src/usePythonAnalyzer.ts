@@ -16,8 +16,7 @@ import { LiveChecksStatus, ToolboxFunction } from './localStorage/schema';
 import useLocalToolbox from './localStorage/useLocalToolbox';
 import {
   FileHandle,
-  installPytamaro,
-  PositionEncoding,
+  initWorkspace,
   SemanticToken,
   Position as TyPosition,
   Range as TyRange,
@@ -41,8 +40,7 @@ export class PythonAnalyzer {
   private diagnosticsCounts: number[];
 
   constructor(extraPythonFiles: PythonFile[] = []) {
-    this.workspace = new Workspace('/', PositionEncoding.Utf16, {});
-    installPytamaro(this.workspace);
+    this.workspace = initWorkspace();
     this.fileHandles = new Map<string, FileHandle>();
     this.sources = [];
     this.diagnosticsCounts = [];

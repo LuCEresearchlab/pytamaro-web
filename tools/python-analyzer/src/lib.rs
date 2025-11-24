@@ -36,6 +36,8 @@ use ty_python_semantic::Program;
 
 static PYTAMARO_ZIP_BYTES: &[u8] = include_bytes!("pytamaro-1.1.4-py3-none-any.whl");
 
+static TY_CONFIG: &str = include_str!("ty.json");
+
 #[derive(Clone, Eq, PartialEq, Debug)]
 #[wasm_bindgen(getter_with_clone)]
 pub struct PythonName {
@@ -328,7 +330,6 @@ fn write_file(
 use std::io::{Cursor, Read};
 use zip::ZipArchive;
 
-#[wasm_bindgen(js_name = "installPytamaro")]
 pub fn install_pytamaro(workspace: &mut Workspace) -> Result<(), Error> {
     let reader = Cursor::new(PYTAMARO_ZIP_BYTES);
     let mut archive = ZipArchive::new(reader)
@@ -363,6 +364,14 @@ pub fn install_pytamaro(workspace: &mut Workspace) -> Result<(), Error> {
     }
 
     Ok(())
+}
+
+#[wasm_bindgen(js_name = "initWorkspace")]
+pub fn init_workspace() -> Result<Workspace, Error> {
+    let options = js_sys::JSON::parse(TY_CONFIG)?;
+    let mut workspace = Workspace::new("/", PositionEncoding::Utf16, options)?;
+    install_pytamaro(&mut workspace)?;
+    Ok(workspace)
 }
 
 /* Taken from https://github.com/astral-sh/ruff/blob/main/crates/ty_wasm/src/lib.rs */

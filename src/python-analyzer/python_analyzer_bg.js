@@ -234,24 +234,6 @@ function passArrayJsValueToWasm0(array, malloc) {
     return ptr;
 }
 /**
- * @param {Workspace} workspace
- */
-export function installPytamaro(workspace) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        _assertClass(workspace, Workspace);
-        wasm.installPytamaro(retptr, workspace.__wbg_ptr);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        if (r1) {
-            throw takeObject(r0);
-        }
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
-}
-
-/**
  * @param {string} python_source
  * @returns {AnalysisResult}
  */
@@ -260,6 +242,25 @@ export function analyze(python_source) {
     const len0 = WASM_VECTOR_LEN;
     const ret = wasm.analyze(ptr0, len0);
     return AnalysisResult.__wrap(ret);
+}
+
+/**
+ * @returns {Workspace}
+ */
+export function initWorkspace() {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.initWorkspace(retptr);
+        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
+        if (r2) {
+            throw takeObject(r1);
+        }
+        return Workspace.__wrap(r0);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
 }
 
 /**
@@ -2434,6 +2435,14 @@ const WorkspaceFinalization = (typeof FinalizationRegistry === 'undefined')
 
 export class Workspace {
 
+    static __wrap(ptr) {
+        ptr = ptr >>> 0;
+        const obj = Object.create(Workspace.prototype);
+        obj.__wbg_ptr = ptr;
+        WorkspaceFinalization.register(obj, obj.__wbg_ptr, obj);
+        return obj;
+    }
+
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
@@ -3285,6 +3294,11 @@ export function __wbg_parameterinformation_unwrap(arg0) {
     const ret = ParameterInformation.__unwrap(takeObject(arg0));
     return ret;
 };
+
+export function __wbg_parse_2a704d6b78abb2b8() { return handleError(function (arg0, arg1) {
+    const ret = JSON.parse(getStringFromWasm0(arg0, arg1));
+    return addHeapObject(ret);
+}, arguments) };
 
 export function __wbg_parseerror_new(arg0) {
     const ret = ParseError.__wrap(arg0);
