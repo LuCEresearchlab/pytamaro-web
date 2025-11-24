@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { Box, Tooltip } from '@mui/material';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { JudiciousFunction } from '../../src/schemas/documentation';
 import theme from '../../src/theme';
 import {
@@ -31,6 +32,7 @@ export default function FunctionDiagram({
   const { name, parameters, returnValue } = fn;
   const { docsMetadata } = useLocalProfile();
   const params = visibleParameters(parameters, docsMetadata.showOptional);
+  const { t } = useLocalTranslation();
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
       <svg width='100%' height={110 + 20 * params.length}>
@@ -187,7 +189,7 @@ export default function FunctionDiagram({
           </g>
         )}
         {fn.sideEffects && (
-          <Tooltip title='Calling this function causes side effects' arrow>
+          <Tooltip title={t('callingFunctionCausesSideEffects')} arrow>
             <image
               href='/boom.png'
               x='68%'

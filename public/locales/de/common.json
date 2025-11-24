@@ -81,6 +81,7 @@
     "parameters": "Parameter",
     "return": "Rückgabe", 
     "sideEffects": "Nebeneffekte",
+    "callingFunctionCausesSideEffects": "Das Aufrufen dieser Funktion verursacht Nebeneffekte",
     "examples": "Beispiele",
     "code": "Code",
     "I/O": "I/O",

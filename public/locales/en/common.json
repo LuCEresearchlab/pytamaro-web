@@ -77,6 +77,7 @@
     "parameters": "Parameters",
     "return": "Return",
     "sideEffects": "Side Effects",
+    "callingFunctionCausesSideEffects": "Calling this function causes side effects",
     "examples": "Examples",
     "code": "Code",
     "result": "Result",

@@ -77,6 +77,7 @@
     "parameters": "Parametri",
     "return": "Ritorno",
     "sideEffects": "Effetti collaterali",
+    "callingFunctionCausesSideEffects": "Chiamare questa funzione causa effetti collaterali",
     "examples": "Esempi",
     "code": "Codice",
     "result": "Risultato",
