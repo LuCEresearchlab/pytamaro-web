@@ -107,7 +107,7 @@ export function staticErrorMessageCategory(ty_code: string): ErrorCategory {
     case 'missing-argument':
     case 'no-matching-overload':
     case 'non-subscriptable':
-    case 'non-iterable':
+    case 'not-iterable':
     case 'parameter-already-assigned':
     case 'positional-only-parameter-as-kwarg':
     case 'too-many-positional-arguments':
