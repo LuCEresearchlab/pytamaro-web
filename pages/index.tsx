@@ -578,7 +578,7 @@ export async function getStaticProps() {
   return {
     props: {
       activities: basicActivities(await listVisibleActivities('luce')),
-      ...(await translationProps(['curriculum'])),
+      ...(await translationProps([])),
     },
   };
 }
