@@ -57,14 +57,16 @@ export default function SaveToToolboxButton({
           <Construction />
         </IconButton>
       </Tooltip>
-      <SaveToToolboxDialog
-        open={open}
-        onClose={() => setOpen(false)}
-        externalImplementation={implementation}
-        originalActivity={originalActivity}
-        setSavingSuccess={setSavingSuccess}
-        setSavingError={setSavingError}
-      />
+      {open && (
+        <SaveToToolboxDialog
+          open={open}
+          onClose={() => setOpen(false)}
+          externalImplementation={implementation}
+          originalActivity={originalActivity}
+          setSavingSuccess={setSavingSuccess}
+          setSavingError={setSavingError}
+        />
+      )}
       <CustomSnackbar
         visible={savingSuccess}
         setVisible={setSavingSuccess}

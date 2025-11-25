@@ -341,7 +341,10 @@ export default function ExecutionOutputArea({
     <Card
       variant='outlined'
       sx={{
-        backgroundColor: BACKGROUND_COLOR,
+        backgroundColor: executionError
+          ? theme.pytamaro.palette.background.errorRed
+          : BACKGROUND_COLOR,
+        color: executionError ? 'red' : 'inherit',
         position: 'relative',
         overflowX: 'auto',
         width: '100%',

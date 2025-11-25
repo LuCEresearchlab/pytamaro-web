@@ -10,7 +10,6 @@ import { TideNodeMetadata } from './cards';
 import { getHandleName } from './cards/function';
 import { ErrorParagraph } from './ErrorParagraph';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const MISSING_PARAMETER = (
   <svg
     xmlns='http://www.w3.org/2000/svg'

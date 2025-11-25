@@ -1,14 +1,18 @@
-import { listVisibleActivities } from './fs-content/activities';
+import { uniq } from 'lodash';
+import {
+  basicActivities,
+  listVisibleActivities,
+} from './fs-content/activities';
 import { readNotebookContent } from './fs-content/notebooks';
 import { cellsVisibleToUser, isCodeCell } from './notebook';
 import { PythonName, analyze } from './python-analyzer/python_analyzer';
-import { Activity, ActivityVariant } from './schemas/activitySchema';
+import { ActivityVariant, BasicActivity } from './schemas/activitySchema';
 import { joinLines } from './sourceUtils';
 
 export interface ActivityVariantWithNames {
-  activity: Activity;
+  activity: BasicActivity;
   variant: ActivityVariant;
-  importedNames: PythonName[];
+  importedNames: string[];
 }
 
 async function importedAPIs(variant: ActivityVariant): Promise<PythonName[]> {
@@ -27,7 +31,7 @@ async function importedAPIs(variant: ActivityVariant): Promise<PythonName[]> {
 export default async function getActivitiesWithAPIs(
   authorSlug: string,
 ): Promise<ActivityVariantWithNames[]> {
-  const activities = await listVisibleActivities(authorSlug);
+  const activities = basicActivities(await listVisibleActivities(authorSlug));
   return (
     await Promise.all(
       activities.map((activity) =>
@@ -42,7 +46,11 @@ export default async function getActivitiesWithAPIs(
             return {
               activity,
               variant,
-              importedNames: await importedAPIs(variant),
+              importedNames: uniq(
+                (await importedAPIs(variant)).map(
+                  (pythonName) => pythonName.module + '.' + pythonName.name,
+                ),
+              ),
             };
           }),
         ),

@@ -139,7 +139,7 @@ function TidePage() {
               sx={{
                 fontSize: theme.typography.body1.fontSize,
                 fontWeight: 'normal',
-                backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                backgroundColor: theme.pytamaro.palette.background.light,
                 marginBottom: 2,
               }}
             >

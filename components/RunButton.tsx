@@ -10,8 +10,7 @@ export default function RunButton({
   executionFinished,
   executionError,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onExecutionRequested: () => Promise<any>;
+  onExecutionRequested: () => Promise<void>;
   executing: boolean;
   executionFinished: boolean;
   executionError: boolean;

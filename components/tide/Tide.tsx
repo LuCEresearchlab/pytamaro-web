@@ -339,6 +339,7 @@ export default function Tide({
                       background: '#fcc',
                       userSelect: 'none',
                     }}
+                    // eslint-disable-next-line react/no-array-index-key
                     key={`${v[0].node_id}_${i}`}
                   >
                     <ErrorParagraph annotation={v[1]} />
@@ -409,6 +410,7 @@ export default function Tide({
           <TidePalette />
         </div>
 
+        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         {menu && <NodeContextMenu {...menu} />}
         {/* Selection rectangle */}
 

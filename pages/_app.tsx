@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { AppCacheProvider } from '@mui/material-nextjs/v15-pagesRouter';
+import { AppCacheProvider } from '@mui/material-nextjs/v16-pagesRouter';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -30,6 +30,7 @@ function MyApp(props: AppProps) {
   const { Component, pageProps } = props;
   const queryClient = new QueryClient();
   return (
+    // eslint-disable-next-line react/jsx-props-no-spreading
     <AppCacheProvider {...props}>
       <Head>
         <title>PyTamaro</title>

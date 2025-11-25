@@ -78,8 +78,8 @@ export default function Documentation({
                   />
                 </ListItemButton>
               )}
-              // eslint-disable-next-line react/jsx-props-no-spreading
               renderInput={(params) => (
+                // eslint-disable-next-line react/jsx-props-no-spreading
                 <TextField {...params} label={t('findName')} />
               )}
               filterOptions={createFilterOptions({

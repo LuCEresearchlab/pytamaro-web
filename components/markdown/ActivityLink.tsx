@@ -48,7 +48,7 @@ export default function ActivityLink({
         underline='none'
         onClick={handleClick}
         style={{
-          color: theme.pytamaro.redColor,
+          color: theme.pytamaro.palette.red,
           fontSize: '1em',
           fontWeight: 'bold',
         }}

@@ -68,9 +68,9 @@ function toolboxSingleModuleName(fn: BareboneToolboxFunction) {
   return `${TOOLBOX_FILE}_${fn.name}`;
 }
 
-export async function importedToolboxNames(source: string) {
+export function importedToolboxNames(source: string) {
   try {
-    const imports: PythonName[] = await analyze(source).imported_names;
+    const imports: PythonName[] = analyze(source).imported_names;
     const toolboxImports = imports.filter(
       ({ module }) => module === TOOLBOX_FILE,
     );
@@ -80,14 +80,12 @@ export async function importedToolboxNames(source: string) {
   }
 }
 
-async function toposortImports(functions: BareboneToolboxFunction[]) {
+function toposortImports(functions: BareboneToolboxFunction[]) {
   const imports = new Topo.Sorter<string>();
-  const deps = await Promise.all(
-    functions.map(async (fn) => ({
-      name: fn.name,
-      neededNames: await importedToolboxNames(fn.source),
-    })),
-  );
+  const deps = functions.map((fn) => ({
+    name: fn.name,
+    neededNames: importedToolboxNames(fn.source),
+  }));
   deps.forEach(({ name, neededNames }) => {
     imports.add(name, { group: name, after: neededNames });
   });
@@ -96,10 +94,10 @@ async function toposortImports(functions: BareboneToolboxFunction[]) {
   );
 }
 
-async function toolboxDriverSource(functions: BareboneToolboxFunction[]) {
+function toolboxDriverSource(functions: BareboneToolboxFunction[]) {
   let sortedFunctions = functions;
   try {
-    sortedFunctions = await toposortImports(functions);
+    sortedFunctions = toposortImports(functions);
   } catch {
     // Possibly a circular import
   }
@@ -110,7 +108,7 @@ async function toolboxDriverSource(functions: BareboneToolboxFunction[]) {
   );
 }
 
-export async function toolboxFiles(
+export function toolboxFiles(
   functions: BareboneToolboxFunction[],
   noEmptyToolbox: boolean = false,
 ) {
@@ -123,12 +121,12 @@ export async function toolboxFiles(
   }
   const toolboxMainFile = {
     name: `${TOOLBOX_FILE}.py`,
-    content: await toolboxDriverSource(functions),
+    content: toolboxDriverSource(functions),
   };
   return [toolboxMainFile, ...singleFiles];
 }
 
-export async function cellsToFiles(
+export function cellsToFiles(
   sources: string[],
   idx: number,
   toolboxFunctions: BareboneToolboxFunction[],
@@ -156,7 +154,7 @@ export async function cellsToFiles(
       name: `${CURRENT_CELL_FILE}.py`,
       content: currentCellSource,
     },
-    ...(await toolboxFiles(toolboxFunctions)),
+    ...toolboxFiles(toolboxFunctions),
     ...extraPythonFiles,
   ];
   // code-runner does not allow empty files, we work around this by including a no-op stmt

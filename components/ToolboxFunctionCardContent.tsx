@@ -18,6 +18,7 @@ import {
   playgroundPathname,
   toolboxFunctionPathname,
 } from '../src/urlUtils';
+import usePythonAnalyzer from '../src/usePythonAnalyzer';
 import useReadOnlyTemporaryActivity from '../src/useReadOnlyTemporaryActivity';
 import CodeEditor from './CodeEditor';
 import SolitaryCodeCell, { initialStateSingleCell } from './SolitaryCodeCell';
@@ -38,6 +39,7 @@ export default function ToolboxFunctionCardContent({
   const toggleShowUsage = () => setShowUsage(!showUsage);
   const usageCodeCells = initialStateSingleCell(fn.usage);
   const activityVariant = toolboxActivityVariant(fn.name);
+  const fnPythonAnalyzer = usePythonAnalyzer();
   const activity = useReadOnlyTemporaryActivity(
     usageCodeCells,
     activityVariant,
@@ -90,6 +92,8 @@ export default function ToolboxFunctionCardContent({
               initialSource={fn.source}
               currentSource={fn.source}
               readOnly
+              pythonAnalyzer={fnPythonAnalyzer}
+              cellIdx={0}
             />
           )}
         </Box>

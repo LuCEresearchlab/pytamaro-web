@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/no-array-index-key */
-import { Box, Divider, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
@@ -16,6 +16,7 @@ import ConfigButtons, {
 } from './ConfigButtons';
 import ConstantDiagram from './ConstantDiagram';
 import DocumentationExample from './DocumentationExample';
+import SectionDivider from './SectionDivider';
 import { hoverProps, moduleId, nameId, sentence } from './utils';
 
 export default function TypeConstantDocumentation({
@@ -35,7 +36,8 @@ export default function TypeConstantDocumentation({
   if (hasExamplesUsingOptional) {
     availableOptions.push(SHOW_OPTIONAL_KEY);
   }
-  if (element.kind === 'constant') {
+  const isConstant = element.kind === 'constant';
+  if (isConstant) {
     const hasType = element.type !== '';
     if (hasType) {
       availableOptions.push(SHOW_TYPES_KEY);
@@ -45,10 +47,14 @@ export default function TypeConstantDocumentation({
   return (
     <>
       <Box mb={1}>
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex' }} minHeight='2em'>
           <span>
-            <Typography color='primary' fontWeight='bold' component='span'>
-              {t(element.kind === 'constant' ? 'Constant' : 'Type')}
+            <Typography
+              color={isConstant ? 'primary' : 'warning'}
+              fontWeight='bold'
+              component='span'
+            >
+              {t(isConstant ? 'Constant' : 'Type')}
             </Typography>
             &nbsp;
             <Typography
@@ -67,7 +73,7 @@ export default function TypeConstantDocumentation({
           <span {...hoverProps(nameId(), hoverElement, setHoverElement)}>
             <CodeElement bold>{name}</CodeElement>
           </span>
-          {element.kind === 'constant' && docsMetadata.showTypes && (
+          {isConstant && docsMetadata.showTypes && (
             <>
               <CodeElement>:</CodeElement>
               <CodeElement>&nbsp;</CodeElement>
@@ -76,7 +82,7 @@ export default function TypeConstantDocumentation({
           )}
         </Typography>
       </Box>
-      {element.kind === 'constant' && docsMetadata.showDiagram && (
+      {isConstant && docsMetadata.showDiagram && (
         <ConstantDiagram
           constant={element}
           module={module}
@@ -91,7 +97,7 @@ export default function TypeConstantDocumentation({
       ))}
       {examples && examples.length > 0 && (
         <>
-          <Divider sx={{ mt: 3, mb: 1 }}>{t('examples')}</Divider>
+          <SectionDivider title={t('examples')} />
           <Stack spacing={2}>
             {examples.map((example, idx) => (
               <DocumentationExample example={example} key={idx} />

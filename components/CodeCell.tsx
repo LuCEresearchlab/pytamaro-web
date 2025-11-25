@@ -1,3 +1,4 @@
+import { PlayCircleFilled } from '@mui/icons-material';
 import SyncProblemIcon from '@mui/icons-material/SyncProblem';
 import {
   Badge,
@@ -11,6 +12,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useConfirm } from 'material-ui-confirm';
 import { useEffect, useState } from 'react';
 import { ExecutionResponse, isExecutionCompleted } from '../src/codeExecution';
 import { CodeCellExecutionState } from '../src/localStorage/schema';
@@ -25,6 +27,7 @@ import {
   PythonFile,
 } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
+import { PythonAnalyzer } from '../src/usePythonAnalyzer';
 import { EllipsisTip, InputTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
 import ExecutionOutputArea from './OutputArea';
@@ -55,6 +58,8 @@ export default function CodeCell({
   sourcesUpTo,
   platformConfig,
   resetCounter,
+  pythonAnalyzer,
+  cellIdx,
   extraPythonFiles = [],
   extraActions = null,
   readOnly = false,
@@ -63,13 +68,14 @@ export default function CodeCell({
   currentSource: string;
   codeCellExecutionState: CodeCellExecutionState;
   onSourceChanged: (newSource: string) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onExecutionRequested: () => Promise<any>;
+  onExecutionRequested: () => Promise<void>;
   firstLineNumber: number;
   activityVariant: ActivityVariant;
   sourcesUpTo: string[];
   platformConfig: PlatformConfiguration;
   resetCounter: number;
+  pythonAnalyzer: PythonAnalyzer | null;
+  cellIdx: number;
   extraPythonFiles?: PythonFile[];
   extraActions?: React.ReactNode;
   readOnly?: boolean;
@@ -97,6 +103,49 @@ export default function CodeCell({
     analyzeSource();
   }, [currentSource]);
 
+  const confirm = useConfirm();
+
+  const handleExecutionRequest = async () => {
+    // Check for static errors before executing
+    const diagnosticsUpToCurrentCell =
+      pythonAnalyzer!.getDiagnosticsCountUpTo(cellIdx);
+    const diagnosticsUpToPreviousCells =
+      pythonAnalyzer!.getDiagnosticsCountUpTo(cellIdx - 1);
+    const currentCellDiagnostics =
+      diagnosticsUpToCurrentCell - diagnosticsUpToPreviousCells;
+    if (diagnosticsUpToCurrentCell === 0) {
+      return onExecutionRequested();
+    }
+
+    let message;
+    if (currentCellDiagnostics > 0 && diagnosticsUpToPreviousCells === 0) {
+      message = t('confirmExecutionWithErrors.descriptionOnlyCurrentCell', {
+        count: currentCellDiagnostics,
+      });
+    } else if (currentCellDiagnostics === 0) {
+      message = t('confirmExecutionWithErrors.descriptionOnlyPreviousCells', {
+        count: diagnosticsUpToPreviousCells,
+      });
+    } else {
+      message = t('confirmExecutionWithErrors.descriptionWithPreviousCells', {
+        currentCount: currentCellDiagnostics,
+        previousCount: diagnosticsUpToPreviousCells,
+      });
+    }
+    return confirm({
+      title: t('confirmExecutionWithErrors.title'),
+      description: message,
+      confirmationText: t('confirmExecutionWithErrors.confirmationText'),
+      cancellationText: t('confirmExecutionWithErrors.cancellationText'),
+      confirmationButtonProps: {
+        endIcon: <PlayCircleFilled />,
+        variant: 'contained',
+      },
+    }).then(() => {
+      return onExecutionRequested();
+    });
+  };
+
   return (
     <Paper
       elevation={readOnly ? 0 : 4}
@@ -116,18 +165,20 @@ export default function CodeCell({
             initialSource={initialSource}
             currentSource={currentSource}
             onChange={onSourceChanged}
-            onExecutionRequested={onExecutionRequested}
+            onExecutionRequested={handleExecutionRequest}
             executionAllowed={!executing}
             executionFinished={executionFinished}
             firstLineNumber={firstLineNumber}
             readOnly={readOnly}
             executionResponse={executionResponse}
             resetCounter={resetCounter}
+            pythonAnalyzer={pythonAnalyzer}
+            cellIdx={cellIdx}
           />
         </CardContent>
         <CardActions disableSpacing sx={{ paddingLeft: 2, display: 'flex' }}>
           <RunButton
-            onExecutionRequested={onExecutionRequested}
+            onExecutionRequested={handleExecutionRequest}
             executing={executing}
             executionFinished={executionFinished}
             executionError={executionError}

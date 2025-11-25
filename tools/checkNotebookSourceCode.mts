@@ -16,10 +16,12 @@ async function main() {
           if (parseErrors.length === 0) {
             return true;
           }
+          // eslint-disable-next-line no-console
           console.error(
             `Failed to parse Python code cell ${idx} in notebook ${notebookPath}:`,
           );
           parseErrors.forEach((error: ParseError) => {
+            // eslint-disable-next-line no-console
             console.error(`  ${error.message} at range ${error.location}`);
           });
         })

@@ -1,20 +1,20 @@
 use std::vec;
 
+use python_analyzer::{
+    ParseError, PythonConstant, PythonFunction, PythonFunctionArgument, PythonName, TextRange,
+    analyze, init_workspace,
+};
 use wasm_bindgen_test::*;
-use python_analyzer::{analyze, AnalysisResult, ParseError, PythonFunction, PythonFunctionArgument, PythonName, PythonConstant};
 
 #[wasm_bindgen_test]
 fn test_no_parse_errors() {
-    assert_eq!(
-        serde_wasm_bindgen::from_value::<AnalysisResult>(analyze("pass")).unwrap().parse_errors,
-        Vec::<ParseError>::new()
-    );
+    assert_eq!(analyze("pass").parse_errors.len(), 0);
 }
 
 #[wasm_bindgen_test]
 fn test_imported_names() {
     assert_eq!(
-        serde_wasm_bindgen::from_value::<AnalysisResult>(analyze("from mod import a, b\nfrom mod2 import c")).unwrap().imported_names,
+        analyze("from mod import a, b\nfrom mod2 import c").imported_names,
         vec![
             PythonName {
                 module: "mod".to_string(),
@@ -35,7 +35,7 @@ fn test_imported_names() {
 #[wasm_bindgen_test]
 fn test_defined_functions() {
     assert_eq!(
-        serde_wasm_bindgen::from_value::<AnalysisResult>(analyze("def f(a: int)->list[int]:\n    \"\"\"Doc\"\"\"\n    pass\ndef g(a, b = 1, *c): return 0")).unwrap().defined_functions,
+        analyze("def f(a: int)->list[int]:\n    \"\"\"Doc\"\"\"\n    pass\ndef g(a, b = 1, *c): return 0").defined_functions,
         vec![
             PythonFunction {
                 name: "f".to_string(),
@@ -83,16 +83,13 @@ fn test_defined_functions() {
 
 #[wasm_bindgen_test]
 fn test_ellipsis() {
-    assert_eq!(
-        serde_wasm_bindgen::from_value::<AnalysisResult>(analyze("1 + ...")).unwrap().has_ellipsis,
-        true
-    );
+    assert_eq!(analyze("1 + ...").has_ellipsis, true);
 }
 
 #[wasm_bindgen_test]
 fn test_called_names() {
     assert_eq!(
-        serde_wasm_bindgen::from_value::<AnalysisResult>(analyze("f(g())")).unwrap().called_names,
+        analyze("f(g())").called_names,
         vec!["f".to_string(), "g".to_string()],
     );
 }
@@ -100,14 +97,14 @@ fn test_called_names() {
 #[wasm_bindgen_test]
 fn test_called_names_inside_expr() {
     assert_eq!(
-        serde_wasm_bindgen::from_value::<AnalysisResult>(analyze("f() + g()")).unwrap().called_names,
+        analyze("f() + g()").called_names,
         vec!["f".to_string(), "g".to_string()],
     );
 }
 
 #[wasm_bindgen_test]
 fn test_imported_names_with_parse_errors() {
-    let result = serde_wasm_bindgen::from_value::<AnalysisResult>(analyze("from mod import a, b,\n\n1+")).unwrap();
+    let result = analyze("from mod import a, b,\n\n1+");
     assert_eq!(
         result.imported_names,
         vec![
@@ -126,11 +123,11 @@ fn test_imported_names_with_parse_errors() {
         vec![
             ParseError {
                 message: "Trailing comma not allowed".to_string(),
-                location: (20, 21),
+                location: TextRange { start: 20, end: 21 },
             },
             ParseError {
                 message: "Expected an expression".to_string(),
-                location: (25, 25),
+                location: TextRange { start: 25, end: 25 },
             },
         ]
     );
@@ -138,19 +135,20 @@ fn test_imported_names_with_parse_errors() {
 
 #[wasm_bindgen_test]
 fn test_import_ranges() {
-    let result = serde_wasm_bindgen::from_value::<AnalysisResult>(analyze("from mod import a, b\nfrom mod2 import c")).unwrap();
+    let result = analyze("from mod import a, b\nfrom mod2 import c");
     assert_eq!(
         result.import_ranges,
         vec![
-            (0, 20),
-            (21, 39),
+            TextRange { start: 0, end: 20 },
+            TextRange { start: 21, end: 39 }
         ]
     );
 }
 
 #[wasm_bindgen_test]
 fn test_defined_constants() {
-    let result = serde_wasm_bindgen::from_value::<AnalysisResult>(analyze("foo = 42\nbar = 42 ** 42\n\"\"\"squared\"\"\"\npi: float = 3.14\n\'tau/2\'")).unwrap();
+    let result =
+        analyze("foo = 42\nbar = 42 ** 42\n\"\"\"squared\"\"\"\npi: float = 3.14\n\'tau/2\'");
     assert_eq!(
         result.defined_constants,
         vec![
@@ -170,5 +168,111 @@ fn test_defined_constants() {
                 docstring: "tau/2".to_string(),
             },
         ]
+    );
+}
+
+#[wasm_bindgen_test]
+fn test_check_type_error() {
+    let mut workspace = init_workspace().expect("Workspace to be initialized");
+    workspace.open_file("main.py", "1 + 'a'").unwrap();
+    let result = workspace.check().unwrap();
+    assert_eq!(result.len(), 1);
+    let diagnostic = &result[0];
+    assert_eq!(
+        diagnostic.message(),
+        "Operator `+` is unsupported between objects of type `Literal[1]` and `Literal[\"a\"]`"
+    );
+}
+
+#[wasm_bindgen_test]
+fn test_pytamaro_success_import() {
+    let mut workspace = init_workspace().expect("Workspace to be initialized");
+    workspace
+        .open_file(
+            "main.py",
+            "from pytamaro import rectangle, red, show_graphic",
+        )
+        .unwrap();
+    let result = workspace.check().unwrap();
+    assert_eq!(result.len(), 0);
+}
+
+#[wasm_bindgen_test]
+fn test_pytamaro_submodule_success_import() {
+    let mut workspace = init_workspace().expect("Workspace to be initialized");
+    workspace
+        .open_file(
+            "main.py",
+            "from pytamaro.it import rettangolo, rosso, visualizza_grafica",
+        )
+        .unwrap();
+    let result = workspace.check().unwrap();
+    assert_eq!(result.len(), 0);
+}
+
+#[wasm_bindgen_test]
+fn test_pytamaro_fail_import() {
+    let mut workspace = init_workspace().expect("Workspace to be initialized");
+    workspace
+        .open_file("main.py", "from pytamaro import _")
+        .unwrap();
+    let result = workspace.check().unwrap();
+    assert_eq!(result.len(), 1);
+    let diagnostic = &result[0];
+    assert_eq!(diagnostic.message(), "Module `pytamaro` has no member `_`");
+}
+
+#[wasm_bindgen_test]
+fn test_pytamaro_call_wrong_argument_type() {
+    let mut workspace = init_workspace().expect("Workspace to be initialized");
+    workspace
+        .open_file(
+            "main.py",
+            "from pytamaro import rectangle\nrectangle(100, 100, 'red')",
+        )
+        .unwrap();
+    let result = workspace.check().unwrap();
+    assert_eq!(result.len(), 1);
+    let diagnostic = &result[0];
+    assert_eq!(
+        diagnostic.message(),
+        "Argument to function `rectangle` is incorrect: Expected `Color`, found `Literal[\"red\"]`"
+    );
+}
+
+#[wasm_bindgen_test]
+fn test_pytamaro_call_wrong_argument_type_alias() {
+    let mut workspace = init_workspace().expect("Workspace to be initialized");
+    workspace
+        .open_file(
+            "main.py",
+            "from pytamaro.it import rettangolo\nrettangolo(100, 100, 'rosso')",
+        )
+        .unwrap();
+    let result = workspace.check().unwrap();
+    assert_eq!(result.len(), 1);
+    let diagnostic = &result[0];
+    assert_eq!(
+        diagnostic.message(),
+        // Ideally this would say "Expected `Colore`", but the type alias is resolved to the original name.
+        "Argument to function `rettangolo` is incorrect: Expected `Color`, found `Literal[\"rosso\"]`"
+    );
+}
+
+#[wasm_bindgen_test]
+fn test_possibly_unresolved_reference() {
+    let mut workspace = init_workspace().expect("Workspace to be initialized");
+    workspace
+        .open_file(
+            "main.py",
+            "from random import randint\nif randint(0, 1) == 0: a = 1\na",
+        )
+        .unwrap();
+    let result = workspace.check().unwrap();
+    assert_eq!(result.len(), 1);
+    let diagnostic = &result[0];
+    assert_eq!(
+        diagnostic.message(),
+        "Name `a` used when possibly not defined"
     );
 }

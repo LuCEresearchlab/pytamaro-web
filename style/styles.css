@@ -67,6 +67,10 @@ pre:has(code) {
   display: none;
 }
 
+.monaco-editor .mtkb {
+  font-weight: 550 !important;
+}
+
 .peekview-title > .filename {
   display: none;
 }
@@ -76,6 +80,16 @@ pre:has(code) {
   background-color: var(--mui-palette-error-main);
   color: var(--mui-palette-error-contrastText);
   font-weight: 500 !important;
+}
+
+.monaco-editor-overlaymessage code {
+  background-color: #00000028;
+  padding: 0px 2px;
+}
+
+.monaco-editor .analyzer-diagnostic-code-highlight {
+  background-color: var(--mui-palette-error-main);
+  opacity: 0.2;
 }
 
 /* Nicer Markdown tables, partially inspired by https://github.com/micromark/micromark-extension-gfm-table#css */

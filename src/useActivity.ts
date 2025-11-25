@@ -1,6 +1,6 @@
 import axios from 'axios';
 import produce from 'immer';
-import { uniqBy } from 'lodash';
+import { debounce, uniqBy } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import {
   Dispatch,
@@ -103,7 +103,7 @@ export function useActivity(
   setMetadata: Dispatch<SetStateAction<Metadata>>,
   activityVariant: ActivityVariant,
   extraPythonFiles: PythonFile[],
-  preExecute: () => ToolboxFunction | undefined = () => undefined,
+  getExtraToolboxFunction: () => ToolboxFunction | undefined = () => undefined,
   postExecuteSingleCell: (
     idx: number,
     executionResponse: ExecutionResponse,
@@ -176,7 +176,10 @@ export function useActivity(
     );
   }, [codeCellsSerialized, initialCodeCellsSerialized, variantId, setMetadata]);
 
-  const handleSourceChanged = (newSource: string, idx: number) => {
+  // Small debounce because this is potentially called on every keystroke.
+  // The setters persist data on Local/Session Storage
+  // and we don't want to write synchronously too often.
+  const handleSourceChanged = debounce((newSource: string, idx: number) => {
     setCodeCells((currentCodeCells) =>
       produce(currentCodeCells, (draft) => {
         draft[idx].source = newSource;
@@ -190,7 +193,7 @@ export function useActivity(
         }
       }),
     );
-  };
+  }, 50);
 
   const sourcesUpTo = (idx: number) =>
     codeCells.slice(0, idx + 1).map(sourceFromCell);
@@ -247,7 +250,7 @@ export function useActivity(
   };
 
   const handleExecute = async (idx: number) => {
-    const extraToolboxFn = preExecute();
+    const extraToolboxFn = getExtraToolboxFunction();
 
     const functionLookup = (name: string) => {
       if (extraToolboxFn && extraToolboxFn.name === name) {
@@ -276,6 +279,7 @@ export function useActivity(
       toolboxFunctions,
       activityVariant,
       extraPythonFiles,
+      liveAnalysis: metadata.liveAnalysis,
     });
     setExecutionFailed(undefined);
     // (Re-)Execute all cells from the first one to the current one, included.

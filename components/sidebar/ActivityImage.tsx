@@ -1,4 +1,6 @@
-import { Box } from '@mui/material';
+import { Fullscreen } from '@mui/icons-material';
+import { Box, Button, Dialog } from '@mui/material';
+import { useState } from 'react';
 import { Activity, ActivityVariant } from '../../src/schemas/activitySchema';
 import ActivityCardMedia from '../ActivityCardMedia';
 import SidebarTitle from './SidebarTitle';
@@ -12,19 +14,42 @@ export default function ActivityImage({
   variant: ActivityVariant;
   title: string;
 }) {
+  const [fullScreenOpen, setFullScreenOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
   return (
-    <Box sx={{ zIndex: 100 }}>
+    <Box>
       <SidebarTitle>{title}</SidebarTitle>
       <Box
-        sx={{
-          transformOrigin: 'top right',
-          transition: 'transform .2s',
-          '&:hover': {
-            transform: 'scale(4)',
-          },
-        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
         <ActivityCardMedia activity={activity} variant={variant} />
+        {hovered && (
+          <>
+            <Dialog
+              onClose={() => {
+                setFullScreenOpen(false);
+                setHovered(false);
+              }}
+              open={fullScreenOpen}
+              maxWidth={false}
+            >
+              <ActivityCardMedia
+                activity={activity}
+                variant={variant}
+                height={(0.9 * window.innerHeight).toString()}
+              />
+            </Dialog>
+            <Button
+              onClick={() => setFullScreenOpen(true)}
+              variant='contained'
+              size='small'
+              sx={{ position: 'absolute', right: 12, top: 32 }}
+            >
+              <Fullscreen />
+            </Button>
+          </>
+        )}
       </Box>
     </Box>
   );

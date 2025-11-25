@@ -6,8 +6,20 @@ declare module '@mui/material/styles' {
     pytamaro: {
       monospaceFontFamily: string;
       monospaceFontSizeRatio: number;
-      redColor: string;
-      backgroundColor: string;
+      palette: {
+        red: string;
+        blue: string;
+        brown: string;
+        green: string;
+        orange: string;
+        gold: string;
+        darkerBlue: string;
+        background: {
+          errorRed: string;
+          default: string;
+          light: string;
+        };
+      };
     };
   }
   // allow configuration using `createTheme`
@@ -15,8 +27,20 @@ declare module '@mui/material/styles' {
     pytamaro?: {
       monospaceFontFamily?: string;
       monospaceFontSizeRatio: number;
-      redColor?: string;
-      backgroundColor?: string;
+      palette?: {
+        red?: string;
+        blue?: string;
+        brown?: string;
+        green?: string;
+        orange?: string;
+        gold?: string;
+        darkerBlue?: string;
+        background?: {
+          errorRed?: string;
+          default?: string;
+          light?: string;
+        };
+      };
     };
   }
 }
@@ -38,8 +62,20 @@ const theme = responsiveFontSizes(
     pytamaro: {
       monospaceFontFamily: "'Fira Code Variable', monospace",
       monospaceFontSizeRatio: 0.9625,
-      redColor: '#D2071D',
-      backgroundColor: '#E1F5FD',
+      palette: {
+        red: '#D2071D',
+        blue: '#008BCB',
+        brown: '#93604C',
+        green: '#038A36',
+        orange: '#FF8021',
+        gold: '#B58200',
+        darkerBlue: '#2B6694',
+        background: {
+          errorRed: 'rgb(255, 245, 245)',
+          default: '#E1F5FD',
+          light: 'rgb(240, 250, 254)', // 50% white on top of `default`
+        },
+      },
     },
     typography: {
       fontFamily: "'Fira Sans', sans-serif",

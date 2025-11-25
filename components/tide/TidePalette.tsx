@@ -34,6 +34,7 @@ function TabPanel(props: React.PropsWithChildren<TabPanelProps>) {
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
+      // eslint-disable-next-line react/jsx-props-no-spreading
       {...other}
     >
       {value === index && children}

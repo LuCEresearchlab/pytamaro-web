@@ -1,7 +1,7 @@
 import { MenuBookOutlined } from '@mui/icons-material';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { Box, Chip, Stack, Tooltip } from '@mui/material';
-import { flatten, isEqual, reverse, slice, uniqWith } from 'lodash';
+import { flatten, reverse, slice, uniqWith } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import { useDocumentationElements } from '../../src/documentation';
@@ -16,8 +16,11 @@ import { ActivityVariant, PythonFile } from '../../src/schemas/activitySchema';
 import theme from '../../src/theme';
 import DocElement from './DocElement';
 
-function reverseUniq<T>(array: T[][]): T[] {
-  return uniqWith(flatten(reverse(slice(array))), isEqual);
+function reverseUniq<T>(
+  array: T[][],
+  comparator: (o1: T, o2: T) => boolean,
+): T[] {
+  return uniqWith(flatten(reverse(slice(array))), comparator);
 }
 
 const COLLAPSED_HEIGHT = 1.5 * theme.typography.htmlFontSize;
@@ -49,7 +52,7 @@ export default function DocumentationStripe({
       (result) => result.imported_names,
     );
     const possiblyImplicitlyImportedNames = analysesResults.map((result) =>
-      result.called_names.map((name) => ({ module: 'builtins', name })),
+      result.called_names.map((name) => new PythonName('builtins', name)),
     );
     setImportedNamesPerCell(
       importedNames.concat(possiblyImplicitlyImportedNames),
@@ -72,8 +75,14 @@ export default function DocumentationStripe({
 
   const toggleNamesExpanded = () => setNamesExpanded(!namesExpanded);
 
-  const allImportedNames = reverseUniq(importedNamesPerCell);
-  const allDefinedFunctions = reverseUniq(functionsPerCell);
+  const allImportedNames = reverseUniq(
+    importedNamesPerCell,
+    (n1, n2) => n1.name === n2.name && n1.module === n2.module,
+  );
+  const allDefinedFunctions = reverseUniq(
+    functionsPerCell,
+    (f1, f2) => f1.name === f2.name,
+  );
 
   const namesToDocElement = useDocumentationElements(
     allImportedNames,
@@ -86,7 +95,7 @@ export default function DocumentationStripe({
   }
 
   return (
-    <Box>
+    <Box bgcolor={theme.pytamaro.palette.background.light}>
       <Stack
         direction='row'
         columnGap={0.7}
@@ -99,8 +108,9 @@ export default function DocumentationStripe({
             sx={{
               fontSize: '1em',
               transform: 'translateY(0.15em)',
+              marginX: theme.spacing(0.5),
             }}
-            color='action'
+            color='primary'
           />
         </Tooltip>
         <Stack

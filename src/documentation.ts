@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import {
   definedConstantToJudiciousConstant,
   definedFnToJudiciousFunction,
+  KNOWN_JUDICIOUS_MODULES,
   toolboxToJudiciousFunction,
 } from '../components/documentation/utils';
 import { TOOLBOX_FILE } from './codeExecution';
@@ -63,17 +64,10 @@ export function useDocumentationElements(
     [extraPythonFiles],
   );
 
-  const extraDocumentationModules = extraDocumentation.map(
-    (file) => file.module,
-  );
-
   const modulesToFetch = uniqWith(
     names.map(({ module }) => module),
     isEqual,
-  ).filter(
-    (module) =>
-      !(module === TOOLBOX_FILE || extraDocumentationModules.includes(module)),
-  );
+  ).filter((module) => KNOWN_JUDICIOUS_MODULES.includes(module));
 
   const modulesData = useJudiciousDocData(modulesToFetch);
 

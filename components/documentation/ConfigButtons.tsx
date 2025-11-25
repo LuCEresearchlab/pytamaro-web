@@ -12,7 +12,6 @@ export const SHOW_TYPES_KEY = 'types';
 
 function tooltipMessageI18n(key: string, active: boolean) {
   const prefix = active ? 'hide' : 'show';
-  // eslint-disable-next-line no-nested-ternary
   const suffix =
     key === SHOW_DIAGRAM_KEY
       ? 'Diagram'

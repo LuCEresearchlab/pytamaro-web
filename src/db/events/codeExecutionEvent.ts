@@ -1,6 +1,6 @@
 import postgres from 'postgres';
 import { CODE_EXECUTION_CELLS_TO_FILES_VERSION } from '../../codeExecution';
-import { ToolboxFunction } from '../../localStorage/schema';
+import { LiveAnalysisStatus, ToolboxFunction } from '../../localStorage/schema';
 import { ActivityVariant, PythonFile } from '../../schemas/activitySchema';
 import { EventName } from '../../storeDbEvent';
 import conn from '../dbConnection';
@@ -60,6 +60,7 @@ async function storeEventCodeExecution(
   docker_image_id: number,
   activity_id: number,
   requested_cell_seq_number: number,
+  live_analysis: LiveAnalysisStatus,
 ) {
   return storeRow(sql, eventTableName(EventName.CodeExecution), {
     id: event_id,
@@ -67,6 +68,7 @@ async function storeEventCodeExecution(
     activity_id,
     requested_cell_seq_number,
     cells_to_files_version: CODE_EXECUTION_CELLS_TO_FILES_VERSION,
+    live_analysis,
   });
 }
 
@@ -80,6 +82,7 @@ export default async function saveCodeExecutionEvent(
   requested_cell_seq_number: number,
   toolboxFunctions: ToolboxFunction[],
   extraPythonFiles: PythonFile[],
+  liveAnalysis: LiveAnalysisStatus,
 ): Promise<boolean> {
   try {
     await conn.begin(async (sql) => {
@@ -97,6 +100,7 @@ export default async function saveCodeExecutionEvent(
         await pDockerImageId,
         await pActivityId,
         requested_cell_seq_number,
+        liveAnalysis,
       );
       await Promise.all(
         [

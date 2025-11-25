@@ -1,12 +1,3 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useReactFlow } from '@xyflow/react';
-import { useStore } from '../../src/tide/store';
-import {
-  getConstantDefinition,
-  getNode,
-  getSubTreeFromRoot,
-} from '../../src/tide/utils';
-import { BORDER_COLOR } from './cards/constant_definition';
 import {
   Box,
   Button,
@@ -16,8 +7,17 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
-import { ConstantDefinitionNode, ConstantNode, TideNode } from './cards';
+import { useReactFlow } from '@xyflow/react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/shallow';
+import { useStore } from '../../src/tide/store';
+import {
+  getConstantDefinition,
+  getNode,
+  getSubTreeFromRoot,
+} from '../../src/tide/utils';
+import { ConstantDefinitionNode, ConstantNode, TideNode } from './cards';
+import { BORDER_COLOR } from './cards/constant_definition';
 
 export default function NodeContextMenu({
   id,
@@ -155,6 +155,7 @@ export default function NodeContextMenu({
         zIndex: '100',
       }}
       className='context-menu'
+      // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
     >
       <button

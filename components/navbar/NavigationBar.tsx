@@ -24,8 +24,8 @@ import {
 import ToolboxListSidebar from '../sidebar/ToolboxListSidebar';
 import FeedbackButton from './FeedbackButton';
 import NotificationsButton from './NotificationsButton';
-import PlatformLanguageButton from './PlatformLanguageButton';
 import RapidPlaygroundButton from './RapidPlaygroundButton';
+import SettingsButton from './SettingsButton';
 
 const navItems = [
   {
@@ -81,7 +81,9 @@ function ScrollAppBarChanges({
   return cloneElement(children, {
     // @ts-expect-error expect children to be a MUI component
     sx: {
-      background: scrolled ? theme.pytamaro.backgroundColor : '#ffffffb0',
+      background: scrolled
+        ? theme.pytamaro.palette.background.default
+        : '#ffffffb0',
     },
   });
 }
@@ -131,7 +133,7 @@ export default function NavigationBar({
         position='sticky'
         elevation={0}
         sx={{
-          background: theme.pytamaro.backgroundColor,
+          background: theme.pytamaro.palette.background.default,
         }}
       >
         <Toolbar>
@@ -165,7 +167,7 @@ export default function NavigationBar({
               }}
               PaperProps={{
                 style: {
-                  backgroundColor: theme.pytamaro.backgroundColor,
+                  backgroundColor: theme.pytamaro.palette.background.default,
                 },
               }}
             >
@@ -229,7 +231,7 @@ export default function NavigationBar({
                 <RapidPlaygroundButton />
                 <FeedbackButton />
                 <NotificationsButton />
-                <PlatformLanguageButton />
+                <SettingsButton />
               </>
             )}
           </Stack>

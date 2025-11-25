@@ -1,5 +1,6 @@
+ 
+/* eslint-disable @typescript-eslint/no-require-imports */
 const { i18n } = require('./next-i18next.config');
-const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -15,25 +16,6 @@ const nextConfig = {
   },
   // Workaround for MUI-NextJS issues https://github.com/mui/material-ui/issues/46181#issuecomment-2894160823 
   transpilePackages: ["@mui/material-nextjs"], 
-  webpack(config, { isServer, dev }) {
-    config.experiments = {
-      asyncWebAssembly: true,
-      layers: true,
-    };
-
-    config.resolve.fallback = {
-      fs: false,
-      path: false,
-      os: false,
-    };
-
-    if (!dev && isServer) {
-      config.output.webassemblyModuleFilename = 'chunks/[id].wasm';
-      config.plugins.push(new WasmChunksFixPlugin());
-    }
-
-    return config;
-  },
   images: {
     remotePatterns: [
       {
@@ -97,26 +79,6 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
-
-// Workaround from https://github.com/vercel/next.js/issues/29362#issuecomment-971377869
-class WasmChunksFixPlugin {
-  apply(compiler) {
-    compiler.hooks.thisCompilation.tap('WasmChunksFixPlugin', (compilation) => {
-      compilation.hooks.processAssets.tap(
-        { name: 'WasmChunksFixPlugin' },
-        (assets) =>
-          Object.entries(assets).forEach(([pathname, source]) => {
-            if (!pathname.match(/\.wasm$/)) return;
-            compilation.deleteAsset(pathname);
-
-            const name = pathname.split('/')[1];
-            const info = compilation.assetsInfo.get(pathname);
-            compilation.emitAsset(name, source, info);
-          }),
-      );
-    });
-  }
-}
 
 // Injected content via Sentry wizard below
 

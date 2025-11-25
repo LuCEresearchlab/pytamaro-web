@@ -25,8 +25,8 @@ const NavItem = styled(Link, {
   shouldForwardProp: (prop) => prop !== 'active' && prop !== 'indent',
 })<{ active: boolean; indent: boolean }>(({ active, indent }) => {
   const activeStyles = {
-    borderLeftColor: theme.pytamaro.redColor,
-    color: theme.pytamaro.redColor,
+    borderLeftColor: theme.pytamaro.palette.red,
+    color: theme.pytamaro.palette.red,
     '&:hover': {
       borderLeftColor: theme.palette.primary,
       color: theme.palette.primary,

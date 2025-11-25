@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable react/jsx-one-expression-per-line */
 import {
   Avatar,
   Box,

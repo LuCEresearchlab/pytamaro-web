@@ -1,23 +1,13 @@
-/* eslint-disable no-nested-ternary */
-import { useMonaco } from '@monaco-editor/react';
 import Keyboard from '@mui/icons-material/Keyboard';
 import { Badge, Box, Card, CardContent, Tooltip } from '@mui/material';
-import { useEffect } from 'react';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
+import useMonacoColorizer, {
+  COLORIZE_CLASSNAME,
+} from '../../src/monacoColorizer';
 import { JudiciousExample } from '../../src/schemas/documentation';
 import theme from '../../src/theme';
-import {
-  registerCustomPythonLanguage,
-  STRICT_PYTHON3_LANG_ID,
-} from '../editor/strictPython3';
-import {
-  COLORIZE_CLASSNAME,
-  colorizeElements,
-  configureEditor,
-} from '../editor/utils';
+import { STRICT_PYTHON3_LANG_ID } from '../editor/strictPython3';
 import { OutputArea } from '../OutputArea';
-
-configureEditor();
 
 function RotatedHeading({
   children,
@@ -40,7 +30,9 @@ function RotatedHeading({
       }}
     >
       <Tooltip arrow title={tooltip} placement='left'>
-        <span style={{ userSelect: 'none' }}>{children}</span>
+        <span style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
+          {children}
+        </span>
       </Tooltip>
     </Box>
   );
@@ -51,16 +43,9 @@ export default function DocumentationExample({
 }: {
   example: JudiciousExample;
 }) {
-  const monaco = useMonaco();
-
   const { t } = useLocalTranslation();
 
-  useEffect(() => {
-    if (monaco) {
-      registerCustomPythonLanguage(monaco);
-      colorizeElements(monaco);
-    }
-  }, [monaco]);
+  useMonacoColorizer();
 
   return (
     <Card sx={{ height: '100%' }} variant='outlined'>
@@ -109,6 +94,7 @@ export default function DocumentationExample({
                   display: 'inline-block',
                   width: example.stdin ? 'auto' : '100%',
                   marginRight: example.stdin ? 0 : theme.spacing(1),
+                  overflowX: 'auto',
                 }}
               />
             )}
@@ -131,6 +117,7 @@ export default function DocumentationExample({
                   sx={{
                     paddingLeft: theme.spacing(0.25),
                     paddingRight: theme.spacing(0.25),
+                    overflowX: 'auto',
                   }}
                   preStyle={{
                     marginTop: theme.spacing(0.5),
@@ -156,6 +143,28 @@ export default function DocumentationExample({
               data={example.result}
               sx={{
                 display: 'inline-block',
+                overflowX: 'auto',
+              }}
+            />
+          </Box>
+        )}
+        {example.error && (
+          <Box
+            display='flex'
+            alignItems='center'
+            sx={{
+              color: 'red',
+              backgroundColor: theme.pytamaro.palette.background.errorRed,
+            }}
+          >
+            <RotatedHeading tooltip={t('errorTooltip')}>
+              {t('error')}
+            </RotatedHeading>
+            <OutputArea
+              data={example.error}
+              sx={{
+                display: 'inline-block',
+                overflowX: 'auto',
               }}
             />
           </Box>

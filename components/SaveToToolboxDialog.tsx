@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import Close from '@mui/icons-material/Close';
 import {
   Alert,
@@ -36,6 +35,7 @@ import { toolboxActivityVariant } from '../src/specialActivities';
 import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import theme from '../src/theme';
 import { toolboxFunctionPathname } from '../src/urlUtils';
+import usePythonAnalyzer from '../src/usePythonAnalyzer';
 import useTemporaryActivity from '../src/useTemporaryActivity';
 import { isExecutionError } from './CodeCell';
 import CodeEditor from './CodeEditor';
@@ -128,7 +128,7 @@ function functionForToolbox(
   description: string,
   originalActivity: ActivityVariant,
   usage: string = '',
-) {
+): ToolboxFunction {
   return {
     name: fn.name,
     args: fn.args.map(({ name, type_str }) => ({
@@ -185,17 +185,20 @@ export default function SaveToToolboxDialog({
   const { exists } = useLocalToolbox();
   const alreadyExists = exists(selectedFunction);
 
-  const preExecute = () => {
-    if (selectedPythonFunction) {
-      return functionForToolbox(
-        selectedPythonFunction,
-        implementation,
-        description,
-        originalActivity,
-      );
-    }
-    return undefined;
+  const newToolboxFunction =
+    selectedPythonFunction &&
+    functionForToolbox(
+      selectedPythonFunction,
+      implementation,
+      description,
+      originalActivity,
+    );
+
+  const getExtraToolboxFunction = () => {
+    return newToolboxFunction;
   };
+
+  const implementationPythonAnalyzer = usePythonAnalyzer();
 
   const postExecuteSingleCell = (
     idx: number,
@@ -240,7 +243,7 @@ export default function SaveToToolboxDialog({
     codeCells,
     setCodeCells,
     activityVariant,
-    preExecute,
+    getExtraToolboxFunction,
     postExecuteSingleCell,
   );
 
@@ -327,6 +330,8 @@ export default function SaveToToolboxDialog({
           initialSource={externalImplementation}
           currentSource={implementation}
           onChange={handleImplementationChange}
+          pythonAnalyzer={implementationPythonAnalyzer}
+          cellIdx={0}
         />
         <Box marginTop={4} />
         {functions.length > 0 ? (
@@ -424,6 +429,9 @@ export default function SaveToToolboxDialog({
                     onExecutionRequest={() => {
                       setInvalidUsageExecution(false);
                     }}
+                    extraToolboxFunctions={
+                      newToolboxFunction ? [newToolboxFunction] : []
+                    }
                   />
                 </div>
               ))}

@@ -49,7 +49,6 @@ export default function TitleNode({ data }: NodeProps<Node<NodeData>>) {
         className={type === 'unit' ? 'curriculum-unit' : undefined}
         id={slug(text)}
       >
-        {/* eslint-disable-next-line no-nested-ternary */}
         {showStartingButton || showFinishButton ? (
           <Tooltip
             arrow

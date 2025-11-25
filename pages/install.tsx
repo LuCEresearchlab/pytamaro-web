@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-one-expression-per-line */
 import { Box, Container, Link, Typography } from '@mui/material';
 import Head from 'next/head';
 import NavigationBar from '../components/navbar/NavigationBar';

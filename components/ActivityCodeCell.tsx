@@ -9,6 +9,7 @@ import {
   PythonFile,
 } from '../src/schemas/activitySchema';
 import { countLines } from '../src/sourceUtils';
+import { PythonAnalyzer } from '../src/usePythonAnalyzer';
 import useReset from '../src/useReset';
 import CodeCell from './CodeCell';
 import FailedExecutionSnackbar from './FailedExecutionSnackbar';
@@ -46,19 +47,17 @@ export default function ActivityCodeCell({
   initialCodeCells,
   cellIdx,
   extraPythonFiles,
-  fullWidthCell,
   platformConfig,
-  onFullWidthToggle,
   activityResetCounter,
+  pythonAnalyzer,
 }: {
   activityVariant: ActivityVariant;
   initialCodeCells: CodeCellState[];
   cellIdx: number;
   extraPythonFiles: PythonFile[];
-  fullWidthCell: boolean;
   platformConfig: PlatformConfiguration;
-  onFullWidthToggle: () => void;
   activityResetCounter: number;
+  pythonAnalyzer: PythonAnalyzer | null;
 }) {
   const {
     codeCells,
@@ -100,6 +99,8 @@ export default function ActivityCodeCell({
         platformConfig={platformConfig}
         resetCounter={resetCounter}
         extraPythonFiles={extraPythonFiles}
+        pythonAnalyzer={pythonAnalyzer}
+        cellIdx={cellIdx}
         extraActions={
           <>
             <SaveToToolboxButton
@@ -111,8 +112,6 @@ export default function ActivityCodeCell({
               codeCellExecutionState={codeExecutionStates[cellIdx]}
               onShowHideOutput={() => handleToggleOutputArea(cellIdx)}
               onReset={() => handleResetSingleCell(cellIdx, newReset)}
-              fullWidthCell={fullWidthCell}
-              onFullWidthToggle={onFullWidthToggle}
             />
           </>
         }

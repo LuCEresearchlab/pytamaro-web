@@ -68,7 +68,6 @@ function getRawContent(annotation: TideError): {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function ErrorParagraph(props: { annotation: TideError }) {
   const { annotation } = props;
 
@@ -97,16 +96,19 @@ export function ErrorParagraph(props: { annotation: TideError }) {
       </p>
       <div style={{ fontSize: '1.25em' }}>
         {message.split('\n').map((line, i) => (
+          // eslint-disable-next-line react/no-array-index-key
           <div key={i}>
             {line.split('*').map((v, i) =>
               i % 2 === 0 ? (
+                // eslint-disable-next-line react/no-array-index-key
                 <span key={i}>{v}</span>
               ) : (
                 <span
+                  // eslint-disable-next-line react/no-array-index-key
                   key={i}
                   style={{
                     fontFamily: theme.pytamaro.monospaceFontFamily,
-                    color: theme.pytamaro.redColor,
+                    color: theme.pytamaro.palette.red,
                   }}
                 >
                   {v}

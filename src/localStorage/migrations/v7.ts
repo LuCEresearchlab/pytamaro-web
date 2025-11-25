@@ -2,9 +2,9 @@ import {
   ActivityVariantMetadata,
   CurriculumMetadata,
   DocsMetadata,
-  Metadata,
   ToolboxFunction,
 } from '../schema';
+import { MetadataV7 } from './v8';
 
 export interface MetadataV6 {
   dataModelVersion: string;
@@ -18,7 +18,7 @@ export interface MetadataV6 {
   docs: DocsMetadata;
 }
 
-export default function migrateToV7(metadata: MetadataV6): Metadata {
+export default function migrateToV7(metadata: MetadataV6): MetadataV7 {
   const newMetadata = {
     ...metadata,
     dataModelVersion: '7',

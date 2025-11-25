@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Accordion,

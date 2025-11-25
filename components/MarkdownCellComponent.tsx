@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, Link, Stack } from '@mui/material';
 import { MDXRemote } from 'next-mdx-remote';
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
+import { COLORIZE_CLASSNAME } from '../src/monacoColorizer';
 import {
   ActivityVariant,
   MarkdownCell,
@@ -11,7 +12,6 @@ import {
 import { activityAssetPathname } from '../src/urlUtils';
 import InlineAPI from './documentation/InlineAPI';
 import { STRICT_PYTHON3_LANG_ID } from './editor/strictPython3';
-import { COLORIZE_CLASSNAME } from './editor/utils';
 import ActivityLink from './markdown/ActivityLink';
 import DoNowBox from './markdown/DoNowBox';
 import TaskBox from './markdown/TaskBox';
@@ -70,12 +70,22 @@ function imgComponent(
 }
 
 function InlineAPIComponent(
-  name: string,
+  name: string | undefined,
   activityVariant: ActivityVariant,
   lang?: string,
   module?: string,
   extraPythonFiles?: PythonFile[],
 ) {
+  // Error on
+  if (!name) {
+    if (typeof window === 'undefined') {
+      // eslint-disable-next-line no-console
+      console.error(
+        'An <API> markdown component is missing the name (correct usage: <API>name</API>)',
+      );
+    }
+    return <span></span>;
+  }
   return (
     <InlineAPI
       name={name}
@@ -124,45 +134,54 @@ export default function MarkdownCellComponent({
   activityVariant: ActivityVariant;
   extraPythonFiles: PythonFile[];
 }) {
-  const adHocComponents = {
-    img: (props: any) =>
-      imgComponent(
-        props,
-        cell,
-        activityVariant.authorSlug,
-        activityVariant.activitySlug,
-      ),
-    a: linkComponent,
-    code: codeComponent,
-    Stack,
-    API: ({
-      lang,
-      module,
-      children: name,
-    }: {
-      lang?: string;
-      module?: string;
-      children: string;
-    }) =>
-      InlineAPIComponent(name, activityVariant, lang, module, extraPythonFiles),
-    Activity: ActivityLink,
-    DoNow: ({
-      id,
-      requireAnswer = false,
-      children,
-    }: {
-      id: string;
-      requireAnswer?: boolean;
-      children: ReactNode;
-    }) =>
-      DoNowBox({
+  const adHocComponents = useMemo(
+    () => ({
+      img: (props: any) =>
+        imgComponent(
+          props,
+          cell,
+          activityVariant.authorSlug,
+          activityVariant.activitySlug,
+        ),
+      a: linkComponent,
+      code: codeComponent,
+      Stack,
+      API: ({
+        lang,
+        module,
+        children: name,
+      }: {
+        lang?: string;
+        module?: string;
+        children: string | undefined;
+      }) =>
+        InlineAPIComponent(
+          name,
+          activityVariant,
+          lang,
+          module,
+          extraPythonFiles,
+        ),
+      Activity: ActivityLink,
+      DoNow: ({
         id,
-        requireAnswer,
+        requireAnswer = false,
         children,
-        activityVariant,
-      }),
-    Task: ({ children }: { children: ReactNode }) => TaskBox({ children }),
-  };
+      }: {
+        id: string;
+        requireAnswer?: boolean;
+        children: ReactNode;
+      }) =>
+        DoNowBox({
+          id,
+          requireAnswer,
+          children,
+          activityVariant,
+        }),
+      Task: ({ children }: { children: ReactNode }) => TaskBox({ children }),
+    }),
+    [activityVariant, cell, extraPythonFiles],
+  );
   return (
     <MDXRemote
       // eslint-disable-next-line react/jsx-props-no-spreading

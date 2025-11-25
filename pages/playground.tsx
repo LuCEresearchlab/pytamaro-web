@@ -34,12 +34,14 @@ import getActivitiesWithAPIs, {
 } from '../src/activitiesAPIs';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
+import useLocalProfile from '../src/localStorage/useLocalProfile';
 import {
   playgroundActivityVariant,
   playgroundInitialSource,
 } from '../src/playground';
 import { analyze, PythonName } from '../src/python-analyzer/python_analyzer';
 import { translationProps } from '../src/serverSideTranslationProps';
+import theme from '../src/theme';
 import useReset from '../src/useReset';
 
 function uniqueNames(names: PythonName[]): Set<string> {
@@ -88,15 +90,11 @@ function PlaygroundCodeCell({
   initialCodeCells,
   resetCounter,
   newReset,
-  fullWidthCell,
-  setFullWidthCell,
   setInitialSource,
 }: {
   initialCodeCells: CodeCellState[];
   resetCounter: number;
   newReset: () => void;
-  fullWidthCell: boolean;
-  setFullWidthCell: (fullWidth: boolean) => void;
   setInitialSource: (newSource: string) => void;
 }) {
   const localActivity = useLocalActivity(
@@ -179,8 +177,6 @@ function PlaygroundCodeCell({
               codeCellExecutionState={codeExecutionStates[0]}
               onShowHideOutput={() => handleToggleOutputArea(0)}
               onReset={() => handleResetSingleCell(0, newReset)}
-              fullWidthCell={fullWidthCell}
-              onFullWidthToggle={() => setFullWidthCell(!fullWidthCell)}
             />
           </>
         }
@@ -222,7 +218,7 @@ function RecommendedActivities({
           // +1 if also the user has imported it
           // -0.5 if the user has not imported it
           let score = 0;
-          uniqueNames(importedNames).forEach((name) => {
+          importedNames.forEach((name) => {
             score += currentlyImported.has(name) ? 1 : -0.5;
           });
           return score;
@@ -248,7 +244,7 @@ function RecommendedActivities({
         severity='info'
         sx={{
           marginTop: 8,
-          backgroundColor: 'rgba(255, 255, 255, 0.5)',
+          backgroundColor: theme.pytamaro.palette.background.light,
         }}
       >
         <AlertTitle>Try out these activities!</AlertTitle>
@@ -290,7 +286,7 @@ export default function Playground({
 
   const { resetCounter, newReset } = useReset();
 
-  const [fullWidthCell, setFullWidthCell] = useState(false);
+  const { metadata } = useLocalProfile();
 
   return (
     <div>
@@ -311,13 +307,11 @@ export default function Playground({
           </Sidebar>
           <CentralContent>
             <PageTitle>Playground</PageTitle>
-            <Container maxWidth={fullWidthCell ? false : 'md'}>
+            <Container maxWidth={metadata.wideEditor ? false : 'md'}>
               <PlaygroundCodeCell
                 initialCodeCells={initialCodeCells}
                 resetCounter={resetCounter}
                 newReset={newReset}
-                fullWidthCell={fullWidthCell}
-                setFullWidthCell={setFullWidthCell}
                 setInitialSource={setInitialSource}
               />
             </Container>

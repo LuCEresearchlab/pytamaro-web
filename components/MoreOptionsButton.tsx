@@ -1,8 +1,6 @@
 import { RestartAlt } from '@mui/icons-material';
-import CloseFullscreen from '@mui/icons-material/CloseFullscreen';
 import ContentCopy from '@mui/icons-material/ContentCopy';
 import MoreVert from '@mui/icons-material/MoreVert';
-import OpenInFull from '@mui/icons-material/OpenInFull';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { IconButton, ListItemIcon, Menu, MenuItem } from '@mui/material';
@@ -16,17 +14,13 @@ import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 export default function MoreOptionsButton({
   codeCellState,
   codeCellExecutionState,
-  fullWidthCell,
   onShowHideOutput,
   onReset,
-  onFullWidthToggle,
 }: {
   codeCellState: CodeCellState;
   codeCellExecutionState: CodeCellExecutionState;
-  fullWidthCell: boolean;
   onShowHideOutput: () => void;
   onReset: () => void;
-  onFullWidthToggle: () => void;
 }) {
   const { t } = useLocalTranslation(['common']);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -44,10 +38,6 @@ export default function MoreOptionsButton({
   const handleShowHideOutputArea = () => {
     handleClose();
     onShowHideOutput();
-  };
-  const handleFullWidthToggle = () => {
-    handleClose();
-    onFullWidthToggle();
   };
   const handleReset = () => {
     handleClose();
@@ -94,19 +84,6 @@ export default function MoreOptionsButton({
             <ContentCopy fontSize='small' />
           </ListItemIcon>
           {t('copyCode')}
-        </MenuItem>
-        <MenuItem
-          onClick={handleFullWidthToggle}
-          sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}
-        >
-          <ListItemIcon sx={{ verticalAlign: 'middle' }}>
-            {fullWidthCell ? (
-              <CloseFullscreen fontSize='small' />
-            ) : (
-              <OpenInFull fontSize='small' />
-            )}
-          </ListItemIcon>
-          {t(`${fullWidthCell ? 'normal' : 'wide'}Width`)}
         </MenuItem>
         {codeCellExecutionState.executionResponse && (
           <MenuItem onClick={handleShowHideOutputArea}>

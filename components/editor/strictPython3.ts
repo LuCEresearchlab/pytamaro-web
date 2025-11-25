@@ -1,15 +1,11 @@
-/* eslint-disable no-useless-escape */
-/* eslint-disable prefer-regex-literals */
-
-import { useMonaco } from '@monaco-editor/react';
+import { Monaco } from '@monaco-editor/react';
 import type { languages } from 'monaco-editor';
 
 export const STRICT_PYTHON3_LANG_ID = 'strict-python3';
 
 // Taken from https://github.com/microsoft/monaco-editor/blob/4dc7b06d9b65ba5e55620b7c1c40afdcf4f517af/src/basic-languages/python/python.ts
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getConf(monaco: any): languages.LanguageConfiguration {
+export function getConf(monaco: Monaco): languages.LanguageConfiguration {
   return {
     comments: {
       lineComment: '#',
@@ -56,15 +52,22 @@ export const strictPython3Language = <languages.IMonarchLanguage>{
   defaultToken: '',
   tokenPostfix: '.python',
 
-  keywords: [
-    // This section is the result of running
-    // > import keyword
-    // > for k in sorted(keyword.kwlist + keyword.softkwlist): print("  '" + k + "',")
-    // in a Python 3.13 REPL.
+  // The next list is the result of running
+  // > import keyword
+  // > for k in sorted(keyword.kwlist + keyword.softkwlist): print("  '" + k + "',")
+  // in a Python 3.13 REPL.
 
-    'False',
-    'None',
-    'True',
+  // We exclude 'False', 'None', and 'True' from keywords to
+  // classify them as literals instead.
+  // For a historical account on why they are both "keywords" from the POV of the parser,
+  // and "literals" when classifying expressions,
+  // see https://python-history.blogspot.com/2013/11/story-of-none-true-false.html
+
+  // 'False',
+  // 'None',
+  // 'True',
+
+  keywords: [
     '_',
     'and',
     'as',
@@ -103,6 +106,8 @@ export const strictPython3Language = <languages.IMonarchLanguage>{
     'yield',
   ],
 
+  literals: ['True', 'False', 'None'],
+
   brackets: [
     { open: '{', close: '}', token: 'delimiter.curly' },
     { open: '[', close: ']', token: 'delimiter.bracket' },
@@ -123,6 +128,7 @@ export const strictPython3Language = <languages.IMonarchLanguage>{
         /[a-zA-Z_]\w*/,
         {
           cases: {
+            '@literals': 'literal',
             '@keywords': 'keyword',
             '@default': 'identifier',
           },
@@ -204,9 +210,7 @@ export const strictPython3Language = <languages.IMonarchLanguage>{
   },
 };
 
-export function registerCustomPythonLanguage(
-  monaco: ReturnType<typeof useMonaco>,
-) {
+export function registerCustomPythonLanguage(monaco: Monaco) {
   monaco?.languages.register({ id: STRICT_PYTHON3_LANG_ID });
   monaco?.languages.setMonarchTokensProvider(
     STRICT_PYTHON3_LANG_ID,

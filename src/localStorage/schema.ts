@@ -3,7 +3,7 @@ import { changelogEntries } from '../../components/ChangelogList';
 import { type ExecutionResponse } from '../codeExecution';
 import { ActivityVariant } from '../schemas/activitySchema';
 
-export const CURRENT_VERSION = '7';
+export const CURRENT_VERSION = '8';
 
 export interface Metadata {
   dataModelVersion: string;
@@ -16,6 +16,14 @@ export interface Metadata {
   platformLocale: string | null; // null means not explicitly chosen
   docs: DocsMetadata;
   lastNotificationSeen: number;
+  liveAnalysis: LiveAnalysisStatus;
+  wideEditor: boolean;
+}
+
+export enum LiveAnalysisStatus {
+  None = 'none',
+  Syntax = 'syntax',
+  SyntaxSemantics = 'syntax-semantics',
 }
 
 export interface DocsMetadata {
@@ -110,5 +118,7 @@ export function getDefaultMetadata(): Metadata {
     platformLocale: null,
     docs: defaultDocsMetadata(),
     lastNotificationSeen: changelogEntries.length - 1,
+    liveAnalysis: LiveAnalysisStatus.Syntax,
+    wideEditor: false,
   };
 }
