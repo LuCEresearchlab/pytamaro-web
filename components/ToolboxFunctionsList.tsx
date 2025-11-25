@@ -77,39 +77,36 @@ export default function ToolboxFunctionsList({
     });
   };
 
-  return (
-    // eslint-disable-next-line no-nested-ternary
-    functions.length === 0 ? (
-      <Typography variant='body1' marginY={3}>
-        {t('toolbox.toolboxEmpty')}
-      </Typography>
-    ) : filteredFunctions.length === 0 ? (
-      <Typography variant='body1' marginY={3}>
-        {t('toolbox.noFunctionSearch')}
-      </Typography>
-    ) : (
-      <Stack direction='column' spacing={3}>
-        {filteredFunctions.map((fn) => (
-          <Card
-            key={fn.name}
-            id={toolboxFunctionAnchor(fn.name)}
-            className='anchor'
-            sx={{ overflow: 'visible' }}
-          >
-            <ToolboxFunctionCardContent fn={fn} />
-            <CardActions sx={{ justifyContent: 'center' }}>
-              <EditToolboxFunctionButton toolboxFunction={fn} />
-              <Button
-                onClick={() => askDeleteFunction(fn)}
-                color='error'
-                variant='contained'
-              >
-                {t('toolbox.deleteFunction')}
-              </Button>
-            </CardActions>
-          </Card>
-        ))}
-      </Stack>
-    )
+  return functions.length === 0 ? (
+    <Typography variant='body1' marginY={3}>
+      {t('toolbox.toolboxEmpty')}
+    </Typography>
+  ) : filteredFunctions.length === 0 ? (
+    <Typography variant='body1' marginY={3}>
+      {t('toolbox.noFunctionSearch')}
+    </Typography>
+  ) : (
+    <Stack direction='column' spacing={3}>
+      {filteredFunctions.map((fn) => (
+        <Card
+          key={fn.name}
+          id={toolboxFunctionAnchor(fn.name)}
+          className='anchor'
+          sx={{ overflow: 'visible' }}
+        >
+          <ToolboxFunctionCardContent fn={fn} />
+          <CardActions sx={{ justifyContent: 'center' }}>
+            <EditToolboxFunctionButton toolboxFunction={fn} />
+            <Button
+              onClick={() => askDeleteFunction(fn)}
+              color='error'
+              variant='contained'
+            >
+              {t('toolbox.deleteFunction')}
+            </Button>
+          </CardActions>
+        </Card>
+      ))}
+    </Stack>
   );
 }

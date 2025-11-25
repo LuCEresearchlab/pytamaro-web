@@ -72,7 +72,6 @@ function PythonCodeCard({
     <Card sx={{ height: '100%' }}>
       <PythonBadge
         badgeContent={
-          // eslint-disable-next-line @next/next/no-img-element
           <div>
             <img
               src='/icons/python-logo.svg'

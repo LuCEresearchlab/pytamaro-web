@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import Keyboard from '@mui/icons-material/Keyboard';
 import { Badge, Box, Card, CardContent, Tooltip } from '@mui/material';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';

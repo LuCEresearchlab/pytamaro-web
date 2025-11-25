@@ -91,8 +91,8 @@ export default function FunctionDiagram({
             docsMetadata.showOptional && param.variableLength;
           const dashed = param.default || variableLengthVisible;
           return (
-            // eslint-disable-next-line react/no-array-index-key
             <g
+              // eslint-disable-next-line react/no-array-index-key
               key={i}
               {...hoverProps(paramId(i), hoverElement, setHoverElement)}
             >

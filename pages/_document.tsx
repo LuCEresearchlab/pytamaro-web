@@ -23,6 +23,7 @@ export default function MyDocument(
         <meta name='theme-color' content={theme.palette.primary.main} />
         <link rel='shortcut icon' href='/favicon.ico' />
         <meta name='emotion-insertion-point' content='' />
+        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <DocumentHeadTags {...props} />
       </Head>
       <body

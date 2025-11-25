@@ -20,6 +20,7 @@ async function main() {
       // Check that there are no duplicate DoNow ids (after slugging)
       const uniqueDoNowIds = new Set(doNowIds);
       if (uniqueDoNowIds.size !== doNowIds.length) {
+        // eslint-disable-next-line no-console
         console.error(
           `Duplicate DoNow ids found in notebook ${notebookPath}: ${doNowIds}`,
         );

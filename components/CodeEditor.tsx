@@ -204,7 +204,6 @@ export default function CodeEditor({
         id: 'code-execution',
         label: 'Run Code Cell',
         keybindings: [
-          // eslint-disable-next-line no-bitwise
           monacoInstance.KeyMod.CtrlCmd | monacoInstance.KeyCode.Enter,
         ],
         precondition: RUN_CODE_CONDITION_KEY,
@@ -253,7 +252,7 @@ export default function CodeEditor({
           },
         ),
       );
-      // eslint-disable-next-line no-param-reassign
+
       monacoInstance._pytamaroCustomProvidersRegistered = true;
       return () => {
         disposers.forEach((disposer) => disposer?.dispose());

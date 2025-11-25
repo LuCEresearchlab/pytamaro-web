@@ -74,7 +74,6 @@ export function toolboxImportCompletionProvider(
 }
 
 const PYTAMARO_MODULES: Record<string, string> = {
-  // eslint-disable-next-line quote-props
   pytamaro: 'en',
   'pytamaro.it': 'it',
   'pytamaro.de': 'de',

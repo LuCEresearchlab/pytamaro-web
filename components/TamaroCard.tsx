@@ -78,6 +78,7 @@ export function Arrow({
       {Array.from({ length: multiple ? 3 : 1 }).map((_, i) => {
         return (
           <div
+            // eslint-disable-next-line react/no-array-index-key
             key={i}
             className='triangle_right'
             style={{
@@ -182,9 +183,11 @@ export function FunctionTamaroCard({
             <div
               className='hovergroup'
               data-hovergroup={`input_${v.name}`}
+              // eslint-disable-next-line react/no-array-index-key
               key={i}
             >
               <Arrow
+                // eslint-disable-next-line react/no-array-index-key
                 key={i}
                 parameter_index={i}
                 parameter_amount={needed_parameters.length}
@@ -208,6 +211,7 @@ export function FunctionTamaroCard({
               <div
                 className='hovergroup'
                 data-hovergroup={`input_${v.name}`}
+                // eslint-disable-next-line react/no-array-index-key
                 key={i}
               >
                 <Arrow
@@ -444,6 +448,7 @@ export function ProceduralHoverStyles({
 }) {
   return (
     <style
+      // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{
         __html: groups
           .map(

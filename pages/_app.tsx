@@ -30,6 +30,7 @@ function MyApp(props: AppProps) {
   const { Component, pageProps } = props;
   const queryClient = new QueryClient();
   return (
+    // eslint-disable-next-line react/jsx-props-no-spreading
     <AppCacheProvider {...props}>
       <Head>
         <title>PyTamaro</title>

@@ -1,4 +1,3 @@
-/* eslint-disable react/no-danger */
 /* eslint-disable @next/next/no-img-element */
 import { Typography } from '@mui/material';
 import { useState } from 'react';

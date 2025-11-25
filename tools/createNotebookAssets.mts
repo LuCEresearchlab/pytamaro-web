@@ -1,8 +1,8 @@
-import path from 'path';
 import fs, { existsSync } from 'fs';
-import { ACTIVITIES_DIR, DATA_DIR } from './utils.mjs';
-import { Activity } from '../src/schemas/activitySchema';
+import path from 'path';
 import { authorInfoPath } from '../src/fs-content/authors.js';
+import { Activity } from '../src/schemas/activitySchema';
+import { ACTIVITIES_DIR, DATA_DIR } from './utils.mjs';
 
 const INFO_FILE = 'info.json';
 
@@ -78,8 +78,8 @@ function main() {
         const infoFileContent = JSON.parse(fs.readFileSync(fileName, 'utf-8'));
         copyAssets(authorSlug, activitySlug, infoFileContent);
       } catch (error) {
-        console.log(error);
-        console.log('Error reading JSON file: ' + fileName);
+        // eslint-disable-next-line no-console
+        console.error('Error reading JSON file: ' + fileName, error);
       }
     });
   });

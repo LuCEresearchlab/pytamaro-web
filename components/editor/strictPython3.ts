@@ -1,6 +1,3 @@
-/* eslint-disable no-useless-escape */
-/* eslint-disable prefer-regex-literals */
-
 import { Monaco } from '@monaco-editor/react';
 import type { languages } from 'monaco-editor';
 

@@ -151,6 +151,7 @@ export default function ActivityInfoPage({
               </Typography>
               <Stack spacing={2}>
                 {uses.map((use, idx) => (
+                  // eslint-disable-next-line react/no-array-index-key
                   <Card key={idx}>
                     <CardContent>
                       <Typography

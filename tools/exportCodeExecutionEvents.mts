@@ -86,6 +86,7 @@ async function main() {
     }),
   );
 
+  // eslint-disable-next-line no-console
   console.log(
     `Exported files for ${events.length} events to the directory '${OUTPUT_DIR}'`,
   );

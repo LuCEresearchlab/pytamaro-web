@@ -9,7 +9,6 @@ function dependencies_extraction<T>(
   if ('error_phase' in value) return [];
   switch (value.kind) {
     case 'function_use':
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return (
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (value.children as any)

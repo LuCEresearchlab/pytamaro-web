@@ -8,11 +8,11 @@ import {
   TideNode,
   TideNodeMetadata,
 } from '../../components/tide/cards';
-import { getNode } from './utils';
 import { check_edge_looping, check_edge_typing } from './interactivity';
-import { StoreType } from './store';
-import { Definition } from './language/definitions';
 import { TideJudiciousMetadata } from './judiciours_to_tide';
+import { Definition } from './language/definitions';
+import { StoreType } from './store';
+import { getNode } from './utils';
 
 type AllStore = StoreType & {
   screenToFlowPosition: (
@@ -159,7 +159,6 @@ export function isValidConnection(
   );
 }
 
-// eslint-disable-next-line no-empty-pattern
 export function onDragOver({}: AllStore, event: React_DragEvent) {
   event.preventDefault();
   // eslint-disable-next-line no-param-reassign

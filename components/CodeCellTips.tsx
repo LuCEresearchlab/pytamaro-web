@@ -47,7 +47,6 @@ export function InputTip() {
         Using the <code>input</code> function is currently not supported on this
         platform.
       </AlertTitle>
-      {/* eslint-disable-next-line max-len */}
       This might be improved in the future. However, consider this general
       remark: mixing user interface aspects (input and output) with computations
       is not a good idea.

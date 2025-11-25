@@ -1,32 +1,32 @@
 import { Card, CardActions, CardContent, Input } from '@mui/material';
-import { useStore } from '../../src/tide/store';
 import { DragEvent, useEffect, useState } from 'react';
-import { TideLiteral } from './cards/literal';
-import { check_const_name } from './cards/constant_definition';
 import {
-  FunctionNode,
-  ConstantNode,
-  TamaroCardNode,
-  LiteralNode,
-} from './cards';
-import { LiteralType, SoundType } from '../../src/tide/language/typing';
+  JudiciousConstant,
+  JudiciousFunction,
+} from '../../src/schemas/documentation';
+import { TideJudiciousMetadata } from '../../src/tide/judiciours_to_tide';
 import {
   ImportedConstantDefinition,
   ImportedDefinition,
   ImportedFunctionDefinition,
 } from '../../src/tide/language/definitions';
-import { TideConstantUse } from './cards/constant_use';
-import { ConstantTamaroCard, FunctionTamaroCard } from '../TamaroCard';
-import { TideJudiciousMetadata } from '../../src/tide/judiciours_to_tide';
 import {
-  JudiciousConstant,
-  JudiciousFunction,
-} from '../../src/schemas/documentation';
-import {
-  INT_REGEX,
   FLOAT_REGEX,
+  INT_REGEX,
   STR_REGEX,
 } from '../../src/tide/language/phases/syntax';
+import { LiteralType, SoundType } from '../../src/tide/language/typing';
+import { useStore } from '../../src/tide/store';
+import { ConstantTamaroCard, FunctionTamaroCard } from '../TamaroCard';
+import {
+  ConstantNode,
+  FunctionNode,
+  LiteralNode,
+  TamaroCardNode,
+} from './cards';
+import { check_const_name } from './cards/constant_definition';
+import { TideConstantUse } from './cards/constant_use';
+import { TideLiteral } from './cards/literal';
 
 export function TidePalettePane({
   values,
@@ -224,7 +224,7 @@ export function TidePalettePane({
                 }
                 hide_handles
                 resetOnChange
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any, react/jsx-props-no-spreading
                 {...({} as any)}
               />
             </div>
