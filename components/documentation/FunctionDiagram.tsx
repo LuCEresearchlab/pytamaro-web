@@ -139,6 +139,7 @@ export default function FunctionDiagram({
                 transform='translate(0, -8)'
                 x='27%'
                 y={`${y}%`}
+                // @ts-expect-error 'text-top' is valid
                 dominantBaseline='text-top'
                 textAnchor='end'
                 fontFamily={theme.pytamaro.monospaceFontFamily}
@@ -178,6 +179,7 @@ export default function FunctionDiagram({
                 transform='translate(0, -8)'
                 x='73%'
                 y='50%'
+                // @ts-expect-error 'text-top' is valid
                 dominantBaseline='text-top'
                 textAnchor='start'
                 fontStyle='italic'

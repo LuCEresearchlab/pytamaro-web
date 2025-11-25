@@ -33,6 +33,4 @@ jobs:
       - name: Install dependecies
         run: npm install
       - name: Build
-        run: |
-          export NODE_OPTIONS="--max-old-space-size=4096"
-          npm run build
+        run: npm run build
