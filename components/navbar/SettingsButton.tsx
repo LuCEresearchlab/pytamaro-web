@@ -27,7 +27,7 @@ export default function SettingsButton() {
         </NavBarButton>
       </PopoverTrigger>
       <PopoverContent>
-        <Paper sx={{ padding: 2 }}>
+        <Paper sx={{ padding: 2, minWidth: 300 }}>
           <Stack spacing={4}>
             <PlatformLanguageControl />
             <Box>
