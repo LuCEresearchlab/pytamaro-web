@@ -16,11 +16,11 @@ export interface Metadata {
   platformLocale: string | null; // null means not explicitly chosen
   docs: DocsMetadata;
   lastNotificationSeen: number;
-  liveChecks: LiveChecksStatus;
+  liveAnalysis: LiveAnalysisStatus;
   wideEditor: boolean;
 }
 
-export enum LiveChecksStatus {
+export enum LiveAnalysisStatus {
   None = 'none',
   Syntax = 'syntax',
   SyntaxSemantics = 'syntax-semantics',
@@ -118,7 +118,7 @@ export function getDefaultMetadata(): Metadata {
     platformLocale: null,
     docs: defaultDocsMetadata(),
     lastNotificationSeen: changelogEntries.length - 1,
-    liveChecks: LiveChecksStatus.Syntax,
+    liveAnalysis: LiveAnalysisStatus.Syntax,
     wideEditor: false,
   };
 }

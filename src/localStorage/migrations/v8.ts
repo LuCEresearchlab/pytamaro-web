@@ -2,7 +2,7 @@ import {
   ActivityVariantMetadata,
   CurriculumMetadata,
   DocsMetadata,
-  LiveChecksStatus,
+  LiveAnalysisStatus,
   Metadata,
   ToolboxFunction,
 } from '../schema';
@@ -24,7 +24,7 @@ export default function migrateToV8(metadata: MetadataV7): Metadata {
   const newMetadata: Metadata = {
     ...metadata,
     dataModelVersion: '8',
-    liveChecks: LiveChecksStatus.Syntax,
+    liveAnalysis: LiveAnalysisStatus.Syntax,
     wideEditor: false,
   };
   return newMetadata;

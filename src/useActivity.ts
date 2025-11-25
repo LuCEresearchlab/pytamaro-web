@@ -279,7 +279,7 @@ export function useActivity(
       toolboxFunctions,
       activityVariant,
       extraPythonFiles,
-      liveChecks: metadata.liveChecks,
+      liveAnalysis: metadata.liveAnalysis,
     });
     setExecutionFailed(undefined);
     // (Re-)Execute all cells from the first one to the current one, included.

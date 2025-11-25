@@ -14,7 +14,7 @@ export default async function handler(
     activityVariant,
     toolboxFunctions,
     extraPythonFiles,
-    liveChecks,
+    liveAnalysis,
   } = req.body;
   const image = process.env.GLOT_IMAGE_TAG;
   if (image === undefined) {
@@ -31,7 +31,7 @@ export default async function handler(
     requestedCellSequenceNumber,
     toolboxFunctions,
     extraPythonFiles,
-    liveChecks,
+    liveAnalysis,
   );
   res.status(saved ? 200 : 500).send({});
 }

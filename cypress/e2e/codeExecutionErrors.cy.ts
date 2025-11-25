@@ -48,7 +48,7 @@ describe('Code Execution Errors', () => {
     cy.get('.squiggly-error').should('be.visible');
   });
 
-  it('should show a name error when semantic checks are enabled', () => {
+  it('should show a name error when semantic analysis is enabled', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();
@@ -73,7 +73,7 @@ describe('Code Execution Errors', () => {
       });
   });
 
-  it('should show a type error when semantic checks are enabled', () => {
+  it('should show a type error when semantic analysis is enabled', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();

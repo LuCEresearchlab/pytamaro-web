@@ -3,7 +3,7 @@ import { debounce, DebouncedFunc, throttle } from 'lodash';
 import { editor, type editor as EditorNamespace } from 'monaco-editor';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ExecutionResponse } from '../src/codeExecution';
-import { LiveChecksStatus } from '../src/localStorage/schema';
+import { LiveAnalysisStatus } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
@@ -64,7 +64,7 @@ export default function CodeEditor({
 }) {
   const { list } = useLocalToolbox();
   const { metadata } = useLocalProfile();
-  const { liveChecks } = metadata;
+  const { liveAnalysis } = metadata;
 
   const monacoRef = useRef<MonacoForPyTamaro | null>(null);
   const editorRef = useRef<EditorNamespace.IStandaloneCodeEditor | null>(null);
@@ -396,7 +396,7 @@ export default function CodeEditor({
     const diagnostics = pythonAnalyzer.customDiagnostics(
       monacoInstance,
       cellIdx,
-      liveChecks,
+      liveAnalysis,
     );
     const diagnosticsCurrentCell = diagnostics.filter(
       (diag) => diag.range.startLineNumber >= firstLineNumber,
@@ -425,7 +425,7 @@ export default function CodeEditor({
     monacoInstance,
     pythonAnalyzer,
     cellIdx,
-    liveChecks,
+    liveAnalysis,
     firstLineNumber,
   ]);
 
@@ -440,14 +440,14 @@ export default function CodeEditor({
     [cellIdx, pythonAnalyzer, addDiagnosticsFromAnalyzer],
   );
 
-  // Effect to react to change in preferences for live checks.
+  // Effect to react to change in preferences for live analysis.
   // Trigger re-analysis of the current source.
   useEffect(() => {
     if (editorInstance) {
       clearAnnotations();
       analyzeSource(editorInstance.getValue());
     }
-  }, [liveChecks, editorInstance, analyzeSource, clearAnnotations]);
+  }, [liveAnalysis, editorInstance, analyzeSource, clearAnnotations]);
 
   const handleSourceChanged = (newSource: string | undefined) => {
     if (newSource !== undefined) {
@@ -457,10 +457,10 @@ export default function CodeEditor({
     }
   };
 
-  // Use an inexistent language if live checks are completely disabled.
+  // Use an inexistent language if live analysis is completely disabled.
   // This way, Monaco doesn't use even the basic tokenizer for coloring Python.
   const language =
-    liveChecks === LiveChecksStatus.None
+    liveAnalysis === LiveAnalysisStatus.None
       ? 'python-none'
       : STRICT_PYTHON3_LANG_ID;
 
@@ -488,7 +488,7 @@ export default function CodeEditor({
           },
           readOnly,
           'semanticHighlighting.enabled':
-            liveChecks === LiveChecksStatus.SyntaxSemantics,
+            liveAnalysis === LiveAnalysisStatus.SyntaxSemantics,
         }}
       />
     </div>

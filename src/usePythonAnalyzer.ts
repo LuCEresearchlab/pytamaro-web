@@ -12,7 +12,7 @@ import {
   staticErrorMessageCategory,
 } from '../components/editor/errors';
 import { CURRENT_CELL_FILE, toolboxFiles } from './codeExecution';
-import { LiveChecksStatus, ToolboxFunction } from './localStorage/schema';
+import { LiveAnalysisStatus, ToolboxFunction } from './localStorage/schema';
 import useLocalToolbox from './localStorage/useLocalToolbox';
 import {
   FileHandle,
@@ -163,12 +163,12 @@ export class PythonAnalyzer {
   customDiagnostics(
     monacoInstance: Monaco,
     cellIdx: number,
-    liveChecks: LiveChecksStatus,
+    liveAnalysis: LiveAnalysisStatus,
   ): CustomDiagnostic[] {
     const currentCellFileHandle = this.getCurrentCellFileHandle(cellIdx);
     if (
       currentCellFileHandle === undefined ||
-      liveChecks === LiveChecksStatus.None
+      liveAnalysis === LiveAnalysisStatus.None
     ) {
       this.diagnosticsCounts[cellIdx] = 0;
       return [];
@@ -206,7 +206,7 @@ export class PythonAnalyzer {
     const visibleDecorations = decorations.filter(
       (diag) =>
         diag.category === ErrorCategory.SyntaxError ||
-        liveChecks === LiveChecksStatus.SyntaxSemantics,
+        liveAnalysis === LiveAnalysisStatus.SyntaxSemantics,
     );
     // Update counts for all cells
     const previousCountThisCell = this.diagnosticsCounts[cellIdx] || 0;

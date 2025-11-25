@@ -15,7 +15,7 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
-import { LiveChecksStatus } from '../../src/localStorage/schema';
+import { LiveAnalysisStatus } from '../../src/localStorage/schema';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import theme from '../../src/theme';
@@ -27,7 +27,7 @@ import PlatformLanguageControl from './PlatformLanguageControl';
 export default function SettingsButton() {
   const { t } = useLocalTranslation();
   const { metadata, setMetadata } = useLocalProfile();
-  const { liveChecks, wideEditor } = metadata;
+  const { liveAnalysis, wideEditor } = metadata;
 
   return (
     <Popover placement='bottom'>
@@ -69,33 +69,33 @@ export default function SettingsButton() {
             </Box>
             <Box>
               <Typography sx={{ ...theme.typography.button }} gutterBottom>
-                {t('editorLiveStaticChecks')}
+                {t('editorLiveStaticAnalysis')}
               </Typography>
               <Stack spacing={2}>
                 <ToggleButtonGroup
                   color='primary'
-                  value={liveChecks}
+                  value={liveAnalysis}
                   exclusive
                   onChange={(_, newValue) => {
                     if (newValue !== null) {
                       setMetadata((prevMetadata) => ({
                         ...prevMetadata,
-                        liveChecks: newValue,
+                        liveAnalysis: newValue,
                       }));
                     }
                   }}
                   size='small'
                   fullWidth
                 >
-                  <ToggleButton value={LiveChecksStatus.None}>
-                    <ReportOff sx={{ mr: 1 }} /> {t('noneChecks')}
+                  <ToggleButton value={LiveAnalysisStatus.None}>
+                    <ReportOff sx={{ mr: 1 }} /> {t('noneAnalysis')}
                   </ToggleButton>
-                  <ToggleButton value={LiveChecksStatus.Syntax}>
-                    <Report sx={{ mr: 1 }} /> {t('syntaxChecks')}
+                  <ToggleButton value={LiveAnalysisStatus.Syntax}>
+                    <Report sx={{ mr: 1 }} /> {t('syntaxAnalysis')}
                   </ToggleButton>
-                  <ToggleButton value={LiveChecksStatus.SyntaxSemantics}>
+                  <ToggleButton value={LiveAnalysisStatus.SyntaxSemantics}>
                     <PlaylistAddCheck sx={{ mr: 1 }} />{' '}
-                    {t('syntaxSemanticsChecks')}
+                    {t('syntaxSemanticsAnalysis')}
                   </ToggleButton>
                 </ToggleButtonGroup>
               </Stack>
@@ -109,7 +109,7 @@ export default function SettingsButton() {
                   })}
                   target='_blank'
                 >
-                  {t('learnMoreChecks')}
+                  {t('learnMoreAnalysis')}
                 </Link>
               </Typography>
             </Box>
