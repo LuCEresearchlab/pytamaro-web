@@ -138,7 +138,11 @@ export function addErrorAnnotationsFromExecution(
       runtimeErrorMessageCategory(message),
       t,
       () => {
-        decorationsCollection.clear();
+        // On close, *simulate a model change* so that
+        // (1) runtime annotations (decorations + widget) are removed
+        // (2) static analysis is re-run, possibly adding diagnostics
+        // (3) the execution response is marked as not synced and becomes grayed out
+        editor.setValue(editor.getValue());
       },
     );
     return {
