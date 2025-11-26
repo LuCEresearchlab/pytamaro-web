@@ -3,7 +3,6 @@ import { debounce, uniqBy } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import {
   Dispatch,
-  RefObject,
   SetStateAction,
   useCallback,
   useContext,
@@ -219,7 +218,7 @@ export function useActivity(
   };
 
   const newPartialExecutionResult =
-    (idx: number) => (executionResponse: ExecutionResponse | undefined) => {
+    (idx: number, executionResponse: ExecutionResponse | undefined) => {
       setCodeExecutionStates((currentCodeExecutionStates) =>
         produce(currentCodeExecutionStates, (draft) => {
           if (executionResponse && !isExecutionFailed(executionResponse)) {
@@ -232,29 +231,9 @@ export function useActivity(
       );
     };
 
-  const handleExecuteSingleCell = async (
-    sources: string[],
-    toolboxFunctions: ToolboxFunction[],
-    outputAreaRef: RefObject<OutputAreaRef | null>,
-    idx: number,
-  ) => {
-    executionStarted(idx);
-    const response = await execute(
-      sources,
-      idx,
-      toolboxFunctions,
-      extraPythonFiles,
-      newPartialExecutionResult(idx),
-      outputAreaRef,
-    );
-    executionFinished(idx, response);
-    postExecuteSingleCell(idx, response);
-    return response;
-  };
-
   const handleExecute = async (
     idx: number,
-    outputAreaRef: RefObject<OutputAreaRef | null>,
+    getOutputRef: (execIdx: number) => OutputAreaRef | null,
   ) => {
     const extraToolboxFn = getExtraToolboxFunction();
 
@@ -297,17 +276,34 @@ export function useActivity(
         }
       }),
     );
-    const responses = [];
-    for (let i = 0; i <= idx; i += 1) {
-      responses.push(
-        handleExecuteSingleCell(sources, toolboxFunctions, outputAreaRef, i),
-      );
+
+    let activeCodeCell: number = idx;
+    const onActiveCellChange = (
+      previouslyActive: number | null,
+      nowActive: number,
+    ) => {
+      if (previouslyActive !== null) {
+        executionFinished(previouslyActive, undefined);
+      }
+      activeCodeCell = nowActive;
+      executionStarted(nowActive);
     }
-    const failedResponses = (await Promise.all(responses)).filter(
-      isExecutionFailed,
+
+    const response = await execute(
+      sources,
+      idx,
+      toolboxFunctions,
+      extraPythonFiles,
+      newPartialExecutionResult,
+      onActiveCellChange,
+      getOutputRef,
     );
-    if (failedResponses.length > 0) {
-      setExecutionFailed(failedResponses[0]);
+
+    executionFinished(activeCodeCell, response);
+    postExecuteSingleCell(activeCodeCell, response);
+
+    if (isExecutionFailed(response)) {
+      setExecutionFailed(response);
     }
   };
 

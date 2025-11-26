@@ -52,11 +52,10 @@ export function isExecutionFailed(
  * Update this version at every change to the process below
  * that turns cells into files for execution.
  */
-export const CODE_EXECUTION_CELLS_TO_FILES_VERSION = 8;
+export const CODE_EXECUTION_CELLS_TO_FILES_VERSION = 9;
 
 export const DRIVER_FILE = 'driver';
-export const PREVIOUS_CELLS_FILE = 'previous_cells';
-export const CURRENT_CELL_FILE = 'cell';
+export const CELL_FILE = 'cell_';
 export const TOOLBOX_FILE = 'toolbox';
 
 export interface BareboneToolboxFunction {
@@ -64,14 +63,13 @@ export interface BareboneToolboxFunction {
   source: string;
 }
 
-// The source of the previous cells is embedded within a context manager that
-// redirects stdout and stderr to None, so that the only the stdout/stderr of
-// the current cell is considered.
-const DRIVER_SOURCE = `
+function driverSource(num_cells: number) {
+  return `
 from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
 from os import chdir, getcwd, path
 from shutil import rmtree
+from pytamaro_js_ffi import set_active_cell
 
 try:
   globals_dict = {}
@@ -80,14 +78,15 @@ try:
       code = compile(Path(filename).read_text(), filename, "exec")
       exec(code, globals_dict)
 
-  with redirect_stdout(None), redirect_stderr(None):
-      run("${PREVIOUS_CELLS_FILE}")
-  run("${CURRENT_CELL_FILE}")
+  for idx in range(0, ${num_cells}):
+    set_active_cell(idx)
+    run(f"${CELL_FILE}{idx}")
 finally:
   cwd = Path(getcwd())
   chdir(cwd.parent.absolute())
   rmtree(cwd.absolute())
 `;
+}
 
 function toolboxSingleModuleName(fn: BareboneToolboxFunction) {
   return `${TOOLBOX_FILE}_${fn.name}`;
@@ -157,28 +156,23 @@ export function cellsToFiles(
   toolboxFunctions: BareboneToolboxFunction[],
   extraPythonFiles: PythonFile[],
 ): RunPythonFile[] {
-  // Get the concatenated source of all the previous cells.
-  const previousCellsSource = joinLines(sources.slice(0, idx));
-  // Get the source of the current cell, padded before with empty lines
-  // to account for the previous cells.
-  let currentCellSource = sources[idx];
-  if (idx > 0) {
-    currentCellSource =
-      emptyLines(countLines(previousCellsSource)) + currentCellSource;
-  }
+  let linesSoFar = 0;
+  const sourceRunFiles = sources.map((content, i) => {
+    const runFile = {
+      name: `${CELL_FILE}${i}.py`,
+      // Pad with empty lines to account for the previous cells so that the
+      // stack trace still reports the correct line number
+      content: emptyLines(linesSoFar) + content,
+    };
+    linesSoFar += countLines(content);
+    return runFile;
+  });
   const files = [
     {
       name: `${DRIVER_FILE}.py`,
-      content: DRIVER_SOURCE,
+      content: driverSource(idx + 1),
     },
-    {
-      name: `${PREVIOUS_CELLS_FILE}.py`,
-      content: previousCellsSource,
-    },
-    {
-      name: `${CURRENT_CELL_FILE}.py`,
-      content: currentCellSource,
-    },
+    ...sourceRunFiles,
     ...toolboxFiles(toolboxFunctions),
     ...extraPythonFiles,
   ];

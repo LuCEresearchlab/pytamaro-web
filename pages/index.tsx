@@ -240,7 +240,7 @@ function PythonCodeCard() {
           completed: true,
           type: 'success',
         }}
-        outputAreaRef={useRef(null)}
+        setOutputAreaRef={() => {}}
         sx={{
           border: 0,
           height: '100%',

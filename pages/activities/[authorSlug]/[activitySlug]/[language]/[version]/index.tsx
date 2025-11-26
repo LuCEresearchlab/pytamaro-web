@@ -56,6 +56,7 @@ import useCurriculumFromQuery from '../../../../../../src/useCurriculumFromQuery
 import useIsMounted from '../../../../../../src/useIsMounted';
 import usePythonAnalyzer from '../../../../../../src/usePythonAnalyzer';
 import useReset from '../../../../../../src/useReset';
+import { OutputAreaRef } from '../../../../../../components/input_output/OutputArea';
 
 const userType = 'student';
 
@@ -92,6 +93,23 @@ function NotebookCells({
   }, [pythonAnalyzer, activity.extraPythonFiles]);
   useMonacoColorizer();
 
+  const outputAreaRefs = useRef<Map<number, OutputAreaRef | null> | null>(null);
+  const getOutputAreaRefs = () => {
+    if (outputAreaRefs.current === null) {
+      outputAreaRefs.current = new Map();
+    }
+    return outputAreaRefs.current;
+  };
+  const setOutputAreaRef = (idx: number, node: OutputAreaRef | null | undefined) => {
+    const map = getOutputAreaRefs();
+    if (node !== undefined) {
+      map.set(idx, node);
+    } else {
+      map.delete(idx);
+    }
+  };
+  const getOutputAreaRef = (idx: number) => getOutputAreaRefs().get(idx)!;
+
   return (
     <Box ref={cellsRef} className='activity-content'>
       {cells.map((cell, idx) =>
@@ -113,6 +131,8 @@ function NotebookCells({
               platformConfig={activity.platformConfig}
               activityResetCounter={resetCounter}
               pythonAnalyzer={pythonAnalyzer}
+              setOutputAreaRef={setOutputAreaRef}
+              getActivityOutputAreaRef={getOutputAreaRef}
               runEnabled={runEnabled}
             />
           </Container>

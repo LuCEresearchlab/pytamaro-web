@@ -2,7 +2,6 @@ import PQueue from 'p-queue';
 import {
   createContext,
   ReactNode,
-  RefObject,
   useEffect,
   useState,
 } from 'react';
@@ -40,7 +39,11 @@ let sharedResultLengthBuffer: SharedArrayBuffer | null = null;
 let resultLengthBuffer: Int32Array | null = null;
 let interruptBuffer: Uint8Array | null = null;
 
-let outputAreaGlobalRef: RefObject<OutputAreaRef | null> | null = null;
+let activeCodeCell: number | null = null;
+let getOutputAreaRef: (idx: number) => OutputAreaRef | null = () => null;
+const getActiveOutputAreaRef = () => activeCodeCell == null
+  ? null
+  : getOutputAreaRef(activeCodeCell);
 
 const pendingResults = new Map<string, ClientResult>();
 
@@ -98,16 +101,23 @@ function notifyWorkerResultReady(
 
 function sendExecutionRequestToWorkerAndWaitForResponse(
   files: RunPythonFile[],
-  updateExecutionResult: (response: ExecutionResponse) => void,
+  updateExecutionResult: (idx: number, response: ExecutionResponse) => void,
+  onActiveCellChange: (before: number | null, after: number) => void = () => {},
 ): Promise<ExecutionResponse> {
   return new Promise<ExecutionResponse>((resolve) => {
     const resultListener = (event: MessageEvent<WorkerMessage>) => {
-      if (event.data?.type === Message.PARTIAL_RESULT) {
-        updateExecutionResult(event.data.result);
+      if (event.data?.type === Message.PARTIAL_RESULT && activeCodeCell !== null) {
+        updateExecutionResult(activeCodeCell, event.data.result);
       }
       if (event.data?.type === Message.RESULT) {
         pyodideWorker?.removeEventListener('message', resultListener);
         resolve(event.data.result);
+      }
+      if (event.data?.type === Message.SET_ACTIVE_CELL) {
+        const oldIdx = activeCodeCell;
+        const newIdx = event.data.idx;
+        activeCodeCell = newIdx;
+        onActiveCellChange(oldIdx, newIdx);
       }
     };
     pyodideWorker?.addEventListener('message', resultListener);
@@ -172,7 +182,7 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
       break;
     case Message.INPUT:
       {
-        const outputArea = outputAreaGlobalRef?.current;
+        const outputArea = getActiveOutputAreaRef();
         outputArea?.activateInputField();
         outputArea?.getInput().then((value: string) => {
           const encoded = new Uint8Array(Buffer.from(value));
@@ -250,8 +260,9 @@ export async function execute(
   idx: number,
   toolboxFunctions: ToolboxFunction[],
   extraPythonFiles: PythonFile[],
-  updateExecutionResult: (response: ExecutionResponse) => void = () => {},
-  outputAreaRef: RefObject<OutputAreaRef | null> | undefined = undefined,
+  updateExecutionResult: (idx: number, response: ExecutionResponse) => void = () => {},
+  onActiveCellChange: (before: number | null, after: number) => void = () => {},
+  getOutputRef: (idx: number) => OutputAreaRef | null = () => null,
 ): Promise<ExecutionResponse> {
   const files = cellsToFiles(
     sources,
@@ -260,19 +271,18 @@ export async function execute(
     extraPythonFiles,
   );
   return (await executionQueue!.add(() => {
-    if (outputAreaRef) {
-      outputAreaGlobalRef = outputAreaRef;
-    }
+    getOutputAreaRef = getOutputRef;
     return sendExecutionRequestToWorkerAndWaitForResponse(
       files,
       updateExecutionResult,
+      onActiveCellChange,
     );
   })) as ExecutionResponse;
 }
 
-export function restart(): Promise<void> {
+export function restartWorker(): Promise<void> {
   return new Promise((resolve) => {
-    outputAreaGlobalRef?.current?.deactivatePossibleInputField();
+    getActiveOutputAreaRef()?.deactivatePossibleInputField();
     pendingResults.clear();
     pyodideWorker?.terminate();
     initPyodide(ffiImpl!).then(resolve);
@@ -281,7 +291,7 @@ export function restart(): Promise<void> {
 
 export function interruptExecution() {
   interruptBuffer![0] = 2; // 2 for SIGINT
-  outputAreaGlobalRef?.current?.deactivatePossibleInputField();
+  getActiveOutputAreaRef()?.deactivatePossibleInputField();
 }
 
 interface PyodideWorkerClientInterface {
@@ -291,8 +301,9 @@ interface PyodideWorkerClientInterface {
     idx: number,
     toolboxFunctions: ToolboxFunction[],
     extraPythonFiles: PythonFile[],
-    updateExecutionResult?: (response: ExecutionResponse) => void,
-    outputAreaRef?: RefObject<OutputAreaRef | null>,
+    updateExecutionResult?: (idx: number, response: ExecutionResponse) => void,
+    onActiveCellChange?: (before: number | null, after: number) => void,
+    getOutputRef?: (idx: number) => OutputAreaRef | null,
   ) => Promise<ExecutionResponse>;
   interruptExecution: () => void;
   restart: () => Promise<void>;
@@ -303,7 +314,7 @@ export const PyodideWorkerClientContext =
     isReady: false,
     execute,
     interruptExecution,
-    restart,
+    restart: restartWorker,
   });
 
 export function PyodideWorkerClientProvider({
@@ -312,6 +323,12 @@ export function PyodideWorkerClientProvider({
   children: ReactNode;
 }) {
   const [isReady, setReady] = useState(false);
+
+  const restart = async () => {
+    setReady(false);
+    await restartWorker();
+    setReady(true);
+  };
 
   useEffect(() => {
     if (typeof SharedArrayBuffer !== 'undefined') {
@@ -327,11 +344,7 @@ export function PyodideWorkerClientProvider({
         isReady,
         execute,
         interruptExecution,
-        restart: async () => {
-          setReady(false);
-          await restart();
-          setReady(true);
-        },
+        restart,
       }}
     >
       {children}

@@ -56,7 +56,7 @@ function nicerTraceback(traceback: string) {
 }
 
 function lineNumOfErrorThisCell(traceback: string[]) {
-  const regex = / {2}File "cell.py", line (\d+)/;
+  const regex = / {2}File "cell_\d+.py", line (\d+)/;
   const idxTracebackLine = traceback.findLastIndex((line) => regex.test(line));
   return idxTracebackLine !== -1
     ? {

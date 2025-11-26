@@ -12,7 +12,7 @@ import {
   ErrorCategory,
   staticErrorMessageCategory,
 } from '../components/editor/errors';
-import { CURRENT_CELL_FILE, toolboxFiles } from './codeExecution';
+import { CELL_FILE, toolboxFiles } from './codeExecution';
 import { LiveAnalysisStatus, ToolboxFunction } from './localStorage/schema';
 import useLocalToolbox from './localStorage/useLocalToolbox';
 import {
@@ -66,7 +66,7 @@ export class PythonAnalyzer {
   }
 
   currentCellFileName(cellIdx: number): string {
-    return `${CURRENT_CELL_FILE}_${cellIdx}.py`;
+    return `${CELL_FILE}${cellIdx}.py`;
   }
 
   getCurrentCellFileHandle(cellIdx: number): FileHandle | undefined {
