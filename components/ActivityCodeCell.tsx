@@ -1,6 +1,6 @@
 import { Alert, AlertTitle, Box, Typography } from '@mui/material';
 import { sum } from 'lodash';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import {
@@ -51,7 +51,9 @@ export default function ActivityCodeCell({
   platformConfig,
   activityResetCounter,
   pythonAnalyzer,
-  runEnabled = true,
+  runEnabled,
+  setOutputAreaRef,
+  getActivityOutputAreaRef,
 }: {
   activityVariant: ActivityVariant;
   initialCodeCells: CodeCellState[];
@@ -60,7 +62,9 @@ export default function ActivityCodeCell({
   platformConfig: PlatformConfiguration;
   activityResetCounter: number;
   pythonAnalyzer: PythonAnalyzer | null;
-  runEnabled?: boolean;
+  runEnabled: boolean;
+  setOutputAreaRef: (idx: number, node: OutputAreaRef | null | undefined) => void,
+  getActivityOutputAreaRef: (execIdx: number) => OutputAreaRef | null,
 }) {
   const {
     codeCells,
@@ -73,7 +77,6 @@ export default function ActivityCodeCell({
     handleRestartPyodide,
     localCodeCellsWrongLength,
   } = useLocalActivity(initialCodeCells, activityVariant, extraPythonFiles);
-  const outputAreaRef = useRef<OutputAreaRef | null>(null);
 
   const { resetCounter, newReset } = useReset();
   useEffect(() => {
@@ -96,7 +99,7 @@ export default function ActivityCodeCell({
         currentSource={currentCodeCell.source}
         codeCellExecutionState={codeExecutionStates[cellIdx]}
         onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
-        onExecutionRequested={() => handleExecute(cellIdx, outputAreaRef)}
+        onExecutionRequested={() => handleExecute(cellIdx, getActivityOutputAreaRef)}
         firstLineNumber={1 + precedingLines}
         activityVariant={activityVariant}
         platformConfig={platformConfig}
@@ -105,7 +108,7 @@ export default function ActivityCodeCell({
         pythonAnalyzer={pythonAnalyzer}
         cellIdx={cellIdx}
         runEnabled={runEnabled}
-        outputAreaRef={outputAreaRef}
+        setOutputAreaRef={setOutputAreaRef}
         extraActions={
           <>
             <SaveToToolboxButton
@@ -118,7 +121,7 @@ export default function ActivityCodeCell({
               codeCellExecutionState={codeExecutionStates[cellIdx]}
               onShowHideOutput={() => handleToggleOutputArea(cellIdx)}
               onReset={() => handleResetSingleCell(cellIdx, newReset)}
-              onRestart={() => handleRestartPyodide()}
+              onRestart={handleRestartPyodide}
             />
           </>
         }

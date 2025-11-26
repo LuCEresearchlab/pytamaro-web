@@ -10,6 +10,7 @@ export enum Message {
   SIZE = 'size',
   INPUT = 'input',
   PARTIAL_RESULT = 'partial_result',
+  SET_ACTIVE_CELL = 'set_active_cell',
 }
 
 // Types for messages sent by the client (to the worker).
@@ -33,7 +34,8 @@ export type InitMessage = {
 export type WorkerMessage =
   | ReadyMessage
   | ResultMessage
-  | MainThreadExecutionMessage;
+  | MainThreadExecutionMessage
+  | SetActiveCellMessage;
 export type ReadyMessage = { type: Message.READY };
 export type ResultMessage = {
   type: Message.RESULT | Message.PARTIAL_RESULT;
@@ -43,6 +45,10 @@ export type MainThreadExecutionMessage = { uuid: string } & (
   | ExecutionRequestMessage
   | ExecutionResultRequestMessage
 );
+export type SetActiveCellMessage = {
+  type: Message.SET_ACTIVE_CELL;
+  idx: number;
+};
 export type ExecutionRequestMessage =
   | ({ type: Message.DRAW } & DrawRequestData)
   | ({ type: Message.SIZE } & SizeRequestData)

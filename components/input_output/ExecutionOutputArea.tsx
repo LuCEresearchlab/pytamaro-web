@@ -11,7 +11,7 @@ import {
   Stack,
   ToggleButton,
 } from '@mui/material';
-import { CSSProperties, RefObject, useState } from 'react';
+import { CSSProperties, useState } from 'react';
 import { NominalExecutionResponse } from '../../src/codeExecution';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import {
@@ -122,13 +122,13 @@ function PreviousCellsErrorAlert({
 export default function ExecutionOutputArea({
   executionError,
   executionResponse,
-  outputAreaRef,
+  setOutputAreaRef,
   dimmed = false,
   sx = {},
 }: {
   executionError: boolean;
   executionResponse: NominalExecutionResponse;
-  outputAreaRef: RefObject<OutputAreaRef | null>;
+  setOutputAreaRef: (node: OutputAreaRef | null | undefined) => void;
   dimmed?: boolean;
   sx?: CSSProperties;
 }) {
@@ -157,7 +157,10 @@ export default function ExecutionOutputArea({
               paddingX={3}
               paddingY={1}
             >
-              <OutputArea data={stdout} disabled={dimmed} ref={outputAreaRef} />
+              <OutputArea
+                data={stdout}
+                disabled={dimmed}
+                ref={setOutputAreaRef} />
             </Box>
           )}
           {stderr && (

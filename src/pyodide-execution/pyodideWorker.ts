@@ -20,8 +20,153 @@ let syncBuffer: Int32Array;
 let resultLengthBuffer: Int32Array;
 let pyodide: PyodideAPI;
 
+let activeCellChangeListener: ((idx: number) => void) | null = null;
+
 const decoder = new TextDecoder();
 const remainingPyProxies: PyProxy[] = [];
+
+interface ReadOnlyExecutionOutput {
+  getStdout(): string,
+  getStderr(): string,
+};
+
+class ExecutionOutput implements ReadOnlyExecutionOutput {
+  private stdout: string;
+  private stderr: string;
+  private readonly decoder: TextDecoder;
+
+  constructor() {
+    this.stdout = '';
+    this.stderr = '';
+    this.decoder = new TextDecoder('utf-8');
+  }
+
+  writeStdout(content: Uint8Array | string): number {
+    this.stdout += typeof content === 'string'
+      ? content
+      : this.decoder.decode(content);
+    return content.length;
+  }
+
+  writeStderr(content: Uint8Array | string): number {
+    this.stderr += typeof content === 'string'
+      ? content
+      : this.decoder.decode(content);
+    return content.length;
+  }
+
+  clear() {
+    this.stdout = '';
+    this.stderr = '';
+  }
+
+  getStdout(): string {
+    return this.stdout;
+  }
+
+  getStderr(): string {
+    return this.stderr;
+  }
+}
+
+/**
+ * @returns An instance of {@link ReadOnlyExecutionOutput} to be used to
+ * get the output of the current active cell.
+ */
+function setupIO(pyodide: PyodideAPI): ReadOnlyExecutionOutput {
+  const out = new ExecutionOutput();
+
+  const sendPartialResult = () => {
+    self.postMessage({
+      type: Message.PARTIAL_RESULT,
+      result: {
+        type: 'success',
+        completed: false,
+        stdout: out.getStdout(),
+        stderr: out.getStderr(),
+      },
+    });
+  };
+
+  activeCellChangeListener = () => {
+    sendPartialResult();
+    out.clear();
+  };
+
+  pyodide.setStdin({
+    stdin: () => {
+      // Send partial result before blocking for input
+      // (this signals that the output is up to date for the current execution,
+      // even if there was no output before the input request)
+      sendPartialResult();
+      const input = ffiInput();
+      // Add back to stdout (including the <enter>) so that the user can see what they typed
+      out.writeStdout(INPUT_BEGIN + input + INPUT_END + '\n');
+      sendPartialResult();
+      return input;
+    },
+  });
+
+  pyodide.setStdout({
+    write: (buf) => {
+      const written = out.writeStdout(buf);
+      sendPartialResult();
+      return written;
+    }
+  });
+  pyodide.setStderr({
+    write: (buf) => {
+      const written = out.writeStderr(buf);
+      sendPartialResult();
+      return written;
+    }
+  });
+
+  return out;
+}
+
+/**
+ * @returns The "entry point code" to run.
+ */
+function setupFS(pyodide: PyodideAPI, files: RunPythonFile[]): string {
+  const fs = pyodide.FS;
+  const basePath = '/run/py';
+
+  fs.mkdirTree(basePath);
+
+  let driverFile: RunPythonFile | null = null;
+  for (const file of files) {
+    if (file.name === 'driver.py') {
+      driverFile = file;
+    } else {
+      fs.writeFile(`${basePath}/${file.name}`, file.content);
+    }
+  }
+
+  // CPython caches the modules that it loads, so we need to forcefully unload
+  // all files that we have just written to ensure that the execution always
+  // uses the proper up-to-date code.
+  const modulesToClear = files
+    .map((file) => file.name)
+    .filter((name) => name.endsWith('.py'))
+    .map((name) => name.replaceAll('/', '.').replace(/\.py$/, ''));
+
+  return joinLines([
+    // Clear cached modules
+    'import sys',
+    ...modulesToClear.flatMap((module) => [
+      `if '${module}' in sys.modules:`,
+      `  del sys.modules['${module}']`,
+    ]),
+    // Set max recursion depth
+    'sys.setrecursionlimit(2000)',
+    // Set CWD to $basePath
+    'import os',
+    `os.chdir('${basePath}')`,
+    // Run code
+    driverFile?.content || '',
+  ]);
+}
 
 function decodeSharedBuffer(sharedBuffer: SharedArrayBuffer): string {
   const len = sharedBuffer.byteLength;
@@ -86,87 +231,19 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
     throw new Error('Pyodide not loaded');
   }
 
-  // Setup outputs
-  let stdout = '';
-  let stderr = '';
-  const decoder = new TextDecoder('utf-8');
-
-  const sendPartialResult = () => {
-    self.postMessage({
-      type: Message.PARTIAL_RESULT,
-      result: { type: 'success', completed: false, stdout, stderr },
-    });
-  };
-
-  pyodide.setStdin({
-    stdin: () => {
-      // Send partial result before blocking for input
-      // (this signals that the output is up to date for the current execution,
-      // even if there was no output before the input request)
-      sendPartialResult();
-      const input = ffiInput();
-      // Add back to stdout (including the <enter>) so that the user can see what they typed
-      stdout += INPUT_BEGIN + input + INPUT_END + '\n';
-      sendPartialResult();
-      return input;
-    },
-  });
-  pyodide.setStdout({
-    write: (buf) => {
-      stdout += decoder.decode(buf);
-      sendPartialResult();
-      return buf.length;
-    },
-  });
-  pyodide.setStderr({
-    write: (buf) => {
-      stderr += decoder.decode(buf);
-      sendPartialResult();
-      return buf.length;
-    },
-  });
-
-  // Setup FileSystem
-  const fs = pyodide.FS;
-  const basePath = '/tmp/run';
-  fs.mkdirTree(basePath);
-  files.forEach((file) => {
-    fs.writeFile(`${basePath}/${file.name}`, file.content);
-  });
-  const modulesToClear = files
-    .map((file) => file.name)
-    .filter((name) => name.endsWith('.py'))
-    .map((name) => name.replaceAll('/', '.').replace(/\.py$/, ''));
-
-  const driverCode = files.filter((f) => f.name === 'driver.py')[0].content;
+  const out = setupIO(pyodide);
+  const code = setupFS(pyodide, files);
 
   const ns = pyodide.toPy({});
   try {
-    await pyodide.runPython(
-      joinLines([
-        // Clear cached modules
-        'import sys',
-        ...modulesToClear.flatMap((module) => [
-          `if '${module}' in sys.modules:`,
-          `  del sys.modules['${module}']`,
-        ]),
-        // Set max recursion depth
-        'sys.setrecursionlimit(2000)',
-        // Set CWD to $basePath
-        'import os',
-        `os.chdir('${basePath}')`,
-        // Run code
-        driverCode,
-      ]),
-      { globals: ns },
-    );
+    await pyodide.runPython(code, { globals: ns });
     return {
       type: Message.RESULT,
       result: {
         type: 'success',
         completed: true,
-        stdout,
-        stderr,
+        stdout: out.getStdout(),
+        stderr: out.getStderr(),
       },
     };
   } catch (err) {
@@ -175,17 +252,17 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
     // eslint-disable-next-line no-console
     console.error(pythonError);
 
-    stderr += pythonError;
     return {
       type: Message.RESULT,
       result: {
         type: 'error',
         completed: true,
-        stdout,
-        stderr,
+        stdout: out.getStdout(),
+        stderr: out.getStderr() + pythonError,
       },
     };
   } finally {
+    activeCellChangeListener = null;
     ns.destroy();
   }
 }
@@ -209,12 +286,20 @@ function ffiInput(): string {
   return decodeSharedBuffer(res);
 }
 
+function setActiveCell(idx: number): void {
+  if (activeCellChangeListener) {
+    activeCellChangeListener(idx);
+  }
+  self.postMessage({ type: Message.SET_ACTIVE_CELL, idx });
+}
+
 function installPytamaroFfi() {
   pyodide?.registerJsModule('pytamaro_js_ffi', {
     render_graphic: (specs: PyProxy, debug: boolean) =>
-      ffiRenderGraphic(unProxy<GraphicSpec[]>(() => specs)(), debug),
+      ffiRenderGraphic(unProxy<GraphicSpec[]>(specs), debug),
     graphic_size: (specs: PyProxy) =>
-      ffiSizeWhenRendered(unProxy<GraphicSpec[]>(() => specs)()),
+      ffiSizeWhenRendered(unProxy<GraphicSpec[]>(specs)),
+    set_active_cell: (idx: number) => setActiveCell(idx),
   });
 }
 
@@ -222,17 +307,13 @@ function installPytamaroFfi() {
  * Unwrap the result of a given function from pyodide FFI proxy to a plain
  * JS object.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function unProxy<T>(fn: (...args: any) => PyProxy): (...args: any) => T {
+function unProxy<T>(proxy: PyProxy): T {
   const pyproxies = remainingPyProxies;
-  return function (...args) {
-    const result = fn(...args);
-    if (typeof result === 'object' && typeof result.toJs === 'function') {
-      return result.toJs({ pyproxies });
-    } else {
-      return result;
-    }
-  };
+  if (typeof proxy === 'object' && typeof proxy.toJs === 'function') {
+    return proxy.toJs({ pyproxies });
+  } else {
+    return proxy as T;
+  }
 }
 
 function destroyLeftoverProxies() {
@@ -257,7 +338,7 @@ addEventListener(
     switch (data.type) {
       case Message.INIT:
         {
-          // Initialize Pyodide with PyTamaro and CanvasKit
+          // Initialize Pyodide with PyTamaro and FFIs
           await loadPyodideWithPytamaro();
           installPytamaroFfi();
           pyodide.setInterruptBuffer(data.interruptBuffer);

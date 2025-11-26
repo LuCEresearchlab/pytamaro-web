@@ -60,7 +60,7 @@ async function main() {
         (await sql`SELECT name, source AS content FROM ${sql(EXTRA_PYTHON_FILES_TABLE)}
                                             INNER JOIN sources ON ${sql(EXTRA_PYTHON_FILES_TABLE)}.source_id = sources.id
                                             WHERE event_id = ${event.id};`) as PythonFile[];
-      const files = await cellsToFiles(
+      const files = cellsToFiles(
         sourcesObj.map((sourcesObj) => sourcesObj.source),
         event.requested_cell_seq_number,
         toolboxFunctions,

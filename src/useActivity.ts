@@ -3,7 +3,6 @@ import { debounce, uniqBy } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import {
   Dispatch,
-  RefObject,
   SetStateAction,
   useCallback,
   useContext,
@@ -91,7 +90,7 @@ export function useActivity(
   postExecuteSingleCell: (
     idx: number,
     executionResponse: ExecutionResponse,
-  ) => void = () => {},
+  ) => void = () => { },
 ) {
   const { getFunction } = useLocalToolbox();
   const variantId = activityVariantId(activityVariant);
@@ -192,6 +191,16 @@ export function useActivity(
     );
   };
 
+  const executionPartiallyCompleted = (idx: number) => {
+    setCodeExecutionStates((currentCodeExecutionStates) =>
+      produce(currentCodeExecutionStates, (draft) => {
+        if (draft[idx].executionResponse
+          && draft[idx].executionResponse?.type !== 'failure') {
+          draft[idx].executionResponse.completed = true;
+        }
+      }));
+  }
+
   const executionFinished = (
     idx: number,
     response: ExecutionResponse | undefined,
@@ -219,10 +228,12 @@ export function useActivity(
   };
 
   const newPartialExecutionResult =
-    (idx: number) => (executionResponse: ExecutionResponse | undefined) => {
+    (idx: number, executionResponse: ExecutionResponse | undefined) => {
       setCodeExecutionStates((currentCodeExecutionStates) =>
         produce(currentCodeExecutionStates, (draft) => {
-          if (executionResponse && !isExecutionFailed(executionResponse)) {
+          if (executionResponse
+            && !isExecutionFailed(executionResponse)
+            && draft[idx] !== undefined) {
             draft[idx].executionResponse = executionResponse;
             draft[idx].outputSynced = true;
             draft[idx].outputAreaVisible =
@@ -232,29 +243,9 @@ export function useActivity(
       );
     };
 
-  const handleExecuteSingleCell = async (
-    sources: string[],
-    toolboxFunctions: ToolboxFunction[],
-    outputAreaRef: RefObject<OutputAreaRef | null>,
-    idx: number,
-  ) => {
-    executionStarted(idx);
-    const response = await execute(
-      sources,
-      idx,
-      toolboxFunctions,
-      extraPythonFiles,
-      newPartialExecutionResult(idx),
-      outputAreaRef,
-    );
-    executionFinished(idx, response);
-    postExecuteSingleCell(idx, response);
-    return response;
-  };
-
   const handleExecute = async (
     idx: number,
-    outputAreaRef: RefObject<OutputAreaRef | null>,
+    getOutputRef: (execIdx: number) => OutputAreaRef | null,
   ) => {
     const extraToolboxFn = getExtraToolboxFunction();
 
@@ -294,20 +285,43 @@ export function useActivity(
       produce(currentCodeExecutionStates, (draft) => {
         for (let i = 0; i <= idx; i += 1) {
           draft[i].outputSynced = false;
+          draft[i].executionInProgress = true;
         }
       }),
     );
-    const responses = [];
-    for (let i = 0; i <= idx; i += 1) {
-      responses.push(
-        handleExecuteSingleCell(sources, toolboxFunctions, outputAreaRef, i),
-      );
+
+    let activeCodeCell: number = idx;
+    const onActiveCellChange = (
+      previouslyActive: number | null,
+      nowActive: number,
+    ) => {
+      if (previouslyActive !== null) {
+        executionFinished(previouslyActive, undefined);
+        executionPartiallyCompleted(previouslyActive);
+      }
+      activeCodeCell = nowActive;
+      executionStarted(nowActive);
     }
-    const failedResponses = (await Promise.all(responses)).filter(
-      isExecutionFailed,
+
+    const response = await execute(
+      sources,
+      idx,
+      toolboxFunctions,
+      extraPythonFiles,
+      newPartialExecutionResult,
+      onActiveCellChange,
+      getOutputRef,
     );
-    if (failedResponses.length > 0) {
-      setExecutionFailed(failedResponses[0]);
+
+    // Mark the "last" cell as complete.
+    // The others are handled by the onActiveCellChange function
+    // Note that "last" does not necessarily mean cell #idx, but rather
+    // the last cell that was executed, hence why we only need to do
+    // isExecutionFailed + setExecution here.
+    executionFinished(activeCodeCell, response);
+    postExecuteSingleCell(activeCodeCell, response);
+    if (isExecutionFailed(response)) {
+      setExecutionFailed(response);
     }
   };
 

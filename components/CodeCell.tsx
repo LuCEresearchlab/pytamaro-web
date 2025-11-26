@@ -8,12 +8,13 @@ import {
   Stack,
 } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
-import { RefObject, useMemo } from 'react';
+import { useMemo } from 'react';
 import {
   isExecutionCompleted,
   isExecutionError,
   isExecutionNominal,
-} from '../src/codeExecution';import { CodeCellExecutionState } from '../src/localStorage/schema';
+} from '../src/codeExecution';
+import { CodeCellExecutionState } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import {
   ActivityVariant,
@@ -42,7 +43,7 @@ export default function CodeCell({
   resetCounter,
   pythonAnalyzer,
   cellIdx,
-  outputAreaRef,
+  setOutputAreaRef,
   extraPythonFiles = [],
   extraActions = null,
   readOnly = false,
@@ -59,7 +60,7 @@ export default function CodeCell({
   resetCounter: number;
   pythonAnalyzer: PythonAnalyzer | null;
   cellIdx: number;
-  outputAreaRef: RefObject<OutputAreaRef | null>;
+  setOutputAreaRef: (idx: number, node: OutputAreaRef | null | undefined) => void;
   extraPythonFiles?: PythonFile[];
   extraActions?: React.ReactNode;
   readOnly?: boolean;
@@ -195,7 +196,7 @@ export default function CodeCell({
                 executionError={executionError}
                 executionResponse={executionResponse}
                 dimmed={!codeCellExecutionState.outputSynced}
-                outputAreaRef={outputAreaRef}
+                setOutputAreaRef={(node) => setOutputAreaRef(cellIdx, node)}
               />
             )}
           </StaleOutputBadge>

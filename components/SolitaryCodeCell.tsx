@@ -44,6 +44,10 @@ export default function SolitaryCodeCell({
   extraToolboxFunctions?: ToolboxFunction[];
 }) {
   const outputAreaRef = useRef<OutputAreaRef>(null);
+  const getOutputAreaRef = () => outputAreaRef.current;
+  const setOutputAreaRef = (node: OutputAreaRef | null | undefined) => {
+    outputAreaRef.current = node === undefined ? null : node;
+  };
   const {
     initialCodeCells,
     codeCells,
@@ -72,7 +76,7 @@ export default function SolitaryCodeCell({
       }}
       onExecutionRequested={() => {
         onExecutionRequest();
-        return handleExecute(0, outputAreaRef);
+        return handleExecute(0, getOutputAreaRef);
       }}
       firstLineNumber={1}
       activityVariant={activityVariant}
@@ -94,7 +98,7 @@ export default function SolitaryCodeCell({
       resetCounter={resetCounter}
       pythonAnalyzer={pythonAnalyzer}
       cellIdx={0}
-      outputAreaRef={outputAreaRef}
+      setOutputAreaRef={(_, node) => setOutputAreaRef(node)}
     />
   );
 }
