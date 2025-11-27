@@ -4,10 +4,13 @@ import { Alert, AlertTitle } from '@mui/material';
 import { Trans } from 'react-i18next';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { PythonName } from '../src/python-analyzer/python_analyzer';
+import theme from '../src/theme';
 
 export function NoOutputTip({
+  dimmed,
   importedNames,
 }: {
+  dimmed: boolean;
   importedNames: PythonName[];
 }) {
   const { t } = useLocalTranslation();
@@ -25,6 +28,10 @@ export function NoOutputTip({
     <Alert
       iconMapping={{
         success: <TipsAndUpdates fontSize='inherit' />,
+      }}
+      sx={{
+        opacity: dimmed ? theme.palette.action.disabledOpacity : undefined,
+        width: '100%',
       }}
     >
       {t('noOutputTip')}

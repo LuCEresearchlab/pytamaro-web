@@ -1,17 +1,12 @@
 import { PlayCircleFilled } from '@mui/icons-material';
-import SyncProblemIcon from '@mui/icons-material/SyncProblem';
 import {
-  Badge,
-  BadgeProps,
   Card,
   CardActions,
   CardContent,
   Collapse,
   Paper,
   Stack,
-  Tooltip,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useConfirm } from 'material-ui-confirm';
 import { useEffect, useState } from 'react';
 import { ExecutionResponse, isExecutionCompleted } from '../src/codeExecution';
@@ -30,18 +25,10 @@ import { joinLines } from '../src/sourceUtils';
 import { PythonAnalyzer } from '../src/usePythonAnalyzer';
 import { EllipsisTip, InputTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
+import DocumentationStripe from './documentation/DocumentationStripe';
 import ExecutionOutputArea from './OutputArea';
 import RunButton from './RunButton';
-import DocumentationStripe from './documentation/DocumentationStripe';
-
-const StaleOutputBadge = styled(Badge)<BadgeProps>(() => ({
-  '& .MuiBadge-badge': {
-    right: '1rem',
-    paddingLeft: '1rem',
-    paddingRight: '1rem',
-  },
-  width: '100%',
-}));
+import StaleOutputBadge from './StaleOutputBadge';
 
 export function isExecutionError(response: ExecutionResponse | undefined) {
   return response?.type === 'error';
@@ -86,13 +73,11 @@ export default function CodeCell({
   const executing = codeCellExecutionState.executionInProgress;
   const executionFinished = codeCellExecutionState.outputSynced;
   const noOutput =
-    executionFinished &&
     executionResponse &&
     isExecutionCompleted(executionResponse) &&
     (executionResponse.stdout + executionResponse.stderr).length === 0;
   const [inputFunctionCalled, setInputFunctionCalled] = useState(false);
   const [ellipsis, setEllipsis] = useState(false);
-  const outputHidden = noOutput || inputFunctionCalled;
 
   useEffect(() => {
     const analyzeSource = async () => {
@@ -188,40 +173,32 @@ export default function CodeCell({
           </Stack>
         </CardActions>
         {noOutput && platformConfig.showNoOutputTip && (
-          <NoOutputTip
-            importedNames={analyze(joinLines(sourcesUpTo)).imported_names}
-          />
+          <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
+            <NoOutputTip
+              dimmed={!codeCellExecutionState.outputSynced}
+              importedNames={analyze(joinLines(sourcesUpTo)).imported_names}
+            />
+          </StaleOutputBadge>
         )}
         {inputFunctionCalled && <InputTip />}
         {ellipsis && <EllipsisTip />}
-        {!outputHidden && (
-          <Collapse
-            in={codeCellExecutionState.outputAreaVisible}
-            timeout='auto'
-            unmountOnExit
-          >
-            <CardContent>
-              <StaleOutputBadge
-                badgeContent={
-                  <Tooltip arrow title={t('staleOutput')}>
-                    <SyncProblemIcon />
-                  </Tooltip>
-                }
-                color='error'
-                invisible={codeCellExecutionState.outputSynced}
-              >
-                {executionResponse &&
-                  isExecutionCompleted(executionResponse) && (
-                    <ExecutionOutputArea
-                      executionError={executionError}
-                      executionResponse={executionResponse}
-                      dimmed={!codeCellExecutionState.outputSynced}
-                    />
-                  )}
-              </StaleOutputBadge>
-            </CardContent>
-          </Collapse>
-        )}
+        <Collapse
+          in={codeCellExecutionState.outputAreaVisible}
+          timeout='auto'
+          unmountOnExit
+        >
+          <CardContent>
+            <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
+              {executionResponse && isExecutionCompleted(executionResponse) && (
+                <ExecutionOutputArea
+                  executionError={executionError}
+                  executionResponse={executionResponse}
+                  dimmed={!codeCellExecutionState.outputSynced}
+                />
+              )}
+            </StaleOutputBadge>
+          </CardContent>
+        </Collapse>
       </Card>
     </Paper>
   );
