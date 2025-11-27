@@ -44,6 +44,7 @@ export default function TypeConstantDocumentation({
     }
     availableOptions.push(SHOW_DIAGRAM_KEY);
   }
+  const gender = isConstant ? 'female' : 'male';
   return (
     <>
       <Box mb={1}>
@@ -63,8 +64,13 @@ export default function TypeConstantDocumentation({
               {...hoverProps(moduleId(), hoverElement, setHoverElement)}
             >
               {module === '.'
-                ? t('fromYourCode')
-                : t('fromLibrary', { module })}
+                ? t('definedInYourCode', {
+                    context: gender,
+                  })
+                : t('definedInLibrary', {
+                    module,
+                    context: gender,
+                  })}
             </Typography>
           </span>
           <ConfigButtons available={availableOptions} />

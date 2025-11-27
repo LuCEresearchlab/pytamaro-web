@@ -79,8 +79,8 @@ export default function FunctionDocumentation({
               {...hoverProps(moduleId(), hoverElement, setHoverElement)}
             >
               {module === '.'
-                ? t('fromYourCode')
-                : t('fromLibrary', { module })}
+                ? t('definedInYourCode', { context: 'female' })
+                : t('definedInLibrary', { module, context: 'female' })}
             </Typography>
             {fn.sideEffects && (
               <Chip
