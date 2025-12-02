@@ -8,20 +8,16 @@ import {
   Stack,
 } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { ExecutionResponse, isExecutionCompleted } from '../src/codeExecution';
 import { CodeCellExecutionState } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import {
-  AnalysisResult,
-  analyze,
-} from '../src/python-analyzer/python_analyzer';
 import {
   ActivityVariant,
   PlatformConfiguration,
   PythonFile,
 } from '../src/schemas/activitySchema';
-import { joinLines } from '../src/sourceUtils';
+import useAnalysisResult from '../src/useAnalysisResult';
 import { PythonAnalyzer } from '../src/usePythonAnalyzer';
 import { EllipsisTip, InputTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
@@ -42,7 +38,6 @@ export default function CodeCell({
   onExecutionRequested,
   firstLineNumber,
   activityVariant,
-  sourcesUpTo,
   platformConfig,
   resetCounter,
   pythonAnalyzer,
@@ -58,7 +53,6 @@ export default function CodeCell({
   onExecutionRequested: () => Promise<void>;
   firstLineNumber: number;
   activityVariant: ActivityVariant;
-  sourcesUpTo: string[];
   platformConfig: PlatformConfiguration;
   resetCounter: number;
   pythonAnalyzer: PythonAnalyzer | null;
@@ -76,17 +70,23 @@ export default function CodeCell({
     executionResponse &&
     isExecutionCompleted(executionResponse) &&
     (executionResponse.stdout + executionResponse.stderr).length === 0;
-  const [inputFunctionCalled, setInputFunctionCalled] = useState(false);
-  const [ellipsis, setEllipsis] = useState(false);
 
-  useEffect(() => {
-    const analyzeSource = async () => {
-      const analysisResult: AnalysisResult = await analyze(currentSource);
-      setInputFunctionCalled(analysisResult.called_names.includes('input'));
-      setEllipsis(analysisResult.has_ellipsis);
-    };
-    analyzeSource();
-  }, [currentSource]);
+  const analysisResult = useAnalysisResult(pythonAnalyzer, cellIdx);
+
+  const extraPythonFilesAnalysisResults = useMemo(() => {
+    if (!pythonAnalyzer) {
+      return [];
+    }
+    return extraPythonFiles.map((file) => ({
+      name: file.name,
+      analysisResult: pythonAnalyzer.analyzeExtraPythonFile(file),
+    }));
+  }, [pythonAnalyzer, extraPythonFiles]);
+
+  const inputFunctionCalled =
+    analysisResult?.called_names.map((info) => info.name).includes('input') ??
+    false;
+  const ellipsis = (analysisResult?.ellipsis.length ?? 0) > 0;
 
   const confirm = useConfirm();
 
@@ -138,9 +138,9 @@ export default function CodeCell({
     >
       {!readOnly && (
         <DocumentationStripe
-          sources={sourcesUpTo}
+          analysisResult={analysisResult}
           activityVariant={activityVariant}
-          extraPythonFiles={extraPythonFiles}
+          extraPythonFilesAnalysisResults={extraPythonFilesAnalysisResults}
         />
       )}
       {/* Overflow to allow for overflowed widgets in a CodeEditor */}
@@ -176,7 +176,7 @@ export default function CodeCell({
           <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
             <NoOutputTip
               dimmed={!codeCellExecutionState.outputSynced}
-              importedNames={analyze(joinLines(sourcesUpTo)).imported_names}
+              importedNames={analysisResult?.imported_names}
             />
           </StaleOutputBadge>
         )}

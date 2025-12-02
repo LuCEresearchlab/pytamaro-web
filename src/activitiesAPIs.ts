@@ -5,7 +5,10 @@ import {
 } from './fs-content/activities';
 import { readNotebookContent } from './fs-content/notebooks';
 import { cellsVisibleToUser, isCodeCell } from './notebook';
-import { PythonName, analyze } from './python-analyzer/python_analyzer';
+import {
+  findImportedNames,
+  PythonName,
+} from './python-analyzer/python_analyzer';
 import { ActivityVariant, BasicActivity } from './schemas/activitySchema';
 import { joinLines } from './sourceUtils';
 
@@ -23,9 +26,7 @@ async function importedAPIs(variant: ActivityVariant): Promise<PythonName[]> {
     variant.version,
   );
   const codeCells = cellsVisibleToUser(cells, 'student').filter(isCodeCell);
-  return codeCells.flatMap(
-    (cell) => analyze(joinLines(cell.source)).imported_names,
-  );
+  return codeCells.flatMap((cell) => findImportedNames(joinLines(cell.source)));
 }
 
 export default async function getActivitiesWithAPIs(

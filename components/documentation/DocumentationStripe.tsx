@@ -1,68 +1,45 @@
 import { MenuBookOutlined } from '@mui/icons-material';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { Box, Chip, Stack, Tooltip } from '@mui/material';
-import { flatten, reverse, slice, uniqWith } from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
+import { uniqWith } from 'lodash';
+import { useCallback, useState } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import { useDocumentationElements } from '../../src/documentation';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import {
   AnalysisResult,
-  analyze,
-  PythonFunction,
   PythonName,
 } from '../../src/python-analyzer/python_analyzer';
-import { ActivityVariant, PythonFile } from '../../src/schemas/activitySchema';
+import { ActivityVariant } from '../../src/schemas/activitySchema';
 import theme from '../../src/theme';
+import { FilesAnalysisResult } from '../../src/usePythonAnalyzer';
 import DocElement from './DocElement';
-
-function reverseUniq<T>(
-  array: T[][],
-  comparator: (o1: T, o2: T) => boolean,
-): T[] {
-  return uniqWith(flatten(reverse(slice(array))), comparator);
-}
 
 const COLLAPSED_HEIGHT = 1.5 * theme.typography.htmlFontSize;
 
 export default function DocumentationStripe({
-  sources,
+  analysisResult,
   activityVariant,
-  extraPythonFiles = [],
+  extraPythonFilesAnalysisResults = [],
 }: {
-  sources: string[];
+  analysisResult: AnalysisResult | undefined;
   activityVariant: ActivityVariant;
-  extraPythonFiles?: PythonFile[];
+  extraPythonFilesAnalysisResults?: FilesAnalysisResult;
 }) {
   const { t } = useLocalTranslation();
-  const [importedNamesPerCell, setImportedNamesPerCell] = useState<
-    PythonName[][]
-  >([]);
-  const [functionsPerCell, setFunctionsPerCell] = useState<PythonFunction[][]>(
-    [],
-  );
   const [namesMultipleLines, setNamesMultipleLines] = useState(false);
   const [namesExpanded, setNamesExpanded] = useState(false);
 
-  useEffect(() => {
-    const analysesResults: AnalysisResult[] = sources.map((source) =>
-      analyze(source),
-    );
-    const importedNames = analysesResults.map(
-      (result) => result.imported_names,
-    );
-    const possiblyImplicitlyImportedNames = analysesResults.map((result) =>
-      result.called_names.map((name) => new PythonName('builtins', name)),
-    );
-    setImportedNamesPerCell(
-      importedNames.concat(possiblyImplicitlyImportedNames),
-    );
-    setFunctionsPerCell(
-      analysesResults.map((result) =>
-        result.defined_functions.filter((fn) => fn.name.length > 0),
-      ),
-    );
-  }, [sources]);
+  const importedNames = analysisResult?.imported_names || [];
+  const possiblyImplicitlyImportedNames =
+    analysisResult?.called_names.map(
+      (info) => new PythonName('builtins', info.name),
+    ) || [];
+  const allImportedNames = importedNames.concat(
+    possiblyImplicitlyImportedNames,
+  );
+  const allDefinedFunctions =
+    analysisResult?.defined_functions.filter((fn) => fn.name.length > 0) || [];
 
   const onResize = useCallback(
     ({ entry }: { entry: ResizeObserverEntry | null }) => {
@@ -75,19 +52,19 @@ export default function DocumentationStripe({
 
   const toggleNamesExpanded = () => setNamesExpanded(!namesExpanded);
 
-  const allImportedNames = reverseUniq(
-    importedNamesPerCell,
+  const allImportedNamesSorted = uniqWith(
+    allImportedNames,
     (n1, n2) => n1.name === n2.name && n1.module === n2.module,
   );
-  const allDefinedFunctions = reverseUniq(
-    functionsPerCell,
+  const allDefinedFunctionsSorted = uniqWith(
+    allDefinedFunctions,
     (f1, f2) => f1.name === f2.name,
   );
 
   const namesToDocElement = useDocumentationElements(
-    allImportedNames,
-    allDefinedFunctions,
-    extraPythonFiles,
+    allImportedNamesSorted,
+    allDefinedFunctionsSorted,
+    extraPythonFilesAnalysisResults,
   );
 
   if (namesToDocElement.length === 0) {

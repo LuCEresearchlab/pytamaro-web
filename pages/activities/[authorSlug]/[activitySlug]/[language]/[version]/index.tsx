@@ -3,7 +3,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import GithubSlugger from 'github-slugger';
 import Head from 'next/head';
-import { RefObject, useEffect, useRef, useState } from 'react';
+import { RefObject, useEffect, useMemo, useRef, useState } from 'react';
 import ActivityCodeCell from '../../../../../../components/ActivityCodeCell';
 import ActivityFooter from '../../../../../../components/ActivityFooter';
 import ActivityResetButton from '../../../../../../components/ActivityResetButton';
@@ -78,6 +78,15 @@ function NotebookCells({
   const { metadata } = useLocalProfile();
   const { wideEditor } = metadata;
   const pythonAnalyzer = usePythonAnalyzer(activity.extraPythonFiles);
+  const extraPythonFilesAnalysisResults = useMemo(() => {
+    if (!pythonAnalyzer) {
+      return [];
+    }
+    return activity.extraPythonFiles.map((file) => ({
+      name: file.name,
+      analysisResult: pythonAnalyzer.analyzeExtraPythonFile(file),
+    }));
+  }, [pythonAnalyzer, activity.extraPythonFiles]);
   useMonacoColorizer();
 
   return (
@@ -88,7 +97,7 @@ function NotebookCells({
             <MarkdownCellComponent
               cell={cell as MarkdownCell}
               activityVariant={activityVariant}
-              extraPythonFiles={activity.extraPythonFiles}
+              extraPythonFilesAnalysisResults={extraPythonFilesAnalysisResults}
             />
           </Container>
         ) : (

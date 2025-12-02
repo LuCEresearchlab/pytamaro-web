@@ -10,14 +10,10 @@ import {
 } from '../components/documentation/utils';
 import { TOOLBOX_FILE } from './codeExecution';
 import useLocalToolbox from './localStorage/useLocalToolbox';
-import {
-  analyze,
-  PythonFunction,
-  PythonName,
-} from './python-analyzer/python_analyzer';
-import { PythonFile } from './schemas/activitySchema';
+import { PythonFunction, PythonName } from './python-analyzer/python_analyzer';
 import { JudiciousElement, JudiciousModule } from './schemas/documentation';
 import { judiciousDocPathname } from './urlUtils';
+import { FilesAnalysisResult } from './usePythonAnalyzer';
 
 export default function useJudiciousDocData(modules: string[]) {
   const results = useQueries({
@@ -43,14 +39,13 @@ export const allKinds = {
 export function useDocumentationElements(
   names: PythonName[],
   locallyDefinedFunctions: PythonFunction[],
-  extraPythonFiles: PythonFile[],
+  extraPythonFilesAnalysisResults: FilesAnalysisResult,
 ): { module: string; element: JudiciousElement }[] {
   const extraDocumentation = useMemo(
     () =>
-      extraPythonFiles.map((file) => {
-        const analysisResult = analyze(file.content);
+      extraPythonFilesAnalysisResults.map(({ name, analysisResult }) => {
         return {
-          module: file.name.replace(/\.py$/, ''),
+          module: name.replace(/\.py$/, ''),
           elements: [
             ...analysisResult.defined_functions.map(
               definedFnToJudiciousFunction,
@@ -61,7 +56,7 @@ export function useDocumentationElements(
           ],
         };
       }),
-    [extraPythonFiles],
+    [extraPythonFilesAnalysisResults],
   );
 
   const modulesToFetch = uniqWith(

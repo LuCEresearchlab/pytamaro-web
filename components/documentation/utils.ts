@@ -109,6 +109,7 @@ export function definedFnToJudiciousFunction(
         description: '',
       },
     }),
+    sideEffects: fn.side_effects,
   };
 }
 
@@ -132,6 +133,7 @@ export function toolboxToJudiciousFunction(
         description: '',
       },
     }),
+    sideEffects: fn.sideEffects,
   };
 }
 

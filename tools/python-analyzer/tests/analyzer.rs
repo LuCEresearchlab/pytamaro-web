@@ -1,10 +1,40 @@
 use std::vec;
 
 use python_analyzer::{
-    ParseError, PythonConstant, PythonFunction, PythonFunctionArgument, PythonName, TextRange,
-    analyze, init_workspace,
+    CalledName, ParseError, PythonConstant, PythonFunction, PythonFunctionArgument, PythonName,
+    TextRange, analyze_file, find_imported_names, init_workspace,
 };
 use wasm_bindgen_test::*;
+
+#[wasm_bindgen_test]
+fn test_find_imported_names() {
+    let imported_names = find_imported_names("from mod import a, b\nfrom mod2 import c");
+    assert_eq!(
+        imported_names,
+        vec![
+            PythonName {
+                module: "mod".to_string(),
+                name: "a".to_string(),
+            },
+            PythonName {
+                module: "mod".to_string(),
+                name: "b".to_string(),
+            },
+            PythonName {
+                module: "mod2".to_string(),
+                name: "c".to_string(),
+            },
+        ]
+    );
+}
+
+fn analyze(source: &str) -> python_analyzer::AnalysisResult {
+    let mut workspace = init_workspace().expect("Workspace to be initialized");
+    let file_handle = workspace
+        .open_file("main.py", source)
+        .expect("File to be created");
+    analyze_file(&mut workspace, &file_handle)
+}
 
 #[wasm_bindgen_test]
 fn test_no_parse_errors() {
@@ -50,6 +80,8 @@ fn test_defined_functions() {
                 return_type_str: "list[int]".to_string(),
                 docstring: "Doc".to_string(),
                 explicit_return: false,
+                side_effects: false,
+                start: 0,
             },
             PythonFunction {
                 name: "g".to_string(),
@@ -76,21 +108,40 @@ fn test_defined_functions() {
                 return_type_str: "".to_string(),
                 docstring: "".to_string(),
                 explicit_return: true,
+                side_effects: false,
+                start: 49,
             },
         ]
     );
 }
 
 #[wasm_bindgen_test]
+fn test_method_is_not_function() {
+    assert_eq!(
+        analyze("class A:\n    def f(self): pass").defined_functions,
+        vec![]
+    );
+}
+
+#[wasm_bindgen_test]
 fn test_ellipsis() {
-    assert_eq!(analyze("1 + ...").has_ellipsis, true);
+    assert_eq!(analyze("1 + ...").ellipsis, vec![4]);
 }
 
 #[wasm_bindgen_test]
 fn test_called_names() {
     assert_eq!(
         analyze("f(g())").called_names,
-        vec!["f".to_string(), "g".to_string()],
+        vec![
+            CalledName {
+                name: "f".to_string(),
+                start: 0
+            },
+            CalledName {
+                name: "g".to_string(),
+                start: 2
+            }
+        ],
     );
 }
 
@@ -98,7 +149,16 @@ fn test_called_names() {
 fn test_called_names_inside_expr() {
     assert_eq!(
         analyze("f() + g()").called_names,
-        vec!["f".to_string(), "g".to_string()],
+        vec![
+            CalledName {
+                name: "f".to_string(),
+                start: 0
+            },
+            CalledName {
+                name: "g".to_string(),
+                start: 6
+            }
+        ],
     );
 }
 
@@ -275,4 +335,114 @@ fn test_possibly_unresolved_reference() {
         diagnostic.message(),
         "Name `a` used when possibly not defined"
     );
+}
+
+#[wasm_bindgen_test]
+fn test_side_effects_builtins() {
+    let result = analyze("def f(): print('Hello, World!')");
+    let f = &result.defined_functions[0];
+    assert_eq!(f.name, "f".to_string());
+    assert_eq!(f.side_effects, true);
+}
+
+#[wasm_bindgen_test]
+fn test_side_effects_propagate() {
+    let result = analyze("def g(): print()\ndef f(): g()");
+    let g = &result.defined_functions[0];
+    assert_eq!(g.name, "g".to_string());
+    assert_eq!(g.side_effects, true);
+    let f = &result.defined_functions[1];
+    assert_eq!(f.name, "f".to_string());
+    assert_eq!(f.side_effects, true);
+}
+
+#[wasm_bindgen_test]
+fn test_side_effects_random() {
+    let result = analyze("from random import randint\ndef f(): return randint(0, 10)");
+    let f = &result.defined_functions[0];
+    assert_eq!(f.name, "f".to_string());
+    assert_eq!(f.side_effects, true);
+}
+
+#[wasm_bindgen_test]
+fn test_side_effects_pytamaro() {
+    let result = analyze(
+        "from pytamaro import show_graphic, empty_graphic\ndef f(): show_graphic(empty_graphic())",
+    );
+    let f = &result.defined_functions[0];
+    assert_eq!(f.name, "f".to_string());
+    assert_eq!(f.side_effects, true);
+}
+
+#[wasm_bindgen_test]
+fn test_side_effects_global_assign() {
+    let result = analyze(
+        "
+def f():
+    global x
+    x = 1
+",
+    );
+    let f = &result.defined_functions[0];
+    assert_eq!(f.name, "f".to_string());
+    assert_eq!(f.side_effects, true);
+}
+
+#[wasm_bindgen_test]
+fn test_side_effects_global_aug_assign() {
+    let result = analyze(
+        "
+x = 0
+def f():
+    global x
+    x += 1
+",
+    );
+    let f = &result.defined_functions[0];
+    assert_eq!(f.name, "f".to_string());
+    assert_eq!(f.side_effects, true);
+}
+
+#[wasm_bindgen_test]
+fn test_side_effects_global_ann_assign() {
+    let result = analyze(
+        "
+def f():
+    global x
+    x: int = 1
+",
+    );
+    let f = &result.defined_functions[0];
+    assert_eq!(f.name, "f".to_string());
+    assert_eq!(f.side_effects, true);
+}
+
+#[wasm_bindgen_test]
+fn test_side_effects_global_no_use() {
+    let result = analyze(
+        "
+def f():
+    global x
+    pass
+",
+    );
+    let f = &result.defined_functions[0];
+    assert_eq!(f.name, "f".to_string());
+    assert_eq!(f.side_effects, false);
+}
+
+#[wasm_bindgen_test]
+fn test_side_effects_across_files() {
+    let mut workspace = init_workspace().expect("Workspace to be initialized");
+    workspace
+        .open_file("a.py", "def g(): print('Hello from g!')")
+        .expect("First file to be created");
+    let file = workspace
+        .open_file("b.py", "from a import g\ndef f(): g()")
+        .expect("Second file to be created");
+    let result = analyze_file(&mut workspace, &file);
+    assert_eq!(result.defined_functions.len(), 1);
+    let f = &result.defined_functions[0];
+    assert_eq!(f.name, "f".to_string());
+    assert_eq!(f.side_effects, true);
 }

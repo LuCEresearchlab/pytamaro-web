@@ -65,7 +65,6 @@ export default function ActivityCodeCell({
     executionFailed,
     handleSourceChanged,
     handleExecute,
-    sourcesUpTo,
     handleToggleOutputArea,
     handleResetSingleCell,
     localCodeCellsWrongLength,
@@ -95,7 +94,6 @@ export default function ActivityCodeCell({
         onExecutionRequested={() => handleExecute(cellIdx)}
         firstLineNumber={1 + precedingLines}
         activityVariant={activityVariant}
-        sourcesUpTo={sourcesUpTo(cellIdx)}
         platformConfig={platformConfig}
         resetCounter={resetCounter}
         extraPythonFiles={extraPythonFiles}
@@ -104,7 +102,8 @@ export default function ActivityCodeCell({
         extraActions={
           <>
             <SaveToToolboxButton
-              sources={sourcesUpTo(cellIdx)}
+              pythonAnalyzer={pythonAnalyzer}
+              cellIdx={cellIdx}
               originalActivity={activityVariant}
             />
             <MoreOptionsButton

@@ -1,7 +1,46 @@
 /* tslint:disable */
 /* eslint-disable */
-export function analyze(python_source: string): AnalysisResult;
-export function initWorkspace(): Workspace;
+
+export class AnalysisResult {
+  private constructor();
+  free(): void;
+  [Symbol.dispose](): void;
+  imported_names: PythonName[];
+  defined_functions: PythonFunction[];
+  defined_constants: PythonConstant[];
+  called_names: CalledName[];
+  ellipsis: Uint32Array;
+  import_ranges: TextRange[];
+  parse_errors: ParseError[];
+}
+
+export class CalledName {
+  private constructor();
+  free(): void;
+  [Symbol.dispose](): void;
+  name: string;
+  start: number;
+}
+
+export class Completion {
+  private constructor();
+  free(): void;
+  [Symbol.dispose](): void;
+  name: string;
+  get kind(): CompletionKind | undefined;
+  set kind(value: CompletionKind | null | undefined);
+  get insert_text(): string | undefined;
+  set insert_text(value: string | null | undefined);
+  get additional_text_edits(): TextEdit[] | undefined;
+  set additional_text_edits(value: TextEdit[] | null | undefined);
+  get documentation(): string | undefined;
+  set documentation(value: string | null | undefined);
+  get detail(): string | undefined;
+  set detail(value: string | null | undefined);
+  get module_name(): string | undefined;
+  set module_name(value: string | null | undefined);
+}
+
 export enum CompletionKind {
   Text = 0,
   Method = 1,
@@ -29,73 +68,7 @@ export enum CompletionKind {
   Operator = 23,
   TypeParameter = 24,
 }
-export enum DocumentHighlightKind {
-  Text = 1,
-  Read = 2,
-  Write = 3,
-}
-export enum InlayHintKind {
-  Type = 0,
-  Parameter = 1,
-}
-export enum PositionEncoding {
-  Utf8 = 0,
-  Utf16 = 1,
-  Utf32 = 2,
-}
-export enum SemanticTokenKind {
-  Namespace = 0,
-  Class = 1,
-  Parameter = 2,
-  SelfParameter = 3,
-  ClsParameter = 4,
-  Variable = 5,
-  Property = 6,
-  Function = 7,
-  Method = 8,
-  Keyword = 9,
-  String = 10,
-  Number = 11,
-  Decorator = 12,
-  BuiltinConstant = 13,
-  TypeParameter = 14,
-}
-export enum Severity {
-  Info = 0,
-  Warning = 1,
-  Error = 2,
-  Fatal = 3,
-}
-export class AnalysisResult {
-  private constructor();
-  free(): void;
-  [Symbol.dispose](): void;
-  imported_names: PythonName[];
-  defined_functions: PythonFunction[];
-  defined_constants: PythonConstant[];
-  called_names: string[];
-  has_ellipsis: boolean;
-  import_ranges: TextRange[];
-  parse_errors: ParseError[];
-}
-export class Completion {
-  private constructor();
-  free(): void;
-  [Symbol.dispose](): void;
-  name: string;
-  get kind(): CompletionKind | undefined;
-  set kind(value: CompletionKind | null | undefined);
-  get insert_text(): string | undefined;
-  set insert_text(value: string | null | undefined);
-  get additional_text_edits(): TextEdit[] | undefined;
-  set additional_text_edits(value: TextEdit[] | null | undefined);
-  get documentation(): string | undefined;
-  set documentation(value: string | null | undefined);
-  get detail(): string | undefined;
-  set detail(value: string | null | undefined);
-  get module_name(): string | undefined;
-  set module_name(value: string | null | undefined);
-}
+
 export class Diagnostic {
   private constructor();
   free(): void;
@@ -107,6 +80,7 @@ export class Diagnostic {
   severity(): Severity;
   toRange(workspace: Workspace): Range | undefined;
 }
+
 export class DocumentHighlight {
   private constructor();
   free(): void;
@@ -114,6 +88,13 @@ export class DocumentHighlight {
   readonly range: Range;
   readonly kind: DocumentHighlightKind;
 }
+
+export enum DocumentHighlightKind {
+  Text = 1,
+  Read = 2,
+  Write = 3,
+}
+
 export class FileHandle {
   private constructor();
 /**
@@ -129,6 +110,7 @@ export class FileHandle {
   toString(): string;
   path(): string;
 }
+
 export class Hover {
   private constructor();
   free(): void;
@@ -136,6 +118,7 @@ export class Hover {
   markdown: string;
   range: Range;
 }
+
 export class InlayHint {
   private constructor();
   free(): void;
@@ -144,6 +127,12 @@ export class InlayHint {
   position: Position;
   kind: InlayHintKind;
 }
+
+export enum InlayHintKind {
+  Type = 0,
+  Parameter = 1,
+}
+
 export class LocationLink {
   private constructor();
   free(): void;
@@ -173,6 +162,7 @@ export class LocationLink {
    */
   set origin_selection_range(value: Range | null | undefined);
 }
+
 export class ParameterInformation {
   private constructor();
   free(): void;
@@ -181,6 +171,7 @@ export class ParameterInformation {
   get documentation(): string | undefined;
   set documentation(value: string | null | undefined);
 }
+
 export class ParseError {
   private constructor();
   free(): void;
@@ -188,6 +179,7 @@ export class ParseError {
   message: string;
   location: TextRange;
 }
+
 export class Position {
   free(): void;
   [Symbol.dispose](): void;
@@ -201,6 +193,13 @@ export class Position {
    */
   column: number;
 }
+
+export enum PositionEncoding {
+  Utf8 = 0,
+  Utf16 = 1,
+  Utf32 = 2,
+}
+
 export class PythonConstant {
   private constructor();
   free(): void;
@@ -209,6 +208,7 @@ export class PythonConstant {
   type_str: string;
   docstring: string;
 }
+
 export class PythonFunction {
   private constructor();
   free(): void;
@@ -218,7 +218,10 @@ export class PythonFunction {
   return_type_str: string;
   docstring: string;
   explicit_return: boolean;
+  side_effects: boolean;
+  start: number;
 }
+
 export class PythonFunctionArgument {
   private constructor();
   free(): void;
@@ -229,6 +232,7 @@ export class PythonFunctionArgument {
   set default(value: string | null | undefined);
   variable_length: boolean;
 }
+
 export class PythonName {
   free(): void;
   [Symbol.dispose](): void;
@@ -236,6 +240,7 @@ export class PythonName {
   module: string;
   name: string;
 }
+
 export class Range {
   free(): void;
   [Symbol.dispose](): void;
@@ -243,6 +248,7 @@ export class Range {
   start: Position;
   end: Position;
 }
+
 export class SemanticToken {
   private constructor();
   free(): void;
@@ -253,6 +259,32 @@ export class SemanticToken {
   modifiers: number;
   range: Range;
 }
+
+export enum SemanticTokenKind {
+  Namespace = 0,
+  Class = 1,
+  Parameter = 2,
+  SelfParameter = 3,
+  ClsParameter = 4,
+  Variable = 5,
+  Property = 6,
+  Function = 7,
+  Method = 8,
+  Keyword = 9,
+  String = 10,
+  Number = 11,
+  Decorator = 12,
+  BuiltinConstant = 13,
+  TypeParameter = 14,
+}
+
+export enum Severity {
+  Info = 0,
+  Warning = 1,
+  Error = 2,
+  Fatal = 3,
+}
+
 export class SignatureHelp {
   private constructor();
   free(): void;
@@ -261,6 +293,7 @@ export class SignatureHelp {
   get active_signature(): number | undefined;
   set active_signature(value: number | null | undefined);
 }
+
 export class SignatureInformation {
   private constructor();
   free(): void;
@@ -272,6 +305,7 @@ export class SignatureInformation {
   get active_parameter(): number | undefined;
   set active_parameter(value: number | null | undefined);
 }
+
 export class TextEdit {
   private constructor();
   free(): void;
@@ -279,6 +313,7 @@ export class TextEdit {
   range: Range;
   new_text: string;
 }
+
 export class TextRange {
   private constructor();
   free(): void;
@@ -286,6 +321,7 @@ export class TextRange {
   start: number;
   end: number;
 }
+
 export class Workspace {
   free(): void;
   [Symbol.dispose](): void;
@@ -329,3 +365,12 @@ export class Workspace {
   tokens(file_id: FileHandle): string;
   openFile(path: string, contents: string): FileHandle;
 }
+
+export function analyzeFile(workspace: Workspace, file_id: FileHandle): AnalysisResult;
+
+/**
+ * Importantly, this does not cache any state (e.g., the parsed AST) between calls.
+ */
+export function findImportedNames(source: string): PythonName[];
+
+export function initWorkspace(): Workspace;

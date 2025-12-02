@@ -7,6 +7,7 @@ import {
 import { useActivity } from '../src/useActivity';
 import usePythonAnalyzer from '../src/usePythonAnalyzer';
 import CodeCell from './CodeCell';
+import SaveToToolboxButton from './SaveToToolboxButton';
 
 export function initialStateSingleCell(source: string) {
   return [{ source, originalIndex: 0 }];
@@ -22,6 +23,7 @@ export default function SolitaryCodeCell({
   resetCounter = 0,
   readOnly = false,
   requireNewExecution = false,
+  allowToolboxSave = false,
   postSourceChange = () => {},
   onExecutionRequest = () => {},
   extraActions = null,
@@ -32,6 +34,7 @@ export default function SolitaryCodeCell({
   resetCounter?: number;
   readOnly?: boolean;
   requireNewExecution?: boolean;
+  allowToolboxSave?: boolean;
   postSourceChange?: (newSource: string) => void;
   onExecutionRequest?: () => void;
   extraActions?: React.ReactNode;
@@ -71,8 +74,18 @@ export default function SolitaryCodeCell({
       activityVariant={activityVariant}
       readOnly={readOnly}
       platformConfig={platformConfigWithDefaults()}
-      extraActions={extraActions}
-      sourcesUpTo={[source]}
+      extraActions={
+        <>
+          {allowToolboxSave && (
+            <SaveToToolboxButton
+              pythonAnalyzer={pythonAnalyzer}
+              cellIdx={0}
+              originalActivity={activityVariant}
+            />
+          )}
+          {extraActions}
+        </>
+      }
       resetCounter={resetCounter}
       pythonAnalyzer={pythonAnalyzer}
       cellIdx={0}

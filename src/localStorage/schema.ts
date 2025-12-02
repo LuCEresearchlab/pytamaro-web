@@ -40,6 +40,7 @@ export interface ToolboxFunction {
   args: PythonFunctionArgument[];
   returnTypeUnparsed: string;
   originalActivity: ActivityVariant;
+  sideEffects?: boolean;
 }
 
 export interface PythonFunctionArgument {

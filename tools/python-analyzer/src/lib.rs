@@ -1,9 +1,10 @@
 use ruff_python_ast::statement_visitor::StatementVisitor;
-use ruff_python_ast::visitor::Visitor;
-use ruff_python_ast::{Expr, ParameterWithDefault, Parameters, Stmt, StmtExpr, visitor};
-use ruff_python_parser::{Mode, parse_unchecked};
+use ruff_python_ast::visitor::source_order::{self, SourceOrderVisitor};
+use ruff_python_ast::{Expr, ParameterWithDefault, Parameters, Stmt, StmtExpr};
+use ty_python_semantic::types::ide_support::definition_for_name;
 // Taken from https://github.com/astral-sh/ruff/blob/main/crates/ty_wasm/src/lib.rs
 use std::any::Any;
+use std::collections::{HashMap, HashSet, VecDeque};
 use wasm_bindgen::prelude::*;
 
 use js_sys::{Error, JsString};
@@ -22,8 +23,8 @@ use ruff_python_formatter::formatted_file;
 use ruff_source_file::{LineIndex, OneIndexed, SourceLocation};
 use ruff_text_size::{Ranged, TextSize};
 use ty_ide::{
-    InlayHintSettings, MarkupKind, RangedValue, document_highlights, goto_declaration,
-    goto_definition, goto_references, goto_type_definition, hover, inlay_hints,
+    InlayHintSettings, MarkupKind, RangedValue, document_highlights, find_references,
+    goto_declaration, goto_definition, goto_type_definition, hover, inlay_hints,
 };
 use ty_ide::{NavigationTargets, signature_help};
 use ty_project::metadata::options::Options;
@@ -31,7 +32,7 @@ use ty_project::metadata::value::ValueSource;
 use ty_project::watch::{ChangeEvent, ChangedKind, CreatedKind, DeletedKind};
 use ty_project::{CheckMode, ProjectMetadata};
 use ty_project::{Db, ProjectDatabase};
-use ty_python_semantic::Program;
+use ty_python_semantic::{Program, SemanticModel};
 //use wasm_bindgen::prelude::*;
 
 static PYTAMARO_ZIP_BYTES: &[u8] = include_bytes!("pytamaro-1.1.4-py3-none-any.whl");
@@ -80,6 +81,8 @@ pub struct PythonFunction {
     pub return_type_str: String,
     pub docstring: String,
     pub explicit_return: bool,
+    pub side_effects: bool,
+    pub start: u32,
 }
 
 #[derive(Clone, Eq, PartialEq, Debug)]
@@ -129,38 +132,6 @@ fn parameters(ast_params: &Parameters, source: &str) -> Vec<PythonFunctionArgume
         .iter()
         .map(|arg| parameter_with_default(arg, source));
     args.chain(vararg).chain(kwonlyargs).collect()
-}
-
-struct FunctionDefinitionsCollector<'a> {
-    functions: Vec<PythonFunction>,
-    source: &'a str,
-}
-impl<'a> StatementVisitor<'a> for FunctionDefinitionsCollector<'a> {
-    fn visit_stmt(&mut self, node: &Stmt) {
-        if let Stmt::FunctionDef(fndefnode) = node {
-            self.functions.push(PythonFunction {
-                name: fndefnode.name.to_string(),
-                args: parameters(&fndefnode.parameters, self.source),
-                return_type_str: get_type_str(&fndefnode.returns, self.source),
-                docstring: fndefnode
-                    .body
-                    .first()
-                    .and_then(|stmt| {
-                        if let Stmt::Expr(expr) = stmt {
-                            if let Some(docstring) = extract_string_literal(expr.value.as_ref()) {
-                                return Some(docstring);
-                            }
-                        }
-                        None
-                    })
-                    .unwrap_or_default(),
-                explicit_return: fndefnode
-                    .body
-                    .iter()
-                    .any(|stmt| matches!(stmt, Stmt::Return(_))),
-            });
-        }
-    }
 }
 
 #[derive(Clone, Eq, PartialEq, Debug)]
@@ -222,20 +193,23 @@ impl<'a> StatementVisitor<'a> for ConstantDefinitionsCollector<'a> {
 }
 
 struct ExprInfoCollector {
-    called_names: Vec<String>,
-    ellipsis_found: bool,
+    called_names: Vec<CalledName>,
+    ellipsis: Vec<u32>,
 }
-impl Visitor<'_> for ExprInfoCollector {
+impl SourceOrderVisitor<'_> for ExprInfoCollector {
     fn visit_expr(&mut self, node: &Expr) {
         if node.is_ellipsis_literal_expr() {
-            self.ellipsis_found = true;
+            self.ellipsis.push(node.range().start().to_u32())
         }
         if let Expr::Call(callnode) = node {
             if let Expr::Name(name) = &*callnode.func {
-                self.called_names.push(name.id.to_string());
+                self.called_names.push(CalledName {
+                    name: name.id.to_string(),
+                    start: name.range.start().to_u32(),
+                });
             }
         }
-        visitor::walk_expr(self, node);
+        source_order::walk_expr(self, node);
     }
 }
 
@@ -246,71 +220,22 @@ pub struct ParseError {
     pub location: TextRange,
 }
 
+#[derive(Clone, Eq, PartialEq, Debug)]
+#[wasm_bindgen(getter_with_clone)]
+pub struct CalledName {
+    pub name: String,
+    pub start: u32,
+}
+
 #[wasm_bindgen(getter_with_clone)]
 pub struct AnalysisResult {
     pub imported_names: Vec<PythonName>,
     pub defined_functions: Vec<PythonFunction>,
     pub defined_constants: Vec<PythonConstant>,
-    pub called_names: Vec<String>,
-    pub has_ellipsis: bool,
+    pub called_names: Vec<CalledName>,
+    pub ellipsis: Vec<u32>,
     pub import_ranges: Vec<TextRange>,
     pub parse_errors: Vec<ParseError>,
-}
-
-#[wasm_bindgen]
-pub fn analyze(python_source: &str) -> AnalysisResult {
-    console_error_panic_hook::set_once();
-    let parsed = parse_unchecked(python_source, Mode::Module.into());
-    let parse_errors = parsed
-        .errors()
-        .iter()
-        .map(|e| ParseError {
-            message: e.error.to_string(),
-            location: TextRange::from(e.location),
-        })
-        .collect();
-    let stmts = parsed.into_syntax().expect_module().body;
-    let imports_info = {
-        let mut collector = ImportsInfoCollector {
-            ranges: Vec::new(),
-            names: Vec::new(),
-        };
-        collector.visit_body(&stmts);
-        collector
-    };
-    let defined_functions = {
-        let mut collector = FunctionDefinitionsCollector {
-            functions: Vec::new(),
-            source: python_source,
-        };
-        collector.visit_body(&stmts);
-        collector.functions
-    };
-    let defined_constants = {
-        let mut collector = ConstantDefinitionsCollector {
-            constants: Vec::new(),
-            source: python_source,
-        };
-        collector.visit_body(&stmts);
-        collector.constants
-    };
-    let expressions_info = {
-        let mut collector = ExprInfoCollector {
-            called_names: Vec::new(),
-            ellipsis_found: false,
-        };
-        collector.visit_body(&stmts);
-        collector
-    };
-    AnalysisResult {
-        import_ranges: imports_info.ranges,
-        imported_names: imports_info.names,
-        defined_functions,
-        defined_constants,
-        called_names: expressions_info.called_names,
-        has_ellipsis: expressions_info.ellipsis_found,
-        parse_errors,
-    }
 }
 
 fn write_file(
@@ -366,6 +291,240 @@ pub fn install_pytamaro(workspace: &mut Workspace) -> Result<(), Error> {
     Ok(())
 }
 
+const PYTAMARO_IMPURE_FUNCTIONS: [&'static str; 16] = [
+    // en
+    "show_graphic",
+    "save_graphic",
+    "show_animation",
+    "save_animation",
+    // it
+    "visualizza_grafica",
+    "salva_grafica",
+    "visualizza_animazione",
+    "salva_animazione",
+    // de
+    "zeige_grafik",
+    "speichere_grafik",
+    "zeige_animation",
+    "speichere_animation",
+    // fr
+    "montre_graphique",
+    "sauvegarde_graphique",
+    "montre_animation",
+    "sauvegarde_animation",
+];
+
+const IMPURE_BUILTINS: [&'static str; 4] = ["input", "print", "eval", "exec"];
+const IMPURE_RANDOM_FUNCTIONS: [&'static str; 6] = [
+    "random", "randint", "sample", "choice", "choices", "shuffle",
+];
+
+#[derive(Clone, Eq, PartialEq, Debug)]
+struct PythonFunctionDefinition {
+    python_function: PythonFunction,
+    path: String,
+    called_functions: Vec<String>, // qualified name (path + name)
+    non_local_names: Vec<String>,  // includes globals and nonlocals
+}
+struct FunctionsVisitor<'db> {
+    db: &'db dyn Db,
+    model: &'db ty_python_semantic::SemanticModel<'db>,
+    functions: Vec<PythonFunctionDefinition>,
+    in_fn_def: bool,
+}
+fn qualified_function_name(path: &str, name: &str) -> String {
+    path.to_string() + "." + name
+}
+impl<'db> FunctionsVisitor<'db> {
+    fn current_fndef(&mut self) -> &mut PythonFunctionDefinition {
+        if !self.in_fn_def {
+            panic!("current_fndef called outside function definition");
+        }
+        self.functions
+            .last_mut()
+            .expect("To have at least one function")
+    }
+    fn mark_function_impure(&mut self) {
+        self.current_fndef().python_function.side_effects = true;
+    }
+    fn add_called_function(&mut self, path: &str, name: &str) {
+        self.current_fndef()
+            .called_functions
+            .push(qualified_function_name(path, name));
+    }
+    fn add_non_local_name(&mut self, name: String) {
+        self.current_fndef().non_local_names.push(name);
+    }
+    fn check_target_for_impurity(&mut self, target: &ruff_python_ast::Expr) {
+        if self.in_fn_def
+            && let ruff_python_ast::Expr::Name(name_expr) = target
+        {
+            if self
+                .current_fndef()
+                .non_local_names
+                .contains(&name_expr.id.to_string())
+            {
+                self.mark_function_impure();
+            }
+        }
+    }
+}
+
+fn propagate_impurity(functions: &mut Vec<PythonFunctionDefinition>) {
+    let name_to_idx: HashMap<String, usize> = functions
+        .iter()
+        .enumerate()
+        .map(|(idx, fndef)| {
+            (
+                qualified_function_name(fndef.path.as_str(), &fndef.python_function.name),
+                idx,
+            )
+        })
+        .collect();
+
+    // Build the reverse Call Graph (Callee_Index -> Set<Caller_Index>)
+    let mut reverse_call_graph: HashMap<usize, HashSet<usize>> = HashMap::new();
+    for (caller_idx, caller_fndef) in functions.iter().enumerate() {
+        for callee_name in &caller_fndef.called_functions {
+            if let Some(&callee_idx) = name_to_idx.get(callee_name) {
+                reverse_call_graph
+                    .entry(callee_idx)
+                    .or_default()
+                    .insert(caller_idx);
+            }
+        }
+    }
+
+    // Functions to process (initially all impure functions)
+    let mut impure_fns_to_process: VecDeque<usize> = functions
+        .iter()
+        .enumerate()
+        .filter_map(|(idx, fndef)| fndef.python_function.side_effects.then_some(idx))
+        .collect();
+
+    // Propagate impurity up the call graph
+    let mut iterations = 0;
+    while let Some(impure_callee_idx) = impure_fns_to_process.pop_front() {
+        iterations += 1;
+
+        if iterations > 2 * functions.len() {
+            panic!("Too many iterations in impurity propagation, possible infinite loop");
+        }
+
+        if let Some(callers) = reverse_call_graph.get(&impure_callee_idx) {
+            for &caller_idx in callers.iter() {
+                let caller_func = &mut functions[caller_idx];
+                if !caller_func.python_function.side_effects {
+                    caller_func.python_function.side_effects = true;
+                    impure_fns_to_process.push_back(caller_idx);
+                }
+            }
+        }
+    }
+}
+impl<'db> SourceOrderVisitor<'db> for FunctionsVisitor<'db> {
+    fn visit_stmt(&mut self, stmt: &'db ruff_python_ast::Stmt) {
+        match stmt {
+            ruff_python_ast::Stmt::FunctionDef(fn_def) => {
+                let source = source_text(self.db, self.model.file());
+                let function = PythonFunction {
+                    name: fn_def.name.to_string(),
+                    args: parameters(&fn_def.parameters, &source),
+                    return_type_str: get_type_str(&fn_def.returns, &source),
+                    docstring: fn_def
+                        .body
+                        .first()
+                        .and_then(|stmt| {
+                            if let Stmt::Expr(expr) = stmt {
+                                if let Some(docstring) = extract_string_literal(expr.value.as_ref())
+                                {
+                                    return Some(docstring);
+                                }
+                            }
+                            None
+                        })
+                        .unwrap_or_default(),
+                    explicit_return: fn_def
+                        .body
+                        .iter()
+                        .any(|stmt| matches!(stmt, Stmt::Return(_))),
+                    side_effects: false,
+                    start: fn_def.range.start().to_u32(),
+                };
+                let fn_def = PythonFunctionDefinition {
+                    path: self.model.file().path(self.db).to_string(),
+                    python_function: function,
+                    called_functions: Vec::new(),
+                    non_local_names: Vec::new(),
+                };
+                self.functions.push(fn_def);
+                self.in_fn_def = true;
+                source_order::walk_stmt(self, stmt);
+                self.in_fn_def = false;
+            }
+            ruff_python_ast::Stmt::Global(global_stmt) => {
+                global_stmt.names.iter().for_each(|name| {
+                    self.add_non_local_name(name.to_string());
+                });
+            }
+            ruff_python_ast::Stmt::Nonlocal(nonlocal_stmt) => {
+                nonlocal_stmt.names.iter().for_each(|name| {
+                    self.add_non_local_name(name.to_string());
+                });
+            }
+            ruff_python_ast::Stmt::Assign(assign_stmt) => {
+                for target in &assign_stmt.targets {
+                    self.check_target_for_impurity(target);
+                }
+                source_order::walk_stmt(self, stmt);
+            }
+            ruff_python_ast::Stmt::AugAssign(aug_assign_stmt) => {
+                self.check_target_for_impurity(&aug_assign_stmt.target);
+                source_order::walk_stmt(self, stmt);
+            }
+            ruff_python_ast::Stmt::AnnAssign(ann_assign_stmt) => {
+                self.check_target_for_impurity(&ann_assign_stmt.target);
+                source_order::walk_stmt(self, stmt);
+            }
+            ruff_python_ast::Stmt::ClassDef(_cls) => {
+                // Do not walk into class definition:
+                // for now, methods are not considered functions.
+            }
+            _ => {
+                source_order::walk_stmt(self, stmt);
+            }
+        }
+    }
+    fn visit_expr(&mut self, node: &'db ruff_python_ast::Expr) {
+        if self.in_fn_def {
+            match node {
+                ruff_python_ast::Expr::Call(call_expr) => {
+                    if let ruff_python_ast::Expr::Name(name_expr) = &*call_expr.func {
+                        if let Some(def) = definition_for_name(self.model, name_expr) {
+                            let name = name_expr.id.clone();
+                            let path = def.file(self.db).path(self.db).as_str();
+                            if path.starts_with("stdlib") || path.starts_with("/pytamaro") {
+                                let bultins_impure = path == "stdlib/builtins.pyi"
+                                    && IMPURE_BUILTINS.contains(&name.as_str());
+                                let random_impure = path == "stdlib/random.pyi"
+                                    && IMPURE_RANDOM_FUNCTIONS.contains(&name.as_str());
+                                let pytamaro_impure = path.starts_with("/pytamaro/")
+                                    && PYTAMARO_IMPURE_FUNCTIONS.contains(&name.as_str());
+                                if bultins_impure || random_impure || pytamaro_impure {
+                                    self.mark_function_impure();
+                                }
+                            }
+                            self.add_called_function(&path, &name);
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+        source_order::walk_expr(self, node);
+    }
+}
+
 #[wasm_bindgen(js_name = "initWorkspace")]
 pub fn init_workspace() -> Result<Workspace, Error> {
     let options = js_sys::JSON::parse(TY_CONFIG)?;
@@ -374,6 +533,108 @@ pub fn init_workspace() -> Result<Workspace, Error> {
     Ok(workspace)
 }
 
+// A faster analyzer when only import names are needed.
+/// Importantly, this does not cache any state (e.g., the parsed AST) between calls.
+#[wasm_bindgen(js_name = "findImportedNames")]
+pub fn find_imported_names(source: &str) -> Vec<PythonName> {
+    let mut workspace = Workspace::new(
+        "/",
+        PositionEncoding::Utf16,
+        js_sys::JSON::parse("{}").expect("Config to be valid JSON"),
+    )
+    .expect("Workspace to be initialized");
+    let file_handle = workspace
+        .open_file("main.py", source)
+        .expect("File to be created");
+    let parsed =
+        ruff_db::parsed::parsed_module(&workspace.db, file_handle.file).load(&workspace.db);
+    let stmts = parsed.suite();
+    let imports_info = {
+        let mut collector = ImportsInfoCollector {
+            ranges: Vec::new(),
+            names: Vec::new(),
+        };
+        collector.visit_body(stmts);
+        collector
+    };
+    imports_info.names
+}
+
+#[wasm_bindgen(js_name = "analyzeFile")]
+pub fn analyze_file(workspace: &mut Workspace, file_id: &FileHandle) -> AnalysisResult {
+    let parsed = ruff_db::parsed::parsed_module(&workspace.db, file_id.file).load(&workspace.db);
+    let python_source = source_text(&workspace.db, file_id.file);
+    let parse_errors = parsed
+        .errors()
+        .iter()
+        .map(|e| ParseError {
+            message: e.error.to_string(),
+            location: TextRange::from(e.location),
+        })
+        .collect();
+    let stmts = parsed.suite();
+    let imports_info = {
+        let mut collector = ImportsInfoCollector {
+            ranges: Vec::new(),
+            names: Vec::new(),
+        };
+        collector.visit_body(stmts);
+        collector
+    };
+    let defined_functions = {
+        let mut functions: Vec<PythonFunctionDefinition> = workspace
+            .db
+            .project()
+            .open_files(&workspace.db)
+            .iter()
+            .flat_map(|file| {
+                let parsed =
+                    ruff_db::parsed::parsed_module(&workspace.db, *file).load(&workspace.db);
+                let model = SemanticModel::new(&workspace.db, *file);
+                let mut visitor = FunctionsVisitor {
+                    db: &workspace.db,
+                    model: &model,
+                    functions: Vec::new(),
+                    in_fn_def: false,
+                };
+                visitor.visit_body(parsed.suite());
+                visitor.functions
+            })
+            .collect();
+        propagate_impurity(&mut functions);
+        // Only return functions for the analyzed file
+        functions
+            .into_iter()
+            .filter(|fndef| fndef.path == file_id.path())
+            .map(|fndef| fndef.python_function)
+            .collect()
+    };
+    let defined_constants = {
+        let mut collector = ConstantDefinitionsCollector {
+            constants: Vec::new(),
+            source: &python_source,
+        };
+        collector.visit_body(stmts);
+        collector.constants
+    };
+    let expressions_info = {
+        let mut collector = ExprInfoCollector {
+            called_names: Vec::new(),
+            ellipsis: Vec::new(),
+        };
+        collector.visit_body(stmts);
+        collector
+    };
+    AnalysisResult {
+        import_ranges: imports_info.ranges,
+        imported_names: imports_info.names,
+        defined_functions,
+        defined_constants,
+        called_names: expressions_info.called_names,
+        ellipsis: expressions_info.ellipsis,
+        parse_errors,
+    }
+}
 /* Taken from https://github.com/astral-sh/ruff/blob/main/crates/ty_wasm/src/lib.rs */
 
 // #[wasm_bindgen(start)]
@@ -667,7 +928,7 @@ impl Workspace {
 
         let offset = position.to_text_size(&source, &index, self.position_encoding)?;
 
-        let Some(targets) = goto_references(&self.db, file_id.file, offset, true) else {
+        let Some(targets) = find_references(&self.db, file_id.file, offset, true) else {
             return Ok(Vec::new());
         };
 

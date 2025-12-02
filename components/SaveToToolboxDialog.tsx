@@ -25,16 +25,14 @@ import { CodeCellState, ToolboxFunction } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import {
-  analyze,
-  PythonFunction,
-} from '../src/python-analyzer/python_analyzer';
+import { PythonFunction } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
 import { toolboxActivityVariant } from '../src/specialActivities';
 import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import theme from '../src/theme';
 import { toolboxFunctionPathname } from '../src/urlUtils';
+import useAnalysisResult from '../src/useAnalysisResult';
 import usePythonAnalyzer from '../src/usePythonAnalyzer';
 import useTemporaryActivity from '../src/useTemporaryActivity';
 import { isExecutionError } from './CodeCell';
@@ -140,6 +138,7 @@ function functionForToolbox(
     originalActivity,
     source: implementation,
     usage,
+    sideEffects: fn.side_effects,
   };
 }
 
@@ -199,6 +198,10 @@ export default function SaveToToolboxDialog({
   };
 
   const implementationPythonAnalyzer = usePythonAnalyzer();
+  const implementationAnalysisResult = useAnalysisResult(
+    implementationPythonAnalyzer,
+    0,
+  );
 
   const postExecuteSingleCell = (
     idx: number,
@@ -222,8 +225,7 @@ export default function SaveToToolboxDialog({
   };
 
   useEffect(() => {
-    const newFunctions: PythonFunction[] =
-      analyze(implementation).defined_functions;
+    const newFunctions = implementationAnalysisResult?.defined_functions || [];
     // Reset the selected function if a function with such a name does not exist anymore
     if (
       selectedFunction &&
@@ -232,7 +234,7 @@ export default function SaveToToolboxDialog({
       resetSelectedFunction();
     }
     setFunctions(newFunctions);
-  }, [implementation, selectedFunction]);
+  }, [implementationAnalysisResult, selectedFunction]);
 
   const activityVariant = toolboxActivityVariant(selectedFunction);
 

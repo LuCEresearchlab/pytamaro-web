@@ -7,9 +7,9 @@ import {
   ActivityVariant,
   MarkdownCell,
   NotebookCell,
-  PythonFile,
 } from '../src/schemas/activitySchema';
 import { activityAssetPathname } from '../src/urlUtils';
+import { FilesAnalysisResult } from '../src/usePythonAnalyzer';
 import InlineAPI from './documentation/InlineAPI';
 import { STRICT_PYTHON3_LANG_ID } from './editor/strictPython3';
 import ActivityLink from './markdown/ActivityLink';
@@ -74,7 +74,7 @@ function InlineAPIComponent(
   activityVariant: ActivityVariant,
   lang?: string,
   module?: string,
-  extraPythonFiles?: PythonFile[],
+  extraPythonFilesAnalysisResults?: FilesAnalysisResult,
 ) {
   // Error on
   if (!name) {
@@ -92,7 +92,7 @@ function InlineAPIComponent(
       activityVariant={activityVariant}
       language={lang}
       module={module}
-      extraPythonFiles={extraPythonFiles}
+      extraPythonFilesAnalysisResults={extraPythonFilesAnalysisResults}
     />
   );
 }
@@ -128,11 +128,11 @@ function linkComponent(props: any) {
 export default function MarkdownCellComponent({
   cell,
   activityVariant,
-  extraPythonFiles,
+  extraPythonFilesAnalysisResults,
 }: {
   cell: MarkdownCell;
   activityVariant: ActivityVariant;
-  extraPythonFiles: PythonFile[];
+  extraPythonFilesAnalysisResults: FilesAnalysisResult;
 }) {
   const adHocComponents = useMemo(
     () => ({
@@ -160,7 +160,7 @@ export default function MarkdownCellComponent({
           activityVariant,
           lang,
           module,
-          extraPythonFiles,
+          extraPythonFilesAnalysisResults,
         ),
       Activity: ActivityLink,
       DoNow: ({
@@ -180,7 +180,7 @@ export default function MarkdownCellComponent({
         }),
       Task: ({ children }: { children: ReactNode }) => TaskBox({ children }),
     }),
-    [activityVariant, cell, extraPythonFiles],
+    [activityVariant, cell, extraPythonFilesAnalysisResults],
   );
   return (
     <MDXRemote

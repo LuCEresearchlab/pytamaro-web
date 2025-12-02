@@ -22,7 +22,6 @@ import MoreOptionsButton from '../components/MoreOptionsButton';
 import NavigationBar from '../components/navbar/NavigationBar';
 import ResetButton from '../components/navbar/ResetButton';
 import PageTitle from '../components/PageTitle';
-import SaveToToolboxButton from '../components/SaveToToolboxButton';
 import CentralContent from '../components/sidebar/CentralContent';
 import Sidebar from '../components/sidebar/Sidebar';
 import ToolboxListSidebar from '../components/sidebar/ToolboxListSidebar';
@@ -39,7 +38,10 @@ import {
   playgroundActivityVariant,
   playgroundInitialSource,
 } from '../src/playground';
-import { analyze, PythonName } from '../src/python-analyzer/python_analyzer';
+import {
+  findImportedNames,
+  PythonName,
+} from '../src/python-analyzer/python_analyzer';
 import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
 import useReset from '../src/useReset';
@@ -105,7 +107,6 @@ function PlaygroundCodeCell({
     codeCells,
     codeExecutionStates,
     executionFailed,
-    sourcesUpTo,
     handleToggleOutputArea,
     handleResetSingleCell,
     handleResetAllCellsNoConfirm,
@@ -166,19 +167,14 @@ function PlaygroundCodeCell({
         activity={localActivity}
         activityVariant={playgroundActivityVariant}
         postSourceChange={updateQueryString}
+        allowToolboxSave={true}
         extraActions={
-          <>
-            <SaveToToolboxButton
-              sources={sourcesUpTo(0)}
-              originalActivity={playgroundActivityVariant}
-            />
-            <MoreOptionsButton
-              codeCellState={codeCells[0]}
-              codeCellExecutionState={codeExecutionStates[0]}
-              onShowHideOutput={() => handleToggleOutputArea(0)}
-              onReset={() => handleResetSingleCell(0, newReset)}
-            />
-          </>
+          <MoreOptionsButton
+            codeCellState={codeCells[0]}
+            codeCellExecutionState={codeExecutionStates[0]}
+            onShowHideOutput={() => handleToggleOutputArea(0)}
+            onReset={() => handleResetSingleCell(0, newReset)}
+          />
         }
       />
     </>
@@ -208,7 +204,7 @@ function RecommendedActivities({
   useEffect(() => {
     if (outputSynced) {
       const currentlyImported = uniqueNames(
-        analyze(codeCells[0].source).imported_names,
+        findImportedNames(codeCells[0].source),
       );
       const scores = activitiesWithNames.map(
         (activityWithName: ActivityVariantWithNames) => {

@@ -39,7 +39,7 @@ uuid = { version = "1.6.1", features = ["v4", "fast-rng", "macro-diagnostics", "
 getrandom = { version="0.3.4", features = ["wasm_js"] }
 
 [dev-dependencies]
-wasm-bindgen-test = "0.3.43"
+wasm-bindgen-test = "0.3.56"
 
 [profile.release]
 strip = true

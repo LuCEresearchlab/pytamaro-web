@@ -1,6 +1,7 @@
 import { useDocumentationElements } from '../../src/documentation';
 import { PythonName } from '../../src/python-analyzer/python_analyzer';
-import { ActivityVariant, PythonFile } from '../../src/schemas/activitySchema';
+import { ActivityVariant } from '../../src/schemas/activitySchema';
+import { FilesAnalysisResult } from '../../src/usePythonAnalyzer';
 import DocElement from './DocElement';
 
 export default function InlineAPI({
@@ -8,13 +9,13 @@ export default function InlineAPI({
   language = undefined,
   module = undefined,
   activityVariant,
-  extraPythonFiles = [],
+  extraPythonFilesAnalysisResults = [],
 }: {
   name: string;
   language?: string | undefined;
   module?: string | undefined;
   activityVariant: ActivityVariant;
-  extraPythonFiles?: PythonFile[];
+  extraPythonFilesAnalysisResults?: FilesAnalysisResult;
 }) {
   // When not provided explicitly, the language is inferred from the activity variant.
   const bestLanguage = language || activityVariant.language;
@@ -27,7 +28,7 @@ export default function InlineAPI({
   const elements = useDocumentationElements(
     [new PythonName(moduleName, name)],
     [],
-    extraPythonFiles,
+    extraPythonFilesAnalysisResults,
   );
   const elementWithModule = elements.find(
     (el) => el.module === moduleName && el.element.name === name,

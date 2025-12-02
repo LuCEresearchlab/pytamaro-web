@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import type { Monaco } from '@monaco-editor/react';
 import {
   editor,
@@ -15,8 +16,11 @@ import { CURRENT_CELL_FILE, toolboxFiles } from './codeExecution';
 import { LiveAnalysisStatus, ToolboxFunction } from './localStorage/schema';
 import useLocalToolbox from './localStorage/useLocalToolbox';
 import {
+  AnalysisResult,
+  analyzeFile,
   FileHandle,
   initWorkspace,
+  PythonFunction,
   SemanticToken,
   Position as TyPosition,
   Range as TyRange,
@@ -33,17 +37,26 @@ export type CustomDiagnostic = EditorNamespace.IModelDeltaDecoration & {
 export const ANALYZER_DIAGNOSTIC_CLASSNAME =
   'squiggly-error analyzer-diagnostic';
 
+export type FilesAnalysisResult = {
+  name: string;
+  analysisResult: AnalysisResult;
+}[];
+
 export class PythonAnalyzer {
   private workspace: Workspace;
   private fileHandles: Map<string, FileHandle>;
   private sources: string[];
   private diagnosticsCounts: number[];
+  private analysisResults: AnalysisResult[];
+  private newAnalysisResultsListeners: (() => void)[][] = [];
 
   constructor(extraPythonFiles: PythonFile[] = []) {
     this.workspace = initWorkspace();
     this.fileHandles = new Map<string, FileHandle>();
     this.sources = [];
     this.diagnosticsCounts = [];
+    this.analysisResults = [];
+    this.newAnalysisResultsListeners = [];
     extraPythonFiles.forEach((file) => {
       const handle = this.workspace?.openFile(file.name, file.content);
       if (handle) {
@@ -66,6 +79,28 @@ export class PythonAnalyzer {
     this.addOrUpdateFile({
       name: this.currentCellFileName(cellIdx),
       content: fileContent,
+    });
+    this.analyze(cellIdx);
+  }
+
+  private notifyNewAnalysisResults(cellIdx: number) {
+    this.newAnalysisResultsListeners[cellIdx]?.forEach((callback) => {
+      callback();
+    });
+  }
+
+  addNewAnalysisResultListener(cellIdx: number, handler: () => void) {
+    if (!this.newAnalysisResultsListeners[cellIdx]) {
+      this.newAnalysisResultsListeners[cellIdx] = [];
+    }
+    this.newAnalysisResultsListeners[cellIdx].push(handler);
+  }
+
+  removeNewAnalysisResultListener(cellIdx: number, handler: () => void) {
+    this.newAnalysisResultsListeners[cellIdx].forEach((h, index) => {
+      if (h === handler) {
+        this.newAnalysisResultsListeners[cellIdx].splice(index, 1);
+      }
     });
   }
 
@@ -160,6 +195,63 @@ export class PythonAnalyzer {
     };
   }
 
+  private computePreviousCellsLength(cellIdx: number): number {
+    return this.sources
+      .slice(0, cellIdx)
+      .reduce((acc, content) => acc + content.length, 0);
+  }
+
+  private analyze(cellIdx: number) {
+    const fileHandle = this.getCurrentCellFileHandle(cellIdx);
+    if (!fileHandle) {
+      throw new Error(
+        `Could not analyze cell ${cellIdx}: no file handle found`,
+      );
+    }
+    const analysisResult = analyzeFile(this.workspace, fileHandle);
+    // We're only interested in ellipsis and names called in the current cell:
+    // filter out the ones from previous cells.
+    const previousCellsLength = this.computePreviousCellsLength(cellIdx);
+    analysisResult.ellipsis = analysisResult.ellipsis.filter(
+      (start) => start > previousCellsLength,
+    );
+    analysisResult.called_names = analysisResult.called_names.filter(
+      (called_name) => called_name.start > previousCellsLength,
+    );
+    // We also need to adjust the ranges
+    analysisResult.import_ranges.forEach((range) => {
+      range.start -= previousCellsLength;
+      range.end -= previousCellsLength;
+    });
+    this.analysisResults[cellIdx] = analysisResult;
+    this.notifyNewAnalysisResults(cellIdx);
+  }
+
+  getAnalysisResult(cellIdx: number): AnalysisResult | undefined {
+    return this.analysisResults[cellIdx];
+  }
+
+  functionsDefinedInCell(cellIdx: number): PythonFunction[] {
+    const analysisResult = this.getAnalysisResult(cellIdx);
+    if (!analysisResult) {
+      return [];
+    }
+    const previousCellsLength = this.computePreviousCellsLength(cellIdx);
+    return analysisResult.defined_functions.filter(
+      (fn) => fn.start >= previousCellsLength,
+    );
+  }
+
+  analyzeExtraPythonFile(file: PythonFile): AnalysisResult {
+    const fileHandle = this.fileHandles.get(file.name);
+    if (!fileHandle) {
+      throw new Error(
+        `Could not analyze extra Python file ${file.name}: no file handle found`,
+      );
+    }
+    return analyzeFile(this.workspace, fileHandle);
+  }
+
   customDiagnostics(
     monacoInstance: Monaco,
     cellIdx: number,
@@ -221,6 +313,10 @@ export class PythonAnalyzer {
 
   getDiagnosticsCountUpTo(cellIdx: number): number {
     return this.diagnosticsCounts[cellIdx] || 0;
+  }
+
+  getSources(): string[] {
+    return this.sources;
   }
 }
 

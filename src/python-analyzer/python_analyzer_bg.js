@@ -3,43 +3,6 @@ export function __wbg_set_wasm(val) {
     wasm = val;
 }
 
-
-let cachedUint8ArrayMemory0 = null;
-
-function getUint8ArrayMemory0() {
-    if (cachedUint8ArrayMemory0 === null || cachedUint8ArrayMemory0.byteLength === 0) {
-        cachedUint8ArrayMemory0 = new Uint8Array(wasm.memory.buffer);
-    }
-    return cachedUint8ArrayMemory0;
-}
-
-let cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });
-
-cachedTextDecoder.decode();
-
-const MAX_SAFARI_DECODE_BYTES = 2146435072;
-let numBytesDecoded = 0;
-function decodeText(ptr, len) {
-    numBytesDecoded += len;
-    if (numBytesDecoded >= MAX_SAFARI_DECODE_BYTES) {
-        cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });
-        cachedTextDecoder.decode();
-        numBytesDecoded = len;
-    }
-    return cachedTextDecoder.decode(getUint8ArrayMemory0().subarray(ptr, ptr + len));
-}
-
-function getStringFromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    return decodeText(ptr, len);
-}
-
-let heap = new Array(128).fill(undefined);
-
-heap.push(undefined, null, true, false);
-
-let heap_next = heap.length;
-
 function addHeapObject(obj) {
     if (heap_next === heap.length) heap.push(heap.length + 1);
     const idx = heap_next;
@@ -49,73 +12,10 @@ function addHeapObject(obj) {
     return idx;
 }
 
-function getObject(idx) { return heap[idx]; }
-
-let WASM_VECTOR_LEN = 0;
-
-const cachedTextEncoder = new TextEncoder();
-
-if (!('encodeInto' in cachedTextEncoder)) {
-    cachedTextEncoder.encodeInto = function (arg, view) {
-        const buf = cachedTextEncoder.encode(arg);
-        view.set(buf);
-        return {
-            read: arg.length,
-            written: buf.length
-        };
+function _assertClass(instance, klass) {
+    if (!(instance instanceof klass)) {
+        throw new Error(`expected instance of ${klass.name}`);
     }
-}
-
-function passStringToWasm0(arg, malloc, realloc) {
-
-    if (realloc === undefined) {
-        const buf = cachedTextEncoder.encode(arg);
-        const ptr = malloc(buf.length, 1) >>> 0;
-        getUint8ArrayMemory0().subarray(ptr, ptr + buf.length).set(buf);
-        WASM_VECTOR_LEN = buf.length;
-        return ptr;
-    }
-
-    let len = arg.length;
-    let ptr = malloc(len, 1) >>> 0;
-
-    const mem = getUint8ArrayMemory0();
-
-    let offset = 0;
-
-    for (; offset < len; offset++) {
-        const code = arg.charCodeAt(offset);
-        if (code > 0x7F) break;
-        mem[ptr + offset] = code;
-    }
-
-    if (offset !== len) {
-        if (offset !== 0) {
-            arg = arg.slice(offset);
-        }
-        ptr = realloc(ptr, len, len = offset + arg.length * 3, 1) >>> 0;
-        const view = getUint8ArrayMemory0().subarray(ptr + offset, ptr + len);
-        const ret = cachedTextEncoder.encodeInto(arg, view);
-
-        offset += ret.written;
-        ptr = realloc(ptr, len, offset, 1) >>> 0;
-    }
-
-    WASM_VECTOR_LEN = offset;
-    return ptr;
-}
-
-let cachedDataViewMemory0 = null;
-
-function getDataViewMemory0() {
-    if (cachedDataViewMemory0 === null || cachedDataViewMemory0.buffer.detached === true || (cachedDataViewMemory0.buffer.detached === undefined && cachedDataViewMemory0.buffer !== wasm.memory.buffer)) {
-        cachedDataViewMemory0 = new DataView(wasm.memory.buffer);
-    }
-    return cachedDataViewMemory0;
-}
-
-function isLikeNone(x) {
-    return x === undefined || x === null;
 }
 
 function debugString(val) {
@@ -183,35 +83,10 @@ function debugString(val) {
     return className;
 }
 
-function handleError(f, args) {
-    try {
-        return f.apply(this, args);
-    } catch (e) {
-        wasm.__wbindgen_export3(addHeapObject(e));
-    }
-}
-
 function dropObject(idx) {
     if (idx < 132) return;
     heap[idx] = heap_next;
     heap_next = idx;
-}
-
-function takeObject(idx) {
-    const ret = getObject(idx);
-    dropObject(idx);
-    return ret;
-}
-
-function getArrayU8FromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    return getUint8ArrayMemory0().subarray(ptr / 1, ptr / 1 + len);
-}
-
-function _assertClass(instance, klass) {
-    if (!(instance instanceof klass)) {
-        throw new Error(`expected instance of ${klass.name}`);
-    }
 }
 
 function getArrayJsValueFromWasm0(ptr, len) {
@@ -224,6 +99,71 @@ function getArrayJsValueFromWasm0(ptr, len) {
     return result;
 }
 
+function getArrayU32FromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    return getUint32ArrayMemory0().subarray(ptr / 4, ptr / 4 + len);
+}
+
+function getArrayU8FromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    return getUint8ArrayMemory0().subarray(ptr / 1, ptr / 1 + len);
+}
+
+let cachedDataViewMemory0 = null;
+function getDataViewMemory0() {
+    if (cachedDataViewMemory0 === null || cachedDataViewMemory0.buffer.detached === true || (cachedDataViewMemory0.buffer.detached === undefined && cachedDataViewMemory0.buffer !== wasm.memory.buffer)) {
+        cachedDataViewMemory0 = new DataView(wasm.memory.buffer);
+    }
+    return cachedDataViewMemory0;
+}
+
+function getStringFromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    return decodeText(ptr, len);
+}
+
+let cachedUint32ArrayMemory0 = null;
+function getUint32ArrayMemory0() {
+    if (cachedUint32ArrayMemory0 === null || cachedUint32ArrayMemory0.byteLength === 0) {
+        cachedUint32ArrayMemory0 = new Uint32Array(wasm.memory.buffer);
+    }
+    return cachedUint32ArrayMemory0;
+}
+
+let cachedUint8ArrayMemory0 = null;
+function getUint8ArrayMemory0() {
+    if (cachedUint8ArrayMemory0 === null || cachedUint8ArrayMemory0.byteLength === 0) {
+        cachedUint8ArrayMemory0 = new Uint8Array(wasm.memory.buffer);
+    }
+    return cachedUint8ArrayMemory0;
+}
+
+function getObject(idx) { return heap[idx]; }
+
+function handleError(f, args) {
+    try {
+        return f.apply(this, args);
+    } catch (e) {
+        wasm.__wbindgen_export3(addHeapObject(e));
+    }
+}
+
+let heap = new Array(128).fill(undefined);
+heap.push(undefined, null, true, false);
+
+let heap_next = heap.length;
+
+function isLikeNone(x) {
+    return x === undefined || x === null;
+}
+
+function passArray32ToWasm0(arg, malloc) {
+    const ptr = malloc(arg.length * 4, 4) >>> 0;
+    getUint32ArrayMemory0().set(arg, ptr / 4);
+    WASM_VECTOR_LEN = arg.length;
+    return ptr;
+}
+
 function passArrayJsValueToWasm0(array, malloc) {
     const ptr = malloc(array.length * 4, 4) >>> 0;
     const mem = getDataViewMemory0();
@@ -233,125 +173,172 @@ function passArrayJsValueToWasm0(array, malloc) {
     WASM_VECTOR_LEN = array.length;
     return ptr;
 }
-/**
- * @param {string} python_source
- * @returns {AnalysisResult}
- */
-export function analyze(python_source) {
-    const ptr0 = passStringToWasm0(python_source, wasm.__wbindgen_export, wasm.__wbindgen_export2);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.analyze(ptr0, len0);
-    return AnalysisResult.__wrap(ret);
+
+function passStringToWasm0(arg, malloc, realloc) {
+    if (realloc === undefined) {
+        const buf = cachedTextEncoder.encode(arg);
+        const ptr = malloc(buf.length, 1) >>> 0;
+        getUint8ArrayMemory0().subarray(ptr, ptr + buf.length).set(buf);
+        WASM_VECTOR_LEN = buf.length;
+        return ptr;
+    }
+
+    let len = arg.length;
+    let ptr = malloc(len, 1) >>> 0;
+
+    const mem = getUint8ArrayMemory0();
+
+    let offset = 0;
+
+    for (; offset < len; offset++) {
+        const code = arg.charCodeAt(offset);
+        if (code > 0x7F) break;
+        mem[ptr + offset] = code;
+    }
+    if (offset !== len) {
+        if (offset !== 0) {
+            arg = arg.slice(offset);
+        }
+        ptr = realloc(ptr, len, len = offset + arg.length * 3, 1) >>> 0;
+        const view = getUint8ArrayMemory0().subarray(ptr + offset, ptr + len);
+        const ret = cachedTextEncoder.encodeInto(arg, view);
+
+        offset += ret.written;
+        ptr = realloc(ptr, len, offset, 1) >>> 0;
+    }
+
+    WASM_VECTOR_LEN = offset;
+    return ptr;
 }
 
-/**
- * @returns {Workspace}
- */
-export function initWorkspace() {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.initWorkspace(retptr);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-        if (r2) {
-            throw takeObject(r1);
-        }
-        return Workspace.__wrap(r0);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
+function takeObject(idx) {
+    const ret = getObject(idx);
+    dropObject(idx);
+    return ret;
+}
+
+let cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });
+cachedTextDecoder.decode();
+const MAX_SAFARI_DECODE_BYTES = 2146435072;
+let numBytesDecoded = 0;
+function decodeText(ptr, len) {
+    numBytesDecoded += len;
+    if (numBytesDecoded >= MAX_SAFARI_DECODE_BYTES) {
+        cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });
+        cachedTextDecoder.decode();
+        numBytesDecoded = len;
+    }
+    return cachedTextDecoder.decode(getUint8ArrayMemory0().subarray(ptr, ptr + len));
+}
+
+const cachedTextEncoder = new TextEncoder();
+
+if (!('encodeInto' in cachedTextEncoder)) {
+    cachedTextEncoder.encodeInto = function (arg, view) {
+        const buf = cachedTextEncoder.encode(arg);
+        view.set(buf);
+        return {
+            read: arg.length,
+            written: buf.length
+        };
     }
 }
 
-/**
- * @enum {0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24}
- */
-export const CompletionKind = Object.freeze({
-    Text: 0, "0": "Text",
-    Method: 1, "1": "Method",
-    Function: 2, "2": "Function",
-    Constructor: 3, "3": "Constructor",
-    Field: 4, "4": "Field",
-    Variable: 5, "5": "Variable",
-    Class: 6, "6": "Class",
-    Interface: 7, "7": "Interface",
-    Module: 8, "8": "Module",
-    Property: 9, "9": "Property",
-    Unit: 10, "10": "Unit",
-    Value: 11, "11": "Value",
-    Enum: 12, "12": "Enum",
-    Keyword: 13, "13": "Keyword",
-    Snippet: 14, "14": "Snippet",
-    Color: 15, "15": "Color",
-    File: 16, "16": "File",
-    Reference: 17, "17": "Reference",
-    Folder: 18, "18": "Folder",
-    EnumMember: 19, "19": "EnumMember",
-    Constant: 20, "20": "Constant",
-    Struct: 21, "21": "Struct",
-    Event: 22, "22": "Event",
-    Operator: 23, "23": "Operator",
-    TypeParameter: 24, "24": "TypeParameter",
-});
-/**
- * @enum {1 | 2 | 3}
- */
-export const DocumentHighlightKind = Object.freeze({
-    Text: 1, "1": "Text",
-    Read: 2, "2": "Read",
-    Write: 3, "3": "Write",
-});
-/**
- * @enum {0 | 1}
- */
-export const InlayHintKind = Object.freeze({
-    Type: 0, "0": "Type",
-    Parameter: 1, "1": "Parameter",
-});
-/**
- * @enum {0 | 1 | 2}
- */
-export const PositionEncoding = Object.freeze({
-    Utf8: 0, "0": "Utf8",
-    Utf16: 1, "1": "Utf16",
-    Utf32: 2, "2": "Utf32",
-});
-/**
- * @enum {0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14}
- */
-export const SemanticTokenKind = Object.freeze({
-    Namespace: 0, "0": "Namespace",
-    Class: 1, "1": "Class",
-    Parameter: 2, "2": "Parameter",
-    SelfParameter: 3, "3": "SelfParameter",
-    ClsParameter: 4, "4": "ClsParameter",
-    Variable: 5, "5": "Variable",
-    Property: 6, "6": "Property",
-    Function: 7, "7": "Function",
-    Method: 8, "8": "Method",
-    Keyword: 9, "9": "Keyword",
-    String: 10, "10": "String",
-    Number: 11, "11": "Number",
-    Decorator: 12, "12": "Decorator",
-    BuiltinConstant: 13, "13": "BuiltinConstant",
-    TypeParameter: 14, "14": "TypeParameter",
-});
-/**
- * @enum {0 | 1 | 2 | 3}
- */
-export const Severity = Object.freeze({
-    Info: 0, "0": "Info",
-    Warning: 1, "1": "Warning",
-    Error: 2, "2": "Error",
-    Fatal: 3, "3": "Fatal",
-});
+let WASM_VECTOR_LEN = 0;
 
 const AnalysisResultFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_analysisresult_free(ptr >>> 0, 1));
 
-export class AnalysisResult {
+const CalledNameFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_calledname_free(ptr >>> 0, 1));
 
+const CompletionFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_completion_free(ptr >>> 0, 1));
+
+const DiagnosticFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_diagnostic_free(ptr >>> 0, 1));
+
+const DocumentHighlightFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_documenthighlight_free(ptr >>> 0, 1));
+
+const FileHandleFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_filehandle_free(ptr >>> 0, 1));
+
+const HoverFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_hover_free(ptr >>> 0, 1));
+
+const InlayHintFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_inlayhint_free(ptr >>> 0, 1));
+
+const LocationLinkFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_locationlink_free(ptr >>> 0, 1));
+
+const ParameterInformationFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_parameterinformation_free(ptr >>> 0, 1));
+
+const ParseErrorFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_parseerror_free(ptr >>> 0, 1));
+
+const PositionFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_position_free(ptr >>> 0, 1));
+
+const PythonConstantFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_pythonconstant_free(ptr >>> 0, 1));
+
+const PythonFunctionFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_pythonfunction_free(ptr >>> 0, 1));
+
+const PythonFunctionArgumentFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_pythonfunctionargument_free(ptr >>> 0, 1));
+
+const PythonNameFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_pythonname_free(ptr >>> 0, 1));
+
+const RangeFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_range_free(ptr >>> 0, 1));
+
+const SemanticTokenFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_semantictoken_free(ptr >>> 0, 1));
+
+const SignatureHelpFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_signaturehelp_free(ptr >>> 0, 1));
+
+const SignatureInformationFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_signatureinformation_free(ptr >>> 0, 1));
+
+const TextEditFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_textedit_free(ptr >>> 0, 1));
+
+const TextRangeFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_textrange_free(ptr >>> 0, 1));
+
+const WorkspaceFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_workspace_free(ptr >>> 0, 1));
+
+export class AnalysisResult {
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(AnalysisResult.prototype);
@@ -359,14 +346,12 @@ export class AnalysisResult {
         AnalysisResultFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         AnalysisResultFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_analysisresult_free(ptr, 0);
@@ -444,7 +429,7 @@ export class AnalysisResult {
         wasm.__wbg_set_analysisresult_defined_constants(this.__wbg_ptr, ptr0, len0);
     }
     /**
-     * @returns {string[]}
+     * @returns {CalledName[]}
      */
     get called_names() {
         try {
@@ -460,7 +445,7 @@ export class AnalysisResult {
         }
     }
     /**
-     * @param {string[]} arg0
+     * @param {CalledName[]} arg0
      */
     set called_names(arg0) {
         const ptr0 = passArrayJsValueToWasm0(arg0, wasm.__wbindgen_export);
@@ -468,17 +453,28 @@ export class AnalysisResult {
         wasm.__wbg_set_analysisresult_called_names(this.__wbg_ptr, ptr0, len0);
     }
     /**
-     * @returns {boolean}
+     * @returns {Uint32Array}
      */
-    get has_ellipsis() {
-        const ret = wasm.__wbg_get_analysisresult_has_ellipsis(this.__wbg_ptr);
-        return ret !== 0;
+    get ellipsis() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.__wbg_get_analysisresult_ellipsis(retptr, this.__wbg_ptr);
+            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+            var v1 = getArrayU32FromWasm0(r0, r1).slice();
+            wasm.__wbindgen_export4(r0, r1 * 4, 4);
+            return v1;
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
     }
     /**
-     * @param {boolean} arg0
+     * @param {Uint32Array} arg0
      */
-    set has_ellipsis(arg0) {
-        wasm.__wbg_set_analysisresult_has_ellipsis(this.__wbg_ptr, arg0);
+    set ellipsis(arg0) {
+        const ptr0 = passArray32ToWasm0(arg0, wasm.__wbindgen_export);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.__wbg_set_analysisresult_ellipsis(this.__wbg_ptr, ptr0, len0);
     }
     /**
      * @returns {TextRange[]}
@@ -531,12 +527,74 @@ export class AnalysisResult {
 }
 if (Symbol.dispose) AnalysisResult.prototype[Symbol.dispose] = AnalysisResult.prototype.free;
 
-const CompletionFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_completion_free(ptr >>> 0, 1));
+export class CalledName {
+    static __wrap(ptr) {
+        ptr = ptr >>> 0;
+        const obj = Object.create(CalledName.prototype);
+        obj.__wbg_ptr = ptr;
+        CalledNameFinalization.register(obj, obj.__wbg_ptr, obj);
+        return obj;
+    }
+    static __unwrap(jsValue) {
+        if (!(jsValue instanceof CalledName)) {
+            return 0;
+        }
+        return jsValue.__destroy_into_raw();
+    }
+    __destroy_into_raw() {
+        const ptr = this.__wbg_ptr;
+        this.__wbg_ptr = 0;
+        CalledNameFinalization.unregister(this);
+        return ptr;
+    }
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_calledname_free(ptr, 0);
+    }
+    /**
+     * @returns {string}
+     */
+    get name() {
+        let deferred1_0;
+        let deferred1_1;
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.__wbg_get_calledname_name(retptr, this.__wbg_ptr);
+            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+            deferred1_0 = r0;
+            deferred1_1 = r1;
+            return getStringFromWasm0(r0, r1);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+            wasm.__wbindgen_export4(deferred1_0, deferred1_1, 1);
+        }
+    }
+    /**
+     * @param {string} arg0
+     */
+    set name(arg0) {
+        const ptr0 = passStringToWasm0(arg0, wasm.__wbindgen_export, wasm.__wbindgen_export2);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.__wbg_set_calledname_name(this.__wbg_ptr, ptr0, len0);
+    }
+    /**
+     * @returns {number}
+     */
+    get start() {
+        const ret = wasm.__wbg_get_calledname_start(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * @param {number} arg0
+     */
+    set start(arg0) {
+        wasm.__wbg_set_calledname_start(this.__wbg_ptr, arg0);
+    }
+}
+if (Symbol.dispose) CalledName.prototype[Symbol.dispose] = CalledName.prototype.free;
 
 export class Completion {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(Completion.prototype);
@@ -544,14 +602,12 @@ export class Completion {
         CompletionFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         CompletionFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_completion_free(ptr, 0);
@@ -734,12 +790,38 @@ export class Completion {
 }
 if (Symbol.dispose) Completion.prototype[Symbol.dispose] = Completion.prototype.free;
 
-const DiagnosticFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_diagnostic_free(ptr >>> 0, 1));
+/**
+ * @enum {0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24}
+ */
+export const CompletionKind = Object.freeze({
+    Text: 0, "0": "Text",
+    Method: 1, "1": "Method",
+    Function: 2, "2": "Function",
+    Constructor: 3, "3": "Constructor",
+    Field: 4, "4": "Field",
+    Variable: 5, "5": "Variable",
+    Class: 6, "6": "Class",
+    Interface: 7, "7": "Interface",
+    Module: 8, "8": "Module",
+    Property: 9, "9": "Property",
+    Unit: 10, "10": "Unit",
+    Value: 11, "11": "Value",
+    Enum: 12, "12": "Enum",
+    Keyword: 13, "13": "Keyword",
+    Snippet: 14, "14": "Snippet",
+    Color: 15, "15": "Color",
+    File: 16, "16": "File",
+    Reference: 17, "17": "Reference",
+    Folder: 18, "18": "Folder",
+    EnumMember: 19, "19": "EnumMember",
+    Constant: 20, "20": "Constant",
+    Struct: 21, "21": "Struct",
+    Event: 22, "22": "Event",
+    Operator: 23, "23": "Operator",
+    TypeParameter: 24, "24": "TypeParameter",
+});
 
 export class Diagnostic {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(Diagnostic.prototype);
@@ -747,14 +829,12 @@ export class Diagnostic {
         DiagnosticFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         DiagnosticFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_diagnostic_free(ptr, 0);
@@ -808,12 +888,7 @@ export class Diagnostic {
 }
 if (Symbol.dispose) Diagnostic.prototype[Symbol.dispose] = Diagnostic.prototype.free;
 
-const DocumentHighlightFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_documenthighlight_free(ptr >>> 0, 1));
-
 export class DocumentHighlight {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(DocumentHighlight.prototype);
@@ -821,14 +896,12 @@ export class DocumentHighlight {
         DocumentHighlightFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         DocumentHighlightFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_documenthighlight_free(ptr, 0);
@@ -850,12 +923,16 @@ export class DocumentHighlight {
 }
 if (Symbol.dispose) DocumentHighlight.prototype[Symbol.dispose] = DocumentHighlight.prototype.free;
 
-const FileHandleFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_filehandle_free(ptr >>> 0, 1));
+/**
+ * @enum {1 | 2 | 3}
+ */
+export const DocumentHighlightKind = Object.freeze({
+    Text: 1, "1": "Text",
+    Read: 2, "2": "Read",
+    Write: 3, "3": "Write",
+});
 
 export class FileHandle {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(FileHandle.prototype);
@@ -863,23 +940,19 @@ export class FileHandle {
         FileHandleFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     toJSON() {
         return {
         };
     }
-
     toString() {
         return JSON.stringify(this);
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         FileHandleFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_filehandle_free(ptr, 0);
@@ -925,12 +998,7 @@ export class FileHandle {
 }
 if (Symbol.dispose) FileHandle.prototype[Symbol.dispose] = FileHandle.prototype.free;
 
-const HoverFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_hover_free(ptr >>> 0, 1));
-
 export class Hover {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(Hover.prototype);
@@ -938,14 +1006,12 @@ export class Hover {
         HoverFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         HoverFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_hover_free(ptr, 0);
@@ -995,12 +1061,7 @@ export class Hover {
 }
 if (Symbol.dispose) Hover.prototype[Symbol.dispose] = Hover.prototype.free;
 
-const InlayHintFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_inlayhint_free(ptr >>> 0, 1));
-
 export class InlayHint {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(InlayHint.prototype);
@@ -1008,14 +1069,12 @@ export class InlayHint {
         InlayHintFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         InlayHintFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_inlayhint_free(ptr, 0);
@@ -1078,12 +1137,15 @@ export class InlayHint {
 }
 if (Symbol.dispose) InlayHint.prototype[Symbol.dispose] = InlayHint.prototype.free;
 
-const LocationLinkFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_locationlink_free(ptr >>> 0, 1));
+/**
+ * @enum {0 | 1}
+ */
+export const InlayHintKind = Object.freeze({
+    Type: 0, "0": "Type",
+    Parameter: 1, "1": "Parameter",
+});
 
 export class LocationLink {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(LocationLink.prototype);
@@ -1091,14 +1153,12 @@ export class LocationLink {
         LocationLinkFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         LocationLinkFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_locationlink_free(ptr, 0);
@@ -1192,12 +1252,7 @@ export class LocationLink {
 }
 if (Symbol.dispose) LocationLink.prototype[Symbol.dispose] = LocationLink.prototype.free;
 
-const ParameterInformationFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_parameterinformation_free(ptr >>> 0, 1));
-
 export class ParameterInformation {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(ParameterInformation.prototype);
@@ -1205,21 +1260,18 @@ export class ParameterInformation {
         ParameterInformationFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     static __unwrap(jsValue) {
         if (!(jsValue instanceof ParameterInformation)) {
             return 0;
         }
         return jsValue.__destroy_into_raw();
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         ParameterInformationFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_parameterinformation_free(ptr, 0);
@@ -1281,12 +1333,7 @@ export class ParameterInformation {
 }
 if (Symbol.dispose) ParameterInformation.prototype[Symbol.dispose] = ParameterInformation.prototype.free;
 
-const ParseErrorFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_parseerror_free(ptr >>> 0, 1));
-
 export class ParseError {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(ParseError.prototype);
@@ -1294,21 +1341,18 @@ export class ParseError {
         ParseErrorFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     static __unwrap(jsValue) {
         if (!(jsValue instanceof ParseError)) {
             return 0;
         }
         return jsValue.__destroy_into_raw();
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         ParseErrorFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_parseerror_free(ptr, 0);
@@ -1358,12 +1402,7 @@ export class ParseError {
 }
 if (Symbol.dispose) ParseError.prototype[Symbol.dispose] = ParseError.prototype.free;
 
-const PositionFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_position_free(ptr >>> 0, 1));
-
 export class Position {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(Position.prototype);
@@ -1371,14 +1410,12 @@ export class Position {
         PositionFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         PositionFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_position_free(ptr, 0);
@@ -1426,12 +1463,16 @@ export class Position {
 }
 if (Symbol.dispose) Position.prototype[Symbol.dispose] = Position.prototype.free;
 
-const PythonConstantFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_pythonconstant_free(ptr >>> 0, 1));
+/**
+ * @enum {0 | 1 | 2}
+ */
+export const PositionEncoding = Object.freeze({
+    Utf8: 0, "0": "Utf8",
+    Utf16: 1, "1": "Utf16",
+    Utf32: 2, "2": "Utf32",
+});
 
 export class PythonConstant {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(PythonConstant.prototype);
@@ -1439,21 +1480,18 @@ export class PythonConstant {
         PythonConstantFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     static __unwrap(jsValue) {
         if (!(jsValue instanceof PythonConstant)) {
             return 0;
         }
         return jsValue.__destroy_into_raw();
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         PythonConstantFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_pythonconstant_free(ptr, 0);
@@ -1542,12 +1580,7 @@ export class PythonConstant {
 }
 if (Symbol.dispose) PythonConstant.prototype[Symbol.dispose] = PythonConstant.prototype.free;
 
-const PythonFunctionFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_pythonfunction_free(ptr >>> 0, 1));
-
 export class PythonFunction {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(PythonFunction.prototype);
@@ -1555,21 +1588,18 @@ export class PythonFunction {
         PythonFunctionFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     static __unwrap(jsValue) {
         if (!(jsValue instanceof PythonFunction)) {
             return 0;
         }
         return jsValue.__destroy_into_raw();
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         PythonFunctionFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_pythonfunction_free(ptr, 0);
@@ -1692,15 +1722,36 @@ export class PythonFunction {
     set explicit_return(arg0) {
         wasm.__wbg_set_pythonfunction_explicit_return(this.__wbg_ptr, arg0);
     }
+    /**
+     * @returns {boolean}
+     */
+    get side_effects() {
+        const ret = wasm.__wbg_get_pythonfunction_side_effects(this.__wbg_ptr);
+        return ret !== 0;
+    }
+    /**
+     * @param {boolean} arg0
+     */
+    set side_effects(arg0) {
+        wasm.__wbg_set_pythonfunction_side_effects(this.__wbg_ptr, arg0);
+    }
+    /**
+     * @returns {number}
+     */
+    get start() {
+        const ret = wasm.__wbg_get_pythonfunction_start(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * @param {number} arg0
+     */
+    set start(arg0) {
+        wasm.__wbg_set_pythonfunction_start(this.__wbg_ptr, arg0);
+    }
 }
 if (Symbol.dispose) PythonFunction.prototype[Symbol.dispose] = PythonFunction.prototype.free;
 
-const PythonFunctionArgumentFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_pythonfunctionargument_free(ptr >>> 0, 1));
-
 export class PythonFunctionArgument {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(PythonFunctionArgument.prototype);
@@ -1708,21 +1759,18 @@ export class PythonFunctionArgument {
         PythonFunctionArgumentFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     static __unwrap(jsValue) {
         if (!(jsValue instanceof PythonFunctionArgument)) {
             return 0;
         }
         return jsValue.__destroy_into_raw();
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         PythonFunctionArgumentFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_pythonfunctionargument_free(ptr, 0);
@@ -1824,12 +1872,7 @@ export class PythonFunctionArgument {
 }
 if (Symbol.dispose) PythonFunctionArgument.prototype[Symbol.dispose] = PythonFunctionArgument.prototype.free;
 
-const PythonNameFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_pythonname_free(ptr >>> 0, 1));
-
 export class PythonName {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(PythonName.prototype);
@@ -1837,21 +1880,18 @@ export class PythonName {
         PythonNameFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     static __unwrap(jsValue) {
         if (!(jsValue instanceof PythonName)) {
             return 0;
         }
         return jsValue.__destroy_into_raw();
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         PythonNameFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_pythonname_free(ptr, 0);
@@ -1927,12 +1967,7 @@ export class PythonName {
 }
 if (Symbol.dispose) PythonName.prototype[Symbol.dispose] = PythonName.prototype.free;
 
-const RangeFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_range_free(ptr >>> 0, 1));
-
 export class Range {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(Range.prototype);
@@ -1940,14 +1975,12 @@ export class Range {
         RangeFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         RangeFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_range_free(ptr, 0);
@@ -1999,12 +2032,7 @@ export class Range {
 }
 if (Symbol.dispose) Range.prototype[Symbol.dispose] = Range.prototype.free;
 
-const SemanticTokenFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_semantictoken_free(ptr >>> 0, 1));
-
 export class SemanticToken {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(SemanticToken.prototype);
@@ -2012,14 +2040,12 @@ export class SemanticToken {
         SemanticTokenFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         SemanticTokenFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_semantictoken_free(ptr, 0);
@@ -2100,12 +2126,38 @@ export class SemanticToken {
 }
 if (Symbol.dispose) SemanticToken.prototype[Symbol.dispose] = SemanticToken.prototype.free;
 
-const SignatureHelpFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_signaturehelp_free(ptr >>> 0, 1));
+/**
+ * @enum {0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14}
+ */
+export const SemanticTokenKind = Object.freeze({
+    Namespace: 0, "0": "Namespace",
+    Class: 1, "1": "Class",
+    Parameter: 2, "2": "Parameter",
+    SelfParameter: 3, "3": "SelfParameter",
+    ClsParameter: 4, "4": "ClsParameter",
+    Variable: 5, "5": "Variable",
+    Property: 6, "6": "Property",
+    Function: 7, "7": "Function",
+    Method: 8, "8": "Method",
+    Keyword: 9, "9": "Keyword",
+    String: 10, "10": "String",
+    Number: 11, "11": "Number",
+    Decorator: 12, "12": "Decorator",
+    BuiltinConstant: 13, "13": "BuiltinConstant",
+    TypeParameter: 14, "14": "TypeParameter",
+});
+
+/**
+ * @enum {0 | 1 | 2 | 3}
+ */
+export const Severity = Object.freeze({
+    Info: 0, "0": "Info",
+    Warning: 1, "1": "Warning",
+    Error: 2, "2": "Error",
+    Fatal: 3, "3": "Fatal",
+});
 
 export class SignatureHelp {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(SignatureHelp.prototype);
@@ -2113,14 +2165,12 @@ export class SignatureHelp {
         SignatureHelpFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         SignatureHelpFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_signaturehelp_free(ptr, 0);
@@ -2165,12 +2215,7 @@ export class SignatureHelp {
 }
 if (Symbol.dispose) SignatureHelp.prototype[Symbol.dispose] = SignatureHelp.prototype.free;
 
-const SignatureInformationFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_signatureinformation_free(ptr >>> 0, 1));
-
 export class SignatureInformation {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(SignatureInformation.prototype);
@@ -2178,21 +2223,18 @@ export class SignatureInformation {
         SignatureInformationFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     static __unwrap(jsValue) {
         if (!(jsValue instanceof SignatureInformation)) {
             return 0;
         }
         return jsValue.__destroy_into_raw();
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         SignatureInformationFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_signatureinformation_free(ptr, 0);
@@ -2291,12 +2333,7 @@ export class SignatureInformation {
 }
 if (Symbol.dispose) SignatureInformation.prototype[Symbol.dispose] = SignatureInformation.prototype.free;
 
-const TextEditFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_textedit_free(ptr >>> 0, 1));
-
 export class TextEdit {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(TextEdit.prototype);
@@ -2304,21 +2341,18 @@ export class TextEdit {
         TextEditFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     static __unwrap(jsValue) {
         if (!(jsValue instanceof TextEdit)) {
             return 0;
         }
         return jsValue.__destroy_into_raw();
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         TextEditFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_textedit_free(ptr, 0);
@@ -2368,12 +2402,7 @@ export class TextEdit {
 }
 if (Symbol.dispose) TextEdit.prototype[Symbol.dispose] = TextEdit.prototype.free;
 
-const TextRangeFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_textrange_free(ptr >>> 0, 1));
-
 export class TextRange {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(TextRange.prototype);
@@ -2381,21 +2410,18 @@ export class TextRange {
         TextRangeFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     static __unwrap(jsValue) {
         if (!(jsValue instanceof TextRange)) {
             return 0;
         }
         return jsValue.__destroy_into_raw();
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         TextRangeFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_textrange_free(ptr, 0);
@@ -2429,12 +2455,7 @@ export class TextRange {
 }
 if (Symbol.dispose) TextRange.prototype[Symbol.dispose] = TextRange.prototype.free;
 
-const WorkspaceFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_workspace_free(ptr >>> 0, 1));
-
 export class Workspace {
-
     static __wrap(ptr) {
         ptr = ptr >>> 0;
         const obj = Object.create(Workspace.prototype);
@@ -2442,14 +2463,12 @@ export class Workspace {
         WorkspaceFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
-
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
         WorkspaceFinalization.unregister(this);
         return ptr;
     }
-
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_workspace_free(ptr, 0);
@@ -3020,12 +3039,64 @@ export class Workspace {
 }
 if (Symbol.dispose) Workspace.prototype[Symbol.dispose] = Workspace.prototype.free;
 
-export function __wbg_Error_e83987f665cf5504(arg0, arg1) {
+/**
+ * @param {Workspace} workspace
+ * @param {FileHandle} file_id
+ * @returns {AnalysisResult}
+ */
+export function analyzeFile(workspace, file_id) {
+    _assertClass(workspace, Workspace);
+    _assertClass(file_id, FileHandle);
+    const ret = wasm.analyzeFile(workspace.__wbg_ptr, file_id.__wbg_ptr);
+    return AnalysisResult.__wrap(ret);
+}
+
+/**
+ * Importantly, this does not cache any state (e.g., the parsed AST) between calls.
+ * @param {string} source
+ * @returns {PythonName[]}
+ */
+export function findImportedNames(source) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passStringToWasm0(source, wasm.__wbindgen_export, wasm.__wbindgen_export2);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.findImportedNames(retptr, ptr0, len0);
+        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+        var v2 = getArrayJsValueFromWasm0(r0, r1).slice();
+        wasm.__wbindgen_export4(r0, r1 * 4, 4);
+        return v2;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+}
+
+/**
+ * @returns {Workspace}
+ */
+export function initWorkspace() {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.initWorkspace(retptr);
+        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
+        if (r2) {
+            throw takeObject(r1);
+        }
+        return Workspace.__wrap(r0);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+}
+
+export function __wbg_Error_52673b7de5a0ca89(arg0, arg1) {
     const ret = Error(getStringFromWasm0(arg0, arg1));
     return addHeapObject(ret);
 };
 
-export function __wbg_Number_bb48ca12f395cd08(arg0) {
+export function __wbg_Number_2d1dcfcf4ec51736(arg0) {
     const ret = Number(getObject(arg0));
     return ret;
 };
@@ -3038,20 +3109,20 @@ export function __wbg_String_8f0eb39a4a4c2f66(arg0, arg1) {
     getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
 };
 
-export function __wbg___wbindgen_bigint_get_as_i64_f3ebc5a755000afd(arg0, arg1) {
+export function __wbg___wbindgen_bigint_get_as_i64_6e32f5e6aff02e1d(arg0, arg1) {
     const v = getObject(arg1);
     const ret = typeof(v) === 'bigint' ? v : undefined;
     getDataViewMemory0().setBigInt64(arg0 + 8 * 1, isLikeNone(ret) ? BigInt(0) : ret, true);
     getDataViewMemory0().setInt32(arg0 + 4 * 0, !isLikeNone(ret), true);
 };
 
-export function __wbg___wbindgen_boolean_get_6d5a1ee65bab5f68(arg0) {
+export function __wbg___wbindgen_boolean_get_dea25b33882b895b(arg0) {
     const v = getObject(arg0);
     const ret = typeof(v) === 'boolean' ? v : undefined;
     return isLikeNone(ret) ? 0xFFFFFF : ret ? 1 : 0;
 };
 
-export function __wbg___wbindgen_debug_string_df47ffb5e35e6763(arg0, arg1) {
+export function __wbg___wbindgen_debug_string_adfb662ae34724b6(arg0, arg1) {
     const ret = debugString(getObject(arg1));
     const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_export, wasm.__wbindgen_export2);
     const len1 = WASM_VECTOR_LEN;
@@ -3059,55 +3130,55 @@ export function __wbg___wbindgen_debug_string_df47ffb5e35e6763(arg0, arg1) {
     getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
 };
 
-export function __wbg___wbindgen_in_bb933bd9e1b3bc0f(arg0, arg1) {
+export function __wbg___wbindgen_in_0d3e1e8f0c669317(arg0, arg1) {
     const ret = getObject(arg0) in getObject(arg1);
     return ret;
 };
 
-export function __wbg___wbindgen_is_bigint_cb320707dcd35f0b(arg0) {
+export function __wbg___wbindgen_is_bigint_0e1a2e3f55cfae27(arg0) {
     const ret = typeof(getObject(arg0)) === 'bigint';
     return ret;
 };
 
-export function __wbg___wbindgen_is_function_ee8a6c5833c90377(arg0) {
+export function __wbg___wbindgen_is_function_8d400b8b1af978cd(arg0) {
     const ret = typeof(getObject(arg0)) === 'function';
     return ret;
 };
 
-export function __wbg___wbindgen_is_object_c818261d21f283a4(arg0) {
+export function __wbg___wbindgen_is_object_ce774f3490692386(arg0) {
     const val = getObject(arg0);
     const ret = typeof(val) === 'object' && val !== null;
     return ret;
 };
 
-export function __wbg___wbindgen_is_string_fbb76cb2940daafd(arg0) {
+export function __wbg___wbindgen_is_string_704ef9c8fc131030(arg0) {
     const ret = typeof(getObject(arg0)) === 'string';
     return ret;
 };
 
-export function __wbg___wbindgen_is_undefined_2d472862bd29a478(arg0) {
+export function __wbg___wbindgen_is_undefined_f6b95eab589e0269(arg0) {
     const ret = getObject(arg0) === undefined;
     return ret;
 };
 
-export function __wbg___wbindgen_jsval_eq_6b13ab83478b1c50(arg0, arg1) {
+export function __wbg___wbindgen_jsval_eq_b6101cc9cef1fe36(arg0, arg1) {
     const ret = getObject(arg0) === getObject(arg1);
     return ret;
 };
 
-export function __wbg___wbindgen_jsval_loose_eq_b664b38a2f582147(arg0, arg1) {
+export function __wbg___wbindgen_jsval_loose_eq_766057600fdd1b0d(arg0, arg1) {
     const ret = getObject(arg0) == getObject(arg1);
     return ret;
 };
 
-export function __wbg___wbindgen_number_get_a20bf9b85341449d(arg0, arg1) {
+export function __wbg___wbindgen_number_get_9619185a74197f95(arg0, arg1) {
     const obj = getObject(arg1);
     const ret = typeof(obj) === 'number' ? obj : undefined;
     getDataViewMemory0().setFloat64(arg0 + 8 * 1, isLikeNone(ret) ? 0 : ret, true);
     getDataViewMemory0().setInt32(arg0 + 4 * 0, !isLikeNone(ret), true);
 };
 
-export function __wbg___wbindgen_string_get_e4f06c90489ad01b(arg0, arg1) {
+export function __wbg___wbindgen_string_get_a2a31e16edf96e42(arg0, arg1) {
     const obj = getObject(arg1);
     const ret = typeof(obj) === 'string' ? obj : undefined;
     var ptr1 = isLikeNone(ret) ? 0 : passStringToWasm0(ret, wasm.__wbindgen_export, wasm.__wbindgen_export2);
@@ -3116,14 +3187,24 @@ export function __wbg___wbindgen_string_get_e4f06c90489ad01b(arg0, arg1) {
     getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
 };
 
-export function __wbg___wbindgen_throw_b855445ff6a94295(arg0, arg1) {
+export function __wbg___wbindgen_throw_dd24417ed36fc46e(arg0, arg1) {
     throw new Error(getStringFromWasm0(arg0, arg1));
 };
 
-export function __wbg_call_e762c39fa8ea36bf() { return handleError(function (arg0, arg1) {
+export function __wbg_call_abb4ff46ce38be40() { return handleError(function (arg0, arg1) {
     const ret = getObject(arg0).call(getObject(arg1));
     return addHeapObject(ret);
 }, arguments) };
+
+export function __wbg_calledname_new(arg0) {
+    const ret = CalledName.__wrap(arg0);
+    return addHeapObject(ret);
+};
+
+export function __wbg_calledname_unwrap(arg0) {
+    const ret = CalledName.__unwrap(getObject(arg0));
+    return ret;
+};
 
 export function __wbg_completion_new(arg0) {
     const ret = Completion.__wrap(arg0);
@@ -3140,34 +3221,22 @@ export function __wbg_documenthighlight_new(arg0) {
     return addHeapObject(ret);
 };
 
-export function __wbg_done_2042aa2670fb1db1(arg0) {
+export function __wbg_done_62ea16af4ce34b24(arg0) {
     const ret = getObject(arg0).done;
     return ret;
 };
 
-export function __wbg_entries_e171b586f8f6bdbf(arg0) {
+export function __wbg_entries_83c79938054e065f(arg0) {
     const ret = Object.entries(getObject(arg0));
     return addHeapObject(ret);
 };
 
-export function __wbg_error_7534b8e9a36f1ab4(arg0, arg1) {
-    let deferred0_0;
-    let deferred0_1;
-    try {
-        deferred0_0 = arg0;
-        deferred0_1 = arg1;
-        console.error(getStringFromWasm0(arg0, arg1));
-    } finally {
-        wasm.__wbindgen_export4(deferred0_0, deferred0_1, 1);
-    }
-};
-
-export function __wbg_get_7bed016f185add81(arg0, arg1) {
+export function __wbg_get_6b7bd52aca3f9671(arg0, arg1) {
     const ret = getObject(arg0)[arg1 >>> 0];
     return addHeapObject(ret);
 };
 
-export function __wbg_get_efcb449f58ec27c2() { return handleError(function (arg0, arg1) {
+export function __wbg_get_af9dab7e9603ea93() { return handleError(function (arg0, arg1) {
     const ret = Reflect.get(getObject(arg0), getObject(arg1));
     return addHeapObject(ret);
 }, arguments) };
@@ -3182,7 +3251,7 @@ export function __wbg_inlayhint_new(arg0) {
     return addHeapObject(ret);
 };
 
-export function __wbg_instanceof_ArrayBuffer_70beb1189ca63b38(arg0) {
+export function __wbg_instanceof_ArrayBuffer_f3320d2419cd0355(arg0) {
     let result;
     try {
         result = getObject(arg0) instanceof ArrayBuffer;
@@ -3193,7 +3262,7 @@ export function __wbg_instanceof_ArrayBuffer_70beb1189ca63b38(arg0) {
     return ret;
 };
 
-export function __wbg_instanceof_Map_8579b5e2ab5437c7(arg0) {
+export function __wbg_instanceof_Map_084be8da74364158(arg0) {
     let result;
     try {
         result = getObject(arg0) instanceof Map;
@@ -3204,7 +3273,7 @@ export function __wbg_instanceof_Map_8579b5e2ab5437c7(arg0) {
     return ret;
 };
 
-export function __wbg_instanceof_Uint8Array_20c8e73002f7af98(arg0) {
+export function __wbg_instanceof_Uint8Array_da54ccc9d3e09434(arg0) {
     let result;
     try {
         result = getObject(arg0) instanceof Uint8Array;
@@ -3215,27 +3284,27 @@ export function __wbg_instanceof_Uint8Array_20c8e73002f7af98(arg0) {
     return ret;
 };
 
-export function __wbg_isArray_96e0af9891d0945d(arg0) {
+export function __wbg_isArray_51fd9e6422c0a395(arg0) {
     const ret = Array.isArray(getObject(arg0));
     return ret;
 };
 
-export function __wbg_isSafeInteger_d216eda7911dde36(arg0) {
+export function __wbg_isSafeInteger_ae7d3f054d55fa16(arg0) {
     const ret = Number.isSafeInteger(getObject(arg0));
     return ret;
 };
 
-export function __wbg_iterator_e5822695327a3c39() {
+export function __wbg_iterator_27b7c8b35ab3e86b() {
     const ret = Symbol.iterator;
     return addHeapObject(ret);
 };
 
-export function __wbg_length_69bca3cb64fc8748(arg0) {
+export function __wbg_length_22ac23eaec9d8053(arg0) {
     const ret = getObject(arg0).length;
     return ret;
 };
 
-export function __wbg_length_cdd215e10d9dd507(arg0) {
+export function __wbg_length_d45040a40c570362(arg0) {
     const ret = getObject(arg0).length;
     return ret;
 };
@@ -3245,42 +3314,37 @@ export function __wbg_locationlink_new(arg0) {
     return addHeapObject(ret);
 };
 
-export function __wbg_new_5a79be3ab53b8aa5(arg0) {
+export function __wbg_new_6421f6084cc5bc5a(arg0) {
     const ret = new Uint8Array(getObject(arg0));
     return addHeapObject(ret);
 };
 
-export function __wbg_new_8a6f238a6ece86ea() {
-    const ret = new Error();
-    return addHeapObject(ret);
-};
-
-export function __wbg_new_a7442b4b19c1a356(arg0, arg1) {
+export function __wbg_new_df1173567d5ff028(arg0, arg1) {
     const ret = new Error(getStringFromWasm0(arg0, arg1));
     return addHeapObject(ret);
 };
 
-export function __wbg_new_no_args_ee98eee5275000a4(arg0, arg1) {
+export function __wbg_new_no_args_cb138f77cf6151ee(arg0, arg1) {
     const ret = new Function(getStringFromWasm0(arg0, arg1));
     return addHeapObject(ret);
 };
 
-export function __wbg_next_020810e0ae8ebcb0() { return handleError(function (arg0) {
-    const ret = getObject(arg0).next();
-    return addHeapObject(ret);
-}, arguments) };
-
-export function __wbg_next_2c826fe5dfec6b6a(arg0) {
+export function __wbg_next_138a17bbf04e926c(arg0) {
     const ret = getObject(arg0).next;
     return addHeapObject(ret);
 };
+
+export function __wbg_next_3cfe5c0fe2a4cc53() { return handleError(function (arg0) {
+    const ret = getObject(arg0).next();
+    return addHeapObject(ret);
+}, arguments) };
 
 export function __wbg_now_2c95c9de01293173(arg0) {
     const ret = getObject(arg0).now();
     return ret;
 };
 
-export function __wbg_now_793306c526e2e3b6() {
+export function __wbg_now_69d776cd24f5215b() {
     const ret = Date.now();
     return ret;
 };
@@ -3291,11 +3355,11 @@ export function __wbg_parameterinformation_new(arg0) {
 };
 
 export function __wbg_parameterinformation_unwrap(arg0) {
-    const ret = ParameterInformation.__unwrap(takeObject(arg0));
+    const ret = ParameterInformation.__unwrap(getObject(arg0));
     return ret;
 };
 
-export function __wbg_parse_2a704d6b78abb2b8() { return handleError(function (arg0, arg1) {
+export function __wbg_parse_a09a54cf72639456() { return handleError(function (arg0, arg1) {
     const ret = JSON.parse(getStringFromWasm0(arg0, arg1));
     return addHeapObject(ret);
 }, arguments) };
@@ -3306,7 +3370,7 @@ export function __wbg_parseerror_new(arg0) {
 };
 
 export function __wbg_parseerror_unwrap(arg0) {
-    const ret = ParseError.__unwrap(takeObject(arg0));
+    const ret = ParseError.__unwrap(getObject(arg0));
     return ret;
 };
 
@@ -3315,7 +3379,7 @@ export function __wbg_performance_7a3ffd0b17f663ad(arg0) {
     return addHeapObject(ret);
 };
 
-export function __wbg_prototypesetcall_2a6620b6922694b2(arg0, arg1, arg2) {
+export function __wbg_prototypesetcall_dfe9b766cdc1f1fd(arg0, arg1, arg2) {
     Uint8Array.prototype.set.call(getArrayU8FromWasm0(arg0, arg1), getObject(arg2));
 };
 
@@ -3325,7 +3389,7 @@ export function __wbg_pythonconstant_new(arg0) {
 };
 
 export function __wbg_pythonconstant_unwrap(arg0) {
-    const ret = PythonConstant.__unwrap(takeObject(arg0));
+    const ret = PythonConstant.__unwrap(getObject(arg0));
     return ret;
 };
 
@@ -3335,7 +3399,7 @@ export function __wbg_pythonfunction_new(arg0) {
 };
 
 export function __wbg_pythonfunction_unwrap(arg0) {
-    const ret = PythonFunction.__unwrap(takeObject(arg0));
+    const ret = PythonFunction.__unwrap(getObject(arg0));
     return ret;
 };
 
@@ -3345,7 +3409,7 @@ export function __wbg_pythonfunctionargument_new(arg0) {
 };
 
 export function __wbg_pythonfunctionargument_unwrap(arg0) {
-    const ret = PythonFunctionArgument.__unwrap(takeObject(arg0));
+    const ret = PythonFunctionArgument.__unwrap(getObject(arg0));
     return ret;
 };
 
@@ -3355,7 +3419,7 @@ export function __wbg_pythonname_new(arg0) {
 };
 
 export function __wbg_pythonname_unwrap(arg0) {
-    const ret = PythonName.__unwrap(takeObject(arg0));
+    const ret = PythonName.__unwrap(getObject(arg0));
     return ret;
 };
 
@@ -3370,34 +3434,26 @@ export function __wbg_signatureinformation_new(arg0) {
 };
 
 export function __wbg_signatureinformation_unwrap(arg0) {
-    const ret = SignatureInformation.__unwrap(takeObject(arg0));
+    const ret = SignatureInformation.__unwrap(getObject(arg0));
     return ret;
 };
 
-export function __wbg_stack_0ed75d68575b0f3c(arg0, arg1) {
-    const ret = getObject(arg1).stack;
-    const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_export, wasm.__wbindgen_export2);
-    const len1 = WASM_VECTOR_LEN;
-    getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
-    getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
-};
-
-export function __wbg_static_accessor_GLOBAL_89e1d9ac6a1b250e() {
+export function __wbg_static_accessor_GLOBAL_769e6b65d6557335() {
     const ret = typeof global === 'undefined' ? null : global;
     return isLikeNone(ret) ? 0 : addHeapObject(ret);
 };
 
-export function __wbg_static_accessor_GLOBAL_THIS_8b530f326a9e48ac() {
+export function __wbg_static_accessor_GLOBAL_THIS_60cf02db4de8e1c1() {
     const ret = typeof globalThis === 'undefined' ? null : globalThis;
     return isLikeNone(ret) ? 0 : addHeapObject(ret);
 };
 
-export function __wbg_static_accessor_SELF_6fdf4b64710cc91b() {
+export function __wbg_static_accessor_SELF_08f5a74c69739274() {
     const ret = typeof self === 'undefined' ? null : self;
     return isLikeNone(ret) ? 0 : addHeapObject(ret);
 };
 
-export function __wbg_static_accessor_WINDOW_b45bfc5a37f6cfa2() {
+export function __wbg_static_accessor_WINDOW_a8924b26aa92d024() {
     const ret = typeof window === 'undefined' ? null : window;
     return isLikeNone(ret) ? 0 : addHeapObject(ret);
 };
@@ -3408,7 +3464,7 @@ export function __wbg_textedit_new(arg0) {
 };
 
 export function __wbg_textedit_unwrap(arg0) {
-    const ret = TextEdit.__unwrap(takeObject(arg0));
+    const ret = TextEdit.__unwrap(getObject(arg0));
     return ret;
 };
 
@@ -3418,11 +3474,11 @@ export function __wbg_textrange_new(arg0) {
 };
 
 export function __wbg_textrange_unwrap(arg0) {
-    const ret = TextRange.__unwrap(takeObject(arg0));
+    const ret = TextRange.__unwrap(getObject(arg0));
     return ret;
 };
 
-export function __wbg_value_692627309814bb8c(arg0) {
+export function __wbg_value_57b7b035e117f7ee(arg0) {
     const ret = getObject(arg0).value;
     return addHeapObject(ret);
 };
@@ -3453,4 +3509,3 @@ export function __wbindgen_object_clone_ref(arg0) {
 export function __wbindgen_object_drop_ref(arg0) {
     takeObject(arg0);
 };
-

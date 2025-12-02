@@ -11,7 +11,7 @@ export function NoOutputTip({
   importedNames,
 }: {
   dimmed: boolean;
-  importedNames: PythonName[];
+  importedNames: PythonName[] | undefined;
 }) {
   const { t } = useLocalTranslation();
   const showGraphicNames: Record<string, string> = {
@@ -21,7 +21,7 @@ export function NoOutputTip({
     'pytamaro.fr': 'montre_graphique',
   };
   // Pick the language based on the first import from one of the pytamaro modules.
-  const moduleName = importedNames.find(
+  const moduleName = importedNames?.find(
     ({ module }) => module in showGraphicNames,
   )?.module;
   return (

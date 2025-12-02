@@ -9,7 +9,7 @@ import type {
 import { TOOLBOX_FILE } from './codeExecution';
 import { ToolboxFunction } from './localStorage/schema';
 import PyTamaroNames from './pytamaroNames';
-import { AnalysisResult, analyze } from './python-analyzer/python_analyzer';
+import { retrieveCellIdx, retrievePythonAnalyzer } from './usePythonAnalyzer';
 
 function kind(monacoInstance: Monaco, type: string) {
   const map: Record<string, languages.CompletionItemKind> = {
@@ -111,9 +111,11 @@ export function pytamaroImportCompletionProvider(monacoInstance: Monaco) {
       model: EditorNamespace.ITextModel,
       position: Position,
     ) {
-      const analysisResult: AnalysisResult = analyze(model.getValue());
+      const pythonAnalyzer = retrievePythonAnalyzer(model);
+      const cellIdx = retrieveCellIdx(model);
+      const analysisResult = pythonAnalyzer.getAnalysisResult(cellIdx);
       const offset = model.getOffsetAt(position);
-      const importStmt = analysisResult.import_ranges.find(
+      const importStmt = analysisResult?.import_ranges.find(
         (range) => range.start <= offset && offset <= range.end,
       );
       if (!importStmt) return { suggestions: [] };
