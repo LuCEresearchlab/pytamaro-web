@@ -216,25 +216,25 @@ export default function SaveToToolboxDialog({
     setImplementation(externalImplementation);
   }, [externalImplementation]);
 
-  const resetSelectedFunction = () => {
+  const clearSelectedFunction = () => {
     setSelectedFunction('');
   };
 
-  const resetDescription = () => {
+  const clearDescription = () => {
     setDescription('');
   };
 
   useEffect(() => {
     const newFunctions = implementationAnalysisResult?.defined_functions || [];
-    // Reset the selected function if a function with such a name does not exist anymore
+    // Reset the selected function to the initial state if a function with such a name does not exist anymore
     if (
       selectedFunction &&
       !newFunctions.some((f) => f.name === selectedFunction)
     ) {
-      resetSelectedFunction();
+      setSelectedFunction(initialName || '');
     }
     setFunctions(newFunctions);
-  }, [implementationAnalysisResult, selectedFunction]);
+  }, [implementationAnalysisResult, selectedFunction, initialName]);
 
   const activityVariant = toolboxActivityVariant(selectedFunction);
 
@@ -458,8 +458,8 @@ export default function SaveToToolboxDialog({
                     enabled={usageExecutedSuccessfully}
                     onSave={() => {
                       if (!replaceExistingFunction) {
-                        resetSelectedFunction();
-                        resetDescription();
+                        clearSelectedFunction();
+                        clearDescription();
                       }
                       onClose();
                     }}
