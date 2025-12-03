@@ -1,6 +1,25 @@
+import { reverse, uniqWith } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
-import { AnalysisResult } from './python-analyzer/python_analyzer';
+import {
+  AnalysisResult,
+  PythonFunction,
+} from './python-analyzer/python_analyzer';
 import { PythonAnalyzer } from './usePythonAnalyzer';
+
+export function visibleDefinedFunctions(
+  analysisResult?: AnalysisResult | undefined,
+): PythonFunction[] {
+  if (!analysisResult) {
+    return [];
+  }
+  // Double reverse to bias uniqWith towards the latest definition, in case of duplicates
+  return reverse(
+    uniqWith(
+      reverse(analysisResult.defined_functions),
+      (f1, f2) => f1.name === f2.name,
+    ),
+  );
+}
 
 export default function useAnalysisResult(
   pythonAnalyzer: PythonAnalyzer | null,

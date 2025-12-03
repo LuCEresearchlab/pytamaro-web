@@ -116,10 +116,31 @@ fn test_defined_functions() {
 }
 
 #[wasm_bindgen_test]
+fn test_defined_function_without_a_name_yet() {
+    assert_eq!(analyze("def ").defined_functions, vec![]);
+}
+
+#[wasm_bindgen_test]
 fn test_method_is_not_function() {
     assert_eq!(
         analyze("class A:\n    def f(self): pass").defined_functions,
         vec![]
+    );
+}
+
+#[wasm_bindgen_test]
+fn test_no_nested_functions() {
+    assert_eq!(
+        analyze("def f():\n    def g(): pass").defined_functions,
+        vec![PythonFunction {
+            name: "f".to_string(),
+            args: vec![],
+            return_type_str: "".to_string(),
+            docstring: "".to_string(),
+            explicit_return: false,
+            side_effects: false,
+            start: 0,
+        }]
     );
 }
 

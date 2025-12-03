@@ -12,6 +12,7 @@ import {
 } from '../../src/python-analyzer/python_analyzer';
 import { ActivityVariant } from '../../src/schemas/activitySchema';
 import theme from '../../src/theme';
+import { visibleDefinedFunctions } from '../../src/useAnalysisResult';
 import { FilesAnalysisResult } from '../../src/usePythonAnalyzer';
 import DocElement from './DocElement';
 
@@ -38,8 +39,10 @@ export default function DocumentationStripe({
   const allImportedNames = importedNames.concat(
     possiblyImplicitlyImportedNames,
   );
-  const allDefinedFunctions =
-    analysisResult?.defined_functions.filter((fn) => fn.name.length > 0) || [];
+  const uniqueImportedNames = uniqWith(
+    allImportedNames,
+    (n1, n2) => n1.name === n2.name && n1.module === n2.module,
+  );
 
   const onResize = useCallback(
     ({ entry }: { entry: ResizeObserverEntry | null }) => {
@@ -52,18 +55,9 @@ export default function DocumentationStripe({
 
   const toggleNamesExpanded = () => setNamesExpanded(!namesExpanded);
 
-  const allImportedNamesSorted = uniqWith(
-    allImportedNames,
-    (n1, n2) => n1.name === n2.name && n1.module === n2.module,
-  );
-  const allDefinedFunctionsSorted = uniqWith(
-    allDefinedFunctions,
-    (f1, f2) => f1.name === f2.name,
-  );
-
   const namesToDocElement = useDocumentationElements(
-    allImportedNamesSorted,
-    allDefinedFunctionsSorted,
+    uniqueImportedNames,
+    visibleDefinedFunctions(analysisResult),
     extraPythonFilesAnalysisResults,
   );
 

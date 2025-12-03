@@ -426,9 +426,18 @@ impl<'db> SourceOrderVisitor<'db> for FunctionsVisitor<'db> {
     fn visit_stmt(&mut self, stmt: &'db ruff_python_ast::Stmt) {
         match stmt {
             ruff_python_ast::Stmt::FunctionDef(fn_def) => {
+                if self.in_fn_def {
+                    // Skip nested function definitions, for now
+                    return;
+                }
+                let name = &fn_def.name.to_string();
+                if name.is_empty() {
+                    // Skip functions without a name (e.g., incomplete code)
+                    return;
+                }
                 let source = source_text(self.db, self.model.file());
                 let function = PythonFunction {
-                    name: fn_def.name.to_string(),
+                    name: name.clone(),
                     args: parameters(&fn_def.parameters, &source),
                     return_type_str: get_type_str(&fn_def.returns, &source),
                     docstring: fn_def

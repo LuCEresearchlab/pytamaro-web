@@ -13,6 +13,7 @@ import useLocalToolbox from './localStorage/useLocalToolbox';
 import { PythonFunction, PythonName } from './python-analyzer/python_analyzer';
 import { JudiciousElement, JudiciousModule } from './schemas/documentation';
 import { judiciousDocPathname } from './urlUtils';
+import { visibleDefinedFunctions } from './useAnalysisResult';
 import { FilesAnalysisResult } from './usePythonAnalyzer';
 
 export default function useJudiciousDocData(modules: string[]) {
@@ -47,7 +48,7 @@ export function useDocumentationElements(
         return {
           module: name.replace(/\.py$/, ''),
           elements: [
-            ...analysisResult.defined_functions.map(
+            ...visibleDefinedFunctions(analysisResult).map(
               definedFnToJudiciousFunction,
             ),
             ...analysisResult.defined_constants.map(

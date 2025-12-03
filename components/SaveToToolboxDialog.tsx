@@ -32,7 +32,9 @@ import { toolboxActivityVariant } from '../src/specialActivities';
 import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import theme from '../src/theme';
 import { toolboxFunctionPathname } from '../src/urlUtils';
-import useAnalysisResult from '../src/useAnalysisResult';
+import useAnalysisResult, {
+  visibleDefinedFunctions,
+} from '../src/useAnalysisResult';
 import usePythonAnalyzer from '../src/usePythonAnalyzer';
 import useTemporaryActivity from '../src/useTemporaryActivity';
 import { isExecutionError } from './CodeCell';
@@ -225,7 +227,7 @@ export default function SaveToToolboxDialog({
   };
 
   useEffect(() => {
-    const newFunctions = implementationAnalysisResult?.defined_functions || [];
+    const newFunctions = visibleDefinedFunctions(implementationAnalysisResult);
     // Reset the selected function to the initial state if a function with such a name does not exist anymore
     if (
       selectedFunction &&
