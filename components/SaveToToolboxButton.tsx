@@ -24,7 +24,7 @@ export default function SaveToToolboxButton({
   const [savingError, setSavingError] = useState(false);
 
   const analysisResult = useAnalysisResult(pythonAnalyzer, cellIdx);
-  const sources = pythonAnalyzer?.getSources() ?? [];
+  const sources = pythonAnalyzer?.getSourcesUpTo(cellIdx) ?? [];
   const implementation = joinLines(sources);
   const functionsThisCell =
     pythonAnalyzer?.functionsDefinedInCell(cellIdx) ?? [];

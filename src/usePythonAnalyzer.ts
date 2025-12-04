@@ -315,8 +315,8 @@ export class PythonAnalyzer {
     return this.diagnosticsCounts[cellIdx] || 0;
   }
 
-  getSources(): string[] {
-    return this.sources;
+  getSourcesUpTo(cellIdx: number): string[] {
+    return this.sources.slice(0, cellIdx + 1);
   }
 }
 
