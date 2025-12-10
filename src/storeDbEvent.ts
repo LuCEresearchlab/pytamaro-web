@@ -33,7 +33,7 @@ export function storeDbEvent(
   metadata: Metadata,
   payload: object,
 ) {
-  if (metadata.allowSharingAnonData) {
+  if (metadata.allowSharingAnonData === 'yes') {
     alwaysStoreDbEvent(event_name, metadata, payload);
   }
 }
