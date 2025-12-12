@@ -36,12 +36,15 @@ export function NoOutputTip({
     >
       {t('noOutputTip')}
       {moduleName && (
-        <Trans
-          t={t}
-          i18nKey='useShowGraphicTip'
-          values={{ apiName: showGraphicNames[moduleName] }}
-          components={{ code: <code /> }}
-        />
+        <>
+          {' '}
+          <Trans
+            t={t}
+            i18nKey='useShowGraphicTip'
+            values={{ apiName: showGraphicNames[moduleName] }}
+            components={{ code: <code /> }}
+          />
+        </>
       )}
     </Alert>
   );
