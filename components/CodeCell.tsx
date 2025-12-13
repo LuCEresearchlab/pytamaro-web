@@ -187,17 +187,15 @@ export default function CodeCell({
           timeout='auto'
           unmountOnExit
         >
-          <CardContent>
-            <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
-              {executionResponse && isExecutionCompleted(executionResponse) && (
-                <ExecutionOutputArea
-                  executionError={executionError}
-                  executionResponse={executionResponse}
-                  dimmed={!codeCellExecutionState.outputSynced}
-                />
-              )}
-            </StaleOutputBadge>
-          </CardContent>
+          <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
+            {executionResponse && isExecutionCompleted(executionResponse) && (
+              <ExecutionOutputArea
+                executionError={executionError}
+                executionResponse={executionResponse}
+                dimmed={!codeCellExecutionState.outputSynced}
+              />
+            )}
+          </StaleOutputBadge>
         </Collapse>
       </Card>
     </Paper>

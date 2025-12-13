@@ -42,7 +42,7 @@ function isGifData(data: string) {
   return data.startsWith(dataURIPrefix('image/gif'));
 }
 
-const BACKGROUND_COLOR = theme.palette.grey[50];
+const BACKGROUND_COLOR = theme.palette.grey[100];
 
 const OUTPUT_ELEMENT_STYLE = {
   display: 'block',
@@ -338,8 +338,7 @@ export default function ExecutionOutputArea({
 }) {
   const { stdout, stderr } = executionResponse;
   return (
-    <Card
-      variant='outlined'
+    <Box
       sx={{
         backgroundColor: executionError
           ? theme.pytamaro.palette.background.errorRed
@@ -348,7 +347,6 @@ export default function ExecutionOutputArea({
         position: 'relative',
         overflowX: 'auto',
         width: '100%',
-        borderColor: executionError ? 'error.main' : undefined,
         ...(dimmed ? { opacity: theme.palette.action.disabledOpacity } : {}),
         ...sx,
       }}
@@ -359,11 +357,11 @@ export default function ExecutionOutputArea({
       {executionError && stderr && isErrorPreviousCells(stderr) ? (
         <PreviousCellsErrorAlert buttonDisabled={dimmed} />
       ) : (
-        <Box sx={{ px: 2 }}>
+        <Box paddingX={3} paddingY={1}>
           <OutputArea data={stdout} disabled={dimmed} />
           {stderr && <CodeElement content={stderr} />}
         </Box>
       )}
-    </Card>
+    </Box>
   );
 }
