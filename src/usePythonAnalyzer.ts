@@ -211,12 +211,13 @@ export class PythonAnalyzer {
     const analysisResult = analyzeFile(this.workspace, fileHandle);
     // We're only interested in ellipsis and names called in the current cell:
     // filter out the ones from previous cells.
+    // `.start` is a zero-based offset in the whole file.
     const previousCellsLength = this.computePreviousCellsLength(cellIdx);
     analysisResult.ellipsis = analysisResult.ellipsis.filter(
-      (start) => start > previousCellsLength,
+      (start) => start >= previousCellsLength,
     );
     analysisResult.called_names = analysisResult.called_names.filter(
-      (called_name) => called_name.start > previousCellsLength,
+      (called_name) => called_name.start >= previousCellsLength,
     );
     // We also need to adjust the ranges
     analysisResult.import_ranges.forEach((range) => {
