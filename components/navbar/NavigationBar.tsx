@@ -102,6 +102,7 @@ function PyTamaroHomeLogo() {
         src='/logo-navbar.png'
         style={{
           height: '1.3rem',
+          marginTop: '-0.25rem', // vertically align the logotype to the baseline of the text in the navbar
         }}
       />
     </IconButton>
