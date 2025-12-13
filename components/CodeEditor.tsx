@@ -354,9 +354,12 @@ export default function CodeEditor({
 
   // Effect to react to changes in the execution response.
   useEffect(() => {
-    if (monacoInstance && editorInstance) {
+    if (!monacoInstance || !editorInstance) {
+      return;
+    }
+    if (executionFinished) {
       clearAnnotations();
-      if (executionResponse?.type === 'error' && executionFinished) {
+      if (executionResponse?.type === 'error') {
         const annotations = addErrorAnnotationsFromExecution(
           monacoInstance,
           editorInstance,
