@@ -38,6 +38,8 @@ export default function DocElement({
     });
   };
 
+  const size = smallerFont ? '0.8em' : '1em';
+
   return element ? (
     <span
       style={{
@@ -56,8 +58,8 @@ export default function DocElement({
             <img
               src={iconPath(module)}
               style={{
-                height: smallerFont ? '0.8em' : '1em',
-                width: 'auto',
+                height: size,
+                width: size,
                 display: 'inline-block',
                 transform: `translateY(.${smallerFont ? '1' : '2'}em)`,
                 marginRight: '0.1em',
