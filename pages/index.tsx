@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import { MenuBookOutlined } from '@mui/icons-material';
 import Download from '@mui/icons-material/Download';
 import PlayCircle from '@mui/icons-material/PlayCircle';
 import Route from '@mui/icons-material/Route';
@@ -6,8 +7,6 @@ import School from '@mui/icons-material/School';
 import Science from '@mui/icons-material/Science';
 import TipsAndUpdates from '@mui/icons-material/TipsAndUpdates';
 import {
-  Badge,
-  BadgeProps,
   Box,
   Button,
   Card,
@@ -16,29 +15,31 @@ import {
   CardHeader,
   Container,
   Link,
-  styled,
+  Stack,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import anime from 'animejs';
 import { shuffle } from 'lodash';
 import Head from 'next/head';
-import Image from 'next/image';
 import { useEffect } from 'react';
 import ActivityCardMedia from '../components/ActivityCardMedia';
 import Carousel from '../components/Carousel';
+import DocElement from '../components/documentation/DocElement';
 import { STRICT_PYTHON3_LANG_ID } from '../components/editor/strictPython3';
 import NavigationBar from '../components/navbar/NavigationBar';
 import ExecutionOutputArea from '../components/OutputArea';
-import PanoramaAlpeFoppa from '../public/AlpeFoppa.jpg';
+import { useDocumentationElements } from '../src/documentation';
 import {
   basicActivities,
   listVisibleActivities,
 } from '../src/fs-content/activities';
 import useMonacoColorizer, { COLORIZE_CLASSNAME } from '../src/monacoColorizer';
+import { playgroundActivityVariant } from '../src/playground';
+import { PythonName } from '../src/python-analyzer/python_analyzer';
 import { BasicActivity } from '../src/schemas/activitySchema';
 import { translationProps } from '../src/serverSideTranslationProps';
-import { joinLines } from '../src/sourceUtils';
 import theme from '../src/theme';
 import {
   aboutPathname,
@@ -48,89 +49,274 @@ import {
   teachingResourcesPathname,
 } from '../src/urlUtils';
 
-const PythonBadge = styled(Badge)<BadgeProps>(() => ({
-  '& .MuiBadge-badge': {
-    right: '1.8rem',
-    top: '1rem',
-    minWidth: '2rem',
-  },
-  width: '100%',
-}));
-
-function PythonCodeCard({
-  lines,
-  preludeLines = [],
-  stdout,
-  pytamaro = false,
+function AnnotationTooltip({
+  children,
+  title,
+  placement,
+  type = 'programming',
 }: {
-  lines: string[];
-  preludeLines?: string[];
-  stdout: string;
-  pytamaro?: boolean;
+  children: React.ReactElement;
+  title: string;
+  placement: 'left' | 'right' | 'top' | 'bottom';
+  type?: 'programming' | 'graphics' | 'other';
 }) {
+  const color =
+    type === 'graphics'
+      ? theme.pytamaro.palette.red
+      : type === 'programming'
+        ? theme.palette.primary.main
+        : theme.palette.text.primary;
   return (
-    <Card sx={{ height: '100%' }}>
-      <PythonBadge
-        badgeContent={
+    <Tooltip
+      open={true}
+      placement={placement}
+      arrow
+      title={title}
+      slotProps={{
+        tooltip: {
+          sx: {
+            backgroundColor: color,
+            fontSize: '1rem',
+            paddingY: 0.25,
+            display: {
+              xs: 'none',
+              sm: 'block',
+            },
+          },
+        },
+        arrow: { sx: { color: color } },
+        popper: { sx: { zIndex: 300 } },
+      }}
+    >
+      <span>{children}</span>
+    </Tooltip>
+  );
+}
+
+function Code({ children }: { children: React.ReactNode }) {
+  return (
+    <span className={COLORIZE_CLASSNAME} data-lang={STRICT_PYTHON3_LANG_ID}>
+      {children}
+    </span>
+  );
+}
+
+const FULL_EXAMPLE_CODE = `
+from pytamaro import (rectangle, empty_graphic, beside, above, rotate,
+                      show_graphic, black, white)
+
+block_size = 25
+num_blocks = 16
+
+line = empty_graphic()
+for col in range(num_blocks):
+    if col % 2 == 0:
+        color = black
+    else:
+        color = white
+    block = rectangle(block_size, block_size, color)
+    line = beside(line, block)
+second_line = rotate(180, line)
+finish_line = above(line, second_line)
+
+show_graphic(finish_line)`;
+
+const EXAMPLE_STDOUT =
+  '@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAAyCAYAAAByHI2dAAAA+ElEQVR4nO3XwYkEMAwEQWu5/FP2piAafI+lKgExr0ZzzrnnsXufnzgz8/yGHXt27NmxZ8fef+z4PL8AwE8SEAASAQEgERAAEgEBIBEQABIBASAREAASAQEgERAAEgEBIBEQABIBASAREAASAQEgERAAEgEBIBEQABIBASAREAASAQEgERAAEgEBIBEQAJK/e+/zIzPz/IYde3bs2bFnx96v7PCBAJAICACJgACQCAgAiYAAkAgIAImAAJAICACJgACQCAgAiYAAkAgIAImAAJAICACJgACQCAgAiYAAkAgIAImAAJAICACJgACQCAgAiYAAkAgIAMkX+JkxYgh26wcAAAAASUVORK5CYII=@@@PYTAMARO_DATA_URI_END@@@';
+function PythonCodeCard() {
+  return (
+    <Card sx={{ height: '100%', position: 'relative' }}>
+      <Documentation />
+      <CardContent sx={{ overflowX: 'auto' }}>
+        <Box
+          sx={{
+            fontFamily: theme.pytamaro.monospaceFontFamily,
+            whiteSpace: 'pre',
+            fontVariantLigatures: 'none',
+          }}
+        >
           <div>
-            <img
-              src='/icons/python-logo.svg'
-              style={{
-                height: '2em',
-                width: 'auto',
-                transform: pytamaro ? 'none' : 'translateX(1em)',
-              }}
-              alt='Python logo'
-            />
-            {pytamaro && (
-              <img
-                src='/favicon.ico'
-                style={{
-                  height: '2em',
-                  width: 'auto',
-                  transform: 'translateY(-0.2em)',
-                }}
-                alt='PyTamaro logo'
-              />
-            )}
+            <Code>block_size = 25</Code>
           </div>
-        }
-      >
-        <CardContent sx={{ overflowX: 'auto' }}>
-          <Box
-            className={COLORIZE_CLASSNAME}
-            data-lang={STRICT_PYTHON3_LANG_ID}
-            sx={{
-              fontFamily: theme.pytamaro.monospaceFontFamily,
-              whiteSpace: 'pre',
-              fontVariantLigatures: 'none',
-            }}
-          >
-            {joinLines(lines)}
-          </Box>
-          {pytamaro && (
-            <Button
-              variant='outlined'
-              size='small'
-              href={playgroundPathname(joinLines([...preludeLines, ...lines]))}
-              sx={{ position: 'absolute', bottom: '.5rem', right: '.5rem' }}
-              endIcon={<PlayCircle />}
+          <div>
+            <Code>num_blocks = 16</Code>
+          </div>
+          <div>
+            <AnnotationTooltip title='Variable' placement='left'>
+              <Code>line = empty_graphic()</Code>
+            </AnnotationTooltip>
+          </div>
+          <div>
+            <AnnotationTooltip title='Loop' placement='right'>
+              <Code>for col in range(num_blocks):</Code>
+            </AnnotationTooltip>
+          </div>
+          <div>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <AnnotationTooltip title='Condition' placement='left'>
+              <Code>if col % 2 == 0:</Code>
+            </AnnotationTooltip>
+          </div>
+          <div>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <Code>color = black</Code>
+          </div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;else:</div>
+          <div>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <Code>color = white</Code>
+          </div>
+          <div>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <AnnotationTooltip
+              title='Primitive Graphics'
+              placement='right'
+              type='graphics'
             >
-              Try it!
-            </Button>
-          )}
-        </CardContent>
-      </PythonBadge>
+              <Code>block = rectangle(block_size, block_size, color)</Code>
+            </AnnotationTooltip>
+          </div>
+          <div>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <AnnotationTooltip
+              title='Graphics Composition'
+              placement='right'
+              type='graphics'
+            >
+              <Code>line = beside(line, block)</Code>
+            </AnnotationTooltip>
+          </div>
+          <div>
+            <Code>second_line = rotate(180, line)</Code>
+          </div>
+          <div>
+            <Code>finish_line = above(line, second_line)</Code>
+          </div>
+          <div>
+            <AnnotationTooltip title='Output' placement='left'>
+              <Code>show_graphic(finish_line)</Code>
+            </AnnotationTooltip>
+          </div>
+        </Box>
+        <Button
+          variant='outlined'
+          size='small'
+          href={playgroundPathname(FULL_EXAMPLE_CODE.trim())}
+          sx={{
+            position: {
+              xs: 'static',
+              sm: 'absolute',
+            },
+            top: {
+              xs: 'auto',
+              sm: '7rem',
+            },
+            right: {
+              xs: 'auto',
+              sm: '1rem',
+            },
+            marginTop: {
+              xs: 2,
+            },
+          }}
+          endIcon={<PlayCircle />}
+        >
+          <div style={{ textAlign: 'center' }}>
+            <Typography fontWeight='bold' component={'span'}>
+              Try it Now!
+            </Typography>{' '}
+            <br />
+            Directly in Your Browser
+          </div>
+        </Button>
+      </CardContent>
       <ExecutionOutputArea
         executionError={false}
         executionResponse={{
-          stdout,
+          stdout: EXAMPLE_STDOUT,
           stderr: '',
           type: 'success',
         }}
-        sx={{ border: 0, height: '100%' }}
+        sx={{
+          border: 0,
+          height: '100%',
+          backgroundColor: theme.palette.grey[300],
+        }}
       />
     </Card>
+  );
+}
+
+function Documentation() {
+  const namesToDocElement = useDocumentationElements(
+    [
+      new PythonName('pytamaro', 'rectangle'),
+      new PythonName('pytamaro', 'beside'),
+      new PythonName('pytamaro', 'above'),
+      new PythonName('pytamaro', 'rotate'),
+      new PythonName('pytamaro', 'empty_graphic'),
+      new PythonName('pytamaro', 'show_graphic'),
+      new PythonName('pytamaro', 'black'),
+      new PythonName('pytamaro', 'white'),
+      new PythonName('builtins', 'range'),
+    ],
+    [],
+    [],
+  );
+  return (
+    <Box bgcolor={theme.pytamaro.palette.background.light}>
+      <Stack
+        direction='row'
+        columnGap={0.7}
+        alignItems='baseline'
+        useFlexGap
+        marginX={0.5}
+      >
+        <MenuBookOutlined
+          sx={{
+            fontSize: '1em',
+            transform: 'translateY(0.15em)',
+            marginX: theme.spacing(0.5),
+          }}
+          color='primary'
+        />
+        <Stack
+          direction='row'
+          rowGap={0.1}
+          columnGap={1}
+          alignItems='baseline'
+          useFlexGap
+          flexWrap='wrap'
+          overflow='hidden'
+        >
+          {namesToDocElement.map(({ module, element }) =>
+            module === 'builtins' && element?.name === 'range' ? (
+              <AnnotationTooltip
+                key={`${module}-${element?.name}`}
+                title={'Documentation'}
+                placement='bottom'
+                type='other'
+              >
+                <DocElement
+                  module={module}
+                  element={element}
+                  smallerFont
+                  activityVariant={playgroundActivityVariant}
+                />
+              </AnnotationTooltip>
+            ) : (
+              <DocElement
+                key={`${module}-${element?.name}`}
+                module={module}
+                element={element}
+                smallerFont
+                activityVariant={playgroundActivityVariant}
+              />
+            ),
+          )}
+        </Stack>
+      </Stack>
+    </Box>
   );
 }
 
@@ -197,29 +383,8 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
           Playground
         </Button>
       </NavigationBar>
-      <Image
-        id='homepage-landscape'
-        src={PanoramaAlpeFoppa}
-        alt='Photo of Alpe Foppa'
-        width='2048'
-        height='576'
-        sizes='100vw'
-        style={{
-          width: '100%',
-          height: 'auto',
-          minHeight: 'max(15vh, 200px)',
-          maxHeight: 'min(20vh, 576px)',
-          objectFit: 'cover',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-        }}
-      />
       <Container maxWidth='xl'>
-        {/* Image spacing */}
-        <div style={{ height: '16vh' }} />
-
-        <Box display='flex' justifyContent='center' paddingY={3}>
+        <Box display='flex' justifyContent='center' marginY={10}>
           <Box sx={{ width: { xs: '35vw', md: '25vw', xl: '15vw' } }}>
             <svg viewBox='0 0 600 108' display='block' overflow='visible'>
               <g id='pytamaro-logo-text'>
@@ -259,7 +424,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
           variant='h3'
           fontWeight='bold'
           textAlign='center'
-          mb={8}
+          marginY={10}
           sx={{ textWrap: 'balance' }}
         >
           Learn{' '}
@@ -281,100 +446,10 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
             Graphics
           </Typography>
         </Typography>
-        <Typography variant='h5' align='center' marginY={2} fontWeight='bold'>
-          Start Simple By Calling Functions
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <PythonCodeCard
-              lines={['root = sqrt(2)', 'print(root)']}
-              stdout='1.4142135623730951'
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <PythonCodeCard
-              pytamaro
-              lines={[
-                'field = rectangle(100, 60, green)',
-                'show_graphic(field)',
-              ]}
-              preludeLines={[
-                'from pytamaro import rectangle, green, show_graphic',
-                '',
-              ]}
-              stdout='@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAA8CAYAAACQPx/OAAAApklEQVR4nO3RQQ0AIBDAsAP/nuGNAvZoFSzZmjNnyNi/A3gZEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIzAWnWQJ2gmwaEgAAAABJRU5ErkJggg==@@@PYTAMARO_DATA_URI_END@@@'
-            />
-          </Grid>
-        </Grid>
-        <Typography variant='h5' align='center' marginY={2} fontWeight='bold'>
-          Define Functions
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <PythonCodeCard
-              lines={['def add(a, b):', '    return a + b', 'print(add(2, 3))']}
-              stdout='5'
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <PythonCodeCard
-              pytamaro
-              lines={[
-                'def circle(diameter, color):',
-                '    return ellipse(diameter, diameter, color)',
-                'show_graphic(circle(75, red))',
-              ]}
-              preludeLines={[
-                'from pytamaro import ellipse, red, show_graphic',
-                '',
-              ]}
-              stdout='@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAABLCAYAAAA4TnrqAAAEL0lEQVR4nO2czW8UZRzHP88QEA/FeFALQltjfDkYDyVAUg8tLyEYjamJF4nGgwc4wn9Qb6AXuHHwwAESiJf1JdHEEwkEgsb3pGCiVIpS0kbrDUvxy+HZLbPT2d0Zdmee51nmk/yS2d1J+30+eWbnZZ/nMThA8DiwDdgMPA1sSqm/YvVnbPsG8I2Bf8rObcr4J4IIGAX2Aa8CO4A1XfzJu8Al4CvgS+A7A+o2p1ME+wWnBfMCFVg3BScF+123OReCSPCeYKZgQa3qmuDdem/2F8Ebgp8dSUrWT4LXXTtZhWBccNEDQWl1XjDm2hGCNYKjHgjJUkdU0gktTdSA4GsPJOSpmmCgbFHDgmkPGv8gNS0YLkvUbsGCB43uphYEu4sWdUCw7EFje1HLggNFiTroQQOLqIO9FrVXsORBw4qoJdnbsI50PJUKngO+BTZ0K91j/gW2G/i13U5tbwlkT7Nf0N+iAB4DPlOHdraUJdvrPgGe73EwX3kBOKMHuXCVveJ1/X3ioo60cpJqUfAy8GNuw/2BgFEDPyQ/aHUYflhoHL8xwFSmPQUTHhwKrut/wXjSTVrPyma1vzHAB8k3m2QJJkgx+pAyXvexQrJnTZUWJQym4i9WZMle8le9qpmm3hXvWROrdq2A2H1jXNZk+TmCYLKxYQAELwLTrtIEwDMGZho9a9JlkgDYB/cPw0zPcx5iJgGM7GOYBWCd0zh+swQ8EQFbqUR1Yh0wGgEjjoOEwkgEDLpOEQiDlazsDFaHYXZGKlnZqQ7DHAwawW3gEddJAuC/CFh0nSIQFiNgznWKQJirZGVnppKVnapn5aCSlYO5CJhxnSIQ5oxgI3YikZthz2EgYGNk4CZw2XUaz7ls4FbjsXLNZZIAqMH9Z/A1ZzHCoAZ1WQauAFddpvGYq3U/TT+y1txk8Z5aY6OS1ZlaY2NFlrHTaM+5SOMx5+pegMS1leAV4HzpkfxlzMDFxoum8VkGLgCflh7JT87GRUHKVbvgJexI3W5mx4fOXeBZA3/E31w1ptTAL8CpslJ5ysdJUdB6HPwIdgjS+oJD+chtYMjAfPKD1HHwxj6JOFxwKF85nCaqI7ILS7gek15mnWjno+1jGcGj2EuJ0dymw+N77DS65VY7ZJlvuAU73/DJHgbzjXnsfJ0b7XbquASJgVngLeBOj4L5xh3gzU6iciE45MF3ShHV2znSMWH9Nvv+/UJExYT1y7oOOwsVFRM2rHBXDLkiGCpFVEzYgOzaLq4bn6c+V9lr0cSEGYUzl/oj+fBzn2BMdp0q10LSyo/1s5IIXpNdEc21IMnXldniyK75947s2nsuJF1TCGv+JZFdTfKMYLFgQYuCs4K3Xbe5awRrBbsExwS/9UjQ74Ljgj2CtWW0w8nZQXYF3KFYbUm8fgq4BVyv12xs+zowa+DvsnPfA6NNTnNzpdkuAAAAAElFTkSuQmCC@@@PYTAMARO_DATA_URI_END@@@'
-            />
-          </Grid>
-        </Grid>
-        <Typography variant='h5' align='center' marginY={2} fontWeight='bold'>
-          Use Selection and Repetition
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <PythonCodeCard
-              lines={[
-                'numbers = [52, -4, 17, 34, 50, 24, -17, 60, 47]',
-                'total_even = 0',
-                'for number in numbers:',
-                '    if number % 2 == 0:',
-                '        total_even = total_even + number',
-                'print(total_even / len(numbers))',
-              ]}
-              stdout='24.0'
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <PythonCodeCard
-              pytamaro
-              lines={[
-                'diameters = [52, -4, 17, 34, 50, 24, -17, 60, 47]',
-                'bubbles = empty_graphic()',
-                'for diameter in diameters:',
-                '    if diameter >= 0:',
-                '        bubbles = beside(bubbles, circle(diameter, blue))',
-                'show_graphic(bubbles)',
-              ]}
-              preludeLines={[
-                'from pytamaro import beside, blue, ellipse, empty_graphic, show_graphic',
-                '',
-                'def circle(diameter, color):',
-                '    return ellipse(diameter, diameter, color)',
-                '',
-              ]}
-              stdout='@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,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@@@PYTAMARO_DATA_URI_END@@@'
-            />
-          </Grid>
-        </Grid>
-        <Typography variant='h5' align='center' marginY={2} fontWeight='bold'>
-          And Much, Much More!
-        </Typography>
-        <Typography variant='h4' mt={8} mb={2} fontWeight='bold'>
+        <Box maxWidth={'md'} marginX={'auto'} marginY={10}>
+          <PythonCodeCard />
+        </Box>
+        <Typography variant='h4' mt={14} mb={2} fontWeight='bold'>
           Learn with PyTamaro
         </Typography>
         <Grid container spacing={2}>

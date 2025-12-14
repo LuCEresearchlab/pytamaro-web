@@ -9,9 +9,8 @@ import {
   MenuItem,
   Stack,
   Toolbar,
-  useScrollTrigger,
 } from '@mui/material';
-import React, { cloneElement, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import theme from '../../src/theme';
 import {
@@ -49,44 +48,6 @@ const navItems = [
     url: aboutPathname(),
   },
 ];
-
-function ScrollAppBarChanges({
-  enabled = false,
-  children,
-}: {
-  enabled: boolean;
-  children: React.ReactElement;
-}) {
-  const [scrollThreshold, setScrollThreshold] = useState(100);
-
-  useEffect(() => {
-    const element = document.getElementById('homepage-landscape');
-    const elementAppBar = document.getElementById('app-bar');
-    setScrollThreshold(
-      element && elementAppBar
-        ? element.offsetTop + element.offsetHeight - elementAppBar.offsetHeight
-        : 100,
-    );
-  }, []);
-
-  const scrolled = useScrollTrigger({
-    disableHysteresis: true,
-    threshold: scrollThreshold,
-  });
-
-  if (!enabled) {
-    return children;
-  }
-
-  return cloneElement(children, {
-    // @ts-expect-error expect children to be a MUI component
-    sx: {
-      background: scrolled
-        ? theme.pytamaro.palette.background.default
-        : '#ffffffb0',
-    },
-  });
-}
 
 function PyTamaroHomeLogo() {
   return (
@@ -128,116 +89,112 @@ export default function NavigationBar({
   const { t } = useLocalTranslation();
 
   return (
-    <ScrollAppBarChanges enabled={home === true}>
-      <AppBar
-        id='app-bar'
-        position='sticky'
-        elevation={0}
-        sx={{
-          background: theme.pytamaro.palette.background.default,
-        }}
-      >
-        <Toolbar>
-          <Box
+    <AppBar
+      id='app-bar'
+      position='sticky'
+      elevation={0}
+      sx={{
+        background: theme.pytamaro.palette.background.default,
+      }}
+    >
+      <Toolbar>
+        <Box
+          sx={{
+            flexGrow: 1,
+            display: {
+              lg: 'none',
+              xs: 'flex',
+            },
+          }}
+        >
+          <IconButton
+            aria-controls='menu-appbar'
+            aria-haspopup='true'
+            aria-label='Menu'
+            onClick={handleOpenNavMenu}
+            size='large'
             sx={{
-              flexGrow: 1,
-              display: {
-                lg: 'none',
-                xs: 'flex',
+              color: theme.palette.text.primary,
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Drawer
+            anchor='left'
+            onClose={handleCloseNavMenu}
+            open={Boolean(anchorElNav)}
+            sx={{
+              display: { xs: 'block', lg: 'none' },
+            }}
+            PaperProps={{
+              style: {
+                backgroundColor: theme.pytamaro.palette.background.default,
               },
             }}
           >
-            <IconButton
-              aria-controls='menu-appbar'
-              aria-haspopup='true'
-              aria-label='Menu'
-              onClick={handleOpenNavMenu}
-              size='large'
+            <Box m={1}>
+              <Stack direction='column'>
+                <PyTamaroHomeLogo />
+                {navItems.map((item) => (
+                  <MenuItem component='a' key={item.url} href={item.url}>
+                    {t(item.name)}
+                  </MenuItem>
+                ))}
+              </Stack>
+              <Divider sx={{ m: 1 }} />
+              <ToolboxListSidebar skipPopup />
+            </Box>
+          </Drawer>
+        </Box>
+
+        <Stack
+          direction='row'
+          display={{
+            lg: 'flex',
+            xs: 'none',
+          }}
+          divider={<Divider flexItem orientation='vertical' variant='middle' />}
+          useFlexGap
+          spacing={1}
+          sx={{
+            flexGrow: 1,
+          }}
+        >
+          <PyTamaroHomeLogo />
+          {navItems.map((item) => (
+            <Button
+              href={item.url}
+              key={item.url}
+              style={{
+                textTransform: 'none',
+              }}
               sx={{
                 color: theme.palette.text.primary,
               }}
             >
-              <MenuIcon />
-            </IconButton>
-            <Drawer
-              anchor='left'
-              onClose={handleCloseNavMenu}
-              open={Boolean(anchorElNav)}
-              sx={{
-                display: { xs: 'block', lg: 'none' },
-              }}
-              PaperProps={{
-                style: {
-                  backgroundColor: theme.pytamaro.palette.background.default,
-                },
-              }}
-            >
-              <Box m={1}>
-                <Stack direction='column'>
-                  <PyTamaroHomeLogo />
-                  {navItems.map((item) => (
-                    <MenuItem component='a' key={item.url} href={item.url}>
-                      {t(item.name)}
-                    </MenuItem>
-                  ))}
-                </Stack>
-                <Divider sx={{ m: 1 }} />
-                <ToolboxListSidebar skipPopup />
-              </Box>
-            </Drawer>
-          </Box>
+              {t(item.name)}
+            </Button>
+          ))}
+        </Stack>
 
-          <Stack
-            direction='row'
-            display={{
-              lg: 'flex',
-              xs: 'none',
-            }}
-            divider={
-              <Divider flexItem orientation='vertical' variant='middle' />
-            }
-            useFlexGap
-            spacing={1}
-            sx={{
-              flexGrow: 1,
-            }}
-          >
-            <PyTamaroHomeLogo />
-            {navItems.map((item) => (
-              <Button
-                href={item.url}
-                key={item.url}
-                style={{
-                  textTransform: 'none',
-                }}
-                sx={{
-                  color: theme.palette.text.primary,
-                }}
-              >
-                {t(item.name)}
-              </Button>
-            ))}
-          </Stack>
-
-          <Stack
-            direction='row'
-            spacing={1}
-            sx={{
-              marginLeft: 'auto',
-            }}
-          >
-            {children}
-            {!home && (
-              <>
-                <RapidPlaygroundButton />
-                <FeedbackButton />
-                <NotificationsButton />
-                <SettingsButton />
-              </>
-            )}
-          </Stack>
-        </Toolbar>
-      </AppBar>
-    </ScrollAppBarChanges>
+        <Stack
+          direction='row'
+          spacing={1}
+          sx={{
+            marginLeft: 'auto',
+          }}
+        >
+          {children}
+          {!home && (
+            <>
+              <RapidPlaygroundButton />
+              <FeedbackButton />
+              <NotificationsButton />
+              <SettingsButton />
+            </>
+          )}
+        </Stack>
+      </Toolbar>
+    </AppBar>
   );
 }
