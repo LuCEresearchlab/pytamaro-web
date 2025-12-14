@@ -23,6 +23,7 @@ import Grid from '@mui/material/Grid';
 import anime from 'animejs';
 import { shuffle } from 'lodash';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import ActivityCardMedia from '../components/ActivityCardMedia';
 import Carousel from '../components/Carousel';
@@ -45,6 +46,7 @@ import {
   aboutPathname,
   activitiesByAuthorPathname,
   curriculaPathname,
+  judiciousDocPathname,
   playgroundPathname,
   teachingResourcesPathname,
 } from '../src/urlUtils';
@@ -248,6 +250,13 @@ function PythonCodeCard() {
 }
 
 function Documentation() {
+  const router = useRouter();
+  useEffect(() => {
+    // Preload the documentation information for pytamaro and builtins
+    router.prefetch(judiciousDocPathname('pytamaro'));
+    router.prefetch(judiciousDocPathname('builtins'));
+  }, [router]);
+
   const namesToDocElement = useDocumentationElements(
     [
       new PythonName('pytamaro', 'rectangle'),
