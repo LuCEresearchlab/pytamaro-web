@@ -1,12 +1,5 @@
 import { PlayCircleFilled } from '@mui/icons-material';
-import {
-  Card,
-  CardActions,
-  CardContent,
-  Collapse,
-  Paper,
-  Stack,
-} from '@mui/material';
+import { Card, CardActions, CardContent, Collapse, Paper } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
 import { useMemo } from 'react';
 import { ExecutionResponse, isExecutionCompleted } from '../src/codeExecution';
@@ -19,9 +12,7 @@ import {
 } from '../src/schemas/activitySchema';
 import useAnalysisResult from '../src/useAnalysisResult';
 import { PythonAnalyzer } from '../src/usePythonAnalyzer';
-import { EllipsisTip, InputTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
-import DocumentationStripe from './documentation/DocumentationStripe';
 import ExecutionOutputArea from './OutputArea';
 import RunButton from './RunButton';
 import StaleOutputBadge from './StaleOutputBadge';
@@ -136,13 +127,6 @@ export default function CodeCell({
       elevation={readOnly ? 0 : 4}
       className='pytamaro-web-code-cell anchor'
     >
-      {!readOnly && (
-        <DocumentationStripe
-          analysisResult={analysisResult}
-          activityVariant={activityVariant}
-          extraPythonFilesAnalysisResults={extraPythonFilesAnalysisResults}
-        />
-      )}
       {/* Overflow to allow for overflowed widgets in a CodeEditor */}
       <Card sx={{ overflow: 'visible' }}>
         <CardContent>
@@ -168,20 +152,7 @@ export default function CodeCell({
             executionFinished={executionFinished}
             executionError={executionError}
           />
-          <Stack direction='row' sx={{ marginLeft: 'auto' }}>
-            {extraActions}
-          </Stack>
         </CardActions>
-        {noOutput && platformConfig.showNoOutputTip && (
-          <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
-            <NoOutputTip
-              dimmed={!codeCellExecutionState.outputSynced}
-              importedNames={analysisResult?.imported_names}
-            />
-          </StaleOutputBadge>
-        )}
-        {inputFunctionCalled && <InputTip />}
-        {ellipsis && <EllipsisTip />}
         <Collapse
           in={codeCellExecutionState.outputAreaVisible}
           timeout='auto'

@@ -489,8 +489,6 @@ export default function CodeEditor({
             useShadows: false,
           },
           readOnly,
-          'semanticHighlighting.enabled':
-            liveAnalysis === LiveAnalysisStatus.SyntaxSemantics,
         }}
       />
     </div>
