@@ -354,13 +354,15 @@ export default function ExecutionOutputArea({
         <PreviousCellsErrorAlert buttonDisabled={dimmed} />
       ) : (
         <Box>
-          <Box
-            sx={{ backgroundColor: BACKGROUND_COLOR }}
-            paddingX={3}
-            paddingY={1}
-          >
-            <OutputArea data={stdout} disabled={dimmed} />
-          </Box>
+          {stdout && (
+            <Box
+              sx={{ backgroundColor: BACKGROUND_COLOR }}
+              paddingX={3}
+              paddingY={1}
+            >
+              <OutputArea data={stdout} disabled={dimmed} />
+            </Box>
+          )}
           {stderr && (
             <Box
               sx={{
