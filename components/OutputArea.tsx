@@ -15,6 +15,7 @@ import {
   Collapse,
   Dialog,
   IconButton,
+  Stack,
   ToggleButton,
   Tooltip,
 } from '@mui/material';
@@ -342,7 +343,8 @@ export default function ExecutionOutputArea({
       sx={{
         position: 'relative',
         overflowX: 'auto',
-        width: '100%',
+        minWidth: '100%',
+        marginTop: 1,
         ...(dimmed ? { opacity: theme.palette.action.disabledOpacity } : {}),
         ...sx,
       }}
@@ -353,7 +355,7 @@ export default function ExecutionOutputArea({
       {executionError && stderr && isErrorPreviousCells(stderr) ? (
         <PreviousCellsErrorAlert buttonDisabled={dimmed} />
       ) : (
-        <Box>
+        <Stack sx={{ width: 'fit-content', minWidth: '100%' }}>
           {stdout && (
             <Box
               sx={{ backgroundColor: BACKGROUND_COLOR }}
@@ -375,7 +377,7 @@ export default function ExecutionOutputArea({
               <CodeElement content={stderr} />
             </Box>
           )}
-        </Box>
+        </Stack>
       )}
     </Box>
   );
