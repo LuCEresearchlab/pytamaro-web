@@ -340,10 +340,6 @@ export default function ExecutionOutputArea({
   return (
     <Box
       sx={{
-        backgroundColor: executionError
-          ? theme.pytamaro.palette.background.errorRed
-          : BACKGROUND_COLOR,
-        color: executionError ? 'red' : 'inherit',
         position: 'relative',
         overflowX: 'auto',
         width: '100%',
@@ -357,9 +353,26 @@ export default function ExecutionOutputArea({
       {executionError && stderr && isErrorPreviousCells(stderr) ? (
         <PreviousCellsErrorAlert buttonDisabled={dimmed} />
       ) : (
-        <Box paddingX={3} paddingY={1}>
-          <OutputArea data={stdout} disabled={dimmed} />
-          {stderr && <CodeElement content={stderr} />}
+        <Box>
+          <Box
+            sx={{ backgroundColor: BACKGROUND_COLOR }}
+            paddingX={3}
+            paddingY={1}
+          >
+            <OutputArea data={stdout} disabled={dimmed} />
+          </Box>
+          {stderr && (
+            <Box
+              sx={{
+                backgroundColor: theme.pytamaro.palette.background.errorRed,
+                color: theme.pytamaro.palette.red,
+              }}
+              paddingX={3}
+              paddingY={1}
+            >
+              <CodeElement content={stderr} />
+            </Box>
+          )}
         </Box>
       )}
     </Box>
