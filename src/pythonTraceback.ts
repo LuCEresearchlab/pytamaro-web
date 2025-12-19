@@ -15,6 +15,13 @@ export const TRACEBACK_MESSAGE_DECORATION_CLASSNAME =
 const LIBRARY_PATH = '/lib/';
 
 function nicerTraceback(traceback: string) {
+  // Remove PythonError: at the beginning
+  const removePythonErrorColon = (s: string) => {
+    const lines = s.split('\n');
+    lines[0] = lines[0].replace(/^PythonError: /, '');
+    return lines.join('\n');
+  };
+
   // Hide the "driver" file.
   const hideDriver = (s: string) =>
     // Remove the line with the driver file, the one after it (source code),
@@ -33,7 +40,7 @@ function nicerTraceback(traceback: string) {
       '',
     );
 
-    // Hide pyodide run folder
+  // Hide pyodide run folder
   const hidePyodideRunFolder = (s: string) =>
     s.replace(/File "\/tmp\/run\//g, 'File "');
 
@@ -47,6 +54,7 @@ function nicerTraceback(traceback: string) {
     s.replace(/`ellipsis`/g, '`...`').replace(/'ellipsis'/g, "'...'");
 
   return [
+    removePythonErrorColon,
     hideDriver,
     hidePyodideBase,
     hidePyodideRunFolder,
