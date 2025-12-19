@@ -4,6 +4,11 @@ import { CSSProperties, ReactElement } from 'react';
 import InputArea, { INPUT_BEGIN, INPUT_END } from './InputArea';
 import { OUTPUT_ELEMENT_STYLE } from './OutputArea';
 
+const INPUT_REGEX = new RegExp(
+  '(' + INPUT_BEGIN + '.*?' + INPUT_END + ')',
+  'g',
+);
+
 export default function PreElement({
   style = {},
   lines,
@@ -17,15 +22,11 @@ export default function PreElement({
     <span style={OUTPUT_ELEMENT_STYLE}>
       {lines.map((line, idx, lines) => {
         const needsActiveInput = idx === lines.length - 1 && input;
-        const inputRegex = new RegExp(
-          '(' + INPUT_BEGIN + '.*?' + INPUT_END + ')',
-          'g',
-        );
-        const chunks = line.split(inputRegex).filter(negate(isEmpty));
+        const chunks = line.split(INPUT_REGEX).filter(negate(isEmpty));
         return (
           <span style={{ display: 'block' }} key={idx}>
             {chunks.map((chunk, chunkIdx) => {
-              if (inputRegex.test(chunk)) {
+              if (INPUT_REGEX.test(chunk)) {
                 const inputContent = chunk.slice(
                   INPUT_BEGIN.length,
                   chunk.length - INPUT_END.length,

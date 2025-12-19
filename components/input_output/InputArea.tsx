@@ -1,8 +1,7 @@
 import { Keyboard } from '@mui/icons-material';
-import { Badge, Box, Tooltip } from '@mui/material';
+import { Box, Tooltip } from '@mui/material';
 import { useEffect, useRef } from 'react';
 import theme from '../../src/theme';
-import { OUTPUT_AREA_BACKGROUND_COLOR } from './OutputArea';
 
 export const INPUT_BEGIN = '@@@PYTAMARO_INPUT_BEGIN@@@';
 export const INPUT_END = '@@@PYTAMARO_INPUT_END@@@';
@@ -26,65 +25,57 @@ export default function InputArea({
     shownContent = '\u200B'; // zero-width space
   }
   return (
-    <Box sx={{ display: 'inline-block' }}>
+    <Box sx={{
+      display: 'inline-block',
+      border: `1px dashed ${theme.palette.grey[600]}`,
+      marginTop: theme.spacing(0.05),
+      marginBottom: theme.spacing(0.05),
+    }}>
       <Tooltip
         arrow
         placement='right'
         title={editable ? 'Type your input and press Enter' : 'User input'}
       >
-        <Badge
-          sx={{
-            verticalAlign: 'baseline',
-            '& .MuiBadge-badge': {
-              right: 0,
-              bottom: 2,
-              paddingLeft: 0.75,
-              paddingRight: 0.75,
-            },
-          }}
-          badgeContent={
-            <Box sx={{
-              padding: 0.25,
-            }}>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 1,
-                  width: 24,
-                  height: 14,
-                  zIndex: 0,
-                }}
-              />
-              <Keyboard fontSize='small' sx={{ position: 'relative', zIndex: 1, }} />
-            </Box>
-          }
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        >
+        <Box sx={{
+          display: 'inline-flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingLeft: theme.spacing(0.5),
+          paddingRight: theme.spacing(0.5),
+        }}>
           <pre
             ref={inputRef}
             style={{
-              border: `1px dashed ${theme.palette.grey[600]}`,
               margin: 0,
-              paddingLeft: theme.spacing(0.5),
-              paddingRight: theme.spacing(2),
-              minWidth: '5ch',
+              minWidth: editable ? '5ch' : undefined,
             }}
             contentEditable={editable}
             onKeyDown={
               editable
                 ? (e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      const inputText = e.currentTarget.innerText;
-                      onSubmit(inputText);
-                    }
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const inputText = e.currentTarget.innerText;
+                    onSubmit(inputText);
                   }
+                }
                 : undefined
             }
           >
             {shownContent}
           </pre>
-        </Badge>
+          <Keyboard
+            fontSize='small'
+            sx={{
+              marginLeft: theme.spacing(0.5),
+              color: theme.palette.common.white,
+              backgroundColor: theme.palette.grey[600],
+              borderRadius: '0.5em',
+              paddingLeft: theme.spacing(0.75),
+              paddingRight: theme.spacing(0.75),
+              width: `calc(1em + ${theme.spacing(1.5)})`,
+            }} />
+        </Box>
       </Tooltip>
     </Box>
   );
