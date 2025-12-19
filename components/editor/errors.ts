@@ -22,6 +22,9 @@ export function simplifyTypes(message: string) {
         .replaceAll(/EllipsisType/g, '...')}\``
         // Several functions in `math` use `SupportsFloat | SupportsIndex`, simplify to `int | float
         .replaceAll(/SupportsFloat \| SupportsIndex/g, 'int | float'),
+  ).replaceAll(
+    // Remove " with no `__getitem__` method"
+    / with no `__getitem__` method/g, '',
   );
 }
 
