@@ -6,7 +6,7 @@ import { runtimeErrorMessageCategory } from '../components/editor/errors';
 import { splitLines } from './sourceUtils';
 import { NominalExecutionResponse } from './codeExecution';
 
-export const TRACEBACK_TIDLE_DECORATION_CLASSNAME =
+export const TRACEBACK_TILDE_DECORATION_CLASSNAME =
   'squiggly-warning traceback-tilde';
 
 export const TRACEBACK_MESSAGE_DECORATION_CLASSNAME =
@@ -84,89 +84,89 @@ export function addErrorAnnotationsFromExecution(
   const tracebackLines = splitLines(traceback);
   const lineNumberInfo = lineNumOfErrorThisCell(tracebackLines);
   const model = editor.getModel();
-  if (model && lineNumberInfo !== undefined) {
-    // Extract the relevant line number
-    const currentCellLineIdx = lineNumberInfo.lineNum - firstLineNumber + 1;
-    // Find that line in the editor, count number of leading spaces
-    const sourceLineContent = model.getLinesContent()[currentCellLineIdx - 1];
-    const leadingSpaces =
-      sourceLineContent.length - sourceLineContent.trimStart().length;
-    // Extract the caret position from two lines after, if available
-    const caretData =
-      tracebackLines[lineNumberInfo.idxInTraceback + 2]?.match(/ {4}(.*)/)?.[1];
-    const validCaret =
-      caretData !== undefined &&
-      Array.from(caretData).every((c) => c === ' ' || c === '^' || c === '~');
-    // Create a widget for the ^^^ part
-    const firstCaret = validCaret ? caretData.indexOf('^') : undefined;
-    const lastCaret = validCaret ? caretData.lastIndexOf('^') : undefined;
-    const caretBegin =
-      firstCaret !== undefined && firstCaret != -1
-        ? firstCaret + leadingSpaces
-        : 0;
-    const caretEnd =
-      lastCaret !== undefined && lastCaret != -1
-        ? lastCaret + leadingSpaces
-        : sourceLineContent.length - 1;
-    // Extract the error message
-    const errorMessage = Array.from(
-      traceback.matchAll(/ {2}.*\n(.*)\n/g),
-    ).pop();
-    const message = errorMessage?.at(1) || 'Error (check the traceback)';
-    const lineNumber = currentCellLineIdx;
-    const startColumn = caretBegin + 1;
-    const endColumn = caretEnd + 2;
-    const mainDecoration = {
-      range: new monaco.Range(lineNumber, startColumn, lineNumber, endColumn),
-      options: {
-        className: TRACEBACK_MESSAGE_DECORATION_CLASSNAME,
-        showIfCollapsed: true,
-      },
-    };
-    // Create decorations for each possible ~~~ chunk.
-    const decorations = Array.from((caretData || '').matchAll(/~+/g)).map(
-      (match) => {
-        const begin = match.index;
-        const end = begin + match[0].length;
-        return {
-          range: new monaco.Range(
-            lineNumber,
-            begin + leadingSpaces + 1,
-            lineNumber,
-            end + leadingSpaces + 1,
-          ),
-          options: {
-            className: TRACEBACK_TIDLE_DECORATION_CLASSNAME,
-          },
-        };
-      },
-    );
-    const decorationsCollection = editor.createDecorationsCollection([
-      mainDecoration,
-      ...decorations,
-    ]);
-    const widget = new ErrorMessageWidget(
-      monaco,
-      editor,
-      mainDecoration.range,
-      message,
-      true,
-      runtimeErrorMessageCategory(message),
-      t,
-      () => {
-        // On close, *simulate a model change* so that
-        // (1) runtime annotations (decorations + widget) are removed
-        // (2) static analysis is re-run, possibly adding diagnostics
-        // (3) the execution response is marked as not synced and becomes grayed out
-        editor.setValue(editor.getValue());
-      },
-    );
-    return {
-      widget,
-      decorationsCollection,
-    };
+  if (!model || lineNumberInfo === undefined) {
+    return null;
   }
-  return null;
+  // Extract the relevant line number
+  const currentCellLineIdx = lineNumberInfo.lineNum - firstLineNumber + 1;
+  // Find that line in the editor, count number of leading spaces
+  const sourceLineContent = model.getLinesContent()[currentCellLineIdx - 1];
+  const leadingSpaces =
+    sourceLineContent.length - sourceLineContent.trimStart().length;
+  // Extract the caret position from two lines after, if available
+  const caretData =
+    tracebackLines[lineNumberInfo.idxInTraceback + 2]?.match(/ {4}(.*)/)?.[1];
+  const validCaret =
+    caretData !== undefined &&
+    Array.from(caretData).every((c) => c === ' ' || c === '^' || c === '~');
+  // Create a widget for the ^^^ part
+  const firstCaret = validCaret ? caretData.indexOf('^') : undefined;
+  const lastCaret = validCaret ? caretData.lastIndexOf('^') : undefined;
+  const caretBegin =
+    firstCaret !== undefined && firstCaret != -1
+      ? firstCaret + leadingSpaces
+      : 0;
+  const caretEnd =
+    lastCaret !== undefined && lastCaret != -1
+      ? lastCaret + leadingSpaces
+      : sourceLineContent.length - 1;
+  // Extract the error message
+  const errorMessage = Array.from(
+    traceback.matchAll(/^(?: {2}.*\n)+(.*)\n?/gm),
+  ).pop();
+  const message = errorMessage?.at(1) || 'Error (check the traceback)';
+  const lineNumber = currentCellLineIdx;
+  const startColumn = caretBegin + 1;
+  const endColumn = caretEnd + 2;
+  const mainDecoration = {
+    range: new monaco.Range(lineNumber, startColumn, lineNumber, endColumn),
+    options: {
+      className: TRACEBACK_MESSAGE_DECORATION_CLASSNAME,
+      showIfCollapsed: true,
+    },
+  };
+  // Create decorations for each possible ~~~ chunk.
+  const decorations = Array.from((caretData || '').matchAll(/~+/g)).map(
+    (match) => {
+      const begin = match.index;
+      const end = begin + match[0].length;
+      return {
+        range: new monaco.Range(
+          lineNumber,
+          begin + leadingSpaces + 1,
+          lineNumber,
+          end + leadingSpaces + 1,
+        ),
+        options: {
+          className: TRACEBACK_TILDE_DECORATION_CLASSNAME,
+        },
+      };
+    },
+  );
+  const decorationsCollection = editor.createDecorationsCollection([
+    mainDecoration,
+    ...decorations,
+  ]);
+  const widget = new ErrorMessageWidget(
+    monaco,
+    editor,
+    mainDecoration.range,
+    message,
+    true,
+    runtimeErrorMessageCategory(message),
+    t,
+    () => {
+      // On close, *simulate a model change* so that
+      // (1) runtime annotations (decorations + widget) are removed
+      // (2) static analysis is re-run, possibly adding diagnostics
+      // (3) the execution response is marked as not synced and becomes grayed out
+      editor.setValue(editor.getValue());
+    },
+  );
+  return {
+    widget,
+    decorationsCollection,
+  };
 }
 
 function stderrLines(content: string) {
