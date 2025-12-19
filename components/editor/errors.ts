@@ -21,7 +21,9 @@ export function simplifyTypes(message: string) {
         // Moreover, we simplify `EllipsisType` to `...` to avoid confusion with PyTamaro's ellipse function and match the source code.
         .replaceAll(/EllipsisType/g, '...')}\``
         // Several functions in `math` use `SupportsFloat | SupportsIndex`, simplify to `int | float
-        .replaceAll(/SupportsFloat \| SupportsIndex/g, 'int | float'),
+        .replaceAll(/SupportsFloat \| SupportsIndex/g, 'int | float')
+        // list[Unknown | -> list[
+        .replaceAll(/list\[Unknown \| /g, 'list['),
   ).replaceAll(
     // Remove " with no `__getitem__` method"
     / with no `__getitem__` method/g, '',
