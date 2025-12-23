@@ -358,6 +358,68 @@
             "urlSuffix": "#math.isclose"
         },
         {
+            "kind": "function",
+            "name": "isnan",
+            "description": {
+                "p": ["Returns True if the given value is 'Not a Number' (NaN)."]
+            },
+            "parameters": [
+                {
+                    "name": "num",
+                    "type": "float",
+                    "description": "number to check"
+                }
+            ],
+            "returnValue": {
+                "type": "bool",
+                "description": "True if the value is NaN, False otherwise"
+            },
+            "examples": [
+                {
+                    "code": "isnan(nan)",
+                    "result": "True"
+                },
+                {
+                    "code": "isnan(inf)",
+                    "result": "False"
+                }
+            ],
+            "urlSuffix": "#math.isnan"
+        },
+        {
+            "kind": "function",
+            "name": "isinf",
+            "description": {
+                "p": ["Returns True if the given value represents positive or negative infinity."]
+            },
+            "parameters": [
+                {
+                    "name": "num",
+                    "type": "float",
+                    "description": "number to check"
+                }
+            ],
+            "returnValue": {
+                "type": "bool",
+                "description": "True if the value is infinite, False otherwise"
+            },
+            "examples": [
+                {
+                    "code": "isinf(inf)",
+                    "result": "True"
+                },
+                {
+                    "code": "isinf(-inf)",
+                    "result": "True"
+                },
+                {
+                    "code": "isinf(42)",
+                    "result": "False"
+                }
+            ],
+            "urlSuffix": "#math.isinf"
+        },
+        {
             "kind": "constant",
             "name": "pi",
             "type": "float",
@@ -402,6 +464,37 @@
                 }
             ],
             "urlSuffix": "#math.e"
+        },
+        {
+            "kind": "constant",
+            "name": "inf",
+            "type": "float",
+            "description": {
+                "p": ["Floating-point value representing positive infinity."]
+            },
+            "examples": [
+                {
+                    "code": "inf + 1",
+                    "result": "inf"
+                }
+            ],
+            "urlSuffix": "#math.inf"
+        },
+        {
+            "kind": "constant",
+            "name": "nan",
+            "type": "float",
+            "description": {
+                "p": ["Floating-point value representing 'Not a Number' (NaN).",
+                      "According to the IEEE 754 standard, NaN is not equal to any value, including itself. Use the `isnan` function to check for NaN values."]
+            },
+            "examples": [
+                {
+                    "code": "nan == nan",
+                    "result": "False"
+                }
+            ],
+            "urlSuffix": "#math.nan"
         }
     ]
 } 
