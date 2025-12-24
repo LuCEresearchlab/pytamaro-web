@@ -134,7 +134,7 @@ export default function DoNowBox({
       <AlertTitle sx={{ fontSize: '1rem' }}>{t('doNow')}</AlertTitle>
       <Box
         sx={{
-          '& > p:last-child': {
+          '& > *:last-child': {
             marginBottom: 0,
           },
         }}

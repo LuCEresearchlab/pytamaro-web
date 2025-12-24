@@ -23,7 +23,7 @@ export default function TaskBox({ children }: { children: React.ReactNode }) {
       <Box
         marginTop='1em'
         sx={{
-          '& > p:last-child': {
+          '& > *:last-child': {
             marginBottom: 0,
           },
         }}
