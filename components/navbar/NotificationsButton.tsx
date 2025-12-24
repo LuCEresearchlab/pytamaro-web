@@ -14,8 +14,10 @@ const DEFAULT_SHOW_COUNT = 3;
 export default function NotificationsButton() {
   const { t } = useLocalTranslation();
   const { metadata, setMetadata } = useLocalProfile();
-  const unreadCount =
-    changelogEntries.length - 1 - metadata.lastNotificationSeen;
+  const unreadEntries = changelogEntries
+    .slice(metadata.lastNotificationSeen + 1)
+    .filter((entry) => entry.silent !== true);
+  const unreadCount = unreadEntries.length;
   const showCount = unreadCount === 0 ? DEFAULT_SHOW_COUNT : unreadCount;
   const [isOpen, setIsOpen] = useState(false);
 

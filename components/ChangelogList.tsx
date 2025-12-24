@@ -10,7 +10,9 @@ import {
 import { printableGraphicActivityVariant } from '../src/specialActivities';
 import {
   activityVariantPathname,
+  activityVariantPathnameFromParts,
   documentationElementPathname,
+  playgroundPathname,
 } from '../src/urlUtils';
 import GenericMuiIcon from './GenericMuiIcon';
 
@@ -141,6 +143,85 @@ export const changelogEntries = [
         !
       </span>
     ),
+  },
+  {
+    date: '2025-04-13',
+    icon: 'NearbyError',
+    title: 'Detection of errors in previous code cells',
+    desc: 'For activities with multiple code cells, the platform now detects errors in previous cells and shows a warning in the current cell. This helps to find the right cell to fix!',
+    silent: true,
+  },
+  {
+    date: '2025-06-09',
+    icon: 'Share',
+    title: 'Shareable Playground Links',
+    desc: (
+      <span>
+        You can now share code in the Playground simply by copying the URL,
+        which automatically contains your code.{' '}
+        <Link href={playgroundPathname("print('Shared!')")}>
+          Try this link!
+        </Link>
+      </span>
+    ),
+    silent: true,
+  },
+  {
+    date: '2025-09-24',
+    icon: 'Schema',
+    title: 'TIDE: TamaroCards IDE',
+    desc: (
+      <span>
+        Introducing TIDE, a new interactive environment for TamaroCards with
+        live evaluation of graphics and colors.{' '}
+        <Link href={'/tide'}>Try TIDE now!</Link>
+      </span>
+    ),
+    silent: true,
+  },
+  {
+    date: '2025-10-28',
+    icon: 'Error',
+    title: 'Improved, unified tooltips for error messages',
+    desc: 'New, custom tooltips show error messages in a unified way for syntax errors (detected live, before running the code) and runtime errors. A clear category helps to identify the kind of error at a glance.',
+    silent: true,
+  },
+  {
+    date: '2025-11-15',
+    icon: 'Palette',
+    title: 'Improved palette for code highlighting',
+    desc: "The palette used for code highlighting in the editor and anywhere else has been improved to better distinguish between kinds of tokens and to better match PyTamaro's color scheme.",
+    silent: true,
+  },
+  {
+    date: '2025-12-02',
+    icon: 'Flare',
+    title: 'Automatic detection of side effects',
+    desc: 'The Judicious documentation system now automatically detects functions with side effects in a number of cases, making it easier to recognize impure functions.',
+    silent: true,
+  },
+  {
+    date: '2025-12-23',
+    icon: 'PlaylistAddCheck',
+    title: 'Semantic analysis in real time',
+    desc: (
+      <span>
+        A new settings allows to enable real-time semantic analysis of the code
+        as you type, providing errors about names and types even before running
+        the code.{' '}
+        <Link
+          href={activityVariantPathnameFromParts(
+            'luce',
+            'learn-errors',
+            'en',
+            'v1',
+          )}
+        >
+          Learn more about the analysis here.
+        </Link>
+      </span>
+    ),
+    silent: true,
   },
 ];
 
