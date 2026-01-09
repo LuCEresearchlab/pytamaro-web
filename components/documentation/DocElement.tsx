@@ -63,6 +63,7 @@ export default function DocElement({
                 display: 'inline-block',
                 transform: `translateY(.${smallerFont ? '1' : '2'}em)`,
                 marginRight: '0.1em',
+                userSelect: 'none',
               }}
               alt='Module logo'
             />
