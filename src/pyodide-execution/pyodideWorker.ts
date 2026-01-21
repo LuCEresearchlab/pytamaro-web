@@ -210,7 +210,7 @@ function executeOnMainThread(
 
 async function loadPyodideWithPytamaro() {
   // @ts-expect-error importScripts is available in web workers
-  importScripts('https://cdn.jsdelivr.net/pyodide/v0.29.0/full/pyodide.js');
+  importScripts('https://cdn.jsdelivr.net/pyodide/v0.29.2/full/pyodide.js');
   // @ts-expect-error pyodide is injected by the script above
   const pyodideReadyPromise = loadPyodide({
     checkAPIVersion: true,
