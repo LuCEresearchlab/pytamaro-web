@@ -1,24 +1,13 @@
 import TipsAndUpdates from '@mui/icons-material/TipsAndUpdates';
 import { Alert, Box } from '@mui/material';
-import { Dispatch, SetStateAction } from 'react';
-import { CodeCellState } from '../src/localStorage/schema';
+import useLocalActivity from '../src/localStorage/useLocalActivity';
 import { rapidPlaygroundActivityVariant } from '../src/specialActivities';
-import useTemporaryActivity from '../src/useTemporaryActivity';
-import SolitaryCodeCell from './SolitaryCodeCell';
+import SolitaryCodeCell, { emptySingleCell } from './SolitaryCodeCell';
 
-export default function RapidPlayground({
-  initialCodeCells,
-  codeCells,
-  setCodeCells,
-}: {
-  initialCodeCells: CodeCellState[];
-  codeCells: CodeCellState[];
-  setCodeCells: Dispatch<SetStateAction<CodeCellState[]>>;
-}) {
-  const activity = useTemporaryActivity(
+export default function RapidPlayground() {
+  const initialCodeCells = emptySingleCell();
+  const activity = useLocalActivity(
     initialCodeCells,
-    codeCells,
-    setCodeCells,
     rapidPlaygroundActivityVariant,
   );
   return (
