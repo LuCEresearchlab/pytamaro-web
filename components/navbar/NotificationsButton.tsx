@@ -46,7 +46,7 @@ export default function NotificationsButton() {
         </NavBarButton>
       </PopoverTrigger>
       <PopoverContent>
-        <Card elevation={0} sx={{ maxWidth: '60ch' }}>
+        <Card elevation={0} sx={{ maxWidth: '60ch', marginRight: 2 }}>
           <ChangelogList start={0} end={showCount} />
           <CardActions>
             <Button size='small' href={aboutPathname()}>

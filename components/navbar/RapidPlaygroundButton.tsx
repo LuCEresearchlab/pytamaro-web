@@ -20,7 +20,10 @@ export default function RapidPlaygroundButton() {
         </Tooltip>
       </PopoverTrigger>
       <PopoverContent>
-        <Paper sx={{ minWidth: '80ch', maxWidth: '100ch' }} elevation={0}>
+        <Paper
+          sx={{ minWidth: '80ch', maxWidth: '100ch', marginRight: 2 }}
+          elevation={0}
+        >
           <RapidPlayground />
         </Paper>
       </PopoverContent>
