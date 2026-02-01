@@ -73,7 +73,11 @@ const nextConfig = {
       // Workaround for canvaskit
       fs: {
         browser: './src/emptyModule.ts',
-      }
+      },
+      // Workaround to avoid turbopack generating files with colons,
+      // which are not supported on an NTFS filesystem (Windows). 
+      // https://github.com/vercel/next.js/discussions/86194
+      'node:inspector': 'inspector',
   }
 }
 };
