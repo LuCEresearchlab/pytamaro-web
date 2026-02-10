@@ -234,7 +234,7 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
 
   const ns = pyodide.toPy({});
   try {
-    await pyodide.runPython(code, { globals: ns });
+    await pyodide.runPython(code, { globals: ns, filename: 'driver.py' });
     return {
       type: Message.RESULT,
       result: {

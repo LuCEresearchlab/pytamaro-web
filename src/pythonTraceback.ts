@@ -3,8 +3,8 @@ import { type editor as EditorNamespace } from 'monaco-editor';
 import { TFunction } from 'next-i18next';
 import { ErrorMessageWidget } from '../components/editor/ErrorMessageWidget';
 import { runtimeErrorMessageCategory } from '../components/editor/errors';
-import { splitLines } from './sourceUtils';
 import { NominalExecutionResponse } from './codeExecution';
+import { splitLines } from './sourceUtils';
 
 export const TRACEBACK_TILDE_DECORATION_CLASSNAME =
   'squiggly-warning traceback-tilde';
@@ -27,7 +27,7 @@ function nicerTraceback(traceback: string) {
     // Remove the line with the driver file, the one after it (source code),
     // and possibly even the one after if it has only the caret.
     s.replace(
-      /^ {2}File "((\/home\/glot\/driver.py)|(<exec>))", line \d+, in \S+\n.*\n(?:\s*~+\^+\s*\n)?/gm,
+      /^ {2}File "driver.py", line \d+, in \S+\n.*\n(?:\s*~+\^+\s*\n)?/gm,
       '',
     );
 
@@ -42,7 +42,7 @@ function nicerTraceback(traceback: string) {
 
   // Hide pyodide run folder
   const hidePyodideRunFolder = (s: string) =>
-    s.replace(/File "\/tmp\/run\//g, 'File "');
+    s.replace(/\/run\/py\/(.*)/g, '$1');
 
   // Shorten library paths
   const shortenLibraryPaths = (s: string) =>
