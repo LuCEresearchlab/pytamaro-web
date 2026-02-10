@@ -113,7 +113,7 @@ export function addErrorAnnotationsFromExecution(
   const caretBegin =
     firstCaret !== undefined && firstCaret != -1
       ? firstCaret + leadingSpaces
-      : 0;
+      : leadingSpaces;
   const caretEnd =
     lastCaret !== undefined && lastCaret != -1
       ? lastCaret + leadingSpaces
