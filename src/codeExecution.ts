@@ -63,6 +63,8 @@ export interface BareboneToolboxFunction {
   source: string;
 }
 
+// linecache is necessary to improve the traceback (e.g., to show the source code, and possibly also the caret)
+// the hack is taken from https://github.com/pyodide/pyodide/blob/3f80192aa814a17dfee7eb20bb24da6509c22049/src/py/_pyodide/_base.py#L312
 function driverSource(num_cells: number) {
   return `
 from pathlib import Path
@@ -71,12 +73,15 @@ from shutil import rmtree
 from sys import stderr, stdout
 from pytamaro_js_ffi import set_active_cell
 import atexit
+import linecache
 
 try:
   globals_dict = {}
   def run(name):
       filename = name + ".py"
-      code = compile(Path(filename).read_text(), filename, "exec")
+      source = Path(filename).read_text()
+      code = compile(source, filename, "exec")
+      linecache.cache[filename] = [lambda: source]
       exec(code, globals_dict)
 
   for idx in range(0, ${num_cells}):
