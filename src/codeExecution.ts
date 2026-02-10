@@ -70,6 +70,7 @@ from os import chdir, getcwd, path
 from shutil import rmtree
 from sys import stderr, stdout
 from pytamaro_js_ffi import set_active_cell
+import atexit
 
 try:
   globals_dict = {}
@@ -89,6 +90,7 @@ finally:
   cwd = Path(getcwd())
   chdir(cwd.parent.absolute())
   rmtree(cwd.absolute())
+  atexit._run_exitfuncs()
 `;
 }
 
