@@ -26,9 +26,9 @@ const decoder = new TextDecoder();
 const remainingPyProxies: PyProxy[] = [];
 
 interface ReadOnlyExecutionOutput {
-  getStdout(): string,
-  getStderr(): string,
-};
+  getStdout(): string;
+  getStderr(): string;
+}
 
 class ExecutionOutput implements ReadOnlyExecutionOutput {
   private stdout: string;
@@ -42,16 +42,14 @@ class ExecutionOutput implements ReadOnlyExecutionOutput {
   }
 
   writeStdout(content: Uint8Array | string): number {
-    this.stdout += typeof content === 'string'
-      ? content
-      : this.decoder.decode(content);
+    this.stdout +=
+      typeof content === 'string' ? content : this.decoder.decode(content);
     return content.length;
   }
 
   writeStderr(content: Uint8Array | string): number {
-    this.stderr += typeof content === 'string'
-      ? content
-      : this.decoder.decode(content);
+    this.stderr +=
+      typeof content === 'string' ? content : this.decoder.decode(content);
     return content.length;
   }
 
@@ -112,14 +110,14 @@ function setupIO(pyodide: PyodideAPI): ReadOnlyExecutionOutput {
       const written = out.writeStdout(buf);
       sendPartialResult();
       return written;
-    }
+    },
   });
   pyodide.setStderr({
     write: (buf) => {
       const written = out.writeStderr(buf);
       sendPartialResult();
       return written;
-    }
+    },
   });
 
   return out;
@@ -267,8 +265,16 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
   }
 }
 
-function ffiRenderGraphic(specs: GraphicSpec[], debug: boolean): string {
-  const res = executeOnMainThread(Message.DRAW, { specs, debug });
+function ffiRenderGraphic(
+  specs: GraphicSpec[],
+  scaling_factor: number,
+  debug: boolean,
+): string {
+  const res = executeOnMainThread(Message.DRAW, {
+    specs,
+    scaling_factor,
+    debug,
+  });
   return decodeSharedBuffer(res);
 }
 
@@ -295,8 +301,8 @@ function setActiveCell(idx: number): void {
 
 function installPytamaroFfi() {
   pyodide?.registerJsModule('pytamaro_js_ffi', {
-    render_graphic: (specs: PyProxy, debug: boolean) =>
-      ffiRenderGraphic(unProxy<GraphicSpec[]>(specs), debug),
+    render_graphic: (specs: PyProxy, scaling_factor: number, debug: boolean) =>
+      ffiRenderGraphic(unProxy<GraphicSpec[]>(specs), scaling_factor, debug),
     graphic_size: (specs: PyProxy) =>
       ffiSizeWhenRendered(unProxy<GraphicSpec[]>(specs)),
     set_active_cell: (idx: number) => setActiveCell(idx),

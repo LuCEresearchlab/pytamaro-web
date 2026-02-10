@@ -1,44 +1,32 @@
-type Cons<T> = {
-  car: T;
-  cdr: Cons<T> | null;
-};
-
 export class Stack<T> {
-  private head: Cons<T> | null;
+  private items: T[];
 
   constructor() {
-    this.head = null;
+    this.items = [];
   }
 
-  push(value: T) {
-    this.head = {
-      car: value,
-      cdr: this.head,
-    };
+  push(item: T) {
+    this.items.push(item);
+  }
+
+  pushInOrder(items: T[]) {
+    // The first item in the `items` array should also be the first one popped,
+    // so we reverse the order before pushing.
+    this.items.push(...items.reverse());
   }
 
   pop() {
-    if (this.head === null) {
-      throw Error('Empty stack');
+    if (this.isEmpty()) {
+      throw Error('Cannot pop from an empty stack');
     }
-    const { car, cdr } = this.head;
-    this.head = cdr;
-    return car;
+    return this.items.pop()!;
   }
 
   isEmpty() {
-    return this.head == null;
+    return this.items.length === 0;
   }
 
-  latest(predicate: (elem: T) => boolean): T | null {
-    let result: T | null = null;
-    let itr = this.head;
-    while (itr !== null) {
-      if (predicate(itr.car)) {
-        result = itr.car;
-      }
-      itr = itr.cdr;
-    }
-    return result;
+  findDeepestWhere(predicate: (elem: T) => boolean): T | null {
+    return this.items.find(predicate) ?? null;
   }
 }

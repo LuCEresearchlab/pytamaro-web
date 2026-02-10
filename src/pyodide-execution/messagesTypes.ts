@@ -55,6 +55,7 @@ export type ExecutionRequestMessage =
   | ({ type: Message.INPUT } & InputRequestData);
 export type DrawRequestData = {
   specs: GraphicSpec[];
+  scaling_factor: number;
   debug: boolean;
 };
 export type SizeRequestData = {

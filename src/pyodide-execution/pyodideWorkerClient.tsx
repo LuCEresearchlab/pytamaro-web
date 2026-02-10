@@ -1,10 +1,5 @@
 import PQueue from 'p-queue';
-import {
-  createContext,
-  ReactNode,
-  useEffect,
-  useState,
-} from 'react';
+import { createContext, ReactNode, useEffect, useState } from 'react';
 import { OutputAreaRef } from '../../components/input_output/OutputArea';
 import { cellsToFiles, ExecutionResponse } from '../codeExecution';
 import { ToolboxFunction } from '../localStorage/schema';
@@ -41,9 +36,8 @@ let interruptBuffer: Uint8Array | null = null;
 
 let activeCodeCell: number | null = null;
 let getOutputAreaRef: (idx: number) => OutputAreaRef | null = () => null;
-const getActiveOutputAreaRef = () => activeCodeCell == null
-  ? null
-  : getOutputAreaRef(activeCodeCell);
+const getActiveOutputAreaRef = () =>
+  activeCodeCell == null ? null : getOutputAreaRef(activeCodeCell);
 
 const pendingResults = new Map<string, ClientResult>();
 
@@ -106,7 +100,10 @@ function sendExecutionRequestToWorkerAndWaitForResponse(
 ): Promise<ExecutionResponse> {
   return new Promise<ExecutionResponse>((resolve) => {
     const resultListener = (event: MessageEvent<WorkerMessage>) => {
-      if (event.data?.type === Message.PARTIAL_RESULT && activeCodeCell !== null) {
+      if (
+        event.data?.type === Message.PARTIAL_RESULT &&
+        activeCodeCell !== null
+      ) {
         updateExecutionResult(activeCodeCell, event.data.result);
       }
       if (event.data?.type === Message.RESULT) {
@@ -166,8 +163,8 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
   switch (data.type) {
     case Message.DRAW:
       {
-        const { specs, debug } = data;
-        ffiImpl!.draw(specs, debug).then((result: string) => {
+        const { specs, scaling_factor, debug } = data;
+        ffiImpl!.draw(specs, scaling_factor, debug).then((result: string) => {
           const encoded = new Uint8Array(Buffer.from(result));
           notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
         });
@@ -260,16 +257,14 @@ export async function execute(
   idx: number,
   toolboxFunctions: ToolboxFunction[],
   extraPythonFiles: PythonFile[],
-  updateExecutionResult: (idx: number, response: ExecutionResponse) => void = () => {},
+  updateExecutionResult: (
+    idx: number,
+    response: ExecutionResponse,
+  ) => void = () => {},
   onActiveCellChange: (before: number | null, after: number) => void = () => {},
   getOutputRef: (idx: number) => OutputAreaRef | null = () => null,
 ): Promise<ExecutionResponse> {
-  const files = cellsToFiles(
-    sources,
-    idx,
-    toolboxFunctions,
-    extraPythonFiles,
-  );
+  const files = cellsToFiles(sources, idx, toolboxFunctions, extraPythonFiles);
   return (await executionQueue!.add(() => {
     // Reset active code cell in between runs
     activeCodeCell = null;

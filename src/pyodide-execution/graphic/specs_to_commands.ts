@@ -1,5 +1,6 @@
 import type {
   CanvasKit,
+  Color,
   EmbindObject,
   Path,
   Rect,
@@ -7,9 +8,10 @@ import type {
 } from '../../canvaskit-wasm/canvaskit';
 import {
   CircularSectorSpec,
-  Color,
   ComposeSpec,
   EllipseSpec,
+  EncodedColor,
+  EncodedPoint,
   GraphicSpec,
   PinSpec,
   Point,
@@ -18,16 +20,60 @@ import {
   TextSpec,
   TriangleSpec,
 } from '../spec.ts';
-import { Command } from './commands.ts';
+import {
+  cleanupAfterDraw,
+  cleanupAfterEnd,
+  Command,
+  extractBegin,
+  extractEnd,
+  extractGraphicCommands,
+} from './commands.ts';
 import { Stack } from './stack.ts';
 
 /* **** Utils **** */
+const decodingView = new DataView(new ArrayBuffer(8));
+
+function decodeColor(
+  ck: CanvasKit,
+  color_value_from_spec: EncodedColor,
+): Color {
+  // ARGB format
+  decodingView.setBigUint64(
+    0,
+    typeof color_value_from_spec === 'number'
+      ? BigInt(color_value_from_spec)
+      : color_value_from_spec,
+    false /* big endian */,
+  );
+  // We're only using 4 bytes of the 8 bytes in the dataview.
+  // Our result starts from byte offset 4.
+  const alpha = decodingView.getUint8(4);
+  const red = decodingView.getUint8(5);
+  const green = decodingView.getUint8(6);
+  const blue = decodingView.getUint8(7);
+  return ck.Color(red, green, blue, alpha / 255);
+}
+
+function decodePoint(point_value_from_spec: EncodedPoint): Point {
+  // 32-bit per coordinate, first x, then y.
+  // Each coordinate is a float in the range -1..1, encoded as an unsigned int.
+  decodingView.setBigUint64(
+    0,
+    typeof point_value_from_spec === 'number'
+      ? BigInt(point_value_from_spec)
+      : point_value_from_spec,
+    false /* big endian */,
+  );
+  const x = decodingView.getFloat32(0, false /* big endian */);
+  const y = decodingView.getFloat32(4, false /* big endian */);
+  return { x, y };
+}
 
 /**
  * Convert (pin) point from relative (-1..1) to absolute coordinates.
  */
-function relToAbsPoint(relPoint: Point, bounds: Rect): Point {
-  const { x: relX, y: relY } = relPoint;
+function relToAbsPoint(relPoint: EncodedPoint, bounds: Rect): Point {
+  const { x: relX, y: relY } = decodePoint(relPoint);
   const absX =
     relX === -1
       ? bounds[0]
@@ -50,85 +96,62 @@ function relToAbsPoint(relPoint: Point, bounds: Rect): Point {
   return { x: absX, y: absY };
 }
 
-function extractBegin(chunk: Command[]): {
-  type: 'BEGIN';
-  path: Path;
-  pinPosition: Point;
-} {
-  const begin = chunk.shift();
-  if (!begin || begin.type !== 'BEGIN') {
-    throw new Error(`Inconsistent state. Expected BEGIN, got ${begin?.type}`);
-  }
-  return begin;
-}
-
-function extractEnd(chunk: Command[]): {
-  type: 'END';
-  toDelete?: EmbindObject<string>[];
-} {
-  const end = chunk.pop();
-  if (!end || end.type !== 'END') {
-    throw new Error(`Inconsistent state, expected END, got ${end?.type}`);
-  }
-  return end;
-}
-
 /* **** Specs Processing **** */
 
-function processEmpty(ck: CanvasKit, store: (commands: Command[]) => void) {
+function addCommandsForEmpty(ck: CanvasKit, stack: Stack<Command>) {
   const emptyPath = new ck.Path();
-  store([
+  stack.pushInOrder([
     { type: 'BEGIN', path: emptyPath, pinPosition: { x: 0, y: 0 } },
     { type: 'END', toDelete: [emptyPath] },
   ]);
 }
 
-function processPrimitive(
+function addCommandsForPrimitive(
   ck: CanvasKit,
-  store: (commands: Command[]) => void,
+  stack: Stack<Command>,
   path: Path,
-  color: Color,
+  color: EncodedColor,
   pinPoint?: Point,
 ) {
   const paint = new ck.Paint();
-  paint.setColor(ck.Color(color.red, color.green, color.blue, color.alpha));
+  paint.setColor(decodeColor(ck, color));
   const bounds = path.computeTightBounds();
   const pinPosition = pinPoint || {
     x: Math.abs(bounds[0] - bounds[2]) / 2,
     y: Math.abs(bounds[1] - bounds[3]) / 2,
   };
-  store([
+  stack.pushInOrder([
     { type: 'BEGIN', path, pinPosition },
     { type: 'DRAW', path, paint },
     { type: 'END' },
   ]);
 }
 
-function processRectangle(
+function addCommandsForRectangle(
   ck: CanvasKit,
-  store: (commands: Command[]) => void,
+  stack: Stack<Command>,
   spec: RectangleSpec,
 ) {
   const path = new ck.Path().addRect(
     ck.XYWHRect(0, 0, spec.width, spec.height),
   );
-  processPrimitive(ck, store, path, spec.color);
+  addCommandsForPrimitive(ck, stack, path, spec.color);
 }
 
-function processEllipse(
+function addCommandsForEllipse(
   ck: CanvasKit,
-  store: (commands: Command[]) => void,
+  stack: Stack<Command>,
   spec: EllipseSpec,
 ) {
   const path = new ck.Path().addOval(
     ck.XYWHRect(0, 0, spec.width, spec.height),
   );
-  processPrimitive(ck, store, path, spec.color);
+  addCommandsForPrimitive(ck, stack, path, spec.color);
 }
 
-function processCircularSector(
+function addCommandsForCircularSector(
   ck: CanvasKit,
-  store: (commands: Command[]) => void,
+  stack: Stack<Command>,
   spec: CircularSectorSpec,
 ) {
   const radius = spec.radius;
@@ -142,12 +165,12 @@ function processCircularSector(
           .arcToOval(rect, 0, -spec.angle, false)
           .close();
   const pinPoint = { x: radius, y: radius };
-  processPrimitive(ck, store, path, spec.color, pinPoint);
+  addCommandsForPrimitive(ck, stack, path, spec.color, pinPoint);
 }
 
-function processTriangle(
+function addCommandsForTriangle(
   ck: CanvasKit,
-  store: (commands: Command[]) => void,
+  stack: Stack<Command>,
   spec: TriangleSpec,
 ) {
   const thirdPoint = {
@@ -163,13 +186,13 @@ function processTriangle(
     .lineTo(spec.side1, 0)
     .lineTo(thirdPoint.x, thirdPoint.y)
     .close();
-  processPrimitive(ck, store, path, spec.color, centroid);
+  addCommandsForPrimitive(ck, stack, path, spec.color, centroid);
 }
 
-function processText(
+function addCommandsForText(
   ck: CanvasKit,
   typefaces: Map<string, Typeface>,
-  store: (commands: Command[]) => void,
+  stack: Stack<Command>,
   spec: TextSpec,
 ) {
   // Fallback to Fira Sans
@@ -194,43 +217,35 @@ function processText(
   font.delete();
 
   const paint = new ck.Paint();
-  paint.setColor(
-    ck.Color(
-      spec.color.red,
-      spec.color.green,
-      spec.color.blue,
-      spec.color.alpha,
-    ),
-  );
+  paint.setColor(decodeColor(ck, spec.color));
   paint.setAntiAlias(true);
 
-  store([
+  stack.pushInOrder([
     { type: 'BEGIN', path, pinPosition: { x: 0, y: 0 } },
     { type: 'DRAW', path, paint },
     { type: 'END' },
   ]);
 }
 
-function processCompose(
+function addCommandsForCompose(
   ck: CanvasKit,
-  fetch: () => Command[],
-  store: (commands: Command[]) => void,
+  stack: Stack<Command>,
   spec: ComposeSpec,
 ) {
-  const fgChunk = fetch();
+  const fgChunk = extractGraphicCommands(stack);
   const fgBegin = extractBegin(fgChunk);
   const fgEnd = extractEnd(fgChunk);
   const { path: fgPath, pinPosition: fgPin } = fgBegin;
-  const fgPinPosition = spec.foreground_pin
-    ? relToAbsPoint(spec.foreground_pin, fgPath.computeTightBounds())
+  const fgPinPosition = spec.fg_pin
+    ? relToAbsPoint(spec.fg_pin, fgPath.computeTightBounds())
     : fgPin;
 
-  const bgChunk = fetch();
+  const bgChunk = extractGraphicCommands(stack);
   const bgBegin = extractBegin(bgChunk);
   const bgEnd = extractEnd(bgChunk);
   const { path: bgPath, pinPosition: bgPin } = bgBegin;
-  const bgPinPosition = spec.background_pin
-    ? relToAbsPoint(spec.background_pin, bgPath.computeTightBounds())
+  const bgPinPosition = spec.bg_pin
+    ? relToAbsPoint(spec.bg_pin, bgPath.computeTightBounds())
     : bgPin;
 
   const fgOffsetMatrix = [
@@ -248,8 +263,8 @@ function processCompose(
     .addPath(bgPath)!
     .addPath(fgPath, fgOffsetMatrix, true)!;
 
-  const pinPosition = spec.own_pin
-    ? relToAbsPoint(spec.own_pin, path.computeTightBounds())
+  const pinPosition = spec.pin
+    ? relToAbsPoint(spec.pin, path.computeTightBounds())
     : bgPinPosition;
 
   const dx = bgPinPosition.x - fgPinPosition.x;
@@ -263,7 +278,7 @@ function processCompose(
     toDelete.push(...bgEnd.toDelete);
   }
 
-  store([
+  stack.pushInOrder([
     { type: 'BEGIN', path, pinPosition },
     { type: 'SAVE' },
     ...bgChunk,
@@ -274,35 +289,27 @@ function processCompose(
   ]);
 }
 
-function processPin(
-  fetch: () => Command[],
-  store: (commands: Command[]) => void,
-  spec: PinSpec,
-) {
-  const childChunk = fetch();
+function addCommandsForPin(stack: Stack<Command>, spec: PinSpec) {
+  const childChunk = extractGraphicCommands(stack);
   const childBegin = extractBegin(childChunk);
   const childEnd = extractEnd(childChunk);
 
   const { path } = childBegin;
-  const pinPosition = relToAbsPoint(
-    spec.pinning_point,
-    path.computeTightBounds(),
-  );
+  const pinPosition = relToAbsPoint(spec.pin, path.computeTightBounds());
 
-  store([
+  stack.pushInOrder([
     { type: 'BEGIN', path, pinPosition },
     ...childChunk,
     { type: 'END', toDelete: childEnd.toDelete },
   ]);
 }
 
-function processRotate(
+function addCommandsForRotate(
   ck: CanvasKit,
-  fetch: () => Command[],
-  store: (commands: Command[]) => void,
+  stack: Stack<Command>,
   spec: RotateSpec,
 ) {
-  const childChunk = fetch();
+  const childChunk = extractGraphicCommands(stack);
   const childBegin = extractBegin(childChunk);
   const childEnd = extractEnd(childChunk);
 
@@ -322,7 +329,7 @@ function processRotate(
     ? childEnd.toDelete.concat([rotatedPath])
     : [rotatedPath];
 
-  store([
+  stack.pushInOrder([
     { type: 'BEGIN', path: rotatedPath, pinPosition },
     { type: 'SAVE' },
     { type: 'TRANSFORM', matrix: rotMatrix },
@@ -332,40 +339,39 @@ function processRotate(
   ]);
 }
 
-function process(
+function addCommandsFromSpec(
   ck: CanvasKit,
   typefaces: Map<string, Typeface>,
-  fetch: () => Command[],
-  store: (commands: Command[]) => void,
+  stack: Stack<Command>,
   spec: GraphicSpec,
 ) {
-  switch (spec.type) {
+  switch (spec.t) {
     case 'Empty':
-      processEmpty(ck, store);
+      addCommandsForEmpty(ck, stack);
       break;
     case 'Rectangle':
-      processRectangle(ck, store, spec);
+      addCommandsForRectangle(ck, stack, spec);
       break;
     case 'Ellipse':
-      processEllipse(ck, store, spec);
+      addCommandsForEllipse(ck, stack, spec);
       break;
     case 'CircularSector':
-      processCircularSector(ck, store, spec);
+      addCommandsForCircularSector(ck, stack, spec);
       break;
     case 'Triangle':
-      processTriangle(ck, store, spec);
+      addCommandsForTriangle(ck, stack, spec);
       break;
     case 'Text':
-      processText(ck, typefaces, store, spec);
+      addCommandsForText(ck, typefaces, stack, spec);
       break;
     case 'Compose':
-      processCompose(ck, fetch, store, spec);
+      addCommandsForCompose(ck, stack, spec);
       break;
     case 'Pin':
-      processPin(fetch, store, spec);
+      addCommandsForPin(stack, spec);
       break;
     case 'Rotate':
-      processRotate(ck, fetch, store, spec);
+      addCommandsForRotate(ck, stack, spec);
       break;
   }
 }
@@ -375,38 +381,13 @@ function ckHeapSize(ck: CanvasKit): number {
   return ck.HEAPF32.length;
 }
 
-export function processSpecs(
+export function specsToCommands(
   ck: CanvasKit,
   typefaces: Map<string, Typeface>,
   specs: GraphicSpec[],
   debugAllocations: boolean = false,
 ): Stack<Command> {
   const stack: Stack<Command> = new Stack();
-
-  const fetch = () => {
-    let cmd = stack.pop();
-    if (cmd.type !== 'BEGIN') {
-      throw Error(`Inconsistent state, expected BEGIN, got ${cmd.type}`);
-    }
-
-    const chunk: Command[] = [];
-    while (true) {
-      chunk.push(cmd);
-      if (cmd.type === 'END') {
-        break;
-      }
-      cmd = stack.pop();
-    }
-    return chunk;
-  };
-
-  const store = (commands: Command[]) => {
-    let i = commands.length - 1;
-    while (i >= 0) {
-      stack.push(commands[i]);
-      i -= 1;
-    }
-  };
 
   let lastCkHeapSize = ckHeapSize(ck);
 
@@ -415,7 +396,7 @@ export function processSpecs(
   // pushing commands from the stack so that they are executed in the right
   // order (e.g. when doing compositions).
   for (const spec of specs) {
-    process(ck, typefaces, fetch, store, spec);
+    addCommandsFromSpec(ck, typefaces, stack, spec);
 
     if (debugAllocations) {
       const afterSpecSize = ckHeapSize(ck);
@@ -438,13 +419,10 @@ export function freeStack(stack: Stack<Command>) {
     const cmd = stack.pop();
     switch (cmd.type) {
       case 'DRAW':
-        cmd.path.delete();
-        cmd.paint.delete();
+        cleanupAfterDraw(cmd);
         break;
       case 'END':
-        cmd.toDelete
-          ?.filter((obj) => !obj.isDeleted())
-          ?.forEach((obj) => obj.delete());
+        cleanupAfterEnd(cmd);
         break;
     }
   }

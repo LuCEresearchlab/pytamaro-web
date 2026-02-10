@@ -7,7 +7,7 @@ export function computeBoundsAndPin(stack: Stack<Command>): {
   bounds: Rect;
   pinPosition: Point;
 } {
-  const latestBegin: Command | null = stack.latest(
+  const latestBegin: Command | null = stack.findDeepestWhere(
     (cmd) => cmd.type === 'BEGIN',
   );
   if (latestBegin === null || latestBegin.type !== 'BEGIN') {
