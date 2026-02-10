@@ -88,13 +88,13 @@ export function addDebugInfo(
   size: number,
 ) {
   const whitePaint = new ck.Paint();
-  whitePaint.setColor(ck.Color4f(0xeb / 255, 0xeb / 255, 0xeb / 255, 1));
+  whitePaint.setColor(ck.Color(0xeb, 0xeb, 0xeb, 1));
   whitePaint.setAntiAlias(true);
   const blackPaint = new ck.Paint();
-  blackPaint.setColor(ck.Color4f(0x29 / 255, 0x29 / 255, 0x29 / 255, 1));
+  blackPaint.setColor(ck.Color(0x29, 0x29, 0x29, 1));
   blackPaint.setAntiAlias(true);
   const bluePaint = new ck.Paint();
-  bluePaint.setColor(ck.Color4f(0x29 / 255, 0x62 / 255, 0xc1 / 255, 1));
+  bluePaint.setColor(ck.Color(0x29, 0x62, 0xc1, 1));
   bluePaint.setAntiAlias(true);
 
   border(ck, canvas, graphicBounds, size, bluePaint, whitePaint);
@@ -103,4 +103,9 @@ export function addDebugInfo(
   const { x, y } = graphicPinPosition;
   pinIndicator(ck, canvas, x, y, whitePaint, 3);
   pinIndicator(ck, canvas, x, y, blackPaint);
+
+  // Cleanup paints
+  whitePaint.delete();
+  blackPaint.delete();
+  bluePaint.delete();
 }
