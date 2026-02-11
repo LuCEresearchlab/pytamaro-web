@@ -3,7 +3,7 @@ import { changelogEntries } from '../../components/ChangelogList';
 import { type ExecutionResponse } from '../codeExecution';
 import { ActivityVariant } from '../schemas/activitySchema';
 
-export const CURRENT_VERSION = '8';
+export const CURRENT_VERSION = '9';
 
 export interface Metadata {
   dataModelVersion: string;
@@ -18,6 +18,7 @@ export interface Metadata {
   lastNotificationSeen: number;
   liveAnalysis: LiveAnalysisStatus;
   wideEditor: boolean;
+  executionMode: ExecutionMode;
 }
 
 export enum LiveAnalysisStatus {
@@ -25,6 +26,11 @@ export enum LiveAnalysisStatus {
   Syntax = 'syntax',
   SyntaxSemantics = 'syntax-semantics',
 }
+
+export enum ExecutionMode {
+  ClientSide = 'cse',
+  ServerSide = 'sse',
+};
 
 export interface DocsMetadata {
   showOptional: boolean;
@@ -121,5 +127,6 @@ export function getDefaultMetadata(): Metadata {
     lastNotificationSeen: changelogEntries.length - 1,
     liveAnalysis: LiveAnalysisStatus.Syntax,
     wideEditor: false,
+    executionMode: ExecutionMode.ClientSide,
   };
 }

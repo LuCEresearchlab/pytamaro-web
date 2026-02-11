@@ -16,6 +16,7 @@ import {
   importedToolboxNames,
   isExecutionCompleted,
 } from './codeExecution';
+import { executeServerSide } from './legacyServerSideExecution';
 import {
   CodeCellExecutionState,
   CodeCellState,
@@ -31,6 +32,8 @@ import {
   activityVariantId,
 } from './schemas/activitySchema';
 import { EventName, storeDbEvent } from './storeDbEvent';
+import { FailedExecution } from '../pages/api/execute';
+import useLocalTranslation from './localStorage/useLocalTranslation';
 
 export function initialCodeExecutionState(): CodeCellExecutionState {
   return {
@@ -89,6 +92,7 @@ export function useActivity(
     executionResponse: ExecutionResponse,
   ) => void = () => { },
 ) {
+  const { t } = useLocalTranslation();
   const { getFunction } = useLocalToolbox();
   const variantId = activityVariantId(activityVariant);
   const variantMetadata = metadata.activities.find((a) => a.id === variantId);
@@ -224,7 +228,7 @@ export function useActivity(
             markAsCompleted();
           } else if (response.type === 'failure') {
             // Pyodide died, we need to restart the worker
-           restartWorkerAndResetExecutionState();
+            restartWorkerAndResetExecutionState();
           }
         }
       }),
@@ -302,6 +306,53 @@ export function useActivity(
       }
       activeCodeCell = nowActive;
       executionStarted(nowActive);
+    }
+
+    // Legacy code path for transition period
+    if (metadata.executionMode === 'sse') {
+      const setLastCodeCellResponse = (response: ExecutionResponse) => {
+        executionFinished(activeCodeCell, response);
+        postExecuteSingleCell(activeCodeCell, response);
+      };
+      const onRemoteFailure = (response: FailedExecution) => {
+        const errorMessage = response.type === 'time-limit-exceeded'
+          ? 'Execution time limit exceeded'
+          : response.type === 'output-limit-exceeded'
+          ? 'Output size limit exceeded'
+          : 'Network error';
+        const execResponse: ExecutionResponse = {
+          type: 'error',
+          completed: true,
+          stdout: '',
+          stderr: errorMessage,
+        };
+        setCodeExecutionStates((currentCodeExecutionStates) =>
+          produce(currentCodeExecutionStates, (draft) => {
+            for (let i = 0; i <= idx; i += 1) {
+              draft[i].outputSynced = false;
+              draft[i].executionInProgress = false;
+              draft[i].executionResponse = {
+                type: 'error',
+                completed: true,
+                stdout: '',
+                stderr: '',
+              };
+            }
+          }),
+        );
+        setLastCodeCellResponse(execResponse);
+      }
+      executeServerSide(
+        sources,
+        idx,
+        toolboxFunctions,
+        extraPythonFiles,
+        newPartialExecutionResult,
+        onActiveCellChange,
+        setLastCodeCellResponse,
+        onRemoteFailure,
+      );
+      return;
     }
 
     const response = await execute(

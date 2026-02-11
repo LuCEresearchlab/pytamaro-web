@@ -12,7 +12,6 @@ export type ExecutionResponse =
   | NominalExecutionResponse
   | FailedExecutionResponse;
 
-
 export type NominalExecutionResponse = {
   type: 'success' | 'error';
   completed: boolean;
@@ -24,13 +23,19 @@ export type FailedExecutionResponse = {
   type: 'failure';
   stdout: string;
   stderr: string;
-  completed?: true;
+}
+
+export type LegacyServerSideExecutionFailureResponse = {
+  type: 'sse-failure',
+  error: 'time-limit-exceeded' | 'output-limit-exceeded' | 'network-error';
 }
 
 export function isExecutionCompleted(
   res: ExecutionResponse | undefined,
-): res is ExecutionResponse {
-  return res?.completed || false;
+): res is NominalExecutionResponse {
+  return (
+    isExecutionSuccessful(res) || isExecutionError(res)
+  ) || false;
 }
 
 export function isExecutionSuccessful(

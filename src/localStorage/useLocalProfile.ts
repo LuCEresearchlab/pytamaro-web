@@ -10,6 +10,7 @@ import migrateToV5 from './migrations/v5';
 import migrateToV6 from './migrations/v6';
 import migrateToV7 from './migrations/v7';
 import migrateToV8 from './migrations/v8';
+import migrateToV9 from './migrations/v9';
 import {
   ActivityVariantMetadata,
   DocsMetadata,
@@ -28,6 +29,7 @@ function migrations(metadata: { dataModelVersion: string }): Metadata {
     5: migrateToV6,
     6: migrateToV7,
     7: migrateToV8,
+    8: migrateToV9,
   };
   const possibleMigration = migrationForVersion[metadata.dataModelVersion];
   if (possibleMigration) {

@@ -13,6 +13,7 @@ import {
   WorkerMessage,
 } from './messagesTypes';
 import { Sized } from './spec';
+import useLocalProfile from '../localStorage/useLocalProfile';
 
 enum ResultStatus {
   Computing,
@@ -350,6 +351,7 @@ export function PyodideWorkerClientProvider({
 }: {
   children: ReactNode;
 }) {
+  const { metadata } = useLocalProfile();
   const [isReady, setReady] = useState(false);
 
   const restart = async () => {
@@ -357,6 +359,11 @@ export function PyodideWorkerClientProvider({
     await restartWorker();
     setReady(true);
   };
+
+  // TMP for transition period: mark immediately as ready if using SSE
+  useEffect(() => {
+    setReady(metadata.executionMode === 'sse' || isReady);
+  }, [metadata, isReady])
 
   useEffect(() => {
     if (typeof SharedArrayBuffer !== 'undefined') {
