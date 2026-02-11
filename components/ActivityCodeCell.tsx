@@ -12,7 +12,6 @@ import { countLines } from '../src/sourceUtils';
 import { PythonAnalyzer } from '../src/usePythonAnalyzer';
 import useReset from '../src/useReset';
 import CodeCell from './CodeCell';
-import FailedExecutionSnackbar from './FailedExecutionSnackbar';
 import { OutputAreaRef } from './input_output/OutputArea';
 import MoreOptionsButton from './MoreOptionsButton';
 import SaveToToolboxButton from './SaveToToolboxButton';
@@ -69,7 +68,6 @@ export default function ActivityCodeCell({
   const {
     codeCells,
     codeExecutionStates,
-    executionFailed,
     handleSourceChanged,
     handleExecute,
     handleToggleOutputArea,
@@ -93,7 +91,6 @@ export default function ActivityCodeCell({
     <InconsistencyMessage />
   ) : (
     <Box marginY={2}>
-      {executionFailed && <FailedExecutionSnackbar />}
       <CodeCell
         initialSource={initialCodeCells[cellIdx].source}
         currentSource={currentCodeCell.source}

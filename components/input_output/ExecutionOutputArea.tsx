@@ -12,7 +12,7 @@ import {
   ToggleButton,
 } from '@mui/material';
 import { CSSProperties, useState } from 'react';
-import { NominalExecutionResponse } from '../../src/codeExecution';
+import { ExecutionResponse, isExecutionFailed } from '../../src/codeExecution';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import {
   isErrorInvolvingToolbox,
@@ -27,6 +27,7 @@ import {
   OutputAreaRef,
 } from './OutputArea';
 import PreElement from './PreElement';
+import FailedExecutionAlert from '../FailedExecutionAlert';
 
 function StderrElement({ content }: { content: string }) {
   const [showAllStackFrames, setShowAllStackFrames] = useState(false);
@@ -127,7 +128,7 @@ export default function ExecutionOutputArea({
   sx = {},
 }: {
   executionError: boolean;
-  executionResponse: NominalExecutionResponse;
+  executionResponse: ExecutionResponse;
   setOutputAreaRef: (node: OutputAreaRef | null | undefined) => void;
   dimmed?: boolean;
   sx?: CSSProperties;
@@ -144,6 +145,9 @@ export default function ExecutionOutputArea({
         ...sx,
       }}
     >
+      {executionError && isExecutionFailed(executionResponse) && (
+        <FailedExecutionAlert />
+      )}
       {executionError && isErrorInvolvingToolbox(stderr) && (
         <ToolboxErrorAlert />
       )}

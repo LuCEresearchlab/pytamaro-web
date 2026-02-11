@@ -17,12 +17,14 @@ import { Sized } from './spec';
 enum ResultStatus {
   Computing,
   Ready,
+  Failure,
 }
 type ClientResultValue =
   | Uint8Array // array for rendering result
   | Sized; // object for size result
 type ClientResult =
   | { status: ResultStatus.Computing }
+  | { status: ResultStatus.Failure }
   | { status: ResultStatus.Ready; value: ClientResultValue };
 
 let pyodideWorker: Worker | null = null;
@@ -93,10 +95,29 @@ function notifyWorkerResultReady(
   notifyWorkerUsingSyncBuffer();
 }
 
+function notifyWorkerResultFailure(
+  uuid: string,
+) {
+  const curr = pendingResults.get(uuid);
+  if (curr == undefined) {
+    // This guard is necessary due to potential concurrency issues
+    return;
+  }
+  if (curr.status !== ResultStatus.Computing) {
+    throw Error(
+      `Trying to deliver notification of failure multiple times for ${uuid}`,
+    );
+  }
+
+  pendingResults.set(uuid, { status: ResultStatus.Failure });
+  resultLengthBuffer![0] = -1;
+  notifyWorkerUsingSyncBuffer();
+}
+
 function sendExecutionRequestToWorkerAndWaitForResponse(
   files: RunPythonFile[],
   updateExecutionResult: (idx: number, response: ExecutionResponse) => void,
-  onActiveCellChange: (before: number | null, after: number) => void = () => {},
+  onActiveCellChange: (before: number | null, after: number) => void = () => { },
 ): Promise<ExecutionResponse> {
   return new Promise<ExecutionResponse>((resolve) => {
     const resultListener = (event: MessageEvent<WorkerMessage>) => {
@@ -131,7 +152,7 @@ function deliverPendingResult(
 ) {
   const { type } = data;
   const result = pendingResults.get(uuid);
-  if (!result || result?.status === ResultStatus.Computing) {
+  if (!result || result?.status !== ResultStatus.Ready) {
     // This guard is necessary due to potential concurrency issues
     return;
   }
@@ -164,27 +185,35 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
     case Message.DRAW:
       {
         const { specs, scaling_factor, debug } = data;
-        ffiImpl!.draw(specs, scaling_factor, debug).then((result: string) => {
-          const encoded = new Uint8Array(Buffer.from(result));
-          notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
-        });
+        ffiImpl!.draw(specs, scaling_factor, debug)
+          .then((result: string) => {
+            const encoded = new Uint8Array(Buffer.from(result));
+            notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
+          })
+          .catch(() => notifyWorkerResultFailure(uuid));
       }
       break;
     case Message.SIZE:
       {
         const { specs } = data;
         const result = ffiImpl!.sizeWhenRendered(specs);
-        notifyWorkerResultReady(uuid, Int32Array.BYTES_PER_ELEMENT * 2, result);
+        if (result == null) {
+          notifyWorkerResultFailure(uuid);
+        } else {
+          notifyWorkerResultReady(uuid, Int32Array.BYTES_PER_ELEMENT * 2, result);
+        }
       }
       break;
     case Message.INPUT:
       {
         const outputArea = getActiveOutputAreaRef();
         outputArea?.activateInputField();
-        outputArea?.getInput().then((value: string) => {
-          const encoded = new Uint8Array(Buffer.from(value));
-          notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
-        });
+        outputArea?.getInput()
+          .then((value: string) => {
+            const encoded = new Uint8Array(Buffer.from(value));
+            notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
+          })
+          .catch(() => notifyWorkerResultFailure(uuid));
       }
       break;
   }
@@ -260,8 +289,8 @@ export async function execute(
   updateExecutionResult: (
     idx: number,
     response: ExecutionResponse,
-  ) => void = () => {},
-  onActiveCellChange: (before: number | null, after: number) => void = () => {},
+  ) => void = () => { },
+  onActiveCellChange: (before: number | null, after: number) => void = () => { },
   getOutputRef: (idx: number) => OutputAreaRef | null = () => null,
 ): Promise<ExecutionResponse> {
   const files = cellsToFiles(sources, idx, toolboxFunctions, extraPythonFiles);

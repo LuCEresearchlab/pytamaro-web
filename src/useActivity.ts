@@ -7,17 +7,14 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useState,
 } from 'react';
 import useSessionStorageState from 'use-session-storage-state';
 import { OutputAreaRef } from '../components/input_output/OutputArea';
 import logAnalyticsEvent, { AnalyticsEventName } from './analyticsEvent';
 import {
   ExecutionResponse,
-  FailedExecutionResponse,
   importedToolboxNames,
   isExecutionCompleted,
-  isExecutionFailed,
 } from './codeExecution';
 import {
   CodeCellExecutionState,
@@ -107,9 +104,17 @@ export function useActivity(
     `pytamaro-web-executionv2-${variantId}`,
     { defaultValue: initialCodeExecutionStates() },
   );
-  const [executionFailed, setExecutionFailed] = useState<
-    FailedExecutionResponse | undefined
-  >(undefined);
+
+  const restartWorkerAndResetExecutionState = useCallback(() => {
+    setCodeExecutionStates((currentCodeExecutionStates) =>
+      produce(currentCodeExecutionStates, (draft) => {
+        for (let idx = 0; idx < draft.length; idx += 1) {
+          draft[idx].executionInProgress = false;
+        }
+      }),
+    );
+    restart();
+  }, [restart, setCodeExecutionStates]);
 
   const completed = !!variantMetadata?.completed;
   const cellsModified = !!variantMetadata?.cellsModified;
@@ -209,18 +214,17 @@ export function useActivity(
       produce(currentCodeExecutionStates, (draft) => {
         draft[idx].executionInProgress = false;
         if (response !== undefined) {
-          if (isExecutionFailed(response)) {
-            setExecutionFailed(response);
-          } else {
-            draft[idx].executionResponse = response;
-            draft[idx].outputSynced = true;
-            draft[idx].outputAreaVisible =
-              isExecutionCompleted(response) &&
-              (response.stdout + response.stderr).length > 0;
+          draft[idx].executionResponse = response;
+          draft[idx].outputSynced = true;
+          draft[idx].outputAreaVisible =
+            isExecutionCompleted(response) &&
+            (response.stdout + response.stderr).length > 0;
+          if (response.type === 'success' && idx === codeCells.length - 1) {
             // Mark the activity as completed when the last cell has been executed successfully.
-            if (response.type === 'success' && idx === codeCells.length - 1) {
-              markAsCompleted();
-            }
+            markAsCompleted();
+          } else if (response.type === 'failure') {
+            // Pyodide died, we need to restart the worker
+           restartWorkerAndResetExecutionState();
           }
         }
       }),
@@ -231,9 +235,7 @@ export function useActivity(
     (idx: number, executionResponse: ExecutionResponse | undefined) => {
       setCodeExecutionStates((currentCodeExecutionStates) =>
         produce(currentCodeExecutionStates, (draft) => {
-          if (executionResponse
-            && !isExecutionFailed(executionResponse)
-            && draft[idx] !== undefined) {
+          if (executionResponse && draft[idx] !== undefined) {
             draft[idx].executionResponse = executionResponse;
             draft[idx].outputSynced = true;
             draft[idx].outputAreaVisible =
@@ -278,7 +280,6 @@ export function useActivity(
       extraPythonFiles,
       liveAnalysis: metadata.liveAnalysis,
     });
-    setExecutionFailed(undefined);
     // (Re-)Execute all cells from the first one to the current one, included.
     // Before starting, we mark the output of these cells as not synced.
     setCodeExecutionStates((currentCodeExecutionStates) =>
@@ -317,12 +318,9 @@ export function useActivity(
     // The others are handled by the onActiveCellChange function
     // Note that "last" does not necessarily mean cell #idx, but rather
     // the last cell that was executed, hence why we only need to do
-    // isExecutionFailed + setExecution here.
+    // executionFinished + postExecuteSingleCell here.
     executionFinished(activeCodeCell, response);
     postExecuteSingleCell(activeCodeCell, response);
-    if (isExecutionFailed(response)) {
-      setExecutionFailed(response);
-    }
   };
 
   const handleToggleOutputArea = (idx: number) => {
@@ -364,16 +362,7 @@ export function useActivity(
       description:
         'You are about to restart the Python environment. All active code executions will be terminated.',
       confirmationText: 'Ok, restart',
-    }).then(() => {
-      setCodeExecutionStates((currentCodeExecutionStates) =>
-        produce(currentCodeExecutionStates, (draft) => {
-          for (let idx = 0; idx < draft.length; idx += 1) {
-            draft[idx].executionInProgress = false;
-          }
-        }),
-      );
-      restart();
-    });
+    }).then(() => restartWorkerAndResetExecutionState());
 
   return {
     initialCodeCells,
@@ -381,7 +370,6 @@ export function useActivity(
     codeExecutionStates,
     completed,
     cellsModified,
-    executionFailed,
     sourcesUpTo,
     handleSourceChanged,
     handleExecute,

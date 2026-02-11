@@ -12,27 +12,31 @@ export type ExecutionResponse =
   | NominalExecutionResponse
   | FailedExecutionResponse;
 
-export interface NominalExecutionResponse {
+
+export type NominalExecutionResponse = {
   type: 'success' | 'error';
   completed: boolean;
   stdout: string;
   stderr: string;
 }
 
-export interface FailedExecutionResponse {
+export type FailedExecutionResponse = {
   type: 'failure';
-}
-
-export function isExecutionNominal(
-  res: ExecutionResponse | undefined,
-): res is NominalExecutionResponse {
-  return res?.type === 'success' || res?.type === 'error';
+  stdout: string;
+  stderr: string;
+  completed?: true;
 }
 
 export function isExecutionCompleted(
   res: ExecutionResponse | undefined,
+): res is ExecutionResponse {
+  return res?.completed || false;
+}
+
+export function isExecutionSuccessful(
+  res: ExecutionResponse | undefined,
 ): res is NominalExecutionResponse {
-  return isExecutionNominal(res) && res.completed;
+  return res?.type === 'success';
 }
 
 export function isExecutionError(

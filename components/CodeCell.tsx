@@ -12,7 +12,7 @@ import { useMemo } from 'react';
 import {
   isExecutionCompleted,
   isExecutionError,
-  isExecutionNominal,
+  isExecutionFailed,
 } from '../src/codeExecution';
 import { CodeCellExecutionState } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
@@ -68,7 +68,8 @@ export default function CodeCell({
 }) {
   const { t } = useLocalTranslation(['common']);
   const { executionResponse } = codeCellExecutionState;
-  const executionError = isExecutionError(executionResponse);
+  const executionError = isExecutionError(executionResponse)
+    || isExecutionFailed(executionResponse);
   const executing = codeCellExecutionState.executionInProgress;
   const executionFinished =
     codeCellExecutionState.outputSynced &&
@@ -191,7 +192,7 @@ export default function CodeCell({
           unmountOnExit
         >
           <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
-            {isExecutionNominal(executionResponse) && (
+            {executionResponse !== undefined && (
               <ExecutionOutputArea
                 executionError={executionError}
                 executionResponse={executionResponse}

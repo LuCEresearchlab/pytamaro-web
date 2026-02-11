@@ -178,7 +178,7 @@ function decodeSharedBuffer(sharedBuffer: SharedArrayBuffer): string {
 function executeOnMainThread(
   type: Message,
   data: DrawRequestData | SizeRequestData | InputRequestData,
-): SharedArrayBuffer {
+): SharedArrayBuffer | null {
   const uuid = crypto.randomUUID();
   // Perform procedure on the main thread
   self.postMessage({
@@ -196,6 +196,10 @@ function executeOnMainThread(
   }
   // Read length of result and create shared array buffer to transfer it
   const lenInBytes = resultLengthBuffer[0];
+  if (lenInBytes < 0) {
+    // Execution failed on the client side
+    return null;
+  }
   const resultBuffer = new SharedArrayBuffer(lenInBytes);
   self.postMessage({
     type,
@@ -246,6 +250,8 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
     };
   } catch (err) {
     const pythonError = err as PythonError;
+    // @ts-expect-error: Usage of field that is not part of the public API
+    const isFatal = err.pyodide_fatal_error;
 
     // eslint-disable-next-line no-console
     console.error(pythonError);
@@ -253,7 +259,7 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
     return {
       type: Message.RESULT,
       result: {
-        type: 'error',
+        type: isFatal ? 'failure' : 'error',
         completed: true,
         stdout: out.getStdout(),
         stderr: out.getStderr() + pythonError,
@@ -269,17 +275,23 @@ function ffiRenderGraphic(
   specs: GraphicSpec[],
   scaling_factor: number,
   debug: boolean,
-): string {
+): string | null {
   const res = executeOnMainThread(Message.DRAW, {
     specs,
     scaling_factor,
     debug,
   });
+  if (res === null) {
+    throw Error('Failed to render graphic');
+  }
   return decodeSharedBuffer(res);
 }
 
 function ffiSizeWhenRendered(specs: GraphicSpec[]): Sized {
   const res = executeOnMainThread(Message.SIZE, { specs });
+  if (res === null) {
+    throw Error('Failed to compute graphic size');
+  }
   const resultArray = new Float32Array(res);
   return {
     width: resultArray[0],
@@ -289,6 +301,10 @@ function ffiSizeWhenRendered(specs: GraphicSpec[]): Sized {
 
 function ffiInput(): string {
   const res = executeOnMainThread(Message.INPUT, {});
+  if (res === null) {
+    // Treat input failure as a normal python exception
+    throw Error('Failed to obtain input string');
+  }
   return decodeSharedBuffer(res);
 }
 

@@ -3,7 +3,7 @@ import { type editor as EditorNamespace } from 'monaco-editor';
 import { TFunction } from 'next-i18next';
 import { ErrorMessageWidget } from '../components/editor/ErrorMessageWidget';
 import { runtimeErrorMessageCategory } from '../components/editor/errors';
-import { NominalExecutionResponse } from './codeExecution';
+import { ExecutionResponse } from './codeExecution';
 import { splitLines } from './sourceUtils';
 
 export const TRACEBACK_TILDE_DECORATION_CLASSNAME =
@@ -81,7 +81,7 @@ function lineNumOfErrorThisCell(traceback: string[]) {
 export function addErrorAnnotationsFromExecution(
   monaco: Monaco,
   editor: EditorNamespace.IStandaloneCodeEditor,
-  executionResponse: NominalExecutionResponse,
+  executionResponse: ExecutionResponse,
   firstLineNumber: number,
   t: TFunction,
 ): {
@@ -215,5 +215,6 @@ export function isErrorInvolvingToolbox(content: string) {
 }
 
 export function isErrorPreviousCells(content: string) {
+  return false;
   return lineNumOfErrorThisCell(stderrLines(content)) === undefined;
 }

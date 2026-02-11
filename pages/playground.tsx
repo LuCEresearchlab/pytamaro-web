@@ -17,7 +17,6 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import ActivitiesStripe from '../components/ActivitiesStripe';
 import DownloadCodeButton from '../components/CodeDownloadButton';
 import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDialog';
-import FailedExecutionSnackbar from '../components/FailedExecutionSnackbar';
 import MoreOptionsButton from '../components/MoreOptionsButton';
 import NavigationBar from '../components/navbar/NavigationBar';
 import ResetButton from '../components/navbar/ResetButton';
@@ -109,7 +108,6 @@ function PlaygroundCodeCell({
   const {
     codeCells,
     codeExecutionStates,
-    executionFailed,
     handleToggleOutputArea,
     handleResetSingleCell,
     handleResetAllCellsNoConfirm,
@@ -165,26 +163,23 @@ function PlaygroundCodeCell({
   );
 
   return (
-    <>
-      {executionFailed && <FailedExecutionSnackbar />}
-      <SolitaryCodeCell
-        resetCounter={resetCounter}
-        activity={localActivity}
-        activityVariant={playgroundActivityVariant}
-        postSourceChange={updateQueryString}
-        allowToolboxSave={true}
-        runEnabled={runEnabled}
-        extraActions={
-          <MoreOptionsButton
-            codeCellState={codeCells[0]}
-            codeCellExecutionState={codeExecutionStates[0]}
-            onShowHideOutput={() => handleToggleOutputArea(0)}
-            onReset={() => handleResetSingleCell(0, newReset)}
-            onRestart={() => handleRestartPyodide()}
-          />
-        }
-      />
-    </>
+    <SolitaryCodeCell
+      resetCounter={resetCounter}
+      activity={localActivity}
+      activityVariant={playgroundActivityVariant}
+      postSourceChange={updateQueryString}
+      allowToolboxSave={true}
+      runEnabled={runEnabled}
+      extraActions={
+        <MoreOptionsButton
+          codeCellState={codeCells[0]}
+          codeCellExecutionState={codeExecutionStates[0]}
+          onShowHideOutput={() => handleToggleOutputArea(0)}
+          onReset={() => handleResetSingleCell(0, newReset)}
+          onRestart={() => handleRestartPyodide()}
+        />
+      }
+    />
   );
 }
 
