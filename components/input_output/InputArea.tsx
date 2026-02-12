@@ -78,7 +78,16 @@ export default function InputArea({
               paddingRight: theme.spacing(3),
               minWidth: '5ch',
             }}
-            contentEditable={editable}
+            contentEditable={editable ? 'plaintext-only' : false}
+            onInput={() => {
+              if (inputRef.current) {
+                const text = inputRef.current.innerText;
+                const eolIndex = text.indexOf('\n');
+                if (eolIndex !== -1) {
+                  inputRef.current.innerText = text.slice(0, eolIndex);
+                }
+              }
+            }}
             onKeyDown={
               editable
                 ? (e) => {
