@@ -98,7 +98,9 @@ export default function DocumentationExample({
                 }}
               />
             )}
-            {example.stdin && <InputArea initialContent={example.stdin} />}
+            {example.stdin && (
+              <InputArea initialContent={example.stdin} forceBadge={true} />
+            )}
           </Box>
         )}
         {example.result && (
