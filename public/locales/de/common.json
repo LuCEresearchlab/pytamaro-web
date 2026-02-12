@@ -160,5 +160,9 @@
         "name": "Name",
         "type": "Typ",
         "other": "Fehler"
+    },
+    "executionError": {
+        "title": "Ausführung fehlgeschlagen",
+        "message": "Dein Code konnte nicht ausgeführt werden. Dies könnte auf eine Reihe von Gründen zurückzuführen sein, wie z.B. eine Grafik, die zu groß oder komplex ist, oder Dein Programm, das zu viel Speicher verwendet.\nDu kannst versuchen, das Programm zu vereinfachen oder es in einer anderen IDE auszuführen."
     }
 }
