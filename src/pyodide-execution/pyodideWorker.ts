@@ -96,6 +96,7 @@ function setupIO(pyodide: PyodideAPI): ReadOnlyExecutionOutput {
       // Send partial result before blocking for input
       // (this signals that the output is up to date for the current execution,
       // even if there was no output before the input request)
+      out.writeStdout('\u200B');
       sendPartialResult();
       const input = ffiInput();
       // Add back to stdout (including the <enter>) so that the user can see what they typed
