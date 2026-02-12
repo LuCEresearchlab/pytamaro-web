@@ -12,7 +12,11 @@ import {
   ToggleButton,
 } from '@mui/material';
 import { CSSProperties, useState } from 'react';
-import { ExecutionResponse, isExecutionFailed } from '../../src/codeExecution';
+import {
+  ExecutionResponse,
+  isExecutionError,
+  isExecutionFailed,
+} from '../../src/codeExecution';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import {
   isErrorInvolvingToolbox,
@@ -20,6 +24,7 @@ import {
   processTraceback,
 } from '../../src/pythonTraceback';
 import theme from '../../src/theme';
+import FailedExecutionAlert from '../FailedExecutionAlert';
 import {
   ERROR_MESSAGE_CLASSNAME,
   OUTPUT_AREA_BACKGROUND_COLOR,
@@ -27,7 +32,6 @@ import {
   OutputAreaRef,
 } from './OutputArea';
 import PreElement from './PreElement';
-import FailedExecutionAlert from '../FailedExecutionAlert';
 
 function StderrElement({ content }: { content: string }) {
   const [showAllStackFrames, setShowAllStackFrames] = useState(false);
@@ -121,18 +125,18 @@ function PreviousCellsErrorAlert({
 }
 
 export default function ExecutionOutputArea({
-  executionError,
   executionResponse,
   setOutputAreaRef,
   dimmed = false,
   sx = {},
 }: {
-  executionError: boolean;
   executionResponse: ExecutionResponse;
   setOutputAreaRef: (node: OutputAreaRef | null | undefined) => void;
   dimmed?: boolean;
   sx?: CSSProperties;
 }) {
+  const errored = isExecutionError(executionResponse);
+  const failed = isExecutionFailed(executionResponse);
   const { stdout, stderr } = executionResponse;
   return (
     <Box
@@ -145,13 +149,10 @@ export default function ExecutionOutputArea({
         ...sx,
       }}
     >
-      {executionError && isExecutionFailed(executionResponse) && (
+      {errored && isErrorInvolvingToolbox(stderr) && <ToolboxErrorAlert />}
+      {failed ? (
         <FailedExecutionAlert />
-      )}
-      {executionError && isErrorInvolvingToolbox(stderr) && (
-        <ToolboxErrorAlert />
-      )}
-      {executionError && stderr && isErrorPreviousCells(stderr) ? (
+      ) : errored && stderr && isErrorPreviousCells(stderr) ? (
         <PreviousCellsErrorAlert buttonDisabled={dimmed} />
       ) : (
         <Stack sx={{ width: 'fit-content', minWidth: '100%' }}>
@@ -164,7 +165,8 @@ export default function ExecutionOutputArea({
               <OutputArea
                 data={stdout}
                 disabled={dimmed}
-                ref={setOutputAreaRef} />
+                ref={setOutputAreaRef}
+              />
             </Box>
           )}
           {stderr && (

@@ -26,10 +26,10 @@ import { PythonAnalyzer } from '../src/usePythonAnalyzer';
 import { EllipsisTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
 import DocumentationStripe from './documentation/DocumentationStripe';
-import RunButton from './RunButton';
-import StaleOutputBadge from './StaleOutputBadge';
 import ExecutionOutputArea from './input_output/ExecutionOutputArea';
 import { OutputAreaRef } from './input_output/OutputArea';
+import RunButton from './RunButton';
+import StaleOutputBadge from './StaleOutputBadge';
 
 export default function CodeCell({
   initialSource,
@@ -60,7 +60,10 @@ export default function CodeCell({
   resetCounter: number;
   pythonAnalyzer: PythonAnalyzer | null;
   cellIdx: number;
-  setOutputAreaRef: (idx: number, node: OutputAreaRef | null | undefined) => void;
+  setOutputAreaRef: (
+    idx: number,
+    node: OutputAreaRef | null | undefined,
+  ) => void;
   extraPythonFiles?: PythonFile[];
   extraActions?: React.ReactNode;
   readOnly?: boolean;
@@ -68,8 +71,8 @@ export default function CodeCell({
 }) {
   const { t } = useLocalTranslation(['common']);
   const { executionResponse } = codeCellExecutionState;
-  const executionError = isExecutionError(executionResponse)
-    || isExecutionFailed(executionResponse);
+  const executionError =
+    isExecutionError(executionResponse) || isExecutionFailed(executionResponse);
   const executing = codeCellExecutionState.executionInProgress;
   const executionFinished =
     codeCellExecutionState.outputSynced &&
@@ -187,14 +190,17 @@ export default function CodeCell({
         )}
         {ellipsis && <EllipsisTip />}
         <Collapse
-          in={codeCellExecutionState.outputAreaVisible || executing}
+          in={
+            codeCellExecutionState.outputAreaVisible ||
+            executing ||
+            isExecutionFailed(executionResponse)
+          }
           timeout='auto'
           unmountOnExit
         >
           <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
             {executionResponse !== undefined && (
               <ExecutionOutputArea
-                executionError={executionError}
                 executionResponse={executionResponse}
                 dimmed={!codeCellExecutionState.outputSynced}
                 setOutputAreaRef={(node) => setOutputAreaRef(cellIdx, node)}
