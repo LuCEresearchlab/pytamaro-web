@@ -15,6 +15,7 @@ import {
   WorkerClientMessage,
 } from './messagesTypes';
 import { GraphicSpec, Sized } from './spec';
+import { throttle } from 'lodash';
 
 let syncBuffer: Int32Array;
 let resultLengthBuffer: Int32Array;
@@ -86,6 +87,8 @@ function setupIO(pyodide: PyodideAPI): ReadOnlyExecutionOutput {
     });
   };
 
+  const throttledSendPartialResult = throttle(sendPartialResult, 50);
+
   activeCellChangeListener = () => {
     sendPartialResult();
     out.clear();
@@ -109,14 +112,14 @@ function setupIO(pyodide: PyodideAPI): ReadOnlyExecutionOutput {
   pyodide.setStdout({
     write: (buf) => {
       const written = out.writeStdout(buf);
-      sendPartialResult();
+      throttledSendPartialResult();
       return written;
     },
   });
   pyodide.setStderr({
     write: (buf) => {
       const written = out.writeStderr(buf);
-      sendPartialResult();
+      throttledSendPartialResult();
       return written;
     },
   });
