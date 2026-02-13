@@ -10,6 +10,7 @@ import {
 } from 'react';
 import useSessionStorageState from 'use-session-storage-state';
 import { OutputAreaRef } from '../components/input_output/OutputArea';
+import { FailedExecution } from '../pages/api/execute';
 import logAnalyticsEvent, { AnalyticsEventName } from './analyticsEvent';
 import {
   ExecutionResponse,
@@ -25,6 +26,7 @@ import {
   getDefaultActivityVariantMetadata,
 } from './localStorage/schema';
 import useLocalToolbox from './localStorage/useLocalToolbox';
+import useLocalTranslation from './localStorage/useLocalTranslation';
 import { PyodideWorkerClientContext } from './pyodide-execution/pyodideWorkerClient';
 import {
   ActivityVariant,
@@ -32,8 +34,6 @@ import {
   activityVariantId,
 } from './schemas/activitySchema';
 import { EventName, storeDbEvent } from './storeDbEvent';
-import { FailedExecution } from '../pages/api/execute';
-import useLocalTranslation from './localStorage/useLocalTranslation';
 
 export function initialCodeExecutionState(): CodeCellExecutionState {
   return {
@@ -90,7 +90,7 @@ export function useActivity(
   postExecuteSingleCell: (
     idx: number,
     executionResponse: ExecutionResponse,
-  ) => void = () => { },
+  ) => void = () => {},
 ) {
   const { t } = useLocalTranslation();
   const { getFunction } = useLocalToolbox();
@@ -109,7 +109,7 @@ export function useActivity(
     { defaultValue: initialCodeExecutionStates() },
   );
 
-  const restartWorkerAndResetExecutionState = useCallback(() => {
+  const restartWorkerAndMarkExecutionAsStopped = useCallback(() => {
     setCodeExecutionStates((currentCodeExecutionStates) =>
       produce(currentCodeExecutionStates, (draft) => {
         for (let idx = 0; idx < draft.length; idx += 1) {
@@ -203,12 +203,15 @@ export function useActivity(
   const executionPartiallyCompleted = (idx: number) => {
     setCodeExecutionStates((currentCodeExecutionStates) =>
       produce(currentCodeExecutionStates, (draft) => {
-        if (draft[idx].executionResponse
-          && draft[idx].executionResponse?.type !== 'failure') {
+        if (
+          draft[idx].executionResponse &&
+          draft[idx].executionResponse?.type !== 'failure'
+        ) {
           draft[idx].executionResponse.completed = true;
         }
-      }));
-  }
+      }),
+    );
+  };
 
   const executionFinished = (
     idx: number,
@@ -228,26 +231,27 @@ export function useActivity(
             markAsCompleted();
           } else if (response.type === 'failure') {
             // Pyodide died, we need to restart the worker
-            restartWorkerAndResetExecutionState();
+            restartWorkerAndMarkExecutionAsStopped();
           }
         }
       }),
     );
   };
 
-  const newPartialExecutionResult =
-    (idx: number, executionResponse: ExecutionResponse | undefined) => {
-      setCodeExecutionStates((currentCodeExecutionStates) =>
-        produce(currentCodeExecutionStates, (draft) => {
-          if (executionResponse && draft[idx] !== undefined) {
-            draft[idx].executionResponse = executionResponse;
-            draft[idx].outputSynced = true;
-            draft[idx].outputAreaVisible =
-              executionResponse?.stdout?.length > 0;
-          }
-        }),
-      );
-    };
+  const newPartialExecutionResult = (
+    idx: number,
+    executionResponse: ExecutionResponse | undefined,
+  ) => {
+    setCodeExecutionStates((currentCodeExecutionStates) =>
+      produce(currentCodeExecutionStates, (draft) => {
+        if (executionResponse && draft[idx] !== undefined) {
+          draft[idx].executionResponse = executionResponse;
+          draft[idx].outputSynced = true;
+          draft[idx].outputAreaVisible = executionResponse?.stdout?.length > 0;
+        }
+      }),
+    );
+  };
 
   const handleExecute = async (
     idx: number,
@@ -306,7 +310,7 @@ export function useActivity(
       }
       activeCodeCell = nowActive;
       executionStarted(nowActive);
-    }
+    };
 
     // Legacy code path for transition period
     if (metadata.executionMode === 'sse') {
@@ -315,11 +319,12 @@ export function useActivity(
         postExecuteSingleCell(activeCodeCell, response);
       };
       const onRemoteFailure = (response: FailedExecution) => {
-        const errorMessage = response.type === 'time-limit-exceeded'
-          ? 'Execution time limit exceeded'
-          : response.type === 'output-limit-exceeded'
-          ? 'Output size limit exceeded'
-          : 'Network error';
+        const errorMessage =
+          response.type === 'time-limit-exceeded'
+            ? 'Execution time limit exceeded'
+            : response.type === 'output-limit-exceeded'
+              ? 'Output size limit exceeded'
+              : 'Network error';
         const execResponse: ExecutionResponse = {
           type: 'error',
           completed: true,
@@ -341,7 +346,7 @@ export function useActivity(
           }),
         );
         setLastCodeCellResponse(execResponse);
-      }
+      };
       executeServerSide(
         sources,
         idx,
@@ -413,7 +418,7 @@ export function useActivity(
       description:
         'You are about to restart the Python environment. All active code executions will be terminated.',
       confirmationText: 'Ok, restart',
-    }).then(() => restartWorkerAndResetExecutionState());
+    }).then(() => restartWorkerAndMarkExecutionAsStopped());
 
   return {
     initialCodeCells,
