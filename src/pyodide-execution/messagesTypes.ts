@@ -39,6 +39,7 @@ export type WorkerMessage =
 export type ReadyMessage = { type: Message.READY };
 export type ResultMessage = {
   type: Message.RESULT | Message.PARTIAL_RESULT;
+  pythonError?: Error;
   result: ExecutionResponse;
 };
 export type MainThreadExecutionMessage = { uuid: string } & (

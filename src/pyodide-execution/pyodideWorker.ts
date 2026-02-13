@@ -1,3 +1,4 @@
+import { throttle } from 'lodash';
 import { PyodideAPI } from 'pyodide';
 import { PyProxy, PythonError } from 'pyodide/ffi';
 import {
@@ -15,7 +16,6 @@ import {
   WorkerClientMessage,
 } from './messagesTypes';
 import { GraphicSpec, Sized } from './spec';
-import { throttle } from 'lodash';
 
 let syncBuffer: Int32Array;
 let resultLengthBuffer: Int32Array;
@@ -257,11 +257,9 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
     // @ts-expect-error: Usage of field that is not part of the public API
     const isFatal = err.pyodide_fatal_error;
 
-    // eslint-disable-next-line no-console
-    console.error(pythonError);
-
     return {
       type: Message.RESULT,
+      pythonError: isFatal ? pythonError : undefined,
       result: {
         type: isFatal ? 'failure' : 'error',
         completed: true,

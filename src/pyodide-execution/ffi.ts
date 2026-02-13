@@ -106,25 +106,19 @@ function sizeWhenRendered(
   ck: CanvasKit,
   typefaces: Map<string, Typeface>,
   specs: GraphicSpec[],
-): Sized | null {
+): Sized {
   if (!ck) {
     throw new Error('Worker not initialized yet');
   }
 
-  try {
-    const instructions = specsToCommands(ck, typefaces, specs);
-    const { bounds } = computeBoundsAndPin(instructions);
-    freeStack(instructions);
+  const instructions = specsToCommands(ck, typefaces, specs);
+  const { bounds } = computeBoundsAndPin(instructions);
+  freeStack(instructions);
 
-    return {
-      width: Math.abs(bounds[0] - bounds[2]),
-      height: Math.abs(bounds[1] - bounds[3]),
-    };
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error('Fatal CanvasKit error', err);
-    return null;
-  }
+  return {
+    width: Math.abs(bounds[0] - bounds[2]),
+    height: Math.abs(bounds[1] - bounds[3]),
+  };
 }
 
 function assetUrl(path: string): string {
@@ -137,7 +131,7 @@ export type PyTamaroFFI = {
     scaling_factor: number,
     debug: boolean,
   ) => Promise<string>;
-  sizeWhenRendered: (specs: GraphicSpec[]) => Sized | null;
+  sizeWhenRendered: (specs: GraphicSpec[]) => Sized;
 };
 
 export default async function initFfi(): Promise<PyTamaroFFI> {

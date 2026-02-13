@@ -1,8 +1,10 @@
+import * as Sentry from '@sentry/nextjs';
 import PQueue from 'p-queue';
 import { createContext, ReactNode, useEffect, useState } from 'react';
 import { OutputAreaRef } from '../../components/input_output/OutputArea';
 import { cellsToFiles, ExecutionResponse } from '../codeExecution';
 import { ToolboxFunction } from '../localStorage/schema';
+import useLocalProfile from '../localStorage/useLocalProfile';
 import { PythonFile } from '../schemas/activitySchema';
 import initFfi, { PyTamaroFFI } from './ffi';
 import {
@@ -13,7 +15,6 @@ import {
   WorkerMessage,
 } from './messagesTypes';
 import { Sized } from './spec';
-import useLocalProfile from '../localStorage/useLocalProfile';
 
 enum ResultStatus {
   Computing,
@@ -96,9 +97,7 @@ function notifyWorkerResultReady(
   notifyWorkerUsingSyncBuffer();
 }
 
-function notifyWorkerResultFailure(
-  uuid: string,
-) {
+function notifyWorkerResultFailure(uuid: string) {
   const curr = pendingResults.get(uuid);
   if (curr == undefined) {
     // This guard is necessary due to potential concurrency issues
@@ -115,10 +114,24 @@ function notifyWorkerResultFailure(
   notifyWorkerUsingSyncBuffer();
 }
 
+function captureErrorWithSentry(error: unknown, tags: Record<string, unknown>) {
+  // Use captureMessage instead of captureException,
+  // because Sentry cannot deal with some custom Pyodide errors.
+  Sentry.captureMessage('Client-Side Execution Failure', {
+    tags: {
+      pyodide: true,
+      ...tags,
+    },
+    extra: {
+      error,
+    },
+  });
+}
+
 function sendExecutionRequestToWorkerAndWaitForResponse(
   files: RunPythonFile[],
   updateExecutionResult: (idx: number, response: ExecutionResponse) => void,
-  onActiveCellChange: (before: number | null, after: number) => void = () => { },
+  onActiveCellChange: (before: number | null, after: number) => void = () => {},
 ): Promise<ExecutionResponse> {
   return new Promise<ExecutionResponse>((resolve) => {
     const resultListener = (event: MessageEvent<WorkerMessage>) => {
@@ -129,8 +142,14 @@ function sendExecutionRequestToWorkerAndWaitForResponse(
         updateExecutionResult(activeCodeCell, event.data.result);
       }
       if (event.data?.type === Message.RESULT) {
+        const result = event.data.result;
+        if (result.type === 'failure') {
+          captureErrorWithSentry(event.data.pythonError, {
+            pyodide_fatal_error: true,
+          });
+        }
         pyodideWorker?.removeEventListener('message', resultListener);
-        resolve(event.data.result);
+        resolve(result);
       }
       if (event.data?.type === Message.SET_ACTIVE_CELL) {
         const oldIdx = activeCodeCell;
@@ -186,22 +205,35 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
     case Message.DRAW:
       {
         const { specs, scaling_factor, debug } = data;
-        ffiImpl!.draw(specs, scaling_factor, debug)
+        ffiImpl!
+          .draw(specs, scaling_factor, debug)
           .then((result: string) => {
             const encoded = new Uint8Array(Buffer.from(result));
             notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
           })
-          .catch(() => notifyWorkerResultFailure(uuid));
+          .catch((err) => {
+            captureErrorWithSentry(err, {
+              pyodide_function: 'draw',
+            });
+            notifyWorkerResultFailure(uuid);
+          });
       }
       break;
     case Message.SIZE:
       {
         const { specs } = data;
-        const result = ffiImpl!.sizeWhenRendered(specs);
-        if (result == null) {
+        try {
+          const result = ffiImpl!.sizeWhenRendered(specs);
+          notifyWorkerResultReady(
+            uuid,
+            Int32Array.BYTES_PER_ELEMENT * 2,
+            result,
+          );
+        } catch (err) {
+          captureErrorWithSentry(err, {
+            pyodide_function: 'size',
+          });
           notifyWorkerResultFailure(uuid);
-        } else {
-          notifyWorkerResultReady(uuid, Int32Array.BYTES_PER_ELEMENT * 2, result);
         }
       }
       break;
@@ -209,12 +241,18 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
       {
         const outputArea = getActiveOutputAreaRef();
         outputArea?.activateInputField();
-        outputArea?.getInput()
+        outputArea
+          ?.getInput()
           .then((value: string) => {
             const encoded = new Uint8Array(Buffer.from(value));
             notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
           })
-          .catch(() => notifyWorkerResultFailure(uuid));
+          .catch((err) => {
+            captureErrorWithSentry(err, {
+              pyodide_function: 'input',
+            });
+            notifyWorkerResultFailure(uuid);
+          });
       }
       break;
   }
@@ -290,8 +328,8 @@ export async function execute(
   updateExecutionResult: (
     idx: number,
     response: ExecutionResponse,
-  ) => void = () => { },
-  onActiveCellChange: (before: number | null, after: number) => void = () => { },
+  ) => void = () => {},
+  onActiveCellChange: (before: number | null, after: number) => void = () => {},
   getOutputRef: (idx: number) => OutputAreaRef | null = () => null,
 ): Promise<ExecutionResponse> {
   const files = cellsToFiles(sources, idx, toolboxFunctions, extraPythonFiles);
@@ -363,7 +401,7 @@ export function PyodideWorkerClientProvider({
   // TMP for transition period: mark immediately as ready if using SSE
   useEffect(() => {
     setReady(metadata.executionMode === 'sse' || isReady);
-  }, [metadata, isReady])
+  }, [metadata, isReady]);
 
   useEffect(() => {
     if (typeof SharedArrayBuffer !== 'undefined') {
