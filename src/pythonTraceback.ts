@@ -226,6 +226,5 @@ export function isErrorInvolvingToolbox(content: string) {
 }
 
 export function isErrorPreviousCells(content: string) {
-  return false;
   return lineNumOfErrorThisCell(stderrLines(content)) === undefined;
 }
