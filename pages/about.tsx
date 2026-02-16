@@ -135,9 +135,20 @@ export default function AboutPage({
             <Link href='https://usi.ch/en'>
               Università della Svizzera italiana
             </Link>{' '}
-            (USI) in Lugano, Switzerland.
+            (USI) in Lugano, Switzerland. Part of the development of the
+            platform has been funded by the Swiss National Science Foundation
+            through the project{' '}
+            <Link href='https://data.snf.ch/grants/grant/184689'>184689</Link>.
+            Part of the content has been created thanks to the support of two
+            grants for{' '}
+            <Link href='https://www.usi.ch/en/university/info/elab/call-projects-innovation-teaching'>
+              didactic innovation projects funded by USI
+            </Link>
+            .
           </Typography>
-          <Typography variant='body1'>Contributors to the platform:</Typography>
+          <Typography variant='body1'>
+            These people contributed to the development of the platform:
+          </Typography>
           <List>
             {orderBy(collaborators, ['lastname', 'firstname']).map((person) => (
               <ListItem
