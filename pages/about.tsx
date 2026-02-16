@@ -146,7 +146,9 @@ export default function AboutPage({
                 <ListItemAvatar>
                   <Avatar
                     alt={`${person.firstname} ${person.lastname}`}
-                    src={`./people/${person.avatar}`}
+                    src={
+                      person.avatar ? `./people/${person.avatar}` : undefined
+                    }
                     sx={{ width: '2.5rem', height: '2.5rem' }}
                   />
                 </ListItemAvatar>
