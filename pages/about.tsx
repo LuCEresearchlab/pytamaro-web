@@ -35,7 +35,7 @@ const collaborators = [
     firstname: 'Luca',
     lastname: 'Chiodini',
     contribution:
-      'PyTamaro library, initial design of the platform, management and contributions throughout',
+      'PyTamaro library, design of the platform, management and contributions throughout',
     title:
       'Postdoctoral researcher at the Software Institute, Università della Svizzera italiana (USI)',
     avatar: 'LucaChiodini.jpg',
