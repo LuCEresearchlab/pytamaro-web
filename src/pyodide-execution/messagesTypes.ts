@@ -39,7 +39,7 @@ export type WorkerMessage =
 export type ReadyMessage = { type: Message.READY };
 export type ResultMessage = {
   type: Message.RESULT | Message.PARTIAL_RESULT;
-  pythonError?: Error;
+  pythonError?: TransferablePythonError;
   result: ExecutionResponse;
 };
 export type MainThreadExecutionMessage = { uuid: string } & (
@@ -66,4 +66,13 @@ export type InputRequestData = object;
 export type ExecutionResultRequestMessage = {
   type: Message.INPUT | Message.DRAW | Message.SIZE;
   resultBuffer: SharedArrayBuffer;
+};
+export type TransferablePythonError = {
+  columnNumber: number;
+  lineNumber: number;
+  fileName: string | undefined;
+  message: string;
+  name: string;
+  isFatal: boolean;
+  stack: string | undefined;
 };

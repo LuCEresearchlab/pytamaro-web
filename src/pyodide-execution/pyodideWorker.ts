@@ -13,6 +13,7 @@ import {
   ResultMessage,
   RunPythonFile,
   SizeRequestData,
+  TransferablePythonError,
   WorkerClientMessage,
 } from './messagesTypes';
 import { GraphicSpec, Sized } from './spec';
@@ -66,6 +67,32 @@ class ExecutionOutput implements ReadOnlyExecutionOutput {
   getStderr(): string {
     return this.stderr;
   }
+}
+
+/**
+ * Attempting to transfer a PythonError object in certain browsers (firefox)
+ * makes the Worker.postMessage method fail (probably due to some component
+ * of the original object referencing some wasm memory location).
+ *
+ * Create a transferable version of the original error with just the fields
+ * that can be safely transferred.
+ */
+function getTransferableError(
+  pythonError: PythonError,
+): TransferablePythonError {
+  return {
+    // @ts-expect-error: Usage of field that is not part of the public API
+    columnNumber: pythonError.columnNumber,
+    // @ts-expect-error: Usage of field that is not part of the public API
+    lineNumber: pythonError.lineNumber,
+    // @ts-expect-error: Usage of field that is not part of the public API
+    fileName: pythonError.fileName,
+    message: pythonError.message,
+    name: pythonError.name,
+    // @ts-expect-error: Usage of field that is not part of the public API
+    isFatal: pythonError.pyodide_fatal_error,
+    stack: pythonError.stack,
+  };
 }
 
 /**
@@ -254,12 +281,12 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
     };
   } catch (err) {
     const pythonError = err as PythonError;
-    // @ts-expect-error: Usage of field that is not part of the public API
-    const isFatal = err.pyodide_fatal_error;
+    const transferableError = getTransferableError(pythonError);
+    const { isFatal } = transferableError;
 
     return {
       type: Message.RESULT,
-      pythonError: isFatal ? pythonError : undefined,
+      pythonError: isFatal ? transferableError : undefined,
       result: {
         type: isFatal ? 'failure' : 'error',
         completed: true,

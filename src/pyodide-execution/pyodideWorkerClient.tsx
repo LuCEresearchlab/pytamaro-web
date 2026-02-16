@@ -292,7 +292,7 @@ function initPyodide(ffi: PyTamaroFFI): Promise<void> {
     const { uuid } = data;
     if (pendingResults.has(uuid)) {
       // If we have already received the execution request message,
-      // this should be an message with the request for the result.
+      // this should be a message with the request for the result.
       deliverPendingResult(uuid, data as ExecutionResultRequestMessage);
     } else {
       // Otherwise, this should be the execution request message.
