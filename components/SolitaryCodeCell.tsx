@@ -53,6 +53,7 @@ export default function SolitaryCodeCell({
     codeCells,
     codeExecutionStates,
     handleSourceChanged,
+    handleExecutionRequestEvent,
     handleExecute,
   } = activity;
   const source = codeCells[0].source;
@@ -74,10 +75,13 @@ export default function SolitaryCodeCell({
         handleSourceChanged(newSource, 0);
         postSourceChange(newSource);
       }}
-      onExecutionRequested={() => {
+      onExecutionRequested={(executionUUID) => {
         onExecutionRequest();
-        return handleExecute(0, getOutputAreaRef);
+        return handleExecute(0, executionUUID, getOutputAreaRef);
       }}
+      onExecutionRequestEvent={(executionUUID) =>
+        handleExecutionRequestEvent(0, executionUUID)
+      }
       firstLineNumber={1}
       activityVariant={activityVariant}
       readOnly={readOnly}

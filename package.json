@@ -43,7 +43,7 @@
     "immer": "^9.0.18",
     "jszip": "^3.10.1",
     "lodash": "^4.17.21",
-    "material-ui-confirm": "^3.0.18",
+    "material-ui-confirm": "^4.0.0",
     "next": "^16.1.6",
     "next-i18next": "^15.4.2",
     "next-mdx-remote": "^5.0.0",

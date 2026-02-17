@@ -62,13 +62,17 @@ export default function ActivityCodeCell({
   activityResetCounter: number;
   pythonAnalyzer: PythonAnalyzer | null;
   runEnabled: boolean;
-  setOutputAreaRef: (idx: number, node: OutputAreaRef | null | undefined) => void,
-  getActivityOutputAreaRef: (execIdx: number) => OutputAreaRef | null,
+  setOutputAreaRef: (
+    idx: number,
+    node: OutputAreaRef | null | undefined,
+  ) => void;
+  getActivityOutputAreaRef: (execIdx: number) => OutputAreaRef | null;
 }) {
   const {
     codeCells,
     codeExecutionStates,
     handleSourceChanged,
+    handleExecutionRequestEvent,
     handleExecute,
     handleToggleOutputArea,
     handleResetSingleCell,
@@ -96,7 +100,12 @@ export default function ActivityCodeCell({
         currentSource={currentCodeCell.source}
         codeCellExecutionState={codeExecutionStates[cellIdx]}
         onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
-        onExecutionRequested={() => handleExecute(cellIdx, getActivityOutputAreaRef)}
+        onExecutionRequestEvent={(executionUUID) =>
+          handleExecutionRequestEvent(cellIdx, executionUUID)
+        }
+        onExecutionRequested={(executionUUID) =>
+          handleExecute(cellIdx, executionUUID, getActivityOutputAreaRef)
+        }
         firstLineNumber={1 + precedingLines}
         activityVariant={activityVariant}
         platformConfig={platformConfig}

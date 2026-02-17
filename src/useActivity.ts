@@ -23,10 +23,10 @@ import {
   CodeCellState,
   Metadata,
   ToolboxFunction,
+  extractMetadataForEvent,
   getDefaultActivityVariantMetadata,
 } from './localStorage/schema';
 import useLocalToolbox from './localStorage/useLocalToolbox';
-import useLocalTranslation from './localStorage/useLocalTranslation';
 import { PyodideWorkerClientContext } from './pyodide-execution/pyodideWorkerClient';
 import {
   ActivityVariant,
@@ -37,7 +37,7 @@ import { EventName, storeDbEvent } from './storeDbEvent';
 
 export function initialCodeExecutionState(): CodeCellExecutionState {
   return {
-    executionInProgress: false,
+    executionUUID: undefined,
     executionResponse: undefined,
     outputAreaVisible: false,
     outputSynced: false,
@@ -92,7 +92,6 @@ export function useActivity(
     executionResponse: ExecutionResponse,
   ) => void = () => {},
 ) {
-  const { t } = useLocalTranslation();
   const { getFunction } = useLocalToolbox();
   const variantId = activityVariantId(activityVariant);
   const variantMetadata = metadata.activities.find((a) => a.id === variantId);
@@ -113,12 +112,12 @@ export function useActivity(
     setCodeExecutionStates((currentCodeExecutionStates) =>
       produce(currentCodeExecutionStates, (draft) => {
         for (let idx = 0; idx < draft.length; idx += 1) {
-          draft[idx].executionInProgress = false;
+          draft[idx].executionUUID = undefined;
         }
       }),
     );
-    restart();
-  }, [restart, setCodeExecutionStates]);
+    restart(metadata);
+  }, [restart, setCodeExecutionStates, metadata]);
 
   const completed = !!variantMetadata?.completed;
   const cellsModified = !!variantMetadata?.cellsModified;
@@ -192,14 +191,6 @@ export function useActivity(
   const sourcesUpTo = (idx: number) =>
     codeCells.slice(0, idx + 1).map(sourceFromCell);
 
-  const executionStarted = (idx: number) => {
-    setCodeExecutionStates((currentCodeExecutionStates) =>
-      produce(currentCodeExecutionStates, (draft) => {
-        draft[idx].executionInProgress = true;
-      }),
-    );
-  };
-
   const executionPartiallyCompleted = (idx: number) => {
     setCodeExecutionStates((currentCodeExecutionStates) =>
       produce(currentCodeExecutionStates, (draft) => {
@@ -219,7 +210,7 @@ export function useActivity(
   ) => {
     setCodeExecutionStates((currentCodeExecutionStates) =>
       produce(currentCodeExecutionStates, (draft) => {
-        draft[idx].executionInProgress = false;
+        draft[idx].executionUUID = undefined;
         if (response !== undefined) {
           draft[idx].executionResponse = response;
           draft[idx].outputSynced = true;
@@ -253,10 +244,7 @@ export function useActivity(
     );
   };
 
-  const handleExecute = async (
-    idx: number,
-    getOutputRef: (execIdx: number) => OutputAreaRef | null,
-  ) => {
+  const retrieveToolboxSources = async (idx: number, sources: string[]) => {
     const extraToolboxFn = getExtraToolboxFunction();
 
     const functionLookup = (name: string) => {
@@ -266,7 +254,6 @@ export function useActivity(
       return getFunction(name);
     };
 
-    const sources = sourcesUpTo(idx);
     const toolboxFunctionsByCell = await Promise.all(
       sources.map((source) =>
         transitivelyImportedToolboxFunctions(source, functionLookup),
@@ -276,6 +263,15 @@ export function useActivity(
       toolboxFunctionsByCell.flat(),
       (fn) => fn.name,
     );
+    return toolboxFunctions;
+  };
+
+  const handleExecutionRequestEvent = async (
+    idx: number,
+    executionUUID: string,
+  ) => {
+    const sources = sourcesUpTo(idx);
+    const toolboxFunctions = await retrieveToolboxSources(idx, sources);
     logAnalyticsEvent(AnalyticsEventName.CodeExecution, {
       activity: variantId,
     });
@@ -287,14 +283,25 @@ export function useActivity(
       activityVariant,
       extraPythonFiles,
       liveAnalysis: metadata.liveAnalysis,
+      executionUUID,
     });
+  };
+
+  const handleExecute = async (
+    idx: number,
+    executionUUID: string,
+    getOutputRef: (execIdx: number) => OutputAreaRef | null,
+  ) => {
+    const sources = sourcesUpTo(idx);
+    const toolboxFunctions = await retrieveToolboxSources(idx, sources);
+
     // (Re-)Execute all cells from the first one to the current one, included.
     // Before starting, we mark the output of these cells as not synced.
     setCodeExecutionStates((currentCodeExecutionStates) =>
       produce(currentCodeExecutionStates, (draft) => {
         for (let i = 0; i <= idx; i += 1) {
           draft[i].outputSynced = false;
-          draft[i].executionInProgress = true;
+          draft[i].executionUUID = executionUUID;
         }
       }),
     );
@@ -309,7 +316,6 @@ export function useActivity(
         executionPartiallyCompleted(previouslyActive);
       }
       activeCodeCell = nowActive;
-      executionStarted(nowActive);
     };
 
     // Legacy code path for transition period
@@ -335,7 +341,7 @@ export function useActivity(
           produce(currentCodeExecutionStates, (draft) => {
             for (let i = 0; i <= idx; i += 1) {
               draft[i].outputSynced = false;
-              draft[i].executionInProgress = false;
+              draft[i].executionUUID = undefined;
               draft[i].executionResponse = {
                 type: 'error',
                 completed: true,
@@ -360,11 +366,17 @@ export function useActivity(
       return;
     }
 
+    const executionMetadata = {
+      executionUUID,
+      ...extractMetadataForEvent(metadata),
+    };
+
     const response = await execute(
       sources,
       idx,
       toolboxFunctions,
       extraPythonFiles,
+      executionMetadata,
       newPartialExecutionResult,
       onActiveCellChange,
       getOutputRef,
@@ -398,18 +410,20 @@ export function useActivity(
       description:
         'You are about to reset the code in this cell. Other cells will be left unchanged. This action cannot be undone! ⚠️',
       confirmationText: 'Ok, delete my code',
-    }).then(() => {
-      setCodeCells((currentCodeCells) =>
-        produce(currentCodeCells, (draft) => {
-          draft[idx] = initialCodeCells[idx];
-        }),
-      );
-      setCodeExecutionStates((currentCodeExecutionStates) =>
-        produce(currentCodeExecutionStates, (draft) => {
-          draft[idx] = initialCodeExecutionState();
-        }),
-      );
-      postReset();
+    }).then(({ confirmed }) => {
+      if (confirmed) {
+        setCodeCells((currentCodeCells) =>
+          produce(currentCodeCells, (draft) => {
+            draft[idx] = initialCodeCells[idx];
+          }),
+        );
+        setCodeExecutionStates((currentCodeExecutionStates) =>
+          produce(currentCodeExecutionStates, (draft) => {
+            draft[idx] = initialCodeExecutionState();
+          }),
+        );
+        postReset();
+      }
     });
   };
 
@@ -418,7 +432,11 @@ export function useActivity(
       description:
         'You are about to restart the Python environment. All active code executions will be terminated.',
       confirmationText: 'Ok, restart',
-    }).then(() => restartWorkerAndMarkExecutionAsStopped());
+    }).then(({ confirmed }) => {
+      if (confirmed) {
+        restartWorkerAndMarkExecutionAsStopped();
+      }
+    });
 
   return {
     initialCodeCells,
@@ -428,6 +446,7 @@ export function useActivity(
     cellsModified,
     sourcesUpTo,
     handleSourceChanged,
+    handleExecutionRequestEvent,
     handleExecute,
     handleToggleOutputArea,
     handleResetAllCellsNoConfirm,

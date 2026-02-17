@@ -61,6 +61,7 @@ async function storeEventCodeExecution(
   activity_id: number,
   requested_cell_seq_number: number,
   live_analysis: LiveAnalysisStatus,
+  executionUUID: string,
 ) {
   return storeRow(sql, eventTableName(EventName.CodeExecution), {
     id: event_id,
@@ -69,6 +70,7 @@ async function storeEventCodeExecution(
     requested_cell_seq_number,
     cells_to_files_version: CODE_EXECUTION_CELLS_TO_FILES_VERSION,
     live_analysis,
+    execution_uuid: executionUUID,
   });
 }
 
@@ -83,6 +85,7 @@ export default async function saveCodeExecutionEvent(
   toolboxFunctions: ToolboxFunction[],
   extraPythonFiles: PythonFile[],
   liveAnalysis: LiveAnalysisStatus,
+  executionUUID: string,
 ): Promise<boolean> {
   try {
     await conn.begin(async (sql) => {
@@ -101,6 +104,7 @@ export default async function saveCodeExecutionEvent(
         await pActivityId,
         requested_cell_seq_number,
         liveAnalysis,
+        executionUUID,
       );
       await Promise.all(
         [

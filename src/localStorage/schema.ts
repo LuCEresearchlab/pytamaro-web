@@ -21,6 +21,11 @@ export interface Metadata {
   executionMode: ExecutionMode;
 }
 
+export type MetadataForEvent = Pick<
+  Metadata,
+  'allowSharingAnonData' | 'userUuid' | 'experimentKey'
+>;
+
 export enum LiveAnalysisStatus {
   None = 'none',
   Syntax = 'syntax',
@@ -30,7 +35,7 @@ export enum LiveAnalysisStatus {
 export enum ExecutionMode {
   ClientSide = 'cse',
   ServerSide = 'sse',
-};
+}
 
 export interface DocsMetadata {
   showOptional: boolean;
@@ -77,7 +82,7 @@ export interface CodeCellState {
 }
 
 export interface CodeCellExecutionState {
-  executionInProgress: boolean;
+  executionUUID: string | undefined;
   executionResponse: ExecutionResponse | undefined;
   outputAreaVisible: boolean;
   outputSynced: boolean;
@@ -128,5 +133,16 @@ export function getDefaultMetadata(): Metadata {
     liveAnalysis: LiveAnalysisStatus.Syntax,
     wideEditor: false,
     executionMode: ExecutionMode.ClientSide,
+  };
+}
+
+/* Utils */
+
+export function extractMetadataForEvent(metadata: Metadata): MetadataForEvent {
+  const { allowSharingAnonData, userUuid, experimentKey } = metadata;
+  return {
+    allowSharingAnonData,
+    userUuid,
+    experimentKey,
   };
 }

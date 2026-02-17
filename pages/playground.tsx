@@ -73,9 +73,11 @@ function PlaygroundReset({
       description:
         'You are about to reset the playground to its initial state: this will delete all the code you have written. This action cannot be undone! ⚠️',
       confirmationText: 'Ok, delete my code',
-    }).then(() => {
-      handleResetAllCellsNoConfirm();
-      newReset();
+    }).then(({ confirmed }) => {
+      if (confirmed) {
+        handleResetAllCellsNoConfirm();
+        newReset();
+      }
     });
   };
 
@@ -137,8 +139,10 @@ function PlaygroundCodeCell({
               description:
                 'You are about to replace the code in your playground with new code!',
               confirmationText: 'Ok, replace my code',
-            }).then(() => {
-              replaceCode(queryCode);
+            }).then(({ confirmed }) => {
+              if (confirmed) {
+                replaceCode(queryCode);
+              }
             });
           }
         }

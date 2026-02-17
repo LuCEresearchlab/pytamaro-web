@@ -15,12 +15,14 @@ import {
   isExecutionFailed,
 } from '../src/codeExecution';
 import { CodeCellExecutionState } from '../src/localStorage/schema';
+import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import {
   ActivityVariant,
   PlatformConfiguration,
   PythonFile,
 } from '../src/schemas/activitySchema';
+import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import useAnalysisResult from '../src/useAnalysisResult';
 import { PythonAnalyzer } from '../src/usePythonAnalyzer';
 import { EllipsisTip, NoOutputTip } from './CodeCellTips';
@@ -36,6 +38,7 @@ export default function CodeCell({
   currentSource,
   codeCellExecutionState,
   onSourceChanged,
+  onExecutionRequestEvent,
   onExecutionRequested,
   firstLineNumber,
   activityVariant,
@@ -53,7 +56,8 @@ export default function CodeCell({
   currentSource: string;
   codeCellExecutionState: CodeCellExecutionState;
   onSourceChanged: (newSource: string) => void;
-  onExecutionRequested: () => Promise<void>;
+  onExecutionRequestEvent: (executionUUID: string) => void;
+  onExecutionRequested: (executionUUID: string) => Promise<void>;
   firstLineNumber: number;
   activityVariant: ActivityVariant;
   platformConfig: PlatformConfiguration;
@@ -70,10 +74,11 @@ export default function CodeCell({
   runEnabled?: boolean;
 }) {
   const { t } = useLocalTranslation(['common']);
+  const { metadata } = useLocalProfile();
   const { executionResponse } = codeCellExecutionState;
   const executionError =
     isExecutionError(executionResponse) || isExecutionFailed(executionResponse);
-  const executing = codeCellExecutionState.executionInProgress;
+  const executing = codeCellExecutionState.executionUUID !== undefined;
   const executionFinished =
     codeCellExecutionState.outputSynced &&
     isExecutionCompleted(executionResponse);
@@ -98,6 +103,11 @@ export default function CodeCell({
   const confirm = useConfirm();
 
   const handleExecutionRequest = async () => {
+    const executionRequestUUID = crypto.randomUUID();
+    // Immediately notify that an execution has been requested,
+    // so that we can log the even if later on the user decides to cancel the execution after seeing the warning dialog.
+    onExecutionRequestEvent(executionRequestUUID);
+
     // Check for static errors before executing
     const diagnosticsUpToCurrentCell =
       pythonAnalyzer!.getDiagnosticsCountUpTo(cellIdx);
@@ -106,7 +116,7 @@ export default function CodeCell({
     const currentCellDiagnostics =
       diagnosticsUpToCurrentCell - diagnosticsUpToPreviousCells;
     if (diagnosticsUpToCurrentCell === 0) {
-      return onExecutionRequested();
+      return onExecutionRequested(executionRequestUUID);
     }
 
     let message;
@@ -124,6 +134,7 @@ export default function CodeCell({
         previousCount: diagnosticsUpToPreviousCells,
       });
     }
+
     return confirm({
       title: t('confirmExecutionWithErrors.title'),
       description: message,
@@ -133,8 +144,15 @@ export default function CodeCell({
         endIcon: <PlayCircleFilled />,
         variant: 'contained',
       },
-    }).then(() => {
-      return onExecutionRequested();
+    }).then(({ confirmed }) => {
+      const forced_execution = confirmed;
+      storeDbEvent(EventName.CodeExecutionErrorsWarning, metadata, {
+        executionUUID: executionRequestUUID,
+        forced_execution,
+      });
+      if (forced_execution) {
+        return onExecutionRequested(executionRequestUUID);
+      }
     });
   };
 
@@ -157,7 +175,7 @@ export default function CodeCell({
             initialSource={initialSource}
             currentSource={currentSource}
             onChange={onSourceChanged}
-            onExecutionRequested={onExecutionRequested}
+            onExecutionRequested={handleExecutionRequest}
             executionAllowed={runEnabled}
             executionFinished={executionFinished}
             firstLineNumber={firstLineNumber}

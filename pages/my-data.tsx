@@ -58,10 +58,12 @@ export default function MyData() {
       description:
         'You are about to delete ALL the data. This action cannot be undone! ⚠️',
       confirmationText: 'Ok, delete everything',
-    }).then(() => {
-      clearEntireLocalStorage();
-      sessionStorage.clear();
-      setLocalStorageChanged(localStorageChanged + 1);
+    }).then(({ confirmed }) => {
+      if (confirmed) {
+        clearEntireLocalStorage();
+        sessionStorage.clear();
+        setLocalStorageChanged(localStorageChanged + 1);
+      }
     });
   };
 

@@ -1,4 +1,5 @@
 import { ExecutionResponse } from '../codeExecution';
+import { MetadataForEvent } from '../localStorage/schema';
 import { GraphicSpec } from './spec';
 
 export enum Message {
@@ -22,6 +23,7 @@ export type RunPythonFile = {
 export type RunMessage = {
   type: Message.RUN;
   files: RunPythonFile[];
+  executionMetadata: ExecutionMetadata;
 };
 export type InitMessage = {
   type: Message.INIT;
@@ -39,6 +41,7 @@ export type WorkerMessage =
 export type ReadyMessage = { type: Message.READY };
 export type ResultMessage = {
   type: Message.RESULT | Message.PARTIAL_RESULT;
+  executionMetadata: ExecutionMetadata;
   pythonError?: TransferablePythonError;
   result: ExecutionResponse;
 };
@@ -62,7 +65,10 @@ export type DrawRequestData = {
 export type SizeRequestData = {
   specs: GraphicSpec[];
 };
-export type InputRequestData = object;
+export type InputRequestData = {
+  executionMetadata: ExecutionMetadata;
+  seq: number;
+};
 export type ExecutionResultRequestMessage = {
   type: Message.INPUT | Message.DRAW | Message.SIZE;
   resultBuffer: SharedArrayBuffer;
@@ -76,3 +82,7 @@ export type TransferablePythonError = {
   isFatal: boolean;
   stack: string | undefined;
 };
+
+export interface ExecutionMetadata extends MetadataForEvent {
+  executionUUID: string;
+}

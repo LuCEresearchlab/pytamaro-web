@@ -3,11 +3,13 @@ import PQueue from 'p-queue';
 import { createContext, ReactNode, useEffect, useState } from 'react';
 import { OutputAreaRef } from '../../components/input_output/OutputArea';
 import { cellsToFiles, ExecutionResponse } from '../codeExecution';
-import { ToolboxFunction } from '../localStorage/schema';
+import { Metadata, ToolboxFunction } from '../localStorage/schema';
 import useLocalProfile from '../localStorage/useLocalProfile';
 import { PythonFile } from '../schemas/activitySchema';
+import { EventName, storeDbEvent } from '../storeDbEvent';
 import initFfi, { PyTamaroFFI } from './ffi';
 import {
+  ExecutionMetadata,
   ExecutionRequestMessage,
   ExecutionResultRequestMessage,
   Message,
@@ -129,6 +131,7 @@ function captureErrorWithSentry(error: unknown, tags: Record<string, unknown>) {
 }
 
 function sendExecutionRequestToWorkerAndWaitForResponse(
+  executionMetadata: ExecutionMetadata,
   files: RunPythonFile[],
   updateExecutionResult: (idx: number, response: ExecutionResponse) => void,
   onActiveCellChange: (before: number | null, after: number) => void = () => {},
@@ -161,6 +164,7 @@ function sendExecutionRequestToWorkerAndWaitForResponse(
     pyodideWorker?.addEventListener('message', resultListener);
     pyodideWorker?.postMessage({
       type: Message.RUN,
+      executionMetadata,
       files,
     });
   });
@@ -244,6 +248,11 @@ function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
         outputArea
           ?.getInput()
           .then((value: string) => {
+            storeDbEvent(EventName.CodeExecutionInput, data.executionMetadata, {
+              executionUUID: data.executionMetadata.executionUUID,
+              seq: data.seq,
+              content: value,
+            });
             const encoded = new Uint8Array(Buffer.from(value));
             notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
           })
@@ -325,6 +334,7 @@ export async function execute(
   idx: number,
   toolboxFunctions: ToolboxFunction[],
   extraPythonFiles: PythonFile[],
+  executionMetadata: ExecutionMetadata,
   updateExecutionResult: (
     idx: number,
     response: ExecutionResponse,
@@ -340,6 +350,7 @@ export async function execute(
     getOutputAreaRef = getOutputRef;
     // Execute the code
     return sendExecutionRequestToWorkerAndWaitForResponse(
+      executionMetadata,
       files,
       updateExecutionResult,
       onActiveCellChange,
@@ -368,12 +379,13 @@ interface PyodideWorkerClientInterface {
     idx: number,
     toolboxFunctions: ToolboxFunction[],
     extraPythonFiles: PythonFile[],
+    executionMetadata: ExecutionMetadata,
     updateExecutionResult?: (idx: number, response: ExecutionResponse) => void,
     onActiveCellChange?: (before: number | null, after: number) => void,
     getOutputRef?: (idx: number) => OutputAreaRef | null,
   ) => Promise<ExecutionResponse>;
   interruptExecution: () => void;
-  restart: () => Promise<void>;
+  restart: (metadata: Metadata) => Promise<void>;
 }
 
 export const PyodideWorkerClientContext =

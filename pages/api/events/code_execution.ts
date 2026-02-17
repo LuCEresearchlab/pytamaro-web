@@ -15,6 +15,7 @@ export default async function handler(
     toolboxFunctions,
     extraPythonFiles,
     liveAnalysis,
+    executionUUID,
   } = req.body;
   const image = process.env.GLOT_IMAGE_TAG;
   if (image === undefined) {
@@ -32,6 +33,7 @@ export default async function handler(
     toolboxFunctions,
     extraPythonFiles,
     liveAnalysis,
+    executionUUID,
   );
   res.status(saved ? 200 : 500).send({});
 }

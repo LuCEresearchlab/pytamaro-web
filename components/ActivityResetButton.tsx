@@ -42,10 +42,12 @@ export default function ActivityResetButton({
       description: t('resetActivityWarning'),
       confirmationText: t('resetActivityConfirm'),
       cancellationText: t('confirmCancel'),
-    }).then(() => {
-      handleResetAllCellsNoConfirm();
-      newReset();
-      setActivityMetadata(activityVariant, defaultMetadata);
+    }).then(({ confirmed }) => {
+      if (confirmed) {
+        handleResetAllCellsNoConfirm();
+        newReset();
+        setActivityMetadata(activityVariant, defaultMetadata);
+      }
     });
   };
 

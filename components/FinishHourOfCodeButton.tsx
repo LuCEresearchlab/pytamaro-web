@@ -15,7 +15,11 @@ export default function FinishHourOfCodeButton() {
       description: t('hourOfCode.description'),
       confirmationText: t('hourOfCode.confirmationText'),
       cancellationText: t('hourOfCode.cancellationText'),
-    }).then(() => router.push(targetUrl));
+    }).then(({ confirmed }) => {
+      if (confirmed) {
+        router.push(targetUrl);
+      }
+    });
   };
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', mb: 6 }}>

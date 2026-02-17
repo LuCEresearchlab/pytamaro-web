@@ -8,6 +8,7 @@ import {
 import { joinLines } from '../sourceUtils';
 import {
   DrawRequestData,
+  ExecutionMetadata,
   InputRequestData,
   Message,
   ResultMessage,
@@ -99,12 +100,16 @@ function getTransferableError(
  * @returns An instance of {@link ReadOnlyExecutionOutput} to be used to
  * get the output of the current active cell.
  */
-function setupIO(pyodide: PyodideAPI): ReadOnlyExecutionOutput {
+function setupIO(
+  pyodide: PyodideAPI,
+  executionMetadata: ExecutionMetadata,
+): ReadOnlyExecutionOutput {
   const out = new ExecutionOutput();
 
   const sendPartialResult = () => {
     self.postMessage({
       type: Message.PARTIAL_RESULT,
+      executionMetadata,
       result: {
         type: 'success',
         completed: false,
@@ -121,6 +126,7 @@ function setupIO(pyodide: PyodideAPI): ReadOnlyExecutionOutput {
     out.clear();
   };
 
+  let inputSeqNumber = 0;
   pyodide.setStdin({
     stdin: () => {
       // Send partial result before blocking for input
@@ -128,7 +134,8 @@ function setupIO(pyodide: PyodideAPI): ReadOnlyExecutionOutput {
       // even if there was no output before the input request)
       out.writeStdout('\u200B');
       sendPartialResult();
-      const input = ffiInput();
+      const input = ffiInput(executionMetadata, inputSeqNumber);
+      inputSeqNumber++;
       // Add back to stdout (including the <enter>) so that the user can see what they typed
       out.writeStdout(INPUT_BEGIN + input + INPUT_END + '\n');
       sendPartialResult();
@@ -257,14 +264,17 @@ async function loadPyodideWithPytamaro() {
   await microPip.install(assetUrl('pytamaro-1.1.4-py3-none-any.whl'));
 }
 
-async function run(files: RunPythonFile[]): Promise<ResultMessage> {
+async function run(
+  files: RunPythonFile[],
+  executionMetadata: ExecutionMetadata,
+): Promise<ResultMessage> {
   destroyLeftoverProxies();
 
   if (!pyodide) {
     throw new Error('Pyodide not loaded');
   }
 
-  const out = setupIO(pyodide);
+  const out = setupIO(pyodide, executionMetadata);
   const code = setupFS(pyodide, files);
 
   const ns = pyodide.toPy({});
@@ -272,6 +282,7 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
     await pyodide.runPython(code, { globals: ns, filename: 'driver.py' });
     return {
       type: Message.RESULT,
+      executionMetadata,
       result: {
         type: 'success',
         completed: true,
@@ -286,6 +297,7 @@ async function run(files: RunPythonFile[]): Promise<ResultMessage> {
 
     return {
       type: Message.RESULT,
+      executionMetadata,
       pythonError: isFatal ? transferableError : undefined,
       result: {
         type: isFatal ? 'failure' : 'error',
@@ -328,8 +340,11 @@ function ffiSizeWhenRendered(specs: GraphicSpec[]): Sized {
   };
 }
 
-function ffiInput(): string {
-  const res = executeOnMainThread(Message.INPUT, {});
+function ffiInput(executionMetadata: ExecutionMetadata, seq: number): string {
+  const res = executeOnMainThread(Message.INPUT, {
+    executionMetadata,
+    seq,
+  });
   if (res === null) {
     // Treat input failure as a normal python exception
     throw Error('Failed to obtain input string');
@@ -403,7 +418,7 @@ addEventListener(
       case Message.RUN:
         {
           // Run the provided Python code
-          self.postMessage(await run(data.files));
+          self.postMessage(await run(data.files, data.executionMetadata));
         }
         break;
     }

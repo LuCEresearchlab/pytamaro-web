@@ -52,8 +52,10 @@ export default function CurriculumPage({
       description:
         'You are about to reset the status of this curriculum. This will NOT affect the activities.',
       confirmationText: 'Ok, reset the curriculum',
-    }).then(() => {
-      removeCurriculum(curriculum);
+    }).then(({ confirmed }) => {
+      if (confirmed) {
+        removeCurriculum(curriculum);
+      }
     });
   };
 
