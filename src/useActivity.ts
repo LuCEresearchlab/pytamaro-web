@@ -15,7 +15,7 @@ import logAnalyticsEvent, { AnalyticsEventName } from './analyticsEvent';
 import {
   ExecutionResponse,
   importedToolboxNames,
-  isExecutionCompleted,
+  isExecutionNominal,
 } from './codeExecution';
 import { executeServerSide } from './legacyServerSideExecution';
 import {
@@ -215,7 +215,7 @@ export function useActivity(
           draft[idx].executionResponse = response;
           draft[idx].outputSynced = true;
           draft[idx].outputAreaVisible =
-            isExecutionCompleted(response) &&
+            isExecutionNominal(response) &&
             (response.stdout + response.stderr).length > 0;
           if (response.type === 'success' && idx === codeCells.length - 1) {
             // Mark the activity as completed when the last cell has been executed successfully.
@@ -405,6 +405,14 @@ export function useActivity(
     setCodeExecutionStates(initialCodeExecutionStates());
   };
 
+  const handleResetSingleCellExecutionState = (idx: number) => {
+    setCodeExecutionStates((currentCodeExecutionStates) =>
+      produce(currentCodeExecutionStates, (draft) => {
+        draft[idx] = initialCodeExecutionState();
+      }),
+    );
+  };
+
   const handleResetSingleCell = (idx: number, postReset: () => void) => {
     confirm({
       description:
@@ -417,11 +425,7 @@ export function useActivity(
             draft[idx] = initialCodeCells[idx];
           }),
         );
-        setCodeExecutionStates((currentCodeExecutionStates) =>
-          produce(currentCodeExecutionStates, (draft) => {
-            draft[idx] = initialCodeExecutionState();
-          }),
-        );
+        handleResetSingleCellExecutionState(idx);
         postReset();
       }
     });
@@ -451,6 +455,7 @@ export function useActivity(
     handleToggleOutputArea,
     handleResetAllCellsNoConfirm,
     handleResetSingleCell,
+    handleResetSingleCellExecutionState,
     handleRestartPyodide,
   };
 }

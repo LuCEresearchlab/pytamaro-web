@@ -53,6 +53,7 @@ export default function SolitaryCodeCell({
     codeCells,
     codeExecutionStates,
     handleSourceChanged,
+    handleResetSingleCellExecutionState,
     handleExecutionRequestEvent,
     handleExecute,
   } = activity;
@@ -71,6 +72,7 @@ export default function SolitaryCodeCell({
       initialSource={initialCodeCells[0].source}
       currentSource={codeCells[0].source}
       codeCellExecutionState={codeExecutionStates[0]}
+      onResetExecutionState={() => handleResetSingleCellExecutionState(0)}
       onSourceChanged={(newSource) => {
         handleSourceChanged(newSource, 0);
         postSourceChange(newSource);

@@ -76,6 +76,7 @@ export default function ActivityCodeCell({
     handleExecute,
     handleToggleOutputArea,
     handleResetSingleCell,
+    handleResetSingleCellExecutionState,
     handleRestartPyodide,
     localCodeCellsWrongLength,
   } = useLocalActivity(initialCodeCells, activityVariant, extraPythonFiles);
@@ -99,6 +100,9 @@ export default function ActivityCodeCell({
         initialSource={initialCodeCells[cellIdx].source}
         currentSource={currentCodeCell.source}
         codeCellExecutionState={codeExecutionStates[cellIdx]}
+        onResetExecutionState={() =>
+          handleResetSingleCellExecutionState(cellIdx)
+        }
         onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
         onExecutionRequestEvent={(executionUUID) =>
           handleExecutionRequestEvent(cellIdx, executionUUID)

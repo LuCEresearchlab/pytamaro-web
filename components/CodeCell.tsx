@@ -8,11 +8,11 @@ import {
   Stack,
 } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
-  isExecutionCompleted,
   isExecutionError,
   isExecutionFailed,
+  isExecutionNominal,
 } from '../src/codeExecution';
 import { CodeCellExecutionState } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
@@ -24,6 +24,7 @@ import {
 } from '../src/schemas/activitySchema';
 import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import useAnalysisResult from '../src/useAnalysisResult';
+import { useIsHydrated } from '../src/useIsHydrated';
 import { PythonAnalyzer } from '../src/usePythonAnalyzer';
 import { EllipsisTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
@@ -37,6 +38,7 @@ export default function CodeCell({
   initialSource,
   currentSource,
   codeCellExecutionState,
+  onResetExecutionState,
   onSourceChanged,
   onExecutionRequestEvent,
   onExecutionRequested,
@@ -55,6 +57,7 @@ export default function CodeCell({
   initialSource: string;
   currentSource: string;
   codeCellExecutionState: CodeCellExecutionState;
+  onResetExecutionState: () => void;
   onSourceChanged: (newSource: string) => void;
   onExecutionRequestEvent: (executionUUID: string) => void;
   onExecutionRequested: (executionUUID: string) => Promise<void>;
@@ -81,9 +84,9 @@ export default function CodeCell({
   const executing = codeCellExecutionState.executionUUID !== undefined;
   const executionFinished =
     codeCellExecutionState.outputSynced &&
-    isExecutionCompleted(executionResponse);
+    isExecutionNominal(executionResponse);
   const noOutput =
-    isExecutionCompleted(executionResponse) &&
+    isExecutionNominal(executionResponse) &&
     (executionResponse.stdout + executionResponse.stderr).length === 0;
 
   const analysisResult = useAnalysisResult(pythonAnalyzer, cellIdx);
@@ -101,6 +104,31 @@ export default function CodeCell({
   const ellipsis = (analysisResult?.ellipsis.length ?? 0) > 0;
 
   const confirm = useConfirm();
+
+  const isHydrated = useIsHydrated();
+
+  const [
+    alreadyClearedPossibleIncompleteExecution,
+    setAlreadyClearedPossibleIncompleteExecution,
+  ] = useState(false);
+
+  useEffect(() => {
+    if (!isHydrated || alreadyClearedPossibleIncompleteExecution) {
+      return;
+    }
+    setAlreadyClearedPossibleIncompleteExecution(true);
+    const { executionResponse } = codeCellExecutionState;
+    if (isExecutionNominal(executionResponse) && !executionResponse.completed) {
+      // The execution state refers to a previous execution that did not complete.
+      // We want to reset the execution state.
+      onResetExecutionState();
+    }
+  }, [
+    codeCellExecutionState,
+    onResetExecutionState,
+    isHydrated,
+    alreadyClearedPossibleIncompleteExecution,
+  ]);
 
   const handleExecutionRequest = async () => {
     const executionRequestUUID = crypto.randomUUID();
