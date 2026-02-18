@@ -1,7 +1,8 @@
 /* eslint-disable react/no-array-index-key */
 import { isEmpty, negate } from 'lodash';
 import { CSSProperties, ReactElement } from 'react';
-import InputArea, { INPUT_BEGIN, INPUT_END } from './InputArea';
+import InputArea from './InputArea';
+import { INPUT_BEGIN, INPUT_END } from './IoMarkers';
 import { OUTPUT_ELEMENT_STYLE } from './OutputArea';
 
 export default function PreElement({

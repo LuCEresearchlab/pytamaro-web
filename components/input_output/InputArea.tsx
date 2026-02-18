@@ -3,9 +3,6 @@ import { Badge, Box, Tooltip } from '@mui/material';
 import { useEffect, useRef } from 'react';
 import theme from '../../src/theme';
 
-export const INPUT_BEGIN = '@@@PYTAMARO_INPUT_BEGIN@@@';
-export const INPUT_END = '@@@PYTAMARO_INPUT_END@@@';
-
 export default function InputArea({
   initialContent = null,
   onSubmit = undefined,

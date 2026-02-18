@@ -4,7 +4,7 @@ import { PyProxy, PythonError } from 'pyodide/ffi';
 import {
   INPUT_BEGIN,
   INPUT_END,
-} from '../../components/input_output/InputArea';
+} from '../../components/input_output/IoMarkers';
 import { joinLines } from '../sourceUtils';
 import {
   DrawRequestData,
