@@ -27,7 +27,6 @@ export default function HourOfCodeCastle({
     <Stack direction='column' spacing={2}>
       {executionResponse && isExecutionNominal(executionResponse) && (
         <ExecutionOutputArea
-          executionError={false}
           executionResponse={executionResponse}
           setOutputAreaRef={() => null}
         />

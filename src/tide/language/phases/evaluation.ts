@@ -1,4 +1,5 @@
 import { ProgramState } from '.';
+import { dummyExecutionMetadata } from '../../../../components/tide/TideConfigurationCode';
 import { execute } from '../../../pyodide-execution/pyodideWorkerClient';
 import { TamaroCard } from '../cards';
 import {
@@ -75,7 +76,7 @@ export async function extract_data(
         definitions.concat(show_graphic_definition),
       );
 
-      return await execute([code], 0, [], [], crypto.randomUUID())
+      return await execute([code], 0, [], [], dummyExecutionMetadata)
         .then((v) => v as CompletedExecutionResponse)
         .then(({ stdout, stderr }) => {
           if (stderr.trim().length !== 0) {
@@ -104,7 +105,7 @@ export async function extract_data(
       };
       const code = turnCodeElementToCode(new_code, definitions.concat());
 
-      return await execute([code], 0, [], [], crypto.randomUUID())
+      return await execute([code], 0, [], [], dummyExecutionMetadata)
         .then((v) => v as CompletedExecutionResponse)
         .then(({ stdout, stderr }) => {
           if (stderr.trim().length !== 0) {

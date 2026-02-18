@@ -1,5 +1,6 @@
 import { useCallback, useContext, useEffect, useRef } from 'react';
 import { allKinds } from '../../src/documentation';
+import { ExecutionMetadata } from '../../src/pyodide-execution/messagesTypes';
 import { PyodideWorkerClientContext } from '../../src/pyodide-execution/pyodideWorkerClient';
 import { JudiciousModule } from '../../src/schemas/documentation';
 import { ConfigurationState } from '../../src/tide/configuration';
@@ -10,6 +11,14 @@ import {
   toTideFunction,
 } from '../../src/tide/judiciours_to_tide';
 import { ImportedDefinition } from '../../src/tide/language/definitions';
+
+// Do not record events from TIDE internals
+export const dummyExecutionMetadata: ExecutionMetadata = {
+  executionUUID: crypto.randomUUID(),
+  allowSharingAnonData: 'no',
+  userUuid: '',
+  experimentKey: '',
+};
 
 export default function TideConfigurationCode({
   setConfiguration,
@@ -36,7 +45,7 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
 [print("IMPORT", v.module, o.name) for v in imports for o in v.names]
 `;
       configuration_timeout.current = undefined;
-      const results = await execute([code], 0, [], [])
+      const results = await execute([code], 0, [], [], dummyExecutionMetadata)
         .catch(() => undefined)
         .then((v) => {
           return v?.type === 'success' ? v.stdout : undefined;
