@@ -376,20 +376,12 @@ function addCommandsFromSpec(
   }
 }
 
-function ckHeapSize(ck: CanvasKit): number {
-  // @ts-expect-error: 2339 (not part of the public CK API)
-  return ck.HEAPF32.length;
-}
-
 export function specsToCommands(
   ck: CanvasKit,
   typefaces: Map<string, Typeface>,
   specs: GraphicSpec[],
-  debugAllocations: boolean = false,
 ): Stack<Command> {
   const stack: Stack<Command> = new Stack();
-
-  let lastCkHeapSize = ckHeapSize(ck);
 
   // Build a sequence of commands that can be executed linearly on the same
   // canvas object to draw the complete graphic. This may involve popping and
@@ -397,18 +389,6 @@ export function specsToCommands(
   // order (e.g. when doing compositions).
   for (const spec of specs) {
     addCommandsFromSpec(ck, typefaces, stack, spec);
-
-    if (debugAllocations) {
-      const afterSpecSize = ckHeapSize(ck);
-      if (lastCkHeapSize != afterSpecSize) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `CK heap size increased by ${afterSpecSize - lastCkHeapSize} after`,
-          spec,
-        );
-        lastCkHeapSize = afterSpecSize;
-      }
-    }
   }
 
   return stack;

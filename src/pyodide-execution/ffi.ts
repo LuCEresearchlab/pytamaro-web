@@ -15,7 +15,7 @@ async function draw(
   scaling_factor: number,
   debug: boolean,
 ): Promise<string> {
-  const instructions = specsToCommands(ck, typefaces, specs, true);
+  const instructions = specsToCommands(ck, typefaces, specs);
   const { bounds, pinPosition } = computeBoundsAndPin(instructions);
   const size = {
     width: Math.abs(bounds[0] - bounds[2]),
