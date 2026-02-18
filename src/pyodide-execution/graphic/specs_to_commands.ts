@@ -236,17 +236,19 @@ function addCommandsForCompose(
   const fgBegin = extractBegin(fgChunk);
   const fgEnd = extractEnd(fgChunk);
   const { path: fgPath, pinPosition: fgPin } = fgBegin;
-  const fgPinPosition = spec.fg_pin
-    ? relToAbsPoint(spec.fg_pin, fgPath.computeTightBounds())
-    : fgPin;
+  const fgPinPosition =
+    spec.fg_pin !== undefined
+      ? relToAbsPoint(spec.fg_pin, fgPath.computeTightBounds())
+      : fgPin;
 
   const bgChunk = extractGraphicCommands(stack);
   const bgBegin = extractBegin(bgChunk);
   const bgEnd = extractEnd(bgChunk);
   const { path: bgPath, pinPosition: bgPin } = bgBegin;
-  const bgPinPosition = spec.bg_pin
-    ? relToAbsPoint(spec.bg_pin, bgPath.computeTightBounds())
-    : bgPin;
+  const bgPinPosition =
+    spec.bg_pin !== undefined
+      ? relToAbsPoint(spec.bg_pin, bgPath.computeTightBounds())
+      : bgPin;
 
   const fgOffsetMatrix = [
     1,
