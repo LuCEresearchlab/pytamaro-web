@@ -9,7 +9,7 @@ import { computeBoundsAndPin } from './graphic/bounds.ts';
 import { addDebugInfo } from './graphic/debug.ts';
 import { drawWithSuperSampling } from './graphic/drawWithSuperSampling.ts';
 import { renderOnCanvas } from './graphic/rendering.ts';
-import { freeStack, specsToCommands } from './graphic/specs_to_commands.ts';
+import { freeStack, specsToCommands } from './graphic/specsToCommands.ts';
 import { GraphicSpec, Sized } from './spec';
 
 async function draw(
