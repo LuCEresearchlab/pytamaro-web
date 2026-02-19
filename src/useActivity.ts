@@ -35,6 +35,13 @@ import {
 } from './schemas/activitySchema';
 import { EventName, storeDbEvent } from './storeDbEvent';
 
+function hasOutput(response: ExecutionResponse): boolean {
+  return (
+    isExecutionNominal(response) &&
+    (response.stdout + response.stderr).length > 0
+  );
+}
+
 export function initialCodeExecutionState(): CodeCellExecutionState {
   return {
     executionUUID: undefined,
@@ -214,9 +221,7 @@ export function useActivity(
         if (response !== undefined) {
           draft[idx].executionResponse = response;
           draft[idx].outputSynced = true;
-          draft[idx].outputAreaVisible =
-            isExecutionNominal(response) &&
-            (response.stdout + response.stderr).length > 0;
+          draft[idx].outputAreaVisible = hasOutput(response);
           if (response.type === 'success' && idx === codeCells.length - 1) {
             // Mark the activity as completed when the last cell has been executed successfully.
             markAsCompleted();
@@ -255,7 +260,7 @@ export function useActivity(
         if (executionResponse && draft[idx] !== undefined) {
           draft[idx].executionResponse = executionResponse;
           draft[idx].outputSynced = true;
-          draft[idx].outputAreaVisible = executionResponse?.stdout?.length > 0;
+          draft[idx].outputAreaVisible = hasOutput(executionResponse);
         }
       }),
     );
