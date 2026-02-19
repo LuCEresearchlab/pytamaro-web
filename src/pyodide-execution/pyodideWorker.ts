@@ -9,6 +9,7 @@ import { joinLines } from '../sourceUtils';
 import {
   DrawRequestData,
   ExecutionMetadata,
+  InitMessage,
   InputRequestData,
   Message,
   ResultMessage,
@@ -19,14 +20,11 @@ import {
 } from './messagesTypes';
 import { GraphicSpec, Sized } from './spec';
 
-let syncBuffer: Int32Array;
-let resultLengthBuffer: Int32Array;
 let pyodide: PyodideAPI;
 
-let activeCellChangeListener: ((idx: number) => void) | null = null;
+/* **** I/O **** */
 
-const decoder = new TextDecoder();
-const remainingPyProxies: PyProxy[] = [];
+let activeCellChangeListener: ((idx: number) => void) | null = null;
 
 interface ReadOnlyExecutionOutput {
   getStdout(): string;
@@ -71,6 +69,127 @@ class ExecutionOutput implements ReadOnlyExecutionOutput {
 }
 
 /**
+ * @returns An instance of {@link ReadOnlyExecutionOutput} to be used to
+ * get the output of the current active cell.
+ */
+function setupIO(
+  pyodide: PyodideAPI,
+  executionMetadata: ExecutionMetadata,
+): ReadOnlyExecutionOutput {
+  const out = new ExecutionOutput();
+
+  const sendPartialResult = () => {
+    self.postMessage({
+      type: Message.PARTIAL_RESULT,
+      executionMetadata,
+      result: {
+        type: 'success',
+        completed: false,
+        stdout: out.getStdout(),
+        stderr: out.getStderr(),
+      },
+    });
+  };
+  // "Flush" the partial results for the currently active cell and then clear
+  // out so we don't send previous outputs to the new cell
+  activeCellChangeListener = () => {
+    sendPartialResult();
+    out.clear();
+  };
+  // Throttle the sending of partial results to avoid overloading react in the
+  // frontend (e.g., when doing lots of `print('.')` in a sequence from python)
+  const throttledSendPartialResult = throttle(sendPartialResult, 50);
+
+  pyodide.setStdout({
+    write: (buf) => {
+      const written = out.writeStdout(buf);
+      throttledSendPartialResult();
+      return written;
+    },
+  });
+  pyodide.setStderr({
+    write: (buf) => {
+      const written = out.writeStderr(buf);
+      throttledSendPartialResult();
+      return written;
+    },
+  });
+
+  // Keep track of each occurrence of input so that in the events database we
+  // can then reliably reconstruct the execution of a code cell, since network
+  // requests may be received out of order by the db
+  let inputSeqNumber = 0;
+  pyodide.setStdin({
+    stdin: () => {
+      // Send partial result before blocking for input
+      // (this signals that the output is up to date for the current execution,
+      // even if there was no output before the input request)
+      out.writeStdout('\u200B');
+      sendPartialResult();
+      const input = ffiInput(executionMetadata, inputSeqNumber);
+      inputSeqNumber++;
+      // Add back to stdout (including the <enter>) so that the user can see
+      // what they typed
+      out.writeStdout(INPUT_BEGIN + input + INPUT_END + '\n');
+      sendPartialResult();
+      return input;
+    },
+  });
+
+  return out;
+}
+
+/* **** Memory Management **** */
+
+const remainingPyProxies: PyProxy[] = [];
+
+/**
+ * Unwrap the result of a given function from pyodide FFI proxy to a plain
+ * JS object.
+ *
+ * Since it is not clear when it's a good moment to get rid of those proxies
+ * (freeing them too early may cause issues on the python side), we register
+ * them into the remainingPyProxies array so that we may deallocate them once
+ * the execution is over.
+ */
+function unProxy<T>(proxy: PyProxy): T {
+  const pyproxies = remainingPyProxies;
+  if (typeof proxy === 'object' && typeof proxy.toJs === 'function') {
+    return proxy.toJs({ pyproxies });
+  } else {
+    return proxy as T;
+  }
+}
+
+/**
+ * Destroy all leftover proxies that we did not deallocate earlier.
+ */
+function destroyLeftoverProxies() {
+  while (remainingPyProxies.length > 0) {
+    // There does not seem to be a way for us to check whether a proxy has
+    // already been deleted.
+    // The pyodide API indicates that an error message will be logged in such
+    // a situation.
+    remainingPyProxies.pop()?.destroy();
+  }
+}
+
+/* **** Client communication **** */
+
+const decoder = new TextDecoder();
+let syncBuffer: Int32Array;
+let resultLengthBuffer: Int32Array;
+
+function decodeSharedBuffer(sharedBuffer: SharedArrayBuffer): string {
+  const len = sharedBuffer.byteLength;
+  const sharedView = new Uint8Array(sharedBuffer);
+  const tmpBuffer = new ArrayBuffer(len);
+  const tmpView = new Uint8Array(tmpBuffer);
+  tmpView.set(sharedView);
+  return decoder.decode(tmpBuffer);
+}
+
+/**
  * Attempting to transfer a PythonError object in certain browsers (firefox)
  * makes the Worker.postMessage method fail (probably due to some component
  * of the original object referencing some wasm memory location).
@@ -96,122 +215,7 @@ function getTransferableError(
   };
 }
 
-/**
- * @returns An instance of {@link ReadOnlyExecutionOutput} to be used to
- * get the output of the current active cell.
- */
-function setupIO(
-  pyodide: PyodideAPI,
-  executionMetadata: ExecutionMetadata,
-): ReadOnlyExecutionOutput {
-  const out = new ExecutionOutput();
-
-  const sendPartialResult = () => {
-    self.postMessage({
-      type: Message.PARTIAL_RESULT,
-      executionMetadata,
-      result: {
-        type: 'success',
-        completed: false,
-        stdout: out.getStdout(),
-        stderr: out.getStderr(),
-      },
-    });
-  };
-
-  const throttledSendPartialResult = throttle(sendPartialResult, 50);
-
-  activeCellChangeListener = () => {
-    sendPartialResult();
-    out.clear();
-  };
-
-  let inputSeqNumber = 0;
-  pyodide.setStdin({
-    stdin: () => {
-      // Send partial result before blocking for input
-      // (this signals that the output is up to date for the current execution,
-      // even if there was no output before the input request)
-      out.writeStdout('\u200B');
-      sendPartialResult();
-      const input = ffiInput(executionMetadata, inputSeqNumber);
-      inputSeqNumber++;
-      // Add back to stdout (including the <enter>) so that the user can see what they typed
-      out.writeStdout(INPUT_BEGIN + input + INPUT_END + '\n');
-      sendPartialResult();
-      return input;
-    },
-  });
-
-  pyodide.setStdout({
-    write: (buf) => {
-      const written = out.writeStdout(buf);
-      throttledSendPartialResult();
-      return written;
-    },
-  });
-  pyodide.setStderr({
-    write: (buf) => {
-      const written = out.writeStderr(buf);
-      throttledSendPartialResult();
-      return written;
-    },
-  });
-
-  return out;
-}
-
-/**
- * @returns The "entry point code" to run.
- */
-function setupFS(pyodide: PyodideAPI, files: RunPythonFile[]): string {
-  const fs = pyodide.FS;
-  const basePath = '/run/py';
-
-  fs.mkdirTree(basePath);
-
-  let driverFile: RunPythonFile | null = null;
-  for (const file of files) {
-    if (file.name === 'driver.py') {
-      driverFile = file;
-    } else {
-      fs.writeFile(`${basePath}/${file.name}`, file.content);
-    }
-  }
-
-  // CPython caches the modules that it loads, so we need to forcefully unload
-  // all files that we have just written to ensure that the execution always
-  // uses the proper up-to-date code.
-  const modulesToClear = files
-    .map((file) => file.name)
-    .filter((name) => name.endsWith('.py'))
-    .map((name) => name.replaceAll('/', '.').replace(/\.py$/, ''));
-
-  return joinLines([
-    // Clear cached modules
-    'import sys',
-    ...modulesToClear.flatMap((module) => [
-      `if '${module}' in sys.modules:`,
-      `  del sys.modules['${module}']`,
-    ]),
-    // Set max recursion depth
-    'sys.setrecursionlimit(2000)',
-    // Set CWD to $basePath
-    'import os',
-    `os.chdir('${basePath}')`,
-    // Run code
-    driverFile?.content || '',
-  ]);
-}
-
-function decodeSharedBuffer(sharedBuffer: SharedArrayBuffer): string {
-  const len = sharedBuffer.byteLength;
-  const sharedView = new Uint8Array(sharedBuffer);
-  const tmpBuffer = new ArrayBuffer(len);
-  const tmpView = new Uint8Array(tmpBuffer);
-  tmpView.set(sharedView);
-  return decoder.decode(tmpBuffer);
-}
+/* **** FFI **** */
 
 function executeOnMainThread(
   type: Message,
@@ -239,77 +243,15 @@ function executeOnMainThread(
     return null;
   }
   const resultBuffer = new SharedArrayBuffer(lenInBytes);
+  // Send the client the shared array buffer and wait for it to be filled in
   self.postMessage({
     type,
     uuid,
     resultBuffer,
   });
   Atomics.wait(syncBuffer, 0, 0);
+  // Return the shared array buffer containing the result from the client
   return resultBuffer;
-}
-
-async function loadPyodideWithPytamaro() {
-  // @ts-expect-error importScripts is available in web workers
-  importScripts('https://cdn.jsdelivr.net/pyodide/v0.29.2/full/pyodide.js');
-  // @ts-expect-error pyodide is injected by the script above
-  const pyodideReadyPromise = loadPyodide({
-    checkAPIVersion: true,
-  });
-  pyodide = await pyodideReadyPromise;
-  if (!pyodide) {
-    throw new Error('Failed to load Pyodide');
-  }
-  await pyodide.loadPackage('micropip');
-  const microPip = pyodide.pyimport('micropip');
-  await microPip.install(assetUrl('pytamaro-1.1.4-py3-none-any.whl'));
-}
-
-async function run(
-  files: RunPythonFile[],
-  executionMetadata: ExecutionMetadata,
-): Promise<ResultMessage> {
-  destroyLeftoverProxies();
-
-  if (!pyodide) {
-    throw new Error('Pyodide not loaded');
-  }
-
-  const out = setupIO(pyodide, executionMetadata);
-  const code = setupFS(pyodide, files);
-
-  const ns = pyodide.toPy({});
-  try {
-    await pyodide.runPython(code, { globals: ns, filename: 'driver.py' });
-    return {
-      type: Message.RESULT,
-      executionMetadata,
-      result: {
-        type: 'success',
-        completed: true,
-        stdout: out.getStdout(),
-        stderr: out.getStderr(),
-      },
-    };
-  } catch (err) {
-    const pythonError = err as PythonError;
-    const transferableError = getTransferableError(pythonError);
-    const { isFatal } = transferableError;
-
-    return {
-      type: Message.RESULT,
-      executionMetadata,
-      pythonError: isFatal ? transferableError : undefined,
-      result: {
-        type: isFatal ? 'failure' : 'error',
-        completed: true,
-        stdout: out.getStdout(),
-        stderr: out.getStderr() + pythonError,
-      },
-    };
-  } finally {
-    activeCellChangeListener = null;
-    ns.destroy();
-  }
 }
 
 function ffiRenderGraphic(
@@ -360,39 +302,160 @@ function setActiveCell(idx: number): void {
 }
 
 function installPytamaroFfi() {
-  pyodide?.registerJsModule('pytamaro_js_ffi', {
+  if (!pyodide) {
+    return;
+  }
+
+  pyodide.registerJsModule('pytamaro_js_ffi', {
     render_graphic: (specs: PyProxy, scaling_factor: number, debug: boolean) =>
       ffiRenderGraphic(unProxy<GraphicSpec[]>(specs), scaling_factor, debug),
     graphic_size: (specs: PyProxy) =>
       ffiSizeWhenRendered(unProxy<GraphicSpec[]>(specs)),
-    set_active_cell: (idx: number) => setActiveCell(idx),
+    set_active_cell: setActiveCell,
   });
 }
 
+/* **** Init **** */
+
+async function initPyodideAndDependencies() {
+  // @ts-expect-error importScripts is available in web workers
+  importScripts('https://cdn.jsdelivr.net/pyodide/v0.29.2/full/pyodide.js');
+  // @ts-expect-error loadPyodide is injected by the script above
+  pyodide = await loadPyodide({
+    checkAPIVersion: true,
+  });
+  if (!pyodide) {
+    throw new Error('Failed to load Pyodide');
+  }
+
+  // Setup micropip
+  await pyodide.loadPackage('micropip');
+  const microPip = pyodide.pyimport('micropip');
+
+  // Install python dependencies
+  await microPip.install(
+    `${location.origin}/pyodide/pytamaro-1.1.4-py3-none-any.whl`,
+  );
+}
+
+async function initWorker(data: InitMessage) {
+  // Initialize Pyodide with dependencies and the FFIs
+  await initPyodideAndDependencies();
+  installPytamaroFfi();
+
+  // Setup main-thread execution infrastructure
+  pyodide.setInterruptBuffer(data.interruptBuffer);
+  syncBuffer = new Int32Array(data.syncBuffer);
+  resultLengthBuffer = new Int32Array(data.resultLengthBuffer);
+
+  self.postMessage({ type: Message.READY });
+}
+
+/* **** Code Execution **** */
+
 /**
- * Unwrap the result of a given function from pyodide FFI proxy to a plain
- * JS object.
+ * @returns The "entry point code" to run.
  */
-function unProxy<T>(proxy: PyProxy): T {
-  const pyproxies = remainingPyProxies;
-  if (typeof proxy === 'object' && typeof proxy.toJs === 'function') {
-    return proxy.toJs({ pyproxies });
-  } else {
-    return proxy as T;
+function setupFS(pyodide: PyodideAPI, files: RunPythonFile[]): string {
+  const fs = pyodide.FS;
+  const basePath = '/run/py';
+
+  fs.mkdirTree(basePath);
+
+  let driverFile: RunPythonFile | null = null;
+  for (const file of files) {
+    if (file.name === 'driver.py') {
+      driverFile = file;
+    } else {
+      fs.writeFile(`${basePath}/${file.name}`, file.content);
+    }
+  }
+
+  if (driverFile == null) {
+    return 'pass';
+  }
+
+  // CPython caches the modules that it loads, so we need to forcefully unload
+  // all files that we have just written to ensure that the execution always
+  // uses the proper up-to-date code.
+  const modulesToClear = files
+    .map((file) => file.name)
+    .filter((name) => name.endsWith('.py') && name !== 'driver.py')
+    .map((name) => name.replaceAll('/', '.').replace(/\.py$/, ''));
+
+  return joinLines([
+    // Clear cached modules
+    'import sys',
+    ...modulesToClear.flatMap((module) => [
+      `if '${module}' in sys.modules:`,
+      `  del sys.modules['${module}']`,
+    ]),
+    // Set max recursion depth.
+    // Note: this might be problematic for non-desktop devices.
+    // There are several limitations at play here, both from the JS and the
+    // wasm worlds. It could be that we'll have to decrease this number in the
+    // future. See: https://github.com/pyodide/pyodide/issues/5959
+    'sys.setrecursionlimit(2000)',
+    // Set CWD to $basePath
+    'import os',
+    `os.chdir('${basePath}')`,
+    // Run code
+    driverFile.content,
+  ]);
+}
+
+async function run(
+  files: RunPythonFile[],
+  executionMetadata: ExecutionMetadata,
+): Promise<ResultMessage> {
+  destroyLeftoverProxies();
+
+  if (!pyodide) {
+    throw new Error('Pyodide not loaded');
+  }
+
+  const out = setupIO(pyodide, executionMetadata);
+  const code = setupFS(pyodide, files);
+
+  // New clean globals for each execution
+  const ns = pyodide.toPy({});
+
+  try {
+    await pyodide.runPython(code, { globals: ns, filename: 'driver.py' });
+    return {
+      type: Message.RESULT,
+      executionMetadata,
+      result: {
+        type: 'success',
+        completed: true,
+        stdout: out.getStdout(),
+        stderr: out.getStderr(),
+      },
+    };
+  } catch (err) {
+    const pythonError = err as PythonError;
+    const transferableError = getTransferableError(pythonError);
+    const { isFatal } = transferableError;
+
+    return {
+      type: Message.RESULT,
+      executionMetadata,
+      pythonError: isFatal ? transferableError : undefined,
+      result: {
+        type: isFatal ? 'failure' : 'error',
+        completed: true,
+        stdout: out.getStdout(),
+        stderr: out.getStderr() + pythonError,
+      },
+    };
+  } finally {
+    activeCellChangeListener = null;
+    ns.destroy();
   }
 }
 
-function destroyLeftoverProxies() {
-  while (remainingPyProxies.length > 0) {
-    remainingPyProxies.pop()?.destroy();
-  }
-}
+/* **** Main **** */
 
-function assetUrl(path: string): string {
-  return `${location.origin}/pyodide/${path}`;
-}
-
-// The worker listens for messages from the main thread
 addEventListener(
   'message',
   async (event: MessageEvent<WorkerClientMessage>) => {
@@ -403,23 +466,12 @@ addEventListener(
 
     switch (data.type) {
       case Message.INIT:
-        {
-          // Initialize Pyodide with PyTamaro and FFIs
-          await loadPyodideWithPytamaro();
-          installPytamaroFfi();
-          pyodide.setInterruptBuffer(data.interruptBuffer);
-
-          syncBuffer = new Int32Array(data.syncBuffer);
-          resultLengthBuffer = new Int32Array(data.resultLengthBuffer);
-
-          self.postMessage({ type: Message.READY });
-        }
+        // Initialize the worker
+        self.postMessage(await initWorker(data));
         break;
       case Message.RUN:
-        {
-          // Run the provided Python code
-          self.postMessage(await run(data.files, data.executionMetadata));
-        }
+        // Run the provided Python code
+        self.postMessage(await run(data.files, data.executionMetadata));
         break;
     }
   },
