@@ -4,12 +4,13 @@ import type {
   CanvasKit,
   Typeface,
 } from '../canvaskit-wasm/canvaskit.d.ts';
-import { FONTS_FILENAME_PREFIX } from './fonts.ts';
 import { computeBoundsAndPin } from './graphic/bounds.ts';
 import { addDebugInfo } from './graphic/debug.ts';
 import { drawWithSuperSampling } from './graphic/drawWithSuperSampling.ts';
+import { loadTypeFaces } from './graphic/fonts.ts';
 import { renderOnCanvas } from './graphic/rendering.ts';
 import { freeStack, specsToCommands } from './graphic/specsToCommands.ts';
+import { canvasKitAssetUrl } from './graphic/utils.ts';
 import { GraphicSpec, Sized } from './spec';
 
 async function draw(
@@ -77,10 +78,6 @@ function sizeWhenRendered(
   };
 }
 
-function assetUrl(path: string): string {
-  return `${location.origin}/canvaskit/${path}`;
-}
-
 export type PyTamaroFFI = {
   draw: (
     specs: GraphicSpec[],
@@ -92,19 +89,9 @@ export type PyTamaroFFI = {
 
 export default async function initFfi(): Promise<PyTamaroFFI> {
   const ck = await CanvasKitInit({
-    locateFile: assetUrl,
+    locateFile: canvasKitAssetUrl,
   });
-  const typefaces: Map<string, Typeface> = new Map();
-  for (const name of FONTS_FILENAME_PREFIX) {
-    const typeface = ck.Typeface.MakeTypefaceFromData(
-      await fetch(assetUrl(`fonts/${name}-Regular.ttf`)).then((res) =>
-        res.arrayBuffer(),
-      ),
-    );
-    if (typeface != null) {
-      typefaces.set(typeface.getFamilyName(), typeface);
-    }
-  }
+  const typefaces = await loadTypeFaces(ck);
 
   return {
     draw: (specs: GraphicSpec[], scaling_factor: number, debug: boolean) =>

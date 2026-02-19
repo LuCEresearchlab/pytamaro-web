@@ -31,6 +31,7 @@ import {
 import { Stack } from './stack.ts';
 
 /* **** Utils **** */
+
 const decodingView = new DataView(new ArrayBuffer(8));
 
 function decodeColor(
