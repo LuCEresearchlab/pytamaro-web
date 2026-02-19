@@ -12,6 +12,7 @@ import {
   InitMessage,
   InputRequestData,
   Message,
+  ReadyMessage,
   ResultMessage,
   RunPythonFile,
   SizeRequestData,
@@ -338,7 +339,7 @@ async function initPyodideAndDependencies() {
   );
 }
 
-async function initWorker(data: InitMessage) {
+async function initWorker(data: InitMessage): Promise<ReadyMessage> {
   // Initialize Pyodide with dependencies and the FFIs
   await initPyodideAndDependencies();
   installPytamaroFfi();
@@ -348,7 +349,7 @@ async function initWorker(data: InitMessage) {
   syncBuffer = new Int32Array(data.syncBuffer);
   resultLengthBuffer = new Int32Array(data.resultLengthBuffer);
 
-  self.postMessage({ type: Message.READY });
+  return { type: Message.READY };
 }
 
 /* **** Code Execution **** */
