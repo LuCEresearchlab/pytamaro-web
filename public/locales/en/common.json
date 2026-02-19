@@ -10,6 +10,7 @@
     "documentation": "Documentation",
     "myToolbox": "My Toolbox",
     "runCode": "Run",
+    "runningCode": "Running",
     "stopExecution": "Stop",
     "executionCompletedWithErrors": "Execution completed with errors",
     "executionCompletedSuccessfully": "Execution completed successfully",
