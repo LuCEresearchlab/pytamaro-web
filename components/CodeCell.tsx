@@ -248,6 +248,7 @@ export default function CodeCell({
             {executionResponse !== undefined && (
               <ExecutionOutputArea
                 executionResponse={executionResponse}
+                firstLineNumber={firstLineNumber}
                 dimmed={!codeCellExecutionState.outputSynced}
                 setOutputAreaRef={(node) => setOutputAreaRef(cellIdx, node)}
               />

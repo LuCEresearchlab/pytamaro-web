@@ -127,11 +127,13 @@ function PreviousCellsErrorAlert({
 export default function ExecutionOutputArea({
   executionResponse,
   setOutputAreaRef,
+  firstLineNumber,
   dimmed = false,
   sx = {},
 }: {
   executionResponse: ExecutionResponse;
   setOutputAreaRef: (node: OutputAreaRef | null | undefined) => void;
+  firstLineNumber: number;
   dimmed?: boolean;
   sx?: CSSProperties;
 }) {
@@ -152,7 +154,7 @@ export default function ExecutionOutputArea({
       {errored && isErrorInvolvingToolbox(stderr) && <ToolboxErrorAlert />}
       {failed ? (
         <FailedExecutionAlert />
-      ) : errored && stderr && isErrorPreviousCells(stderr) ? (
+      ) : errored && stderr && isErrorPreviousCells(stderr, firstLineNumber) ? (
         <PreviousCellsErrorAlert buttonDisabled={dimmed} />
       ) : (
         <Stack sx={{ width: 'fit-content', minWidth: '100%' }}>

@@ -229,6 +229,23 @@ export function useActivity(
     );
   };
 
+  const propagateExecutionResponse = (
+    rangeStartExclusive: number,
+    rangeEndInclusive: number,
+    response: ExecutionResponse,
+  ) => {
+    setCodeExecutionStates((currentCodeExecutionStates) =>
+      produce(currentCodeExecutionStates, (draft) => {
+        for (let idx = rangeEndInclusive; idx > rangeStartExclusive; --idx) {
+          draft[idx].executionUUID = undefined;
+          draft[idx].outputSynced = true;
+          draft[idx].outputAreaVisible = true;
+          draft[idx].executionResponse = response;
+        }
+      }),
+    );
+  };
+
   const newPartialExecutionResult = (
     idx: number,
     executionResponse: ExecutionResponse | undefined,
@@ -389,6 +406,12 @@ export function useActivity(
     // executionFinished + postExecuteSingleCell here.
     executionFinished(activeCodeCell, response);
     postExecuteSingleCell(activeCodeCell, response);
+    // If the execution did not complete successfully and terminated before
+    // cell $idx, we need to mark all cells in range ($activeCodeCell, $idx] as
+    // "failed"
+    if (response.type === 'error' || response.type === 'failure') {
+      propagateExecutionResponse(activeCodeCell, idx, response);
+    }
   };
 
   const handleToggleOutputArea = (idx: number) => {

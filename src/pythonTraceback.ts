@@ -74,15 +74,20 @@ function nicerTraceback(traceback: string) {
   ].reduce((acc, fn) => fn(acc), traceback);
 }
 
-function lineNumOfErrorThisCell(traceback: string[]) {
+function lineNumOfErrorThisCell(
+  traceback: string[],
+  firstLineNumberOfThisCell: number,
+) {
   const regex = / {2}File "cell_\d+.py", line (\d+)/;
-  const idxTracebackLine = traceback.findLastIndex((line) => regex.test(line));
-  return idxTracebackLine !== -1
-    ? {
-        idxInTraceback: idxTracebackLine,
-        lineNum: parseInt(traceback[idxTracebackLine].match(regex)![1], 10),
-      }
-    : undefined;
+  const idxInTraceback = traceback.findLastIndex((line) => regex.test(line));
+  if (idxInTraceback === -1) {
+    return undefined;
+  }
+  const lineNum = parseInt(traceback[idxInTraceback].match(regex)![1], 10);
+  if (lineNum < firstLineNumberOfThisCell) {
+    return undefined;
+  }
+  return { idxInTraceback, lineNum };
 }
 
 /**
@@ -101,7 +106,10 @@ export function addErrorAnnotationsFromExecution(
 } | null {
   const traceback = nicerTraceback(executionResponse.stderr);
   const tracebackLines = splitLines(traceback);
-  const lineNumberInfo = lineNumOfErrorThisCell(tracebackLines);
+  const lineNumberInfo = lineNumOfErrorThisCell(
+    tracebackLines,
+    firstLineNumber,
+  );
   const model = editor.getModel();
   if (!model || lineNumberInfo === undefined) {
     return null;
@@ -225,6 +233,8 @@ export function isErrorInvolvingToolbox(content: string) {
   return stderrLines(content).some((line) => regex.test(line));
 }
 
-export function isErrorPreviousCells(content: string) {
-  return lineNumOfErrorThisCell(stderrLines(content)) === undefined;
+export function isErrorPreviousCells(content: string, firstLineNumber: number) {
+  return (
+    lineNumOfErrorThisCell(stderrLines(content), firstLineNumber) === undefined
+  );
 }
