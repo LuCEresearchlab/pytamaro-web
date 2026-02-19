@@ -330,7 +330,9 @@ async function initPyodideAndDependencies() {
   }
 
   // Setup micropip
-  await pyodide.loadPackage('micropip');
+  await pyodide.loadPackage('micropip', {
+    messageCallback: () => {},
+  });
   const microPip = pyodide.pyimport('micropip');
 
   // Install python dependencies
