@@ -38,48 +38,41 @@ export async function drawWithSuperSampling(
     throw new Error('Could not create CanvasKit surface');
   }
 
-  return new Promise((resolve, reject) => {
-    ckPremulSuperSurface.drawOnce((ckSuperCanvas) => {
-      ckSuperCanvas.scale(scalingFactor, scalingFactor);
-      drawImage(ckSuperCanvas);
+  const ckSuperCanvas = ckPremulSuperSurface.getCanvas();
+  ckSuperCanvas.scale(scalingFactor, scalingFactor);
+  drawImage(ckSuperCanvas);
+  ckPremulSuperSurface.flush();
 
-      // Now take a snapshot of the super-sampled canvas, and draw it scaled
-      // down on the base canvas.
-      const superSampledImage = ckPremulSuperSurface.makeImageSnapshot();
-      const superSampledImageWithMipmaps =
-        superSampledImage.makeCopyWithDefaultMipmaps();
+  // Now take a snapshot of the super-sampled canvas, and draw it scaled
+  // down on the base canvas.
+  const superSampledImage = ckPremulSuperSurface.makeImageSnapshot();
+  const superSampledImageWithMipmaps =
+    superSampledImage.makeCopyWithDefaultMipmaps();
 
-      ckBaseSurface.drawOnce((ckBaseCanvas) => {
-        // Shader to scale down with a linear filter
-        const shader = superSampledImageWithMipmaps.makeShaderOptions(
-          ck.TileMode.Clamp,
-          ck.TileMode.Clamp,
-          ck.FilterMode.Linear,
-          ck.MipmapMode.Nearest,
-          ck.Matrix.scaled(1 / scalingFactor, 1 / scalingFactor),
-        );
+  // Shader to scale down with a linear filter
+  const shader = superSampledImageWithMipmaps.makeShaderOptions(
+    ck.TileMode.Clamp,
+    ck.TileMode.Clamp,
+    ck.FilterMode.Linear,
+    ck.MipmapMode.Nearest,
+    ck.Matrix.scaled(1 / scalingFactor, 1 / scalingFactor),
+  );
+  const paint = new ck.Paint();
+  paint.setShader(shader);
+  paint.setBlendMode(ck.BlendMode.Src);
 
-        const paint = new ck.Paint();
-        paint.setShader(shader);
-        paint.setBlendMode(ck.BlendMode.Src);
+  // Draw downscaled version
+  const ckBaseCanvas = ckBaseSurface.getCanvas();
+  ckBaseCanvas.drawPaint(paint);
+  ckBaseSurface.flush();
 
-        // Draw downscaled version
-        ckBaseCanvas.drawPaint(paint);
+  // Cleanup WASM objects
+  paint.delete();
+  shader.delete();
+  superSampledImageWithMipmaps.delete();
+  superSampledImage.delete();
+  ckPremulSuperSurface.delete();
+  ckBaseSurface.delete();
 
-        // Cleanup WASM objects
-        paint.delete();
-        shader.delete();
-        superSampledImageWithMipmaps.delete();
-        superSampledImage.delete();
-      });
-    });
-
-    // Double requestAnimationFrame because there are two canvases to be drawn
-    // (the super-sampled one, and the base one).
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => {
-        baseCanvas?.convertToBlob().then(resolve).catch(reject);
-      }),
-    );
-  });
+  return baseCanvas.convertToBlob();
 }
