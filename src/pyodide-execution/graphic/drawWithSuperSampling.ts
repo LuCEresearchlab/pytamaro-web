@@ -71,8 +71,11 @@ export async function drawWithSuperSampling(
   shader.delete();
   superSampledImageWithMipmaps.delete();
   superSampledImage.delete();
-  ckPremulSuperSurface.delete();
-  ckBaseSurface.delete();
+
+  // Call dispose() on surfaces to free the underlying pixels and delete the object,
+  // see https://github.com/google/skia/blob/d0e1963cc6319f8fc7c30ea4feb5a8e94def0d76/modules/canvaskit/cpu.js#L96-L103
+  ckPremulSuperSurface.dispose();
+  ckBaseSurface.dispose();
 
   return baseCanvas.convertToBlob();
 }
