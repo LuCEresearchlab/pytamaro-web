@@ -9,6 +9,8 @@ import { ToolboxFunction } from './localStorage/schema';
 import { PythonFile } from './schemas/activitySchema';
 
 const MARKER_SET_ACTIVE_CELL_PATTERN = /@@@PYTAMARO_SET_ACTIVE_CELL\(\d+\)@@@/;
+const MARKER_SET_ACTIVE_CELL_PATTERN_CAPTURING =
+  /@@@PYTAMARO_SET_ACTIVE_CELL\((\d+)\)@@@/g;
 
 async function executeOnServer(
   sources: string[],
@@ -29,8 +31,43 @@ async function executeOnServer(
   }
 }
 
-function groupByActiveCell(source: string): string[] {
-  return source.split(MARKER_SET_ACTIVE_CELL_PATTERN).slice(1); // Skip the first (there's nothing before the first marker)
+function groupStdoutByActiveCell(stdout: string): string[] {
+  // Skip the first (there's nothing before the first marker)
+  return stdout.split(MARKER_SET_ACTIVE_CELL_PATTERN).slice(1);
+}
+
+function groupStderrByActiveCell(stderr: string, numCells: number): string[] {
+  // Skip the first (there's nothing before the first marker)
+  const executedCells = stderr.split(MARKER_SET_ACTIVE_CELL_PATTERN).slice(1);
+  const numExecuted = executedCells.length;
+
+  if (numExecuted === numCells) {
+    return executedCells;
+  }
+
+  // Some cells were not executed due to a failure in one of the previous cells
+  // we need to first find the last cell we were able to execute...
+  const lastCellIdx = stderr
+    .matchAll(MARKER_SET_ACTIVE_CELL_PATTERN_CAPTURING)
+    .reduce((_, match) => parseInt(match[1], 10), -1);
+
+  // ... then we use the traceback of the last cell in all subsequent ones
+  // (to match the behavior of CSE)
+  const allCells = new Array<string>(lastCellIdx);
+  for (let i = 0; i < numCells; i++) {
+    allCells[i] = executedCells[Math.min(numExecuted - 1, i)];
+  }
+  return allCells;
+}
+
+function errorInCurrentCell(cellIdx: number, traceback: string[]): boolean {
+  const idxInTraceback = traceback.findLastIndex((line) => {
+    const matches = MARKER_SET_ACTIVE_CELL_PATTERN_CAPTURING.exec(line);
+    if (matches && matches.length === 2) {
+      return parseInt(matches[1], 10) === cellIdx;
+    }
+  });
+  return idxInTraceback !== -1;
 }
 
 export async function executeServerSide(
@@ -56,19 +93,26 @@ export async function executeServerSide(
   }
 
   // Process the response and send output to the various cells
-  const stdoutLines = groupByActiveCell(response.stdout);
-  const stderrLines = groupByActiveCell(response.stderr);
+  const stdoutLines = groupStdoutByActiveCell(response.stdout);
+  const stderrLines = groupStderrByActiveCell(response.stderr, idx + 1);
 
   // Reset active cell to 0
   onActiveCellChange(0, 0);
 
   // Mark previous cells as successful
   for (let i = 0; i < idx; i++) {
+    const out = i < stdoutLines.length ? stdoutLines[i] : '';
+    const err = stderrLines[i];
+    const type =
+      i < stdoutLines.length && !errorInCurrentCell(i, stderrLines)
+        ? 'success'
+        : 'error';
+
     updateExecutionResult(i, {
-      type: 'success',
+      type,
       completed: true,
-      stdout: stdoutLines[i] || '',
-      stderr: stderrLines[i] || '',
+      stdout: out,
+      stderr: err,
     });
     onActiveCellChange(i, i + 1);
   }
@@ -77,7 +121,7 @@ export async function executeServerSide(
   setLastCellResult({
     type: response.type,
     completed: true,
-    stdout: stdoutLines[idx] || '',
-    stderr: stderrLines[idx] || '',
+    stdout: idx < stdoutLines.length ? stdoutLines[idx] : '',
+    stderr: stderrLines[idx],
   });
 }
