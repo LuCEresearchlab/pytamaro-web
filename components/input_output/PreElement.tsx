@@ -41,6 +41,7 @@ export default function PreElement({
                     style={{
                       margin: 0,
                       display: 'inline-block',
+                      verticalAlign: needsActiveInput ? 'top' : undefined,
                       ...style,
                     }}
                   >
