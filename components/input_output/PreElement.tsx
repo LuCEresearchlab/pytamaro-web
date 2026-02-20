@@ -1,5 +1,4 @@
 /* eslint-disable react/no-array-index-key */
-import { isEmpty, negate } from 'lodash';
 import { CSSProperties, ReactElement } from 'react';
 import InputArea from './InputArea';
 import { INPUT_BEGIN, INPUT_END } from './IoMarkers';
@@ -22,7 +21,7 @@ export default function PreElement({
           '(' + INPUT_BEGIN + '.*?' + INPUT_END + ')',
           'g',
         );
-        const chunks = line.split(inputRegex).filter(negate(isEmpty));
+        const chunks = line.split(inputRegex);
         return (
           <span style={{ display: 'block' }} key={idx}>
             {chunks.map((chunk, chunkIdx) => {

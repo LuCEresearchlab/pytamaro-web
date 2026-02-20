@@ -7,11 +7,11 @@ import {
   useRef,
   useState,
 } from 'react';
-import { splitLines } from '../../src/sourceUtils';
+import { splitLinesWithoutPossibleTrailingNewline } from '../../src/sourceUtils';
 import theme from '../../src/theme';
+import ImgElement from './ImgElement';
 import InputArea from './InputArea';
 import PreElement from './PreElement';
-import ImgElement from './ImgElement';
 
 function dataURIPrefix(mime: string) {
   return `data:${mime};base64,`;
@@ -32,7 +32,6 @@ export const OUTPUT_ELEMENT_STYLE = {
   marginTop: theme.spacing(1),
   marginBottom: theme.spacing(1),
 };
-
 
 export const ERROR_MESSAGE_CLASSNAME = 'traceback-error-message';
 
@@ -97,7 +96,7 @@ export function OutputArea({
         ) : (
           <PreElement
             key={idx}
-            lines={splitLines(chunk)}
+            lines={splitLinesWithoutPossibleTrailingNewline(chunk)}
             style={preStyle}
             activeInput={
               idx === chunks.length - 1 && inputFieldActive

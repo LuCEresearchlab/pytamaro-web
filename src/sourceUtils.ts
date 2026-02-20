@@ -15,3 +15,10 @@ export function countLines(source: string) {
 export function emptyLines(n: number) {
   return EOL.repeat(n);
 }
+
+export function splitLinesWithoutPossibleTrailingNewline(source: string) {
+  const sourceWithoutTrailingNewline = source.endsWith(EOL)
+    ? source.slice(0, -EOL.length)
+    : source;
+  return splitLines(sourceWithoutTrailingNewline);
+}
