@@ -146,7 +146,6 @@ export default function ExecutionOutputArea({
         position: 'relative',
         overflowX: 'auto',
         minWidth: '100%',
-        marginTop: 1,
         ...(dimmed ? { opacity: theme.palette.action.disabledOpacity } : {}),
         ...sx,
       }}

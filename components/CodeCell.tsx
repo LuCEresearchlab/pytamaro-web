@@ -1,5 +1,6 @@
 import { PlayCircleFilled } from '@mui/icons-material';
 import {
+  Box,
   Card,
   CardActions,
   CardContent,
@@ -226,35 +227,37 @@ export default function CodeCell({
             {extraActions}
           </Stack>
         </CardActions>
-        {noOutput && platformConfig.showNoOutputTip && (
-          <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
-            <NoOutputTip
-              dimmed={!codeCellExecutionState.outputSynced}
-              importedNames={analysisResult?.imported_names}
-            />
-          </StaleOutputBadge>
-        )}
-        {ellipsis && <EllipsisTip />}
-        <Collapse
-          in={
-            codeCellExecutionState.outputAreaVisible ||
-              // Show in case of a failed execution, because the alert is inside ExecutionOutputArea.
-            isExecutionFailed(executionResponse)
-          }
-          timeout='auto'
-          unmountOnExit
-        >
-          <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
-            {executionResponse !== undefined && (
-              <ExecutionOutputArea
-                executionResponse={executionResponse}
-                firstLineNumber={firstLineNumber}
+        <Box sx={{ marginTop: 1 }}>
+          {noOutput && platformConfig.showNoOutputTip && (
+            <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
+              <NoOutputTip
                 dimmed={!codeCellExecutionState.outputSynced}
-                setOutputAreaRef={(node) => setOutputAreaRef(cellIdx, node)}
+                importedNames={analysisResult?.imported_names}
               />
-            )}
-          </StaleOutputBadge>
-        </Collapse>
+            </StaleOutputBadge>
+          )}
+          {ellipsis && <EllipsisTip />}
+          <Collapse
+            in={
+              codeCellExecutionState.outputAreaVisible ||
+              // Show in case of a failed execution, because the alert is inside ExecutionOutputArea.
+              isExecutionFailed(executionResponse)
+            }
+            timeout='auto'
+            unmountOnExit
+          >
+            <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
+              {executionResponse !== undefined && (
+                <ExecutionOutputArea
+                  executionResponse={executionResponse}
+                  firstLineNumber={firstLineNumber}
+                  dimmed={!codeCellExecutionState.outputSynced}
+                  setOutputAreaRef={(node) => setOutputAreaRef(cellIdx, node)}
+                />
+              )}
+            </StaleOutputBadge>
+          </Collapse>
+        </Box>
       </Card>
     </Paper>
   );
