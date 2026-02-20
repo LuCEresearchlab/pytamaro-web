@@ -77,17 +77,28 @@ function nicerTraceback(traceback: string) {
 function lineNumOfErrorThisCell(
   traceback: string[],
   firstLineNumberOfThisCell: number,
-) {
+): { idxInTraceback: number; lineNum: number } | undefined {
+  if (traceback.length === 0) {
+    return undefined;
+  }
+
   const regex = / {2}File "cell_\d+.py", line (\d+)/;
-  const idxInTraceback = traceback.findLastIndex((line) => regex.test(line));
-  if (idxInTraceback === -1) {
-    return undefined;
-  }
-  const lineNum = parseInt(traceback[idxInTraceback].match(regex)![1], 10);
-  if (lineNum < firstLineNumberOfThisCell) {
-    return undefined;
-  }
-  return { idxInTraceback, lineNum };
+  // We need to find the least recent occurrence of the regex where the line
+  // number is ≥ firstLineNumberOfThisCell.
+  const candidates = traceback
+    .map((line) => {
+      const match = line.match(regex);
+      if (match === null) {
+        return null;
+      }
+      const lineNumber = parseInt(match[1], 10);
+      return lineNumber >= firstLineNumberOfThisCell ? lineNumber : null;
+    })
+    .map((lineNum, idxInTraceback) => {
+      return lineNum === null ? undefined : { idxInTraceback, lineNum };
+    })
+    .filter((candidate) => candidate !== undefined);
+  return candidates.length > 0 ? candidates[candidates.length - 1] : undefined;
 }
 
 function simulateModelChange(
