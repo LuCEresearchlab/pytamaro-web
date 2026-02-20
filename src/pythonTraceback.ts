@@ -90,6 +90,34 @@ function lineNumOfErrorThisCell(
   return { idxInTraceback, lineNum };
 }
 
+function simulateModelChange(
+  monaco: Monaco,
+  model: EditorNamespace.ITextModel,
+) {
+  // We need a "real" change, otherwise Monaco will "optimize it away".
+  // However, we want to avoid using the drastic `editor.setValue(editor.getValue())`,
+  // because it forces a re-tokenization, causing visual glitches (e.g., highlighting, scrollbars).
+
+  // Alternative: add a space at the end, then remove it.
+  const lastPos = model.getFullModelRange().getEndPosition();
+  const lastRange = monaco.Range.fromPositions(lastPos, lastPos);
+  model.applyEdits([
+    {
+      range: lastRange,
+      text: ' ',
+    },
+  ]);
+  // Remove the space we just added (but as a separate edit, to ensure it is applied after the previous edit).
+  const newLastPos = model.getFullModelRange().getEndPosition();
+  const newLastRange = monaco.Range.fromPositions(lastPos, newLastPos);
+  model.applyEdits([
+    {
+      range: newLastRange,
+      text: '',
+    },
+  ]);
+}
+
 /**
  * Adds error annotations as decorations and a content widget.
  * This function already adds the decorations and the widget to the editor.
@@ -187,7 +215,11 @@ export function addErrorAnnotationsFromExecution(
       // (1) runtime annotations (decorations + widget) are removed
       // (2) static analysis is re-run, possibly adding diagnostics
       // (3) the execution response is marked as not synced and becomes grayed out
-      editor.setValue(editor.getValue());
+      const model = editor.getModel();
+      if (!model) {
+        return;
+      }
+      simulateModelChange(monaco, model);
     },
   );
   return {
