@@ -32,7 +32,9 @@ export default function TideConfigurationCode({
 
   const configuration_timeout = useRef(undefined as NodeJS.Timeout | undefined);
   const cached_modules = useRef([] as string[]);
-  const { execute } = useContext(PyodideWorkerClientContext);
+  const { execute, isReady: execReady } = useContext(
+    PyodideWorkerClientContext,
+  );
 
   const extract_names = useCallback(
     async (configuration_code: string) => {
@@ -138,16 +140,19 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
   );
 
   useEffect(() => {
-    if (modules.length === cached_modules.current.length) return;
+    if (!execReady || modules.length === cached_modules.current.length) {
+      return;
+    }
     cached_modules.current = modules.map((v) => v.module);
-    if (configuration_timeout.current)
+    if (configuration_timeout.current) {
       clearTimeout(configuration_timeout.current);
+    }
     configuration_timeout.current = setTimeout(async () => {
       configuration_timeout.current = undefined;
       return extract_names(source);
     }, 4000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modules, source]);
+  }, [execReady, modules, source]);
 
   return <></>;
   //<CodeEditor

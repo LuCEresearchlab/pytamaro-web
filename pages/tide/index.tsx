@@ -1,5 +1,5 @@
 import { ReactFlowProvider } from '@xyflow/react';
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import Tide from '../../components/tide/Tide';
 import TideConfigurationCode from '../../components/tide/TideConfigurationCode';
@@ -15,7 +15,6 @@ import Head from 'next/head';
 import { useShallow } from 'zustand/shallow';
 import PageTitle from '../../components/PageTitle';
 import NavigationBar from '../../components/navbar/NavigationBar';
-import { PyodideWorkerClientContext } from '../../src/pyodide-execution/pyodideWorkerClient';
 import theme from '../../src/theme';
 
 function TidePage() {
@@ -23,15 +22,11 @@ function TidePage() {
     undefined as Partial<ConfigurationState> | undefined,
   );
 
-  const [loaded, setLoaded] = useState(false);
-
   const { setJudicious } = useStore();
 
   const cached_modules = useRef([] as string[]);
 
   const modules = useJudiciousDocData(['pytamaro']);
-
-  const { isReady: execReady } = useContext(PyodideWorkerClientContext);
 
   useEffect(() => {
     if (modules.length === cached_modules.current.length) return;
@@ -39,32 +34,15 @@ function TidePage() {
     cached_modules.current = modules.map((v) => v.module);
   }, [modules, setJudicious]);
 
-  const { nodes, evaluating } = useStore(
-    useShallow((state) => ({
-      nodes: state.nodes,
-      evaluating: state.evaluating,
-    })),
-  );
-
-  const loading_step1 = useMemo(
-    () =>
-      !(
-        configuration &&
-        modules.length === cached_modules.current.length &&
-        !nodes.find((v) => v.data.outdated === true) &&
-        evaluating
-      ),
-    [configuration, evaluating, modules.length, nodes],
-  );
+  const { nodes } = useStore(useShallow((state) => ({ nodes: state.nodes })));
 
   const loading = useMemo(
-    () => !(loaded || (loading_step1 && execReady)),
-    [loaded, loading_step1, execReady],
+    () =>
+      configuration === undefined || // Configuration not yet loaded
+      modules.length !== cached_modules.current.length || // Modules not yet loaded
+      nodes.find((v) => v.data.outdated === true), // Outdated node data
+    [configuration, modules.length, nodes],
   );
-
-  useEffect(() => {
-    if (!loading) setLoaded(true);
-  }, [loading]);
 
   useEffect(() => {
     const tl = anime.timeline({
