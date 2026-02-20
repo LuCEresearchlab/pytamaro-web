@@ -238,7 +238,7 @@ export default function CodeCell({
         <Collapse
           in={
             codeCellExecutionState.outputAreaVisible ||
-            executing ||
+              // Show in case of a failed execution, because the alert is inside ExecutionOutputArea.
             isExecutionFailed(executionResponse)
           }
           timeout='auto'
