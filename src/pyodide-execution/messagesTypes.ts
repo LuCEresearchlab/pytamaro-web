@@ -8,6 +8,7 @@ export enum Message {
   READY = 'ready',
   RESULT = 'result',
   DRAW = 'draw',
+  SAVE = 'save',
   SIZE = 'size',
   INPUT = 'input',
   PARTIAL_RESULT = 'partial_result',
@@ -56,11 +57,16 @@ export type SetActiveCellMessage = {
 export type ExecutionRequestMessage =
   | ({ type: Message.DRAW } & DrawRequestData)
   | ({ type: Message.SIZE } & SizeRequestData)
+  | ({ type: Message.SAVE } & SaveRequestData)
   | ({ type: Message.INPUT } & InputRequestData);
 export type DrawRequestData = {
   specs: GraphicSpec[];
-  scaling_factor: number;
+  scalingFactor: number;
   debug: boolean;
+};
+export type SaveRequestData = {
+  fileName: string;
+  content: string;
 };
 export type SizeRequestData = {
   specs: GraphicSpec[];
@@ -70,7 +76,7 @@ export type InputRequestData = {
   seq: number;
 };
 export type ExecutionResultRequestMessage = {
-  type: Message.INPUT | Message.DRAW | Message.SIZE;
+  type: Message.INPUT | Message.DRAW | Message.SIZE | Message.SAVE;
   resultBuffer: SharedArrayBuffer;
 };
 export type TransferablePythonError = {

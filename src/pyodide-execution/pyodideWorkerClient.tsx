@@ -203,66 +203,116 @@ function deliverPendingResult(
   notifyWorkerUsingSyncBuffer();
 }
 
+function drawProcedure(
+  uuid: string,
+  data: ExecutionRequestMessage & { type: Message.DRAW },
+) {
+  const { specs, scalingFactor, debug } = data;
+  ffiImpl!
+    .draw(specs, scalingFactor, debug)
+    .then((result: string) => {
+      const encoded = new Uint8Array(Buffer.from(result));
+      notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
+    })
+    .catch((err) => {
+      captureErrorWithSentry(err, {
+        pyodide_function: 'draw',
+      });
+      notifyWorkerResultFailure(uuid);
+    });
+}
+
+function saveProcedure(
+  uuid: string,
+  data: ExecutionRequestMessage & { type: Message.SAVE },
+) {
+  const { fileName, content } = data;
+  fetch(content)
+    .then((res) => res.blob())
+    .then(URL.createObjectURL)
+    .then((blobUrl) => {
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = fileName;
+      a.style.display = 'none';
+      document.body.append(a);
+      // Need to wrap into a setTimeout for Safari
+      // Monaco has a global "click" listener that somehow utilizes the
+      // navigator.clipboard API, which is known to be quirky in Safari.
+      // The best known workaround seems to be wrapping the invocation of
+      // whatever code calls navigator.clipboard into a setTimeout
+      setTimeout(() => {
+        a.click();
+        notifyWorkerResultReady(uuid, 0, new Uint8Array(0));
+      }, 0);
+      setTimeout(() => {
+        URL.revokeObjectURL(blobUrl);
+        a.remove();
+      }, 1000);
+    })
+    .catch((err) => {
+      captureErrorWithSentry(err, {
+        pyodide_function: 'save',
+      });
+      notifyWorkerResultFailure(uuid);
+    });
+}
+
+function sizeProcedure(
+  uuid: string,
+  data: ExecutionRequestMessage & { type: Message.SIZE },
+) {
+  const { specs } = data;
+  try {
+    const result = ffiImpl!.sizeWhenRendered(specs);
+    notifyWorkerResultReady(uuid, Int32Array.BYTES_PER_ELEMENT * 2, result);
+  } catch (err) {
+    captureErrorWithSentry(err, {
+      pyodide_function: 'size',
+    });
+    notifyWorkerResultFailure(uuid);
+  }
+}
+
+function inputProcedure(
+  uuid: string,
+  data: ExecutionRequestMessage & { type: Message.INPUT },
+) {
+  const outputArea = getActiveOutputAreaRef();
+  outputArea?.activateInputField();
+  outputArea
+    ?.getInput()
+    .then((value: string) => {
+      storeDbEvent(EventName.CodeExecutionInput, data.executionMetadata, {
+        executionUUID: data.executionMetadata.executionUUID,
+        seq: data.seq,
+        content: value,
+      });
+      const encoded = new Uint8Array(Buffer.from(value));
+      notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
+    })
+    .catch((err) => {
+      captureErrorWithSentry(err, {
+        pyodide_function: 'input',
+      });
+      notifyWorkerResultFailure(uuid);
+    });
+}
+
 function invokeProcedure(uuid: string, data: ExecutionRequestMessage) {
   pendingResults.set(uuid, { status: ResultStatus.Computing });
   switch (data.type) {
     case Message.DRAW:
-      {
-        const { specs, scaling_factor, debug } = data;
-        ffiImpl!
-          .draw(specs, scaling_factor, debug)
-          .then((result: string) => {
-            const encoded = new Uint8Array(Buffer.from(result));
-            notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
-          })
-          .catch((err) => {
-            captureErrorWithSentry(err, {
-              pyodide_function: 'draw',
-            });
-            notifyWorkerResultFailure(uuid);
-          });
-      }
+      drawProcedure(uuid, data);
+      break;
+    case Message.SAVE:
+      saveProcedure(uuid, data);
       break;
     case Message.SIZE:
-      {
-        const { specs } = data;
-        try {
-          const result = ffiImpl!.sizeWhenRendered(specs);
-          notifyWorkerResultReady(
-            uuid,
-            Int32Array.BYTES_PER_ELEMENT * 2,
-            result,
-          );
-        } catch (err) {
-          captureErrorWithSentry(err, {
-            pyodide_function: 'size',
-          });
-          notifyWorkerResultFailure(uuid);
-        }
-      }
+      sizeProcedure(uuid, data);
       break;
     case Message.INPUT:
-      {
-        const outputArea = getActiveOutputAreaRef();
-        outputArea?.activateInputField();
-        outputArea
-          ?.getInput()
-          .then((value: string) => {
-            storeDbEvent(EventName.CodeExecutionInput, data.executionMetadata, {
-              executionUUID: data.executionMetadata.executionUUID,
-              seq: data.seq,
-              content: value,
-            });
-            const encoded = new Uint8Array(Buffer.from(value));
-            notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
-          })
-          .catch((err) => {
-            captureErrorWithSentry(err, {
-              pyodide_function: 'input',
-            });
-            notifyWorkerResultFailure(uuid);
-          });
-      }
+      inputProcedure(uuid, data);
       break;
   }
 }

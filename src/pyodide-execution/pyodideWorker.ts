@@ -15,6 +15,7 @@ import {
   ReadyMessage,
   ResultMessage,
   RunPythonFile,
+  SaveRequestData,
   SizeRequestData,
   TransferablePythonError,
   WorkerClientMessage,
@@ -220,7 +221,7 @@ function getTransferableError(
 
 function executeOnMainThread(
   type: Message,
-  data: DrawRequestData | SizeRequestData | InputRequestData,
+  data: DrawRequestData | SizeRequestData | InputRequestData | SaveRequestData,
 ): SharedArrayBuffer | null {
   const uuid = crypto.randomUUID();
   // Perform procedure on the main thread
@@ -257,18 +258,25 @@ function executeOnMainThread(
 
 function ffiRenderGraphic(
   specs: GraphicSpec[],
-  scaling_factor: number,
+  scalingFactor: number,
   debug: boolean,
-): string | null {
+): string {
   const res = executeOnMainThread(Message.DRAW, {
     specs,
-    scaling_factor,
+    scalingFactor,
     debug,
   });
   if (res === null) {
     throw Error('Failed to render graphic');
   }
   return decodeSharedBuffer(res);
+}
+
+function ffiSave(fileName: string, content: string) {
+  executeOnMainThread(Message.SAVE, {
+    fileName,
+    content,
+  });
 }
 
 function ffiSizeWhenRendered(specs: GraphicSpec[]): Sized {
@@ -308,10 +316,14 @@ function installPytamaroFfi() {
   }
 
   pyodide.registerJsModule('pytamaro_js_ffi', {
-    render_graphic: (specs: PyProxy, scaling_factor: number, debug: boolean) =>
-      ffiRenderGraphic(unProxy<GraphicSpec[]>(specs), scaling_factor, debug),
-    graphic_size: (specs: PyProxy) =>
+    js_graphic_size: (specs: PyProxy) =>
       ffiSizeWhenRendered(unProxy<GraphicSpec[]>(specs)),
+    js_render_graphic: (
+      specs: PyProxy,
+      scaling_factor: number,
+      debug: boolean,
+    ) => ffiRenderGraphic(unProxy<GraphicSpec[]>(specs), scaling_factor, debug),
+    js_save: (fileName: string, content: string) => ffiSave(fileName, content),
     set_active_cell: setActiveCell,
   });
 }
