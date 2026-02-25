@@ -77,7 +77,7 @@ export default function DocumentationStripe({
 
   const hoveredInCollapsed = hoveredName
     ? namesToDocElement
-        .slice(visibleNamesCount + 1)
+        .slice(visibleNamesCount)
         .some(
           ({ module, element }) =>
             module === hoveredName.module && element?.name === hoveredName.name,
