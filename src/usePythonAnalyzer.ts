@@ -4,6 +4,7 @@ import {
   editor,
   IRange,
   languages,
+  Position,
   Range,
   type editor as EditorNamespace,
 } from 'monaco-editor';
@@ -21,6 +22,7 @@ import {
   FileHandle,
   initWorkspace,
   PythonFunction,
+  PythonName,
   SemanticToken,
   Position as TyPosition,
   Range as TyRange,
@@ -319,6 +321,54 @@ export class PythonAnalyzer {
   getSourcesUpTo(cellIdx: number): string[] {
     return this.sources.slice(0, cellIdx + 1);
   }
+
+  hoveredPythonName(
+    model: editor.ITextModel,
+    position: Position,
+  ): PythonName | null {
+    const name = model.getWordAtPosition(position)?.word;
+    if (!name) {
+      return null;
+    }
+    const fileHandle = this.getCurrentCellFileHandle(retrieveCellIdx(model));
+    if (!fileHandle) {
+      return null;
+    }
+    const previousLinesCount = countPreviousLines(model);
+    const tyPosition = new TyPosition(
+      position.lineNumber + previousLinesCount,
+      position.column,
+    );
+    const locations = this.workspace.gotoDeclaration(fileHandle, tyPosition);
+    if (locations.length === 0) {
+      return null;
+    } else {
+      // In case of multiple declarations, pick the first one (they are listed from the innermost scope to the outermost).
+      const path = locations[0].path;
+      const mod = path === fileHandle.path() ? '.' : moduleFromPath(path);
+      return new PythonName(mod, name);
+    }
+  }
+}
+
+function moduleFromPath(path: string): string {
+  // Standard library 'vendored://stdlib/math.pyi' --> 'math'
+  const vendoredStdlibRegex = /^vendored:\/\/stdlib\/(.+)\.pyi$/;
+  const match = path.match(vendoredStdlibRegex);
+  if (match) {
+    return match[1];
+  }
+  // PyTamaro '/pytamaro/any/some_module.py' --> 'pytamaro', but '/pytamaro/it/some_module.py' --> 'pytamaro.it'
+  const matchPyTamaro = path.match(/^\/pytamaro\//);
+  if (matchPyTamaro) {
+    // but preserve pytamaro.it, pytamaro.de, pytamaro.fr
+    const localizedPyTamaro = path.match(/^\/pytamaro\/(it|de|fr)\//);
+    if (localizedPyTamaro) {
+      return `pytamaro.${localizedPyTamaro[1]}`;
+    }
+    return 'pytamaro';
+  }
+  return path.slice(1).replace('.py', '');
 }
 
 export default function usePythonAnalyzer(

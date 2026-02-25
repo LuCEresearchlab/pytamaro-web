@@ -1,6 +1,6 @@
 import Editor from '@monaco-editor/react';
 import { debounce, DebouncedFunc, throttle } from 'lodash';
-import { editor, type editor as EditorNamespace } from 'monaco-editor';
+import { type editor as EditorNamespace } from 'monaco-editor';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ExecutionResponse } from '../src/codeExecution';
 import { LiveAnalysisStatus } from '../src/localStorage/schema';
@@ -12,6 +12,7 @@ import {
   pytamaroImportCompletionProvider,
   toolboxImportCompletionProvider,
 } from '../src/monacoSuggestions';
+import { PythonName } from '../src/python-analyzer/python_analyzer';
 import { addErrorAnnotationsFromExecution } from '../src/pythonTraceback';
 import scrollToAnchor from '../src/scrollToAnchor';
 import theme from '../src/theme';
@@ -48,6 +49,7 @@ export default function CodeEditor({
   resetCounter = 0,
   pythonAnalyzer,
   cellIdx,
+  setHoveredName = undefined,
 }: {
   initialSource: string;
   currentSource: string;
@@ -61,6 +63,7 @@ export default function CodeEditor({
   resetCounter?: number;
   pythonAnalyzer: PythonAnalyzer | null;
   cellIdx: number;
+  setHoveredName?: (name: PythonName | null) => void;
 }) {
   const { list } = useLocalToolbox();
   const { metadata } = useLocalProfile();
@@ -78,11 +81,11 @@ export default function CodeEditor({
   const runtimeErrorWidgetRef = useRef<ErrorMessageWidget | null>(null);
   const staticErrorWidgetRef = useRef<ErrorMessageWidget | null>(null);
   const runtimeDecorationsCollectionRef =
-    useRef<editor.IEditorDecorationsCollection | null>(null);
+    useRef<EditorNamespace.IEditorDecorationsCollection | null>(null);
   const staticDecorationsCollectionRef =
-    useRef<editor.IEditorDecorationsCollection | null>(null);
+    useRef<EditorNamespace.IEditorDecorationsCollection | null>(null);
   const hoveredStaticErrorDecorationRef =
-    useRef<editor.IEditorDecorationsCollection>(null);
+    useRef<EditorNamespace.IEditorDecorationsCollection>(null);
   const customDiagnosticsRef = useRef<CustomDiagnostic[]>([]);
   const shownDiagnosticRef = useRef<CustomDiagnostic | null>(null);
   const debouncedShowDiagnosticOnHover = useRef<DebouncedFunc<
@@ -266,13 +269,25 @@ export default function CodeEditor({
 
   useEffect(() => {
     const handleMouseMoved = (e: EditorNamespace.IEditorMouseEvent) => {
+      const position = e.target.position;
+      const mouseOverText =
+        e.target.type === monacoInstance?.editor.MouseTargetType.CONTENT_TEXT;
+      const model = editorInstance?.getModel();
+      if (setHoveredName !== undefined) {
+        if (!position || !model || !pythonAnalyzer || !mouseOverText) {
+          setHoveredName(null);
+        } else {
+          const hoveredName = pythonAnalyzer.hoveredPythonName(model, position);
+          setHoveredName(hoveredName);
+        }
+      }
+
       if (runtimeErrorWidgetRef.current) {
         // If there is a runtime error widget shown, do not show static error widgets.
         return;
       }
       // Find position under mouse
       // Check if there is a diagnostic at that position
-      const position = e.target.position;
       if (!position) {
         clearStaticWidget();
         return;
@@ -334,6 +349,9 @@ export default function CodeEditor({
     const mouseLeaveDisposer = editorInstance?.onMouseLeave(
       throttle(() => {
         clearStaticWidget();
+        if (setHoveredName !== undefined) {
+          setHoveredName(null);
+        }
       }),
       100,
     );
@@ -341,7 +359,14 @@ export default function CodeEditor({
       mouseMoveDisposer?.dispose();
       mouseLeaveDisposer?.dispose();
     };
-  }, [monacoInstance, editorInstance, clearStaticWidget, t]);
+  }, [
+    monacoInstance,
+    editorInstance,
+    setHoveredName,
+    pythonAnalyzer,
+    clearStaticWidget,
+    t,
+  ]);
 
   // Effect to trigger remeasurement of fonts after they have been loaded.
   useEffect(() => {

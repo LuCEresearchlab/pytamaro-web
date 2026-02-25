@@ -293,7 +293,7 @@ function Documentation() {
         <Stack
           direction='row'
           rowGap={0.1}
-          columnGap={1}
+          columnGap={0.5}
           alignItems='baseline'
           useFlexGap
           flexWrap='wrap'

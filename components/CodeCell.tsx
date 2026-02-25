@@ -18,6 +18,7 @@ import {
 import { CodeCellExecutionState } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
+import { PythonName } from '../src/python-analyzer/python_analyzer';
 import {
   ActivityVariant,
   PlatformConfiguration,
@@ -185,6 +186,8 @@ export default function CodeCell({
     });
   };
 
+  const [hoveredName, setHoveredName] = useState<PythonName | null>(null);
+
   return (
     <Paper
       elevation={readOnly ? 0 : 4}
@@ -195,6 +198,7 @@ export default function CodeCell({
           analysisResult={analysisResult}
           activityVariant={activityVariant}
           extraPythonFilesAnalysisResults={extraPythonFilesAnalysisResults}
+          hoveredName={hoveredName}
         />
       )}
       {/* Overflow to allow for overflowed widgets in a CodeEditor */}
@@ -213,6 +217,7 @@ export default function CodeCell({
             resetCounter={resetCounter}
             pythonAnalyzer={pythonAnalyzer}
             cellIdx={cellIdx}
+            setHoveredName={setHoveredName}
           />
         </CardContent>
         <CardActions disableSpacing sx={{ paddingLeft: 2, display: 'flex' }}>

@@ -18,11 +18,13 @@ export default function DocElement({
   element,
   activityVariant,
   smallerFont,
+  highlighted = false,
 }: {
   module: string;
   element: JudiciousElement;
   activityVariant: ActivityVariant;
   smallerFont: boolean;
+  highlighted?: boolean;
 }) {
   const [hover, setHover] = useState(false);
   const { metadata } = useLocalProfile();
@@ -46,8 +48,17 @@ export default function DocElement({
         display: 'inline-flex',
         alignItems: 'baseline',
         borderRadius: '0.5em',
-        backgroundColor: hover ? theme.palette.action.hover : 'transparent',
+        backgroundColor: highlighted
+          ? theme.palette.action.selected
+          : hover
+            ? theme.palette.action.hover
+            : 'transparent',
         cursor: 'pointer',
+        lineHeight: 1,
+        marginTop: '0.125em',
+        marginBottom: '0.125em',
+        paddingLeft: theme.spacing(0.25),
+        paddingRight: theme.spacing(0.25),
       }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
