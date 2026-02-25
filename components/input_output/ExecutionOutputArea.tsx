@@ -127,13 +127,13 @@ function PreviousCellsErrorAlert({
 export default function ExecutionOutputArea({
   executionResponse,
   setOutputAreaRef,
-  firstLineNumber,
+  firstLineNumber = 1,
   dimmed = false,
   sx = {},
 }: {
   executionResponse: ExecutionResponse;
   setOutputAreaRef: (node: OutputAreaRef | null | undefined) => void;
-  firstLineNumber: number;
+  firstLineNumber?: number;
   dimmed?: boolean;
   sx?: CSSProperties;
 }) {
