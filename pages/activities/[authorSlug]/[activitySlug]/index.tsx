@@ -16,7 +16,10 @@ import ActivityAuthorInfo from '../../../../components/AttributionInfo';
 import CurriculaList from '../../../../components/CurriculaList';
 import NavigationBar from '../../../../components/navbar/NavigationBar';
 import visibleCurricula, { allActivities } from '../../../../src/curricula';
-import { readActivity } from '../../../../src/fs-content/activities';
+import {
+  basicActivity,
+  readActivity,
+} from '../../../../src/fs-content/activities';
 import {
   getAuthorProfile,
   listAuthorsWithContent,
@@ -25,7 +28,10 @@ import {
 import getLanguageDisplayName, {
   format,
 } from '../../../../src/internationalization';
-import { Activity } from '../../../../src/schemas/activitySchema';
+import {
+  Activity,
+  BasicActivity,
+} from '../../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../../src/schemas/authorSchema';
 import { Curriculum } from '../../../../src/schemas/curriculumSchema';
 import { translationProps } from '../../../../src/serverSideTranslationProps';
@@ -37,17 +43,21 @@ import {
 
 export default function ActivityInfoPage({
   activity,
+  uses,
+  derivedFrom,
   author,
   includingCurricula,
 }: {
-  activity: Activity;
+  activity: BasicActivity;
+  uses: Activity['uses'];
+  derivedFrom: Activity['derivedFrom'];
   author: AuthorProfile;
   includingCurricula: Curriculum[];
 }) {
   const title = activity.slug;
   const pageTitle = `${title} - PyTamaro`;
 
-  const uses = activity.uses.filter((use) => !use.hidden);
+  const visibleUses = uses.filter((use) => !use.hidden);
 
   return (
     <div>
@@ -89,7 +99,7 @@ export default function ActivityInfoPage({
           <ActivityAuthorInfo
             type='activity'
             author={author}
-            derivedFrom={activity.derivedFrom}
+            derivedFrom={derivedFrom}
           />
           {activity.concepts.length > 0 && (
             <>
@@ -141,16 +151,16 @@ export default function ActivityInfoPage({
               <CurriculaList curricula={includingCurricula} />
             </>
           )}
-          {uses.length > 0 && (
+          {visibleUses.length > 0 && (
             <>
               <Typography variant='h4' marginTop={4} marginBottom={2}>
                 Uses
               </Typography>
               <Typography variant='body1' marginBottom={3}>
-                {`This activity has been used in ${format(uses.length, 'course', 'courses')}:`}
+                {`This activity has been used in ${format(visibleUses.length, 'course', 'courses')}:`}
               </Typography>
               <Stack spacing={2}>
-                {uses.map((use, idx) => (
+                {visibleUses.map((use, idx) => (
                   // eslint-disable-next-line react/no-array-index-key
                   <Card key={idx}>
                     <CardContent>
@@ -202,10 +212,13 @@ export async function getStaticProps(context: {
       );
     },
   );
+  const activity = await readActivity(authorSlug, activitySlug);
   return {
     props: {
       author: await getAuthorProfile(authorSlug),
-      activity: await readActivity(authorSlug, activitySlug),
+      activity: basicActivity(activity),
+      uses: activity.uses,
+      derivedFrom: activity.derivedFrom,
       includingCurricula,
       ...(await translationProps()),
     },
