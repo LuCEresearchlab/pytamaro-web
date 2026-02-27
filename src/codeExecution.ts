@@ -70,8 +70,14 @@ export interface BareboneToolboxFunction {
   source: string;
 }
 
+// IMPORTANT, part 1:
+// the entire driver is wrapped in a single function so that `globals_dict`, which contains the shared state between cells,
+// goes clearly out of scope at the end of the execution of the wrapper, allowing the GC to properly clean it up at the end of the execution of all cells.
+
+// IMPORTANT, part 2:
 // linecache is necessary to improve the traceback (e.g., to show the source code, and possibly also the caret)
 // the hack is taken from https://github.com/pyodide/pyodide/blob/3f80192aa814a17dfee7eb20bb24da6509c22049/src/py/_pyodide/_base.py#L312
+
 function driverSource(num_cells: number) {
   return `
 from pathlib import Path
@@ -82,27 +88,29 @@ from pytamaro_js_ffi import set_active_cell
 import atexit
 import linecache
 
-try:
-  globals_dict = {}
-  def run(name):
-      filename = name + ".py"
-      source = Path(filename).read_text()
-      code = compile(source, filename, "exec")
-      linecache.cache[filename] = [lambda: source]
-      exec(code, globals_dict)
+def run_all():
+  try:
+    globals_dict = {}
+    def run_single_cell(name):
+        filename = name + ".py"
+        source = Path(filename).read_text()
+        code = compile(source, filename, "exec")
+        linecache.cache[filename] = [lambda: source]
+        exec(code, globals_dict)
 
-  for idx in range(0, ${num_cells}):
-    if stdout is not None:
-      stdout.flush()
-    if stderr is not None:
-      stderr.flush()
-    set_active_cell(idx)
-    run(f"${CELL_FILE}{idx}")
-finally:
-  cwd = Path(getcwd())
-  chdir(cwd.parent.absolute())
-  rmtree(cwd.absolute())
-  atexit._run_exitfuncs()
+    for idx in range(0, ${num_cells}):
+      if stdout is not None:
+        stdout.flush()
+      if stderr is not None:
+        stderr.flush()
+      set_active_cell(idx)
+      run_single_cell(f"${CELL_FILE}{idx}")
+  finally:
+    cwd = Path(getcwd())
+    chdir(cwd.parent.absolute())
+    rmtree(cwd.absolute())
+    atexit._run_exitfuncs()
+run_all()
 `;
 }
 
