@@ -1,4 +1,4 @@
-import { StopCircle } from '@mui/icons-material';
+import { Keyboard, StopCircle } from '@mui/icons-material';
 import Done from '@mui/icons-material/Done';
 import ErrorOutline from '@mui/icons-material/ErrorOutline';
 import PlayCircleFilled from '@mui/icons-material/PlayCircleFilled';
@@ -11,18 +11,25 @@ function StatusIndicator({
   executing,
   executionFinished,
   executionError,
+  isWaitingForInput,
 }: {
   executing: boolean;
   executionFinished: boolean;
   executionError: boolean;
+  isWaitingForInput: boolean;
 }) {
   const { t } = useLocalTranslation(['common']);
   let tooltipTitle = '';
   let icon = <span />;
   if (executing) {
-    tooltipTitle = t('runningCode');
-    // CircularProgress is not an icon, but we set it to be the same size as actual icons
-    icon = <CircularProgress size='35px' />;
+    if (isWaitingForInput) {
+      tooltipTitle = t('waitingForInput');
+      icon = <Keyboard fontSize='large' color='info' />;
+    } else {
+      tooltipTitle = t('runningCode');
+      // CircularProgress is not an icon, but we set it to be the same size as actual icons
+      icon = <CircularProgress size='35px' />;
+    }
   } else if (executionFinished) {
     if (executionError) {
       tooltipTitle = t('executionCompletedWithErrors');
@@ -53,7 +60,9 @@ export default function RunButton({
   executionError: boolean;
 }) {
   const { t } = useLocalTranslation(['common']);
-  const { interruptExecution } = useContext(PyodideWorkerClientContext);
+  const { interruptExecution, isWaitingForInput } = useContext(
+    PyodideWorkerClientContext,
+  );
 
   return (
     <Stack direction='row' spacing={2} alignItems='center'>
@@ -71,6 +80,7 @@ export default function RunButton({
         executing={executing}
         executionFinished={executionFinished}
         executionError={executionError}
+        isWaitingForInput={isWaitingForInput}
       />
     </Stack>
   );

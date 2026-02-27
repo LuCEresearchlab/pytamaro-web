@@ -11,6 +11,7 @@
     "myToolbox": "La mia Toolbox",
     "runCode": "Esegui",
     "runningCode": "In Esecuzione",
+    "waitingForInput": "In attesa di input dell'utente",
     "stopExecution": "Stop",
     "executionCompletedWithErrors": "Esecuzione completata con errori",
     "executionCompletedSuccessfully": "Esecuzione completata con successo",

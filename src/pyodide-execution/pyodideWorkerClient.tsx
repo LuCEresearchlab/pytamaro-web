@@ -44,6 +44,7 @@ let activeCodeCell: number | null = null;
 let getOutputAreaRef: (idx: number) => OutputAreaRef | null = () => null;
 const getActiveOutputAreaRef = () =>
   activeCodeCell == null ? null : getOutputAreaRef(activeCodeCell);
+let setIsWaitingForInput: ((waiting: boolean) => void) | null = null;
 
 const pendingResults = new Map<string, ClientResult>();
 
@@ -280,9 +281,11 @@ function inputProcedure(
 ) {
   const outputArea = getActiveOutputAreaRef();
   outputArea?.activateInputField();
+  setIsWaitingForInput?.(true);
   outputArea
     ?.getInput()
     .then((value: string) => {
+      setIsWaitingForInput?.(false);
       storeDbEvent(EventName.CodeExecutionInput, data.executionMetadata, {
         executionUUID: data.executionMetadata.executionUUID,
         seq: data.seq,
@@ -292,6 +295,7 @@ function inputProcedure(
       notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
     })
     .catch((err) => {
+      setIsWaitingForInput?.(false);
       captureErrorWithSentry(err, {
         pyodide_function: 'input',
       });
@@ -411,6 +415,7 @@ export async function execute(
 export function restartWorker(): Promise<void> {
   return new Promise((resolve) => {
     getActiveOutputAreaRef()?.deactivatePossibleInputField();
+    setIsWaitingForInput?.(false);
     pendingResults.clear();
     pyodideWorker?.terminate();
     initPyodide(ffiImpl!).then(resolve);
@@ -420,10 +425,12 @@ export function restartWorker(): Promise<void> {
 export function interruptExecution() {
   interruptBuffer![0] = 2; // 2 for SIGINT
   getActiveOutputAreaRef()?.deactivatePossibleInputField();
+  setIsWaitingForInput?.(false);
 }
 
 interface PyodideWorkerClientInterface {
   isReady: boolean;
+  isWaitingForInput: boolean;
   execute: (
     sources: string[],
     idx: number,
@@ -441,6 +448,7 @@ interface PyodideWorkerClientInterface {
 export const PyodideWorkerClientContext =
   createContext<PyodideWorkerClientInterface>({
     isReady: false,
+    isWaitingForInput: false,
     execute,
     interruptExecution,
     restart: restartWorker,
@@ -453,6 +461,7 @@ export function PyodideWorkerClientProvider({
 }) {
   const { metadata } = useLocalProfile();
   const [isReady, setReady] = useState(false);
+  const [isWaitingForInput, localSetIsWaitingForInput] = useState(false);
 
   const restart = async () => {
     setReady(false);
@@ -469,7 +478,10 @@ export function PyodideWorkerClientProvider({
     if (typeof SharedArrayBuffer !== 'undefined') {
       initFfi()
         .then(initPyodide)
-        .then(() => setReady(true));
+        .then(() => {
+          setReady(true);
+          setIsWaitingForInput = localSetIsWaitingForInput;
+        });
     }
   }, []);
 
@@ -477,6 +489,7 @@ export function PyodideWorkerClientProvider({
     <PyodideWorkerClientContext
       value={{
         isReady,
+        isWaitingForInput,
         execute,
         interruptExecution,
         restart,
