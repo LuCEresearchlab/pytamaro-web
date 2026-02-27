@@ -75,7 +75,7 @@ export interface BareboneToolboxFunction {
 function driverSource(num_cells: number) {
   return `
 from pathlib import Path
-from os import chdir, getcwd, path
+from os import chdir, getcwd
 from shutil import rmtree
 from sys import stderr, stdout
 from pytamaro_js_ffi import set_active_cell
