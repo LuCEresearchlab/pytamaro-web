@@ -72,8 +72,7 @@ export default function InputArea({
               border: `1px dashed ${theme.palette.grey[600]}`,
               margin: 0,
               paddingLeft: theme.spacing(0.5),
-              paddingRight: theme.spacing(3),
-              minWidth: '5ch',
+              paddingRight: theme.spacing(0.5 + (editable ? 6 : 0)),
             }}
             contentEditable={editable ? 'plaintext-only' : false}
             onInput={() => {
