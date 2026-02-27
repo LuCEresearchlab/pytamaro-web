@@ -71,6 +71,7 @@ export default function InputArea({
             style={{
               border: `1px dashed ${theme.palette.grey[600]}`,
               margin: 0,
+              marginLeft: `calc(-1 * (1px + ${theme.spacing(0.5)}))`, // 1px for the border, 0.5 to compensate the left padding
               paddingLeft: theme.spacing(0.5),
               paddingRight: theme.spacing(0.5 + (editable ? 6 : 0)),
             }}
