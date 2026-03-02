@@ -29,6 +29,7 @@ export default function HourOfCodeCastle({
         <ExecutionOutputArea
           executionResponse={executionResponse}
           setOutputAreaRef={() => null}
+          setIsWaitingForInput={() => {}}
         />
       )}
       <DownloadCodeButton

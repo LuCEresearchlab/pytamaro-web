@@ -91,6 +91,8 @@ export default function CodeCell({
     isExecutionNominal(executionResponse) &&
     (executionResponse.stdout + executionResponse.stderr).length === 0;
 
+  const [isWaitingForInput, setIsWaitingForInput] = useState(false);
+
   const analysisResult = useAnalysisResult(pythonAnalyzer, cellIdx);
 
   const extraPythonFilesAnalysisResults = useMemo(() => {
@@ -227,6 +229,7 @@ export default function CodeCell({
             executing={executing}
             executionFinished={executionFinished}
             executionError={executionError}
+            isWaitingForInput={isWaitingForInput}
           />
           <Stack direction='row' sx={{ marginLeft: 'auto' }}>
             {extraActions}
@@ -258,6 +261,7 @@ export default function CodeCell({
                   firstLineNumber={firstLineNumber}
                   dimmed={!codeCellExecutionState.outputSynced}
                   setOutputAreaRef={(node) => setOutputAreaRef(cellIdx, node)}
+                  setIsWaitingForInput={setIsWaitingForInput}
                 />
               )}
             </StaleOutputBadge>

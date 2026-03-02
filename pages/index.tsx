@@ -240,6 +240,7 @@ function PythonCodeCard() {
           type: 'success',
         }}
         setOutputAreaRef={() => {}}
+        setIsWaitingForInput={() => {}}
         sx={{
           border: 0,
           height: '100%',

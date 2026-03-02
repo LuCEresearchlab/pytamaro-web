@@ -47,12 +47,14 @@ export function OutputArea({
   sx = {},
   preStyle = {},
   ref = undefined,
+  setIsWaitingForInput = () => {},
 }: {
   data: string;
   disabled?: boolean;
   sx?: CSSProperties;
   preStyle?: CSSProperties;
   ref?: Ref<OutputAreaRef>;
+  setIsWaitingForInput?: (isWaiting: boolean) => void;
 }) {
   const resolveInputPromiseRef = useRef<((value: string) => void) | undefined>(
     undefined,
@@ -67,12 +69,14 @@ export function OutputArea({
       },
       activateInputField() {
         setInputFieldActive(true);
+        setIsWaitingForInput(true);
       },
       deactivatePossibleInputField() {
         setInputFieldActive(false);
+        setIsWaitingForInput(false);
       },
     };
-  }, []);
+  }, [setIsWaitingForInput]);
   const pytamaroDataUriRegex =
     /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
   const inputArea = (

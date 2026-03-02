@@ -52,17 +52,17 @@ export default function RunButton({
   executing,
   executionFinished,
   executionError,
+  isWaitingForInput,
 }: {
   enabled: boolean;
   onExecutionRequested: () => Promise<void>;
   executing: boolean;
   executionFinished: boolean;
   executionError: boolean;
+  isWaitingForInput: boolean;
 }) {
   const { t } = useLocalTranslation(['common']);
-  const { interruptExecution, isWaitingForInput } = useContext(
-    PyodideWorkerClientContext,
-  );
+  const { interruptExecution } = useContext(PyodideWorkerClientContext);
 
   return (
     <Stack direction='row' spacing={2} alignItems='center'>

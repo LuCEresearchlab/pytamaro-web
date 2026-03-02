@@ -127,12 +127,14 @@ function PreviousCellsErrorAlert({
 export default function ExecutionOutputArea({
   executionResponse,
   setOutputAreaRef,
+  setIsWaitingForInput,
   firstLineNumber = 1,
   dimmed = false,
   sx = {},
 }: {
   executionResponse: ExecutionResponse;
   setOutputAreaRef: (node: OutputAreaRef | null | undefined) => void;
+  setIsWaitingForInput: (isWaiting: boolean) => void;
   firstLineNumber?: number;
   dimmed?: boolean;
   sx?: CSSProperties;
@@ -167,6 +169,7 @@ export default function ExecutionOutputArea({
                 data={stdout}
                 disabled={dimmed}
                 ref={setOutputAreaRef}
+                setIsWaitingForInput={setIsWaitingForInput}
               />
             </Box>
           )}

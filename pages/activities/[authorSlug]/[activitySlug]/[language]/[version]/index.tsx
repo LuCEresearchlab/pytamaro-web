@@ -78,11 +78,14 @@ function sanitizeIframes() {
       // eslint-disable-next-line no-param-reassign
       iframe.src = iframe.src;
     } else {
-      // If the browser does not support credentialless iframes, replace the iframe with a message and a link to open it in a new tab.
-      // Unfortunately, it's hard to localize this message because we are doing manual DOM manipulation here, outside React.
+      // If the browser does not support credentialless iframes, replace the
+      // iframe with a message and a link to open it in a new tab.
+      // Unfortunately, it's hard to localize this message because we are doing
+      // manual DOM manipulation here, outside React.
       const altElem = document.createElement('p');
       altElem.innerHTML =
-        '<i>Some external content cannot be displayed directly on this page. View it on a <a href=' +
+        '<i>Some external content cannot be displayed directly on this page. ' +
+        'View it on a <a href=' +
         iframe.src +
         ' target="_blank" rel="noopener noreferrer">separate page</a>.</i>';
       iframe.replaceWith(altElem);
