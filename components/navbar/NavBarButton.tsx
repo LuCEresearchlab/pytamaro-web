@@ -12,11 +12,11 @@ export default function NavBarButton({
   onClick?: IconButtonProps['onClick'];
   disabled?: boolean;
 }) {
-  // <div> and <span> are necessary for Tooltip to work properly in all cases
+  // <div>s are necessary for Tooltip to work properly in all cases
   return (
     <div>
       <Tooltip arrow title={label}>
-        <span>
+        <div>
           <IconButton
             sx={{
               color: disabled
@@ -28,7 +28,7 @@ export default function NavBarButton({
           >
             {children}
           </IconButton>
-        </span>
+        </div>
       </Tooltip>
     </div>
   );

@@ -12,11 +12,11 @@ export default function RapidPlaygroundButton() {
     <Popover placement='bottom'>
       <PopoverTrigger>
         <Tooltip arrow title={t('rapidPlayground')}>
-          <span>
+          <div>
             <IconButton sx={{ color: theme.palette.text.primary }}>
               <Code />
             </IconButton>
-          </span>
+          </div>
         </Tooltip>
       </PopoverTrigger>
       <PopoverContent>

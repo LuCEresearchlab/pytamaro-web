@@ -62,20 +62,29 @@ export default function RunButton({
   isWaitingForInput: boolean;
 }) {
   const { t } = useLocalTranslation(['common']);
-  const { interruptExecution } = useContext(PyodideWorkerClientContext);
+  const { isExecuting, interruptExecution } = useContext(
+    PyodideWorkerClientContext,
+  );
+
+  const tooltipMessage = isExecuting ? t('executionInProgress') : undefined;
 
   return (
     <Stack direction='row' spacing={2} alignItems='center'>
-      <Button
-        onClick={executing ? interruptExecution : onExecutionRequested}
-        endIcon={executing ? <StopCircle /> : <PlayCircleFilled />}
-        variant='contained'
-        color={executing ? 'warning' : 'primary'}
-        disabled={!enabled}
-        className='run-button'
-      >
-        <span>{t(executing ? 'stopExecution' : 'runCode')}</span>
-      </Button>
+      <Tooltip title={tooltipMessage}>
+        {/* https://mui.com/material-ui/react-tooltip/#disabled-elements */}
+        <div>
+          <Button
+            onClick={executing ? interruptExecution : onExecutionRequested}
+            endIcon={executing ? <StopCircle /> : <PlayCircleFilled />}
+            variant='contained'
+            color={executing ? 'warning' : 'primary'}
+            disabled={!enabled}
+            className='run-button'
+          >
+            <span>{t(executing ? 'stopExecution' : 'runCode')}</span>
+          </Button>
+        </div>
+      </Tooltip>
       <StatusIndicator
         executing={executing}
         executionFinished={executionFinished}

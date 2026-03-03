@@ -170,5 +170,6 @@
         "cse": "New Mode",
         "sse": "Legacy Mode",
         "info": "The new mode runs on your browser, is faster, and allows using input. For a limited time, you can use the legacy mode if you experience issues."
-    }
+    },
+    "executionInProgress": "Code execution in progress."
 }

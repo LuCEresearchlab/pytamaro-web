@@ -168,5 +168,6 @@
         "cse": "Neue Modus",
         "sse": "Legacy-Modus",
         "info": "Der neue Modus läuft in Deinem Browser, ist schneller und ermöglicht die Verwendung von input. Für eine begrenzte Zeit kannst Du den Legacy-Modus verwenden, wenn Du Probleme hast."
-    }
+    },
+    "executionInProgress": "Codeausführung läuft."
 }
