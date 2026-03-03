@@ -23,7 +23,7 @@ export default function PreElement({
         );
         const chunks = line.split(inputRegex);
         return (
-          <span style={{ display: 'block' }} key={idx}>
+          <span style={{ display: 'flex', alignItems: 'baseline' }} key={idx}>
             {chunks.map((chunk, chunkIdx) => {
               if (inputRegex.test(chunk)) {
                 const inputContent = chunk.slice(
