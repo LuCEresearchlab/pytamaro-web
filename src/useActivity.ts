@@ -103,7 +103,9 @@ export function useActivity(
   const variantId = activityVariantId(activityVariant);
   const variantMetadata = metadata.activities.find((a) => a.id === variantId);
 
-  const { execute, restart } = useContext(PyodideWorkerClientContext);
+  const { isReady, isExecuting, execute, restart } = useContext(
+    PyodideWorkerClientContext,
+  );
 
   const initialCodeExecutionStates = () =>
     Array(initialCodeCells.length)
@@ -314,6 +316,19 @@ export function useActivity(
     executionUUID: string,
     getOutputRef: (execIdx: number) => OutputAreaRef | null,
   ) => {
+    if (!isReady) {
+      // eslint-disable-next-line no-console
+      console.error('Aborting execution request. Not ready');
+      return;
+    }
+    if (isExecuting) {
+      // eslint-disable-next-line no-console
+      console.error(
+        'Aborting execution request. Another execution is in progress',
+      );
+      return;
+    }
+
     const sources = sourcesUpTo(idx);
     const toolboxFunctions = await retrieveToolboxSources(idx, sources);
 

@@ -52,7 +52,7 @@ const pendingResults = new Map<string, ClientResult>();
 // never be resolved (because the worker had been killed).
 // Unfortunately the PQueue class itself does not offer any proper way to
 // cancel "running events", so we have to let the GC do the dirty job for us.
-let executionQueue = null;
+let executionQueue: PQueue | null = null;
 
 /**
  * Notify the worker that a result is ready in the shared buffer.
@@ -424,6 +424,7 @@ export function interruptExecution() {
 
 interface PyodideWorkerClientInterface {
   isReady: boolean;
+  isExecuting: boolean;
   execute: (
     sources: string[],
     idx: number,
@@ -441,6 +442,7 @@ interface PyodideWorkerClientInterface {
 export const PyodideWorkerClientContext =
   createContext<PyodideWorkerClientInterface>({
     isReady: false,
+    isExecuting: false,
     execute,
     interruptExecution,
     restart: restartWorker,
@@ -453,6 +455,7 @@ export function PyodideWorkerClientProvider({
 }) {
   const { metadata } = useLocalProfile();
   const [isReady, setReady] = useState(false);
+  const [isExecuting, setIsExecuting] = useState(false);
 
   const restart = async () => {
     setReady(false);
@@ -466,17 +469,27 @@ export function PyodideWorkerClientProvider({
   }, [metadata, isReady]);
 
   useEffect(() => {
-    if (typeof SharedArrayBuffer !== 'undefined') {
-      initFfi()
-        .then(initPyodide)
-        .then(() => setReady(true));
+    if (typeof SharedArrayBuffer === 'undefined') {
+      return;
     }
+    initFfi()
+      .then(initPyodide)
+      .then(() => {
+        executionQueue?.addListener('empty', () => {
+          setIsExecuting(false);
+        });
+        executionQueue?.addListener('add', () => {
+          setIsExecuting(true);
+        });
+        setReady(true);
+      });
   }, []);
 
   return (
     <PyodideWorkerClientContext
       value={{
         isReady,
+        isExecuting,
         execute,
         interruptExecution,
         restart,

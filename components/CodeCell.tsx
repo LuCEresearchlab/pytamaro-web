@@ -109,6 +109,12 @@ export default function CodeCell({
 
   const confirm = useConfirm();
 
+  const runButtonEnabled =
+    // Global {en,dis}able, or...
+    runEnabled ||
+    // ...this cell is being executed
+    (isExecutionNominal(executionResponse) && !executionResponse.completed);
+
   const isHydrated = useIsHydrated();
 
   const [
@@ -211,7 +217,7 @@ export default function CodeCell({
             currentSource={currentSource}
             onChange={onSourceChanged}
             onExecutionRequested={handleExecutionRequest}
-            executionAllowed={runEnabled}
+            executionAllowed={runButtonEnabled}
             executionFinished={executionFinished}
             firstLineNumber={firstLineNumber}
             readOnly={readOnly}
@@ -225,7 +231,7 @@ export default function CodeCell({
         <CardActions disableSpacing sx={{ paddingLeft: 2, display: 'flex' }}>
           <RunButton
             onExecutionRequested={handleExecutionRequest}
-            enabled={runEnabled}
+            enabled={runButtonEnabled}
             executing={executing}
             executionFinished={executionFinished}
             executionError={executionError}

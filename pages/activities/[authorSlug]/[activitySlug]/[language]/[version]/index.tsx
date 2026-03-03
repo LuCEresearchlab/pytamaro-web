@@ -236,7 +236,9 @@ export default function NotebookPage({
     };
   }, [isMounted, cells]);
 
-  const { isReady: execReady } = useContext(PyodideWorkerClientContext);
+  const { isReady: isExecReady, isExecuting } = useContext(
+    PyodideWorkerClientContext,
+  );
 
   return (
     <div key={activityVariantId(activityVariant)}>
@@ -286,7 +288,7 @@ export default function NotebookPage({
               cellsRef={cellsRef}
               resetCounter={resetCounter}
               originalIdxToCodeCellIdx={originalIdxToCodeCellIdx}
-              runEnabled={execReady}
+              runEnabled={isExecReady && !isExecuting}
             />
             <Container maxWidth='md'>
               {!isSpecialActivity(activityVariant) && (
