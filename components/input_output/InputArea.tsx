@@ -1,16 +1,15 @@
-import { Keyboard } from '@mui/icons-material';
-import { Badge, Box, Tooltip } from '@mui/material';
+import { Box, Tooltip } from '@mui/material';
 import { useEffect, useRef } from 'react';
 import theme from '../../src/theme';
+
+const COMPACT_INPUT_AREA_BACKGROUND_COLOR = theme.palette.grey[300];
 
 export default function InputArea({
   initialContent = null,
   onSubmit = undefined,
-  forceBadge = false,
 }: {
   initialContent?: string | null;
   onSubmit?: (input: string) => void | undefined;
-  forceBadge?: boolean;
 }) {
   const editable = onSubmit !== undefined;
   const inputRef = useRef<HTMLPreElement | null>(null);
@@ -30,76 +29,41 @@ export default function InputArea({
         placement={editable ? 'bottom' : 'right'}
         title={editable ? 'Type your input and press Enter' : 'User input'}
       >
-        <Badge
-          sx={{
-            verticalAlign: 'baseline',
-            '& .MuiBadge-badge': {
-              bgcolor: theme.palette.grey[600],
-              color: theme.palette.common.white,
-              right: 0,
-              bottom: 2,
-              paddingLeft: 0.75,
-              paddingRight: 0.75,
-              display: forceBadge || editable ? 'inline-flex' : 'none',
-            },
+        <pre
+          ref={inputRef}
+          style={{
+            outline: 'none',
+            borderBottom:
+              '1px solid ' +
+              (editable ? theme.palette.primary.main : theme.palette.grey[500]),
+            backgroundColor: COMPACT_INPUT_AREA_BACKGROUND_COLOR,
+            margin: 0,
+            minWidth: editable ? '3ch' : undefined,
           }}
-          badgeContent={
-            <Box
-              sx={{
-                padding: 0.25,
-              }}
-            >
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 1,
-                  width: 24,
-                  height: 14,
-                  zIndex: 0,
-                }}
-              />
-              <Keyboard
-                fontSize='small'
-                sx={{ position: 'relative', zIndex: 1 }}
-              />
-            </Box>
-          }
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        >
-          <pre
-            ref={inputRef}
-            style={{
-              border: `1px dashed ${theme.palette.grey[600]}`,
-              margin: 0,
-              marginLeft: `calc(-1 * (1px + ${theme.spacing(0.5)}))`, // 1px for the border, 0.5 to compensate the left padding
-              paddingLeft: theme.spacing(0.5),
-              paddingRight: theme.spacing(0.5 + (editable ? 6 : 0)),
-            }}
-            contentEditable={editable ? 'plaintext-only' : false}
-            onInput={() => {
-              if (inputRef.current) {
-                const text = inputRef.current.innerText;
-                const eolIndex = text.indexOf('\n');
-                if (eolIndex !== -1) {
-                  inputRef.current.innerText = text.slice(0, eolIndex);
-                }
+          contentEditable={editable ? 'plaintext-only' : false}
+          onInput={() => {
+            if (inputRef.current) {
+              const text = inputRef.current.innerText;
+              const eolIndex = text.indexOf('\n');
+              if (eolIndex !== -1) {
+                inputRef.current.innerText = text.slice(0, eolIndex);
               }
-            }}
-            onKeyDown={
-              editable
-                ? (e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      const inputText = e.currentTarget.innerText;
-                      onSubmit(inputText);
-                    }
-                  }
-                : undefined
             }
-          >
-            {shownContent}
-          </pre>
-        </Badge>
+          }}
+          onKeyDown={
+            editable
+              ? (e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const inputText = e.currentTarget.innerText;
+                    onSubmit(inputText);
+                  }
+                }
+              : undefined
+          }
+        >
+          {shownContent}
+        </pre>
       </Tooltip>
     </Box>
   );
