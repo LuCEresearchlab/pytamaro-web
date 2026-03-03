@@ -296,6 +296,9 @@ function inputProcedure(
         pyodide_function: 'input',
       });
       notifyWorkerResultFailure(uuid);
+    })
+    .finally(() => {
+      outputArea?.deactivatePossibleInputField();
     });
 }
 
