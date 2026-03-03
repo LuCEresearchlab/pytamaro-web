@@ -173,5 +173,8 @@
         "sse": "Modalità legacy",
         "info": "La nuova modalità esegue sul tuo browser, è più veloce e permette di usare input. Per un periodo limitato, puoi usare la modalità legacy se riscontri problemi."
     },
-    "executionInProgress": "Esecuzione di codice in corso."
+    "executionDisabled": {
+        "notReady": "Caricamento dell'ambiente Python in corso",
+        "anotherInProgress": "Un'altra esecuzione è in corso"
+    }
 }

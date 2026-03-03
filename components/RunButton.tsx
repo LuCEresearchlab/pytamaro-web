@@ -62,15 +62,23 @@ export default function RunButton({
   isWaitingForInput: boolean;
 }) {
   const { t } = useLocalTranslation(['common']);
-  const { isExecuting, interruptExecution } = useContext(
+  const { isReady, isExecuting, interruptExecution } = useContext(
     PyodideWorkerClientContext,
   );
 
-  const tooltipMessage = isExecuting ? t('executionInProgress') : undefined;
+  let tooltipMessage = undefined;
+  if (!enabled) {
+    if (!isReady) {
+      tooltipMessage = t('executionDisabled.notReady');
+    } else if (isExecuting) {
+      tooltipMessage = t('executionDisabled.anotherInProgress');
+    }
+    // Maybe there are other cases here for which we may want to display a reason for the disabled
+  }
 
   return (
     <Stack direction='row' spacing={2} alignItems='center'>
-      <Tooltip title={tooltipMessage}>
+      <Tooltip arrow placement='left' title={tooltipMessage}>
         {/* https://mui.com/material-ui/react-tooltip/#disabled-elements */}
         <div>
           <Button
