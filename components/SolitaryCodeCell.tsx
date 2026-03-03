@@ -23,7 +23,7 @@ export default function SolitaryCodeCell({
   activityVariant,
   resetCounter = 0,
   readOnly = false,
-  runEnabled = true,
+  runEnabled = false,
   requireNewExecution = false,
   allowToolboxSave = false,
   postSourceChange = () => {},

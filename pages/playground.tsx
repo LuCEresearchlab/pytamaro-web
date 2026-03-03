@@ -290,6 +290,8 @@ export default function Playground({
 
   const { metadata } = useLocalProfile();
 
+  // We don't care about isExecuting here because there's only one code cell
+  // that we need to take care of
   const { isReady: execReady } = useContext(PyodideWorkerClientContext);
 
   return (

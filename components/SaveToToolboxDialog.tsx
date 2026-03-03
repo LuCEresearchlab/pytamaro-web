@@ -18,7 +18,13 @@ import {
   Typography,
 } from '@mui/material';
 import { Trans } from 'next-i18next';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
 import {
   ExecutionResponse,
@@ -29,6 +35,7 @@ import { CodeCellState, ToolboxFunction } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
+import { PyodideWorkerClientContext } from '../src/pyodide-execution/pyodideWorkerClient';
 import { PythonFunction } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
@@ -201,6 +208,10 @@ export default function SaveToToolboxDialog({
   const getExtraToolboxFunction = () => {
     return newToolboxFunction;
   };
+
+  const { isReady: isExecReady, isExecuting } = useContext(
+    PyodideWorkerClientContext,
+  );
 
   const implementationPythonAnalyzer = usePythonAnalyzer();
   const implementationAnalysisResult = useAnalysisResult(
@@ -428,6 +439,7 @@ export default function SaveToToolboxDialog({
                   <SolitaryCodeCell
                     activity={activity}
                     activityVariant={activityVariant}
+                    runEnabled={isExecReady && !isExecuting}
                     requireNewExecution={invalidUsageExecution}
                     postSourceChange={() => {
                       setUsageEdited(true);
