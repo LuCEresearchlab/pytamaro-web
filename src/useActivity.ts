@@ -27,7 +27,7 @@ import {
   getDefaultActivityVariantMetadata,
 } from './localStorage/schema';
 import useLocalToolbox from './localStorage/useLocalToolbox';
-import { PyodideWorkerClientContext } from './pyodide-execution/pyodideWorkerClient';
+import { ExecutorContext } from './pyodide-execution/pyodideWorkerClient';
 import {
   ActivityVariant,
   PythonFile,
@@ -103,9 +103,9 @@ export function useActivity(
   const variantId = activityVariantId(activityVariant);
   const variantMetadata = metadata.activities.find((a) => a.id === variantId);
 
-  const { isReady, isExecuting, execute, restart } = useContext(
-    PyodideWorkerClientContext,
-  );
+  const { isReady, activeExecutionInfo, execute, restart } =
+    useContext(ExecutorContext);
+  const isExecuting = activeExecutionInfo !== null;
 
   const initialCodeExecutionStates = () =>
     Array(initialCodeCells.length)

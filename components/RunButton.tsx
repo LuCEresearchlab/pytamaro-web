@@ -5,7 +5,7 @@ import PlayCircleFilled from '@mui/icons-material/PlayCircleFilled';
 import { Button, CircularProgress, Stack, Tooltip } from '@mui/material';
 import { useContext } from 'react';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import { PyodideWorkerClientContext } from '../src/pyodide-execution/pyodideWorkerClient';
+import { ExecutorContext } from '../src/pyodide-execution/pyodideWorkerClient';
 
 function StatusIndicator({
   executing,
@@ -62,9 +62,10 @@ export default function RunButton({
   isWaitingForInput: boolean;
 }) {
   const { t } = useLocalTranslation(['common']);
-  const { isReady, isExecuting, interruptExecution } = useContext(
-    PyodideWorkerClientContext,
-  );
+  const { isReady, activeExecutionInfo, interruptExecution } =
+    useContext(ExecutorContext);
+
+  const isExecuting = activeExecutionInfo !== null;
 
   let tooltipMessage = undefined;
   if (!enabled) {

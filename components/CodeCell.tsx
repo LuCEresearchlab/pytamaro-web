@@ -9,7 +9,7 @@ import {
   Stack,
 } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import {
   isExecutionError,
   isExecutionFailed,
@@ -18,6 +18,7 @@ import {
 import { CodeCellExecutionState } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
+import { ExecutorContext } from '../src/pyodide-execution/pyodideWorkerClient';
 import { PythonName } from '../src/python-analyzer/python_analyzer';
 import {
   ActivityVariant,
@@ -80,7 +81,7 @@ export default function CodeCell({
 }) {
   const { t } = useLocalTranslation(['common']);
   const { metadata } = useLocalProfile();
-  const { executionResponse } = codeCellExecutionState;
+  const { executionResponse, executionUUID } = codeCellExecutionState;
   const executionError =
     isExecutionError(executionResponse) || isExecutionFailed(executionResponse);
   const executing = codeCellExecutionState.executionUUID !== undefined;
@@ -109,11 +110,14 @@ export default function CodeCell({
 
   const confirm = useConfirm();
 
+  const { activeExecutionInfo } = useContext(ExecutorContext);
+
   const runButtonEnabled =
     // Global {en,dis}able, or...
     runEnabled ||
     // ...this cell is being executed
-    (isExecutionNominal(executionResponse) && !executionResponse.completed);
+    (executionUUID === activeExecutionInfo?.executionUUID &&
+      cellIdx === activeExecutionInfo?.activeCellIdx);
 
   const isHydrated = useIsHydrated();
 

@@ -35,7 +35,7 @@ import { CodeCellState, ToolboxFunction } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import { PyodideWorkerClientContext } from '../src/pyodide-execution/pyodideWorkerClient';
+import { ExecutorContext } from '../src/pyodide-execution/pyodideWorkerClient';
 import { PythonFunction } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
@@ -209,9 +209,9 @@ export default function SaveToToolboxDialog({
     return newToolboxFunction;
   };
 
-  const { isReady: isExecReady, isExecuting } = useContext(
-    PyodideWorkerClientContext,
-  );
+  const { isReady: isExecReady, activeExecutionInfo } =
+    useContext(ExecutorContext);
+  const isExecuting = activeExecutionInfo !== null;
 
   const implementationPythonAnalyzer = usePythonAnalyzer();
   const implementationAnalysisResult = useAnalysisResult(

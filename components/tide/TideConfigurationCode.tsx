@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef } from 'react';
 import { allKinds } from '../../src/documentation';
 import { ExecutionMetadata } from '../../src/pyodide-execution/messagesTypes';
-import { PyodideWorkerClientContext } from '../../src/pyodide-execution/pyodideWorkerClient';
+import { ExecutorContext } from '../../src/pyodide-execution/pyodideWorkerClient';
 import { JudiciousModule } from '../../src/schemas/documentation';
 import { ConfigurationState } from '../../src/tide/configuration';
 import { evaluation, synchronous_phases } from '../../src/tide/evaluation';
@@ -32,9 +32,7 @@ export default function TideConfigurationCode({
 
   const configuration_timeout = useRef(undefined as NodeJS.Timeout | undefined);
   const cached_modules = useRef([] as string[]);
-  const { execute, isReady: execReady } = useContext(
-    PyodideWorkerClientContext,
-  );
+  const { execute, isReady: execReady } = useContext(ExecutorContext);
 
   const extract_names = useCallback(
     async (configuration_code: string) => {

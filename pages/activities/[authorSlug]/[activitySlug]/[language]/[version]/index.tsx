@@ -43,7 +43,7 @@ import { CodeCellState } from '../../../../../../src/localStorage/schema';
 import useLocalProfile from '../../../../../../src/localStorage/useLocalProfile';
 import useMonacoColorizer from '../../../../../../src/monacoColorizer';
 import getNotebookContent from '../../../../../../src/notebook';
-import { PyodideWorkerClientContext } from '../../../../../../src/pyodide-execution/pyodideWorkerClient';
+import { ExecutorContext } from '../../../../../../src/pyodide-execution/pyodideWorkerClient';
 import {
   Activity,
   ActivityVariant,
@@ -236,9 +236,9 @@ export default function NotebookPage({
     };
   }, [isMounted, cells]);
 
-  const { isReady: isExecReady, isExecuting } = useContext(
-    PyodideWorkerClientContext,
-  );
+  const { isReady: isExecReady, activeExecutionInfo } =
+    useContext(ExecutorContext);
+  const isExecuting = activeExecutionInfo !== null;
 
   return (
     <div key={activityVariantId(activityVariant)}>

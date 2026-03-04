@@ -25,7 +25,7 @@ import '@fontsource/fira-sans/500.css';
 import '@fontsource/fira-sans/700.css';
 // Icon font
 import '@fontsource/material-icons';
-import { PyodideWorkerClientProvider } from '../src/pyodide-execution/pyodideWorkerClient';
+import { ExecutorProvider } from '../src/pyodide-execution/pyodideWorkerClient';
 
 function MyApp(props: AppProps) {
   const { Component, pageProps } = props;
@@ -37,7 +37,7 @@ function MyApp(props: AppProps) {
         <title>PyTamaro</title>
         <meta name='viewport' content='initial-scale=1, width=device-width' />
       </Head>
-      <PyodideWorkerClientProvider>
+      <ExecutorProvider>
         <ThemeProvider theme={theme}>
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
@@ -65,7 +65,7 @@ function MyApp(props: AppProps) {
             </ConfirmProvider>
           </PlausibleProvider>
         </ThemeProvider>
-      </PyodideWorkerClientProvider>
+      </ExecutorProvider>
     </AppCacheProvider>
   );
 }

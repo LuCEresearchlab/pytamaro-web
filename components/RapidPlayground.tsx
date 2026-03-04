@@ -2,7 +2,7 @@ import TipsAndUpdates from '@mui/icons-material/TipsAndUpdates';
 import { Alert, Box } from '@mui/material';
 import { useContext } from 'react';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
-import { PyodideWorkerClientContext } from '../src/pyodide-execution/pyodideWorkerClient';
+import { ExecutorContext } from '../src/pyodide-execution/pyodideWorkerClient';
 import { rapidPlaygroundActivityVariant } from '../src/specialActivities';
 import SolitaryCodeCell, { emptySingleCell } from './SolitaryCodeCell';
 
@@ -13,7 +13,8 @@ export default function RapidPlayground() {
     rapidPlaygroundActivityVariant,
   );
 
-  const { isReady, isExecuting } = useContext(PyodideWorkerClientContext);
+  const { isReady, activeExecutionInfo } = useContext(ExecutorContext);
+  const isExecuting = activeExecutionInfo !== null;
 
   return (
     <Box>
