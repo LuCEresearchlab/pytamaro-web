@@ -11,6 +11,7 @@ import {
   toTideFunction,
 } from '../../src/tide/judiciours_to_tide';
 import { ImportedDefinition } from '../../src/tide/language/definitions';
+import { setExecute } from '../../src/tide/store';
 
 // Do not record events from TIDE internals
 export const dummyExecutionMetadata: ExecutionMetadata = {
@@ -123,12 +124,21 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
       });
 
       const imported = await evaluation(
+        execute,
         synchronous_phases({
           imported_definitions: sorted,
           expressions: [],
           local_definitions: [],
         }),
       ).then((v) => v.imported_definitions);
+
+      // This entire TIDE thing is so messed up it's beyond salvation.
+      // I won't even try to make it right at this point.
+      // It is not maintainable.
+      // Some day TIDE will have to be properly rewritten.
+      // This hack has to happen right now, for it is here where the stars align
+      // (it was told to me in a dream).
+      setExecute(execute);
 
       setConfiguration({
         imported_definitions: imported,

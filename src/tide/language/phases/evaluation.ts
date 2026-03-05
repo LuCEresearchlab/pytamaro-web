@@ -1,6 +1,9 @@
 import { ProgramState } from '.';
 import { dummyExecutionMetadata } from '../../../../components/tide/TideConfigurationCode';
-import { execute } from '../../../pyodide-execution/pyodideWorkerClient';
+import { ExecutionResponse as ExecutorExecutionResponse } from '../../../codeExecution';
+import { ToolboxFunction } from '../../../localStorage/schema';
+import { ExecutionMetadata } from '../../../pyodide-execution/messagesTypes';
+import { PythonFile } from '../../../schemas/activitySchema';
 import { TamaroCard } from '../cards';
 import {
   Definition,
@@ -55,7 +58,14 @@ type DestinationState<U, Tlocal, Timport> = ProgramState<
   'evaluated'
 >;
 
-export async function extract_data(
+async function extract_data(
+  execute: (
+    sources: string[],
+    idx: number,
+    toolboxFunctions: ToolboxFunction[],
+    extraPythonFiles: PythonFile[],
+    executionMetadata: ExecutionMetadata,
+  ) => Promise<ExecutorExecutionResponse>,
   code_repr: CodeRepresentation,
   type: ValueType,
   definitions: Definition<unknown, unknown, unknown, 'code_element'>[],
@@ -134,6 +144,13 @@ export async function extract_data(
 }
 
 export default async function evaluated_phase<U, Tlocal, Timport>(
+  execute: (
+    sources: string[],
+    idx: number,
+    toolboxFunctions: ToolboxFunction[],
+    extraPythonFiles: PythonFile[],
+    executionMetadata: ExecutionMetadata,
+  ) => Promise<ExecutorExecutionResponse>,
   base: SourceState<U, Tlocal, Timport>,
 ): Promise<DestinationState<U, Tlocal, Timport>> {
   const definitions = base.imported_definitions
@@ -190,6 +207,7 @@ export default async function evaluated_phase<U, Tlocal, Timport>(
         }
 
         const data = await extract_data(
+          execute,
           exp.code_element,
           exp.type,
           definitions,
@@ -213,6 +231,7 @@ export default async function evaluated_phase<U, Tlocal, Timport>(
       case 'constant_use': {
         if ('error_phase' in exp) return exp;
         const data = await extract_data(
+          execute,
           exp.code_element,
           exp.type,
           definitions,
@@ -234,6 +253,7 @@ export default async function evaluated_phase<U, Tlocal, Timport>(
       case 'literal': {
         if ('error_phase' in exp) return exp;
         const data = await extract_data(
+          execute,
           exp.code_element,
           exp.type,
           definitions,
