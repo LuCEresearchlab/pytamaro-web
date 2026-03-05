@@ -99,12 +99,12 @@ def run_all():
         exec(code, globals_dict)
 
     for idx in range(0, ${num_cells}):
+      set_active_cell(idx)
+      run_single_cell(f"${CELL_FILE}{idx}")
       if stdout is not None:
         stdout.flush()
       if stderr is not None:
         stderr.flush()
-      set_active_cell(idx)
-      run_single_cell(f"${CELL_FILE}{idx}")
   finally:
     cwd = Path(getcwd())
     chdir(cwd.parent.absolute())
