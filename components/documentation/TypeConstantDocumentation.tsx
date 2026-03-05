@@ -79,7 +79,7 @@ export default function TypeConstantDocumentation({
           <span {...hoverProps(nameId(), hoverElement, setHoverElement)}>
             <CodeElement bold>{name}</CodeElement>
           </span>
-          {isConstant && docsMetadata.showTypes && (
+          {isConstant && docsMetadata.showTypes && element.type && (
             <>
               <CodeElement>:</CodeElement>
               <CodeElement>&nbsp;</CodeElement>
