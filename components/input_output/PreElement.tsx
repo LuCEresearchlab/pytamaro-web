@@ -1,5 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 import { CSSProperties, ReactElement } from 'react';
+import { withEOL } from '../../src/sourceUtils';
 import InputArea from './InputArea';
 import { INPUT_BEGIN, INPUT_END } from './IoMarkers';
 import { OUTPUT_ELEMENT_STYLE } from './OutputArea';
@@ -47,7 +48,7 @@ export default function PreElement({
                       ...style,
                     }}
                   >
-                    {chunk}
+                    {withEOL(chunk)}
                   </pre>
                 );
               }

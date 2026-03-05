@@ -22,3 +22,7 @@ export function splitLinesWithoutPossibleTrailingNewline(source: string) {
     : source;
   return splitLines(sourceWithoutTrailingNewline);
 }
+
+export function withEOL(line: string) {
+  return line + EOL;
+}
