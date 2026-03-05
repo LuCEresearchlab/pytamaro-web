@@ -9,11 +9,13 @@ import { ExecutorContext } from '../src/pyodide-execution/pyodideWorkerClient';
 
 function StatusIndicator({
   executing,
+  isExecutingPreviousCell,
   executionFinished,
   executionError,
   isWaitingForInput,
 }: {
   executing: boolean;
+  isExecutingPreviousCell: boolean;
   executionFinished: boolean;
   executionError: boolean;
   isWaitingForInput: boolean;
@@ -26,9 +28,18 @@ function StatusIndicator({
       tooltipTitle = t('waitingForInput');
       icon = <Keyboard fontSize='large' color='info' />;
     } else {
-      tooltipTitle = t('runningCode');
+      tooltipTitle = t(
+        isExecutingPreviousCell ? 'waitingRunningCode' : 'runningCode',
+      );
       // CircularProgress is not an icon, but we set it to be the same size as actual icons
-      icon = <CircularProgress size='35px' />;
+      icon = (
+        <CircularProgress
+          enableTrackSlot={true}
+          value={isExecutingPreviousCell ? 5 : undefined}
+          variant={isExecutingPreviousCell ? 'determinate' : 'indeterminate'}
+          size='35px'
+        />
+      );
     }
   } else if (executionFinished) {
     if (executionError) {
@@ -50,6 +61,7 @@ export default function RunButton({
   enabled,
   onExecutionRequested,
   executing,
+  isExecutingPreviousCell,
   executionFinished,
   executionError,
   isWaitingForInput,
@@ -57,6 +69,7 @@ export default function RunButton({
   enabled: boolean;
   onExecutionRequested: () => Promise<void>;
   executing: boolean;
+  isExecutingPreviousCell: boolean;
   executionFinished: boolean;
   executionError: boolean;
   isWaitingForInput: boolean;
@@ -96,6 +109,7 @@ export default function RunButton({
       </Tooltip>
       <StatusIndicator
         executing={executing}
+        isExecutingPreviousCell={isExecutingPreviousCell}
         executionFinished={executionFinished}
         executionError={executionError}
         isWaitingForInput={isWaitingForInput}

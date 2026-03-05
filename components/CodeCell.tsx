@@ -112,12 +112,19 @@ export default function CodeCell({
 
   const { activeExecutionInfo } = useContext(ExecutorContext);
 
+  const executingThisExecutionUUID =
+    activeExecutionInfo !== null &&
+    activeExecutionInfo.executionUUID === executionUUID;
+
+  const isExecutingPreviousCell =
+    executingThisExecutionUUID && activeExecutionInfo.activeCellIdx < cellIdx;
+
   const runButtonEnabled =
     // Global {en,dis}able, or...
     runEnabled ||
-    // ...this cell is being executed
-    (executionUUID === activeExecutionInfo?.executionUUID &&
-      cellIdx === activeExecutionInfo?.activeCellIdx);
+    // ...this cell is part of the sequence of cells in execution
+    isExecutingPreviousCell ||
+    activeExecutionInfo?.activeCellIdx === cellIdx;
 
   const isHydrated = useIsHydrated();
 
@@ -237,6 +244,7 @@ export default function CodeCell({
             onExecutionRequested={handleExecutionRequest}
             enabled={runButtonEnabled}
             executing={executing}
+            isExecutingPreviousCell={isExecutingPreviousCell}
             executionFinished={executionFinished}
             executionError={executionError}
             isWaitingForInput={isWaitingForInput}

@@ -11,6 +11,7 @@
     "myToolbox": "La mia Toolbox",
     "runCode": "Esegui",
     "runningCode": "In Esecuzione",
+    "waitingRunningCode": "In attesa che le celle precedenti vengano eseguite",
     "waitingForInput": "In attesa di input dell'utente",
     "stopExecution": "Stop",
     "executionCompletedWithErrors": "Esecuzione completata con errori",
