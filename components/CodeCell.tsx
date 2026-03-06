@@ -84,7 +84,6 @@ export default function CodeCell({
   const { executionResponse, executionUUID } = codeCellExecutionState;
   const executionError =
     isExecutionError(executionResponse) || isExecutionFailed(executionResponse);
-  const executing = codeCellExecutionState.executionUUID !== undefined;
   const executionFinished =
     codeCellExecutionState.outputSynced &&
     isExecutionNominal(executionResponse);
@@ -111,10 +110,10 @@ export default function CodeCell({
   const confirm = useConfirm();
 
   const { activeExecutionInfo } = useContext(ExecutorContext);
+  const executing = executionUUID !== undefined && activeExecutionInfo !== null;
 
   const executingThisExecutionUUID =
-    activeExecutionInfo !== null &&
-    activeExecutionInfo.executionUUID === executionUUID;
+    executing && activeExecutionInfo.executionUUID === executionUUID;
 
   const isExecutingPreviousCell =
     executingThisExecutionUUID && activeExecutionInfo.activeCellIdx < cellIdx;
