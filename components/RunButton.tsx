@@ -48,8 +48,16 @@ function StatusIndicator({
           />
         );
       } else {
-        // CircularProgress is not an icon, but we set it to be the same size as actual icons
-        icon = <CircularProgress enableTrackSlot={true} size='35px' />;
+        // CircularProgress is not an icon, but we style it so that the circle takes the same space as e.g., ErrorOutline.
+        icon = (
+          <CircularProgress
+            enableTrackSlot={true}
+            size='35px'
+            style={{
+              padding: '3px',
+            }}
+          />
+        );
       }
     }
   } else if (executionFinished) {
