@@ -4,7 +4,10 @@ import { TFunction } from 'next-i18next';
 import { ErrorMessageWidget } from '../components/editor/ErrorMessageWidget';
 import { runtimeErrorMessageCategory } from '../components/editor/errors';
 import { ExecutionResponse } from './codeExecution';
-import { splitLines } from './sourceUtils';
+import {
+  splitLines,
+  splitLinesWithoutPossibleTrailingNewline,
+} from './sourceUtils';
 
 export const TRACEBACK_TILDE_DECORATION_CLASSNAME =
   'squiggly-warning traceback-tilde';
@@ -244,7 +247,7 @@ export function addErrorAnnotationsFromExecution(
 }
 
 function stderrLines(content: string) {
-  return splitLines(nicerTraceback(content));
+  return splitLinesWithoutPossibleTrailingNewline(nicerTraceback(content));
 }
 
 export function processTraceback(content: string) {
