@@ -1,4 +1,4 @@
-import { Keyboard, StopCircle } from '@mui/icons-material';
+import { DownloadingOutlined, Keyboard, StopCircle } from '@mui/icons-material';
 import Done from '@mui/icons-material/Done';
 import ErrorOutline from '@mui/icons-material/ErrorOutline';
 import PlayCircleFilled from '@mui/icons-material/PlayCircleFilled';
@@ -31,28 +31,26 @@ function StatusIndicator({
       tooltipTitle = t(
         isExecutingPreviousCell ? 'waitingRunningCode' : 'runningCode',
       );
-      // CircularProgress is not an icon, but we set it to be the same size as actual icons
-      icon = (
-        <CircularProgress
-          enableTrackSlot={true}
-          value={isExecutingPreviousCell ? 10 : undefined}
-          variant={isExecutingPreviousCell ? 'determinate' : 'indeterminate'}
-          sx={{
-            animation: isExecutingPreviousCell
-              ? 'spin 10s steps(10) infinite'
-              : undefined,
-            '@keyframes spin': {
-              '0%': {
-                transform: 'rotate(0deg)',
+      if (isExecutingPreviousCell) {
+        icon = (
+          <DownloadingOutlined
+            fontSize='large'
+            color='info'
+            sx={{
+              transform: 'rotate(180deg)',
+              animation: 'pulse 2s infinite',
+              '@keyframes pulse': {
+                '0%': { opacity: 1 },
+                '50%': { opacity: 0.5 },
+                '100%': { opacity: 1 },
               },
-              '100%': {
-                transform: 'rotate(360deg)',
-              },
-            },
-          }}
-          size='35px'
-        />
-      );
+            }}
+          />
+        );
+      } else {
+        // CircularProgress is not an icon, but we set it to be the same size as actual icons
+        icon = <CircularProgress enableTrackSlot={true} size='35px' />;
+      }
     }
   } else if (executionFinished) {
     if (executionError) {
