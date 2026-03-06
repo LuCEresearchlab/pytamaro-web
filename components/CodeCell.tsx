@@ -115,7 +115,9 @@ export default function CodeCell({
     executing && activeExecutionInfo.executionUUID === executionUUID;
 
   const isExecutingPreviousCell =
-    executingThisExecutionUUID && activeExecutionInfo.activeCellIdx < cellIdx;
+    executingThisExecutionUUID &&
+    (activeExecutionInfo.activeCellIdx === null ||
+      activeExecutionInfo.activeCellIdx < cellIdx);
 
   const runButtonEnabled =
     // Global {en,dis}able, or...

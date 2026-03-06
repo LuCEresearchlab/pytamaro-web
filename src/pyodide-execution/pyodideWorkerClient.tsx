@@ -47,7 +47,7 @@ function captureErrorWithSentry(error: unknown, tags: Record<string, unknown>) {
 
 interface ExecutionInProgressInfo {
   executionUUID: string;
-  activeCellIdx: number;
+  activeCellIdx: number | null;
 }
 
 interface IExecutor {
@@ -492,13 +492,13 @@ class PyodideWorkerClient {
       extraPythonFiles,
     );
     return (await this.executionQueue.add(() => {
-      // Update the info about thecurrent active execution.
-      // Aat the beginning, we preliminary set the active cell idx to 0,
+      // Update the info about the current active execution.
+      // At the beginning, we don't have an active cell yet, but we want to set the executionUUID immediately anyway
       // so that clients (e.g., UI) can already know which executionUUID is currently active.
       // During execution, the active cell idx will be updated after receiving the special message from the worker.
       this.updateActiveExecutionInfo({
         executionUUID: executionMetadata.executionUUID,
-        activeCellIdx: 0,
+        activeCellIdx: null,
       });
       // Set function to obtain output area ref for stdin
       this.getOutputAreaRef = getOutputRef;
