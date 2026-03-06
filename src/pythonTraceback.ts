@@ -254,9 +254,12 @@ export function processTraceback(content: string) {
   const contentLines = stderrLines(content);
   // Find the last part in the traceback, after the indented stack frames, that
   // contains the error.
+  const errorRegex = /.*(:.*)?/g; // exception name, followed by optional ": message"
   const startErrorLine = contentLines.findLastIndex(
     (line, idx) =>
-      idx > 0 && contentLines[idx - 1].startsWith('  ') && /.*:.*/g.test(line),
+      idx > 0 &&
+      contentLines[idx - 1].startsWith('  ') &&
+      errorRegex.test(line),
   );
   const errorLines = contentLines.slice(startErrorLine);
   const tracebackLines = contentLines.slice(0, startErrorLine);
