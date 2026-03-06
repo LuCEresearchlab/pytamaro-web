@@ -116,15 +116,16 @@ export default function CodeCell({
 
   const isExecutingPreviousCell =
     executingThisExecutionUUID &&
-    (activeExecutionInfo.activeCellIdx === null ||
-      activeExecutionInfo.activeCellIdx < cellIdx);
+    activeExecutionInfo.activeCellIdx &&
+    activeExecutionInfo.activeCellIdx < cellIdx;
 
   const runButtonEnabled =
     // Global {en,dis}able, or...
     runEnabled ||
     // ...this cell is part of the sequence of cells in execution
-    isExecutingPreviousCell ||
-    activeExecutionInfo?.activeCellIdx === cellIdx;
+    (activeExecutionInfo &&
+      (activeExecutionInfo.activeCellIdx === null ||
+        activeExecutionInfo.activeCellIdx <= cellIdx));
 
   const isHydrated = useIsHydrated();
 
