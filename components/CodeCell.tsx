@@ -85,10 +85,9 @@ export default function CodeCell({
   const executionError =
     isExecutionError(executionResponse) || isExecutionFailed(executionResponse);
   const executionFinished =
-    codeCellExecutionState.outputSynced &&
-    isExecutionNominal(executionResponse);
-  const noOutput =
-    isExecutionNominal(executionResponse) &&
+    isExecutionNominal(executionResponse) && executionResponse.completed;
+  const finishedWithoutOutput =
+    executionFinished &&
     (executionResponse.stdout + executionResponse.stderr).length === 0;
 
   const [isWaitingForInput, setIsWaitingForInput] = useState(false);
@@ -253,7 +252,7 @@ export default function CodeCell({
           </Stack>
         </CardActions>
         <Box sx={{ marginTop: 1 }}>
-          {noOutput && platformConfig.showNoOutputTip && (
+          {finishedWithoutOutput && platformConfig.showNoOutputTip && (
             <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
               <NoOutputTip
                 dimmed={!codeCellExecutionState.outputSynced}
