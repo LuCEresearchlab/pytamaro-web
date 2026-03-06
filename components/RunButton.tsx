@@ -101,6 +101,9 @@ export default function RunButton({
     // Maybe there are other cases here for which we may want to display a reason for the disabled
   }
 
+  const stopLabel = t('stopExecution');
+  const runLabel = t('runCode');
+
   return (
     <Stack direction='row' spacing={2} alignItems='center'>
       <Tooltip arrow placement='left' title={tooltipMessage}>
@@ -114,7 +117,14 @@ export default function RunButton({
             disabled={!enabled}
             className='run-button'
           >
-            <span>{t(executing ? 'stopExecution' : 'runCode')}</span>
+            <span
+              style={{
+                // Keep the width constant even when the button rapidly changes between "Run" and "Stop"
+                minWidth: `${Math.max(stopLabel.length, runLabel.length)}ch`,
+              }}
+            >
+              {executing ? stopLabel : runLabel}
+            </span>
           </Button>
         </div>
       </Tooltip>
