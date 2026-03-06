@@ -155,6 +155,10 @@ export function addErrorAnnotationsFromExecution(
   }
   // Extract the relevant line number
   const currentCellLineIdx = lineNumberInfo.lineNum - firstLineNumber + 1;
+  // Ensure that the line number is still valid (the model may have changed in the meantime)
+  if (currentCellLineIdx < 1 || currentCellLineIdx > model.getLineCount()) {
+    return null;
+  }
   // Find that line in the editor, count number of leading spaces
   const sourceLineContent = model.getLinesContent()[currentCellLineIdx - 1];
   const leadingSpaces =
