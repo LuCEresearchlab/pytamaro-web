@@ -35,8 +35,21 @@ function StatusIndicator({
       icon = (
         <CircularProgress
           enableTrackSlot={true}
-          value={isExecutingPreviousCell ? 5 : undefined}
+          value={isExecutingPreviousCell ? 10 : undefined}
           variant={isExecutingPreviousCell ? 'determinate' : 'indeterminate'}
+          sx={{
+            animation: isExecutingPreviousCell
+              ? 'spin 10s steps(10) infinite'
+              : undefined,
+            '@keyframes spin': {
+              '0%': {
+                transform: 'rotate(0deg)',
+              },
+              '100%': {
+                transform: 'rotate(360deg)',
+              },
+            },
+          }}
           size='35px'
         />
       );
