@@ -81,7 +81,8 @@ export default function CodeCell({
 }) {
   const { t } = useLocalTranslation(['common']);
   const { metadata } = useLocalProfile();
-  const { executionResponse, executionUUID } = codeCellExecutionState;
+  const { executionResponse, executionUUID, outputAreaVisible, outputSynced } =
+    codeCellExecutionState;
   const executionError =
     isExecutionError(executionResponse) || isExecutionFailed(executionResponse);
   const executionFinished =
@@ -122,9 +123,9 @@ export default function CodeCell({
 
   const isExecutingInLegacyServerSideMode =
     metadata.executionMode === 'sse' &&
-    codeCellExecutionState.executionResponse !== undefined &&
-    codeCellExecutionState.executionResponse.type !== 'failure' &&
-    codeCellExecutionState.executionResponse.completed === false;
+    executionResponse !== undefined &&
+    executionResponse.type !== 'failure' &&
+    executionResponse.completed === false;
 
   const runButtonEnabled =
     // Global {en,dis}able, or...
@@ -146,14 +147,13 @@ export default function CodeCell({
       return;
     }
     setAlreadyClearedPossibleIncompleteExecution(true);
-    const { executionResponse } = codeCellExecutionState;
     if (isExecutionNominal(executionResponse) && !executionResponse.completed) {
       // The execution state refers to a previous execution that did not complete.
       // We want to reset the execution state.
       onResetExecutionState();
     }
   }, [
-    codeCellExecutionState,
+    executionResponse,
     onResetExecutionState,
     isHydrated,
     alreadyClearedPossibleIncompleteExecution,
@@ -263,9 +263,9 @@ export default function CodeCell({
         </CardActions>
         <Box sx={{ marginTop: 1 }}>
           {finishedWithoutOutput && platformConfig.showNoOutputTip && (
-            <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
+            <StaleOutputBadge hidden={outputSynced}>
               <NoOutputTip
-                dimmed={!codeCellExecutionState.outputSynced}
+                dimmed={!outputSynced}
                 importedNames={analysisResult?.imported_names}
               />
             </StaleOutputBadge>
@@ -273,19 +273,19 @@ export default function CodeCell({
           {ellipsis && <EllipsisTip />}
           <Collapse
             in={
-              codeCellExecutionState.outputAreaVisible ||
+              outputAreaVisible ||
               // Show in case of a failed execution, because the alert is inside ExecutionOutputArea.
               isExecutionFailed(executionResponse)
             }
             timeout='auto'
             unmountOnExit
           >
-            <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
+            <StaleOutputBadge hidden={outputSynced}>
               {executionResponse !== undefined && (
                 <ExecutionOutputArea
                   executionResponse={executionResponse}
                   firstLineNumber={firstLineNumber}
-                  dimmed={!codeCellExecutionState.outputSynced}
+                  dimmed={!outputSynced}
                   setOutputAreaRef={(node) => setOutputAreaRef(cellIdx, node)}
                   setIsWaitingForInput={setIsWaitingForInput}
                 />
