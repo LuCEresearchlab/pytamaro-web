@@ -1,14 +1,14 @@
+export type EncodedColor = number | bigint;
+
 export type EncodedPoint = number | bigint;
+
+type Colored = {
+  color: EncodedColor;
+};
 
 export type Point = {
   x: number;
   y: number;
-};
-
-export type EncodedColor = number | bigint;
-
-type Colored = {
-  color: EncodedColor;
 };
 
 export type Sized = {
@@ -69,16 +69,16 @@ export type RotateSpec = {
   t: 'Rotate';
 };
 
-export type PrimitiveSpec =
+type PrimitiveSpec =
   | RectangleSpec
   | EllipseSpec
   | CircularSectorSpec
-  | TriangleSpec;
+  | TriangleSpec
+  | TextSpec;
 
 export type GraphicSpec =
   | EmptySpec
   | PrimitiveSpec
-  | TextSpec
   | ComposeSpec
   | PinSpec
   | RotateSpec;

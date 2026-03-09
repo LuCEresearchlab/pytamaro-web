@@ -2,7 +2,7 @@ import Editor from '@monaco-editor/react';
 import { debounce, DebouncedFunc, throttle } from 'lodash';
 import { type editor as EditorNamespace } from 'monaco-editor';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ExecutionResponse } from '../src/codeExecution';
+import { ExecutionResponse } from '../src/execution/codeExecution';
 import { LiveAnalysisStatus } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';

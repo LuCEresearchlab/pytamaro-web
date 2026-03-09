@@ -30,6 +30,7 @@ import SolitaryCodeCell, {
 import getActivitiesWithAPIs, {
   ActivityVariantWithNames,
 } from '../src/activitiesAPIs';
+import { ExecutorContext } from '../src/execution/executorContext';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
@@ -37,7 +38,6 @@ import {
   playgroundActivityVariant,
   playgroundInitialSource,
 } from '../src/playground';
-import { ExecutorContext } from '../src/pyodide-execution/pyodideWorkerClient';
 import {
   findImportedNames,
   PythonName,
@@ -290,9 +290,10 @@ export default function Playground({
 
   const { metadata } = useLocalProfile();
 
+  const { executorState } = useContext(ExecutorContext);
   // We don't care about isExecuting here because there's only one code cell
   // that we need to take care of
-  const { isReady: execReady } = useContext(ExecutorContext);
+  const runEnabled = executorState.type !== 'loading';
 
   return (
     <div>
@@ -318,7 +319,7 @@ export default function Playground({
                 initialCodeCells={initialCodeCells}
                 resetCounter={resetCounter}
                 newReset={newReset}
-                runEnabled={execReady}
+                runEnabled={runEnabled}
                 setInitialSource={setInitialSource}
               />
             </Container>

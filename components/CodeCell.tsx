@@ -14,11 +14,11 @@ import {
   isExecutionError,
   isExecutionFailed,
   isExecutionNominal,
-} from '../src/codeExecution';
+} from '../src/execution/codeExecution';
+import { ExecutorContext } from '../src/execution/executorContext';
 import { CodeCellExecutionState } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import { ExecutorContext } from '../src/pyodide-execution/pyodideWorkerClient';
 import { PythonName } from '../src/python-analyzer/python_analyzer';
 import {
   ActivityVariant,
@@ -108,24 +108,31 @@ export default function CodeCell({
 
   const confirm = useConfirm();
 
-  const { activeExecutionInfo } = useContext(ExecutorContext);
-  const executing = executionUUID !== undefined && activeExecutionInfo !== null;
+  const { executorState } = useContext(ExecutorContext);
+  const executing =
+    executionUUID !== undefined && executorState.type === 'executing';
 
   const executingThisExecutionUUID =
-    executing && activeExecutionInfo.executionUUID === executionUUID;
+    executing && executorState.executionUUID === executionUUID;
 
   const isExecutingPreviousCell =
     executingThisExecutionUUID &&
-    activeExecutionInfo.activeCellIdx &&
-    activeExecutionInfo.activeCellIdx < cellIdx;
+    executorState.activeCellIdx !== null && // TODO: make sure this doesn't break anything
+    executorState.activeCellIdx < cellIdx;
+
+  const isExecutingInLegacyServerSideMode =
+    metadata.executionMode === 'sse' &&
+    codeCellExecutionState.executionResponse !== undefined &&
+    codeCellExecutionState.executionResponse.type !== 'failure' &&
+    codeCellExecutionState.executionResponse.completed === false;
 
   const runButtonEnabled =
     // Global {en,dis}able, or...
     runEnabled ||
     // ...this cell is part of the sequence of cells in execution
-    (activeExecutionInfo &&
-      (activeExecutionInfo.activeCellIdx === null ||
-        activeExecutionInfo.activeCellIdx <= cellIdx));
+    (executingThisExecutionUUID &&
+      (executorState.activeCellIdx === null ||
+        executorState.activeCellIdx <= cellIdx));
 
   const isHydrated = useIsHydrated();
 
@@ -244,7 +251,7 @@ export default function CodeCell({
           <RunButton
             onExecutionRequested={handleExecutionRequest}
             enabled={runButtonEnabled}
-            executing={executing}
+            executing={executing || isExecutingInLegacyServerSideMode}
             isExecutingPreviousCell={isExecutingPreviousCell}
             executionFinished={executionFinished}
             executionError={executionError}

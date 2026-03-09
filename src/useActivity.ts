@@ -16,7 +16,8 @@ import {
   ExecutionResponse,
   importedToolboxNames,
   isExecutionNominal,
-} from './codeExecution';
+} from './execution/codeExecution';
+import { ExecutorContext } from './execution/executorContext';
 import { executeServerSide } from './legacyServerSideExecution';
 import {
   CodeCellExecutionState,
@@ -27,7 +28,6 @@ import {
   getDefaultActivityVariantMetadata,
 } from './localStorage/schema';
 import useLocalToolbox from './localStorage/useLocalToolbox';
-import { ExecutorContext } from './pyodide-execution/pyodideWorkerClient';
 import {
   ActivityVariant,
   PythonFile,
@@ -103,9 +103,7 @@ export function useActivity(
   const variantId = activityVariantId(activityVariant);
   const variantMetadata = metadata.activities.find((a) => a.id === variantId);
 
-  const { isReady, activeExecutionInfo, execute, restart } =
-    useContext(ExecutorContext);
-  const isExecuting = activeExecutionInfo !== null;
+  const { executorState, execute, restart } = useContext(ExecutorContext);
 
   const initialCodeExecutionStates = () =>
     Array(initialCodeCells.length)
@@ -125,8 +123,8 @@ export function useActivity(
         }
       }),
     );
-    restart(metadata);
-  }, [restart, setCodeExecutionStates, metadata]);
+    restart();
+  }, [restart, setCodeExecutionStates]);
 
   const completed = !!variantMetadata?.completed;
   const cellsModified = !!variantMetadata?.cellsModified;
@@ -316,12 +314,12 @@ export function useActivity(
     executionUUID: string,
     getOutputRef: (execIdx: number) => OutputAreaRef | null,
   ) => {
-    if (!isReady) {
+    if (executorState.type === 'loading') {
       // eslint-disable-next-line no-console
       console.error('Aborting execution request. Not ready');
       return;
     }
-    if (isExecuting) {
+    if (executorState.type === 'executing') {
       // eslint-disable-next-line no-console
       console.error(
         'Aborting execution request. Another execution is in progress',
@@ -378,7 +376,7 @@ export function useActivity(
           produce(currentCodeExecutionStates, (draft) => {
             for (let i = 0; i <= idx; i += 1) {
               draft[i].outputSynced = false;
-              draft[i].executionUUID = undefined;
+              draft[i].executionUUID = 'server-side-execution';
               draft[i].executionResponse = {
                 type: 'error',
                 completed: true,
@@ -390,6 +388,20 @@ export function useActivity(
         );
         setLastCodeCellResponse(execResponse);
       };
+      setCodeExecutionStates((currentCodeExecutionStates) =>
+        produce(currentCodeExecutionStates, (draft) => {
+          for (let i = 0; i <= idx; i += 1) {
+            draft[i].outputSynced = false;
+            draft[i].executionUUID = 'server-side-execution';
+            draft[i].executionResponse = {
+              type: 'success',
+              completed: false,
+              stdout: '',
+              stderr: '',
+            };
+          }
+        }),
+      );
       executeServerSide(
         sources,
         idx,

@@ -1,5 +1,5 @@
 import { Stack } from '@mui/material';
-import { isExecutionNominal } from '../src/codeExecution';
+import { isExecutionNominal } from '../src/execution/codeExecution';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import { PythonFile } from '../src/schemas/activitySchema';
 import DownloadCodeButton from './CodeDownloadButton';

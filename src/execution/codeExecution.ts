@@ -1,10 +1,10 @@
 import Topo from '@hapi/topo';
 import lodash from 'lodash';
-import { ToolboxFunction } from './localStorage/schema';
-import { RunPythonFile } from './pyodide-execution/messagesTypes';
-import { findImportedNames } from './python-analyzer/python_analyzer';
-import { PythonFile } from './schemas/activitySchema';
-import { countLines, emptyLines, joinLines } from './sourceUtils';
+import { ToolboxFunction } from '../localStorage/schema';
+import { findImportedNames } from '../python-analyzer/python_analyzer';
+import { PythonFile } from '../schemas/activitySchema';
+import { countLines, emptyLines, joinLines } from '../sourceUtils';
+import { RunPythonFile } from './messageTypes';
 
 const { uniq } = lodash;
 
@@ -70,25 +70,28 @@ export interface BareboneToolboxFunction {
   source: string;
 }
 
-// IMPORTANT, part 1:
-// the entire driver is wrapped in a single function so that `globals_dict`, which contains the shared state between cells,
-// goes clearly out of scope at the end of the execution of the wrapper, allowing the GC to properly clean it up at the end of the execution of all cells.
-
-// IMPORTANT, part 2:
-// linecache is necessary to improve the traceback (e.g., to show the source code, and possibly also the caret)
-// the hack is taken from https://github.com/pyodide/pyodide/blob/3f80192aa814a17dfee7eb20bb24da6509c22049/src/py/_pyodide/_base.py#L312
-
 function driverSource(num_cells: number) {
+  // IMPORTANT, part 1:
+  // the entire driver is wrapped in a single function so that `globals_dict`,
+  // which contains the shared state between cells,
+  // goes clearly out of scope at the end of the execution of the wrapper,
+  // allowing the GC to properly clean it up at the end of the execution of all
+  // cells.
+
+  // IMPORTANT, part 2:
+  // linecache is necessary to improve the traceback (e.g., to show the source
+  // code, and possibly also the caret). The hack is taken from:
+  // https://github.com/pyodide/pyodide/blob/3f80192aa814a17dfee7eb20bb24da6509c22049/src/py/_pyodide/_base.py#L312
   return `
 from pathlib import Path
+from pytamaro_js_ffi import set_active_cell
 from os import chdir, getcwd
 from shutil import rmtree
 from sys import stderr, stdout
-from pytamaro_js_ffi import set_active_cell
 import atexit
 import linecache
 
-def run_all():
+def main():
   try:
     globals_dict = {}
     def run_single_cell(name):
@@ -110,7 +113,7 @@ def run_all():
     chdir(cwd.parent.absolute())
     rmtree(cwd.absolute())
     atexit._run_exitfuncs()
-run_all()
+main()
 `;
 }
 
@@ -202,6 +205,7 @@ export function cellsToFiles(
     ...toolboxFiles(toolboxFunctions),
     ...extraPythonFiles,
   ];
-  // code-runner does not allow empty files, we work around this by including a no-op stmt
+  // code-runner does not allow empty files, we work around this by including
+  // a no-op stmt
   return files.map((file) => ({ ...file, content: file.content || 'pass' }));
 }

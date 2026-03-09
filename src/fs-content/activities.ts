@@ -1,6 +1,10 @@
 import { readFile, readdir } from 'fs/promises';
 import path from 'path';
-import { DRIVER_FILE, CELL_FILE, TOOLBOX_FILE } from '../codeExecution';
+import {
+  CELL_FILE,
+  DRIVER_FILE,
+  TOOLBOX_FILE,
+} from '../execution/codeExecution';
 import {
   Activity,
   BasicActivity,

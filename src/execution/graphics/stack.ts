@@ -5,24 +5,24 @@ export class Stack<T> {
     this.items = [];
   }
 
-  push(item: T) {
+  push(item: T): void {
     this.items.push(item);
   }
 
-  pushInOrder(items: T[]) {
+  pushInOrder(items: T[]): void {
     // The first item in the `items` array should also be the first one popped,
     // so we reverse the order before pushing.
     this.items.push(...items.reverse());
   }
 
-  pop() {
+  pop(): T {
     if (this.isEmpty()) {
       throw Error('Cannot pop from an empty stack');
     }
     return this.items.pop()!;
   }
 
-  isEmpty() {
+  isEmpty(): boolean {
     return this.items.length === 0;
   }
 

@@ -4,8 +4,8 @@ import ErrorOutline from '@mui/icons-material/ErrorOutline';
 import PlayCircleFilled from '@mui/icons-material/PlayCircleFilled';
 import { Button, CircularProgress, Stack, Tooltip } from '@mui/material';
 import { useContext } from 'react';
+import { ExecutorContext } from '../src/execution/executorContext';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import { ExecutorContext } from '../src/pyodide-execution/pyodideWorkerClient';
 
 function StatusIndicator({
   executing,
@@ -94,20 +94,17 @@ export default function RunButton({
   isWaitingForInput: boolean;
 }) {
   const { t } = useLocalTranslation(['common']);
-  const { isReady, activeExecutionInfo, interruptExecution } =
-    useContext(ExecutorContext);
+  const { executorState, interruptExecution } = useContext(ExecutorContext);
 
-  const isExecuting = activeExecutionInfo !== null;
-
-  let tooltipMessage = undefined;
-  if (!enabled) {
-    if (!isReady) {
-      tooltipMessage = t('executionDisabled.notReady');
-    } else if (isExecuting) {
-      tooltipMessage = t('executionDisabled.anotherInProgress');
-    }
-    // Maybe there are other cases here for which we may want to display a reason for the disabled
-  }
+  const tooltipMessage = enabled
+    ? undefined
+    : executorState.type === 'loading'
+      ? t('executionDisabled.notReady')
+      : executorState.type === 'executing'
+        ? t('executionDisabled.anotherInProgress')
+        : // Maybe there will be other cases here for which we may want to
+          // display a reason for the disabled
+          undefined;
 
   const stopLabel = t('stopExecution');
   const runLabel = t('runCode');

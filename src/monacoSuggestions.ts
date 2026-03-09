@@ -6,7 +6,7 @@ import type {
   languages,
   Position,
 } from 'monaco-editor';
-import { TOOLBOX_FILE } from './codeExecution';
+import { TOOLBOX_FILE } from './execution/codeExecution';
 import { ToolboxFunction } from './localStorage/schema';
 import PyTamaroNames from './pytamaroNames';
 import { retrieveCellIdx, retrievePythonAnalyzer } from './usePythonAnalyzer';

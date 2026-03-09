@@ -10,9 +10,9 @@ import { getNode } from './utils';
 
 import { Edge } from '@xyflow/react';
 import { getParameterName } from '../../components/tide/cards/function';
-import { ExecutionResponse as ExecutorExecutionResponse } from '../codeExecution';
+import { ExecutionResponse as ExecutorExecutionResponse } from '../execution/codeExecution';
+import { ExecutionMetadata } from '../execution/messageTypes';
 import { ToolboxFunction } from '../localStorage/schema';
-import { ExecutionMetadata } from '../pyodide-execution/messagesTypes';
 import { PythonFile } from '../schemas/activitySchema';
 import { JudiciousConstant, JudiciousFunction } from '../schemas/documentation';
 import {

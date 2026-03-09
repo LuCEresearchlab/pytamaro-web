@@ -1,5 +1,5 @@
 import { Canvas, CanvasKit, Paint, Rect } from '../../canvaskit-wasm/canvaskit';
-import { Point } from '../spec';
+import { Point } from './spec';
 
 function circle(
   ck: CanvasKit,

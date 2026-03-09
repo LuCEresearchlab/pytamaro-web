@@ -25,7 +25,7 @@ import '@fontsource/fira-sans/500.css';
 import '@fontsource/fira-sans/700.css';
 // Icon font
 import '@fontsource/material-icons';
-import { ExecutorProvider } from '../src/pyodide-execution/pyodideWorkerClient';
+import { ExecutorProvider } from '../src/execution/executorContext';
 
 function MyApp(props: AppProps) {
   const { Component, pageProps } = props;

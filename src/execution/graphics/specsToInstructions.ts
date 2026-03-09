@@ -7,6 +7,15 @@ import type {
   Typeface,
 } from '../../canvaskit-wasm/canvaskit';
 import {
+  cleanupAfterDraw,
+  cleanupAfterEnd,
+  extractBegin,
+  extractEnd,
+  extractGraphicInstructions,
+  RenderInstruction,
+  RenderInstructionType,
+} from './instructions.ts';
+import {
   CircularSectorSpec,
   ComposeSpec,
   EllipseSpec,
@@ -19,15 +28,7 @@ import {
   RotateSpec,
   TextSpec,
   TriangleSpec,
-} from '../spec.ts';
-import {
-  cleanupAfterDraw,
-  cleanupAfterEnd,
-  Command,
-  extractBegin,
-  extractEnd,
-  extractGraphicCommands,
-} from './commands.ts';
+} from './spec.ts';
 import { Stack } from './stack.ts';
 
 /* **** Utils **** */
@@ -99,17 +100,24 @@ function relToAbsPoint(relPoint: EncodedPoint, bounds: Rect): Point {
 
 /* **** Specs Processing **** */
 
-function addCommandsForEmpty(ck: CanvasKit, stack: Stack<Command>) {
+function addInstructionsForEmpty(
+  ck: CanvasKit,
+  stack: Stack<RenderInstruction>,
+) {
   const emptyPath = new ck.Path();
   stack.pushInOrder([
-    { type: 'BEGIN', path: emptyPath, pinPosition: { x: 0, y: 0 } },
-    { type: 'END', toDelete: [emptyPath] },
+    {
+      type: RenderInstructionType.BEGIN,
+      path: emptyPath,
+      pinPosition: { x: 0, y: 0 },
+    },
+    { type: RenderInstructionType.END, toDelete: [emptyPath] },
   ]);
 }
 
-function addCommandsForPrimitive(
+function addInstructionsForPrimitive(
   ck: CanvasKit,
-  stack: Stack<Command>,
+  stack: Stack<RenderInstruction>,
   path: Path,
   color: EncodedColor,
   pinPoint?: Point,
@@ -122,37 +130,37 @@ function addCommandsForPrimitive(
     y: Math.abs(bounds[1] - bounds[3]) / 2,
   };
   stack.pushInOrder([
-    { type: 'BEGIN', path, pinPosition },
-    { type: 'DRAW', path, paint },
-    { type: 'END' },
+    { type: RenderInstructionType.BEGIN, path, pinPosition },
+    { type: RenderInstructionType.DRAW, path, paint },
+    { type: RenderInstructionType.END },
   ]);
 }
 
-function addCommandsForRectangle(
+function addInstructionsForRectangle(
   ck: CanvasKit,
-  stack: Stack<Command>,
+  stack: Stack<RenderInstruction>,
   spec: RectangleSpec,
 ) {
   const path = new ck.Path().addRect(
     ck.XYWHRect(0, 0, spec.width, spec.height),
   );
-  addCommandsForPrimitive(ck, stack, path, spec.color);
+  addInstructionsForPrimitive(ck, stack, path, spec.color);
 }
 
-function addCommandsForEllipse(
+function addInstructionsForEllipse(
   ck: CanvasKit,
-  stack: Stack<Command>,
+  stack: Stack<RenderInstruction>,
   spec: EllipseSpec,
 ) {
   const path = new ck.Path().addOval(
     ck.XYWHRect(0, 0, spec.width, spec.height),
   );
-  addCommandsForPrimitive(ck, stack, path, spec.color);
+  addInstructionsForPrimitive(ck, stack, path, spec.color);
 }
 
-function addCommandsForCircularSector(
+function addInstructionsForCircularSector(
   ck: CanvasKit,
-  stack: Stack<Command>,
+  stack: Stack<RenderInstruction>,
   spec: CircularSectorSpec,
 ) {
   const radius = spec.radius;
@@ -166,12 +174,12 @@ function addCommandsForCircularSector(
           .arcToOval(rect, 0, -spec.angle, false)
           .close();
   const pinPoint = { x: radius, y: radius };
-  addCommandsForPrimitive(ck, stack, path, spec.color, pinPoint);
+  addInstructionsForPrimitive(ck, stack, path, spec.color, pinPoint);
 }
 
-function addCommandsForTriangle(
+function addinstructionsForTriangle(
   ck: CanvasKit,
-  stack: Stack<Command>,
+  stack: Stack<RenderInstruction>,
   spec: TriangleSpec,
 ) {
   const thirdPoint = {
@@ -187,13 +195,13 @@ function addCommandsForTriangle(
     .lineTo(spec.side1, 0)
     .lineTo(thirdPoint.x, thirdPoint.y)
     .close();
-  addCommandsForPrimitive(ck, stack, path, spec.color, centroid);
+  addInstructionsForPrimitive(ck, stack, path, spec.color, centroid);
 }
 
-function addCommandsForText(
+function addInstructionsForText(
   ck: CanvasKit,
   typefaces: Map<string, Typeface>,
-  stack: Stack<Command>,
+  stack: Stack<RenderInstruction>,
   spec: TextSpec,
 ) {
   // Fallback to Fira Sans
@@ -222,18 +230,18 @@ function addCommandsForText(
   paint.setAntiAlias(true);
 
   stack.pushInOrder([
-    { type: 'BEGIN', path, pinPosition: { x: 0, y: 0 } },
-    { type: 'DRAW', path, paint },
-    { type: 'END' },
+    { type: RenderInstructionType.BEGIN, path, pinPosition: { x: 0, y: 0 } },
+    { type: RenderInstructionType.DRAW, path, paint },
+    { type: RenderInstructionType.END },
   ]);
 }
 
-function addCommandsForCompose(
+function addInstructionsForCompose(
   ck: CanvasKit,
-  stack: Stack<Command>,
+  stack: Stack<RenderInstruction>,
   spec: ComposeSpec,
 ) {
-  const fgChunk = extractGraphicCommands(stack);
+  const fgChunk = extractGraphicInstructions(stack);
   const fgBegin = extractBegin(fgChunk);
   const fgEnd = extractEnd(fgChunk);
   const { path: fgPath, pinPosition: fgPin } = fgBegin;
@@ -242,7 +250,7 @@ function addCommandsForCompose(
       ? relToAbsPoint(spec.fg_pin, fgPath.computeTightBounds())
       : fgPin;
 
-  const bgChunk = extractGraphicCommands(stack);
+  const bgChunk = extractGraphicInstructions(stack);
   const bgBegin = extractBegin(bgChunk);
   const bgEnd = extractEnd(bgChunk);
   const { path: bgPath, pinPosition: bgPin } = bgBegin;
@@ -282,18 +290,18 @@ function addCommandsForCompose(
   }
 
   stack.pushInOrder([
-    { type: 'BEGIN', path, pinPosition },
-    { type: 'SAVE' },
+    { type: RenderInstructionType.BEGIN, path, pinPosition },
+    { type: RenderInstructionType.SAVE },
     ...bgChunk,
-    { type: 'TRANSLATE', dx, dy },
+    { type: RenderInstructionType.TRANSLATE, dx, dy },
     ...fgChunk,
-    { type: 'RESTORE' },
-    { type: 'END', toDelete },
+    { type: RenderInstructionType.RESTORE },
+    { type: RenderInstructionType.END, toDelete },
   ]);
 }
 
-function addCommandsForPin(stack: Stack<Command>, spec: PinSpec) {
-  const childChunk = extractGraphicCommands(stack);
+function addInstructionsForPin(stack: Stack<RenderInstruction>, spec: PinSpec) {
+  const childChunk = extractGraphicInstructions(stack);
   const childBegin = extractBegin(childChunk);
   const childEnd = extractEnd(childChunk);
 
@@ -301,18 +309,18 @@ function addCommandsForPin(stack: Stack<Command>, spec: PinSpec) {
   const pinPosition = relToAbsPoint(spec.pin, path.computeTightBounds());
 
   stack.pushInOrder([
-    { type: 'BEGIN', path, pinPosition },
+    { type: RenderInstructionType.BEGIN, path, pinPosition },
     ...childChunk,
-    { type: 'END', toDelete: childEnd.toDelete },
+    { type: RenderInstructionType.END, toDelete: childEnd.toDelete },
   ]);
 }
 
-function addCommandsForRotate(
+function addinstructionsForRotate(
   ck: CanvasKit,
-  stack: Stack<Command>,
+  stack: Stack<RenderInstruction>,
   spec: RotateSpec,
 ) {
-  const childChunk = extractGraphicCommands(stack);
+  const childChunk = extractGraphicInstructions(stack);
   const childBegin = extractBegin(childChunk);
   const childEnd = extractEnd(childChunk);
 
@@ -333,78 +341,78 @@ function addCommandsForRotate(
     : [rotatedPath];
 
   stack.pushInOrder([
-    { type: 'BEGIN', path: rotatedPath, pinPosition },
-    { type: 'SAVE' },
-    { type: 'TRANSFORM', matrix: rotMatrix },
+    { type: RenderInstructionType.BEGIN, path: rotatedPath, pinPosition },
+    { type: RenderInstructionType.SAVE },
+    { type: RenderInstructionType.TRANSFORM, matrix: rotMatrix },
     ...childChunk,
-    { type: 'RESTORE' },
-    { type: 'END', toDelete },
+    { type: RenderInstructionType.RESTORE },
+    { type: RenderInstructionType.END, toDelete },
   ]);
 }
 
-function addCommandsFromSpec(
+function addinstructionsFromSpec(
   ck: CanvasKit,
   typefaces: Map<string, Typeface>,
-  stack: Stack<Command>,
+  stack: Stack<RenderInstruction>,
   spec: GraphicSpec,
 ) {
   switch (spec.t) {
     case 'Empty':
-      addCommandsForEmpty(ck, stack);
+      addInstructionsForEmpty(ck, stack);
       break;
     case 'Rectangle':
-      addCommandsForRectangle(ck, stack, spec);
+      addInstructionsForRectangle(ck, stack, spec);
       break;
     case 'Ellipse':
-      addCommandsForEllipse(ck, stack, spec);
+      addInstructionsForEllipse(ck, stack, spec);
       break;
     case 'CircularSector':
-      addCommandsForCircularSector(ck, stack, spec);
+      addInstructionsForCircularSector(ck, stack, spec);
       break;
     case 'Triangle':
-      addCommandsForTriangle(ck, stack, spec);
+      addinstructionsForTriangle(ck, stack, spec);
       break;
     case 'Text':
-      addCommandsForText(ck, typefaces, stack, spec);
+      addInstructionsForText(ck, typefaces, stack, spec);
       break;
     case 'Compose':
-      addCommandsForCompose(ck, stack, spec);
+      addInstructionsForCompose(ck, stack, spec);
       break;
     case 'Pin':
-      addCommandsForPin(stack, spec);
+      addInstructionsForPin(stack, spec);
       break;
     case 'Rotate':
-      addCommandsForRotate(ck, stack, spec);
+      addinstructionsForRotate(ck, stack, spec);
       break;
   }
 }
 
-export function specsToCommands(
+export function specsToInstructions(
   ck: CanvasKit,
   typefaces: Map<string, Typeface>,
   specs: GraphicSpec[],
-): Stack<Command> {
-  const stack: Stack<Command> = new Stack();
+): Stack<RenderInstruction> {
+  const stack: Stack<RenderInstruction> = new Stack();
 
-  // Build a sequence of commands that can be executed linearly on the same
-  // canvas object to draw the complete graphic. This may involve popping and
-  // pushing commands from the stack so that they are executed in the right
+  // Build a sequence of instructions that can be executed linearly on the same
+  // canvas object to render the complete graphic. This may involve popping and
+  // pushing instructions from the stack so that they are executed in the right
   // order (e.g. when doing compositions).
   for (const spec of specs) {
-    addCommandsFromSpec(ck, typefaces, stack, spec);
+    addinstructionsFromSpec(ck, typefaces, stack, spec);
   }
 
   return stack;
 }
 
-export function freeStack(stack: Stack<Command>) {
+export function freeStack(stack: Stack<RenderInstruction>) {
   while (!stack.isEmpty()) {
     const cmd = stack.pop();
     switch (cmd.type) {
-      case 'DRAW':
+      case RenderInstructionType.DRAW:
         cleanupAfterDraw(cmd);
         break;
-      case 'END':
+      case RenderInstructionType.END:
         cleanupAfterEnd(cmd);
         break;
     }

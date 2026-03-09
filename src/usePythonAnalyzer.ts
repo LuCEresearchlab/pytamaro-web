@@ -13,7 +13,7 @@ import {
   ErrorCategory,
   staticErrorMessageCategory,
 } from '../components/editor/errors';
-import { CELL_FILE, toolboxFiles } from './codeExecution';
+import { CELL_FILE, toolboxFiles } from './execution/codeExecution';
 import { LiveAnalysisStatus, ToolboxFunction } from './localStorage/schema';
 import useLocalToolbox from './localStorage/useLocalToolbox';
 import {

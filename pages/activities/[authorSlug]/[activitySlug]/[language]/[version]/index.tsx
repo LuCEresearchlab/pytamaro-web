@@ -30,6 +30,7 @@ import TableOfContents from '../../../../../../components/sidebar/TableOfContent
 import ToolboxListSidebar from '../../../../../../components/sidebar/ToolboxListSidebar';
 import VariantSelector from '../../../../../../components/VariantSelector';
 import { findIncludingCurricula } from '../../../../../../src/curricula';
+import { ExecutorContext } from '../../../../../../src/execution/executorContext';
 import {
   findVersions,
   readActivity,
@@ -43,7 +44,6 @@ import { CodeCellState } from '../../../../../../src/localStorage/schema';
 import useLocalProfile from '../../../../../../src/localStorage/useLocalProfile';
 import useMonacoColorizer from '../../../../../../src/monacoColorizer';
 import getNotebookContent from '../../../../../../src/notebook';
-import { ExecutorContext } from '../../../../../../src/pyodide-execution/pyodideWorkerClient';
 import {
   Activity,
   ActivityVariant,
@@ -236,9 +236,7 @@ export default function NotebookPage({
     };
   }, [isMounted, cells]);
 
-  const { isReady: isExecReady, activeExecutionInfo } =
-    useContext(ExecutorContext);
-  const isExecuting = activeExecutionInfo !== null;
+  const { executorState } = useContext(ExecutorContext);
 
   return (
     <div key={activityVariantId(activityVariant)}>
@@ -288,7 +286,7 @@ export default function NotebookPage({
               cellsRef={cellsRef}
               resetCounter={resetCounter}
               originalIdxToCodeCellIdx={originalIdxToCodeCellIdx}
-              runEnabled={isExecReady && !isExecuting}
+              runEnabled={executorState.type == 'available'}
             />
             <Container maxWidth='md'>
               {!isSpecialActivity(activityVariant) && (

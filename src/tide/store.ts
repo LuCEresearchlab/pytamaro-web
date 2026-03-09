@@ -17,9 +17,9 @@ import {
   TideNode,
   TideNodeMetadata,
 } from '../../components/tide/cards';
-import { ExecutionResponse } from '../codeExecution';
+import { ExecutionResponse } from '../execution/codeExecution';
+import { ExecutionMetadata } from '../execution/messageTypes';
 import { ToolboxFunction } from '../localStorage/schema';
-import { ExecutionMetadata } from '../pyodide-execution/messagesTypes';
 import { PythonFile } from '../schemas/activitySchema';
 import { JudiciousModule } from '../schemas/documentation';
 import { ChangeSliceState, createChangeSlice } from './changes';

@@ -16,8 +16,10 @@ export async function drawWithSuperSampling(
   // Create a surface for the super-sampled canvas.
   // We want a *premultiplied* surface to avoid artifacts when downsampling
   // (see https://groups.google.com/g/skia-discuss/c/dA_zsIr_1aE/m/A7tuwGeCAwAJ).
-  // Unfortunately, CanvasKit does not expose an API to directly create a SWCanvasSurface with premultiplied alpha,
-  // so we create a disposable one just to be able to call .makeSurface() with the right options.
+  // Unfortunately, CanvasKit does not expose an API to directly create a
+  // SWCanvasSurface with premultiplied alpha,
+  // so we create a disposable one just to be able to call .makeSurface() with
+  // the right options.
   const ckSuperSurface = ck.MakeSWCanvasSurface(superCanvas);
   const ckPremulSuperSurface = ckSuperSurface?.makeSurface({
     width: superCanvas.width,
@@ -26,7 +28,8 @@ export async function drawWithSuperSampling(
     colorSpace: ck.ColorSpace.SRGB,
     colorType: ck.ColorType.RGBA_8888,
   });
-  // (We won't use the *un*-premultiplied surface, so we can delete it immediately.)
+  // (We won't use the *un*-premultiplied surface, so we can delete it
+  // immediately.)
   ckSuperSurface?.delete();
 
   // ...and then we scale down to the wanted size to perform
@@ -72,8 +75,9 @@ export async function drawWithSuperSampling(
   superSampledImageWithMipmaps.delete();
   superSampledImage.delete();
 
-  // Call dispose() on surfaces to free the underlying pixels and delete the object,
-  // see https://github.com/google/skia/blob/d0e1963cc6319f8fc7c30ea4feb5a8e94def0d76/modules/canvaskit/cpu.js#L96-L103
+  // Call dispose() on surfaces to free the underlying pixels and delete the
+  // object, see
+  // https://github.com/google/skia/blob/d0e1963cc6319f8fc7c30ea4feb5a8e94def0d76/modules/canvaskit/cpu.js#L96-L103
   ckPremulSuperSurface.dispose();
   ckBaseSurface.dispose();
 

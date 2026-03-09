@@ -1,5 +1,5 @@
 import postgres from 'postgres';
-import { CODE_EXECUTION_CELLS_TO_FILES_VERSION } from '../../codeExecution';
+import { CODE_EXECUTION_CELLS_TO_FILES_VERSION } from '../../execution/codeExecution';
 import { LiveAnalysisStatus, ToolboxFunction } from '../../localStorage/schema';
 import { ActivityVariant, PythonFile } from '../../schemas/activitySchema';
 import { EventName } from '../../storeDbEvent';

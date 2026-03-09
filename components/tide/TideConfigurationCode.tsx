@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef } from 'react';
 import { allKinds } from '../../src/documentation';
-import { ExecutionMetadata } from '../../src/pyodide-execution/messagesTypes';
-import { ExecutorContext } from '../../src/pyodide-execution/pyodideWorkerClient';
+import { ExecutorContext } from '../../src/execution/executorContext';
+import { ExecutionMetadata } from '../../src/execution/messageTypes';
 import { JudiciousModule } from '../../src/schemas/documentation';
 import { ConfigurationState } from '../../src/tide/configuration';
 import { evaluation, synchronous_phases } from '../../src/tide/evaluation';
@@ -33,7 +33,7 @@ export default function TideConfigurationCode({
 
   const configuration_timeout = useRef(undefined as NodeJS.Timeout | undefined);
   const cached_modules = useRef([] as string[]);
-  const { execute, isReady: execReady } = useContext(ExecutorContext);
+  const { executorState, execute } = useContext(ExecutorContext);
 
   const extract_names = useCallback(
     async (configuration_code: string) => {
@@ -148,7 +148,10 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
   );
 
   useEffect(() => {
-    if (!execReady || modules.length === cached_modules.current.length) {
+    if (
+      executorState.type === 'loading' ||
+      modules.length === cached_modules.current.length
+    ) {
       return;
     }
     cached_modules.current = modules.map((v) => v.module);
@@ -160,7 +163,7 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
       return extract_names(source);
     }, 4000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [execReady, modules, source]);
+  }, [executorState, modules, source]);
 
   return <></>;
   //<CodeEditor

@@ -8,7 +8,7 @@ import {
   KNOWN_JUDICIOUS_MODULES,
   toolboxToJudiciousFunction,
 } from '../components/documentation/utils';
-import { TOOLBOX_FILE } from './codeExecution';
+import { TOOLBOX_FILE } from './execution/codeExecution';
 import useLocalToolbox from './localStorage/useLocalToolbox';
 import { PythonFunction, PythonName } from './python-analyzer/python_analyzer';
 import { JudiciousElement, JudiciousModule } from './schemas/documentation';

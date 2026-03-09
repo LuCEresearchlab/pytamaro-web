@@ -3,7 +3,7 @@ import { type editor as EditorNamespace } from 'monaco-editor';
 import { TFunction } from 'next-i18next';
 import { ErrorMessageWidget } from '../components/editor/ErrorMessageWidget';
 import { runtimeErrorMessageCategory } from '../components/editor/errors';
-import { ExecutionResponse } from './codeExecution';
+import { ExecutionResponse } from './execution/codeExecution';
 import {
   splitLines,
   splitLinesWithoutPossibleTrailingNewline,

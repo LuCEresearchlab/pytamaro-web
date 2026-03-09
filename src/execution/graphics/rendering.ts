@@ -1,35 +1,43 @@
 import { Canvas } from '../../canvaskit-wasm/canvaskit';
-import { cleanupAfterDraw, cleanupAfterEnd, Command } from './commands';
+import {
+  RenderInstruction,
+  RenderInstructionType,
+  cleanupAfterDraw,
+  cleanupAfterEnd,
+} from './instructions';
 import { Stack } from './stack';
 
-function runCommand(canvas: Canvas, command: Command) {
+function runCommand(canvas: Canvas, command: RenderInstruction) {
   switch (command.type) {
-    case 'BEGIN':
+    case RenderInstructionType.BEGIN:
       // Ignore, we don't care about this when drawing.
       break;
-    case 'END':
+    case RenderInstructionType.END:
       cleanupAfterEnd(command);
       break;
-    case 'DRAW':
+    case RenderInstructionType.DRAW:
       canvas.drawPath(command.path, command.paint);
       cleanupAfterDraw(command);
       break;
-    case 'SAVE':
+    case RenderInstructionType.SAVE:
       canvas.save();
       break;
-    case 'RESTORE':
+    case RenderInstructionType.RESTORE:
       canvas.restore();
       break;
-    case 'TRANSLATE':
+    case RenderInstructionType.TRANSLATE:
       canvas.translate(command.dx, command.dy);
       break;
-    case 'TRANSFORM':
+    case RenderInstructionType.TRANSFORM:
       canvas.concat(command.matrix);
       break;
   }
 }
 
-export function renderOnCanvas(canvas: Canvas, instructions: Stack<Command>) {
+export function renderOnCanvas(
+  canvas: Canvas,
+  instructions: Stack<RenderInstruction>,
+) {
   while (!instructions.isEmpty()) {
     runCommand(canvas, instructions.pop());
   }

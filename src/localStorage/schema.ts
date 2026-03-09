@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { changelogEntries } from '../../components/ChangelogList';
-import { type ExecutionResponse } from '../codeExecution';
+import { type ExecutionResponse } from '../execution/codeExecution';
 import { ActivityVariant } from '../schemas/activitySchema';
 
 export const CURRENT_VERSION = '9';

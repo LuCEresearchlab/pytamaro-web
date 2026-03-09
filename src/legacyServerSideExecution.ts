@@ -4,7 +4,7 @@ import {
   isCompleted,
   ServerSideExecutionResponse,
 } from '../pages/api/execute';
-import { ExecutionResponse } from './codeExecution';
+import { ExecutionResponse } from './execution/codeExecution';
 import { ToolboxFunction } from './localStorage/schema';
 import { PythonFile } from './schemas/activitySchema';
 

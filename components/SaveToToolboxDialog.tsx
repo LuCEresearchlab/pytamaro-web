@@ -30,12 +30,12 @@ import {
   ExecutionResponse,
   isExecutionError,
   TOOLBOX_FILE,
-} from '../src/codeExecution';
+} from '../src/execution/codeExecution';
+import { ExecutorContext } from '../src/execution/executorContext';
 import { CodeCellState, ToolboxFunction } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import { ExecutorContext } from '../src/pyodide-execution/pyodideWorkerClient';
 import { PythonFunction } from '../src/python-analyzer/python_analyzer';
 import { ActivityVariant } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
@@ -209,9 +209,7 @@ export default function SaveToToolboxDialog({
     return newToolboxFunction;
   };
 
-  const { isReady: isExecReady, activeExecutionInfo } =
-    useContext(ExecutorContext);
-  const isExecuting = activeExecutionInfo !== null;
+  const { executorState } = useContext(ExecutorContext);
 
   const implementationPythonAnalyzer = usePythonAnalyzer();
   const implementationAnalysisResult = useAnalysisResult(
@@ -439,7 +437,7 @@ export default function SaveToToolboxDialog({
                   <SolitaryCodeCell
                     activity={activity}
                     activityVariant={activityVariant}
-                    runEnabled={isExecReady && !isExecuting}
+                    runEnabled={executorState.type === 'available'}
                     requireNewExecution={invalidUsageExecution}
                     postSourceChange={() => {
                       setUsageEdited(true);

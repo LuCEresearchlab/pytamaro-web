@@ -16,7 +16,7 @@ import {
   ExecutionResponse,
   isExecutionError,
   isExecutionFailed,
-} from '../../src/codeExecution';
+} from '../../src/execution/codeExecution';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import {
   isErrorInvolvingToolbox,

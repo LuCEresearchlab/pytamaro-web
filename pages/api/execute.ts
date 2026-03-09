@@ -1,6 +1,10 @@
 import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { CELL_FILE, cellsToFiles, DRIVER_FILE } from '../../src/codeExecution';
+import {
+  CELL_FILE,
+  cellsToFiles,
+  DRIVER_FILE,
+} from '../../src/execution/codeExecution';
 import { ToolboxFunction } from '../../src/localStorage/schema';
 import { PythonFile } from '../../src/schemas/activitySchema';
 
