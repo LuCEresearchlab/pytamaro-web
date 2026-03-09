@@ -237,7 +237,7 @@ export default function CodeCell({
             onChange={onSourceChanged}
             onExecutionRequested={handleExecutionRequest}
             executionAllowed={runButtonEnabled}
-            executionFinished={executionFinished}
+            showRuntimeAnnotations={executionFinished && outputSynced}
             firstLineNumber={firstLineNumber}
             readOnly={readOnly}
             executionResponse={executionResponse}

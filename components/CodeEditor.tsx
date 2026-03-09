@@ -43,7 +43,7 @@ export default function CodeEditor({
   onChange = () => {},
   onExecutionRequested = undefined,
   executionAllowed = false,
-  executionFinished = false,
+  showRuntimeAnnotations = false,
   firstLineNumber = 1,
   readOnly = false,
   resetCounter = 0,
@@ -57,7 +57,7 @@ export default function CodeEditor({
   onChange?: (source: string) => void;
   onExecutionRequested?: () => void;
   executionAllowed?: boolean;
-  executionFinished?: boolean;
+  showRuntimeAnnotations?: boolean;
   firstLineNumber?: number;
   readOnly?: boolean;
   resetCounter?: number;
@@ -377,14 +377,10 @@ export default function CodeEditor({
     });
   }, [monacoInstance]);
 
-  // Effect to react to changes in the execution response.
-  useEffect(() => {
-    if (!monacoInstance || !editorInstance) {
-      return;
-    }
-    if (executionFinished) {
-      clearAnnotations();
-      if (executionResponse?.type === 'error') {
+  const possiblyAddRuntimeErrorAnnotations = useCallback(() => {
+    if (monacoInstance && editorInstance) {
+      if (executionResponse?.type === 'error' && showRuntimeAnnotations) {
+        clearAnnotations();
         const annotations = addErrorAnnotationsFromExecution(
           monacoInstance,
           editorInstance,
@@ -400,13 +396,13 @@ export default function CodeEditor({
       }
     }
   }, [
-    executionResponse,
-    editorInstance,
     monacoInstance,
-    clearAnnotations,
-    executionFinished,
+    editorInstance,
+    executionResponse,
+    showRuntimeAnnotations,
     firstLineNumber,
     t,
+    clearAnnotations,
   ]);
 
   // Effect to reset the editor when resetCounter changes.
@@ -473,8 +469,15 @@ export default function CodeEditor({
     if (editorInstance) {
       clearAnnotations();
       analyzeSource(editorInstance.getValue());
+      possiblyAddRuntimeErrorAnnotations();
     }
-  }, [liveAnalysis, editorInstance, analyzeSource, clearAnnotations]);
+  }, [
+    liveAnalysis,
+    editorInstance,
+    analyzeSource,
+    clearAnnotations,
+    possiblyAddRuntimeErrorAnnotations,
+  ]);
 
   const handleSourceChanged = (newSource: string | undefined) => {
     if (newSource !== undefined) {
