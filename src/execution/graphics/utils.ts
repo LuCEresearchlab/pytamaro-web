@@ -21,7 +21,8 @@ export function computeBoundsAndPin(instructions: Stack<RenderInstruction>): {
     throw new Error('Empty stack');
   }
   return {
-    bounds: latestBegin.path.computeTightBounds(),
+    bounds:
+      latestBegin.alternativeBounds ?? latestBegin.path.computeTightBounds(),
     pinPosition: latestBegin.pinPosition,
   };
 }

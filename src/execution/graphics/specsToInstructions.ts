@@ -221,6 +221,20 @@ function addInstructionsForText(
     }
   }
 
+  // Compute the bounding box of the text, whose width is determined by
+  // summing the glyph widths instead of relying on the path's tight bounds. This is to
+  // account for leading and trailing glyphs with no outline (e.g. spaces).
+  const textWidth = font
+    .getGlyphWidths(glyphIDs)
+    .reduce((sum, w) => sum + w, 0);
+  const pathBounds = path.computeTightBounds();
+  const textBounds = new Float32Array([
+    0,
+    pathBounds[1],
+    textWidth,
+    pathBounds[3],
+  ]);
+
   // Do NOT delete the typeface: it is shared across graphics.
   // Delete only the font, which is unique for each graphic.
   font.delete();
@@ -230,7 +244,12 @@ function addInstructionsForText(
   paint.setAntiAlias(true);
 
   stack.pushInOrder([
-    { type: RenderInstructionType.BEGIN, path, pinPosition: { x: 0, y: 0 } },
+    {
+      type: RenderInstructionType.BEGIN,
+      path,
+      pinPosition: { x: 0, y: 0 },
+      alternativeBounds: textBounds,
+    },
     { type: RenderInstructionType.DRAW, path, paint },
     { type: RenderInstructionType.END },
   ]);

@@ -3,6 +3,7 @@ import {
   InputMatrix,
   Paint,
   Path,
+  Rect,
 } from '../../canvaskit-wasm/canvaskit';
 import { Point } from './spec';
 import { Stack } from './stack';
@@ -30,6 +31,7 @@ export type BeginInstruction = {
   type: RenderInstructionType.BEGIN;
   path: Path;
   pinPosition: Point;
+  alternativeBounds?: Rect; // optional bounds to use instead of the path's tight bounds
 };
 export type EndInstruction = {
   type: RenderInstructionType.END;
