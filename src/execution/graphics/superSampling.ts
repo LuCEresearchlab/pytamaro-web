@@ -30,7 +30,7 @@ export async function drawWithSuperSampling(
   });
   // (We won't use the *un*-premultiplied surface, so we can delete it
   // immediately.)
-  ckSuperSurface?.delete();
+  ckSuperSurface?.dispose();
 
   // ...and then we scale down to the wanted size to perform
   // anti-aliasing (SSAA).
