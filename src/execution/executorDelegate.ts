@@ -58,6 +58,7 @@ export class ExecutorDelegate {
       if (data.debug) {
         addDebugInfo(this.ck, bounds, pinPosition, canvas, extraSpace);
       }
+      freeStack(instructions);
     };
 
     return drawWithSuperSampling(
