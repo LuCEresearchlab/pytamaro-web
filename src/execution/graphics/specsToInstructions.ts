@@ -177,7 +177,7 @@ function addInstructionsForCircularSector(
   addInstructionsForPrimitive(ck, stack, path, spec.color, pinPoint);
 }
 
-function addinstructionsForTriangle(
+function addInstructionsForTriangle(
   ck: CanvasKit,
   stack: Stack<RenderInstruction>,
   spec: TriangleSpec,
@@ -222,12 +222,13 @@ function addInstructionsForText(
   }
 
   // Compute the bounding box of the text, whose width is determined by
-  // summing the glyph widths instead of relying on the path's tight bounds. This is to
-  // account for leading and trailing glyphs with no outline (e.g. spaces).
-  const textWidth = font
-    .getGlyphWidths(glyphIDs)
-    .reduce((sum, w) => sum + w, 0);
-  const pathBounds = path.computeTightBounds();
+  // summing the glyph widths instead of relying on the path's tight bounds.
+  // This is to account for leading and trailing glyphs with no outline
+  // (e.g. spaces).
+  // Note: measureText will set the pathBounds to the tight bounds, so we need
+  // to manually adjust the width of the bounding box
+  const pathBounds: Rect = new Float32Array([0, 0, 0, 0]);
+  const textWidth = font.measureText(spec.text, pathBounds);
   const textBounds = new Float32Array([
     0,
     pathBounds[1],
@@ -334,7 +335,7 @@ function addInstructionsForPin(stack: Stack<RenderInstruction>, spec: PinSpec) {
   ]);
 }
 
-function addinstructionsForRotate(
+function addInstructionsForRotate(
   ck: CanvasKit,
   stack: Stack<RenderInstruction>,
   spec: RotateSpec,
@@ -369,7 +370,7 @@ function addinstructionsForRotate(
   ]);
 }
 
-function addinstructionsFromSpec(
+function addInstructionsFromSpec(
   ck: CanvasKit,
   typefaces: Map<string, Typeface>,
   stack: Stack<RenderInstruction>,
@@ -389,7 +390,7 @@ function addinstructionsFromSpec(
       addInstructionsForCircularSector(ck, stack, spec);
       break;
     case 'Triangle':
-      addinstructionsForTriangle(ck, stack, spec);
+      addInstructionsForTriangle(ck, stack, spec);
       break;
     case 'Text':
       addInstructionsForText(ck, typefaces, stack, spec);
@@ -401,7 +402,7 @@ function addinstructionsFromSpec(
       addInstructionsForPin(stack, spec);
       break;
     case 'Rotate':
-      addinstructionsForRotate(ck, stack, spec);
+      addInstructionsForRotate(ck, stack, spec);
       break;
   }
 }
@@ -418,7 +419,7 @@ export function specsToInstructions(
   // pushing instructions from the stack so that they are executed in the right
   // order (e.g. when doing compositions).
   for (const spec of specs) {
-    addinstructionsFromSpec(ck, typefaces, stack, spec);
+    addInstructionsFromSpec(ck, typefaces, stack, spec);
   }
 
   return stack;

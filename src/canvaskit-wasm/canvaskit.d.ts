@@ -2086,6 +2086,14 @@ export interface Font extends EmbindObject<"Font"> {
      * @param glyphID
      */
     getPath(glyphID: GlyphID): Path | null;
+
+    /**
+     * Returns the bounding box of text relative to (0, 0).
+     *
+     * @param text
+     * @param output - if provided, the tight bounds will be copied into this rect.
+     */
+    measureText(text: string, output?: Rect): number;
 }
 
 /**
