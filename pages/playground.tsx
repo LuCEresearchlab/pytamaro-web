@@ -46,6 +46,25 @@ import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
 import useReset from '../src/useReset';
 
+async function compressString(data: string): Promise<string> {
+  const stream = new Blob([data], { type: 'text/plain' })
+    .stream()
+    .pipeThrough(new CompressionStream('gzip'));
+  const blob = await new Response(stream).blob();
+  return Buffer.from(await blob.arrayBuffer()).toString('base64');
+}
+
+async function decompressString(data: string): Promise<string> {
+  const stream = new Blob([data], { type: 'text/base64' })
+    .stream()
+    .pipeThrough(new DecompressionStream('gzip'));
+  const blob = await new Response(stream).blob();
+  return Buffer.from(
+    Buffer.from(await blob.arrayBuffer()).toString('base64'),
+    'base64',
+  ).toString('utf-8');
+}
+
 function uniqueNames(names: PythonName[]): Set<string> {
   return new Set(names.map(({ module, name }) => `${module}.${name}`));
 }
@@ -117,8 +136,10 @@ function PlaygroundCodeCell({
   } = localActivity;
 
   const confirm = useConfirm();
+
   const { query } = useRouter();
   const codeFromQuery = query?.code;
+  const compressedCodeFromQuery = query?.c;
   useEffect(
     () => {
       const replaceCode = (newCode: string) => {
@@ -126,10 +147,8 @@ function PlaygroundCodeCell({
         handleResetAllCellsNoConfirm();
         newReset();
       };
-      if (typeof codeFromQuery === 'string') {
-        const queryCode = Buffer.from(codeFromQuery, 'base64').toString(
-          'utf-8',
-        );
+
+      const setCodeFromQuery = (queryCode: string) => {
         const userCode = codeCells[0].source;
         if (userCode !== queryCode) {
           if (userCode === playgroundInitialSource) {
@@ -146,22 +165,38 @@ function PlaygroundCodeCell({
             });
           }
         }
+      };
+
+      if (typeof codeFromQuery === 'string') {
+        setCodeFromQuery(
+          Buffer.from(codeFromQuery, 'base64').toString('utf-8'),
+        );
+      } else if (typeof compressedCodeFromQuery === 'string') {
+        decompressString(compressedCodeFromQuery)
+          .then(setCodeFromQuery)
+          .catch(() => {});
       }
     },
     // We need to run this only once, when the query changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [codeFromQuery],
+    [codeFromQuery, compressedCodeFromQuery],
   );
   const updateQueryString = useMemo(
     () =>
       debounce((newSource: string) => {
-        const newCode = Buffer.from(newSource, 'utf-8').toString('base64');
-        const newQuery = { ...query, code: newCode };
-        window.history.replaceState(
-          {},
-          '',
-          `?${new URLSearchParams(newQuery)}`,
-        );
+        compressString(newSource).then((newCode: string) => {
+          const newQuery = {
+            ...query,
+            c: newCode,
+          };
+          // Do not persist uncompressed code
+          Reflect.deleteProperty(newQuery, 'code');
+          window.history.replaceState(
+            {},
+            '',
+            `?${new URLSearchParams(newQuery)}`,
+          );
+        });
       }, 1000),
     [query],
   );
