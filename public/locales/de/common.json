@@ -173,5 +173,12 @@
     "executionDisabled": {
         "notReady": "Python-Umgebung wird geladen",
         "anotherInProgress": "Eine andere Ausführung ist im Gange"
+    },
+    "share": {
+        "action": "Teilen",
+        "urlCopiedToClipboard": {
+            "success": "URL in die Zwischenablage kopiert",
+            "failure": "URL konnte nicht in die Zwischenablage kopiert werden"
+        }
     }
 }

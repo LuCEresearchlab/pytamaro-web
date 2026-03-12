@@ -177,5 +177,12 @@
     "executionDisabled": {
         "notReady": "Caricamento dell'ambiente Python in corso",
         "anotherInProgress": "Un'altra esecuzione è in corso"
+    },
+    "share": {
+        "action": "Condividi",
+        "urlCopiedToClipboard": {
+            "success": "URL copiato negli appunti",
+            "failure": "Copia dell'URL negli appunti fallita"
+        }
     }
 }

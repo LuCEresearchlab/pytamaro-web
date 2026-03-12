@@ -175,5 +175,12 @@
     "executionDisabled": {
         "notReady": "Python environment is loading",
         "anotherInProgress": "Another execution is in progress"
+    },
+    "share": {
+        "action": "Share",
+        "urlCopiedToClipboard": {
+            "success": "URL copied to clipboard",
+            "failure": "Failed to copy URL to clipboard"
+        }
     }
 }

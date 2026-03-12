@@ -1,0 +1,48 @@
+import ShareIcon from '@mui/icons-material/Share';
+import { Button, Snackbar } from '@mui/material';
+import { useState } from 'react';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
+
+export function ShareButton({
+  getTextToCopy,
+  message,
+  failureMessage = undefined,
+}: {
+  getTextToCopy: () => string;
+  message: string;
+  failureMessage?: string;
+}) {
+  const { t } = useLocalTranslation();
+
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarContent, setSnackbarContent] = useState('');
+
+  const copyTextToClipboard = () => {
+    navigator.clipboard
+      .writeText(getTextToCopy())
+      .then(() => setSnackbarContent(message))
+      .catch(() =>
+        setSnackbarContent(failureMessage ?? t('errorCategory.other')),
+      )
+      .then(() => setSnackbarVisible(true));
+  };
+
+  return (
+    <>
+      <Button
+        variant='contained'
+        color='primary'
+        startIcon={<ShareIcon />}
+        onClick={copyTextToClipboard}
+      >
+        {t('share.action')}
+      </Button>
+      <Snackbar
+        open={snackbarVisible}
+        onClose={() => setSnackbarVisible(false)}
+        message={snackbarContent}
+        autoHideDuration={3000}
+      />
+    </>
+  );
+}

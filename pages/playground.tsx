@@ -21,6 +21,7 @@ import MoreOptionsButton from '../components/MoreOptionsButton';
 import NavigationBar from '../components/navbar/NavigationBar';
 import ResetButton from '../components/navbar/ResetButton';
 import PageTitle from '../components/PageTitle';
+import { ShareButton } from '../components/ShareButton';
 import CentralContent from '../components/sidebar/CentralContent';
 import Sidebar from '../components/sidebar/Sidebar';
 import ToolboxListSidebar from '../components/sidebar/ToolboxListSidebar';
@@ -34,6 +35,7 @@ import { ExecutorContext } from '../src/execution/executorContext';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import {
   playgroundActivityVariant,
   playgroundInitialSource,
@@ -305,10 +307,18 @@ function PlaygroundCodeDownloadButton({
     playgroundActivityVariant,
   );
   const { codeCells } = localActivity;
+  return <DownloadCodeButton codeCells={codeCells} />;
+}
+
+function PlaygroundCodeShareButton() {
+  const { t } = useLocalTranslation();
+
   return (
-    <Box sx={{ display: 'flex', marginTop: 12 }} justifyContent='center'>
-      <DownloadCodeButton codeCells={codeCells} />
-    </Box>
+    <ShareButton
+      getTextToCopy={() => window.location.toString()}
+      message={t('share.urlCopiedToClipboard.success')}
+      failureMessage={t('share.urlCopiedToClipboard.failure')}
+    />
   );
 }
 
@@ -359,13 +369,21 @@ export default function Playground({
               />
             </Container>
             <Container maxWidth='md'>
-              <PlaygroundCodeDownloadButton
-                initialCodeCells={initialCodeCells}
-              />
-              <RecommendedActivities
-                activitiesWithNames={activitiesWithNames}
-                initialCodeCells={initialCodeCells}
-              />
+              <Grid
+                sx={{ marginTop: 12 }}
+                justifyContent='center'
+                spacing={2}
+                container
+              >
+                <PlaygroundCodeDownloadButton
+                  initialCodeCells={initialCodeCells}
+                />
+                <PlaygroundCodeShareButton />
+                <RecommendedActivities
+                  activitiesWithNames={activitiesWithNames}
+                  initialCodeCells={initialCodeCells}
+                />
+              </Grid>
             </Container>
           </CentralContent>
           <Sidebar side='right' />
