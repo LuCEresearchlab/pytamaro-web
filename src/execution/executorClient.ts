@@ -222,7 +222,6 @@ export class ExecutorClient {
               executionUUID: executionMetadata.executionUUID,
               activeCellIdx: newIdx,
             });
-            // TODO: maybe we don't need this anymore?
             onActiveCellChange(oldIdx, newIdx);
           } else if (type === MessageType.FINAL_RESULT) {
             // Final execution result

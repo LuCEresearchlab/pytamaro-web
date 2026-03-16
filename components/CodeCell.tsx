@@ -118,7 +118,7 @@ export default function CodeCell({
 
   const isExecutingPreviousCell =
     executingThisExecutionUUID &&
-    executorState.activeCellIdx !== null && // TODO: make sure this doesn't break anything
+    executorState.activeCellIdx !== null &&
     executorState.activeCellIdx < cellIdx;
 
   const isExecutingInLegacyServerSideMode =
