@@ -1,7 +1,8 @@
 import ShareIcon from '@mui/icons-material/Share';
-import { Button, Snackbar } from '@mui/material';
+import { Button } from '@mui/material';
 import { useState } from 'react';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
+import CustomSnackbar from './CustomSnackbar';
 
 export function ShareButton({
   getTextToCopy,
@@ -37,11 +38,11 @@ export function ShareButton({
       >
         {t('share.action')}
       </Button>
-      <Snackbar
-        open={snackbarVisible}
-        onClose={() => setSnackbarVisible(false)}
+      <CustomSnackbar
+        visible={snackbarVisible}
+        setVisible={setSnackbarVisible}
+        severity='success'
         message={snackbarContent}
-        autoHideDuration={3000}
       />
     </>
   );
