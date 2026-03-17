@@ -65,6 +65,10 @@ function nicerTraceback(traceback: string) {
   const replaceEllipsis = (s: string) =>
     s.replace(/`ellipsis`/g, '`...`').replace(/'ellipsis'/g, "'...'");
 
+  // Add a message to the KeyboardInterrupt error
+  const addKeyboardInterruptMessage = (s: string) =>
+    s.replace(/^KeyboardInterrupt$/m, 'KeyboardInterrupt: execution stopped');
+
   return [
     removePythonErrorColon,
     hideDriver,
@@ -74,6 +78,7 @@ function nicerTraceback(traceback: string) {
     shortenLibraryPaths,
     shortenGlotLibraryPaths,
     replaceEllipsis,
+    addKeyboardInterruptMessage,
   ].reduce((acc, fn) => fn(acc), traceback);
 }
 
