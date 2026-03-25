@@ -225,11 +225,9 @@ function addInstructionsForText(
   // summing the glyph widths instead of relying on the path's tight bounds.
   // This is to account for leading and trailing glyphs with no outline
   // (e.g. spaces).
-  // Note: measureText will set the pathBounds to the tight bounds, so we need
-  // to manually adjust the width of the bounding box
-  const pathBounds: Rect = new Float32Array([0, 0, 0, 0]);
-  const textWidth = font.measureText(spec.text, pathBounds);
-  const textBounds = new Float32Array([
+  const pathBounds = path.computeTightBounds();
+  const textWidth = font.measureText(spec.text);
+  const textBounds: Rect = new Float32Array([
     0,
     pathBounds[1],
     textWidth,
