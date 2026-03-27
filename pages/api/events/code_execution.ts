@@ -16,9 +16,10 @@ export default async function handler(
     extraPythonFiles,
     liveAnalysis,
     executionUUID,
+    clientSideExecutionTag,
   } = req.body;
-  const image = process.env.GLOT_IMAGE_TAG;
-  if (image === undefined) {
+  const tag = clientSideExecutionTag ?? process.env.GLOT_IMAGE_TAG;
+  if (tag === undefined) {
     res.status(500).send({});
     return;
   }
@@ -28,7 +29,7 @@ export default async function handler(
     sources,
     initialSources,
     activityVariant,
-    image,
+    tag,
     requestedCellSequenceNumber,
     toolboxFunctions,
     extraPythonFiles,

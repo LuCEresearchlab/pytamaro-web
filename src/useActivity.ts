@@ -18,6 +18,7 @@ import {
   isExecutionNominal,
 } from './execution/codeExecution';
 import { ExecutorContext } from './execution/executorContext';
+import { CLIENT_SIDE_EXECUTION_TAG } from './execution/versions';
 import { executeServerSide } from './legacyServerSideExecution';
 import {
   CodeCellExecutionState,
@@ -306,6 +307,10 @@ export function useActivity(
       extraPythonFiles,
       liveAnalysis: metadata.liveAnalysis,
       executionUUID,
+      clientSideExecutionTag:
+        metadata.executionMode === 'cse'
+          ? CLIENT_SIDE_EXECUTION_TAG
+          : undefined,
     });
   };
 

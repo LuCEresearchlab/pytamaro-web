@@ -1,12 +1,10 @@
 import { Box, Container, Link, Typography } from '@mui/material';
 import Head from 'next/head';
 import NavigationBar from '../components/navbar/NavigationBar';
+import { PYTAMARO_VERSION, PYTHON_VERSION } from '../src/execution/versions';
 import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
 import { activityVariantPathnameFromParts } from '../src/urlUtils';
-
-const PYTHON_VERSION = '3.13';
-const PYTAMARO_VERSION = '1.1.3';
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (

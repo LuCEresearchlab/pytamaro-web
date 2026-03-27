@@ -18,9 +18,8 @@ import {
   RunPythonFile,
   TransferablePythonError,
 } from './messageTypes';
+import { PYODIDE_VERSION, PYTAMARO_VERSION } from './versions';
 
-const PYODIDE_VERSION = '0.29.2';
-const PYTAMARO_VERSION = '1.1.4';
 const EXEC_BASE_PATH = '/run/py';
 const DRIVER_FILE_NAME = 'driver.py';
 
