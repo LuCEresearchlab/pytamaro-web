@@ -412,6 +412,7 @@ export function specsToInstructions(
 ): Stack<RenderInstruction> {
   const stack: Stack<RenderInstruction> = new Stack();
 
+  try {
   // Build a sequence of instructions that can be executed linearly on the same
   // canvas object to render the complete graphic. This may involve popping and
   // pushing instructions from the stack so that they are executed in the right
@@ -419,8 +420,13 @@ export function specsToInstructions(
   for (const spec of specs) {
     addInstructionsFromSpec(ck, typefaces, stack, spec);
   }
-
   return stack;
+  } catch (error) {
+    // The code above may crash when CanvasKit fails to allocate memory.
+    // We must clean up any leftover CanvasKit objects.
+    freeStack(stack);
+    throw error;
+  }
 }
 
 export function freeStack(stack: Stack<RenderInstruction>) {
