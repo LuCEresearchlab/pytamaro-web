@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/nextjs';
 import PQueue from 'p-queue';
 import { OutputAreaRef } from '../../components/input_output/OutputArea';
+import logAnalyticsEvent, { AnalyticsEventName } from '../analyticsEvent';
 import { ToolboxFunction } from '../localStorage/schema';
 import { PythonFile } from '../schemas/activitySchema';
 import { EventName, storeDbEvent } from '../storeDbEvent';
@@ -447,6 +448,7 @@ export class ExecutorClient {
           seq: data.seq,
           content: value,
         });
+        logAnalyticsEvent(AnalyticsEventName.CodeExecutionInput, {});
         const encoded = new Uint8Array(Buffer.from(value));
         this.notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
       })
