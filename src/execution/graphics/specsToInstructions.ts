@@ -122,18 +122,31 @@ function addInstructionsForPrimitive(
   color: EncodedColor,
   pinPoint?: Point,
 ) {
-  const paint = new ck.Paint();
-  paint.setColor(decodeColor(ck, color));
+  const decodedColor = decodeColor(ck, color);
   const bounds = path.computeTightBounds();
   const pinPosition = pinPoint || {
     x: Math.abs(bounds[0] - bounds[2]) / 2,
     y: Math.abs(bounds[1] - bounds[3]) / 2,
   };
-  stack.pushInOrder([
-    { type: RenderInstructionType.BEGIN, path, pinPosition },
-    { type: RenderInstructionType.DRAW, path, paint },
-    { type: RenderInstructionType.END },
-  ]);
+  // Optimization: do not emit a DRAW instruction for fully transparent primitives.
+  // They do not affect the final graphic, but are rather common in PyTamaro code to simulate relative positioning.
+  // We still need to compute the path to determine the bounds and pin position.
+  if (decodedColor[3] === 0) {
+    stack.pushInOrder([
+      { type: RenderInstructionType.BEGIN, path, pinPosition },
+      // `path` would be deallocated automatically after a DRAW instruction,
+      // but since we're skipping that, we need to manually mark it for deletion.
+      { type: RenderInstructionType.END, toDelete: [path] },
+    ]);
+  } else {
+    const paint = new ck.Paint();
+    paint.setColor(decodedColor);
+    stack.pushInOrder([
+      { type: RenderInstructionType.BEGIN, path, pinPosition },
+      { type: RenderInstructionType.DRAW, path, paint },
+      { type: RenderInstructionType.END },
+    ]);
+  }
 }
 
 function addInstructionsForRectangle(
@@ -413,14 +426,14 @@ export function specsToInstructions(
   const stack: Stack<RenderInstruction> = new Stack();
 
   try {
-  // Build a sequence of instructions that can be executed linearly on the same
-  // canvas object to render the complete graphic. This may involve popping and
-  // pushing instructions from the stack so that they are executed in the right
-  // order (e.g. when doing compositions).
-  for (const spec of specs) {
-    addInstructionsFromSpec(ck, typefaces, stack, spec);
-  }
-  return stack;
+    // Build a sequence of instructions that can be executed linearly on the same
+    // canvas object to render the complete graphic. This may involve popping and
+    // pushing instructions from the stack so that they are executed in the right
+    // order (e.g. when doing compositions).
+    for (const spec of specs) {
+      addInstructionsFromSpec(ck, typefaces, stack, spec);
+    }
+    return stack;
   } catch (error) {
     // The code above may crash when CanvasKit fails to allocate memory.
     // We must clean up any leftover CanvasKit objects.
