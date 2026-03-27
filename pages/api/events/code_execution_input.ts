@@ -15,3 +15,12 @@ export default async function handler(
   );
   res.status(saved ? 200 : 500).send({});
 }
+
+export const config = {
+  api: {
+    bodyParser: {
+      // Discard unreasonably large inputs (~ bigger than 10 thousand characters) to prevent abuse and save DB space
+      sizeLimit: '10kb',
+    },
+  },
+};
