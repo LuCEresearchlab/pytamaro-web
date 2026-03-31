@@ -7,7 +7,7 @@ import { addDebugInfo } from './graphics/debug';
 import { loadTypeFaces } from './graphics/fonts';
 import { renderOnCanvas } from './graphics/rendering';
 import { Sized } from './graphics/spec';
-import { freeStack, specsToInstructions } from './graphics/specsToInstructions';
+import { specsToInstructions } from './graphics/specsToInstructions';
 import { drawWithSuperSampling } from './graphics/superSampling';
 import { canvasKitAssetUrl, computeBoundsAndPin } from './graphics/utils';
 import {
@@ -34,9 +34,14 @@ export class ExecutorDelegate {
   }
 
   async renderGraphic(data: DrawRequestData): Promise<string> {
+    // Use a disposable stack to make sure all wasm objects are properly
+    // deallocated once we exit from this method (regardless of whether the code
+    // crashed or succeeded).
+    using disposableStack = new DisposableStack();
     const instructions = specsToInstructions(
       this.ck,
       this.typefaces,
+      disposableStack,
       data.specs,
     );
     const { bounds, pinPosition } = computeBoundsAndPin(instructions);
@@ -58,7 +63,6 @@ export class ExecutorDelegate {
       if (data.debug) {
         addDebugInfo(this.ck, bounds, pinPosition, canvas, extraSpace);
       }
-      freeStack(instructions);
     };
 
     return drawWithSuperSampling(
@@ -79,13 +83,17 @@ export class ExecutorDelegate {
   }
 
   sizeOfGraphic(data: SizeRequestData): Sized {
+    // Use a disposable stack to make sure all wasm objects are properly
+    // deallocated once we exit from this method (regardless of whether the code
+    // crashed or succeeded).
+    using disposableStack = new DisposableStack();
     const instructions = specsToInstructions(
       this.ck,
       this.typefaces,
+      disposableStack,
       data.specs,
     );
     const { bounds } = computeBoundsAndPin(instructions);
-    freeStack(instructions);
 
     return {
       width: Math.abs(bounds[0] - bounds[2]),

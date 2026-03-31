@@ -1,4 +1,5 @@
-import type { Canvas, CanvasKit } from '../../canvaskit-wasm/canvaskit';
+import type { Canvas, CanvasKit, Image } from '../../canvaskit-wasm/canvaskit';
+import { disposeOfEmBindObject, disposeOfSurface } from './memory';
 
 export async function drawWithSuperSampling(
   ck: CanvasKit,
@@ -7,8 +8,14 @@ export async function drawWithSuperSampling(
   scalingFactor: number,
   drawImage: (ckCanvas: Canvas) => void,
 ): Promise<Blob> {
+  // Track all wasm objects using this disposable stack so that we will be
+  // able to deallocate the memory automatically once we exit from this method,
+  // even in case of crashes
+  using ds = new DisposableStack();
+
   // We to set the size before the CK surface is initialized.
   // We use the superCanvas as a super-sampled canvas...
+  // [continued before declaration of baseCanvas]
   const superCanvas = new OffscreenCanvas(
     width * scalingFactor,
     height * scalingFactor,
@@ -20,22 +27,32 @@ export async function drawWithSuperSampling(
   // SWCanvasSurface with premultiplied alpha,
   // so we create a disposable one just to be able to call .makeSurface() with
   // the right options.
-  const ckSuperSurface = ck.MakeSWCanvasSurface(superCanvas);
-  const ckPremulSuperSurface = ckSuperSurface?.makeSurface({
-    width: superCanvas.width,
-    height: superCanvas.height,
-    alphaType: ck.AlphaType.Premul,
-    colorSpace: ck.ColorSpace.SRGB,
-    colorType: ck.ColorType.RGBA_8888,
-  });
+  const ckSuperSurface = ds.adopt(
+    ck.MakeSWCanvasSurface(superCanvas),
+    disposeOfSurface,
+  );
+  const ckPremulSuperSurface = ds.adopt(
+    ckSuperSurface?.makeSurface({
+      width: superCanvas.width,
+      height: superCanvas.height,
+      alphaType: ck.AlphaType.Premul,
+      colorSpace: ck.ColorSpace.SRGB,
+      colorType: ck.ColorType.RGBA_8888,
+    }),
+    disposeOfSurface,
+  );
   // (We won't use the *un*-premultiplied surface, so we can delete it
-  // immediately.)
+  // immediately since it's potentially expensive to keep it unused in memory.)
   ckSuperSurface?.dispose();
 
+  // [continues from declaration of superCanvas]
   // ...and then we scale down to the wanted size to perform
   // anti-aliasing (SSAA).
   const baseCanvas = new OffscreenCanvas(width, height);
-  const ckBaseSurface = ck.MakeSWCanvasSurface(baseCanvas);
+  const ckBaseSurface = ds.adopt(
+    ck.MakeSWCanvasSurface(baseCanvas),
+    disposeOfSurface,
+  );
 
   if (!ckPremulSuperSurface || !ckBaseSurface) {
     throw new Error('Could not create CanvasKit surface');
@@ -48,38 +65,41 @@ export async function drawWithSuperSampling(
 
   // Now take a snapshot of the super-sampled canvas, and draw it scaled
   // down on the base canvas.
-  const superSampledImage = ckPremulSuperSurface.makeImageSnapshot();
-  const superSampledImageWithMipmaps =
-    superSampledImage.makeCopyWithDefaultMipmaps();
-
-  // Shader to scale down with a linear filter
-  const shader = superSampledImageWithMipmaps.makeShaderOptions(
-    ck.TileMode.Clamp,
-    ck.TileMode.Clamp,
-    ck.FilterMode.Linear,
-    ck.MipmapMode.Nearest,
-    ck.Matrix.scaled(1 / scalingFactor, 1 / scalingFactor),
+  const superSampledImage: Image = ds.adopt(
+    ckPremulSuperSurface.makeImageSnapshot(),
+    disposeOfEmBindObject,
   );
-  const paint = new ck.Paint();
+  const superSampledImageWithMipmaps = ds.adopt(
+    superSampledImage.makeCopyWithDefaultMipmaps(),
+    disposeOfEmBindObject,
+  );
+  // Shader to scale down with a linear filter
+  const shader = ds.adopt(
+    superSampledImageWithMipmaps.makeShaderOptions(
+      ck.TileMode.Clamp,
+      ck.TileMode.Clamp,
+      ck.FilterMode.Linear,
+      ck.MipmapMode.Nearest,
+      ck.Matrix.scaled(1 / scalingFactor, 1 / scalingFactor),
+    ),
+    disposeOfEmBindObject,
+  );
+  const paint = ds.adopt(new ck.Paint(), disposeOfEmBindObject);
   paint.setShader(shader);
   paint.setBlendMode(ck.BlendMode.Src);
 
-  // Draw downscaled version
+  // We DO NOT want to bind this to the local disposable stack: ckBaseSurface
+  // is already bound to it.
+  // If we were to use the disposable stack, the canvas object would be freed
+  // earlier than the surface it is associated to (the DS keeps track of the
+  // order in which things were "adopted").
+  // This would cause a double free, because the dispose implementation of the
+  // surface does not check whether the object has already been deleted before
+  // attempting to do so.
   const ckBaseCanvas = ckBaseSurface.getCanvas();
+  // Draw downscaled version
   ckBaseCanvas.drawPaint(paint);
   ckBaseSurface.flush();
 
-  // Cleanup WASM objects
-  paint.delete();
-  shader.delete();
-  superSampledImageWithMipmaps.delete();
-  superSampledImage.delete();
-
-  // Call dispose() on surfaces to free the underlying pixels and delete the
-  // object, see
-  // https://github.com/google/skia/blob/d0e1963cc6319f8fc7c30ea4feb5a8e94def0d76/modules/canvaskit/cpu.js#L96-L103
-  ckPremulSuperSurface.dispose();
-  ckBaseSurface.dispose();
-
-  return baseCanvas.convertToBlob();
+  return await baseCanvas.convertToBlob();
 }

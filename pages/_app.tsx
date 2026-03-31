@@ -3,6 +3,7 @@ import { AppCacheProvider } from '@mui/material-nextjs/v16-pagesRouter';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import 'disposablestack/auto';
 import { ConfirmProvider } from 'material-ui-confirm';
 import { appWithTranslation } from 'next-i18next';
 import PlausibleProvider from 'next-plausible';

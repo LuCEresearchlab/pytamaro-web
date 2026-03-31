@@ -1,10 +1,4 @@
-import {
-  EmbindObject,
-  InputMatrix,
-  Paint,
-  Path,
-  Rect,
-} from '../../canvaskit-wasm/canvaskit';
+import { InputMatrix, Paint, Path, Rect } from '../../canvaskit-wasm/canvaskit';
 import { Point } from './spec';
 import { Stack } from './stack';
 
@@ -35,7 +29,6 @@ export type BeginInstruction = {
 };
 export type EndInstruction = {
   type: RenderInstructionType.END;
-  toDelete?: EmbindObject<string>[];
 };
 export type DrawInstruction = {
   type: RenderInstructionType.DRAW;
@@ -89,15 +82,4 @@ export function extractGraphicInstructions(
     cmd = stack.pop();
   }
   return chunk;
-}
-
-export function cleanupAfterDraw(drawCmd: DrawInstruction) {
-  drawCmd.path.delete();
-  drawCmd.paint.delete();
-}
-
-export function cleanupAfterEnd(endCmd: EndInstruction) {
-  endCmd.toDelete
-    ?.filter((obj) => !obj.isDeleted())
-    ?.filter((obj) => obj.delete());
 }

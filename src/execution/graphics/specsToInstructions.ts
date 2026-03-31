@@ -2,19 +2,20 @@ import type {
   CanvasKit,
   Color,
   EmbindObject,
+  Font,
+  Paint,
   Path,
   Rect,
   Typeface,
 } from '../../canvaskit-wasm/canvaskit';
 import {
-  cleanupAfterDraw,
-  cleanupAfterEnd,
   extractBegin,
   extractEnd,
   extractGraphicInstructions,
   RenderInstruction,
   RenderInstructionType,
 } from './instructions.ts';
+import { disposeOfEmBindObject } from './memory.ts';
 import {
   CircularSectorSpec,
   ComposeSpec,
@@ -31,43 +32,91 @@ import {
 } from './spec.ts';
 import { Stack } from './stack.ts';
 
+type CkFactory = {
+  font: (fontName: string, size: number, ds?: DisposableStack) => Font;
+  paint: (ds?: DisposableStack) => Paint;
+  path: (ds?: DisposableStack) => Path;
+};
+
 /* **** Utils **** */
 
-const decodingView = new DataView(new ArrayBuffer(8));
+function clampUint8Bit(n: number): number {
+  return Math.round(Math.max(0, Math.min(n, 255)));
+}
 
-function decodeColor(
-  ck: CanvasKit,
-  color_value_from_spec: EncodedColor,
-): Color {
-  // ARGB format
-  decodingView.setBigUint64(
+/**
+ * Scalar dot product between two array of numbers.
+ *
+ * Note: a and b need to have equal length
+ */
+function dotProduct(a: number[], b: number[]) {
+  const n = Math.min(a.length, b.length);
+  let acc = 0;
+  for (let i = 0; i < n; i++) {
+    acc += a[i] * b[i];
+  }
+  return acc;
+}
+
+/**
+ * Return a matrix representing a rotation by n radians.
+ *
+ * px, py define say which point the rotation should be around.
+ */
+function rotatedMatrix(radians: number, px: number, py: number): number[] {
+  const sinV = Math.sin(radians);
+  const cosV = Math.cos(radians);
+  return [
+    cosV,
+    -sinV,
+    dotProduct([sinV, 1 - cosV], [py, px]),
+    sinV,
+    cosV,
+    dotProduct([-sinV, 1 - cosV], [px, py]),
     0,
-    typeof color_value_from_spec === 'number'
-      ? BigInt(color_value_from_spec)
-      : color_value_from_spec,
+    0,
+    1,
+  ];
+}
+
+const DECODING_VIEW = new DataView(new ArrayBuffer(8));
+
+function decodeColor(colorValueFromSpec: EncodedColor): Color {
+  // ARGB format
+  DECODING_VIEW.setBigUint64(
+    0,
+    typeof colorValueFromSpec === 'number'
+      ? BigInt(colorValueFromSpec)
+      : colorValueFromSpec,
     false /* big endian */,
   );
   // We're only using 4 bytes of the 8 bytes in the dataview.
   // Our result starts from byte offset 4.
-  const alpha = decodingView.getUint8(4);
-  const red = decodingView.getUint8(5);
-  const green = decodingView.getUint8(6);
-  const blue = decodingView.getUint8(7);
-  return ck.Color(red, green, blue, alpha / 255);
+  const alpha = DECODING_VIEW.getUint8(4);
+  const red = DECODING_VIEW.getUint8(5);
+  const green = DECODING_VIEW.getUint8(6);
+  const blue = DECODING_VIEW.getUint8(7);
+
+  return Float32Array.of(
+    clampUint8Bit(red) / 255,
+    clampUint8Bit(green) / 255,
+    clampUint8Bit(blue) / 255,
+    alpha / 255,
+  );
 }
 
-function decodePoint(point_value_from_spec: EncodedPoint): Point {
+function decodePoint(pointValueFromSpec: EncodedPoint): Point {
   // 32-bit per coordinate, first x, then y.
   // Each coordinate is a float in the range -1..1, encoded as an unsigned int.
-  decodingView.setBigUint64(
+  DECODING_VIEW.setBigUint64(
     0,
-    typeof point_value_from_spec === 'number'
-      ? BigInt(point_value_from_spec)
-      : point_value_from_spec,
+    typeof pointValueFromSpec === 'number'
+      ? BigInt(pointValueFromSpec)
+      : pointValueFromSpec,
     false /* big endian */,
   );
-  const x = decodingView.getFloat32(0, false /* big endian */);
-  const y = decodingView.getFloat32(4, false /* big endian */);
+  const x = DECODING_VIEW.getFloat32(0, false /* big endian */);
+  const y = DECODING_VIEW.getFloat32(4, false /* big endian */);
   return { x, y };
 }
 
@@ -101,28 +150,28 @@ function relToAbsPoint(relPoint: EncodedPoint, bounds: Rect): Point {
 /* **** Specs Processing **** */
 
 function addInstructionsForEmpty(
-  ck: CanvasKit,
+  ckFactory: CkFactory,
   stack: Stack<RenderInstruction>,
 ) {
-  const emptyPath = new ck.Path();
+  const emptyPath = ckFactory.path();
   stack.pushInOrder([
     {
       type: RenderInstructionType.BEGIN,
       path: emptyPath,
       pinPosition: { x: 0, y: 0 },
     },
-    { type: RenderInstructionType.END, toDelete: [emptyPath] },
+    { type: RenderInstructionType.END },
   ]);
 }
 
 function addInstructionsForPrimitive(
-  ck: CanvasKit,
+  ckFactory: CkFactory,
   stack: Stack<RenderInstruction>,
   path: Path,
   color: EncodedColor,
   pinPoint?: Point,
 ) {
-  const decodedColor = decodeColor(ck, color);
+  const decodedColor = decodeColor(color);
   const bounds = path.computeTightBounds();
   const pinPosition = pinPoint || {
     x: Math.abs(bounds[0] - bounds[2]) / 2,
@@ -136,10 +185,10 @@ function addInstructionsForPrimitive(
       { type: RenderInstructionType.BEGIN, path, pinPosition },
       // `path` would be deallocated automatically after a DRAW instruction,
       // but since we're skipping that, we need to manually mark it for deletion.
-      { type: RenderInstructionType.END, toDelete: [path] },
+      { type: RenderInstructionType.END },
     ]);
   } else {
-    const paint = new ck.Paint();
+    const paint = ckFactory.paint();
     paint.setColor(decodedColor);
     stack.pushInOrder([
       { type: RenderInstructionType.BEGIN, path, pinPosition },
@@ -150,88 +199,102 @@ function addInstructionsForPrimitive(
 }
 
 function addInstructionsForRectangle(
-  ck: CanvasKit,
+  ckFactory: CkFactory,
   stack: Stack<RenderInstruction>,
   spec: RectangleSpec,
 ) {
-  const path = new ck.Path().addRect(
-    ck.XYWHRect(0, 0, spec.width, spec.height),
-  );
-  addInstructionsForPrimitive(ck, stack, path, spec.color);
+  const rect: Rect = Float32Array.of(0, 0, spec.width, spec.height);
+  const path: Path = ckFactory.path().addRect(rect);
+  addInstructionsForPrimitive(ckFactory, stack, path, spec.color);
 }
 
 function addInstructionsForEllipse(
-  ck: CanvasKit,
+  ckFactory: CkFactory,
   stack: Stack<RenderInstruction>,
   spec: EllipseSpec,
 ) {
-  const path = new ck.Path().addOval(
-    ck.XYWHRect(0, 0, spec.width, spec.height),
-  );
-  addInstructionsForPrimitive(ck, stack, path, spec.color);
+  const rect: Rect = Float32Array.of(0, 0, spec.width, spec.height);
+  const path: Path = ckFactory.path().addOval(rect);
+  addInstructionsForPrimitive(ckFactory, stack, path, spec.color);
 }
 
 function addInstructionsForCircularSector(
-  ck: CanvasKit,
+  ckFactory: CkFactory,
   stack: Stack<RenderInstruction>,
   spec: CircularSectorSpec,
 ) {
   const radius = spec.radius;
   const diameter = radius * 2;
-  const rect = ck.XYWHRect(0, 0, diameter, diameter);
-  const path =
+  const rect: Rect = Float32Array.of(0, 0, diameter, diameter);
+  const path: Path =
     spec.angle == 360
-      ? new ck.Path().addOval(rect)
-      : new ck.Path()
+      ? ckFactory.path().addOval(rect)
+      : ckFactory
+          .path()
           .moveTo(radius, radius)
           .arcToOval(rect, 0, -spec.angle, false)
           .close();
-  const pinPoint = { x: radius, y: radius };
-  addInstructionsForPrimitive(ck, stack, path, spec.color, pinPoint);
+
+  const pinPoint: Point = { x: radius, y: radius };
+  addInstructionsForPrimitive(ckFactory, stack, path, spec.color, pinPoint);
 }
 
 function addInstructionsForTriangle(
-  ck: CanvasKit,
+  ckFactory: CkFactory,
   stack: Stack<RenderInstruction>,
   spec: TriangleSpec,
 ) {
-  const thirdPoint = {
+  const thirdPoint: Point = {
     x: spec.side2 * Math.cos((spec.angle / -180) * Math.PI),
     y: spec.side2 * Math.sin((spec.angle / -180) * Math.PI),
   };
-  const centroid = {
+  const centroid: Point = {
     x: (spec.side1 + thirdPoint.x) / 3,
     y: thirdPoint.y / 3,
   };
-  const path = new ck.Path()
+  const path: Path = ckFactory
+    .path()
     .moveTo(0, 0)
     .lineTo(spec.side1, 0)
     .lineTo(thirdPoint.x, thirdPoint.y)
     .close();
-  addInstructionsForPrimitive(ck, stack, path, spec.color, centroid);
+  addInstructionsForPrimitive(ckFactory, stack, path, spec.color, centroid);
 }
 
 function addInstructionsForText(
-  ck: CanvasKit,
-  typefaces: Map<string, Typeface>,
+  ckFactory: CkFactory,
   stack: Stack<RenderInstruction>,
   spec: TextSpec,
 ) {
-  // Fallback to Fira Sans
-  const typeface = typefaces.get(spec.font_name) || typefaces.get('Fira Sans')!;
-  const font = new ck.Font(typeface, spec.text_size);
+  using localDS = new DisposableStack();
+  // The font object only needs to be destroyed as this method goes out of
+  // scope, so let's bind it to a local disposable stack instead
+  const font = ckFactory.font(spec.font_name, spec.text_size, localDS);
   const glyphIDs = font.getGlyphIDs(spec.text);
   const offsets = font.getXPos(glyphIDs);
-  const path = new ck.Path();
+  // On the other hand, this path object needs to survive this method, so
+  // we don't bind it to the local disposable stack
+  const path = ckFactory.path();
   for (let i = 0; i < glyphIDs.length; i++) {
     const glyphID = glyphIDs[i];
     const offset = offsets[i];
-    const glyphPath = font.getPath(glyphID);
-    if (glyphPath != null) {
-      glyphPath.offset(offset, 0);
-      path.addPath(glyphPath);
-      glyphPath.delete();
+    // !! DO NOT USE glyphPathRef directly. Make the local DS adopt it !!
+    // Font is bound to the local disposable stack, so anything that "comes"
+    // from it, shall be bound to the same DS to synchronize their life-cycles.
+    // As an additional complication here, Font.getPath may return null for
+    // "invalid" glyph IDs, so we can't blindly adopt it, we need to do a null
+    // check first.
+    const glyphPathToBeAdopted = font.getPath(glyphID);
+    if (glyphPathToBeAdopted == null) {
+      continue;
     }
+    const glyphPath = localDS.adopt(
+      glyphPathToBeAdopted,
+      disposeOfEmBindObject,
+    );
+    glyphPath.offset(offset, 0);
+    path.addPath(glyphPath);
+    glyphPath.delete();
   }
 
   // Compute the bounding box of the text, whose width is determined by
@@ -240,19 +303,15 @@ function addInstructionsForText(
   // (e.g. spaces).
   const pathBounds = path.computeTightBounds();
   const textWidth = font.measureText(spec.text);
-  const textBounds: Rect = new Float32Array([
+  const textBounds: Rect = Float32Array.of(
     0,
     pathBounds[1],
     textWidth,
     pathBounds[3],
-  ]);
+  );
 
-  // Do NOT delete the typeface: it is shared across graphics.
-  // Delete only the font, which is unique for each graphic.
-  font.delete();
-
-  const paint = new ck.Paint();
-  paint.setColor(decodeColor(ck, spec.color));
+  const paint = ckFactory.paint();
+  paint.setColor(decodeColor(spec.color));
   paint.setAntiAlias(true);
 
   stack.pushInOrder([
@@ -268,13 +327,13 @@ function addInstructionsForText(
 }
 
 function addInstructionsForCompose(
-  ck: CanvasKit,
+  ckFactory: CkFactory,
   stack: Stack<RenderInstruction>,
   spec: ComposeSpec,
 ) {
   const fgChunk = extractGraphicInstructions(stack);
   const fgBegin = extractBegin(fgChunk);
-  const fgEnd = extractEnd(fgChunk);
+  extractEnd(fgChunk);
   const { path: fgPath, pinPosition: fgPin } = fgBegin;
   const fgPinPosition =
     spec.fg_pin !== undefined
@@ -283,7 +342,7 @@ function addInstructionsForCompose(
 
   const bgChunk = extractGraphicInstructions(stack);
   const bgBegin = extractBegin(bgChunk);
-  const bgEnd = extractEnd(bgChunk);
+  extractEnd(bgChunk);
   const { path: bgPath, pinPosition: bgPin } = bgBegin;
   const bgPinPosition =
     spec.bg_pin !== undefined
@@ -301,7 +360,8 @@ function addInstructionsForCompose(
     0,
     1,
   ];
-  const path = new ck.Path()
+  const path = ckFactory
+    .path()
     .addPath(bgPath)!
     .addPath(fgPath, fgOffsetMatrix, true)!;
 
@@ -312,14 +372,6 @@ function addInstructionsForCompose(
   const dx = bgPinPosition.x - fgPinPosition.x;
   const dy = bgPinPosition.y - fgPinPosition.y;
 
-  const toDelete: EmbindObject<string>[] = [path];
-  if (fgEnd.toDelete) {
-    toDelete.push(...fgEnd.toDelete);
-  }
-  if (bgEnd.toDelete) {
-    toDelete.push(...bgEnd.toDelete);
-  }
-
   stack.pushInOrder([
     { type: RenderInstructionType.BEGIN, path, pinPosition },
     { type: RenderInstructionType.SAVE },
@@ -327,14 +379,14 @@ function addInstructionsForCompose(
     { type: RenderInstructionType.TRANSLATE, dx, dy },
     ...fgChunk,
     { type: RenderInstructionType.RESTORE },
-    { type: RenderInstructionType.END, toDelete },
+    { type: RenderInstructionType.END },
   ]);
 }
 
 function addInstructionsForPin(stack: Stack<RenderInstruction>, spec: PinSpec) {
   const childChunk = extractGraphicInstructions(stack);
   const childBegin = extractBegin(childChunk);
-  const childEnd = extractEnd(childChunk);
+  extractEnd(childChunk);
 
   const { path } = childBegin;
   const pinPosition = relToAbsPoint(spec.pin, path.computeTightBounds());
@@ -342,22 +394,22 @@ function addInstructionsForPin(stack: Stack<RenderInstruction>, spec: PinSpec) {
   stack.pushInOrder([
     { type: RenderInstructionType.BEGIN, path, pinPosition },
     ...childChunk,
-    { type: RenderInstructionType.END, toDelete: childEnd.toDelete },
+    { type: RenderInstructionType.END },
   ]);
 }
 
 function addInstructionsForRotate(
-  ck: CanvasKit,
+  ckFactory: CkFactory,
   stack: Stack<RenderInstruction>,
   spec: RotateSpec,
 ) {
   const childChunk = extractGraphicInstructions(stack);
   const childBegin = extractBegin(childChunk);
-  const childEnd = extractEnd(childChunk);
+  extractEnd(childChunk);
 
   const { path, pinPosition } = childBegin;
 
-  const rotMatrix = ck.Matrix.rotated(
+  const rotMatrix = rotatedMatrix(
     (-spec.angle / 180) * Math.PI,
     pinPosition.x,
     pinPosition.y,
@@ -365,11 +417,7 @@ function addInstructionsForRotate(
 
   // We must use the actual path of the child unlike in other graphics with
   // child(ren) because the bounds are affected by rotation
-  const rotatedPath = new ck.Path().addPath(path)!.transform(rotMatrix);
-
-  const toDelete = childEnd.toDelete
-    ? childEnd.toDelete.concat([rotatedPath])
-    : [rotatedPath];
+  const rotatedPath = ckFactory.path().addPath(path)!.transform(rotMatrix);
 
   stack.pushInOrder([
     { type: RenderInstructionType.BEGIN, path: rotatedPath, pinPosition },
@@ -377,43 +425,42 @@ function addInstructionsForRotate(
     { type: RenderInstructionType.TRANSFORM, matrix: rotMatrix },
     ...childChunk,
     { type: RenderInstructionType.RESTORE },
-    { type: RenderInstructionType.END, toDelete },
+    { type: RenderInstructionType.END },
   ]);
 }
 
 function addInstructionsFromSpec(
-  ck: CanvasKit,
-  typefaces: Map<string, Typeface>,
+  ckFactory: CkFactory,
   stack: Stack<RenderInstruction>,
   spec: GraphicSpec,
 ) {
   switch (spec.t) {
     case 'Empty':
-      addInstructionsForEmpty(ck, stack);
+      addInstructionsForEmpty(ckFactory, stack);
       break;
     case 'Rectangle':
-      addInstructionsForRectangle(ck, stack, spec);
+      addInstructionsForRectangle(ckFactory, stack, spec);
       break;
     case 'Ellipse':
-      addInstructionsForEllipse(ck, stack, spec);
+      addInstructionsForEllipse(ckFactory, stack, spec);
       break;
     case 'CircularSector':
-      addInstructionsForCircularSector(ck, stack, spec);
+      addInstructionsForCircularSector(ckFactory, stack, spec);
       break;
     case 'Triangle':
-      addInstructionsForTriangle(ck, stack, spec);
+      addInstructionsForTriangle(ckFactory, stack, spec);
       break;
     case 'Text':
-      addInstructionsForText(ck, typefaces, stack, spec);
+      addInstructionsForText(ckFactory, stack, spec);
       break;
     case 'Compose':
-      addInstructionsForCompose(ck, stack, spec);
+      addInstructionsForCompose(ckFactory, stack, spec);
       break;
     case 'Pin':
       addInstructionsForPin(stack, spec);
       break;
     case 'Rotate':
-      addInstructionsForRotate(ck, stack, spec);
+      addInstructionsForRotate(ckFactory, stack, spec);
       break;
   }
 }
@@ -421,37 +468,42 @@ function addInstructionsFromSpec(
 export function specsToInstructions(
   ck: CanvasKit,
   typefaces: Map<string, Typeface>,
+  disposableStack: DisposableStack,
   specs: GraphicSpec[],
 ): Stack<RenderInstruction> {
   const stack: Stack<RenderInstruction> = new Stack();
 
-  try {
-    // Build a sequence of instructions that can be executed linearly on the same
-    // canvas object to render the complete graphic. This may involve popping and
-    // pushing instructions from the stack so that they are executed in the right
-    // order (e.g. when doing compositions).
-    for (const spec of specs) {
-      addInstructionsFromSpec(ck, typefaces, stack, spec);
-    }
-    return stack;
-  } catch (error) {
-    // The code above may crash when CanvasKit fails to allocate memory.
-    // We must clean up any leftover CanvasKit objects.
-    freeStack(stack);
-    throw error;
-  }
-}
+  const makeEmBindObject: <T extends EmbindObject<string>>(
+    init: (ck: CanvasKit) => T,
+    ds: DisposableStack | undefined,
+  ) => T = (init, ds) =>
+    (ds === undefined ? disposableStack : ds).adopt(
+      init(ck),
+      disposeOfEmBindObject,
+    );
 
-export function freeStack(stack: Stack<RenderInstruction>) {
-  while (!stack.isEmpty()) {
-    const cmd = stack.pop();
-    switch (cmd.type) {
-      case RenderInstructionType.DRAW:
-        cleanupAfterDraw(cmd);
-        break;
-      case RenderInstructionType.END:
-        cleanupAfterEnd(cmd);
-        break;
-    }
+  // This factory allow us to proxy all instantiation of CK "wasm objects" that
+  // need to be freed manually once the rendering has been completed.
+  // We delegate the task of freeing them to a disposableStack (either the one
+  // we given as a parameter to this function, or one supplied by the user of
+  // the factory).
+  const ckFactory: CkFactory = {
+    font: (fontName, size, ds) =>
+      makeEmBindObject((ck) => {
+        // Fallback to the 'Fira Sans' typeface
+        const typeface = typefaces.get(fontName) || typefaces.get('Fira Sans')!;
+        return new ck.Font(typeface, size);
+      }, ds),
+    path: (ds) => makeEmBindObject((ck) => new ck.Path(), ds),
+    paint: (ds) => makeEmBindObject((ck) => new ck.Paint(), ds),
+  };
+
+  // Build a sequence of instructions that can be executed linearly on the same
+  // canvas object to render the complete graphic. This may involve popping and
+  // pushing instructions from the stack so that they are executed in the right
+  // order (e.g. when doing compositions).
+  for (const spec of specs) {
+    addInstructionsFromSpec(ckFactory, stack, spec);
   }
+  return stack;
 }

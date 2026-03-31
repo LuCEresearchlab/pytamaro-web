@@ -1,23 +1,15 @@
 import { Canvas } from '../../canvaskit-wasm/canvaskit';
-import {
-  RenderInstruction,
-  RenderInstructionType,
-  cleanupAfterDraw,
-  cleanupAfterEnd,
-} from './instructions';
+import { RenderInstruction, RenderInstructionType } from './instructions';
 import { Stack } from './stack';
 
 function runCommand(canvas: Canvas, command: RenderInstruction) {
   switch (command.type) {
     case RenderInstructionType.BEGIN:
-      // Ignore, we don't care about this when drawing.
-      break;
     case RenderInstructionType.END:
-      cleanupAfterEnd(command);
+      // Ignore, we don't care about this when drawing.
       break;
     case RenderInstructionType.DRAW:
       canvas.drawPath(command.path, command.paint);
-      cleanupAfterDraw(command);
       break;
     case RenderInstructionType.SAVE:
       canvas.save();
