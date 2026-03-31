@@ -58,6 +58,9 @@ export async function drawWithSuperSampling(
     throw new Error('Could not create CanvasKit surface');
   }
 
+  // Safety: getCanvas() does not move the ownership of the canvas to the caller,
+  // so we must not track this object in the disposable stack (otherwise it would cause a double free,
+  // because the surface does not check whether its canvas has already been deleted before attempting to do so).
   const ckSuperCanvas = ckPremulSuperSurface.getCanvas();
   ckSuperCanvas.scale(scalingFactor, scalingFactor);
   drawImage(ckSuperCanvas);
@@ -88,14 +91,9 @@ export async function drawWithSuperSampling(
   paint.setShader(shader);
   paint.setBlendMode(ck.BlendMode.Src);
 
-  // We DO NOT want to bind this to the local disposable stack: ckBaseSurface
-  // is already bound to it.
-  // If we were to use the disposable stack, the canvas object would be freed
-  // earlier than the surface it is associated to (the DS keeps track of the
-  // order in which things were "adopted").
-  // This would cause a double free, because the dispose implementation of the
-  // surface does not check whether the object has already been deleted before
-  // attempting to do so.
+  // Safety: getCanvas() does not move the ownership of the canvas to the caller,
+  // so we must not track this object in the disposable stack (otherwise it would cause a double free,
+  // because the surface does not check whether its canvas has already been deleted before attempting to do so).
   const ckBaseCanvas = ckBaseSurface.getCanvas();
   // Draw downscaled version
   ckBaseCanvas.drawPaint(paint);
