@@ -33,9 +33,10 @@ import {
 import { Stack } from './stack.ts';
 
 type CkFactory = {
-  font: (fontName: string, size: number, ds?: DisposableStack) => Font;
-  paint: (ds?: DisposableStack) => Paint;
-  path: (ds?: DisposableStack) => Path;
+  font: (fontName: string, size: number) => Font;
+  glyphPath: (font: Font, glyphID: number) => Path | null;
+  paint: () => Paint;
+  path: () => Path;
 };
 
 /* **** Utils **** */
@@ -266,35 +267,20 @@ function addInstructionsForText(
   stack: Stack<RenderInstruction>,
   spec: TextSpec,
 ) {
-  using localDS = new DisposableStack();
-  // The font object only needs to be destroyed as this method goes out of
-  // scope, so let's bind it to a local disposable stack instead
-  const font = ckFactory.font(spec.font_name, spec.text_size, localDS);
+  const font = ckFactory.font(spec.font_name, spec.text_size);
   const glyphIDs = font.getGlyphIDs(spec.text);
   const offsets = font.getXPos(glyphIDs);
-  // On the other hand, this path object needs to survive this method, so
-  // we don't bind it to the local disposable stack
   const path = ckFactory.path();
   for (let i = 0; i < glyphIDs.length; i++) {
     const glyphID = glyphIDs[i];
     const offset = offsets[i];
-    // !! DO NOT USE glyphPathRef directly. Make the local DS adopt it !!
-    // Font is bound to the local disposable stack, so anything that "comes"
-    // from it, shall be bound to the same DS to synchronize their life-cycles.
-    // As an additional complication here, Font.getPath may return null for
-    // "invalid" glyph IDs, so we can't blindly adopt it, we need to do a null
-    // check first.
-    const glyphPathToBeAdopted = font.getPath(glyphID);
-    if (glyphPathToBeAdopted == null) {
-      continue;
+    const glyphPath = ckFactory.glyphPath(font, glyphID);
+    if (glyphPath !== null) {
+      glyphPath.offset(offset, 0);
+      path.addPath(glyphPath);
+      // We no longer need the glyph path, so we can immediately delete it.
+      glyphPath.delete();
     }
-    const glyphPath = localDS.adopt(
-      glyphPathToBeAdopted,
-      disposeOfEmBindObject,
-    );
-    glyphPath.offset(offset, 0);
-    path.addPath(glyphPath);
-    glyphPath.delete();
   }
 
   // Compute the bounding box of the text, whose width is determined by
@@ -303,6 +289,8 @@ function addInstructionsForText(
   // (e.g. spaces).
   const pathBounds = path.computeTightBounds();
   const textWidth = font.measureText(spec.text);
+  // We no longer need the font, so we can immediately delete it.
+  font.delete();
   const textBounds: Rect = Float32Array.of(
     0,
     pathBounds[1],
@@ -475,27 +463,27 @@ export function specsToInstructions(
 
   const makeEmBindObject: <T extends EmbindObject<string>>(
     init: (ck: CanvasKit) => T,
-    ds: DisposableStack | undefined,
-  ) => T = (init, ds) =>
-    (ds === undefined ? disposableStack : ds).adopt(
-      init(ck),
-      disposeOfEmBindObject,
-    );
+  ) => T = (init) => disposableStack.adopt(init(ck), disposeOfEmBindObject);
 
   // This factory allow us to proxy all instantiation of CK "wasm objects" that
   // need to be freed manually once the rendering has been completed.
-  // We delegate the task of freeing them to a disposableStack (either the one
-  // we given as a parameter to this function, or one supplied by the user of
-  // the factory).
+  // We delegate the task of freeing them to the DisposableStack given as a parameter to this function.
   const ckFactory: CkFactory = {
-    font: (fontName, size, ds) =>
+    font: (fontName, size) =>
       makeEmBindObject((ck) => {
         // Fallback to the 'Fira Sans' typeface
         const typeface = typefaces.get(fontName) || typefaces.get('Fira Sans')!;
         return new ck.Font(typeface, size);
-      }, ds),
-    path: (ds) => makeEmBindObject((ck) => new ck.Path(), ds),
-    paint: (ds) => makeEmBindObject((ck) => new ck.Paint(), ds),
+      }),
+    glyphPath: (font, glyphID) => {
+      const path = font.getPath(glyphID);
+      if (path === null) {
+        return null;
+      }
+      return makeEmBindObject(() => path);
+    },
+    path: () => makeEmBindObject((ck) => new ck.Path()),
+    paint: () => makeEmBindObject((ck) => new ck.Paint()),
   };
 
   // Build a sequence of instructions that can be executed linearly on the same
