@@ -52,19 +52,18 @@ async function compressString(data: string): Promise<string> {
   const stream = new Blob([data], { type: 'text/plain' })
     .stream()
     .pipeThrough(new CompressionStream('gzip'));
-  const blob = await new Response(stream).blob();
-  return Buffer.from(await blob.arrayBuffer()).toString('base64');
+  const buf = await new Response(stream).arrayBuffer();
+  return Buffer.from(buf).toString('base64');
 }
 
 async function decompressString(data: string): Promise<string> {
-  const stream = new Blob([data], { type: 'text/base64' })
-    .stream()
-    .pipeThrough(new DecompressionStream('gzip'));
-  const blob = await new Response(stream).blob();
-  return Buffer.from(
-    Buffer.from(await blob.arrayBuffer()).toString('base64'),
-    'base64',
-  ).toString('utf-8');
+  const encodedRes = await fetch(
+    'data:application/octet-stream;base64,' + data,
+  );
+  const blob = await encodedRes.blob();
+  const stream = blob.stream().pipeThrough(new DecompressionStream('gzip'));
+  const buf = await new Response(stream).arrayBuffer();
+  return Buffer.from(buf).toString();
 }
 
 function uniqueNames(names: PythonName[]): Set<string> {
