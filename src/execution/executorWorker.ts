@@ -1,10 +1,7 @@
 import throttle from 'lodash/throttle';
 import { PyodideAPI } from 'pyodide';
 import { PyProxy, PythonError } from 'pyodide/ffi';
-import {
-  INPUT_BEGIN,
-  INPUT_END,
-} from '../../components/input_output/IoMarkers';
+import { INPUT_BEGIN, INPUT_END } from '../ioMarkers';
 import { joinLines } from '../sourceUtils';
 import { ExecutionResponse } from './codeExecution';
 import { GraphicSpec, Sized } from './graphics/spec';
