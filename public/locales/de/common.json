@@ -180,5 +180,9 @@
             "success": "URL in die Zwischenablage kopiert",
             "failure": "URL konnte nicht in die Zwischenablage kopiert werden"
         }
+    },
+    "inputHint": {
+        "active": "Geben Sie Ihre Eingabe ein und drücken Sie die Eingabetaste",
+        "inactive": "Benutzereingabe"
     }
 }

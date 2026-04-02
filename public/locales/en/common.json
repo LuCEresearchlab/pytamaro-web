@@ -182,5 +182,9 @@
             "success": "URL copied to clipboard",
             "failure": "Failed to copy URL to clipboard"
         }
+    },
+    "inputHint": {
+        "active": "Type your input and press Enter",
+        "inactive": "User input"
     }
 }

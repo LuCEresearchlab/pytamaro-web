@@ -1,8 +1,11 @@
 import { Box, Tooltip } from '@mui/material';
 import { useEffect, useRef } from 'react';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import theme from '../../src/theme';
 
 const COMPACT_INPUT_AREA_BACKGROUND_COLOR = theme.palette.grey[300];
+const BORDER_EDITABLE_COLOR = theme.palette.primary.main;
+const BORDER_NOT_EDITABLE_COLOR = theme.palette.grey[500];
 
 export default function InputArea({
   initialContent = null,
@@ -11,23 +14,19 @@ export default function InputArea({
   initialContent?: string | null;
   onSubmit?: (input: string) => void | undefined;
 }) {
+  const { t } = useLocalTranslation();
   const editable = onSubmit !== undefined;
   const inputRef = useRef<HTMLPreElement | null>(null);
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
-  // When this inputArea is non-editable, we need to ensure that the string is not empty
-  // to avoid collapsing the pre element and keep the alignment on the baseline.
-  let shownContent = initialContent;
-  if (!editable && !shownContent) {
-    shownContent = '\u200B'; // zero-width space
-  }
+
   return (
     <Box sx={{ display: 'inline-block' }}>
       <Tooltip
         arrow
         placement={editable ? 'bottom' : 'right'}
-        title={editable ? 'Type your input and press Enter' : 'User input'}
+        title={t(editable ? 'inputHint.active' : 'inputHint.inactive')}
       >
         <pre
           ref={inputRef}
@@ -35,7 +34,7 @@ export default function InputArea({
             outline: 'none',
             borderBottom:
               '1px solid ' +
-              (editable ? theme.palette.primary.main : theme.palette.grey[500]),
+              (editable ? BORDER_EDITABLE_COLOR : BORDER_NOT_EDITABLE_COLOR),
             backgroundColor: COMPACT_INPUT_AREA_BACKGROUND_COLOR,
             margin: 0,
             minWidth: editable ? '3ch' : undefined,
@@ -62,7 +61,14 @@ export default function InputArea({
               : undefined
           }
         >
-          {shownContent}
+          {
+            // When this inputArea is non-editable, we need to ensure that the
+            // string is not empty to avoid collapsing the pre element and keep
+            // the alignment on the baseline.
+            !editable && !initialContent
+              ? '\u200B' // zero-width space
+              : initialContent
+          }
         </pre>
       </Tooltip>
     </Box>
