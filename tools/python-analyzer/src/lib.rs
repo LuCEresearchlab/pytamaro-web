@@ -35,7 +35,7 @@ use ty_project::{Db, ProjectDatabase};
 use ty_python_semantic::{Program, SemanticModel};
 //use wasm_bindgen::prelude::*;
 
-static PYTAMARO_ZIP_BYTES: &[u8] = include_bytes!("pytamaro-1.1.4-py3-none-any.whl");
+static PYTAMARO_ZIP_BYTES: &[u8] = include_bytes!("pytamaro-2.0.0-py3-none-any.whl");
 
 static TY_CONFIG: &str = include_str!("ty.json");
 

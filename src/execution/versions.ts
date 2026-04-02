@@ -1,6 +1,6 @@
 export const PYODIDE_VERSION = '0.29.2';
 export const PYTHON_VERSION = '3.13';
-export const PYTAMARO_VERSION = '1.1.4';
+export const PYTAMARO_VERSION = '2.0.0';
 
 /*
 The execution environment depends on a number of factors, including:
