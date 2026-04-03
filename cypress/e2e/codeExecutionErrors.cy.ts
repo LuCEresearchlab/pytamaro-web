@@ -52,9 +52,9 @@ describe('Code Execution Errors', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();
-    cy.get('[data-testid="SettingsOutlinedIcon"]').click();
+    cy.get('.platform-settings').click();
     cy.get('button').contains('Semantics').click();
-    cy.get('[data-testid="SettingsOutlinedIcon"]').click();
+    cy.get('.platform-settings').click();
     cy.get('.monaco-editor').first().type('{selectall}{backspace}');
     cy.get('.monaco-editor').first().type('print(a)');
     cy.get('.squiggly-error').should('be.visible');
@@ -77,9 +77,9 @@ describe('Code Execution Errors', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();
-    cy.get('[data-testid="SettingsOutlinedIcon"]').click();
+    cy.get('.platform-settings').click();
     cy.get('button').contains('Semantics').click();
-    cy.get('[data-testid="SettingsOutlinedIcon"]').click();
+    cy.get('.platform-settings').click();
     cy.get('.monaco-editor').first().type('{selectall}{backspace}');
     cy.get('.monaco-editor').first().type('1 + "a"');
     cy.get('.squiggly-error').should('be.visible');
