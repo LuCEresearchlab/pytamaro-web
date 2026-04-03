@@ -4,6 +4,7 @@ import { TFunction } from 'next-i18next';
 import { ErrorMessageWidget } from '../components/editor/ErrorMessageWidget';
 import { runtimeErrorMessageCategory } from '../components/editor/errors';
 import { ExecutionResponse } from './execution/codeExecution';
+import { PYTHON_VERSION } from './execution/versions';
 import {
   splitLines,
   splitLinesWithoutPossibleTrailingNewline,
@@ -55,7 +56,7 @@ function nicerTraceback(traceback: string) {
 
   // Shorten library paths
   const shortenLibraryPaths = (s: string) =>
-    s.replaceAll('/lib/python3.13/site-packages/', LIBRARY_PATH);
+    s.replaceAll(`/lib/python${PYTHON_VERSION}/site-packages/`, LIBRARY_PATH);
 
   const shortenGlotLibraryPaths = (s: string) =>
     s.replaceAll('/usr/local/lib/', LIBRARY_PATH);
