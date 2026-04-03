@@ -14,6 +14,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           submodules: true
+          token: ${{ secrets.PYTAMARO_WEB_TOKEN }}
       # Install npm dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
