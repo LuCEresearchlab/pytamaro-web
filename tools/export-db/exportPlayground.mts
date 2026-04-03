@@ -7,10 +7,10 @@
 import { exec } from 'child_process';
 import { mkdir, rm, writeFile } from 'fs/promises';
 import { join } from 'path';
-import { BareboneToolboxFunction } from '../src/codeExecution.ts';
-import sql from '../src/db/dbConnection.ts';
-import { TOOLBOX_FUNCTIONS_TABLE } from '../src/db/events/codeExecutionEvent.ts';
-import { EventName } from '../src/storeDbEvent.ts';
+import sql from '../../src/db/dbConnection.ts';
+import { TOOLBOX_FUNCTIONS_TABLE } from '../../src/db/events/codeExecutionEvent.ts';
+import { BareboneToolboxFunction } from '../../src/execution/codeExecution.ts';
+import { EventName } from '../../src/storeDbEvent.ts';
 
 const BEGIN_DATE = '2025-12-10 18:00:00';
 const END_DATE = '2026-01-01 00:00:00';
