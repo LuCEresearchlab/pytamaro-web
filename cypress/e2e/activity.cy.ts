@@ -14,7 +14,7 @@ describe('Activity Page', () => {
     // visible cells contain keyword "pass"
     cy.get('.lines-content', { timeout: 20000 }).each(($cell) => {
       cy.wrap($cell).within(() => {
-        cy.get('.mtk6').contains('pass').should('have.length.at.least', 1);
+        cy.get('.mtk1').contains('pass').should('have.length.at.least', 1);
       });
     });
   });

@@ -40,7 +40,7 @@ function StderrElement({ content }: { content: string }) {
     processTraceback(content);
 
   return (
-    <div>
+    <div className='stderr'>
       <PreElement lines={userTracebackLines} />
       {collapsed && (
         <div>
