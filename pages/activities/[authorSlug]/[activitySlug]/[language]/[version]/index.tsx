@@ -93,6 +93,12 @@ function sanitizeIframes() {
   });
 }
 
+function sanitizeImgs() {
+  document.querySelectorAll('img').forEach((img) => {
+    img.setAttribute('crossOrigin', 'anonymous');
+  });
+}
+
 function NotebookCells({
   activity,
   initialCodeCells,
@@ -128,6 +134,7 @@ function NotebookCells({
 
   useEffect(() => {
     sanitizeIframes();
+    sanitizeImgs();
   }, []);
 
   const outputAreaRefs = useRef<Map<number, OutputAreaRef | null> | null>(null);
