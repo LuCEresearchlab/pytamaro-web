@@ -35,6 +35,7 @@ export function ShareButton({
         color='primary'
         startIcon={<ShareIcon />}
         onClick={copyTextToClipboard}
+        data-testid='share-button'
       >
         {t('share.action')}
       </Button>
