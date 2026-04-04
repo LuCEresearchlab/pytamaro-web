@@ -167,6 +167,7 @@ export default function FunctionDocumentation({
             src={description.figure.url}
             alt={description.figure.caption}
             height={200}
+            crossOrigin='anonymous'
           />
           <Typography color='text.secondary' sx={{ mt: 1 }} variant='caption'>
             {description.figure.caption}

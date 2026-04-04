@@ -68,12 +68,14 @@ export default function ToolboxFunctionsList({
       title: t('toolbox.deleteAreYouSure'),
       confirmationText: t('toolbox.deleteConfirm'),
       cancellationText: t('confirmCancel'),
-    }).then(() => {
-      logAnalyticsEvent(AnalyticsEventName.DeleteToolboxFunction, {
-        name: fn.name,
-      });
-      storeDbEvent(EventName.DeleteToolboxFunction, metadata, { fn });
-      deleteFunction(fn);
+    }).then(({ confirmed }) => {
+      if (confirmed) {
+        logAnalyticsEvent(AnalyticsEventName.DeleteToolboxFunction, {
+          name: fn.name,
+        });
+        storeDbEvent(EventName.DeleteToolboxFunction, metadata, { fn });
+        deleteFunction(fn);
+      }
     });
   };
 

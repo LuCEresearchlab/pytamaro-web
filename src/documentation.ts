@@ -8,7 +8,7 @@ import {
   KNOWN_JUDICIOUS_MODULES,
   toolboxToJudiciousFunction,
 } from '../components/documentation/utils';
-import { TOOLBOX_FILE } from './codeExecution';
+import { TOOLBOX_FILE } from './execution/codeExecution';
 import useLocalToolbox from './localStorage/useLocalToolbox';
 import { PythonFunction, PythonName } from './python-analyzer/python_analyzer';
 import { JudiciousElement, JudiciousModule } from './schemas/documentation';
@@ -74,7 +74,7 @@ export function useDocumentationElements(
     .map(({ name }) => ({ module: '.', name }))
     .concat(names);
 
-  return namesToShow
+  const elementsToShow = namesToShow
     .flatMap(({ module, name }) => {
       if (module === TOOLBOX_FILE) {
         const toolboxFunction = toolboxFunctions.find((fn) => fn.name === name);
@@ -116,4 +116,9 @@ export function useDocumentationElements(
       return element && [{ module, element }];
     })
     .filter((element) => element !== undefined);
+
+  return uniqWith(
+    elementsToShow,
+    (e1, e2) => e1.module === e2.module && e1.element.name === e2.element.name,
+  );
 }

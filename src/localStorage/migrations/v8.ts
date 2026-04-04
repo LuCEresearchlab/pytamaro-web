@@ -3,9 +3,9 @@ import {
   CurriculumMetadata,
   DocsMetadata,
   LiveAnalysisStatus,
-  Metadata,
   ToolboxFunction,
 } from '../schema';
+import { MetadataV8 } from './v9';
 
 export interface MetadataV7 {
   dataModelVersion: string;
@@ -20,8 +20,8 @@ export interface MetadataV7 {
   lastNotificationSeen: number;
 }
 
-export default function migrateToV8(metadata: MetadataV7): Metadata {
-  const newMetadata: Metadata = {
+export default function migrateToV8(metadata: MetadataV7): MetadataV8 {
+  const newMetadata: MetadataV8 = {
     ...metadata,
     dataModelVersion: '8',
     liveAnalysis: LiveAnalysisStatus.Syntax,

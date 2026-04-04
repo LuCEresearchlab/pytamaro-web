@@ -15,26 +15,12 @@ import Head from 'next/head';
 import { useShallow } from 'zustand/shallow';
 import PageTitle from '../../components/PageTitle';
 import NavigationBar from '../../components/navbar/NavigationBar';
-import initFfi from '../../src/pyodide-execution/ffi';
-import { initPyodide } from '../../src/pyodide-execution/pyodideWorkerClient';
 import theme from '../../src/theme';
-
-if (typeof window !== 'undefined') {
-  initFfi().then(initPyodide);
-}
-
-const LOADING_DEBOUNCE_TIME = 2000;
 
 function TidePage() {
   const [configuration, setConfiguration] = useState(
     undefined as Partial<ConfigurationState> | undefined,
   );
-  const [loading_debounce, setLoadingDebounche] = useState(false);
-  const loading_debounche_timer = useRef(
-    undefined as NodeJS.Timeout | undefined,
-  );
-
-  const [loaded, setLoaded] = useState(false);
 
   const { setJudicious } = useStore();
 
@@ -48,42 +34,15 @@ function TidePage() {
     cached_modules.current = modules.map((v) => v.module);
   }, [modules, setJudicious]);
 
-  const { nodes, evaluating } = useStore(
-    useShallow((state) => ({
-      nodes: state.nodes,
-      evaluating: state.evaluating,
-    })),
-  );
-
-  const loading_step1 = useMemo(
-    () =>
-      !(
-        configuration &&
-        modules.length === cached_modules.current.length &&
-        !nodes.find((v) => v.data.outdated === true) &&
-        evaluating
-      ),
-    [configuration, evaluating, modules.length, nodes],
-  );
-
-  useEffect(() => {
-    if (loading_step1) {
-      if (loading_debounche_timer.current)
-        clearTimeout(loading_debounche_timer.current);
-      loading_debounche_timer.current = setTimeout(() => {
-        setLoadingDebounche(true);
-      }, LOADING_DEBOUNCE_TIME);
-    }
-  }, [loading_step1]);
+  const { nodes } = useStore(useShallow((state) => ({ nodes: state.nodes })));
 
   const loading = useMemo(
-    () => !(loaded || (loading_step1 && loading_debounce)),
-    [loaded, loading_step1, loading_debounce],
+    () =>
+      configuration === undefined || // Configuration not yet loaded
+      modules.length !== cached_modules.current.length || // Modules not yet loaded
+      nodes.find((v) => v.data.outdated === true), // Outdated node data
+    [configuration, modules.length, nodes],
   );
-
-  useEffect(() => {
-    if (!loading) setLoaded(true);
-  }, [loading]);
 
   useEffect(() => {
     const tl = anime.timeline({

@@ -1,1 +1,2 @@
-*.wasm.map      binary
+*.wasm.map                         binary
+src/canvaskit-wasm/canvaskit.js    binary

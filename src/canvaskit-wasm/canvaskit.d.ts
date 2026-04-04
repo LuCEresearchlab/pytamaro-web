@@ -2067,6 +2067,33 @@ export interface Font extends EmbindObject<"Font"> {
      * @param face
      */
     setTypeface(face: Typeface | null): void;
+
+    /**
+     * Retrieves the x-positions for each glyph.
+     *
+     * @param glyphIDs array of glyph indices to be positioned
+     * @param origin x-position of the first glyph. Defaults to 0
+     * @returns returns glyphs x-positions
+     */
+    getXPos(glyphIDs: GlyphIDArray, origin?: number): number[];
+
+    /**
+     * If the specified glyph can be represented as a path, return its path.
+     * If it is not (e.g. it is represented with a bitmap) return null.
+     *
+     * Note: an 'empty' glyph (e.g. what a space " " character might map to) can return
+     * a path, but that path may have zero contours.
+     * @param glyphID
+     */
+    getPath(glyphID: GlyphID): Path | null;
+
+    /**
+     * Returns the bounding box of text relative to (0, 0).
+     *
+     * @param text
+     * @param output - if provided, the tight bounds will be copied into this rect.
+     */
+    measureText(text: string, output?: Rect): number;
 }
 
 /**
@@ -4398,6 +4425,8 @@ export type FlattenedPointArray = Float32Array;
 export type FlattenedRectangleArray = Float32Array;
 
 export type GlyphIDArray = Uint16Array;
+
+export type GlyphID = number;
 /**
  * A command is a verb and then any arguments needed to fulfill that path verb.
  * InputCommands is a flattened structure of one or more of these.

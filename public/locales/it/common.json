@@ -10,12 +10,17 @@
     "documentation": "Documentazione",
     "myToolbox": "La mia Toolbox",
     "runCode": "Esegui",
+    "runningCode": "In Esecuzione",
+    "waitingRunningCode": "In attesa che le celle precedenti vengano eseguite",
+    "waitingForInput": "In attesa di input dell'utente",
+    "stopExecution": "Stop",
     "executionCompletedWithErrors": "Esecuzione completata con errori",
     "executionCompletedSuccessfully": "Esecuzione completata con successo",
     "errorInvolvesToolbox": "Questo errore coinvolge una funzione dalla toolbox.",
     "errorPreviousCell": "Si è verificato un errore in una cella di codice precedente. Risolvilo prima di eseguire questa cella di codice.",
     "goToError": "Vai all'errore",
     "resetCell": "Reset Cella",
+    "restartPythonEnvironment": "Riavvia ambiente Python",
     "copyCode": "Copia Codice",
     "hideOutput": "Nascondi Output",
     "showOutput": "Mostra Output",
@@ -158,5 +163,30 @@
         "name": "Nome",
         "type": "Tipo",
         "other": "Errore"
+    },
+    "executionError": {
+        "title": "Esecuzione fallita",
+        "message": "Il tuo codice non può essere eseguito. Questo potrebbe dipendere da una serie di motivi, come una grafica troppo grande o complessa, o il tuo programma che utilizza troppa memoria.\nPuoi provare a semplificare il programma, o eseguirlo in un altro IDE."
+    },
+    "executionMode": {
+        "title": "Esecuzione Python",
+        "cse": "Nuova modalità",
+        "sse": "Modalità legacy",
+        "info": "La nuova modalità esegue sul tuo browser, è più veloce e permette di usare input. Per un periodo limitato, puoi usare la modalità legacy se riscontri problemi."
+    },
+    "executionDisabled": {
+        "notReady": "Caricamento dell'ambiente Python in corso",
+        "anotherInProgress": "Un'altra esecuzione è in corso"
+    },
+    "share": {
+        "action": "Condividi",
+        "urlCopiedToClipboard": {
+            "success": "URL copiato negli appunti",
+            "failure": "Copia dell'URL negli appunti fallita"
+        }
+    },
+    "inputHint": {
+        "active": "Scrivi l'input e premi Invio",
+        "inactive": "Input utente"
     }
 }

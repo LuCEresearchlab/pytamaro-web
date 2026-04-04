@@ -20,8 +20,8 @@ describe('Code Execution Errors', () => {
       .should('be.visible')
       .contains('Name');
     cy.get('.squiggly-error').should('be.visible');
-    cy.get('.output-area').should('be.empty');
-    cy.get('.output-area').parent().contains('NameError');
+    cy.get('.output-area').should('not.exist');
+    cy.get('.stderr').should('be.visible').contains('NameError');
   });
 
   it('should hide annotations when the code changes', () => {
@@ -52,9 +52,9 @@ describe('Code Execution Errors', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();
-    cy.get('[data-testid="SettingsOutlinedIcon"]').click();
+    cy.get('.platform-settings').click();
     cy.get('button').contains('Semantics').click();
-    cy.get('[data-testid="SettingsOutlinedIcon"]').click();
+    cy.get('.platform-settings').click();
     cy.get('.monaco-editor').first().type('{selectall}{backspace}');
     cy.get('.monaco-editor').first().type('print(a)');
     cy.get('.squiggly-error').should('be.visible');
@@ -77,9 +77,9 @@ describe('Code Execution Errors', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();
-    cy.get('[data-testid="SettingsOutlinedIcon"]').click();
+    cy.get('.platform-settings').click();
     cy.get('button').contains('Semantics').click();
-    cy.get('[data-testid="SettingsOutlinedIcon"]').click();
+    cy.get('.platform-settings').click();
     cy.get('.monaco-editor').first().type('{selectall}{backspace}');
     cy.get('.monaco-editor').first().type('1 + "a"');
     cy.get('.squiggly-error').should('be.visible');
@@ -151,7 +151,7 @@ describe('Code Execution Errors', () => {
       );
     cy.get('.run-button').first().click();
     cy.get('.output-area').should('contain.text', 'out');
-    cy.get('.output-area').parent().should('contain.text', 'err');
+    cy.get('.stderr').should('contain.text', 'err');
   });
 
   it('should show the error when a cell calls a function from a previous cell that has an error', () => {
@@ -168,6 +168,6 @@ describe('Code Execution Errors', () => {
     cy.get('.monaco-editor-overlaymessage')
       .should('be.visible')
       .contains('Name');
-    cy.get('.output-area').parent().contains('NameError');
+    cy.get('.stderr').should('be.visible').contains('NameError');
   });
 });

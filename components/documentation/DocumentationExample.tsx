@@ -1,5 +1,4 @@
-import Keyboard from '@mui/icons-material/Keyboard';
-import { Badge, Box, Card, CardContent, Tooltip } from '@mui/material';
+import { Box, Card, CardContent, Tooltip } from '@mui/material';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import useMonacoColorizer, {
   COLORIZE_CLASSNAME,
@@ -7,7 +6,8 @@ import useMonacoColorizer, {
 import { JudiciousExample } from '../../src/schemas/documentation';
 import theme from '../../src/theme';
 import { STRICT_PYTHON3_LANG_ID } from '../editor/strictPython3';
-import { OutputArea } from '../OutputArea';
+import InputArea from '../input_output/InputArea';
+import { OutputArea } from '../input_output/OutputArea';
 
 function RotatedHeading({
   children,
@@ -98,36 +98,7 @@ export default function DocumentationExample({
                 }}
               />
             )}
-            {example.stdin && (
-              <Badge
-                badgeContent={
-                  <Keyboard
-                    sx={{
-                      position: 'absolute',
-                      bottom: theme.spacing(1),
-                      right: theme.spacing(-1),
-                    }}
-                  />
-                }
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                sx={{ display: 'inline-block' }}
-              >
-                <OutputArea
-                  data={example.stdin}
-                  sx={{
-                    paddingLeft: theme.spacing(0.25),
-                    paddingRight: theme.spacing(0.25),
-                    overflowX: 'auto',
-                  }}
-                  preStyle={{
-                    marginTop: theme.spacing(0.5),
-                    marginBottom: theme.spacing(0.5),
-                    padding: theme.spacing(0.5),
-                    border: `1px dashed ${theme.palette.grey[600]}`,
-                  }}
-                />
-              </Badge>
-            )}
+            {example.stdin && <InputArea initialContent={example.stdin} />}
           </Box>
         )}
         {example.result && (

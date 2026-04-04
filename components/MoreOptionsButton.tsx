@@ -1,4 +1,4 @@
-import { RestartAlt } from '@mui/icons-material';
+import { RestartAlt, SettingsBackupRestore } from '@mui/icons-material';
 import ContentCopy from '@mui/icons-material/ContentCopy';
 import MoreVert from '@mui/icons-material/MoreVert';
 import Visibility from '@mui/icons-material/Visibility';
@@ -16,11 +16,13 @@ export default function MoreOptionsButton({
   codeCellExecutionState,
   onShowHideOutput,
   onReset,
+  onRestart,
 }: {
   codeCellState: CodeCellState;
   codeCellExecutionState: CodeCellExecutionState;
   onShowHideOutput: () => void;
   onReset: () => void;
+  onRestart: () => void;
 }) {
   const { t } = useLocalTranslation(['common']);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -42,6 +44,10 @@ export default function MoreOptionsButton({
   const handleReset = () => {
     handleClose();
     onReset();
+  };
+  const handleRestart = () => {
+    handleClose();
+    onRestart();
   };
   return (
     <>
@@ -73,6 +79,12 @@ export default function MoreOptionsButton({
           },
         }}
       >
+        <MenuItem onClick={handleRestart}>
+          <ListItemIcon sx={{ verticalAlign: 'middle' }}>
+            <SettingsBackupRestore fontSize='small' />
+          </ListItemIcon>
+          {t('restartPythonEnvironment')}
+        </MenuItem>
         <MenuItem onClick={handleReset}>
           <ListItemIcon sx={{ verticalAlign: 'middle' }}>
             <RestartAlt fontSize='small' />

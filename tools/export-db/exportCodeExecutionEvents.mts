@@ -13,18 +13,18 @@
 
 import { mkdir, rm, writeFile } from 'fs/promises';
 import { join } from 'path';
-import {
-  BareboneToolboxFunction,
-  CODE_EXECUTION_CELLS_TO_FILES_VERSION,
-  cellsToFiles,
-} from '../src/codeExecution';
-import sql from '../src/db/dbConnection';
+import sql from '../../src/db/dbConnection';
 import {
   EXTRA_PYTHON_FILES_TABLE,
   TOOLBOX_FUNCTIONS_TABLE,
-} from '../src/db/events/codeExecutionEvent';
-import { PythonFile } from '../src/schemas/activitySchema';
-import { EventName } from '../src/storeDbEvent';
+} from '../../src/db/events/codeExecutionEvent';
+import {
+  BareboneToolboxFunction,
+  cellsToFiles,
+  CODE_EXECUTION_CELLS_TO_FILES_VERSION,
+} from '../../src/execution/codeExecution';
+import { PythonFile } from '../../src/schemas/activitySchema';
+import { EventName } from '../../src/storeDbEvent';
 
 const EXPERIMENT_KEY = 'luce-members'; // or, e.g., 'pytamaro-summ%er-academy-2023'
 const BEGIN_DATE = '2023-07-14 00:00:00';
@@ -60,7 +60,7 @@ async function main() {
         (await sql`SELECT name, source AS content FROM ${sql(EXTRA_PYTHON_FILES_TABLE)}
                                             INNER JOIN sources ON ${sql(EXTRA_PYTHON_FILES_TABLE)}.source_id = sources.id
                                             WHERE event_id = ${event.id};`) as PythonFile[];
-      const files = await cellsToFiles(
+      const files = cellsToFiles(
         sourcesObj.map((sourcesObj) => sourcesObj.source),
         event.requested_cell_seq_number,
         toolboxFunctions,

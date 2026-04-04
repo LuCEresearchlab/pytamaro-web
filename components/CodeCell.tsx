@@ -1,5 +1,6 @@
 import { PlayCircleFilled } from '@mui/icons-material';
 import {
+  Box,
   Card,
   CardActions,
   CardContent,
@@ -8,33 +9,41 @@ import {
   Stack,
 } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
-import { useMemo } from 'react';
-import { ExecutionResponse, isExecutionCompleted } from '../src/codeExecution';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import {
+  isExecutionError,
+  isExecutionFailed,
+  isExecutionNominal,
+} from '../src/execution/codeExecution';
+import { ExecutorContext } from '../src/execution/executorContext';
 import { CodeCellExecutionState } from '../src/localStorage/schema';
+import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
+import { PythonName } from '../src/python-analyzer/python_analyzer';
 import {
   ActivityVariant,
   PlatformConfiguration,
   PythonFile,
 } from '../src/schemas/activitySchema';
+import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import useAnalysisResult from '../src/useAnalysisResult';
+import { useIsHydrated } from '../src/useIsHydrated';
 import { PythonAnalyzer } from '../src/usePythonAnalyzer';
-import { EllipsisTip, InputTip, NoOutputTip } from './CodeCellTips';
+import { EllipsisTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
 import DocumentationStripe from './documentation/DocumentationStripe';
-import ExecutionOutputArea from './OutputArea';
+import ExecutionOutputArea from './input_output/ExecutionOutputArea';
+import { OutputAreaRef } from './input_output/OutputArea';
 import RunButton from './RunButton';
 import StaleOutputBadge from './StaleOutputBadge';
-
-export function isExecutionError(response: ExecutionResponse | undefined) {
-  return response?.type === 'error';
-}
 
 export default function CodeCell({
   initialSource,
   currentSource,
   codeCellExecutionState,
+  onResetExecutionState,
   onSourceChanged,
+  onExecutionRequestEvent,
   onExecutionRequested,
   firstLineNumber,
   activityVariant,
@@ -42,34 +51,47 @@ export default function CodeCell({
   resetCounter,
   pythonAnalyzer,
   cellIdx,
+  setOutputAreaRef,
   extraPythonFiles = [],
   extraActions = null,
   readOnly = false,
+  runEnabled = true,
 }: {
   initialSource: string;
   currentSource: string;
   codeCellExecutionState: CodeCellExecutionState;
+  onResetExecutionState: () => void;
   onSourceChanged: (newSource: string) => void;
-  onExecutionRequested: () => Promise<void>;
+  onExecutionRequestEvent: (executionUUID: string) => void;
+  onExecutionRequested: (executionUUID: string) => Promise<void>;
   firstLineNumber: number;
   activityVariant: ActivityVariant;
   platformConfig: PlatformConfiguration;
   resetCounter: number;
   pythonAnalyzer: PythonAnalyzer | null;
   cellIdx: number;
+  setOutputAreaRef: (
+    idx: number,
+    node: OutputAreaRef | null | undefined,
+  ) => void;
   extraPythonFiles?: PythonFile[];
   extraActions?: React.ReactNode;
   readOnly?: boolean;
+  runEnabled?: boolean;
 }) {
   const { t } = useLocalTranslation(['common']);
-  const { executionResponse } = codeCellExecutionState;
-  const executionError = isExecutionError(executionResponse);
-  const executing = codeCellExecutionState.executionInProgress;
-  const executionFinished = codeCellExecutionState.outputSynced;
-  const noOutput =
-    executionResponse &&
-    isExecutionCompleted(executionResponse) &&
+  const { metadata } = useLocalProfile();
+  const { executionResponse, executionUUID, outputAreaVisible, outputSynced } =
+    codeCellExecutionState;
+  const executionError =
+    isExecutionError(executionResponse) || isExecutionFailed(executionResponse);
+  const executionFinished =
+    isExecutionNominal(executionResponse) && executionResponse.completed;
+  const finishedWithoutOutput =
+    executionFinished &&
     (executionResponse.stdout + executionResponse.stderr).length === 0;
+
+  const [isWaitingForInput, setIsWaitingForInput] = useState(false);
 
   const analysisResult = useAnalysisResult(pythonAnalyzer, cellIdx);
 
@@ -83,14 +105,66 @@ export default function CodeCell({
     }));
   }, [pythonAnalyzer, extraPythonFiles]);
 
-  const inputFunctionCalled =
-    analysisResult?.called_names.map((info) => info.name).includes('input') ??
-    false;
   const ellipsis = (analysisResult?.ellipsis.length ?? 0) > 0;
 
   const confirm = useConfirm();
 
+  const { executorState } = useContext(ExecutorContext);
+  const executing =
+    executionUUID !== undefined && executorState.type === 'executing';
+
+  const executingThisExecutionUUID =
+    executing && executorState.executionUUID === executionUUID;
+
+  const isExecutingPreviousCell =
+    executingThisExecutionUUID &&
+    executorState.activeCellIdx !== null &&
+    executorState.activeCellIdx < cellIdx;
+
+  const isExecutingInLegacyServerSideMode =
+    metadata.executionMode === 'sse' &&
+    executionResponse !== undefined &&
+    executionResponse.type !== 'failure' &&
+    executionResponse.completed === false;
+
+  const runButtonEnabled =
+    // Global {en,dis}able, or...
+    runEnabled ||
+    // ...this cell is part of the sequence of cells in execution
+    (executingThisExecutionUUID &&
+      (executorState.activeCellIdx === null ||
+        executorState.activeCellIdx <= cellIdx));
+
+  const isHydrated = useIsHydrated();
+
+  const [
+    alreadyClearedPossibleIncompleteExecution,
+    setAlreadyClearedPossibleIncompleteExecution,
+  ] = useState(false);
+
+  useEffect(() => {
+    if (!isHydrated || alreadyClearedPossibleIncompleteExecution) {
+      return;
+    }
+    setAlreadyClearedPossibleIncompleteExecution(true);
+    if (isExecutionNominal(executionResponse) && !executionResponse.completed) {
+      // The execution state refers to a previous execution that did not complete.
+      // We want to reset the execution state.
+      onResetExecutionState();
+    }
+  }, [
+    executionResponse,
+    onResetExecutionState,
+    isHydrated,
+    alreadyClearedPossibleIncompleteExecution,
+  ]);
+
   const handleExecutionRequest = async () => {
+    const executionRequestUUID = crypto.randomUUID();
+    // Immediately notify that an execution has been requested,
+    // so that we can log the even if later on the user decides to cancel the execution after seeing the warning dialog.
+    onExecutionRequestEvent(executionRequestUUID);
+
     // Check for static errors before executing
     const diagnosticsUpToCurrentCell =
       pythonAnalyzer!.getDiagnosticsCountUpTo(cellIdx);
@@ -99,7 +173,7 @@ export default function CodeCell({
     const currentCellDiagnostics =
       diagnosticsUpToCurrentCell - diagnosticsUpToPreviousCells;
     if (diagnosticsUpToCurrentCell === 0) {
-      return onExecutionRequested();
+      return onExecutionRequested(executionRequestUUID);
     }
 
     let message;
@@ -117,6 +191,7 @@ export default function CodeCell({
         previousCount: diagnosticsUpToPreviousCells,
       });
     }
+
     return confirm({
       title: t('confirmExecutionWithErrors.title'),
       description: message,
@@ -126,10 +201,19 @@ export default function CodeCell({
         endIcon: <PlayCircleFilled />,
         variant: 'contained',
       },
-    }).then(() => {
-      return onExecutionRequested();
+    }).then(({ confirmed }) => {
+      const forced_execution = confirmed;
+      storeDbEvent(EventName.CodeExecutionErrorsWarning, metadata, {
+        executionUUID: executionRequestUUID,
+        forced_execution,
+      });
+      if (forced_execution) {
+        return onExecutionRequested(executionRequestUUID);
+      }
     });
   };
+
+  const [hoveredName, setHoveredName] = useState<PythonName | null>(null);
 
   return (
     <Paper
@@ -141,6 +225,7 @@ export default function CodeCell({
           analysisResult={analysisResult}
           activityVariant={activityVariant}
           extraPythonFilesAnalysisResults={extraPythonFilesAnalysisResults}
+          hoveredName={hoveredName}
         />
       )}
       {/* Overflow to allow for overflowed widgets in a CodeEditor */}
@@ -151,52 +236,63 @@ export default function CodeCell({
             currentSource={currentSource}
             onChange={onSourceChanged}
             onExecutionRequested={handleExecutionRequest}
-            executionAllowed={!executing}
-            executionFinished={executionFinished}
+            executionAllowed={runButtonEnabled}
+            showRuntimeAnnotations={executionFinished && outputSynced}
             firstLineNumber={firstLineNumber}
             readOnly={readOnly}
             executionResponse={executionResponse}
             resetCounter={resetCounter}
             pythonAnalyzer={pythonAnalyzer}
             cellIdx={cellIdx}
+            setHoveredName={setHoveredName}
           />
         </CardContent>
         <CardActions disableSpacing sx={{ paddingLeft: 2, display: 'flex' }}>
           <RunButton
             onExecutionRequested={handleExecutionRequest}
-            executing={executing}
+            enabled={runButtonEnabled}
+            executing={executing || isExecutingInLegacyServerSideMode}
+            isExecutingPreviousCell={isExecutingPreviousCell}
             executionFinished={executionFinished}
             executionError={executionError}
+            isWaitingForInput={isWaitingForInput}
           />
           <Stack direction='row' sx={{ marginLeft: 'auto' }}>
             {extraActions}
           </Stack>
         </CardActions>
-        {noOutput && platformConfig.showNoOutputTip && (
-          <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
-            <NoOutputTip
-              dimmed={!codeCellExecutionState.outputSynced}
-              importedNames={analysisResult?.imported_names}
-            />
-          </StaleOutputBadge>
-        )}
-        {inputFunctionCalled && <InputTip />}
-        {ellipsis && <EllipsisTip />}
-        <Collapse
-          in={codeCellExecutionState.outputAreaVisible}
-          timeout='auto'
-          unmountOnExit
-        >
-          <StaleOutputBadge hidden={codeCellExecutionState.outputSynced}>
-            {executionResponse && isExecutionCompleted(executionResponse) && (
-              <ExecutionOutputArea
-                executionError={executionError}
-                executionResponse={executionResponse}
-                dimmed={!codeCellExecutionState.outputSynced}
+        <Box sx={{ marginTop: 1 }}>
+          {finishedWithoutOutput && platformConfig.showNoOutputTip && (
+            <StaleOutputBadge hidden={outputSynced}>
+              <NoOutputTip
+                dimmed={!outputSynced}
+                importedNames={analysisResult?.imported_names}
               />
-            )}
-          </StaleOutputBadge>
-        </Collapse>
+            </StaleOutputBadge>
+          )}
+          {ellipsis && <EllipsisTip />}
+          <Collapse
+            in={
+              outputAreaVisible ||
+              // Show in case of a failed execution, because the alert is inside ExecutionOutputArea.
+              isExecutionFailed(executionResponse)
+            }
+            timeout='auto'
+            unmountOnExit
+          >
+            <StaleOutputBadge hidden={outputSynced}>
+              {executionResponse !== undefined && (
+                <ExecutionOutputArea
+                  executionResponse={executionResponse}
+                  firstLineNumber={firstLineNumber}
+                  dimmed={!outputSynced}
+                  setOutputAreaRef={(node) => setOutputAreaRef(cellIdx, node)}
+                  setIsWaitingForInput={setIsWaitingForInput}
+                />
+              )}
+            </StaleOutputBadge>
+          </Collapse>
+        </Box>
       </Card>
     </Paper>
   );

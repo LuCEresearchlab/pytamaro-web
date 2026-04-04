@@ -17,6 +17,10 @@ import {
   TideNode,
   TideNodeMetadata,
 } from '../../components/tide/cards';
+import { ExecutionResponse } from '../execution/codeExecution';
+import { ExecutionMetadata } from '../execution/messageTypes';
+import { ToolboxFunction } from '../localStorage/schema';
+import { PythonFile } from '../schemas/activitySchema';
 import { JudiciousModule } from '../schemas/documentation';
 import { ChangeSliceState, createChangeSlice } from './changes';
 import { ConfigurationState, createConfigurationSlice } from './configuration';
@@ -35,6 +39,26 @@ import {
 export interface DraggedElementData {
   type: string;
   data: TideNode['data'];
+}
+
+let execute: (
+  sources: string[],
+  idx: number,
+  toolboxFunctions: ToolboxFunction[],
+  extraPythonFiles: PythonFile[],
+  executionMetadata: ExecutionMetadata,
+) => Promise<ExecutionResponse> = () => new Promise((_, reject) => reject());
+
+export function setExecute(
+  fn: (
+    sources: string[],
+    idx: number,
+    toolboxFunctions: ToolboxFunction[],
+    extraPythonFiles: PythonFile[],
+    executionMetadata: ExecutionMetadata,
+  ) => Promise<ExecutionResponse>,
+) {
+  execute = fn;
 }
 
 let evaluation_timeout: NodeJS.Timeout | undefined = undefined;
@@ -265,7 +289,7 @@ export const createGraphSlice: StateCreator<
         async () => {
           const prev = evaluation_timeout;
 
-          const async = await evaluation(sync);
+          const async = await evaluation(execute, sync);
           if (prev !== evaluation_timeout || !evaluation_timeout) return;
           evaluation_timeout = undefined;
 

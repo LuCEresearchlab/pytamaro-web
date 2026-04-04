@@ -29,8 +29,8 @@ import ActivityCardMedia from '../components/ActivityCardMedia';
 import Carousel from '../components/Carousel';
 import DocElement from '../components/documentation/DocElement';
 import { STRICT_PYTHON3_LANG_ID } from '../components/editor/strictPython3';
+import ExecutionOutputArea from '../components/input_output/ExecutionOutputArea';
 import NavigationBar from '../components/navbar/NavigationBar';
-import ExecutionOutputArea from '../components/OutputArea';
 import { useDocumentationElements } from '../src/documentation';
 import {
   basicActivities,
@@ -233,12 +233,14 @@ function PythonCodeCard() {
         </Button>
       </CardContent>
       <ExecutionOutputArea
-        executionError={false}
         executionResponse={{
           stdout: EXAMPLE_STDOUT,
           stderr: '',
+          completed: true,
           type: 'success',
         }}
+        setOutputAreaRef={() => {}}
+        setIsWaitingForInput={() => {}}
         sx={{
           border: 0,
           height: '100%',
@@ -292,7 +294,7 @@ function Documentation() {
         <Stack
           direction='row'
           rowGap={0.1}
-          columnGap={1}
+          columnGap={0.5}
           alignItems='baseline'
           useFlexGap
           flexWrap='wrap'

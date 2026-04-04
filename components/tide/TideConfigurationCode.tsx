@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useContext, useEffect, useRef } from 'react';
 import { allKinds } from '../../src/documentation';
-import executeWithPyodide from '../../src/pyodide-execution/pyodideWorkerClient';
+import { ExecutorContext } from '../../src/execution/executorContext';
+import { ExecutionMetadata } from '../../src/execution/messageTypes';
 import { JudiciousModule } from '../../src/schemas/documentation';
 import { ConfigurationState } from '../../src/tide/configuration';
 import { evaluation, synchronous_phases } from '../../src/tide/evaluation';
@@ -10,6 +11,15 @@ import {
   toTideFunction,
 } from '../../src/tide/judiciours_to_tide';
 import { ImportedDefinition } from '../../src/tide/language/definitions';
+import { setExecute } from '../../src/tide/store';
+
+// Do not record events from TIDE internals
+export const dummyExecutionMetadata: ExecutionMetadata = {
+  executionUUID: crypto.randomUUID(),
+  allowSharingAnonData: 'no',
+  userUuid: '',
+  experimentKey: '',
+};
 
 export default function TideConfigurationCode({
   setConfiguration,
@@ -23,6 +33,7 @@ export default function TideConfigurationCode({
 
   const configuration_timeout = useRef(undefined as NodeJS.Timeout | undefined);
   const cached_modules = useRef([] as string[]);
+  const { executorState, execute } = useContext(ExecutorContext);
 
   const extract_names = useCallback(
     async (configuration_code: string) => {
@@ -35,7 +46,7 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
 [print("IMPORT", v.module, o.name) for v in imports for o in v.names]
 `;
       configuration_timeout.current = undefined;
-      const results = await executeWithPyodide([code], 0, [], [])
+      const results = await execute([code], 0, [], [], dummyExecutionMetadata)
         .catch(() => undefined)
         .then((v) => {
           return v?.type === 'success' ? v.stdout : undefined;
@@ -113,6 +124,7 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
       });
 
       const imported = await evaluation(
+        execute,
         synchronous_phases({
           imported_definitions: sorted,
           expressions: [],
@@ -120,24 +132,38 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
         }),
       ).then((v) => v.imported_definitions);
 
+      // This entire TIDE thing is so messed up it's beyond salvation.
+      // I won't even try to make it right at this point.
+      // It is not maintainable.
+      // Some day TIDE will have to be properly rewritten.
+      // This hack has to happen right now, for it is here where the stars align
+      // (it was told to me in a dream).
+      setExecute(execute);
+
       setConfiguration({
         imported_definitions: imported,
       });
     },
-    [modules, setConfiguration],
+    [modules, execute, setConfiguration],
   );
 
   useEffect(() => {
-    if (modules.length === cached_modules.current.length) return;
+    if (
+      executorState.type === 'loading' ||
+      modules.length === cached_modules.current.length
+    ) {
+      return;
+    }
     cached_modules.current = modules.map((v) => v.module);
-    if (configuration_timeout.current)
+    if (configuration_timeout.current) {
       clearTimeout(configuration_timeout.current);
+    }
     configuration_timeout.current = setTimeout(async () => {
       configuration_timeout.current = undefined;
       return extract_names(source);
     }, 4000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modules, source]);
+  }, [executorState, modules, source]);
 
   return <></>;
   //<CodeEditor

@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from 'react';
-import { ExecutionResponse } from './codeExecution';
+import { ExecutionResponse } from './execution/codeExecution';
 import { CodeCellState, ToolboxFunction } from './localStorage/schema';
 import useLocalProfile from './localStorage/useLocalProfile';
 import { ActivityVariant } from './schemas/activitySchema';

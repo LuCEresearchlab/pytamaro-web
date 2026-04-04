@@ -13,15 +13,15 @@ import { debounce } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import ActivitiesStripe from '../components/ActivitiesStripe';
 import DownloadCodeButton from '../components/CodeDownloadButton';
 import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDialog';
-import FailedExecutionSnackbar from '../components/FailedExecutionSnackbar';
 import MoreOptionsButton from '../components/MoreOptionsButton';
 import NavigationBar from '../components/navbar/NavigationBar';
 import ResetButton from '../components/navbar/ResetButton';
 import PageTitle from '../components/PageTitle';
+import { ShareButton } from '../components/ShareButton';
 import CentralContent from '../components/sidebar/CentralContent';
 import Sidebar from '../components/sidebar/Sidebar';
 import ToolboxListSidebar from '../components/sidebar/ToolboxListSidebar';
@@ -31,9 +31,11 @@ import SolitaryCodeCell, {
 import getActivitiesWithAPIs, {
   ActivityVariantWithNames,
 } from '../src/activitiesAPIs';
+import { ExecutorContext } from '../src/execution/executorContext';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import {
   playgroundActivityVariant,
   playgroundInitialSource,
@@ -45,6 +47,24 @@ import {
 import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
 import useReset from '../src/useReset';
+
+async function compressString(data: string): Promise<string> {
+  const stream = new Blob([data], { type: 'text/plain' })
+    .stream()
+    .pipeThrough(new CompressionStream('gzip'));
+  const buf = await new Response(stream).arrayBuffer();
+  return Buffer.from(buf).toString('base64');
+}
+
+async function decompressString(data: string): Promise<string> {
+  const encodedRes = await fetch(
+    'data:application/octet-stream;base64,' + data,
+  );
+  const blob = await encodedRes.blob();
+  const stream = blob.stream().pipeThrough(new DecompressionStream('gzip'));
+  const buf = await new Response(stream).arrayBuffer();
+  return Buffer.from(buf).toString();
+}
 
 function uniqueNames(names: PythonName[]): Set<string> {
   return new Set(names.map(({ module, name }) => `${module}.${name}`));
@@ -73,9 +93,11 @@ function PlaygroundReset({
       description:
         'You are about to reset the playground to its initial state: this will delete all the code you have written. This action cannot be undone! ⚠️',
       confirmationText: 'Ok, delete my code',
-    }).then(() => {
-      handleResetAllCellsNoConfirm();
-      newReset();
+    }).then(({ confirmed }) => {
+      if (confirmed) {
+        handleResetAllCellsNoConfirm();
+        newReset();
+      }
     });
   };
 
@@ -91,11 +113,13 @@ function PlaygroundReset({
 function PlaygroundCodeCell({
   initialCodeCells,
   resetCounter,
+  runEnabled,
   newReset,
   setInitialSource,
 }: {
   initialCodeCells: CodeCellState[];
   resetCounter: number;
+  runEnabled: boolean;
   newReset: () => void;
   setInitialSource: (newSource: string) => void;
 }) {
@@ -106,14 +130,17 @@ function PlaygroundCodeCell({
   const {
     codeCells,
     codeExecutionStates,
-    executionFailed,
     handleToggleOutputArea,
     handleResetSingleCell,
     handleResetAllCellsNoConfirm,
+    handleRestartPyodide,
   } = localActivity;
+
   const confirm = useConfirm();
+
   const { query } = useRouter();
   const codeFromQuery = query?.code;
+  const compressedCodeFromQuery = query?.c;
   useEffect(
     () => {
       const replaceCode = (newCode: string) => {
@@ -121,10 +148,8 @@ function PlaygroundCodeCell({
         handleResetAllCellsNoConfirm();
         newReset();
       };
-      if (typeof codeFromQuery === 'string') {
-        const queryCode = Buffer.from(codeFromQuery, 'base64').toString(
-          'utf-8',
-        );
+
+      const setCodeFromQuery = (queryCode: string) => {
         const userCode = codeCells[0].source;
         if (userCode !== queryCode) {
           if (userCode === playgroundInitialSource) {
@@ -134,50 +159,67 @@ function PlaygroundCodeCell({
               description:
                 'You are about to replace the code in your playground with new code!',
               confirmationText: 'Ok, replace my code',
-            }).then(() => {
-              replaceCode(queryCode);
+            }).then(({ confirmed }) => {
+              if (confirmed) {
+                replaceCode(queryCode);
+              }
             });
           }
         }
+      };
+
+      if (typeof codeFromQuery === 'string') {
+        setCodeFromQuery(
+          Buffer.from(codeFromQuery, 'base64').toString('utf-8'),
+        );
+      } else if (typeof compressedCodeFromQuery === 'string') {
+        decompressString(compressedCodeFromQuery)
+          .then(setCodeFromQuery)
+          .catch(() => {});
       }
     },
     // We need to run this only once, when the query changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [codeFromQuery],
+    [codeFromQuery, compressedCodeFromQuery],
   );
   const updateQueryString = useMemo(
     () =>
       debounce((newSource: string) => {
-        const newCode = Buffer.from(newSource, 'utf-8').toString('base64');
-        const newQuery = { ...query, code: newCode };
-        window.history.replaceState(
-          {},
-          '',
-          `?${new URLSearchParams(newQuery)}`,
-        );
+        compressString(newSource).then((newCode: string) => {
+          const newQuery = {
+            ...query,
+            c: newCode,
+          };
+          // Do not persist uncompressed code
+          Reflect.deleteProperty(newQuery, 'code');
+          window.history.replaceState(
+            {},
+            '',
+            `?${new URLSearchParams(newQuery)}`,
+          );
+        });
       }, 1000),
     [query],
   );
 
   return (
-    <>
-      {executionFailed && <FailedExecutionSnackbar res={executionFailed} />}
-      <SolitaryCodeCell
-        resetCounter={resetCounter}
-        activity={localActivity}
-        activityVariant={playgroundActivityVariant}
-        postSourceChange={updateQueryString}
-        allowToolboxSave={true}
-        extraActions={
-          <MoreOptionsButton
-            codeCellState={codeCells[0]}
-            codeCellExecutionState={codeExecutionStates[0]}
-            onShowHideOutput={() => handleToggleOutputArea(0)}
-            onReset={() => handleResetSingleCell(0, newReset)}
-          />
-        }
-      />
-    </>
+    <SolitaryCodeCell
+      resetCounter={resetCounter}
+      activity={localActivity}
+      activityVariant={playgroundActivityVariant}
+      postSourceChange={updateQueryString}
+      allowToolboxSave={true}
+      runEnabled={runEnabled}
+      extraActions={
+        <MoreOptionsButton
+          codeCellState={codeCells[0]}
+          codeCellExecutionState={codeExecutionStates[0]}
+          onShowHideOutput={() => handleToggleOutputArea(0)}
+          onReset={() => handleResetSingleCell(0, newReset)}
+          onRestart={() => handleRestartPyodide()}
+        />
+      }
+    />
   );
 }
 
@@ -264,10 +306,18 @@ function PlaygroundCodeDownloadButton({
     playgroundActivityVariant,
   );
   const { codeCells } = localActivity;
+  return <DownloadCodeButton codeCells={codeCells} />;
+}
+
+function PlaygroundCodeShareButton() {
+  const { t } = useLocalTranslation();
+
   return (
-    <Box sx={{ display: 'flex', marginTop: 12 }} justifyContent='center'>
-      <DownloadCodeButton codeCells={codeCells} />
-    </Box>
+    <ShareButton
+      getTextToCopy={() => window.location.toString()}
+      message={t('share.urlCopiedToClipboard.success')}
+      failureMessage={t('share.urlCopiedToClipboard.failure')}
+    />
   );
 }
 
@@ -283,6 +333,11 @@ export default function Playground({
   const { resetCounter, newReset } = useReset();
 
   const { metadata } = useLocalProfile();
+
+  const { executorState } = useContext(ExecutorContext);
+  // We don't care about isExecuting here because there's only one code cell
+  // that we need to take care of
+  const runEnabled = executorState.type !== 'loading';
 
   return (
     <div>
@@ -308,17 +363,26 @@ export default function Playground({
                 initialCodeCells={initialCodeCells}
                 resetCounter={resetCounter}
                 newReset={newReset}
+                runEnabled={runEnabled}
                 setInitialSource={setInitialSource}
               />
             </Container>
             <Container maxWidth='md'>
-              <PlaygroundCodeDownloadButton
-                initialCodeCells={initialCodeCells}
-              />
-              <RecommendedActivities
-                activitiesWithNames={activitiesWithNames}
-                initialCodeCells={initialCodeCells}
-              />
+              <Grid
+                sx={{ marginTop: 12 }}
+                justifyContent='center'
+                spacing={2}
+                container
+              >
+                <PlaygroundCodeDownloadButton
+                  initialCodeCells={initialCodeCells}
+                />
+                <PlaygroundCodeShareButton />
+                <RecommendedActivities
+                  activitiesWithNames={activitiesWithNames}
+                  initialCodeCells={initialCodeCells}
+                />
+              </Grid>
             </Container>
           </CentralContent>
           <Sidebar side='right' />

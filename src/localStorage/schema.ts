@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { changelogEntries } from '../../components/ChangelogList';
-import { type ExecutionResponse } from '../codeExecution';
+import { type ExecutionResponse } from '../execution/codeExecution';
 import { ActivityVariant } from '../schemas/activitySchema';
 
-export const CURRENT_VERSION = '8';
+export const CURRENT_VERSION = '9';
 
 export interface Metadata {
   dataModelVersion: string;
@@ -18,12 +18,23 @@ export interface Metadata {
   lastNotificationSeen: number;
   liveAnalysis: LiveAnalysisStatus;
   wideEditor: boolean;
+  executionMode: ExecutionMode;
 }
+
+export type MetadataForEvent = Pick<
+  Metadata,
+  'allowSharingAnonData' | 'userUuid' | 'experimentKey'
+>;
 
 export enum LiveAnalysisStatus {
   None = 'none',
   Syntax = 'syntax',
   SyntaxSemantics = 'syntax-semantics',
+}
+
+export enum ExecutionMode {
+  ClientSide = 'cse',
+  ServerSide = 'sse',
 }
 
 export interface DocsMetadata {
@@ -71,7 +82,7 @@ export interface CodeCellState {
 }
 
 export interface CodeCellExecutionState {
-  executionInProgress: boolean;
+  executionUUID: string | undefined;
   executionResponse: ExecutionResponse | undefined;
   outputAreaVisible: boolean;
   outputSynced: boolean;
@@ -121,5 +132,17 @@ export function getDefaultMetadata(): Metadata {
     lastNotificationSeen: changelogEntries.length - 1,
     liveAnalysis: LiveAnalysisStatus.Syntax,
     wideEditor: false,
+    executionMode: ExecutionMode.ClientSide,
+  };
+}
+
+/* Utils */
+
+export function extractMetadataForEvent(metadata: Metadata): MetadataForEvent {
+  const { allowSharingAnonData, userUuid, experimentKey } = metadata;
+  return {
+    allowSharingAnonData,
+    userUuid,
+    experimentKey,
   };
 }

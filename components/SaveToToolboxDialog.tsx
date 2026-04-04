@@ -18,9 +18,20 @@ import {
   Typography,
 } from '@mui/material';
 import { Trans } from 'next-i18next';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
-import { ExecutionResponse, TOOLBOX_FILE } from '../src/codeExecution';
+import {
+  ExecutionResponse,
+  isExecutionError,
+  TOOLBOX_FILE,
+} from '../src/execution/codeExecution';
+import { ExecutorContext } from '../src/execution/executorContext';
 import { CodeCellState, ToolboxFunction } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
@@ -37,7 +48,6 @@ import useAnalysisResult, {
 } from '../src/useAnalysisResult';
 import usePythonAnalyzer from '../src/usePythonAnalyzer';
 import useTemporaryActivity from '../src/useTemporaryActivity';
-import { isExecutionError } from './CodeCell';
 import CodeEditor from './CodeEditor';
 import SolitaryCodeCell, { initialStateSingleCell } from './SolitaryCodeCell';
 
@@ -198,6 +208,8 @@ export default function SaveToToolboxDialog({
   const getExtraToolboxFunction = () => {
     return newToolboxFunction;
   };
+
+  const { executorState } = useContext(ExecutorContext);
 
   const implementationPythonAnalyzer = usePythonAnalyzer();
   const implementationAnalysisResult = useAnalysisResult(
@@ -425,6 +437,7 @@ export default function SaveToToolboxDialog({
                   <SolitaryCodeCell
                     activity={activity}
                     activityVariant={activityVariant}
+                    runEnabled={executorState.type === 'available'}
                     requireNewExecution={invalidUsageExecution}
                     postSourceChange={() => {
                       setUsageEdited(true);

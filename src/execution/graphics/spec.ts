@@ -1,19 +1,14 @@
-/* Point */
+export type EncodedColor = number | bigint;
+
+export type EncodedPoint = number | bigint;
+
+type Colored = {
+  color: EncodedColor;
+};
 
 export type Point = {
   x: number;
   y: number;
-};
-
-export type Color = {
-  red: number;
-  green: number;
-  blue: number;
-  alpha: number;
-};
-
-type Colored = {
-  color: Color;
 };
 
 export type Sized = {
@@ -24,64 +19,66 @@ export type Sized = {
 /* Graphics */
 
 export type EmptySpec = {
-  type: 'empty';
+  t: 'Empty';
 };
 
 export type RectangleSpec = Colored &
   Sized & {
-    type: 'rectangle';
+    t: 'Rectangle';
   };
 
 export type EllipseSpec = Colored &
   Sized & {
-    type: 'ellipse';
+    t: 'Ellipse';
   };
 
 export type CircularSectorSpec = Colored & {
   radius: number;
   angle: number;
-  type: 'circular_sector';
+  t: 'CircularSector';
 };
 
 export type TriangleSpec = Colored & {
   side1: number;
   side2: number;
   angle: number;
-  type: 'triangle';
+  t: 'Triangle';
 };
 
 export type TextSpec = Colored & {
   text: string;
   font_name: string;
   text_size: number;
-  type: 'text';
+  t: 'Text';
 };
 
 export type ComposeSpec = {
-  foreground: GraphicSpec;
-  background: GraphicSpec;
-  type: 'compose';
+  fg_pin?: EncodedPoint;
+  bg_pin?: EncodedPoint;
+  pin?: EncodedPoint;
+  t: 'Compose';
 };
 
 export type PinSpec = {
-  pinning_point: Point;
-  graphic: GraphicSpec;
-  type: 'pin';
+  pin: EncodedPoint;
+  t: 'Pin';
 };
 
 export type RotateSpec = {
   angle: number;
-  graphic: GraphicSpec;
-  type: 'rotate';
+  t: 'Rotate';
 };
 
-export type GraphicSpec =
-  | EmptySpec
+type PrimitiveSpec =
   | RectangleSpec
   | EllipseSpec
   | CircularSectorSpec
   | TriangleSpec
-  | TextSpec
+  | TextSpec;
+
+export type GraphicSpec =
+  | EmptySpec
+  | PrimitiveSpec
   | ComposeSpec
   | PinSpec
   | RotateSpec;

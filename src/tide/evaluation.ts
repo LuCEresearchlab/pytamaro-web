@@ -1,28 +1,32 @@
-import { ImportedDefinition, LocalDefinition } from './language/definitions';
 import {
   ConstantDefinitionNode,
   TamaroCardNode,
   TideNode,
   TideNodeMetadata,
 } from '../../components/tide/cards';
-import { getNode } from './utils';
 import { TamaroCard } from './language/cards';
+import { ImportedDefinition, LocalDefinition } from './language/definitions';
+import { getNode } from './utils';
 
 import { Edge } from '@xyflow/react';
-import { ProgramState } from './language/phases';
 import { getParameterName } from '../../components/tide/cards/function';
+import { ExecutionResponse as ExecutorExecutionResponse } from '../execution/codeExecution';
+import { ExecutionMetadata } from '../execution/messageTypes';
+import { ToolboxFunction } from '../localStorage/schema';
+import { PythonFile } from '../schemas/activitySchema';
+import { JudiciousConstant, JudiciousFunction } from '../schemas/documentation';
 import {
   TideJudiciousMetadata,
   toTideConstant,
   toTideFunction,
 } from './judiciours_to_tide';
-import { JudiciousConstant, JudiciousFunction } from '../schemas/documentation';
+import { ProgramState } from './language/phases';
+import code_created_phase from './language/phases/code_created';
+import code_element_phase from './language/phases/code_element';
+import evaluated_phase from './language/phases/evaluation';
 import name_checked_phase from './language/phases/name';
 import syntax_checked_phase from './language/phases/syntax';
 import type_checked_phase from './language/phases/type';
-import code_element_phase from './language/phases/code_element';
-import code_created_phase from './language/phases/code_created';
-import evaluated_phase from './language/phases/evaluation';
 
 function nodeToExpression(
   v: TamaroCardNode,
@@ -205,6 +209,13 @@ export function synchronous_phases(
 }
 
 export function evaluation(
+  execute: (
+    sources: string[],
+    idx: number,
+    toolboxFunctions: ToolboxFunction[],
+    extraPythonFiles: PythonFile[],
+    executionMetadata: ExecutionMetadata,
+  ) => Promise<ExecutorExecutionResponse>,
   state: ProgramState<
     TideNodeMetadata,
     TideNodeMetadata,
@@ -219,5 +230,5 @@ export function evaluation(
     'evaluated'
   >
 > {
-  return evaluated_phase(state);
+  return evaluated_phase(execute, state);
 }

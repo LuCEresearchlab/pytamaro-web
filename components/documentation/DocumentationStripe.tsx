@@ -22,13 +22,15 @@ export default function DocumentationStripe({
   analysisResult,
   activityVariant,
   extraPythonFilesAnalysisResults = [],
+  hoveredName = null,
 }: {
   analysisResult: AnalysisResult | undefined;
   activityVariant: ActivityVariant;
   extraPythonFilesAnalysisResults?: FilesAnalysisResult;
+  hoveredName?: PythonName | null;
 }) {
   const { t } = useLocalTranslation();
-  const [namesMultipleLines, setNamesMultipleLines] = useState(false);
+  const [visibleNamesCount, setVisibleNamesCount] = useState(0);
   const [namesExpanded, setNamesExpanded] = useState(false);
 
   const importedNames = analysisResult?.imported_names || [];
@@ -47,7 +49,15 @@ export default function DocumentationStripe({
   const onResize = useCallback(
     ({ entry }: { entry: ResizeObserverEntry | null }) => {
       const target: HTMLDivElement | null = entry?.target as HTMLDivElement;
-      setNamesMultipleLines(target && target.scrollHeight > COLLAPSED_HEIGHT);
+      setVisibleNamesCount(
+        target
+          ? Array.from(target.children).filter(
+              (child) =>
+                (child as HTMLElement).offsetTop <
+                target.offsetTop + COLLAPSED_HEIGHT / 2,
+            ).length
+          : 0,
+      );
     },
     [],
   );
@@ -64,6 +74,15 @@ export default function DocumentationStripe({
   if (namesToDocElement.length === 0) {
     return null;
   }
+
+  const hoveredInCollapsed = hoveredName
+    ? namesToDocElement
+        .slice(visibleNamesCount)
+        .some(
+          ({ module, element }) =>
+            module === hoveredName.module && element?.name === hoveredName.name,
+        )
+    : false;
 
   return (
     <Box bgcolor={theme.pytamaro.palette.background.light}>
@@ -87,7 +106,7 @@ export default function DocumentationStripe({
         <Stack
           direction='row'
           rowGap={0.1}
-          columnGap={1}
+          columnGap={0.5}
           alignItems='baseline'
           useFlexGap
           flexWrap='wrap'
@@ -102,6 +121,10 @@ export default function DocumentationStripe({
               element={element}
               smallerFont
               activityVariant={activityVariant}
+              highlighted={
+                hoveredName?.module === module &&
+                hoveredName?.name === element?.name
+              }
             />
           ))}
         </Stack>
@@ -110,9 +133,18 @@ export default function DocumentationStripe({
           label={namesExpanded ? t('showLess') : t('showAll')}
           deleteIcon={<ExpandMore />}
           sx={{
+            backgroundColor:
+              hoveredInCollapsed && !namesExpanded
+                ? theme.palette.action.selected
+                : 'transparent',
+            color: theme.pytamaro.palette.darkerBlue,
+            textTransform: 'uppercase',
             flexGrow: '1',
             height: '1rem',
-            visibility: namesMultipleLines ? 'visible' : 'hidden',
+            visibility:
+              visibleNamesCount !== namesToDocElement.length
+                ? 'visible'
+                : 'hidden',
             '.MuiChip-deleteIcon': {
               transform: `rotate(${namesExpanded ? 180 : 0}deg)`,
               transition: `transform ${theme.transitions.duration.shortest}ms`,

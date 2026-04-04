@@ -102,7 +102,7 @@ export default function NavigateToActivity({
 
   return (
     <Tooltip arrow title={enabled ? undefined : t('availableAfterCompleting')}>
-      <span>
+      <div>
         <Button
           loading={loading}
           disabled={!enabled}
@@ -114,7 +114,7 @@ export default function NavigateToActivity({
         >
           <span>{message}</span>
         </Button>
-      </span>
+      </div>
     </Tooltip>
   );
 }

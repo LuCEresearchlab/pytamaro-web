@@ -3,12 +3,20 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import GithubSlugger from 'github-slugger';
 import Head from 'next/head';
-import { RefObject, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  RefObject,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import ActivityCodeCell from '../../../../../../components/ActivityCodeCell';
 import ActivityFooter from '../../../../../../components/ActivityFooter';
 import ActivityResetButton from '../../../../../../components/ActivityResetButton';
 import DataSharingPreferenceDialog from '../../../../../../components/DataSharingPreferenceDialog';
 import GoToCurriculaBanner from '../../../../../../components/GoToCurriculaBanner';
+import { OutputAreaRef } from '../../../../../../components/input_output/OutputArea';
 import MarkdownCellComponent from '../../../../../../components/MarkdownCellComponent';
 import InfoButton from '../../../../../../components/navbar/InfoButton';
 import NavigationBar from '../../../../../../components/navbar/NavigationBar';
@@ -22,6 +30,7 @@ import TableOfContents from '../../../../../../components/sidebar/TableOfContent
 import ToolboxListSidebar from '../../../../../../components/sidebar/ToolboxListSidebar';
 import VariantSelector from '../../../../../../components/VariantSelector';
 import { findIncludingCurricula } from '../../../../../../src/curricula';
+import { ExecutorContext } from '../../../../../../src/execution/executorContext';
 import {
   findVersions,
   readActivity,
@@ -58,6 +67,38 @@ import useReset from '../../../../../../src/useReset';
 
 const userType = 'student';
 
+function sanitizeIframes() {
+  const supportsCredentialless =
+    'credentialless' in HTMLIFrameElement.prototype;
+  const iframesOnPage = document.querySelectorAll('iframe');
+  iframesOnPage.forEach((iframe) => {
+    if (supportsCredentialless) {
+      iframe.setAttribute('credentialless', '');
+      // Force reload of the iframe to apply the new attribute
+      // eslint-disable-next-line no-param-reassign
+      iframe.src = iframe.src;
+    } else {
+      // If the browser does not support credentialless iframes, replace the
+      // iframe with a message and a link to open it in a new tab.
+      // Unfortunately, it's hard to localize this message because we are doing
+      // manual DOM manipulation here, outside React.
+      const altElem = document.createElement('p');
+      altElem.innerHTML =
+        '<i>Some external content cannot be displayed directly on this page. ' +
+        'View it on a <a href=' +
+        iframe.src +
+        ' target="_blank" rel="noopener noreferrer">separate page</a>.</i>';
+      iframe.replaceWith(altElem);
+    }
+  });
+}
+
+function sanitizeImgs() {
+  document.querySelectorAll('img').forEach((img) => {
+    img.setAttribute('crossOrigin', 'anonymous');
+  });
+}
+
 function NotebookCells({
   activity,
   initialCodeCells,
@@ -66,6 +107,7 @@ function NotebookCells({
   cellsRef,
   resetCounter,
   originalIdxToCodeCellIdx,
+  runEnabled,
 }: {
   activity: Activity;
   initialCodeCells: CodeCellState[];
@@ -74,6 +116,7 @@ function NotebookCells({
   cellsRef: RefObject<HTMLDivElement | null>;
   resetCounter: number;
   originalIdxToCodeCellIdx: Map<number, number>;
+  runEnabled: boolean;
 }) {
   const { metadata } = useLocalProfile();
   const { wideEditor } = metadata;
@@ -88,6 +131,31 @@ function NotebookCells({
     }));
   }, [pythonAnalyzer, activity.extraPythonFiles]);
   useMonacoColorizer();
+
+  useEffect(() => {
+    sanitizeIframes();
+    sanitizeImgs();
+  }, []);
+
+  const outputAreaRefs = useRef<Map<number, OutputAreaRef | null> | null>(null);
+  const getOutputAreaRefs = () => {
+    if (outputAreaRefs.current === null) {
+      outputAreaRefs.current = new Map();
+    }
+    return outputAreaRefs.current;
+  };
+  const setOutputAreaRef = (
+    idx: number,
+    node: OutputAreaRef | null | undefined,
+  ) => {
+    const map = getOutputAreaRefs();
+    if (node !== undefined) {
+      map.set(idx, node);
+    } else {
+      map.delete(idx);
+    }
+  };
+  const getOutputAreaRef = (idx: number) => getOutputAreaRefs().get(idx)!;
 
   return (
     <Box ref={cellsRef} className='activity-content'>
@@ -110,6 +178,9 @@ function NotebookCells({
               platformConfig={activity.platformConfig}
               activityResetCounter={resetCounter}
               pythonAnalyzer={pythonAnalyzer}
+              setOutputAreaRef={setOutputAreaRef}
+              getActivityOutputAreaRef={getOutputAreaRef}
+              runEnabled={runEnabled}
             />
           </Container>
         ),
@@ -172,6 +243,8 @@ export default function NotebookPage({
     };
   }, [isMounted, cells]);
 
+  const { executorState } = useContext(ExecutorContext);
+
   return (
     <div key={activityVariantId(activityVariant)}>
       <Head>
@@ -220,6 +293,7 @@ export default function NotebookPage({
               cellsRef={cellsRef}
               resetCounter={resetCounter}
               originalIdxToCodeCellIdx={originalIdxToCodeCellIdx}
+              runEnabled={executorState.type == 'available'}
             />
             <Container maxWidth='md'>
               {!isSpecialActivity(activityVariant) && (

@@ -27,6 +27,9 @@ export default function ActivityCardMedia({
         objectFit: 'contain',
         backgroundColor: activity.previewImage.backgroundColor,
       }}
+      // Suppress hydration warning: on the homepage, the images are shuffled,
+      // leading to mismatch between the server and the hydrated versions
+      suppressHydrationWarning={true}
     />
   );
 }

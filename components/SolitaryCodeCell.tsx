@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { ToolboxFunction } from '../src/localStorage/schema';
 import {
   ActivityVariant,
@@ -8,6 +8,7 @@ import { useActivity } from '../src/useActivity';
 import usePythonAnalyzer from '../src/usePythonAnalyzer';
 import CodeCell from './CodeCell';
 import SaveToToolboxButton from './SaveToToolboxButton';
+import { OutputAreaRef } from './input_output/OutputArea';
 
 export function initialStateSingleCell(source: string) {
   return [{ source, originalIndex: 0 }];
@@ -22,6 +23,7 @@ export default function SolitaryCodeCell({
   activityVariant,
   resetCounter = 0,
   readOnly = false,
+  runEnabled = false,
   requireNewExecution = false,
   allowToolboxSave = false,
   postSourceChange = () => {},
@@ -33,6 +35,7 @@ export default function SolitaryCodeCell({
   activityVariant: ActivityVariant;
   resetCounter?: number;
   readOnly?: boolean;
+  runEnabled?: boolean;
   requireNewExecution?: boolean;
   allowToolboxSave?: boolean;
   postSourceChange?: (newSource: string) => void;
@@ -40,11 +43,18 @@ export default function SolitaryCodeCell({
   extraActions?: React.ReactNode;
   extraToolboxFunctions?: ToolboxFunction[];
 }) {
+  const outputAreaRef = useRef<OutputAreaRef>(null);
+  const getOutputAreaRef = () => outputAreaRef.current;
+  const setOutputAreaRef = (node: OutputAreaRef | null | undefined) => {
+    outputAreaRef.current = node === undefined ? null : node;
+  };
   const {
     initialCodeCells,
     codeCells,
     codeExecutionStates,
     handleSourceChanged,
+    handleResetSingleCellExecutionState,
+    handleExecutionRequestEvent,
     handleExecute,
   } = activity;
   const source = codeCells[0].source;
@@ -62,17 +72,22 @@ export default function SolitaryCodeCell({
       initialSource={initialCodeCells[0].source}
       currentSource={codeCells[0].source}
       codeCellExecutionState={codeExecutionStates[0]}
+      onResetExecutionState={() => handleResetSingleCellExecutionState(0)}
       onSourceChanged={(newSource) => {
         handleSourceChanged(newSource, 0);
         postSourceChange(newSource);
       }}
-      onExecutionRequested={() => {
+      onExecutionRequested={(executionUUID) => {
         onExecutionRequest();
-        return handleExecute(0);
+        return handleExecute(0, executionUUID, getOutputAreaRef);
       }}
+      onExecutionRequestEvent={(executionUUID) =>
+        handleExecutionRequestEvent(0, executionUUID)
+      }
       firstLineNumber={1}
       activityVariant={activityVariant}
       readOnly={readOnly}
+      runEnabled={runEnabled}
       platformConfig={platformConfigWithDefaults()}
       extraActions={
         <>
@@ -89,6 +104,7 @@ export default function SolitaryCodeCell({
       resetCounter={resetCounter}
       pythonAnalyzer={pythonAnalyzer}
       cellIdx={0}
+      setOutputAreaRef={(_, node) => setOutputAreaRef(node)}
     />
   );
 }

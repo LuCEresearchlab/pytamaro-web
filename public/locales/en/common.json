@@ -10,12 +10,17 @@
     "documentation": "Documentation",
     "myToolbox": "My Toolbox",
     "runCode": "Run",
+    "runningCode": "Running",
+    "waitingRunningCode": "Waiting for previous cells to run",
+    "waitingForInput": "Waiting for user input",
+    "stopExecution": "Stop",
     "executionCompletedWithErrors": "Execution completed with errors",
     "executionCompletedSuccessfully": "Execution completed successfully",
     "errorInvolvesToolbox": "This error involves a function from the toolbox.",
     "errorPreviousCell": "An error occurred in a previous code cell. Fix it before running this code cell.",
     "goToError": "Go to error",
     "resetCell": "Reset Cell",
+    "restartPythonEnvironment": "Restart Python Environment",
     "copyCode": "Copy Code",
     "hideOutput": "Hide Output",
     "showOutput": "Show Output",
@@ -156,5 +161,30 @@
         "name": "Name",
         "type": "Type",
         "other": "Error"
+    },
+    "executionError": {
+        "title": "Execution failed",
+        "message": "Your code could not be executed. This could be due to a number of reasons, such as a graphic being too big or complex, or your program using too much memory.\nYou can try to simplify the program, or run it in another IDE."
+    },
+    "executionMode": {
+        "title": "Python Execution",
+        "cse": "New Mode",
+        "sse": "Legacy Mode",
+        "info": "The new mode runs on your browser, is faster, and allows using input. For a limited time, you can use the legacy mode if you experience issues."
+    },
+    "executionDisabled": {
+        "notReady": "Python environment is loading",
+        "anotherInProgress": "Another execution is in progress"
+    },
+    "share": {
+        "action": "Share",
+        "urlCopiedToClipboard": {
+            "success": "URL copied to clipboard",
+            "failure": "Failed to copy URL to clipboard"
+        }
+    },
+    "inputHint": {
+        "active": "Type your input and press Enter",
+        "inactive": "User input"
     }
 }

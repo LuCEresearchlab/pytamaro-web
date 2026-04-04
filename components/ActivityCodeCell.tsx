@@ -12,7 +12,7 @@ import { countLines } from '../src/sourceUtils';
 import { PythonAnalyzer } from '../src/usePythonAnalyzer';
 import useReset from '../src/useReset';
 import CodeCell from './CodeCell';
-import FailedExecutionSnackbar from './FailedExecutionSnackbar';
+import { OutputAreaRef } from './input_output/OutputArea';
 import MoreOptionsButton from './MoreOptionsButton';
 import SaveToToolboxButton from './SaveToToolboxButton';
 
@@ -50,6 +50,9 @@ export default function ActivityCodeCell({
   platformConfig,
   activityResetCounter,
   pythonAnalyzer,
+  runEnabled,
+  setOutputAreaRef,
+  getActivityOutputAreaRef,
 }: {
   activityVariant: ActivityVariant;
   initialCodeCells: CodeCellState[];
@@ -58,15 +61,23 @@ export default function ActivityCodeCell({
   platformConfig: PlatformConfiguration;
   activityResetCounter: number;
   pythonAnalyzer: PythonAnalyzer | null;
+  runEnabled: boolean;
+  setOutputAreaRef: (
+    idx: number,
+    node: OutputAreaRef | null | undefined,
+  ) => void;
+  getActivityOutputAreaRef: (execIdx: number) => OutputAreaRef | null;
 }) {
   const {
     codeCells,
     codeExecutionStates,
-    executionFailed,
     handleSourceChanged,
+    handleExecutionRequestEvent,
     handleExecute,
     handleToggleOutputArea,
     handleResetSingleCell,
+    handleResetSingleCellExecutionState,
+    handleRestartPyodide,
     localCodeCellsWrongLength,
   } = useLocalActivity(initialCodeCells, activityVariant, extraPythonFiles);
 
@@ -85,13 +96,20 @@ export default function ActivityCodeCell({
     <InconsistencyMessage />
   ) : (
     <Box marginY={2}>
-      {executionFailed && <FailedExecutionSnackbar res={executionFailed} />}
       <CodeCell
         initialSource={initialCodeCells[cellIdx].source}
         currentSource={currentCodeCell.source}
         codeCellExecutionState={codeExecutionStates[cellIdx]}
+        onResetExecutionState={() =>
+          handleResetSingleCellExecutionState(cellIdx)
+        }
         onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
-        onExecutionRequested={() => handleExecute(cellIdx)}
+        onExecutionRequestEvent={(executionUUID) =>
+          handleExecutionRequestEvent(cellIdx, executionUUID)
+        }
+        onExecutionRequested={(executionUUID) =>
+          handleExecute(cellIdx, executionUUID, getActivityOutputAreaRef)
+        }
         firstLineNumber={1 + precedingLines}
         activityVariant={activityVariant}
         platformConfig={platformConfig}
@@ -99,6 +117,8 @@ export default function ActivityCodeCell({
         extraPythonFiles={extraPythonFiles}
         pythonAnalyzer={pythonAnalyzer}
         cellIdx={cellIdx}
+        runEnabled={runEnabled}
+        setOutputAreaRef={setOutputAreaRef}
         extraActions={
           <>
             <SaveToToolboxButton
@@ -111,6 +131,7 @@ export default function ActivityCodeCell({
               codeCellExecutionState={codeExecutionStates[cellIdx]}
               onShowHideOutput={() => handleToggleOutputArea(cellIdx)}
               onReset={() => handleResetSingleCell(cellIdx, newReset)}
+              onRestart={handleRestartPyodide}
             />
           </>
         }

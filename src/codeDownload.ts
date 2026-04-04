@@ -1,6 +1,6 @@
 import { saveAs } from 'file-saver';
 import JSZip from 'jszip';
-import { toolboxFiles } from './codeExecution';
+import { toolboxFiles } from './execution/codeExecution';
 import { ToolboxFunction } from './localStorage/schema';
 import { PythonFile } from './schemas/activitySchema';
 import { transitivelyImportedToolboxFunctions } from './useActivity';

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Metadata } from './localStorage/schema';
+import { MetadataForEvent } from './localStorage/schema';
 
 export enum EventName {
   CodeExecution = 'code_execution',
@@ -9,11 +9,13 @@ export enum EventName {
   DeleteToolboxFunction = 'delete_toolbox_function',
   DoNowCompleted = 'do_now_completed',
   CurriculumNavigation = 'curriculum_navigation',
+  CodeExecutionInput = 'code_execution_input',
+  CodeExecutionErrorsWarning = 'code_execution_errors_warning',
 }
 
 export async function alwaysStoreDbEvent(
   event_name: EventName,
-  metadata: Metadata,
+  metadata: MetadataForEvent,
   payload: object,
 ) {
   try {
@@ -30,7 +32,7 @@ export async function alwaysStoreDbEvent(
 
 export function storeDbEvent(
   event_name: EventName,
-  metadata: Metadata,
+  metadata: MetadataForEvent,
   payload: object,
 ) {
   if (metadata.allowSharingAnonData === 'yes') {

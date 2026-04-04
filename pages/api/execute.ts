@@ -1,27 +1,82 @@
 import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { ExecutionResponse, cellsToFiles } from '../../src/codeExecution';
+import {
+  CELL_FILE,
+  cellsToFiles,
+  DRIVER_FILE,
+} from '../../src/execution/codeExecution';
 import { ToolboxFunction } from '../../src/localStorage/schema';
 import { PythonFile } from '../../src/schemas/activitySchema';
 
-const dummySuccessfulResponse: ExecutionResponse = {
+export type ServerSideExecutionResponse =
+  | CompletedExecutionResponse
+  | FailedExecution;
+
+export interface CompletedExecutionResponse {
+  type: 'success' | 'error';
+  stdout: string;
+  stderr: string;
+}
+
+export interface FailedExecution {
+  type: 'time-limit-exceeded' | 'output-limit-exceeded' | 'network-error';
+}
+
+export function isCompleted(
+  response: ServerSideExecutionResponse | undefined,
+): response is CompletedExecutionResponse {
+  return response === undefined
+    ? false
+    : response.type === 'success' || response.type === 'error';
+}
+
+function driverCode(num_cells: number) {
+  return `
+from pathlib import Path
+import linecache
+import sys
+
+globals_dict = {}
+
+def run(name):
+    filename = name + ".py"
+    source = Path(filename).read_text()
+    code = compile(source, filename, "exec")
+    linecache.cache[filename] = [lambda: source]
+    exec(code, globals_dict)
+
+for idx in range(0, ${num_cells}):
+    print(f"@@@PYTAMARO_SET_ACTIVE_CELL({idx})@@@", file=sys.stdout, end="")
+    print(f"@@@PYTAMARO_SET_ACTIVE_CELL({idx})@@@", file=sys.stderr, end="")
+    run(f"${CELL_FILE}{idx}")
+`;
+}
+
+const dummySuccessfulResponse: ServerSideExecutionResponse = {
   type: 'success',
   stdout: 'Hello, world!',
   stderr: '(Demo output - Only shown in development mode)',
 };
 
 async function doExecution(
-  sources: string[],
+  cells: string[],
   idx: number,
   toolboxFunctions: ToolboxFunction[],
   extraPythonFiles: PythonFile[],
-): Promise<ExecutionResponse> {
-  const files = await cellsToFiles(
-    sources,
+): Promise<ServerSideExecutionResponse> {
+  const files = cellsToFiles(
+    cells,
     idx,
     toolboxFunctions,
     extraPythonFiles,
+  ).map(
+    // Replace CSE driver with glot-driver
+    (file) =>
+      file.name === `${DRIVER_FILE}.py`
+        ? { name: file.name, content: driverCode(idx + 1) }
+        : file,
   );
+
   const data = {
     image: process.env.GLOT_IMAGE_TAG,
     payload: {
@@ -63,7 +118,7 @@ async function doExecution(
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ExecutionResponse>,
+  res: NextApiResponse<ServerSideExecutionResponse>,
 ) {
   const { sources, idx, toolboxFunctions, extraPythonFiles } = req.body;
   let response = await doExecution(

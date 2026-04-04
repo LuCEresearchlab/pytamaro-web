@@ -1,11 +1,10 @@
 import { readFile, readdir } from 'fs/promises';
 import path from 'path';
 import {
-  CURRENT_CELL_FILE,
+  CELL_FILE,
   DRIVER_FILE,
-  PREVIOUS_CELLS_FILE,
   TOOLBOX_FILE,
-} from '../codeExecution';
+} from '../execution/codeExecution';
 import {
   Activity,
   BasicActivity,
@@ -19,6 +18,8 @@ import { ACTIVITIES_DIR, DATA_DIR, notebookFileNames } from './notebooks';
 const ACTIVITY_INFO_FILE = 'info.json';
 const PYTHON_FILES_DIR = 'python-files';
 
+const CELL_FILE_PATH_PATTERN = new RegExp(`${CELL_FILE}\\d+.py`);
+
 async function readPythonFiles(files: PythonFileInfo[], authorDir: string) {
   // Ensure that destination paths are unique
   const destinationPaths = files.map((file) => file.destinationPath);
@@ -26,16 +27,13 @@ async function readPythonFiles(files: PythonFileInfo[], authorDir: string) {
     throw new Error('Non-unique destination path in extraPythonFiles');
   }
   // Ensure that destination paths are not reserved
-  const reservedFilenames = [
-    DRIVER_FILE,
-    PREVIOUS_CELLS_FILE,
-    CURRENT_CELL_FILE,
-    TOOLBOX_FILE,
-  ];
+  const reservedFilenames = [DRIVER_FILE, TOOLBOX_FILE];
   const reservedPaths = reservedFilenames.map((filename) => `${filename}.py`);
   if (
-    reservedPaths.some((reservedPath) =>
-      destinationPaths.includes(reservedPath),
+    destinationPaths.some(
+      (destinationPath) =>
+        reservedPaths.includes(destinationPath) ||
+        CELL_FILE_PATH_PATTERN.test(destinationPath),
     )
   ) {
     throw new Error(
