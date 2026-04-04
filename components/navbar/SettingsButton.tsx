@@ -34,7 +34,7 @@ export default function SettingsButton() {
   return (
     <Popover placement='bottom'>
       <PopoverTrigger>
-        <NavBarButton label='Settings' onClick={() => {}}>
+        <NavBarButton label={t('settings')} onClick={() => {}}>
           <SettingsOutlined className='platform-settings' />
         </NavBarButton>
       </PopoverTrigger>

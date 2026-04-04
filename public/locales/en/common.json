@@ -137,6 +137,7 @@
     },
     "sendFeedback": "Send Feedback",
     "notifications": "Notifications",
+    "settings": "Settings",
     "platformLanguage": "Platform Language",
     "editorSize": "Editor Size",
     "editorLiveStaticAnalysis": "Static Error Analysis in Real Time",
