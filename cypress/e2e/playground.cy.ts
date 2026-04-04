@@ -55,4 +55,12 @@ describe('Playground Page', () => {
         cy.get('.monaco-editor').first().should('contain.text', code);
       });
   });
+
+  it('should load uncompressed base64 code from URL', () => {
+    dismissDataCollectionModal();
+    const code = 'print("Magic!")';
+    const base64Code = Buffer.from(code).toString('base64');
+    cy.visit(`/playground?code=${base64Code}`);
+    cy.get('.monaco-editor').first().should('contain.text', code);
+  });
 });
