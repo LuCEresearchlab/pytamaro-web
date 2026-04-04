@@ -30,6 +30,17 @@ describe('Playground Page', () => {
     cy.get('[data-testid="share-button"]').focus();
     cy.get('[data-testid="share-button"]').dblclick();
 
+    // Grant clipboard permissions
+    cy.wrap(
+      Cypress.automation('remote:debugger:protocol', {
+        command: 'Browser.grantPermissions',
+        params: {
+          permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'],
+          origin: window.location.origin,
+        },
+      }),
+    );
+
     cy.window()
       .then((win) => win.navigator.clipboard.readText())
       .then((url) => {
