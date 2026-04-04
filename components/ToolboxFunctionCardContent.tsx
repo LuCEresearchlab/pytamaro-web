@@ -8,7 +8,8 @@ import {
   Typography,
 } from '@mui/material';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { ExecutorContext } from '../src/execution/executorContext';
 import { ToolboxFunction } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { isPlaygroundVariant } from '../src/playground';
@@ -47,6 +48,9 @@ export default function ToolboxFunctionCardContent({
   const originalActivityPathname = isPlaygroundVariant(fn.originalActivity)
     ? playgroundPathname()
     : activityVariantPathname(fn.originalActivity);
+
+  const { executorState } = useContext(ExecutorContext);
+
   return (
     <CardContent sx={{ pb: 1, minWidth: '80ch' }}>
       <FunctionCardContent
@@ -122,6 +126,7 @@ export default function ToolboxFunctionCardContent({
         <SolitaryCodeCell
           activity={activity}
           activityVariant={activityVariant}
+          runEnabled={executorState.type === 'available'}
           readOnly
         />
       )}
