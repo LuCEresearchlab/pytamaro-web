@@ -282,6 +282,7 @@ function Documentation() {
         alignItems='baseline'
         useFlexGap
         marginX={0.5}
+        minHeight={'1.25em'}
       >
         <MenuBookOutlined
           sx={{
