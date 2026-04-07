@@ -1,8 +1,8 @@
 use std::vec;
 
 use python_analyzer::{
-    CalledName, ParseError, PythonConstant, PythonFunction, PythonFunctionArgument, PythonName,
-    TextRange, analyze_file, find_imported_names, init_workspace,
+    analyze_file, find_imported_names, init_workspace, CalledName, ParseError, PythonConstant,
+    PythonFunction, PythonFunctionArgument, PythonName, TextRange,
 };
 use wasm_bindgen_test::*;
 
@@ -261,7 +261,7 @@ fn test_check_type_error() {
     let diagnostic = &result[0];
     assert_eq!(
         diagnostic.message(),
-        "Operator `+` is unsupported between objects of type `Literal[1]` and `Literal[\"a\"]`"
+        "Operator `+` is not supported between objects of type `Literal[1]` and `Literal[\"a\"]`"
     );
 }
 
