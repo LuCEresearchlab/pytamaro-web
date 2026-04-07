@@ -25,12 +25,10 @@ ruff_python_parser = { git = "https://github.com/astral-sh/ruff", tag = "0.15.9"
 ruff_text_size = { git = "https://github.com/astral-sh/ruff", tag = "0.15.9" }
 ruff_source_file = { git = "https://github.com/astral-sh/ruff", tag = "0.15.9" }
 ruff_notebook = { git = "https://github.com/astral-sh/ruff", tag = "0.15.9" }
-ruff_python_formatter = { git = "https://github.com/astral-sh/ruff", tag = "0.15.9" }
 ruff_db = { git = "https://github.com/astral-sh/ruff", tag = "0.15.9", default-features = false, features = [] }
 ty_ide = { git = "https://github.com/astral-sh/ruff", tag = "0.15.9" }
 ty_project = { git = "https://github.com/astral-sh/ruff", tag = "0.15.9", default-features = false, features = [
     "deflate",
-    "format"
 ] }
 ty_python_semantic = { git = "https://github.com/astral-sh/ruff", tag = "0.15.9" }
 

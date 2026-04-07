@@ -17,7 +17,6 @@ use ruff_db::system::{
     SystemVirtualPath, WhichError, WhichResult, WritableSystem,
 };
 use ruff_notebook::Notebook;
-use ruff_python_formatter::formatted_file;
 use ruff_source_file::{LineIndex, OneIndexed, SourceLocation};
 use ruff_text_size::{Ranged, TextSize};
 use ty_ide::{NavigationTarget, NavigationTargets, RangedValue, goto_declaration};
@@ -856,6 +855,7 @@ impl Workspace {
         Ok(result.into_iter().map(Diagnostic::wrap).collect())
     }
 
+    /*
     /// Returns the parsed AST for `path`
     pub fn parsed(&self, file_id: &FileHandle) -> Result<String, Error> {
         let parsed = ruff_db::parsed::parsed_module(&self.db, file_id.file).load(&self.db);
@@ -881,7 +881,6 @@ impl Workspace {
         Ok(source_text.to_string())
     }
 
-    /*
     #[wasm_bindgen(js_name = "gotoTypeDefinition")]
     pub fn goto_type_definition(
         &self,

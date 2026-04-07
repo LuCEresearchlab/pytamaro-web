@@ -273,21 +273,11 @@ export class Workspace {
      */
     checkFile(file_id: FileHandle): Diagnostic[];
     closeFile(file_id: FileHandle): void;
-    format(file_id: FileHandle): string | undefined;
     gotoDeclaration(file_id: FileHandle, position: Position): LocationLink[];
     constructor(root: string, position_encoding: PositionEncoding, options: any);
     openFile(path: string, contents: string): FileHandle;
-    /**
-     * Returns the parsed AST for `path`
-     */
-    parsed(file_id: FileHandle): string;
     semanticTokens(file_id: FileHandle): SemanticToken[];
     semanticTokensInRange(file_id: FileHandle, range: Range): SemanticToken[];
-    sourceText(file_id: FileHandle): string;
-    /**
-     * Returns the token stream for `path` serialized as a string.
-     */
-    tokens(file_id: FileHandle): string;
     updateFile(file_id: FileHandle, contents: string): void;
     updateOptions(options: any): void;
 }
