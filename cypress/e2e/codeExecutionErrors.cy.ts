@@ -91,7 +91,7 @@ describe('Code Execution Errors', () => {
         cy.get('body').trigger('mousemove', pos.left, pos.top);
         cy.get('.monaco-editor-overlaymessage').should('be.visible');
         cy.get('.monaco-editor-overlaymessage').contains(
-          'unsupported between objects of type',
+          'not supported between objects of type',
         );
         cy.get('.monaco-editor-overlaymessage').contains('Type');
         // 1st should contain +, 2nd and 3rd the simplified types
