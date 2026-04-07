@@ -101,7 +101,12 @@ export default function FunctionDocumentation({
           <CodeElement>(</CodeElement>
           {params.map((param, i) => (
             <span key={i}>
-              {i > 0 && <CodeElement>,&nbsp;</CodeElement>}
+              {i > 0 && (
+                <>
+                  <CodeElement>,</CodeElement>
+                  <CodeElement>&nbsp;</CodeElement>
+                </>
+              )}
               <span {...hoverProps(paramId(i), hoverElement, setHoverElement)}>
                 {param.variableLength && docsMetadata.showOptional && (
                   <CodeElement>*</CodeElement>
