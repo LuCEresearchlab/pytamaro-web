@@ -68,6 +68,7 @@ export default async function getNotebookContent(
               mdxOptions: {
                 remarkPlugins: [remarkGfm],
               },
+              blockJS: false,
             })
           : null,
       };
