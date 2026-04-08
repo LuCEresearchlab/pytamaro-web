@@ -31,19 +31,33 @@ You can do so by adding this special comment in the first line of the code cell:
 
 There are three ways to include an image in your activity:
 
-- as a Jupyter notebook attachment (some editors supports drag-and-drop)
-- using the standard HTML `<img>` tag referring to an external URL, e.g.
-  ```html
-  <img
-    alt="Example image"
-    src="https://upload.wikimedia.org/wikipedia/commons/7/70/Example.png"
-  />
-  ```
-- using the standard HTML `<img>` tag referring to a file in the activity's directory; please use a **relative path**:
-  ```html
-  <img alt="Example image" src="example.png" />
-  ```
-  and **add the resource** to the array of `assets` specified in the activity's `info.json` file.
+1. As a Jupyter notebook attachment (some editors such as VSCode support drag-and-drop of images into notebook cells)
+2. Only for images already hosted online, you use their URL directly with an `<img>` tag, e.g.:
+
+   ```html
+   <img
+     alt="Example image"
+     src="https://upload.wikimedia.org/wikipedia/commons/7/70/Example.png"
+   />
+   ```
+
+   (Note: the website has to support security headers such as CORS to allow the image to be displayed in our platform.)
+
+3. For local images (as well as online ones), you have to use the Markdown syntax:
+
+   ```markdown
+   ![Example image](example.png)
+   ```
+
+   and **add the resource path** to the `assets` array specified in the activity's `info.json` file.
+
+Tip: you can wrap an image in a `<div>` to limit its maximum width, e.g.:
+
+```html
+<div style={{ maxWidth: '30%' }}>
+![Example image](example.png)
+</div>
+```
 
 ## Special Components
 
