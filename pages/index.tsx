@@ -333,10 +333,6 @@ function Documentation() {
 }
 
 export default function Home({ activities }: { activities: BasicActivity[] }) {
-  const featuredActivities = shuffle(
-    activities.filter((activity) => activity.visibility === 'featured'),
-  );
-
   useEffect(() => {
     const tl = anime.timeline({
       easing: 'easeOutCirc',
@@ -493,16 +489,14 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                 </CardContent>
                 <Box padding={2}>
                   <Carousel interval={2000}>
-                    {featuredActivities
-                      .filter((activity) => activity.slug !== 'swiss-flag')
-                      .map((activity) => (
-                        <ActivityCardMedia
-                          key={activity.slug}
-                          activity={activity}
-                          variant={activity.variants[0]}
-                          height='250rem'
-                        />
-                      ))}
+                    {shuffle(activities).map((activity) => (
+                      <ActivityCardMedia
+                        key={activity.slug}
+                        activity={activity}
+                        variant={activity.variants[0]}
+                        height='250rem'
+                      />
+                    ))}
                   </Carousel>
                 </Box>
               </CardActionArea>
@@ -662,9 +656,13 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
 }
 
 export async function getStaticProps() {
+  const allActivities = basicActivities(await listVisibleActivities('luce'));
+  const featuredActivities = allActivities.filter(
+    (activity) => activity.visibility === 'featured',
+  );
   return {
     props: {
-      activities: basicActivities(await listVisibleActivities('luce')),
+      activities: featuredActivities,
       ...(await translationProps([])),
     },
   };
