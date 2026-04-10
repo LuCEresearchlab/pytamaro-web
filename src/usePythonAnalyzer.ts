@@ -198,9 +198,7 @@ export class PythonAnalyzer {
   }
 
   private computePreviousCellsLength(cellIdx: number): number {
-    return this.sources
-      .slice(0, cellIdx)
-      .reduce((acc, content) => acc + content.length, 0);
+    return joinLines(this.sources.slice(0, cellIdx)).length;
   }
 
   private analyze(cellIdx: number) {
