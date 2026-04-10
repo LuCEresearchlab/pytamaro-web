@@ -25,7 +25,7 @@ export type BeginInstruction = {
   type: RenderInstructionType.BEGIN;
   path: Path;
   pinPosition: Point;
-  alternativeBounds?: Rect; // optional bounds to use instead of the path's tight bounds
+  bounds: Rect;
 };
 export type EndInstruction = {
   type: RenderInstructionType.END;

@@ -160,6 +160,7 @@ function addInstructionsForEmpty(
       type: RenderInstructionType.BEGIN,
       path: emptyPath,
       pinPosition: { x: 0, y: 0 },
+      bounds: new Float32Array([0, 0, 0, 0]),
     },
     { type: RenderInstructionType.END },
   ]);
@@ -183,7 +184,7 @@ function addInstructionsForPrimitive(
   // We still need to compute the path to determine the bounds and pin position.
   if (decodedColor[3] === 0) {
     stack.pushInOrder([
-      { type: RenderInstructionType.BEGIN, path, pinPosition },
+      { type: RenderInstructionType.BEGIN, path, pinPosition, bounds },
       // `path` would be deallocated automatically after a DRAW instruction,
       // but since we're skipping that, we need to manually mark it for deletion.
       { type: RenderInstructionType.END },
@@ -192,7 +193,7 @@ function addInstructionsForPrimitive(
     const paint = ckFactory.paint();
     paint.setColor(decodedColor);
     stack.pushInOrder([
-      { type: RenderInstructionType.BEGIN, path, pinPosition },
+      { type: RenderInstructionType.BEGIN, path, pinPosition, bounds },
       { type: RenderInstructionType.DRAW, path, paint },
       { type: RenderInstructionType.END },
     ]);
@@ -307,7 +308,7 @@ function addInstructionsForText(
       type: RenderInstructionType.BEGIN,
       path,
       pinPosition: { x: 0, y: 0 },
-      alternativeBounds: textBounds,
+      bounds: textBounds,
     },
     { type: RenderInstructionType.DRAW, path, paint },
     { type: RenderInstructionType.END },
@@ -322,20 +323,16 @@ function addInstructionsForCompose(
   const fgChunk = extractGraphicInstructions(stack);
   const fgBegin = extractBegin(fgChunk);
   extractEnd(fgChunk);
-  const { path: fgPath, pinPosition: fgPin } = fgBegin;
+  const { path: fgPath, pinPosition: fgPin, bounds: fgBounds } = fgBegin;
   const fgPinPosition =
-    spec.fg_pin !== undefined
-      ? relToAbsPoint(spec.fg_pin, fgPath.computeTightBounds())
-      : fgPin;
+    spec.fg_pin !== undefined ? relToAbsPoint(spec.fg_pin, fgBounds) : fgPin;
 
   const bgChunk = extractGraphicInstructions(stack);
   const bgBegin = extractBegin(bgChunk);
   extractEnd(bgChunk);
-  const { path: bgPath, pinPosition: bgPin } = bgBegin;
+  const { path: bgPath, pinPosition: bgPin, bounds: bgBounds } = bgBegin;
   const bgPinPosition =
-    spec.bg_pin !== undefined
-      ? relToAbsPoint(spec.bg_pin, bgPath.computeTightBounds())
-      : bgPin;
+    spec.bg_pin !== undefined ? relToAbsPoint(spec.bg_pin, bgBounds) : bgPin;
 
   const fgOffsetMatrix = [
     1,
@@ -353,15 +350,17 @@ function addInstructionsForCompose(
     .addPath(bgPath)!
     .addPath(fgPath, fgOffsetMatrix, true)!;
 
+  const bounds = path.computeTightBounds();
+
   const pinPosition = spec.pin
-    ? relToAbsPoint(spec.pin, path.computeTightBounds())
+    ? relToAbsPoint(spec.pin, bounds)
     : bgPinPosition;
 
   const dx = bgPinPosition.x - fgPinPosition.x;
   const dy = bgPinPosition.y - fgPinPosition.y;
 
   stack.pushInOrder([
-    { type: RenderInstructionType.BEGIN, path, pinPosition },
+    { type: RenderInstructionType.BEGIN, path, pinPosition, bounds },
     { type: RenderInstructionType.SAVE },
     ...bgChunk,
     { type: RenderInstructionType.TRANSLATE, dx, dy },
@@ -376,11 +375,11 @@ function addInstructionsForPin(stack: Stack<RenderInstruction>, spec: PinSpec) {
   const childBegin = extractBegin(childChunk);
   extractEnd(childChunk);
 
-  const { path } = childBegin;
+  const { path, bounds } = childBegin;
   const pinPosition = relToAbsPoint(spec.pin, path.computeTightBounds());
 
   stack.pushInOrder([
-    { type: RenderInstructionType.BEGIN, path, pinPosition },
+    { type: RenderInstructionType.BEGIN, path, pinPosition, bounds },
     ...childChunk,
     { type: RenderInstructionType.END },
   ]);
@@ -395,7 +394,7 @@ function addInstructionsForRotate(
   const childBegin = extractBegin(childChunk);
   extractEnd(childChunk);
 
-  const { path, pinPosition } = childBegin;
+  const { path, pinPosition, bounds } = childBegin;
 
   const rotMatrix = rotatedMatrix(
     (-spec.angle / 180) * Math.PI,
@@ -408,7 +407,12 @@ function addInstructionsForRotate(
   const rotatedPath = ckFactory.path().addPath(path)!.transform(rotMatrix);
 
   stack.pushInOrder([
-    { type: RenderInstructionType.BEGIN, path: rotatedPath, pinPosition },
+    {
+      type: RenderInstructionType.BEGIN,
+      path: rotatedPath,
+      pinPosition,
+      bounds,
+    },
     { type: RenderInstructionType.SAVE },
     { type: RenderInstructionType.TRANSFORM, matrix: rotMatrix },
     ...childChunk,
