@@ -351,8 +351,9 @@ export class PythonAnalyzer {
 
 function moduleFromPath(path: string): string {
   // Standard library 'vendored://stdlib/math.pyi' --> 'math'
-  const vendoredStdlibRegex = /^vendored:\/\/stdlib\/(.+)\.pyi$/;
-  const match = path.match(vendoredStdlibRegex);
+  // (but ignores __init__, so that 'vendored://stdlib/string/__init__.pyi' --> 'string')
+  const vendoredLibRegex = /^vendored:\/\/stdlib\/(.+?)(?:\/__init__)?\.pyi$/;
+  const match = path.match(vendoredLibRegex);
   if (match) {
     return match[1];
   }
