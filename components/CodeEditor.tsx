@@ -281,9 +281,10 @@ export default function CodeEditor({
         // If there is a runtime error widget shown, do not show static error widgets.
         return;
       }
-      // Find position under mouse
-      // Check if there is a diagnostic at that position
-      if (!position) {
+      // Do not show the widget if we don't have a position or the desired mouse position is beyond it
+      // (to avoid showing a widget when the user is hovering on the empty space after the end of the line).
+      // We can't simply use `mouseOverText` here, because a diagnostic may be attached to the end of the line, beyond the last character.
+      if (!position || e.target.mouseColumn > position.column) {
         clearStaticWidget();
         return;
       }
