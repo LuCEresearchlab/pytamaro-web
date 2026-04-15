@@ -1,5 +1,5 @@
 import Editor from '@monaco-editor/react';
-import { debounce, DebouncedFunc, throttle } from 'lodash';
+import { debounce } from 'lodash';
 import { type editor as EditorNamespace } from 'monaco-editor';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ExecutionResponse } from '../src/execution/codeExecution';
@@ -88,9 +88,6 @@ export default function CodeEditor({
     useRef<EditorNamespace.IEditorDecorationsCollection>(null);
   const customDiagnosticsRef = useRef<CustomDiagnostic[]>([]);
   const shownDiagnosticRef = useRef<CustomDiagnostic | null>(null);
-  const debouncedShowDiagnosticOnHover = useRef<DebouncedFunc<
-    () => void
-  > | null>(null);
 
   const { t } = useLocalTranslation();
 
@@ -144,8 +141,6 @@ export default function CodeEditor({
     hoveredStaticErrorDecorationRef.current = null;
     // And the shown diagnostic
     shownDiagnosticRef.current = null;
-    // Also cancel possible pending showing of a diagnostic widget/decorations
-    debouncedShowDiagnosticOnHover.current?.cancel();
   }, []);
 
   const clearStaticAnnotations = useCallback(() => {
@@ -314,48 +309,44 @@ export default function CodeEditor({
         return;
       }
       clearStaticWidget();
-      debouncedShowDiagnosticOnHover.current = debounce(() => {
-        shownDiagnosticRef.current = selectedDiagnosticToShow;
-        const widget = new ErrorMessageWidget(
-          monacoInstance!,
-          editorInstance!,
-          selectedDiagnosticToShow.range,
-          selectedDiagnosticToShow.message,
-          false,
-          selectedDiagnosticToShow.category,
-          t,
-        );
-        hoveredStaticErrorDecorationRef.current =
-          editorInstance!.createDecorationsCollection([
-            {
-              range: selectedDiagnosticToShow.range,
-              options: {
-                className: 'analyzer-diagnostic-code-highlight',
-                showIfCollapsed: true,
-              },
+      shownDiagnosticRef.current = selectedDiagnosticToShow;
+      const widget = new ErrorMessageWidget(
+        monacoInstance!,
+        editorInstance!,
+        selectedDiagnosticToShow.range,
+        selectedDiagnosticToShow.message,
+        false,
+        selectedDiagnosticToShow.category,
+        t,
+      );
+      hoveredStaticErrorDecorationRef.current =
+        editorInstance!.createDecorationsCollection([
+          {
+            range: selectedDiagnosticToShow.range,
+            options: {
+              className: 'analyzer-diagnostic-code-highlight',
+              showIfCollapsed: true,
             },
-          ]);
-        staticErrorWidgetRef.current = widget;
-      }, 150);
-      debouncedShowDiagnosticOnHover.current();
+          },
+        ]);
+      staticErrorWidgetRef.current = widget;
     };
+    const handleMouseLeave = () => {
+      clearStaticWidget();
+      setHoveredName?.(null);
+    };
+    const delay = 250;
+    const debouncedHandleMouseMoved = debounce(handleMouseMoved, delay);
+    const debouncedHandleMouseLeave = debounce(handleMouseLeave, delay);
     const mouseMoveDisposer = editorInstance?.onMouseMove(
-      throttle((e) => handleMouseMoved(e), 100, {
-        // Invoke on the leading edge to make it occur before any mouse leave event.
-        leading: true,
-        trailing: false,
-      }),
+      debouncedHandleMouseMoved,
     );
     const mouseLeaveDisposer = editorInstance?.onMouseLeave(
-      throttle(() => {
-        clearStaticWidget();
-        if (setHoveredName !== undefined) {
-          setHoveredName(null);
-        }
-      }),
-      100,
+      debouncedHandleMouseLeave,
     );
     return () => {
+      debouncedHandleMouseMoved.cancel();
+      debouncedHandleMouseLeave.cancel();
       mouseMoveDisposer?.dispose();
       mouseLeaveDisposer?.dispose();
     };
