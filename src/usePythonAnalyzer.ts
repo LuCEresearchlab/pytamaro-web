@@ -320,6 +320,13 @@ export class PythonAnalyzer {
     return this.sources.slice(0, cellIdx + 1);
   }
 
+  private emptyRange(range: TyRange): boolean {
+    return (
+      range.start.line === range.end.line &&
+      range.start.column === range.end.column
+    );
+  }
+
   hoveredPythonName(
     model: editor.ITextModel,
     position: Position,
@@ -337,7 +344,11 @@ export class PythonAnalyzer {
       position.lineNumber + previousLinesCount,
       position.column,
     );
-    const locations = this.workspace.gotoDeclaration(fileHandle, tyPosition);
+    const locations = this.workspace
+      .gotoDeclaration(fileHandle, tyPosition)
+      // Filter out empty ranges (this can happen when finding the declaration of a module name, e.g., `from <CURSOR>random import random`).
+      .filter((loc) => !this.emptyRange(loc.full_range));
+
     if (locations.length === 0) {
       return null;
     } else {
