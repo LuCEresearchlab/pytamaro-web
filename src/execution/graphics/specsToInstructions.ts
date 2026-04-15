@@ -394,7 +394,7 @@ function addInstructionsForRotate(
   const childBegin = extractBegin(childChunk);
   extractEnd(childChunk);
 
-  const { path, pinPosition, bounds } = childBegin;
+  const { path, pinPosition } = childBegin;
 
   const rotMatrix = rotatedMatrix(
     (-spec.angle / 180) * Math.PI,
@@ -405,13 +405,14 @@ function addInstructionsForRotate(
   // We must use the actual path of the child unlike in other graphics with
   // child(ren) because the bounds are affected by rotation
   const rotatedPath = ckFactory.path().addPath(path)!.transform(rotMatrix);
+  const rotatedBounds = rotatedPath.computeTightBounds();
 
   stack.pushInOrder([
     {
       type: RenderInstructionType.BEGIN,
       path: rotatedPath,
       pinPosition,
-      bounds,
+      bounds: rotatedBounds,
     },
     { type: RenderInstructionType.SAVE },
     { type: RenderInstructionType.TRANSFORM, matrix: rotMatrix },
