@@ -4,6 +4,10 @@
 
 BEGIN;
 
+DROP DATABASE IF EXISTS export;
+CREATE DATABASE export;
+\c export;
+
 -- Find ids of events to delete
 CREATE TEMP TABLE ids_old_events ON COMMIT DROP AS
 SELECT id
