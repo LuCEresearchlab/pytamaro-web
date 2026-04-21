@@ -28,19 +28,25 @@ function nicerTraceback(traceback: string) {
 
   // Hide the "driver" file.
   const hideDriver = (s: string) =>
-    // Remove the line with the driver file, the one after it (source code),
-    // and possibly even the one after if it has only the caret.
+    // Remove the line with the driver file + an arbitrary number of chunks of
+    // subsequent lines:
+    // - the one after it (source code),
+    // - which may be followed with a line with the caret
+    // - which may be followed by another line for "code folding"
     s.replace(
-      /^ {2}File "driver.py", line \d+, in \S+\n.*\n(?:\s*~+\^+\s*\n)?/gm,
+      /^ {2}File "driver\.py", line \d+, in \S+\n(?: {4}.*\n(?: {4}\s*~*\^*\s*\n(?: {4}...<\d+ lines?>...\n)?)?)+/gm,
       '',
     );
 
   // Hide /lib/python*/_pyodide/_base.py
   const hidePyodideBase = (s: string) =>
-    // Remove the line with the driver file, the one after it (source code),
-    // and possibly even the one after if it has only the caret.
+    // Remove the line with the driver file + an arbitrary number of chunks of
+    // subsequent lines:
+    // - the one after it (source code),
+    // - which may be followed with a line with the caret
+    // - which may be followed by another line for "code folding"
     s.replace(
-      /^ {2}File "\/lib\/python\d+\.zip\/_pyodide\/_base.py", line \d+, in \S+\n.*\n(?:\s*~+\^+\s*\n)?/gm,
+      /^ {2}File "\/lib\/python\d+\.zip\/_pyodide\/_base\.py", line \d+, in \S+\n(?: {4}.*\n(?: {4}\s*~*\^*\s*\n(?: {4}...<\d+ lines?>...\n)?)?)+/gm,
       '',
     );
 
