@@ -18,6 +18,8 @@ export const TRACEBACK_MESSAGE_DECORATION_CLASSNAME =
 
 const LIBRARY_PATH = '/lib/';
 
+const REGEX_TRACEBACK_CELL_FILE_LINE = / {2}File "cell_\d+\.py", line (\d+)/;
+
 function nicerTraceback(traceback: string) {
   // Remove PythonError: at the beginning
   const removePythonErrorColon = (s: string) => {
@@ -97,12 +99,11 @@ function lineNumOfErrorThisCell(
     return undefined;
   }
 
-  const regex = / {2}File "cell_\d+.py", line (\d+)/;
   // We need to find the least recent occurrence of the regex where the line
   // number is ≥ firstLineNumberOfThisCell.
   const candidates = traceback
     .map((line) => {
-      const match = line.match(regex);
+      const match = line.match(REGEX_TRACEBACK_CELL_FILE_LINE);
       if (match === null) {
         return null;
       }
@@ -114,6 +115,12 @@ function lineNumOfErrorThisCell(
     })
     .filter((candidate) => candidate !== undefined);
   return candidates.length > 0 ? candidates[candidates.length - 1] : undefined;
+}
+
+function errorIsInUserCode(traceback: string[]): boolean {
+  return traceback.some(
+    (line) => line.match(REGEX_TRACEBACK_CELL_FILE_LINE) !== null,
+  );
 }
 
 function simulateModelChange(
@@ -299,7 +306,9 @@ export function isErrorInvolvingToolbox(content: string) {
 }
 
 export function isErrorPreviousCells(content: string, firstLineNumber: number) {
+  const tracebackLines = stderrLines(content);
   return (
-    lineNumOfErrorThisCell(stderrLines(content), firstLineNumber) === undefined
+    errorIsInUserCode(tracebackLines) &&
+    lineNumOfErrorThisCell(tracebackLines, firstLineNumber) === undefined
   );
 }
