@@ -119,6 +119,11 @@ pre:has(code) {
   background-color: #b0e8ff;
 }
 
+.activity-content details summary {
+  cursor: pointer;
+}
+
+
 /* Icons, from https://fontsource.org/docs/getting-started/material-icons */
 
 .material-icons {
