@@ -294,7 +294,7 @@ function Documentation() {
         />
         <Stack
           direction='row'
-          rowGap={0.1}
+          rowGap={0.5}
           columnGap={0.5}
           alignItems='baseline'
           useFlexGap

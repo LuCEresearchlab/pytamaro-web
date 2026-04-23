@@ -55,8 +55,6 @@ export default function DocElement({
             : 'transparent',
         cursor: 'pointer',
         lineHeight: 1,
-        marginTop: '0.125em',
-        marginBottom: '0.125em',
         paddingLeft: theme.spacing(0.25),
         paddingRight: theme.spacing(0.25),
       }}
