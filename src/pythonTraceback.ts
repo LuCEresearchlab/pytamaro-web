@@ -1,11 +1,13 @@
 import { Monaco } from '@monaco-editor/react';
-import { IRange, type editor as EditorNamespace } from 'monaco-editor';
+import { sum } from 'lodash';
+import { type editor as EditorNamespace } from 'monaco-editor';
 import { TFunction } from 'next-i18next';
 import { ErrorMessageWidget } from '../components/editor/ErrorMessageWidget';
 import { runtimeErrorMessageCategory } from '../components/editor/errors';
 import { ExecutionResponse } from './execution/codeExecution';
 import { PYTHON_VERSION } from './execution/versions';
 import {
+  joinLines,
   splitLines,
   splitLinesWithoutPossibleTrailingNewline,
 } from './sourceUtils';
@@ -21,10 +23,6 @@ const LIBRARY_PATH = '/lib/';
 const REGEX_TRACEBACK_CELL_FILE_LINE = / {2}File "cell_\d+\.py", line (\d+)/;
 
 const REGEX_CARET_LINE = /^\s*~*\^+~*$/;
-
-function sum(numbers: number[]): number {
-  return numbers.reduce((acc, n) => acc + n, 0);
-}
 
 function tracebackEntriesRegex(fileNamePattern: string): RegExp {
   // Real examples of different traceback entry formats that we want to capture
@@ -62,7 +60,7 @@ function tracebackEntriesRegex(fileNamePattern: string): RegExp {
   //     )
   //     ^
   //
-  // Plain regex (with `.+\.py` as hardcoded fileNamePatter):
+  // Plain regex (with `.+\.py` as hardcoded fileNamePattern):
   // ^ {2}File ".+\.py", line \d+(?:, in \S+)?\n(?: {4}.*\n(?: {4}\s*~*\^*[ ~]*\n(?: {4}...<\d+ lines?>...\n)?)?)+
 
   return new RegExp(
@@ -79,16 +77,16 @@ const pyodideBaseTracebackEntriesRegex = tracebackEntriesRegex(
 function nicerTraceback(traceback: string) {
   // Remove PythonError: at the beginning
   const removePythonErrorColon = (s: string) => {
-    const lines = s.split('\n');
+    const lines = splitLines(s);
     lines[0] = lines[0].replace(/^PythonError: /, '');
-    return lines.join('\n');
+    return joinLines(lines);
   };
 
   // Remove the traceback entries for the driver.py file
   const hideDriver = (s: string) =>
     s.replace(driverPyTracebackEntriesRegex, '');
 
-  // Remove the trackeback entries for the /lib/python*/_pyodide/_base.py file
+  // Remove the traceback entries for the /lib/python*/_pyodide/_base.py file
   const hidePyodideBase = (s: string) =>
     s.replace(pyodideBaseTracebackEntriesRegex, '');
 
@@ -234,9 +232,9 @@ export function addErrorAnnotationsFromExecution(
   ).pop();
   const message = errorMessage?.at(1) || 'Error (check the traceback)';
 
-  const tracebackFromErrorBegin: string = tracebackLines
-    .slice(lineNumberInfo.idxInTraceback)
-    .join('\n');
+  const tracebackFromErrorBegin: string = joinLines(
+    tracebackLines.slice(lineNumberInfo.idxInTraceback),
+  );
 
   // Parse traceback entries
   const match = tracebackFromErrorBegin.match(tracebackEntriesRegex('.+\\.py'));
@@ -280,23 +278,16 @@ export function addErrorAnnotationsFromExecution(
     line.match(REGEX_CARET_LINE),
   );
 
-  let caretDecoration: {
-    range: IRange;
-    options: {
-      className: string;
-      showIfCollapsed: boolean;
-    };
-  };
+  let caretDecoration: EditorNamespace.IModelDeltaDecoration;
   if (firstCaretLineIdx === -1) {
     // No caret, highlight the whole line
     const lineNumber = tracebackIdxToCodeLineNumber(0);
     caretDecoration = {
       range: new monaco.Range(
         lineNumber,
-        leadingSpaces,
+        leadingSpaces + 1, // 1-based Monaco column
         lineNumber,
-        // + 1 for monaco range
-        sourceLineContent.length + 1,
+        sourceLineContent.length + 1, // 1-based Monaco column
       ),
       options: {
         className: TRACEBACK_MESSAGE_DECORATION_CLASSNAME,
@@ -340,12 +331,12 @@ export function addErrorAnnotationsFromExecution(
     };
   }
 
-  const tildeDecorations = tracebackEntries.flatMap((line, idx) => {
+  const tildeDecorations = tracebackEntries.flatMap((_line, idx) => {
     // Skip "line fold" lines
     if (lineFolds[idx] > 0) {
       return [];
     }
-    const indentedLine = ' '.repeat(leadingSpaces) + line.substring(4);
+    const indentedLine = properlyIndentedCodeLine(idx);
     // Skip lines with source code
     if (indentedLine.match(/^\s*~*\^*~*$/) === null) {
       return [];
