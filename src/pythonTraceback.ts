@@ -1,4 +1,5 @@
 import { Monaco } from '@monaco-editor/react';
+import { sum } from 'lodash';
 import { type editor as EditorNamespace } from 'monaco-editor';
 import { TFunction } from 'next-i18next';
 import { ErrorMessageWidget } from '../components/editor/ErrorMessageWidget';
@@ -6,6 +7,7 @@ import { runtimeErrorMessageCategory } from '../components/editor/errors';
 import { ExecutionResponse } from './execution/codeExecution';
 import { PYTHON_VERSION } from './execution/versions';
 import {
+  joinLines,
   splitLines,
   splitLinesWithoutPossibleTrailingNewline,
 } from './sourceUtils';
@@ -18,31 +20,75 @@ export const TRACEBACK_MESSAGE_DECORATION_CLASSNAME =
 
 const LIBRARY_PATH = '/lib/';
 
+const REGEX_TRACEBACK_CELL_FILE_LINE = / {2}File "cell_\d+\.py", line (\d+)/;
+
+const REGEX_CARET_LINE = /^\s*~*\^+~*$/;
+
+function tracebackEntriesRegex(fileNamePattern: string): RegExp {
+  // Real examples of different traceback entry formats that we want to capture
+  //
+  // - Syntax error, with carets:
+  //   File "cell_0.py", line 1
+  //     if True:
+  //             ^
+  //
+  // - Single line of code, no carets:
+  //   File "/lib/python313.zip/_pyodide/_base.py", line 147, in _parse_and_compile_gen
+  //     source = dedent(source)
+  //
+  // - Runtime, with carets and tildes:
+  //   File "/lib/python313.zip/_pyodide/_base.py", line 285, in __init__
+  //     self.ast = next(self._gen)
+  //                ~~~~^^^^^^^^^^^
+  //
+  // - Multiline:
+  //   File "cell_0.py", line 1, in <module>
+  //     i = 1 \
+  //         ~~~
+  //         / 0
+  //         ^~~
+  //
+  // - Multiline, with folds
+  //  File "/lib/python313.zip/_pyodide/_base.py", line 513, in eval_code
+  //    CodeRunner(
+  //     ~~~~~~~~~~^
+  //         source,
+  //         ^^^^^^^
+  //     ...<5 lines>...
+  //         optimize=optimize,
+  //         ^^^^^^^^^^^^^^^^^^
+  //     )
+  //     ^
+  //
+  // Plain regex (with `.+\.py` as hardcoded fileNamePattern):
+  // ^ {2}File ".+\.py", line \d+(?:, in \S+)?\n(?: {4}.*\n(?: {4}\s*~*\^*[ ~]*\n(?: {4}...<\d+ lines?>...\n)?)?)+
+
+  return new RegExp(
+    `^ {2}File "${fileNamePattern}", line \\d+(?:, in \\S+)?\\n(?: {4}.*\\n(?: {4}\\s*~*\\^*[ ~]*\\n(?: {4}...<\\d+ lines?>...\\n)?)?)+`,
+    'gm',
+  );
+}
+
+const driverPyTracebackEntriesRegex = tracebackEntriesRegex('driver\\.py');
+const pyodideBaseTracebackEntriesRegex = tracebackEntriesRegex(
+  '\\\/lib\\\/python\\d+\\.zip\\\/_pyodide\\\/_base\\.py',
+);
+
 function nicerTraceback(traceback: string) {
   // Remove PythonError: at the beginning
   const removePythonErrorColon = (s: string) => {
-    const lines = s.split('\n');
+    const lines = splitLines(s);
     lines[0] = lines[0].replace(/^PythonError: /, '');
-    return lines.join('\n');
+    return joinLines(lines);
   };
 
-  // Hide the "driver" file.
+  // Remove the traceback entries for the driver.py file
   const hideDriver = (s: string) =>
-    // Remove the line with the driver file, the one after it (source code),
-    // and possibly even the one after if it has only the caret.
-    s.replace(
-      /^ {2}File "driver.py", line \d+, in \S+\n.*\n(?:\s*~+\^+\s*\n)?/gm,
-      '',
-    );
+    s.replace(driverPyTracebackEntriesRegex, '');
 
-  // Hide /lib/python*/_pyodide/_base.py
+  // Remove the traceback entries for the /lib/python*/_pyodide/_base.py file
   const hidePyodideBase = (s: string) =>
-    // Remove the line with the driver file, the one after it (source code),
-    // and possibly even the one after if it has only the caret.
-    s.replace(
-      /^ {2}File "\/lib\/python\d+\.zip\/_pyodide\/_base.py", line \d+, in \S+\n.*\n(?:\s*~+\^+\s*\n)?/gm,
-      '',
-    );
+    s.replace(pyodideBaseTracebackEntriesRegex, '');
 
   const hideGlotBase = (s: string) =>
     s.replace(
@@ -91,12 +137,11 @@ function lineNumOfErrorThisCell(
     return undefined;
   }
 
-  const regex = / {2}File "cell_\d+.py", line (\d+)/;
   // We need to find the least recent occurrence of the regex where the line
   // number is ≥ firstLineNumberOfThisCell.
   const candidates = traceback
     .map((line) => {
-      const match = line.match(regex);
+      const match = line.match(REGEX_TRACEBACK_CELL_FILE_LINE);
       if (match === null) {
         return null;
       }
@@ -108,6 +153,12 @@ function lineNumOfErrorThisCell(
     })
     .filter((candidate) => candidate !== undefined);
   return candidates.length > 0 ? candidates[candidates.length - 1] : undefined;
+}
+
+function errorIsInUserCode(traceback: string[]): boolean {
+  return traceback.some(
+    (line) => line.match(REGEX_TRACEBACK_CELL_FILE_LINE) !== null,
+  );
 }
 
 function simulateModelChange(
@@ -162,74 +213,157 @@ export function addErrorAnnotationsFromExecution(
   if (!model || lineNumberInfo === undefined) {
     return null;
   }
+
   // Extract the relevant line number
   const currentCellLineIdx = lineNumberInfo.lineNum - firstLineNumber + 1;
   // Ensure that the line number is still valid (the model may have changed in the meantime)
   if (currentCellLineIdx < 1 || currentCellLineIdx > model.getLineCount()) {
     return null;
   }
+
   // Find that line in the editor, count number of leading spaces
   const sourceLineContent = model.getLinesContent()[currentCellLineIdx - 1];
   const leadingSpaces =
     sourceLineContent.length - sourceLineContent.trimStart().length;
-  // Extract the caret position from two lines after, if available
-  const caretData =
-    tracebackLines[lineNumberInfo.idxInTraceback + 2]?.match(/ {4}(.*)/)?.[1];
-  const validCaret =
-    caretData !== undefined &&
-    Array.from(caretData).every((c) => c === ' ' || c === '^' || c === '~');
-  // Create a widget for the ^^^ part
-  const firstCaret = validCaret ? caretData.indexOf('^') : undefined;
-  const lastCaret = validCaret ? caretData.lastIndexOf('^') : undefined;
-  const caretBegin =
-    firstCaret !== undefined && firstCaret != -1
-      ? firstCaret + leadingSpaces
-      : leadingSpaces;
-  const caretEnd =
-    lastCaret !== undefined && lastCaret != -1
-      ? lastCaret + leadingSpaces
-      : sourceLineContent.length - 1;
+
   // Extract the error message
   const errorMessage = Array.from(
     traceback.matchAll(/^(?: {2}.*\n)+(.*)\n?/gm),
   ).pop();
   const message = errorMessage?.at(1) || 'Error (check the traceback)';
-  const lineNumber = currentCellLineIdx;
-  const startColumn = caretBegin + 1;
-  const endColumn = caretEnd + 2;
-  const mainDecoration = {
-    range: new monaco.Range(lineNumber, startColumn, lineNumber, endColumn),
-    options: {
-      className: TRACEBACK_MESSAGE_DECORATION_CLASSNAME,
-      showIfCollapsed: true,
-    },
+
+  const tracebackFromErrorBegin: string = joinLines(
+    tracebackLines.slice(lineNumberInfo.idxInTraceback),
+  );
+
+  // Parse traceback entries
+  const match = tracebackFromErrorBegin.match(tracebackEntriesRegex('.+\\.py'));
+  if (match === null) {
+    return null;
+  }
+
+  // Skip the first line that contains `File "XX.py", line YY, in ZZ
+  const tracebackEntries: string[] = splitLines(match[0]).slice(1);
+  if (tracebackEntries.length === 0) {
+    return null;
+  }
+
+  // How many lines of code have been folded in each line of traceback
+  const lineFolds = tracebackEntries.map((line) => {
+    const match = line.match(/^ {4}\.\.\.<(\d+) lines?>\.\.\.$/);
+    return match === null ? 0 : parseInt(match[1], 10);
+  });
+
+  const tracebackIdxToCodeLineNumber = (idx: number): number => {
+    if (idx < 0) {
+      return -1;
+    }
+    const foldsBefore = lineFolds.slice(0, idx);
+    const numFoldsBefore = foldsBefore.filter((n) => n > 0).length;
+    return (
+      lineNumberInfo.lineNum -
+      // Lines before this cell
+      firstLineNumber +
+      // 1-based index in monaco
+      1 +
+      Math.floor((idx - numFoldsBefore) / 2) +
+      sum(foldsBefore)
+    );
   };
-  // Create decorations for each possible ~~~ chunk.
-  const decorations = Array.from((caretData || '').matchAll(/~+/g)).map(
-    (match) => {
-      const begin = match.index;
+
+  const properlyIndentedCodeLine = (idx: number): string =>
+    ' '.repeat(leadingSpaces) + tracebackEntries[idx].substring(4);
+
+  const firstCaretLineIdx = tracebackEntries.findIndex((line) =>
+    line.match(REGEX_CARET_LINE),
+  );
+
+  let caretDecoration: EditorNamespace.IModelDeltaDecoration;
+  if (firstCaretLineIdx === -1) {
+    // No caret, highlight the whole line
+    const lineNumber = tracebackIdxToCodeLineNumber(0);
+    caretDecoration = {
+      range: new monaco.Range(
+        lineNumber,
+        leadingSpaces + 1, // 1-based Monaco column
+        lineNumber,
+        sourceLineContent.length + 1, // 1-based Monaco column
+      ),
+      options: {
+        className: TRACEBACK_MESSAGE_DECORATION_CLASSNAME,
+        showIfCollapsed: true,
+      },
+    };
+  } else {
+    // First caret position
+    const firstCaretLineCode = properlyIndentedCodeLine(firstCaretLineIdx);
+    const firstCaretColumn =
+      1 + // 1-based index
+      (firstCaretLineIdx >= 0 ? firstCaretLineCode.indexOf('^') : 0);
+    const firstCaretLine = tracebackIdxToCodeLineNumber(firstCaretLineIdx);
+
+    // Last caret position
+    const lastCaretLineIdx = tracebackEntries.findLastIndex((line) =>
+      line.match(REGEX_CARET_LINE),
+    );
+    const lastCaretLineCode = properlyIndentedCodeLine(
+      lastCaretLineIdx < 0 ? firstCaretLineIdx : lastCaretLineIdx,
+    );
+    const lastCaretColumn =
+      1 + // 1-based index
+      (lastCaretLineIdx >= 0
+        ? // + 1 for monaco range
+          lastCaretLineCode.lastIndexOf('^') + 1
+        : lastCaretLineCode.length);
+    const lastCaretLine = tracebackIdxToCodeLineNumber(lastCaretLineIdx);
+
+    caretDecoration = {
+      range: new monaco.Range(
+        firstCaretLine,
+        firstCaretColumn,
+        lastCaretLine,
+        lastCaretColumn,
+      ),
+      options: {
+        className: TRACEBACK_MESSAGE_DECORATION_CLASSNAME,
+        showIfCollapsed: true,
+      },
+    };
+  }
+
+  const tildeDecorations = tracebackEntries.flatMap((_line, idx) => {
+    // Skip "line fold" lines
+    if (lineFolds[idx] > 0) {
+      return [];
+    }
+    const indentedLine = properlyIndentedCodeLine(idx);
+    // Skip lines with source code
+    if (indentedLine.match(/^\s*~*\^*~*$/) === null) {
+      return [];
+    }
+    const lineNumber = tracebackIdxToCodeLineNumber(idx);
+    // Find chunks of ~
+    return Array.from(indentedLine.matchAll(/~+/g)).map((match) => {
+      // + 1 for 1-based index
+      const begin = match.index + 1;
       const end = begin + match[0].length;
       return {
-        range: new monaco.Range(
-          lineNumber,
-          begin + leadingSpaces + 1,
-          lineNumber,
-          end + leadingSpaces + 1,
-        ),
+        range: new monaco.Range(lineNumber, begin, lineNumber, end),
         options: {
           className: TRACEBACK_TILDE_DECORATION_CLASSNAME,
         },
       };
-    },
-  );
+    });
+  });
+
   const decorationsCollection = editor.createDecorationsCollection([
-    mainDecoration,
-    ...decorations,
+    caretDecoration,
+    ...tildeDecorations,
   ]);
   const widget = new ErrorMessageWidget(
     monaco,
     editor,
-    mainDecoration.range,
+    caretDecoration.range,
     message,
     true,
     runtimeErrorMessageCategory(message),
@@ -293,7 +427,9 @@ export function isErrorInvolvingToolbox(content: string) {
 }
 
 export function isErrorPreviousCells(content: string, firstLineNumber: number) {
+  const tracebackLines = stderrLines(content);
   return (
-    lineNumOfErrorThisCell(stderrLines(content), firstLineNumber) === undefined
+    errorIsInUserCode(tracebackLines) &&
+    lineNumOfErrorThisCell(tracebackLines, firstLineNumber) === undefined
   );
 }
