@@ -504,6 +504,98 @@
         },
         {
             "kind": "function",
+            "name": "tuple",
+            "description": {
+                "p": [
+                    "Converts a sequence to a tuple, i.e., an immutable sequence of elements of possibly different types.",
+                    "(Technical note: this function is actually a constructor of tuple objects.)"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "sequence",
+                    "type": "Sequence",
+                    "description": "sequence to convert to a tuple"
+                }
+            ],
+            "returnValue": {
+                "type": "Tuple",
+                "description": "tuple with the elements of the sequence"
+            },
+            "examples": [
+                {
+                    "code": "tuple(range(3))",
+                    "result": "(0, 1, 2)"
+                },
+                {
+                    "code": "tuple('ABC')",
+                    "result": "('A', 'B', 'C')"
+                }
+            ],
+            "urlSuffix": "#func-tuple"
+        },
+        {
+            "kind": "function",
+            "name": "set",
+            "description": {
+                "p": [
+                    "Converts a sequence to a set, i.e., a collection of distinct elements. A set does not guarantee any particular order of its elements.",
+                    "(Technical note: this function is actually a constructor of set objects.)"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "sequence",
+                    "type": "Sequence",
+                    "description": "sequence to convert to a set"
+                }
+            ],
+            "returnValue": {
+                "type": "Set",
+                "description": "set with the distinct elements of the sequence"
+            },
+            "examples": [
+                {
+                    "code": "set([1, 2, 2, 3])",
+                    "result": "{1, 2, 3}"
+                },
+                {
+                    "code": "set('hello')",
+                    "result": "{'e', 'l', 'o', 'h'}"
+                }
+            ],
+            "urlSuffix": "#func-set"
+        },
+        {
+            "kind": "function",
+            "name": "dict",
+            "description": {
+                "p": [
+                    "Converts a sequence of pairs of keys and values to a dictionary, i.e., a collection of key-value pairs.",
+                    "(Technical note: this function is actually a constructor of dict objects.)"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "sequence",
+                    "type": "Sequence[Tuple[K, V]]",
+                    "description": "sequence of pairs of keys and values to convert to a dictionary"
+                }
+            ],
+            "returnValue": {
+                "type": "Dict[K, V]",
+                "description": "dictionary with the keys and values of the pairs in the sequence"
+            },
+            "examples": [
+                {
+                    "code": "dict([('Lugano', 70_000), ('Zürich', 400_000)])",
+                    "result": "{'Lugano': 70000, 'Zürich': 400000}"
+                }
+            ],
+            "urlSuffix": "#func-dict"
+        },
+        {
+            "kind": "function",
             "name": "max",
             "description": {
                 "p": [
