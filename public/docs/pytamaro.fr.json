@@ -1027,7 +1027,7 @@
                 {
                     "name": "graphique_arriere_plan",
                     "type": "Graphique",
-                    "description": null
+                    "description": "le graphique en arri\u00e8re plan"
                 }
             ],
             "returnValue": {
