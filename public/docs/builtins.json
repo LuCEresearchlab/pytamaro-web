@@ -240,7 +240,8 @@
                 {
                     "name": "value",
                     "type": "str | int",
-                    "description": "value to convert to an integer"
+                    "description": "value to convert to an integer",
+                    "default": "0"
                 },
                 {
                     "name": "base",
@@ -255,12 +256,18 @@
             },
             "examples": [
                 {
+                    "code": "int()",
+                    "result": "0"
+                },
+                {
                     "code": "int('42')",
-                    "result": "42"
+                    "result": "42",
+                    "usesOptional": true
                 },
                 {
                     "code": "int(123.45)",
-                    "result": "123"
+                    "result": "123",
+                    "usesOptional": true
                 },
                 {
                     "code": "int('111', 2)",
@@ -283,7 +290,8 @@
                 {
                     "name": "value",
                     "type": "Any",
-                    "description": "value to convert to a string"
+                    "description": "value to convert to a string",
+                    "default": "''"
                 }
             ],
             "returnValue": {
@@ -292,8 +300,13 @@
             },
             "examples": [
                 {
+                    "code": "str()",
+                    "result": "''"
+                },
+                {
                     "code": "str(12)",
-                    "result": "'12'"
+                    "result": "'12'",
+                    "usesOptional": true
                 }
             ],
             "urlSuffix": "#func-str"
@@ -483,7 +496,8 @@
                 {
                     "name": "sequence",
                     "type": "Sequence",
-                    "description": "sequence to convert to a list"
+                    "description": "sequence to convert to a list",
+                    "default": "[]"
                 }
             ],
             "returnValue": {
@@ -492,12 +506,18 @@
             },
             "examples": [
                 {
+                    "code": "list()",
+                    "result": "[]"
+                },
+                {
                     "code": "list(range(3))",
-                    "result": "[0, 1, 2]"
+                    "result": "[0, 1, 2]",
+                    "usesOptional": true
                 },
                 {
                     "code": "list('ABC')",
-                    "result": "['A', 'B', 'C']"
+                    "result": "['A', 'B', 'C']",
+                    "usesOptional": true
                 }
             ],
             "urlSuffix": "#func-list"
@@ -515,7 +535,8 @@
                 {
                     "name": "sequence",
                     "type": "Sequence",
-                    "description": "sequence to convert to a tuple"
+                    "description": "sequence to convert to a tuple",
+                    "default": "()"
                 }
             ],
             "returnValue": {
@@ -524,12 +545,18 @@
             },
             "examples": [
                 {
+                    "code": "tuple()",
+                    "result": "()"
+                },
+                {
                     "code": "tuple(range(3))",
-                    "result": "(0, 1, 2)"
+                    "result": "(0, 1, 2)",
+                    "usesOptional": true
                 },
                 {
                     "code": "tuple('ABC')",
-                    "result": "('A', 'B', 'C')"
+                    "result": "('A', 'B', 'C')",
+                    "usesOptional": true
                 }
             ],
             "urlSuffix": "#func-tuple"
@@ -547,7 +574,8 @@
                 {
                     "name": "sequence",
                     "type": "Sequence",
-                    "description": "sequence to convert to a set"
+                    "description": "sequence to convert to a set",
+                    "default": "[]"
                 }
             ],
             "returnValue": {
@@ -556,12 +584,18 @@
             },
             "examples": [
                 {
+                    "code": "set()",
+                    "result": "set()"
+                },
+                {
                     "code": "set([1, 2, 2, 3])",
-                    "result": "{1, 2, 3}"
+                    "result": "{1, 2, 3}",
+                    "usesOptional": true
                 },
                 {
                     "code": "set('hello')",
-                    "result": "{'e', 'l', 'o', 'h'}"
+                    "result": "{'e', 'l', 'o', 'h'}",
+                    "usesOptional": true
                 }
             ],
             "urlSuffix": "#func-set"
@@ -579,7 +613,8 @@
                 {
                     "name": "sequence",
                     "type": "Sequence[Tuple[K, V]]",
-                    "description": "sequence of pairs of keys and values to convert to a dictionary"
+                    "description": "sequence of pairs of keys and values to convert to a dictionary",
+                    "default": "[]"
                 }
             ],
             "returnValue": {
@@ -588,8 +623,13 @@
             },
             "examples": [
                 {
+                    "code": "dict()",
+                    "result": "{}"
+                },
+                {
                     "code": "dict([('Lugano', 70_000), ('Zürich', 400_000)])",
-                    "result": "{'Lugano': 70000, 'Zürich': 400000}"
+                    "result": "{'Lugano': 70000, 'Zürich': 400000}",
+                    "usesOptional": true
                 }
             ],
             "urlSuffix": "#func-dict"
