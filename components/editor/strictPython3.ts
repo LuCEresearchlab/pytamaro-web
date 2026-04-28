@@ -4,6 +4,7 @@ import type { languages } from 'monaco-editor';
 export const STRICT_PYTHON3_LANG_ID = 'strict-python3';
 
 // Taken from https://github.com/microsoft/monaco-editor/blob/4dc7b06d9b65ba5e55620b7c1c40afdcf4f517af/src/basic-languages/python/python.ts
+// Plus lucach's changes in https://github.com/microsoft/monaco-editor/pull/5084/
 
 export function getConf(monaco: Monaco): languages.LanguageConfiguration {
   return {
@@ -114,6 +115,12 @@ export const strictPython3Language = <languages.IMonarchLanguage>{
     { open: '(', close: ')', token: 'delimiter.parenthesis' },
   ],
 
+  // we include these common regular expressions
+  digits: /\d+(_+\d+)*/,
+  octaldigits: /[0-7]+(_+[0-7]+)*/,
+  binarydigits: /[0-1]+(_+[0-1]+)*/,
+  hexdigits: /[[0-9a-fA-F]+(_+[0-9a-fA-F]+)*/,
+
   tokenizer: {
     root: [
       { include: '@whitespace' },
@@ -156,10 +163,17 @@ export const strictPython3Language = <languages.IMonarchLanguage>{
       [/"/, 'string'],
     ],
 
-    // Recognize hex, negatives, decimals, imaginaries, longs, and scientific notation
+    // Recognize hex, octal, binary, floating-point (including scientific notation), decimals, plus variants (imaginaries, Python 2 longs)
     numbers: [
-      [/-?0x([abcdef]|[ABCDEF]|\d)+[lL]?/, 'number.hex'],
-      [/-?(\d*\.)?\d+([eE][+\-]?\d+)?[jJ]?[lL]?/, 'number'],
+      [/0[xX]_?(@hexdigits)[lL]?/, 'number.hex'],
+      [/0[oO]_?(@octaldigits)[lL]?/, 'number.octal'],
+      [/0[bB]_?(@binarydigits)[lL]?/, 'number.binary'],
+      [
+        /(((@digits)\.(@digits)?)|(\.(@digits)))([eE][+-]?(@digits))?[jJ]?/,
+        'number.float',
+      ],
+      [/(@digits)[eE][+-]?(@digits)[jJ]?/, 'number.float'],
+      [/(@digits)[lLjJ]?/, 'number'],
     ],
 
     // Recognize strings, including those broken across lines with \ (but not without)
