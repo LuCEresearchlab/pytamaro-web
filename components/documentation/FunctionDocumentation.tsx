@@ -2,6 +2,7 @@
 /* eslint-disable react/no-array-index-key */
 import { Box, Chip, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
+import { toSpanAndCodeElements } from '../../src/basicMarkdown';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { JudiciousFunction } from '../../src/schemas/documentation';
@@ -155,7 +156,7 @@ export default function FunctionDocumentation({
       <Box sx={{ mt: 2 }} />
       {description.p.map((p, idx) => (
         <Typography key={idx} color='text.secondary' gutterBottom>
-          {sentence(p)}
+          {toSpanAndCodeElements(sentence(p))}
         </Typography>
       ))}
       {description.figure && (
@@ -190,7 +191,7 @@ export default function FunctionDocumentation({
               >
                 <CodeElement>{param.name}</CodeElement>
                 <Typography color='text.secondary' component='span' ml='1ch'>
-                  {param.description}
+                  {toSpanAndCodeElements(param.description)}
                 </Typography>
               </Typography>
             ))}
@@ -204,7 +205,7 @@ export default function FunctionDocumentation({
             component='span'
             {...hoverProps(returnId(), hoverElement, setHoverElement)}
           >
-            {sentence(returnValue.description)}
+            {toSpanAndCodeElements(sentence(returnValue.description))}
           </Typography>
         </>
       )}

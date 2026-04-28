@@ -25,6 +25,7 @@ import NavigationBar from '../../../components/navbar/NavigationBar';
 import PageTitle from '../../../components/PageTitle';
 import CentralContent from '../../../components/sidebar/CentralContent';
 import Sidebar from '../../../components/sidebar/Sidebar';
+import { toSpanAndCodeElements } from '../../../src/basicMarkdown';
 import { allKinds } from '../../../src/documentation';
 import allDocumentationModules, {
   readDocumentation,
@@ -99,7 +100,9 @@ export default function DocumentationModule({
                               </ListItemAvatar>
                               <ListItemText
                                 primary={element.name}
-                                secondary={element.description.p[0]}
+                                secondary={toSpanAndCodeElements(
+                                  element.description.p[0],
+                                )}
                                 sx={{
                                   '& .MuiListItemText-primary': {
                                     fontSize: '1.2rem',

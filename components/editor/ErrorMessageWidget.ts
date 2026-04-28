@@ -5,14 +5,10 @@ import type {
   IRange,
 } from 'monaco-editor';
 import { TFunction } from 'next-i18next';
+import { convertMarkdownCodeTagsToHTML } from '../../src/basicMarkdown';
 import theme from '../../src/theme';
 import { ERROR_MESSAGE_CLASSNAME } from '../input_output/OutputArea';
-import {
-  convertMarkdownToCodeTag,
-  displayErrorCategory,
-  ErrorCategory,
-  simplifyTypes,
-} from './errors';
+import { displayErrorCategory, ErrorCategory, simplifyTypes } from './errors';
 
 const STATIC_ERROR_MESSAGE_ID = 'static-error-message-widget';
 const RUNTIME_ERROR_MESSAGE_ID = 'runtime-error-message-widget';
@@ -103,7 +99,9 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
     messageContent.style.paddingRight = '12px';
     messageContent.style.paddingTop = '2px';
     messageContent.style.paddingBottom = '2px';
-    messageContent.innerHTML = convertMarkdownToCodeTag(simplifyTypes(content));
+    messageContent.innerHTML = convertMarkdownCodeTagsToHTML(
+      simplifyTypes(content),
+    );
     if (isRuntimeError) {
       messageContent.onmouseover = () => this.highlightCorrespondingError(true);
       messageContent.onmouseout = () => this.highlightCorrespondingError(false);
