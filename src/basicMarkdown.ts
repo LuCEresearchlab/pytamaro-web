@@ -11,8 +11,8 @@ export function convertMarkdownCodeTagsToHTML(message: string) {
 export function toSpanAndCodeElements(message: string): ReactNode[] {
   const elements: ReactNode[] = [];
   let lastIndex = 0;
-  const regex = /`(.*?)`/g;
   let match: RegExpExecArray | null;
+  const regex = new RegExp(BACKTICKS_REGEX); // Create a new regex instance to reset lastIndex
   while ((match = regex.exec(message)) !== null) {
     // Add text before the code span as a regular span
     if (match.index > lastIndex) {
