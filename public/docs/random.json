@@ -94,6 +94,10 @@
                 {
                     "code": "choice(['Lugano', 'Zürich', 'Genève'])",
                     "result": "'Zürich'"
+                },
+                {
+                    "code": "choice('Lugano')",
+                    "result": "'g'"
                 }
             ],
             "urlSuffix": "#random.choice"
@@ -138,6 +142,10 @@
             },
             "sideEffects": true,
             "examples": [
+                {
+                    "code": "choices('Lugano')",
+                    "result": "['g']"
+                },
                 {
                     "code": "choices(['Lugano', 'Zürich', 'Genève'], k=2)",
                     "result": "['Lugano', 'Zürich']",
