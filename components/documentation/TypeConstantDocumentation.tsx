@@ -2,6 +2,7 @@
 /* eslint-disable react/no-array-index-key */
 import { Box, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
+import { toSpanAndCodeElements } from '../../src/basicMarkdown';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import {
@@ -98,7 +99,7 @@ export default function TypeConstantDocumentation({
       )}
       {description.p.map((p, idx) => (
         <Typography key={idx} color='text.secondary' gutterBottom>
-          {sentence(p)}
+          {toSpanAndCodeElements(sentence(p))}
         </Typography>
       ))}
       {examples && examples.length > 0 && (

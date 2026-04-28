@@ -998,7 +998,7 @@
                 {
                     "name": "grafik",
                     "type": "Grafik",
-                    "description": null
+                    "description": "die urspr\u00fcngliche Grafik"
                 }
             ],
             "returnValue": {
