@@ -2,7 +2,6 @@ import ArrowBack from '@mui/icons-material/ArrowBack';
 import ArrowForward from '@mui/icons-material/ArrowForward';
 import { Button, Tooltip } from '@mui/material';
 import { useTranslation } from 'next-i18next';
-import { useRouter } from 'next/router';
 import { useState } from 'react';
 import {
   NavigationDirection,
@@ -47,7 +46,6 @@ export default function NavigateToActivity({
   const { t } = useTranslation('activityfooter');
   const { metadata } = useLocalProfile();
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const isNext = direction === 'next';
 
@@ -91,7 +89,7 @@ export default function NavigateToActivity({
         anchorTo,
       );
     }
-    router.push(url);
+    window.location.assign(url);
   };
 
   const messageKey =
