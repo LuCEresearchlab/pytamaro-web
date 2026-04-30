@@ -108,7 +108,7 @@
             "description": {
                 "p": [
                     "Returns a list with a random sample of elements from the given sequence.",
-                    "Elements are sampled with equal probability, unless specific weights are provided."
+                    "Elements are sampled with equal probability, unless specific weights are provided. Weights do not need to be normalized to sum up to 1."
                 ]
             },
             "parameters": [
@@ -119,14 +119,14 @@
                 },
                 {
                     "name": "weights",
-                    "type": "Sequence[float]",
-                    "description": "A sequence of weights, one for each element in the sequence, to determine the probability of sampling each element",
+                    "type": "Sequence[float] | None",
+                    "description": "When not `None`, a sequence of weights, one for each element in the sequence, which after normalization determine the probability of sampling each element",
                     "default": "None"
                 },
                 {
                     "name": "cum_weights",
-                    "type": "Sequence[float]",
-                    "description": "A sequence of cumulative weights (to be used as an alternative to weights)",
+                    "type": "Sequence[float] | None",
+                    "description": "When not `None`, a sequence of cumulative weights (to be used as an alternative to weights)",
                     "default": "None"
                 },
                 {
@@ -147,12 +147,12 @@
                     "result": "['g']"
                 },
                 {
-                    "code": "choices(['Lugano', 'Zürich', 'Genève'], k=2)",
-                    "result": "['Lugano', 'Zürich']",
+                    "code": "choices(['Lugano', 'Zürich', 'Genève'], [999, 1, 1])",
+                    "result": "['Lugano']",
                     "usesOptional": true
                 },
                 {
-                    "code": "choices(['Lugano', 'Zürich', 'Genève'], weights=[0.7, 0.3, 0], k=3)",
+                    "code": "choices(['Lugano', 'Zürich', 'Genève'], [0.7, 0.3, 0], k=3)",
                     "result": "['Zürich', 'Lugano', 'Lugano']",
                     "usesOptional": true
                 }
