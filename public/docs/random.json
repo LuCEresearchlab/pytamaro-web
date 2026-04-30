@@ -209,8 +209,8 @@
                 },
                 {
                     "name": "counts",
-                    "type": "Sequence[int]",
-                    "description": "A sequence of counts, one for each element in the sequence, to determine the number of times each element can be sampled",
+                    "type": "Sequence[int] | None",
+                    "description": "When not `None`, a sequence of counts, one for each element in the sequence, to determine the number of times each element can be sampled",
                     "default": "None"
                 }
             ],
