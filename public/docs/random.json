@@ -108,7 +108,7 @@
             "description": {
                 "p": [
                     "Returns a list with a random sample of elements from the given sequence.",
-                    "Elements are sampled with equal probability, unless specific weights are provided. Weights do not need to be normalized to sum up to 1."
+                    "Elements are sampled with equal probability, unless specific weights are provided. Weights do not need to be normalized to sum to 1."
                 ]
             },
             "parameters": [
