@@ -656,8 +656,8 @@
                 },
                 {
                     "name": "key",
-                    "type": "T -> K",
-                    "description": "optional function to extract the comparison key from the elements",
+                    "type": "(T -> K) | None",
+                    "description": "when not `None`, a function to turn an element into a key used for comparison",
                     "default": "None"
                 }
             ],
@@ -705,8 +705,8 @@
                 },
                 {
                     "name": "key",
-                    "type": "T -> K",
-                    "description": "optional function to extract the comparison key from the elements",
+                    "type": "(T -> K) | None",
+                    "description": "when not `None`, a function to turn an element into a key used for comparison",
                     "default": "None"
                 }
             ],
@@ -754,8 +754,8 @@
                 },
                 {
                     "name": "modulo",
-                    "type": "int",
-                    "description": "modulo",
+                    "type": "int | None",
+                    "description": "when not `None`, modulo for the exponentiation",
                     "default": "None"
                 }
             ],
