@@ -2,11 +2,9 @@
 -- events created before 2025-12-11, which cannot be used.
 -- It also deletes lots (all?) associated information, with an eye on performance.
 
-BEGIN;
+\c exportdb;
 
-DROP DATABASE IF EXISTS export;
-CREATE DATABASE export;
-\c export;
+BEGIN;
 
 -- Find ids of events to delete
 CREATE TEMP TABLE ids_old_events ON COMMIT DROP AS
