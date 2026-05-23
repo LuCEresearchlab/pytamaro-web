@@ -48,8 +48,25 @@ function ResearchCard({
       />
       <CardContent>
         <Stack direction='row' spacing={1} mb={2}>
-          <Chip label={conference} size='small' icon={<Home />} />
-          <Chip label={authors} size='small' icon={<People />} />
+          <Chip
+            sx={{ minHeight: 24, height: 'auto' }}
+            label={conference}
+            size='small'
+            icon={<Home />}
+          />
+          <Chip
+            // Multiline (author list can be long)
+            sx={{
+              height: 'auto',
+              '& .MuiChip-label': {
+                display: 'block',
+                whiteSpace: 'normal',
+              },
+            }}
+            label={authors}
+            size='small'
+            icon={<People />}
+          />
         </Stack>
         <Typography
           variant='body2'
