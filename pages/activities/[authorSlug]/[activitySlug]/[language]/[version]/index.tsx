@@ -61,7 +61,6 @@ import { translationProps } from '../../../../../../src/serverSideTranslationPro
 import { isSpecialActivity } from '../../../../../../src/specialActivities';
 import { activityVariantPathnameFromParts } from '../../../../../../src/urlUtils';
 import useCurriculumFromQuery from '../../../../../../src/useCurriculumFromQuery';
-import useIsMounted from '../../../../../../src/useIsMounted';
 import usePythonAnalyzer from '../../../../../../src/usePythonAnalyzer';
 import useReset from '../../../../../../src/useReset';
 
@@ -223,25 +222,37 @@ export default function NotebookPage({
 
   const { resetCounter, newReset } = useReset();
 
-  const isMounted = useIsMounted();
+  const [headingsVersion, setHeadingsVersion] = useState(0);
   const [headingsReady, setHeadingsReady] = useState(false);
 
   useEffect(() => {
-    if (isMounted) {
+    const slugHeadingsAndMarkAsInitialized = () => {
       const slugger = new GithubSlugger();
-      const headings = cellsRef.current?.querySelectorAll(
+      if (!cellsRef.current) {
+        return;
+      }
+      const headings = cellsRef.current.querySelectorAll(
         'h1, h2, h3, h4, h5, h6',
       );
-      headings?.forEach((heading) => {
+      headings.forEach((heading) => {
         // eslint-disable-next-line no-param-reassign
         heading.id = slugger.slug(heading.textContent || '');
       });
       setHeadingsReady(true);
+      setHeadingsVersion((v) => v + 1);
+    };
+    const observer = new MutationObserver(slugHeadingsAndMarkAsInitialized);
+    if (cellsRef.current) {
+      slugHeadingsAndMarkAsInitialized();
+      observer.observe(cellsRef.current, {
+        childList: true,
+      });
     }
     return () => {
       setHeadingsReady(false);
+      observer.disconnect();
     };
-  }, [isMounted, cells]);
+  }, [cells]);
 
   const { executorState } = useContext(ExecutorContext);
 
@@ -320,6 +331,7 @@ export default function NotebookPage({
               />
             )}
             <TableOfContents
+              key={headingsVersion}
               initialized={headingsReady}
               elementRef={cellsRef}
               selector='h2[id], h3[id]'
