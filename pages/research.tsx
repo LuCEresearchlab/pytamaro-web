@@ -88,6 +88,7 @@ function ResearchCard({
             variant='contained'
             color='success'
             startIcon={<PictureAsPdf />}
+            target='_blank'
           >
             Read Full Paper
           </Button>
@@ -98,6 +99,7 @@ function ResearchCard({
               variant='contained'
               color='success'
               startIcon={<OndemandVideo />}
+              target='_blank'
             >
               Watch Presentation
             </Button>
