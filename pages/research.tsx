@@ -119,6 +119,45 @@ export default function Research() {
         <Container maxWidth='md'>
           <PageTitle>Research Behind PyTamaro</PageTitle>
           <Typography variant='h6' gutterBottom fontWeight='normal'>
+            This doctoral dissertation describes the entire PyTamaro project,
+            from the motivations to the design of the library and this web
+            platform, to the evaluation of the approach:
+          </Typography>
+          <Stack direction='column' spacing={2}>
+            <ResearchCard
+              title='Teaching Introductory Programming Using Graphics as a Domain'
+              abstract='
+An increasingly wider and more diverse population is learning to program, with interests and motivations that often differ from traditional ones. Instructors try to cater to
+these new needs by designing learning experiences that go beyond classic domains and
+include, for example, multimedia. Graphics, in particular, has emerged as an attractive
+domain. However, this shift is not exempt from criticisms: programming graphics can
+be an engaging activity, but it might actually distract from the intended learning goals.
+This dissertation aims to show that it is possible to design an approach to teach
+programming using graphics as a domain, thereby sustaining the engagement, without neglecting fundamental aspects of programming such as abstraction and problem
+decomposition. We start by reviewing existing approaches to graphics used in introductory programming, highlighting a number of pitfalls. We then present the PyTamaro
+approach: a Python library with a design that eschews these pitfalls, an unplugged
+introduction to programming based on the library, and a dedicated web platform that
+integrates pedagogical features to leverage the strengths of the approach.
+The PyTamaro approach is evaluated in a controlled experiment using the popular
+turtle graphics as a baseline. Both groups reported high engagement. On transfer to
+questions outside the domain of graphics, we found few differences, despite the fact
+that the PyTamaro group had practiced on tasks isomorphic to those in the post-test.
+We then conducted a case study with five Swiss high school teachers who have
+adopted the PyTamaro approach to teach programming. The study analyzed why they
+decided to adopt our approach, examined their teaching materials in depth, and collected the experience of using PyTamaro with their students. In summary, teachers
+recognized PyTamaro as a novel and engaging approach to graphics, used it to introduce most programming concepts, and emphasized the definition of functions as a
+means of abstraction. The case study also highlighted certain issues: teachers had to
+create their own materials, explained problem decomposition only in the domain of
+graphics, and struggled to reconcile the ideas of (im)mutable variables and constants.
+Overall, the PyTamaro approach shows the feasibility of teaching introductory programming in an engaging way, emphasizing abstraction and decomposition. Its current
+use at three educational levels paves the way for future empirical investigations.
+'
+              pdf='https://susi.usi.ch/documents/332702/preview/2025INF011.pdf'
+              conference='USI PhD 2025'
+              authors='Luca Chiodini'
+            />
+          </Stack>
+          <Typography variant='h6' gutterBottom fontWeight='normal' mt={4}>
             These research papers describe and evaluate the design of the
             PyTamaro library and its pedagogical approach:
           </Typography>
