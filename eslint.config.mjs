@@ -56,7 +56,7 @@ const eslintConfig = defineConfig([
       'react/jsx-props-no-spreading': 'warn',
       'react/no-array-index-key': 'warn',
       '@typescript-eslint/strict-boolean-expressions': [
-        'warn',
+        'error',
         {
           allowNumber: false,
           allowString: false,

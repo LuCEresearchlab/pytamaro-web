@@ -44,7 +44,7 @@ export default function SingleElementDocPage({
               nameKind={nameKind}
             />
             <DocElementCard module={module} element={element} elevation={0} />
-            {officialBaseUrl !== null && element.urlSuffix !== null && (
+            {officialBaseUrl !== null && element.urlSuffix !== undefined && (
               <Typography mt={10} textAlign='center'>
                 See also{' '}
                 <Link href={officialBaseUrl + element.urlSuffix}>
