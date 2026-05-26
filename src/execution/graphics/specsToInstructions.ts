@@ -352,9 +352,8 @@ function addInstructionsForCompose(
 
   const bounds = path.computeTightBounds();
 
-  const pinPosition = spec.pin
-    ? relToAbsPoint(spec.pin, bounds)
-    : bgPinPosition;
+  const pinPosition =
+    spec.pin !== undefined ? relToAbsPoint(spec.pin, bounds) : bgPinPosition;
 
   const dx = bgPinPosition.x - fgPinPosition.x;
   const dy = bgPinPosition.y - fgPinPosition.y;
