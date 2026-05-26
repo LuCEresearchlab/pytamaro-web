@@ -5,11 +5,10 @@ import {
   Node,
   ReactFlow,
   ReactFlowProvider,
-  useNodesInitialized,
 } from '@xyflow/react';
 import produce from 'immer';
 import { NextRouter, useRouter } from 'next/router';
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import {
   Curriculum,
   CurriculumActivity,
@@ -358,40 +357,6 @@ function getFlowElements(
   };
 }
 
-function Flow({
-  nodes,
-  edges,
-  setNodesInitialized,
-}: {
-  nodes: Node[];
-  edges: Edge[];
-  setNodesInitialized: (initialized: boolean) => void;
-}) {
-  // Separate component, so we can use the hook
-  const nodesInitialized = useNodesInitialized();
-  useEffect(() => {
-    if (nodesInitialized) {
-      scrollToAnchor();
-    }
-    setNodesInitialized(nodesInitialized);
-  }, [nodesInitialized, setNodesInitialized]);
-  return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      nodeTypes={nodeTypes}
-      style={rfStyle}
-      panOnDrag={false}
-      zoomOnScroll={false}
-      zoomOnPinch={false}
-      zoomOnDoubleClick={false}
-      preventScrolling={false}
-      elementsSelectable={false}
-      proOptions={{ hideAttribution: true }}
-    />
-  );
-}
-
 export default function CurriculumFlow({
   curriculum,
   metadata,
@@ -423,10 +388,22 @@ export default function CurriculumFlow({
       }}
     >
       <ReactFlowProvider>
-        <Flow
+        <ReactFlow
           nodes={nodes}
           edges={edges}
-          setNodesInitialized={setNodesInitialized}
+          nodeTypes={nodeTypes}
+          style={rfStyle}
+          panOnDrag={false}
+          zoomOnScroll={false}
+          zoomOnPinch={false}
+          zoomOnDoubleClick={false}
+          preventScrolling={false}
+          elementsSelectable={false}
+          proOptions={{ hideAttribution: true }}
+          onInit={() => {
+            scrollToAnchor();
+            setNodesInitialized(true);
+          }}
         />
       </ReactFlowProvider>
     </Box>
