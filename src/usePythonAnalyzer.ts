@@ -61,6 +61,7 @@ export class PythonAnalyzer {
     this.newAnalysisResultsListeners = [];
     extraPythonFiles.forEach((file) => {
       const handle = this.workspace?.openFile(file.name, file.content);
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       if (handle) {
         this.fileHandles.set(file.name, handle);
       }
@@ -92,6 +93,7 @@ export class PythonAnalyzer {
   }
 
   addNewAnalysisResultListener(cellIdx: number, handler: () => void) {
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (!this.newAnalysisResultsListeners[cellIdx]) {
       this.newAnalysisResultsListeners[cellIdx] = [];
     }
@@ -302,6 +304,7 @@ export class PythonAnalyzer {
         liveAnalysis === LiveAnalysisStatus.SyntaxSemantics,
     );
     // Update counts for all cells
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     const previousCountThisCell = this.diagnosticsCounts[cellIdx] || 0;
     this.diagnosticsCounts[cellIdx] = visibleDecorations.length;
     const delta = this.diagnosticsCounts[cellIdx] - previousCountThisCell;
@@ -313,6 +316,7 @@ export class PythonAnalyzer {
   }
 
   getDiagnosticsCountUpTo(cellIdx: number): number {
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     return this.diagnosticsCounts[cellIdx] || 0;
   }
 
@@ -332,7 +336,7 @@ export class PythonAnalyzer {
     position: Position,
   ): PythonName | null {
     const name = model.getWordAtPosition(position)?.word;
-    if (!name) {
+    if (name === undefined) {
       return null;
     }
     const fileHandle = this.getCurrentCellFileHandle(retrieveCellIdx(model));

@@ -25,6 +25,7 @@ export function tokenize(input: string): Token[] {
   let match: RegExpExecArray | null;
   while ((match = regex.exec(input)) !== null) {
     const [, value] = match;
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (!value.trim()) continue;
 
     if (value === ':=') tokens.push({ type: 'COLON_EQ' });

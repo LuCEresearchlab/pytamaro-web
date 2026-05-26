@@ -158,6 +158,7 @@ export default function AboutPage({
                   <Avatar
                     alt={`${person.firstname} ${person.lastname}`}
                     src={
+                      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
                       person.avatar ? `./people/${person.avatar}` : undefined
                     }
                     sx={{ width: '2.5rem', height: '2.5rem' }}

@@ -44,7 +44,7 @@ export default function SingleElementDocPage({
               nameKind={nameKind}
             />
             <DocElementCard module={module} element={element} elevation={0} />
-            {officialBaseUrl && element.urlSuffix && (
+            {officialBaseUrl !== null && element.urlSuffix !== null && (
               <Typography mt={10} textAlign='center'>
                 See also{' '}
                 <Link href={officialBaseUrl + element.urlSuffix}>
@@ -70,7 +70,7 @@ export async function getStaticProps({
     props: {
       ...(await translationProps()),
       module: params.module,
-      officialBaseUrl: doc.officialBaseUrl || null,
+      officialBaseUrl: doc.officialBaseUrl ?? null,
       element: doc.elements.find((element) => element.name === params.name),
     },
   };

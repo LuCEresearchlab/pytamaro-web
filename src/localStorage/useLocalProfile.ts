@@ -32,6 +32,7 @@ function migrations(metadata: { dataModelVersion: string }): Metadata {
     8: migrateToV9,
   };
   const possibleMigration = migrationForVersion[metadata.dataModelVersion];
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   if (possibleMigration) {
     return migrations(possibleMigration(metadata));
   }

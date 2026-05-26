@@ -203,6 +203,7 @@ export class ExecutorClient {
         const resultsListener = (
           event: MessageEvent<ExecutorWorkerMessage>,
         ) => {
+          // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
           if (!event.data) {
             return;
           }

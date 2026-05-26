@@ -126,6 +126,7 @@ export function getVariantTitle(
   const maybeInfo = activity.languagesInfo.find(
     (i) => i.language === variant.language,
   );
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   return maybeInfo?.title || activity.slug;
 }
 

@@ -127,7 +127,9 @@ export function useActivity(
     restart();
   }, [restart, setCodeExecutionStates]);
 
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   const completed = !!variantMetadata?.completed;
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   const cellsModified = !!variantMetadata?.cellsModified;
 
   const markAsCompleted = useCallback(() => {

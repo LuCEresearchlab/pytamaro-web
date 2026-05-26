@@ -127,7 +127,7 @@ export default function DocumentationModule({
                 </Accordion>
               ))}
             </div>
-            {moduleData.officialBaseUrl && (
+            {moduleData.officialBaseUrl !== undefined && (
               <Typography mt={10} textAlign='center'>
                 See also the{' '}
                 <Link href={moduleData.officialBaseUrl}>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 /* eslint-disable @next/next/no-img-element */
 import { Handle, NodeProps, Position } from '@xyflow/react';
 import {

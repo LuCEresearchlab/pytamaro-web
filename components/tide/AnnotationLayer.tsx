@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { useReactFlow, ViewportPortal, XYPosition } from '@xyflow/react';
 import { JSX } from 'react';
 import { TideError, TideRuntimeError } from '../../src/tide/language/errors';

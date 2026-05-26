@@ -47,6 +47,7 @@ export async function getAuthorProfile(
 
 export async function listAuthorsProfiles(): Promise<AuthorProfile[]> {
   const authorSlugs = (await readdir(DATA_DIR, { withFileTypes: true }))
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     .filter(async (entry) =>
       (await stat(path.join(DATA_DIR, entry.name))).isDirectory(),
     )

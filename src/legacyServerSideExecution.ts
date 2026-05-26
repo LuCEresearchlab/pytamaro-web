@@ -61,6 +61,7 @@ function groupStderrByActiveCell(stderr: string, numCells: number): string[] {
 }
 
 function errorInCurrentCell(cellIdx: number, traceback: string[]): boolean {
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   const idxInTraceback = traceback.findLastIndex((line) => {
     const matches = MARKER_SET_ACTIVE_CELL_PATTERN_CAPTURING.exec(line);
     if (matches && matches.length === 2) {

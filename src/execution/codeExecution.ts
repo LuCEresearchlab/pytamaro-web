@@ -207,5 +207,8 @@ export function cellsToFiles(
   ];
   // code-runner does not allow empty files, we work around this by including
   // a no-op stmt
-  return files.map((file) => ({ ...file, content: file.content || 'pass' }));
+  return files.map((file) => ({
+    ...file,
+    content: file.content.length > 0 ? file.content : 'pass',
+  }));
 }

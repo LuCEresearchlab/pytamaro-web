@@ -236,7 +236,7 @@ export default function NotebookPage({
       );
       headings.forEach((heading) => {
         // eslint-disable-next-line no-param-reassign
-        heading.id = slugger.slug(heading.textContent || '');
+        heading.id = slugger.slug(heading.textContent ?? '');
       });
       setHeadingsReady(true);
       setHeadingsVersion((v) => v + 1);

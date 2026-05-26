@@ -33,7 +33,7 @@ export default function PageFooter() {
         </Link>
         {' • '}
         {`Platform Version ${process.env.PLATFORM_VERSION}`}
-        {process.env.BUILD_TIMESTAMP &&
+        {process.env.BUILD_TIMESTAMP !== undefined &&
           ` (${new Date(parseInt(process.env.BUILD_TIMESTAMP, 10)).toUTCString()})`}
       </Typography>
     </Container>

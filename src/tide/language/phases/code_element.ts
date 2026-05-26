@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { ProgramState } from '.';
 import { TamaroCard } from '../cards';
 import { ImportedDefinition, LocalDefinition } from '../definitions';

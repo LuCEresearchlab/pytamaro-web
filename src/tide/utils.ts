@@ -1,16 +1,17 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 'use client';
 import { Edge, EdgeChange, Node, NodeChange } from '@xyflow/react';
-import {
-  getHandleName,
-  getParameterName,
-} from '../../components/tide/cards/function';
-import { JudiciousFunction, JudiciousModule } from '../schemas/documentation';
 import {
   CardType,
   FunctionNode,
   ImportReference,
   TideNode,
 } from '../../components/tide/cards';
+import {
+  getHandleName,
+  getParameterName,
+} from '../../components/tide/cards/function';
+import { JudiciousFunction, JudiciousModule } from '../schemas/documentation';
 import { Definition } from './language/definitions';
 import { SoundType, UnsoundType } from './language/typing';
 

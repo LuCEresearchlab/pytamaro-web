@@ -155,11 +155,13 @@ export default function ExecutionOutputArea({
       {errored && isErrorInvolvingToolbox(stderr) && <ToolboxErrorAlert />}
       {failed ? (
         <FailedExecutionAlert />
-      ) : errored && stderr && isErrorPreviousCells(stderr, firstLineNumber) ? (
+      ) : errored &&
+        stderr.length > 0 &&
+        isErrorPreviousCells(stderr, firstLineNumber) ? (
         <PreviousCellsErrorAlert buttonDisabled={dimmed} />
       ) : (
         <Stack sx={{ width: 'fit-content', minWidth: '100%' }}>
-          {stdout && (
+          {stdout.length > 0 && (
             <Box
               sx={{ backgroundColor: OUTPUT_AREA_BACKGROUND_COLOR }}
               paddingX={3}
@@ -173,7 +175,7 @@ export default function ExecutionOutputArea({
               />
             </Box>
           )}
-          {stderr && (
+          {stderr.length > 0 && (
             <Box
               sx={{
                 backgroundColor: theme.pytamaro.palette.background.errorRed,

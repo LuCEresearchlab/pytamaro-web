@@ -36,7 +36,7 @@ export function ContentEditableDiv(props: {
       autoCapitalize='false'
       onInput={(e) => {
         const div = e.target as HTMLElement;
-        props.onChange(div.textContent || '');
+        props.onChange(div.textContent ?? '');
       }}
       suppressContentEditableWarning={true}
     >

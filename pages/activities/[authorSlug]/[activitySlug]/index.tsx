@@ -57,7 +57,7 @@ export default function ActivityInfoPage({
   const title = activity.slug;
   const pageTitle = `${title} - PyTamaro`;
 
-  const visibleUses = uses.filter((use) => !use.hidden);
+  const visibleUses = uses.filter((use) => use.hidden !== true);
 
   return (
     <div>

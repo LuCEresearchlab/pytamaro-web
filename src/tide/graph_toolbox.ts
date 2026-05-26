@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { Connection, Edge, NodeReplaceChange, XYPosition } from '@xyflow/react';
 import {
   DragEvent as React_DragEvent,

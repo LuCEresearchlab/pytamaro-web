@@ -1,7 +1,7 @@
 import { Box, Button } from '@mui/material';
 
-import { useRef, useState } from 'react';
 import UploadIcon from '@mui/icons-material/Upload';
+import { useRef, useState } from 'react';
 import CustomSnackbar from './CustomSnackbar';
 
 export default function ImportLocalStorageButton({
@@ -22,6 +22,7 @@ export default function ImportLocalStorageButton({
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { target } = event;
     const filesUploaded = event.target.files;
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (filesUploaded && filesUploaded[0]) {
       const reader = new FileReader();
       reader.readAsText(filesUploaded[0], 'UTF-8');

@@ -69,7 +69,11 @@ async function readActivityFromFS(
     const language = components.at(-2);
     const version = components.at(-1);
     const activity = components.slice(0, -2).join(separator);
-    if (activity !== activitySlug || !language || !version) {
+    if (
+      activity !== activitySlug ||
+      language === undefined ||
+      version === undefined
+    ) {
       // Show a warning but do not throw (this allows us to have extra notebooks in the directory)
       // eslint-disable-next-line no-console
       console.warn(

@@ -309,7 +309,7 @@ function getFlowElements(
       );
       const stepId = anchorName(unitIdx, stepIdx);
       // A step may be optional (shown as a single collapsed node)
-      if (step.isOptional) {
+      if (step.isOptional === true) {
         addSingleNode(
           stepId,
           'optional',

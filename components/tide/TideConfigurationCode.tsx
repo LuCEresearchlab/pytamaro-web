@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { useCallback, useContext, useEffect, useRef } from 'react';
 import { allKinds } from '../../src/documentation';
 import { ExecutorContext } from '../../src/execution/executorContext';

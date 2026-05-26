@@ -32,6 +32,7 @@ export default function TypeConstantDocumentation({
   const { docsMetadata } = useLocalProfile();
   const { t } = useLocalTranslation();
   const hasExamplesUsingOptional =
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     examples?.some((ex) => ex.usesOptional) || false;
   const availableOptions = [];
   if (hasExamplesUsingOptional) {
@@ -80,7 +81,7 @@ export default function TypeConstantDocumentation({
           <span {...hoverProps(nameId(), hoverElement, setHoverElement)}>
             <CodeElement bold>{name}</CodeElement>
           </span>
-          {isConstant && docsMetadata.showTypes && element.type && (
+          {isConstant && docsMetadata.showTypes && element.type.length > 0 && (
             <>
               <CodeElement>:</CodeElement>
               <CodeElement>&nbsp;</CodeElement>

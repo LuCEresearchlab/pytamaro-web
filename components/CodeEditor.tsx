@@ -223,7 +223,7 @@ export default function CodeEditor({
   useEffect(() => {
     if (
       monacoInstance &&
-      !monacoInstance._pytamaroCustomProvidersRegistered &&
+      monacoInstance._pytamaroCustomProvidersRegistered !== true &&
       pythonAnalyzer
     ) {
       const providers = [
@@ -288,8 +288,9 @@ export default function CodeEditor({
         clearStaticWidget();
         return;
       }
-      const matchingDiagnostics = customDiagnosticsRef.current.filter((diag) =>
-        monacoInstance?.Range.containsPosition(diag.range, position),
+      const matchingDiagnostics = customDiagnosticsRef.current.filter(
+        (diag) =>
+          monacoInstance?.Range.containsPosition(diag.range, position) === true,
       );
       // Sort diagnostics by range length (shorter ranges first, i.e., more specific diagnostics first).
       matchingDiagnostics.sort((d1, d2) => {

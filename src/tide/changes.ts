@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { Edge, EdgeChange, NodeChange } from '@xyflow/react';
 import { StateCreator } from 'zustand';
 import { TideNode } from '../../components/tide/cards';

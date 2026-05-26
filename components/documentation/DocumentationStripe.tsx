@@ -48,7 +48,7 @@ export default function DocumentationStripe({
 
   const onResize = useCallback(
     ({ entry }: { entry: ResizeObserverEntry | null }) => {
-      const target: HTMLDivElement | null = entry?.target as HTMLDivElement;
+      const target = entry?.target as HTMLDivElement | undefined;
       setVisibleNamesCount(
         target
           ? Array.from(target.children).filter(

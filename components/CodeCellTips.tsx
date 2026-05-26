@@ -35,7 +35,7 @@ export function NoOutputTip({
       }}
     >
       {t('noOutputTip')}
-      {moduleName && (
+      {moduleName !== undefined && (
         <>
           {' '}
           <Trans

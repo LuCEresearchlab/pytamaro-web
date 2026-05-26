@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { Card, CardActions, CardContent, Input } from '@mui/material';
 import { DragEvent, useEffect, useState } from 'react';
 import {

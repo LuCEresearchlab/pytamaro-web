@@ -8,6 +8,16 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    languageOptions: {
+      parserOptions: {
+        projectService: {
+          allowDefaultProject: ['*.js', '*.mjs'],
+        }
+      },
+    },
+  },
+
   prettier,
   // Override default ignores of eslint-config-next.
   globalIgnores([
@@ -17,6 +27,7 @@ const eslintConfig = defineConfig([
     'build/**',
     'next-env.d.ts',
     // Custom ignores:
+    'next-i18next.config.js',
     'src/python-analyzer/**',
     'tools/python-analyzer/**',
     'src/canvaskit-wasm/**',
@@ -44,6 +55,13 @@ const eslintConfig = defineConfig([
       'react/no-danger': 'error',
       'react/jsx-props-no-spreading': 'warn',
       'react/no-array-index-key': 'warn',
+      '@typescript-eslint/strict-boolean-expressions': [
+        'warn',
+        {
+          allowNumber: false,
+          allowString: false,
+        },
+      ],
     },
   },
   {

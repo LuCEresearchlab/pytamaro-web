@@ -42,6 +42,7 @@ export default function DocElement({
 
   const size = smallerFont ? '0.8em' : '1em';
 
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   return element ? (
     <span
       style={{
