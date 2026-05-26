@@ -92,14 +92,15 @@ export function moduleImportCompletionProvider(monacoInstance: Monaco) {
       const isFromImport =
         text.match('from\\s+([^\\s]+)') && !text.match('import\\s');
       return {
-        suggestions: isFromImport
-          ? KNOWN_MODULES.map((module) => ({
-              label: module,
-              kind: kind(monacoInstance, 'module'),
-              insertText: module,
-              range: getRangeLastWord(model, position),
-            }))
-          : [],
+        suggestions:
+          isFromImport === true
+            ? KNOWN_MODULES.map((module) => ({
+                label: module,
+                kind: kind(monacoInstance, 'module'),
+                insertText: module,
+                range: getRangeLastWord(model, position),
+              }))
+            : [],
       };
     },
   };

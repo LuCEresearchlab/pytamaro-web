@@ -29,6 +29,7 @@ export default function TitleNode({ data }: NodeProps<Node<NodeData>>) {
     onEndClick,
     id,
   } = data;
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   const showStartingButton = type === 'start' && !started;
   const showFinishButton = type === 'end' && unlocked;
   const { t } = useLocalTranslation(['curriculum']);

@@ -230,6 +230,7 @@ export function addErrorAnnotationsFromExecution(
   const errorMessage = Array.from(
     traceback.matchAll(/^(?: {2}.*\n)+(.*)\n?/gm),
   ).pop();
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   const message = errorMessage?.at(1) || 'Error (check the traceback)';
 
   const tracebackFromErrorBegin: string = joinLines(

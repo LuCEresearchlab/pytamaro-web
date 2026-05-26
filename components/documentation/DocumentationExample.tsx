@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { Box, Card, CardContent, Tooltip } from '@mui/material';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import useMonacoColorizer, {

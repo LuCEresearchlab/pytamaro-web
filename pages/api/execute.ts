@@ -101,6 +101,7 @@ async function doExecution(
   } catch (err) {
     if (axios.isAxiosError(err)) {
       const errorData = err.response?.data;
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       if (errorData) {
         if (errorData.error === 'limits.execution_time')
           return { type: 'time-limit-exceeded' };

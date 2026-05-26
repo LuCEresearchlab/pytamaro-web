@@ -92,7 +92,7 @@ function ResearchCard({
           >
             Read Full Paper
           </Button>
-          {video && (
+          {video !== undefined && (
             <Button
               href={video}
               size='small'

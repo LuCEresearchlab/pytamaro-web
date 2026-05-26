@@ -89,7 +89,7 @@ export default function FunctionDiagram({
           const y = ((i + 1) * 100) / (params.length + 1);
           const variableLengthVisible =
             docsMetadata.showOptional && param.variableLength;
-          const dashed = param.default || variableLengthVisible;
+          const dashed = param.default ?? variableLengthVisible;
           return (
             <g
               // eslint-disable-next-line react/no-array-index-key
@@ -111,6 +111,7 @@ export default function FunctionDiagram({
                 strokeWidth='3'
                 y1={`${y}%`}
                 y2={`${y}%`}
+                // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
                 strokeDasharray={dashed ? '10 4' : 'none'}
               />
               <use
@@ -119,7 +120,7 @@ export default function FunctionDiagram({
                 href='#arrowhead'
                 transform='translate(-11, -6)'
               />
-              {variableLengthVisible && (
+              {variableLengthVisible === true && (
                 <>
                   <use
                     x='27%'
@@ -186,7 +187,7 @@ export default function FunctionDiagram({
             )}
           </g>
         )}
-        {fn.sideEffects && (
+        {fn.sideEffects === true && (
           <Tooltip title={t('callingFunctionCausesSideEffects')} arrow>
             <image
               href='/boom.png'

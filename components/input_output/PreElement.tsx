@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 /* eslint-disable react/no-array-index-key */
 import { CSSProperties, ReactElement } from 'react';
 import { INPUT_BEGIN, INPUT_END } from '../../src/ioMarkers';

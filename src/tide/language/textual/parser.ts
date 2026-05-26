@@ -1,12 +1,12 @@
 import { Token, tokenize, TokenType } from './tokenizer';
 import {
-  Program,
+  Arg,
   Definition,
   Definitions,
-  Root,
   Expression,
   FunctionUse,
-  Arg,
+  Program,
+  Root,
 } from './types';
 
 export class Parser {
@@ -18,6 +18,7 @@ export class Parser {
   }
   private consume(type?: TokenType): Token {
     const token = this.tokens[this.pos++];
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (type && token.type !== type) {
       throw new Error(`Expected ${type} but got ${token.type}`);
     }

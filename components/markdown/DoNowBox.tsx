@@ -51,7 +51,7 @@ export default function DoNowBox({
     ({ id: completedId }) => completedId === id,
   );
   const alreadyDidIt = currentDoNowInfo !== undefined;
-  const answerFromLocalStorage = currentDoNowInfo?.answer || '';
+  const answerFromLocalStorage = currentDoNowInfo?.answer ?? '';
   const [answer, setAnswer] = useState(answerFromLocalStorage);
   useEffect(() => {
     setAnswer(answerFromLocalStorage);
@@ -161,7 +161,7 @@ export default function DoNowBox({
             variant='outlined'
             color='warning'
             onClick={handleDidIt}
-            disabled={requireAnswer && !answer}
+            disabled={requireAnswer && answer.length === 0}
           >
             {requireAnswer ? t('saveAndContinue') : t('didIt')}
           </Button>

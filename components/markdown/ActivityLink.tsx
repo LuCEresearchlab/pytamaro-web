@@ -17,7 +17,7 @@ export default function ActivityLink({
 }) {
   const theme = useTheme();
   const variant = activityVariantFromId(id);
-  const target = `${activityVariantPathname(variant)}${fragment ? `#${fragment}` : ''}`;
+  const target = `${activityVariantPathname(variant)}${fragment !== undefined ? `#${fragment}` : ''}`;
 
   const handleClick = () => {
     logAnalyticsEvent(AnalyticsEventName.ActivityLink, { variant, fragment });

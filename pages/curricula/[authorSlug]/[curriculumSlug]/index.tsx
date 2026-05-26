@@ -61,6 +61,7 @@ export default function CurriculumPage({
 
   useEffect(() => {
     const toId = router.query.to;
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (nodesInitialized && toId && typeof toId === 'string') {
       delay(() => {
         document.getElementById(toId)?.scrollIntoView({ behavior: 'smooth' });
@@ -116,7 +117,7 @@ export default function CurriculumPage({
                 metadata={metadata}
                 setMetadata={setMetadata}
                 setNodesInitialized={setNodesInitialized}
-                availableWidth={mainContentWidth || 800}
+                availableWidth={mainContentWidth ?? 800}
               />
             </div>
             <Divider sx={{ mb: 3 }} />

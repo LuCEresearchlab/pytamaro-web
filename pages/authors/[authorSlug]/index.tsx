@@ -44,6 +44,7 @@ export default function AuthorPage({
           <Typography variant='h3' marginY={3}>
             {authorProfile.name}
           </Typography>
+          {/* eslint-disable-next-line @typescript-eslint/strict-boolean-expressions */}
           {authorProfile.description && (
             // eslint-disable-next-line react/jsx-props-no-spreading
             <MDXRemote {...authorProfile.description} />

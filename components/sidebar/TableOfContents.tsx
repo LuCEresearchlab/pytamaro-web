@@ -62,6 +62,7 @@ const noop = () => {};
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function useThrottledOnScroll(callback: any, delay: number) {
   const throttledCallback = React.useMemo(
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     () => (callback ? throttle(callback, delay) : noop),
     [callback, delay],
   );
@@ -113,7 +114,7 @@ export default function TableOfContents({
       const elements = Array.from(
         elementRef.current.querySelectorAll<HTMLElement>(selector),
       ).map((element) => ({
-        text: element.dataset.tocTitle || element.textContent || '',
+        text: element.dataset.tocTitle ?? element.textContent ?? '',
         hash: element.id,
         indent:
           element.dataset.tocIndent === 'true' ||

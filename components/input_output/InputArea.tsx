@@ -65,6 +65,7 @@ export default function InputArea({
             // When this inputArea is non-editable, we need to ensure that the
             // string is not empty to avoid collapsing the pre element and keep
             // the alignment on the baseline.
+            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
             !editable && !initialContent
               ? '\u200B' // zero-width space
               : initialContent

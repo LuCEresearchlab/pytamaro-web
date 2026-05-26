@@ -17,6 +17,7 @@ export default function useLocalActivity(
   const variantId = activityVariantId(activityVariant);
   const variantMetadata = metadata.activities.find((a) => a.id === variantId);
   const [codeCells, setCodeCells] = useLocalStorageState(
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     variantMetadata?.codeCellsKey || getActivityVariantCodeCellsKey(variantId),
     { defaultValue: initialCodeCells },
   );

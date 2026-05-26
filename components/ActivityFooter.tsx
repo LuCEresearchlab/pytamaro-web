@@ -60,7 +60,7 @@ export default function ActivityFooter({
           />
         )}
       </Stack>
-      {curriculum?.hourOfCode && <FinishHourOfCodeButton />}
+      {curriculum?.hourOfCode === true && <FinishHourOfCodeButton />}
       <Divider sx={{ mb: 3 }} />
       <Container maxWidth='md' sx={{ textAlign: 'center' }}>
         <AttributionInfo

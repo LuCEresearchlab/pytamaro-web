@@ -45,7 +45,7 @@ export default function FeedbackButton() {
   };
 
   const handleSend = async () => {
-    if (!message) {
+    if (message.length === 0) {
       setErrorMessageRequired(true);
       return;
     }

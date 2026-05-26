@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { ProgramState } from '.';
 import { dummyExecutionMetadata } from '../../../../components/tide/TideConfigurationCode';
 import { ExecutionResponse as ExecutorExecutionResponse } from '../../../execution/codeExecution';

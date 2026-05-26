@@ -21,6 +21,7 @@ function copyAssets(
   // List of properties that contain paths of assets to be copied
   const assetsPaths = [
     infoFileContent.previewImage.filename,
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     ...(infoFileContent?.assets || []),
   ];
   fs.mkdirSync(path.join(ASSETS_PATH, authorSlug, activitySlug));

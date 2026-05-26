@@ -90,6 +90,7 @@ export default function CompetencyCardContent({
           </Box>
         </>
       )}
+      {/* eslint-disable-next-line @typescript-eslint/strict-boolean-expressions */}
       {competency.longDescription && (
         <Box marginTop={3}>
           <MDXRemote

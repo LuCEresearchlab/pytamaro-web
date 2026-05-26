@@ -12,7 +12,7 @@ export const COLORIZE_CLASSNAME = 'monaco-colorize';
 configureEditor();
 
 export default function useMonacoColorizer() {
-  const monaco = useMonaco() as MonacoForPyTamaro;
+  const monaco = useMonaco() as MonacoForPyTamaro | null;
   useEffect(() => {
     if (monaco) {
       registerPyTamaroLanguageAndTheme(monaco);

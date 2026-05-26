@@ -531,6 +531,7 @@ addEventListener(
   'message',
   async (event: MessageEvent<ExecutorClientMessage>) => {
     const { data } = event;
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (!data) {
       return;
     }

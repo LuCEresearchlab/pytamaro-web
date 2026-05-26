@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { Article, Error, RemoveRedEye } from '@mui/icons-material';
 import { IconButton, Paper } from '@mui/material';
 import {

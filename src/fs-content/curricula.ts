@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { readdir, readFile } from 'fs/promises';
 import { serialize } from 'next-mdx-remote/serialize';
 import path from 'path';

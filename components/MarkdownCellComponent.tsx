@@ -77,7 +77,7 @@ function InlineAPIComponent(
   extraPythonFilesAnalysisResults?: FilesAnalysisResult,
 ) {
   // Error on
-  if (!name) {
+  if (name === undefined) {
     if (typeof window === 'undefined') {
       // eslint-disable-next-line no-console
       console.error(

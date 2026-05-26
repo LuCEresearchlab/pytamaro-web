@@ -67,7 +67,7 @@ export function curriculumWithAnchor(
   anchorTo?: string,
 ) {
   const query = new URLSearchParams();
-  if (anchorTo) {
+  if (anchorTo !== undefined) {
     query.set('to', anchorTo);
   }
   return `${curriculumPathname(authorSlug, curriculumSlug)}?${query.toString()}#${anchor}`;
@@ -97,7 +97,7 @@ export function authorPathname(authorSlug: string) {
 
 export function playgroundPathname(initialCode?: string) {
   const basePath = '/playground';
-  if (!initialCode) {
+  if (initialCode === undefined) {
     return basePath;
   }
   const base64code = Buffer.from(initialCode).toString('base64');

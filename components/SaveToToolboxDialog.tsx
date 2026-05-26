@@ -181,10 +181,10 @@ export default function SaveToToolboxDialog({
   const [implementation, setImplementation] = useState(externalImplementation);
   const [functions, setFunctions] = useState<PythonFunction[]>([]);
   const [selectedFunction, setSelectedFunction] = useState<string>(
-    initialName || '',
+    initialName ?? '',
   );
-  const [description, setDescription] = useState(initialDescription || '');
-  const [usage, setUsage] = useState(initialUsage || '');
+  const [description, setDescription] = useState(initialDescription ?? '');
+  const [usage, setUsage] = useState(initialUsage ?? '');
   const [usageExecutedSuccessfully, setUsageExecutedSuccessfully] =
     useState(false);
   const [usageEdited, setUsageEdited] = useState(false);
@@ -242,10 +242,10 @@ export default function SaveToToolboxDialog({
     const newFunctions = visibleDefinedFunctions(implementationAnalysisResult);
     // Reset the selected function to the initial state if a function with such a name does not exist anymore
     if (
-      selectedFunction &&
+      selectedFunction !== '' &&
       !newFunctions.some((f) => f.name === selectedFunction)
     ) {
-      setSelectedFunction(initialName || '');
+      setSelectedFunction(initialName ?? '');
     }
     setFunctions(newFunctions);
   }, [implementationAnalysisResult, selectedFunction, initialName]);
@@ -265,7 +265,11 @@ export default function SaveToToolboxDialog({
 
   const initUsage = (newSelectedFn: string) => {
     // Do not overwrite the usage if the user has edited it at least once in the past
-    if (newSelectedFn && newSelectedFn !== selectedFunction && !usageEdited) {
+    if (
+      newSelectedFn !== '' &&
+      newSelectedFn !== selectedFunction &&
+      !usageEdited
+    ) {
       const newUsage = joinLines([
         `from ${TOOLBOX_FILE} import ${newSelectedFn}`,
         'from pytamaro import _',
@@ -279,11 +283,11 @@ export default function SaveToToolboxDialog({
   };
 
   const initDocstring = (newSelectedFn: string) => {
-    if (newSelectedFn && newSelectedFn !== selectedFunction) {
+    if (newSelectedFn !== '' && newSelectedFn !== selectedFunction) {
       const sourceDocstring = functions.find(
         (f) => f.name === newSelectedFn,
       )?.docstring;
-      if (sourceDocstring) {
+      if (sourceDocstring !== undefined) {
         setDescription(sourceDocstring);
       }
     }
@@ -420,9 +424,9 @@ export default function SaveToToolboxDialog({
             {replaceExistingFunction && !replacingFunctionFound && (
               <Alert severity='error'>{t('toolbox.nameDisappeared')}</Alert>
             )}
-            {selectedFunction &&
+            {selectedFunction !== '' &&
               (!alreadyExists || replaceExistingFunction) &&
-              (!description ? (
+              (description.length === 0 ? (
                 <Alert severity='info'>{t('toolbox.addDescription')}</Alert>
               ) : (
                 <div id='usage'>
@@ -454,7 +458,7 @@ export default function SaveToToolboxDialog({
               ))}
             {selectedPythonFunction &&
               (!alreadyExists || replaceExistingFunction) &&
-              description && (
+              description.length > 0 && (
                 <>
                   {!usageExecutedSuccessfully && (
                     <Alert sx={{ mt: 2 }} severity='info'>

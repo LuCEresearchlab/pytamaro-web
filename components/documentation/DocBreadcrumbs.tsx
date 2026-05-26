@@ -38,17 +38,17 @@ export default function DocBreadcrumbs({
       >
         {t('documentation')}
       </Link>
-      {module && (
+      {module !== undefined && (
         <Link
           key='mod'
           href={documentationModulePathname(module)}
-          color={name ? 'inherit' : 'primary'}
+          color={name !== undefined ? 'inherit' : 'primary'}
           underline='hover'
         >
           {t('library')} <strong>{module}</strong>
         </Link>
       )}
-      {module && name && nameKind && (
+      {module !== undefined && name !== undefined && nameKind !== undefined && (
         <Link
           key='name'
           href={documentationElementPathname(module, name)}

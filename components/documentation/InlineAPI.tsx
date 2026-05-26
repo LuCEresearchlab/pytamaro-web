@@ -18,12 +18,12 @@ export default function InlineAPI({
   extraPythonFilesAnalysisResults?: FilesAnalysisResult;
 }) {
   // When not provided explicitly, the language is inferred from the activity variant.
-  const bestLanguage = language || activityVariant.language;
+  const bestLanguage = language ?? activityVariant.language;
 
   // When not provided explicitly, the module assumed to be 'pytamaro'
   // (possibly a language-specific submodule).
   const moduleName =
-    module || (bestLanguage === 'en' ? 'pytamaro' : `pytamaro.${bestLanguage}`);
+    module ?? (bestLanguage === 'en' ? 'pytamaro' : `pytamaro.${bestLanguage}`);
 
   const elements = useDocumentationElements(
     [new PythonName(moduleName, name)],

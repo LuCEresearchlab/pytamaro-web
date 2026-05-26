@@ -71,7 +71,7 @@ export function nextOrPreviousObviousActivity(
     return undefined;
   }
   const targetStep = currentUnit.steps[targetStepIdx];
-  if (targetStep.isOptional || targetStep.activities.length > 1) {
+  if (targetStep.isOptional === true || targetStep.activities.length > 1) {
     return undefined;
   }
   return targetStep.activities[0];
