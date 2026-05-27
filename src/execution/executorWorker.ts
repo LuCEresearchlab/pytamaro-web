@@ -181,6 +181,8 @@ class WorkerExecutor {
           scalingFactor,
           debug,
         ),
+      js_svg_graphic: (specs: PyProxy, debug: boolean) =>
+        this.ffSvgGraphicOnClient(this.unProxy<GraphicSpec[]>(specs), debug),
       js_save: (fileName: string, content: string) =>
         this.ffSaveOnClient(fileName, content),
       set_active_cell: (idx: number) => this.ffSetActiveCell(idx),
@@ -435,10 +437,25 @@ class WorkerExecutor {
     return this.decodeSharedBuffer(res);
   }
 
+  /**
+   * @returns The SVG string of the graphic, computed with canvaskit on the main thread
+   */
+  private ffSvgGraphicOnClient(specs: GraphicSpec[], debug: boolean): string {
+    const res = this.executeFFOnClient(MessageType.DRAW_SVG, {
+      specs,
+      debug,
+    });
+    if (res == null) {
+      // Treat render failure as a normal python exception
+      throw new Error('Failed to compute SVG of a graphic');
+    }
+    return this.decodeSharedBuffer(res);
+  }
+
   private ffSaveOnClient(fileName: string, content: string): void {
     this.executeFFOnClient(MessageType.SAVE, {
       fileName,
-      content,
+      contentUri: content,
     });
   }
 

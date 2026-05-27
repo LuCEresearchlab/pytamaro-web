@@ -12,6 +12,7 @@ import {
   ClientExecutionRequestMessage,
   ClientExecutionResultRequestMessage,
   DrawRequestData,
+  DrawSvgRequestData,
   ExecutionMetadata,
   ExecutorWorkerMessage,
   InputRequestData,
@@ -379,6 +380,7 @@ export class ExecutorClient {
     const toDeliver = result.value;
     switch (type) {
       case MessageType.DRAW:
+      case MessageType.DRAW_SVG:
       case MessageType.INPUT:
         {
           const src = toDeliver as Uint8Array;
@@ -409,6 +411,9 @@ export class ExecutorClient {
       case MessageType.DRAW:
         this.handleDelegatedDraw(uuid, request);
         break;
+      case MessageType.DRAW_SVG:
+        this.handleDelegatedDrawSvg(uuid, request);
+        break;
       case MessageType.INPUT:
         this.handleDelegatedInput(uuid, request);
         break;
@@ -423,13 +428,26 @@ export class ExecutorClient {
 
   private handleDelegatedDraw(uuid: string, data: DrawRequestData): void {
     this.delegate
-      .renderGraphic(data)
+      .drawRasterGraphic(data)
       .then((result) => {
         const encoded = new Uint8Array(Buffer.from(result));
         this.notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
       })
       .catch((err) => {
         captureErrorWithSentry(err, { procedure: 'draw' });
+        this.notifyWorkerResultFailure(uuid);
+      });
+  }
+
+  private handleDelegatedDrawSvg(uuid: string, data: DrawSvgRequestData): void {
+    this.delegate
+      .drawSvgGraphic(data)
+      .then((result) => {
+        const encoded = new Uint8Array(Buffer.from(result));
+        this.notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
+      })
+      .catch((err) => {
+        captureErrorWithSentry(err, { procedure: 'draw_svg' });
         this.notifyWorkerResultFailure(uuid);
       });
   }

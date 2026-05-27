@@ -8,6 +8,7 @@ export enum MessageType {
   READY = 'ready',
   FINAL_RESULT = 'result',
   DRAW = 'draw',
+  DRAW_SVG = 'draw_svg',
   SAVE = 'save',
   SIZE = 'size',
   INPUT = 'input',
@@ -17,6 +18,7 @@ export enum MessageType {
 
 export type MessageData =
   | DrawRequestData
+  | DrawSvgRequestData
   | SizeRequestData
   | InputRequestData
   | SaveRequestData;
@@ -103,15 +105,20 @@ export type ClientExecutionRequestMessage =
   | ({ type: MessageType.DRAW } & DrawRequestData)
   | ({ type: MessageType.SIZE } & SizeRequestData)
   | ({ type: MessageType.SAVE } & SaveRequestData)
-  | ({ type: MessageType.INPUT } & InputRequestData);
+  | ({ type: MessageType.INPUT } & InputRequestData)
+  | ({ type: MessageType.DRAW_SVG } & DrawSvgRequestData);
 export type DrawRequestData = {
   specs: GraphicSpec[];
   scalingFactor: number;
   debug: boolean;
 };
+export type DrawSvgRequestData = {
+  specs: GraphicSpec[];
+  debug: boolean;
+};
 export type SaveRequestData = {
   fileName: string;
-  content: string;
+  contentUri: string;
 };
 export type SizeRequestData = {
   specs: GraphicSpec[];
@@ -128,6 +135,7 @@ export type ClientExecutionResultRequestMessage = {
   type:
     | MessageType.INPUT
     | MessageType.DRAW
+    | MessageType.DRAW_SVG
     | MessageType.SIZE
     | MessageType.SAVE;
   resultBuffer: SharedArrayBuffer;

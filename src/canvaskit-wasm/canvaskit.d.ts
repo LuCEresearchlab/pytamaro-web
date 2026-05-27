@@ -460,6 +460,7 @@ export interface CanvasKit {
     readonly Path: PathConstructorAndFactory;
     readonly PictureRecorder: DefaultConstructor<PictureRecorder>;
     readonly TextStyle: TextStyleConstructor;
+    readonly SimpleSVGCanvas: DefaultConstructor<SimpleSVGCanvas>;
     readonly SlottableTextProperty: SlottableTextPropertyConstructor;
 
     // Factories, i.e. things made with CanvasKit.Foo.MakeTurboEncabulator()
@@ -2994,6 +2995,22 @@ export interface RuntimeEffect extends EmbindObject<"RuntimeEffect"> {
      */
     getUniformName(index: number): string;
 }
+
+export interface SimpleSVGCanvas extends EmbindObject<"SimpleSVGCanvas"> {
+    /**
+     * Returns a canvas on which to draw. When done drawing, call `endDrawing()`.
+     * 
+     * @param width - the width of the canvas in pixels
+     * @param height - the height of the canvas in pixels
+     */
+    beginDrawing(width: number, height: number): Canvas;
+
+    /**
+     * Returns the captured draw commands as an SVG string and invalidates the canvas returned by `beginDrawing()`.
+     */
+    endDrawing(): string;
+}
+
 
 /**
  * See SkShader.h for more on this class. The objects are opaque.
