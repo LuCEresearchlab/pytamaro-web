@@ -12,6 +12,7 @@ import { drawWithSuperSampling } from './graphics/superSampling';
 import { canvasKitAssetUrl, computeBoundsAndPin } from './graphics/utils';
 import {
   DrawRequestData,
+  DrawSvgRequestData,
   SaveRequestData,
   SizeRequestData,
 } from './messageTypes';
@@ -33,7 +34,14 @@ export class ExecutorDelegate {
     this.typefaces = typefaces;
   }
 
-  async renderGraphic(data: DrawRequestData): Promise<string> {
+  private async drawGraphic(
+    data: DrawRequestData | DrawSvgRequestData,
+    drawOnCanvas: (
+      width: number,
+      height: number,
+      drawImage: (canvas: Canvas) => void,
+    ) => Promise<string> | string,
+  ): Promise<string> {
     // Use a disposable stack to make sure all wasm objects are properly
     // deallocated once we exit from this method (regardless of whether the code
     // crashed or succeeded).
@@ -65,21 +73,41 @@ export class ExecutorDelegate {
       }
     };
 
-    return drawWithSuperSampling(
-      this.ck,
-      renderedWidth,
-      renderedHeight,
-      data.scalingFactor,
-      drawImage,
-    ).then(
-      (imageBlob: Blob) =>
-        new Promise<string>((resolve) => {
-          // Extract as base64 PNG data URL
+    return await drawOnCanvas(renderedWidth, renderedHeight, drawImage);
+  }
+
+  async drawRasterGraphic(data: DrawRequestData): Promise<string> {
+    return this.drawGraphic(
+      data,
+      async (renderedWidth, renderedHeight, drawImage) => {
+        const imageBlob = await drawWithSuperSampling(
+          this.ck,
+          renderedWidth,
+          renderedHeight,
+          data.scalingFactor,
+          drawImage,
+        );
+        return new Promise((resolve, reject) => {
           const reader = new FileReader();
-          reader.onloadend = async () => resolve(reader.result as string);
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = reject;
           reader.readAsDataURL(imageBlob);
-        }),
+        });
+      },
     );
+  }
+
+  async drawSvgGraphic(data: DrawSvgRequestData): Promise<string> {
+    return this.drawGraphic(data, (width, height, drawImage) => {
+      const svgCanvas = new this.ck.SimpleSVGCanvas();
+      try {
+        const canvas = svgCanvas.beginDrawing(width, height);
+        drawImage(canvas);
+        return svgCanvas.endDrawing();
+      } finally {
+        svgCanvas.delete();
+      }
+    });
   }
 
   sizeOfGraphic(data: SizeRequestData): Sized {
@@ -102,7 +130,7 @@ export class ExecutorDelegate {
   }
 
   async saveAsFile(data: SaveRequestData): Promise<void> {
-    return fetch(data.content)
+    return fetch(data.contentUri)
       .then((res: Response) => res.blob())
       .then(URL.createObjectURL)
       .then((blobUrl: string) => {
