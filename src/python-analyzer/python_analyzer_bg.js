@@ -1,6 +1,5 @@
 export class AnalysisResult {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(AnalysisResult.prototype);
         obj.__wbg_ptr = ptr;
         AnalysisResultFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -189,7 +188,6 @@ if (Symbol.dispose) AnalysisResult.prototype[Symbol.dispose] = AnalysisResult.pr
 
 export class CalledName {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(CalledName.prototype);
         obj.__wbg_ptr = ptr;
         CalledNameFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -256,7 +254,6 @@ if (Symbol.dispose) CalledName.prototype[Symbol.dispose] = CalledName.prototype.
 
 export class Diagnostic {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(Diagnostic.prototype);
         obj.__wbg_ptr = ptr;
         DiagnosticFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -360,7 +357,6 @@ export const DocumentHighlightKind = Object.freeze({
 
 export class FileHandle {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(FileHandle.prototype);
         obj.__wbg_ptr = ptr;
         FileHandleFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -482,7 +478,6 @@ if (Symbol.dispose) Hover.prototype[Symbol.dispose] = Hover.prototype.free;
 
 export class LocationLink {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(LocationLink.prototype);
         obj.__wbg_ptr = ptr;
         LocationLinkFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -600,7 +595,6 @@ export const LogLevel = Object.freeze({
 
 export class ParameterInformation {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(ParameterInformation.prototype);
         obj.__wbg_ptr = ptr;
         ParameterInformationFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -681,7 +675,6 @@ if (Symbol.dispose) ParameterInformation.prototype[Symbol.dispose] = ParameterIn
 
 export class ParseError {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(ParseError.prototype);
         obj.__wbg_ptr = ptr;
         ParseErrorFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -750,7 +743,6 @@ if (Symbol.dispose) ParseError.prototype[Symbol.dispose] = ParseError.prototype.
 
 export class Position {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(Position.prototype);
         obj.__wbg_ptr = ptr;
         PositionFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -788,7 +780,7 @@ export class Position {
      */
     constructor(line, column) {
         const ret = wasm.position_new(line, column);
-        this.__wbg_ptr = ret >>> 0;
+        this.__wbg_ptr = ret;
         PositionFinalization.register(this, this.__wbg_ptr, this);
         return this;
     }
@@ -820,7 +812,6 @@ export const PositionEncoding = Object.freeze({
 
 export class PythonConstant {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(PythonConstant.prototype);
         obj.__wbg_ptr = ptr;
         PythonConstantFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -928,7 +919,6 @@ if (Symbol.dispose) PythonConstant.prototype[Symbol.dispose] = PythonConstant.pr
 
 export class PythonFunction {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(PythonFunction.prototype);
         obj.__wbg_ptr = ptr;
         PythonFunctionFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -1099,7 +1089,6 @@ if (Symbol.dispose) PythonFunction.prototype[Symbol.dispose] = PythonFunction.pr
 
 export class PythonFunctionArgument {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(PythonFunctionArgument.prototype);
         obj.__wbg_ptr = ptr;
         PythonFunctionArgumentFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -1220,7 +1209,6 @@ if (Symbol.dispose) PythonFunctionArgument.prototype[Symbol.dispose] = PythonFun
 
 export class PythonName {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(PythonName.prototype);
         obj.__wbg_ptr = ptr;
         PythonNameFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -1290,7 +1278,7 @@ export class PythonName {
         const ptr1 = passStringToWasm0(name, wasm.__wbindgen_export, wasm.__wbindgen_export2);
         const len1 = WASM_VECTOR_LEN;
         const ret = wasm.pythonname_new(ptr0, len0, ptr1, len1);
-        this.__wbg_ptr = ret >>> 0;
+        this.__wbg_ptr = ret;
         PythonNameFinalization.register(this, this.__wbg_ptr, this);
         return this;
     }
@@ -1315,7 +1303,6 @@ if (Symbol.dispose) PythonName.prototype[Symbol.dispose] = PythonName.prototype.
 
 export class Range {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(Range.prototype);
         obj.__wbg_ptr = ptr;
         RangeFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -1355,7 +1342,7 @@ export class Range {
         _assertClass(end, Position);
         var ptr1 = end.__destroy_into_raw();
         const ret = wasm.range_new(ptr0, ptr1);
-        this.__wbg_ptr = ret >>> 0;
+        this.__wbg_ptr = ret;
         RangeFinalization.register(this, this.__wbg_ptr, this);
         return this;
     }
@@ -1380,7 +1367,6 @@ if (Symbol.dispose) Range.prototype[Symbol.dispose] = Range.prototype.free;
 
 export class SemanticToken {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(SemanticToken.prototype);
         obj.__wbg_ptr = ptr;
         SemanticTokenFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -1519,7 +1505,7 @@ export class SignatureHelp {
      */
     get active_signature() {
         const ret = wasm.__wbg_get_signaturehelp_active_signature(this.__wbg_ptr);
-        return ret === 0x100000001 ? undefined : ret;
+        return ret === Number.MAX_SAFE_INTEGER ? undefined : ret;
     }
     /**
      * @returns {SignatureInformation[]}
@@ -1541,7 +1527,7 @@ export class SignatureHelp {
      * @param {number | null} [arg0]
      */
     set active_signature(arg0) {
-        wasm.__wbg_set_signaturehelp_active_signature(this.__wbg_ptr, isLikeNone(arg0) ? 0x100000001 : (arg0) >>> 0);
+        wasm.__wbg_set_signaturehelp_active_signature(this.__wbg_ptr, isLikeNone(arg0) ? Number.MAX_SAFE_INTEGER : (arg0) >>> 0);
     }
     /**
      * @param {SignatureInformation[]} arg0
@@ -1556,7 +1542,6 @@ if (Symbol.dispose) SignatureHelp.prototype[Symbol.dispose] = SignatureHelp.prot
 
 export class SignatureInformation {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(SignatureInformation.prototype);
         obj.__wbg_ptr = ptr;
         SignatureInformationFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -1583,7 +1568,7 @@ export class SignatureInformation {
      */
     get active_parameter() {
         const ret = wasm.__wbg_get_signatureinformation_active_parameter(this.__wbg_ptr);
-        return ret === 0x100000001 ? undefined : ret;
+        return ret === Number.MAX_SAFE_INTEGER ? undefined : ret;
     }
     /**
      * @returns {string | undefined}
@@ -1643,7 +1628,7 @@ export class SignatureInformation {
      * @param {number | null} [arg0]
      */
     set active_parameter(arg0) {
-        wasm.__wbg_set_signatureinformation_active_parameter(this.__wbg_ptr, isLikeNone(arg0) ? 0x100000001 : (arg0) >>> 0);
+        wasm.__wbg_set_signatureinformation_active_parameter(this.__wbg_ptr, isLikeNone(arg0) ? Number.MAX_SAFE_INTEGER : (arg0) >>> 0);
     }
     /**
      * @param {string | null} [arg0]
@@ -1674,7 +1659,6 @@ if (Symbol.dispose) SignatureInformation.prototype[Symbol.dispose] = SignatureIn
 
 export class TextRange {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(TextRange.prototype);
         obj.__wbg_ptr = ptr;
         TextRangeFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -1727,7 +1711,6 @@ if (Symbol.dispose) TextRange.prototype[Symbol.dispose] = TextRange.prototype.fr
 
 export class Workspace {
     static __wrap(ptr) {
-        ptr = ptr >>> 0;
         const obj = Object.create(Workspace.prototype);
         obj.__wbg_ptr = ptr;
         WorkspaceFinalization.register(obj, obj.__wbg_ptr, obj);
@@ -1850,7 +1833,7 @@ export class Workspace {
             if (r2) {
                 throw takeObject(r1);
             }
-            this.__wbg_ptr = r0 >>> 0;
+            this.__wbg_ptr = r0;
             WorkspaceFinalization.register(this, this.__wbg_ptr, this);
             return this;
         } finally {
@@ -2035,11 +2018,11 @@ export function initWorkspace() {
 export function run() {
     wasm.run();
 }
-export function __wbg_Error_2e59b1b37a9a34c3(arg0, arg1) {
+export function __wbg_Error_ef53bc310eb298a0(arg0, arg1) {
     const ret = Error(getStringFromWasm0(arg0, arg1));
     return addHeapObject(ret);
 }
-export function __wbg_Number_e6ffdb596c888833(arg0) {
+export function __wbg_Number_6b506e6536831eaa(arg0) {
     const ret = Number(getObject(arg0));
     return ret;
 }
@@ -2050,64 +2033,64 @@ export function __wbg_String_8564e559799eccda(arg0, arg1) {
     getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
     getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
 }
-export function __wbg___wbindgen_bigint_get_as_i64_2c5082002e4826e2(arg0, arg1) {
+export function __wbg___wbindgen_bigint_get_as_i64_38130e98eecd467d(arg0, arg1) {
     const v = getObject(arg1);
     const ret = typeof(v) === 'bigint' ? v : undefined;
     getDataViewMemory0().setBigInt64(arg0 + 8 * 1, isLikeNone(ret) ? BigInt(0) : ret, true);
     getDataViewMemory0().setInt32(arg0 + 4 * 0, !isLikeNone(ret), true);
 }
-export function __wbg___wbindgen_boolean_get_a86c216575a75c30(arg0) {
+export function __wbg___wbindgen_boolean_get_1a45e2c38d4d41b9(arg0) {
     const v = getObject(arg0);
     const ret = typeof(v) === 'boolean' ? v : undefined;
     return isLikeNone(ret) ? 0xFFFFFF : ret ? 1 : 0;
 }
-export function __wbg___wbindgen_debug_string_dd5d2d07ce9e6c57(arg0, arg1) {
+export function __wbg___wbindgen_debug_string_0accd80f45e5faa2(arg0, arg1) {
     const ret = debugString(getObject(arg1));
     const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_export, wasm.__wbindgen_export2);
     const len1 = WASM_VECTOR_LEN;
     getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
     getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
 }
-export function __wbg___wbindgen_in_4bd7a57e54337366(arg0, arg1) {
+export function __wbg___wbindgen_in_70a403a56e771704(arg0, arg1) {
     const ret = getObject(arg0) in getObject(arg1);
     return ret;
 }
-export function __wbg___wbindgen_is_bigint_6c98f7e945dacdde(arg0) {
+export function __wbg___wbindgen_is_bigint_6ffd6468a9bc44b9(arg0) {
     const ret = typeof(getObject(arg0)) === 'bigint';
     return ret;
 }
-export function __wbg___wbindgen_is_function_49868bde5eb1e745(arg0) {
+export function __wbg___wbindgen_is_function_754e9f305ff6029e(arg0) {
     const ret = typeof(getObject(arg0)) === 'function';
     return ret;
 }
-export function __wbg___wbindgen_is_object_40c5a80572e8f9d3(arg0) {
+export function __wbg___wbindgen_is_object_56732c2bc353f41d(arg0) {
     const val = getObject(arg0);
     const ret = typeof(val) === 'object' && val !== null;
     return ret;
 }
-export function __wbg___wbindgen_is_string_b29b5c5a8065ba1a(arg0) {
+export function __wbg___wbindgen_is_string_c236cabd84a4d769(arg0) {
     const ret = typeof(getObject(arg0)) === 'string';
     return ret;
 }
-export function __wbg___wbindgen_is_undefined_c0cca72b82b86f4d(arg0) {
+export function __wbg___wbindgen_is_undefined_67b456be8673d3d7(arg0) {
     const ret = getObject(arg0) === undefined;
     return ret;
 }
-export function __wbg___wbindgen_jsval_eq_7d430e744a913d26(arg0, arg1) {
+export function __wbg___wbindgen_jsval_eq_1068e624fa87f6ab(arg0, arg1) {
     const ret = getObject(arg0) === getObject(arg1);
     return ret;
 }
-export function __wbg___wbindgen_jsval_loose_eq_3a72ae764d46d944(arg0, arg1) {
+export function __wbg___wbindgen_jsval_loose_eq_2c56564c75129511(arg0, arg1) {
     const ret = getObject(arg0) == getObject(arg1);
     return ret;
 }
-export function __wbg___wbindgen_number_get_7579aab02a8a620c(arg0, arg1) {
+export function __wbg___wbindgen_number_get_9bb1761122181af2(arg0, arg1) {
     const obj = getObject(arg1);
     const ret = typeof(obj) === 'number' ? obj : undefined;
     getDataViewMemory0().setFloat64(arg0 + 8 * 1, isLikeNone(ret) ? 0 : ret, true);
     getDataViewMemory0().setInt32(arg0 + 4 * 0, !isLikeNone(ret), true);
 }
-export function __wbg___wbindgen_string_get_914df97fcfa788f2(arg0, arg1) {
+export function __wbg___wbindgen_string_get_72bdf95d3ae505b1(arg0, arg1) {
     const obj = getObject(arg1);
     const ret = typeof(obj) === 'string' ? obj : undefined;
     var ptr1 = isLikeNone(ret) ? 0 : passStringToWasm0(ret, wasm.__wbindgen_export, wasm.__wbindgen_export2);
@@ -2115,10 +2098,10 @@ export function __wbg___wbindgen_string_get_914df97fcfa788f2(arg0, arg1) {
     getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
     getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
 }
-export function __wbg___wbindgen_throw_81fc77679af83bc6(arg0, arg1) {
+export function __wbg___wbindgen_throw_1506f2235d1bdba0(arg0, arg1) {
     throw new Error(getStringFromWasm0(arg0, arg1));
 }
-export function __wbg_call_7f2987183bb62793() { return handleError(function (arg0, arg1) {
+export function __wbg_call_8a89609d89f6608a() { return handleError(function (arg0, arg1) {
     const ret = getObject(arg0).call(getObject(arg1));
     return addHeapObject(ret);
 }, arguments); }
@@ -2130,22 +2113,22 @@ export function __wbg_calledname_unwrap(arg0) {
     const ret = CalledName.__unwrap(getObject(arg0));
     return ret;
 }
-export function __wbg_debug_50e24f25b064ded1(arg0) {
+export function __wbg_debug_78b457f1effb3792(arg0) {
     console.debug(getObject(arg0));
 }
 export function __wbg_diagnostic_new(arg0) {
     const ret = Diagnostic.__wrap(arg0);
     return addHeapObject(ret);
 }
-export function __wbg_done_547d467e97529006(arg0) {
+export function __wbg_done_60cf307fcc680536(arg0) {
     const ret = getObject(arg0).done;
     return ret;
 }
-export function __wbg_entries_616b1a459b85be0b(arg0) {
+export function __wbg_entries_04b37a02507f1713(arg0) {
     const ret = Object.entries(getObject(arg0));
     return addHeapObject(ret);
 }
-export function __wbg_error_38bec0a78dd8ded8(arg0) {
+export function __wbg_error_78ff5b3a29b770e0(arg0) {
     console.error(getObject(arg0));
 }
 export function __wbg_error_a6fa202b58aa1cd3(arg0, arg1) {
@@ -2159,15 +2142,15 @@ export function __wbg_error_a6fa202b58aa1cd3(arg0, arg1) {
         wasm.__wbindgen_export4(deferred0_0, deferred0_1, 1);
     }
 }
-export function __wbg_get_4848e350b40afc16(arg0, arg1) {
-    const ret = getObject(arg0)[arg1 >>> 0];
-    return addHeapObject(ret);
-}
-export function __wbg_get_ed0642c4b9d31ddf() { return handleError(function (arg0, arg1) {
+export function __wbg_get_1f8f054ddbaa7db2() { return handleError(function (arg0, arg1) {
     const ret = Reflect.get(getObject(arg0), getObject(arg1));
     return addHeapObject(ret);
 }, arguments); }
-export function __wbg_get_unchecked_7d7babe32e9e6a54(arg0, arg1) {
+export function __wbg_get_2b48c7d0d006a781(arg0, arg1) {
+    const ret = getObject(arg0)[arg1 >>> 0];
+    return addHeapObject(ret);
+}
+export function __wbg_get_unchecked_33f6e5c9e2f2d6b2(arg0, arg1) {
     const ret = getObject(arg0)[arg1 >>> 0];
     return addHeapObject(ret);
 }
@@ -2175,10 +2158,10 @@ export function __wbg_get_with_ref_key_6412cf3094599694(arg0, arg1) {
     const ret = getObject(arg0)[getObject(arg1)];
     return addHeapObject(ret);
 }
-export function __wbg_info_4e3339024d0fb613(arg0) {
+export function __wbg_info_af7f45292ba9b0ea(arg0) {
     console.info(getObject(arg0));
 }
-export function __wbg_instanceof_ArrayBuffer_ff7c1337a5e3b33a(arg0) {
+export function __wbg_instanceof_ArrayBuffer_8f49811467741499(arg0) {
     let result;
     try {
         result = getObject(arg0) instanceof ArrayBuffer;
@@ -2188,7 +2171,7 @@ export function __wbg_instanceof_ArrayBuffer_ff7c1337a5e3b33a(arg0) {
     const ret = result;
     return ret;
 }
-export function __wbg_instanceof_Map_a10a2795ef4bfe97(arg0) {
+export function __wbg_instanceof_Map_9fc06d9a951bcee6(arg0) {
     let result;
     try {
         result = getObject(arg0) instanceof Map;
@@ -2198,7 +2181,7 @@ export function __wbg_instanceof_Map_a10a2795ef4bfe97(arg0) {
     const ret = result;
     return ret;
 }
-export function __wbg_instanceof_Uint8Array_4b8da683deb25d72(arg0) {
+export function __wbg_instanceof_Uint8Array_86f30649f63ef9c2(arg0) {
     let result;
     try {
         result = getObject(arg0) instanceof Uint8Array;
@@ -2208,23 +2191,23 @@ export function __wbg_instanceof_Uint8Array_4b8da683deb25d72(arg0) {
     const ret = result;
     return ret;
 }
-export function __wbg_isArray_db61795ad004c139(arg0) {
+export function __wbg_isArray_67c2c9c4313f4448(arg0) {
     const ret = Array.isArray(getObject(arg0));
     return ret;
 }
-export function __wbg_isSafeInteger_ea83862ba994770c(arg0) {
+export function __wbg_isSafeInteger_66acec27e09e99a7(arg0) {
     const ret = Number.isSafeInteger(getObject(arg0));
     return ret;
 }
-export function __wbg_iterator_de403ef31815a3e6() {
+export function __wbg_iterator_8732428d309e270e() {
     const ret = Symbol.iterator;
     return addHeapObject(ret);
 }
-export function __wbg_length_0c32cb8543c8e4c8(arg0) {
+export function __wbg_length_4a591ecaa01354d9(arg0) {
     const ret = getObject(arg0).length;
     return ret;
 }
-export function __wbg_length_6e821edde497a532(arg0) {
+export function __wbg_length_66f1a4b2e9026940(arg0) {
     const ret = getObject(arg0).length;
     return ret;
 }
@@ -2232,30 +2215,30 @@ export function __wbg_locationlink_new(arg0) {
     const ret = LocationLink.__wrap(arg0);
     return addHeapObject(ret);
 }
-export function __wbg_log_4c0baeb8af2f8f89(arg0) {
+export function __wbg_log_cf2e968649f3384e(arg0) {
     console.log(getObject(arg0));
 }
 export function __wbg_new_227d7c05414eb861() {
     const ret = new Error();
     return addHeapObject(ret);
 }
-export function __wbg_new_a560378ea1240b14(arg0) {
-    const ret = new Uint8Array(getObject(arg0));
-    return addHeapObject(ret);
-}
-export function __wbg_new_e3b04b4d53d1b593(arg0, arg1) {
+export function __wbg_new_50bb5ebeecef71a8(arg0, arg1) {
     const ret = new Error(getStringFromWasm0(arg0, arg1));
     return addHeapObject(ret);
 }
-export function __wbg_next_01132ed6134b8ef5(arg0) {
+export function __wbg_new_578aeef4b6b94378(arg0) {
+    const ret = new Uint8Array(getObject(arg0));
+    return addHeapObject(ret);
+}
+export function __wbg_next_9e03acdf51c4960d(arg0) {
     const ret = getObject(arg0).next;
     return addHeapObject(ret);
 }
-export function __wbg_next_b3713ec761a9dbfd() { return handleError(function (arg0) {
+export function __wbg_next_eb8ca7351fa27906() { return handleError(function (arg0) {
     const ret = getObject(arg0).next();
     return addHeapObject(ret);
 }, arguments); }
-export function __wbg_now_88621c9c9a4f3ffc() {
+export function __wbg_now_190933fa139cc119() {
     const ret = Date.now();
     return ret;
 }
@@ -2271,7 +2254,7 @@ export function __wbg_parameterinformation_unwrap(arg0) {
     const ret = ParameterInformation.__unwrap(getObject(arg0));
     return ret;
 }
-export function __wbg_parse_545d11396395fbbd() { return handleError(function (arg0, arg1) {
+export function __wbg_parse_03863847d06c4e89() { return handleError(function (arg0, arg1) {
     const ret = JSON.parse(getStringFromWasm0(arg0, arg1));
     return addHeapObject(ret);
 }, arguments); }
@@ -2287,7 +2270,7 @@ export function __wbg_performance_3fcf6e32a7e1ed0a(arg0) {
     const ret = getObject(arg0).performance;
     return addHeapObject(ret);
 }
-export function __wbg_prototypesetcall_3e05eb9545565046(arg0, arg1, arg2) {
+export function __wbg_prototypesetcall_3249fc62a0fafa30(arg0, arg1, arg2) {
     Uint8Array.prototype.set.call(getArrayU8FromWasm0(arg0, arg1), getObject(arg2));
 }
 export function __wbg_pythonconstant_new(arg0) {
@@ -2341,19 +2324,19 @@ export function __wbg_stack_3b0d974bbf31e44f(arg0, arg1) {
     getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
     getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
 }
-export function __wbg_static_accessor_GLOBAL_THIS_a1248013d790bf5f() {
-    const ret = typeof globalThis === 'undefined' ? null : globalThis;
-    return isLikeNone(ret) ? 0 : addHeapObject(ret);
-}
-export function __wbg_static_accessor_GLOBAL_f2e0f995a21329ff() {
+export function __wbg_static_accessor_GLOBAL_9d53f2689e622ca1() {
     const ret = typeof global === 'undefined' ? null : global;
     return isLikeNone(ret) ? 0 : addHeapObject(ret);
 }
-export function __wbg_static_accessor_SELF_24f78b6d23f286ea() {
+export function __wbg_static_accessor_GLOBAL_THIS_a1a35cec07001a8a() {
+    const ret = typeof globalThis === 'undefined' ? null : globalThis;
+    return isLikeNone(ret) ? 0 : addHeapObject(ret);
+}
+export function __wbg_static_accessor_SELF_4c59f6c7ea29a144() {
     const ret = typeof self === 'undefined' ? null : self;
     return isLikeNone(ret) ? 0 : addHeapObject(ret);
 }
-export function __wbg_static_accessor_WINDOW_59fd959c540fe405() {
+export function __wbg_static_accessor_WINDOW_e70ae9f2eb052253() {
     const ret = typeof window === 'undefined' ? null : window;
     return isLikeNone(ret) ? 0 : addHeapObject(ret);
 }
@@ -2365,11 +2348,11 @@ export function __wbg_textrange_unwrap(arg0) {
     const ret = TextRange.__unwrap(getObject(arg0));
     return ret;
 }
-export function __wbg_value_7f6052747ccf940f(arg0) {
+export function __wbg_value_f3625092ee4b37f4(arg0) {
     const ret = getObject(arg0).value;
     return addHeapObject(ret);
 }
-export function __wbg_warn_2b0a27f629a4bb1e(arg0) {
+export function __wbg_warn_410c3261e3c6d686(arg0) {
     console.warn(getObject(arg0));
 }
 export function __wbindgen_cast_0000000000000001(arg0) {
@@ -2396,64 +2379,64 @@ export function __wbindgen_object_drop_ref(arg0) {
 }
 const AnalysisResultFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_analysisresult_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_analysisresult_free(ptr, 1));
 const CalledNameFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_calledname_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_calledname_free(ptr, 1));
 const DiagnosticFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_diagnostic_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_diagnostic_free(ptr, 1));
 const DocumentHighlightFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_documenthighlight_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_documenthighlight_free(ptr, 1));
 const FileHandleFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_filehandle_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_filehandle_free(ptr, 1));
 const HoverFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_hover_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_hover_free(ptr, 1));
 const LocationLinkFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_locationlink_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_locationlink_free(ptr, 1));
 const ParameterInformationFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_parameterinformation_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_parameterinformation_free(ptr, 1));
 const ParseErrorFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_parseerror_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_parseerror_free(ptr, 1));
 const PositionFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_position_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_position_free(ptr, 1));
 const PythonConstantFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_pythonconstant_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_pythonconstant_free(ptr, 1));
 const PythonFunctionFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_pythonfunction_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_pythonfunction_free(ptr, 1));
 const PythonFunctionArgumentFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_pythonfunctionargument_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_pythonfunctionargument_free(ptr, 1));
 const PythonNameFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_pythonname_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_pythonname_free(ptr, 1));
 const RangeFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_range_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_range_free(ptr, 1));
 const SemanticTokenFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_semantictoken_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_semantictoken_free(ptr, 1));
 const SignatureHelpFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_signaturehelp_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_signaturehelp_free(ptr, 1));
 const SignatureInformationFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_signatureinformation_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_signatureinformation_free(ptr, 1));
 const TextRangeFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_textrange_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_textrange_free(ptr, 1));
 const WorkspaceFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_workspace_free(ptr >>> 0, 1));
+    : new FinalizationRegistry(ptr => wasm.__wbg_workspace_free(ptr, 1));
 
 function addHeapObject(obj) {
     if (heap_next === heap.length) heap.push(heap.length + 1);
@@ -2570,8 +2553,7 @@ function getDataViewMemory0() {
 }
 
 function getStringFromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    return decodeText(ptr, len);
+    return decodeText(ptr >>> 0, len);
 }
 
 let cachedUint32ArrayMemory0 = null;

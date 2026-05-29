@@ -25,7 +25,7 @@ use ty_project::metadata::value::ValueSource;
 use ty_project::watch::{ChangeEvent, ChangedKind, CreatedKind, DeletedKind};
 use ty_project::{CheckMode, ProjectMetadata};
 use ty_project::{Db, ProjectDatabase};
-use ty_python_semantic::{FallibleStrategy, Program};
+use ty_python_core::program::{FallibleStrategy, Program};
 use wasm_bindgen::prelude::*;
 
 static PYTAMARO_ZIP_BYTES: &[u8] = include_bytes!("pytamaro-2.0.1-py3-none-any.whl");
@@ -278,7 +278,7 @@ pub fn install_pytamaro(workspace: &mut Workspace) -> Result<(), Error> {
             // web_sys::console::log_1(&JsValue::from(format!("Writing file: {name} at index {i}")));
             let path = write_file(&workspace, &name, &contents)?;
             workspace.db.apply_changes(
-                vec![ChangeEvent::Created {
+                &[ChangeEvent::Created {
                     path: path.clone(),
                     kind: CreatedKind::File,
                 }],
@@ -742,12 +742,22 @@ impl Workspace {
         )
         .map_err(into_error)?;
 
-        let program_settings = project
+        let (program_settings, program_settings_diagnostics) = project
             .to_program_settings(&self.system, self.db.vendored(), &FallibleStrategy)
             .map_err(into_error)?;
         Program::get(&self.db).update_from_settings(&mut self.db, program_settings);
 
-        self.db.project().reload(&mut self.db, project);
+        let (settings, settings_diagnostics) = project
+            .to_settings(&self.db, &FallibleStrategy)
+            .map_err(into_error)?;
+
+        self.db.project().reload(
+            &mut self.db,
+            project,
+            Some(settings),
+            settings_diagnostics,
+            program_settings_diagnostics,
+        );
 
         Ok(())
     }
@@ -762,7 +772,7 @@ impl Workspace {
             .map_err(into_error)?;
 
         self.db.apply_changes(
-            vec![ChangeEvent::Created {
+            &[ChangeEvent::Created {
                 path: path.clone(),
                 kind: CreatedKind::File,
             }],
@@ -795,7 +805,7 @@ impl Workspace {
             .map_err(into_error)?;
 
         self.db.apply_changes(
-            vec![
+            &[
                 ChangeEvent::Changed {
                     path: system_path.to_path_buf(),
                     kind: ChangedKind::FileContent,
@@ -829,7 +839,7 @@ impl Workspace {
                 .map_err(into_error)?;
 
             self.db.apply_changes(
-                vec![ChangeEvent::Deleted {
+                &[ChangeEvent::Deleted {
                     path: system_path.to_path_buf(),
                     kind: DeletedKind::File,
                 }],
