@@ -61,7 +61,7 @@ Tip: you can wrap an image in a `<div>` to limit its maximum width, e.g.:
 
 ## Special Components
 
-Special components that can be used:
+Special components that can be used inline with the text:
 
 - `<API>above</API>` to render a name (e.g., `above`) from the PyTamaro library with a distinguished style
   and an automatic popup to retrieve the documentation.
@@ -80,10 +80,22 @@ Special components that can be used:
   You can optionally specify a fragment to link to a specific section of the activity. The `id` should refer to a fully qualified activity variant identifier,
   i.e. it should include the author's slug, the activity's slug, the language, and the version.
   The content of the tag will be rendered as the link's text.
+
+Top-level special components that can be used to structure the activity (these need to be separated by at least one blank line from the rest of the Markdown content):
+
 - `<DoNow id="describe-rectangle">How would you describe the figure so that your friend can draw it?</DoNow>` to render a "Do Now" box with the specified content. A "Do Now" box blurs the rest of the activity until the user has clicked on a "I did it" button.
   This forces learners to think before proceeding.
   The `id` must be unique within an activity, so that we can keep track of which "Do Now" boxes the user has already completed and avoid blurring the content again on subsequent visits.
   Optionally, you can add a `requireAnswer` attribute (e.g., `<DoNow id="..." requireAnswer>...</DoNow>`) to force the user to type an answer before being able to unblur the rest of the activity.
+- To highlight a task that the user should complete you can use the `<Task>` component:
+  ```
+  <Task>
+  Fill in the missing parts of the code!
+  </Task>
+  ```
+
+Other special components:
+
 - Material UI's [Stack](https://mui.com/material-ui/react-stack/). For instance, you might want to display multiple images side by side with some spacing:
   ```
   <Stack direction="row" spacing={2} alignItems="flex-end">
@@ -94,10 +106,4 @@ Special components that can be used:
     ![description 2](img2.svg)
     </div>
   </Stack>
-  ```
-- To highlight a task that the user should complete you can use the `<Task>` component:
-  ```
-  <Task>
-  Fill in the missing parts of the code!
-  </Task>
   ```
