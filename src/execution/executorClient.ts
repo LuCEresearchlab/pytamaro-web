@@ -493,7 +493,7 @@ export class ExecutorClient {
       const encodedSize = this.delegate.sizeOfGraphic(data);
       this.notifyWorkerResultReady(
         uuid,
-        Int32Array.BYTES_PER_ELEMENT * 2,
+        Float32Array.BYTES_PER_ELEMENT * 2,
         encodedSize,
       );
     } catch (err) {
