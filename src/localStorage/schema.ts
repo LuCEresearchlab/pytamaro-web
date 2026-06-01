@@ -18,7 +18,6 @@ export interface Metadata {
   lastNotificationSeen: number;
   liveAnalysis: LiveAnalysisStatus;
   wideEditor: boolean;
-  executionMode: ExecutionMode;
 }
 
 export type MetadataForEvent = Pick<
@@ -30,11 +29,6 @@ export enum LiveAnalysisStatus {
   None = 'none',
   Syntax = 'syntax',
   SyntaxSemantics = 'syntax-semantics',
-}
-
-export enum ExecutionMode {
-  ClientSide = 'cse',
-  ServerSide = 'sse',
 }
 
 export interface DocsMetadata {
@@ -132,7 +126,6 @@ export function getDefaultMetadata(): Metadata {
     lastNotificationSeen: changelogEntries.length - 1,
     liveAnalysis: LiveAnalysisStatus.Syntax,
     wideEditor: false,
-    executionMode: ExecutionMode.ClientSide,
   };
 }
 

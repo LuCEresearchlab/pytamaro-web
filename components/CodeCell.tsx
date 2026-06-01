@@ -121,12 +121,6 @@ export default function CodeCell({
     executorState.activeCellIdx !== null &&
     executorState.activeCellIdx < cellIdx;
 
-  const isExecutingInLegacyServerSideMode =
-    metadata.executionMode === 'sse' &&
-    executionResponse !== undefined &&
-    executionResponse.type !== 'failure' &&
-    executionResponse.completed === false;
-
   const runButtonEnabled =
     // Global {en,dis}able, or...
     runEnabled ||
@@ -251,7 +245,7 @@ export default function CodeCell({
           <RunButton
             onExecutionRequested={handleExecutionRequest}
             enabled={runButtonEnabled}
-            executing={executing || isExecutingInLegacyServerSideMode}
+            executing={executing}
             isExecutingPreviousCell={isExecutingPreviousCell}
             executionFinished={executionFinished}
             executionError={executionError}

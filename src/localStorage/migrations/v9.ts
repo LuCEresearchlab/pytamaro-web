@@ -2,7 +2,6 @@ import {
   ActivityVariantMetadata,
   CurriculumMetadata,
   DocsMetadata,
-  ExecutionMode,
   LiveAnalysisStatus,
   Metadata,
   ToolboxFunction,
@@ -27,7 +26,6 @@ export default function migrateToV9(metadata: MetadataV8): Metadata {
   const newMetadata: Metadata = {
     ...metadata,
     dataModelVersion: '9',
-    executionMode: ExecutionMode.ClientSide,
   };
   return newMetadata;
 }

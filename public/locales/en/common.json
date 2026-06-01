@@ -167,12 +167,6 @@
         "title": "Execution failed",
         "message": "Your code could not be executed. This could be due to a number of reasons, such as a graphic being too big or complex, or your program using too much memory.\nYou can try to simplify the program, or run it in another IDE."
     },
-    "executionMode": {
-        "title": "Python Execution",
-        "cse": "New Mode",
-        "sse": "Legacy Mode",
-        "info": "The new mode runs on your browser, is faster, and allows using input. For a limited time, you can use the legacy mode if you experience issues."
-    },
     "executionDisabled": {
         "notReady": "Python environment is loading",
         "anotherInProgress": "Another execution is in progress"
