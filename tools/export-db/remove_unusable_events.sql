@@ -2,8 +2,6 @@
 -- events created before 2025-12-11, which cannot be used.
 -- It also deletes lots (all?) associated information, with an eye on performance.
 
-\c exportdb;
-
 BEGIN;
 
 -- Find ids of events to delete
