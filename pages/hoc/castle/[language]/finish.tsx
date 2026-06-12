@@ -23,10 +23,7 @@ import CertificateImage from '../../../../public/hoc/hour_of_code_certificate.jp
 import { readActivity } from '../../../../src/fs-content/activities';
 import useLocalTranslation from '../../../../src/localStorage/useLocalTranslation';
 import { Activity } from '../../../../src/schemas/activitySchema';
-import {
-  locales,
-  translationProps,
-} from '../../../../src/serverSideTranslationProps';
+import { translationProps } from '../../../../src/serverSideTranslationProps';
 import {
   activitiesByAuthorPathname,
   activityAssetPathname,
@@ -387,7 +384,9 @@ export async function getStaticProps() {
 
 export async function getStaticPaths() {
   return {
-    paths: locales.map((locale) => ({ params: { language: locale } })),
+    paths: ['en', 'it', 'de'].map((locale) => ({
+      params: { language: locale },
+    })),
     fallback: false,
   };
 }

@@ -35,10 +35,7 @@ import PureFunctionImage from '../../../../public/hoc/castle/PureFunction.png';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
 import useLocalTranslation from '../../../../src/localStorage/useLocalTranslation';
 import { Curriculum } from '../../../../src/schemas/curriculumSchema';
-import {
-  locales,
-  translationProps,
-} from '../../../../src/serverSideTranslationProps';
+import { translationProps } from '../../../../src/serverSideTranslationProps';
 import { curriculumInfoPathname } from '../../../../src/urlUtils';
 
 function ContributorCard({
@@ -717,7 +714,9 @@ export async function getStaticProps({
 
 export async function getStaticPaths() {
   return {
-    paths: locales.map((locale) => ({ params: { language: locale } })),
+    paths: ['en', 'it', 'de'].map((locale) => ({
+      params: { language: locale },
+    })),
     fallback: false,
   };
 }
