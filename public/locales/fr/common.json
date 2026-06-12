@@ -45,11 +45,11 @@
         "reviewOptions": "Revoir les options"
     },
     "activityCreatedByLicensedUnder": "Cette activité a été créée par <authorLink>{{authorName}}</authorLink> et est licenciée sous <licenseLink>{{license}}</licenseLink>.",
-    "curriculumCreatedByLicensedUnder": "Ce Curricula a été créé par <authorLink>{{authorName}}</authorLink> et est licencié sous <licenseLink>{{license}}</licenseLink>.",
+    "curriculumCreatedByLicensedUnder": "Ce curriculum a été créé par <authorLink>{{authorName}}</authorLink> et est licencié sous <licenseLink>{{license}}</licenseLink>.",
     "activityDerivedFrom": "Elle est dérivée de",
     "curriculumDerivedFrom": "Il est dérivé de",
     "activityThis": "<a>cette activité</a>",
-    "curriculumThis": "<a>ce Curricula</a>",
+    "curriculumThis": "<a>ce curriculum</a>",
     "yourTask": "Votre tâche !",
     "doNow": "À faire maintenant !",
     "saveAndContinue": "Enregistrer et continuer",
