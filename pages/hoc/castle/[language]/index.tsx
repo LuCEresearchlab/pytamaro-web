@@ -11,10 +11,7 @@ import NavigationBar from '../../../../components/navbar/NavigationBar';
 import Valleys from '../../../../public/hoc/castle/BellinzonaAndValleysMap1862-sepia.gif';
 import MarketingImage from '../../../../public/hoc/castle/MarketingImage-NoText-NoList-Overlay-transparent.png';
 import useLocalTranslation from '../../../../src/localStorage/useLocalTranslation';
-import {
-  locales,
-  translationProps,
-} from '../../../../src/serverSideTranslationProps';
+import { translationProps } from '../../../../src/serverSideTranslationProps';
 
 export default function HocCastlePage() {
   const router = useRouter();
@@ -149,7 +146,9 @@ export async function getStaticProps() {
 
 export async function getStaticPaths() {
   return {
-    paths: locales.map((locale) => ({ params: { language: locale } })),
+    paths: ['en', 'it', 'de'].map((locale) => ({
+      params: { language: locale },
+    })),
     fallback: false,
   };
 }
