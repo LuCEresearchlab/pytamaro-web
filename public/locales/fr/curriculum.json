@@ -1,0 +1,19 @@
+{
+    "start": "Démarrer",
+    "finish": "Terminer",
+    "clickToStart": "Cliquez pour démarrer",
+    "clickToFinish": "Cliquez pour terminer",
+    "inThisCurriculum": "Dans ce Curricula",
+    "openActivity": "Ouvrir l'activité",
+    "unlockByCompleting": "Débloquer en complétant les activités antérieures",
+    "unlockByStarting": "Débloquer en commençant le Curricula",
+    "myCompetencies": "Mes compétences",
+    "competencies": "Compétences",
+    "myCurriculum": "Mon Curricula",
+    "optionalActivities": "Activités optionnelles",
+    "curriculumInformation": "Informations sur le Curricula",
+    "authorLicense": "Auteur et licence",
+    "showMatrix": "Afficher la matrice Activités/Compétences",
+    "practicedInOutOf_one": "Pratiquée dans {{done}} sur {{total}} activité :",
+    "practicedInOutOf_other": "Pratiquée dans {{done}} sur {{total}} activités :"
+}
