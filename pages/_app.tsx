@@ -10,6 +10,7 @@ import PlausibleProvider from 'next-plausible';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import PageFooter from '../components/PageFooter';
+import config from '../next-i18next.config';
 import theme from '../src/theme';
 
 // Global CSS
@@ -71,4 +72,4 @@ function MyApp(props: AppProps) {
   );
 }
 
-export default appWithTranslation(MyApp);
+export default appWithTranslation(MyApp, config);
