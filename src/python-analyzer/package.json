@@ -1,0 +1,25 @@
+{
+  "name": "python-analyzer",
+  "type": "module",
+  "collaborators": [
+    "Luca Chiodini <luca@chiodini.org>"
+  ],
+  "description": "A WebAssembly-based Python code analyzer powered by Ruff.",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LuCEresearchlab/pytamaro-web"
+  },
+  "files": [
+    "python_analyzer_bg.wasm",
+    "python_analyzer.js",
+    "python_analyzer_bg.js",
+    "python_analyzer.d.ts"
+  ],
+  "main": "python_analyzer.js",
+  "types": "python_analyzer.d.ts",
+  "sideEffects": [
+    "./python_analyzer.js",
+    "./snippets/*"
+  ]
+}
