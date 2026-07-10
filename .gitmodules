@@ -46,3 +46,6 @@
 [submodule "farner"]
 	path = data/farner
 	url = git@github.com:LuCEresearchlab/pytamaro-web-farner.git
+[submodule "vannay"]
+	path = data/vannay
+	url = git@github.com:LuCEresearchlab/pytamaro-web-vannay.git
