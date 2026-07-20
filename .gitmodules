@@ -49,3 +49,6 @@
 [submodule "vannay"]
 	path = data/vannay
 	url = git@github.com:LuCEresearchlab/pytamaro-web-vannay.git
+[submodule "fnc-scl"]
+	path = data/fnc-scl
+	url = git@github.com:LuCEresearchlab/pytamaro-web-fnc-scl.git
