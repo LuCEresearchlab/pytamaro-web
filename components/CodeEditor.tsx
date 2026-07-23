@@ -506,8 +506,10 @@ export default function CodeEditor({
           scrollBeyondLastLine: false,
           scrollbar: {
             vertical: 'hidden',
-            handleMouseWheel: false,
             useShadows: false,
+            // https://github.com/microsoft/monaco-editor/issues/1853#issuecomment-610254053
+            handleMouseWheel: true,
+            alwaysConsumeMouseWheel: false,
           },
           readOnly,
           'semanticHighlighting.enabled':
