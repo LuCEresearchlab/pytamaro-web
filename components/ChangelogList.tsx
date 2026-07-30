@@ -223,6 +223,13 @@ export const changelogEntries = [
     ),
     silent: true,
   },
+  {
+    date: '2026-04-04',
+    icon: 'PlayCircle',
+    title: 'Python execution in the browser',
+    desc: 'Python now runs directly in your browser thanks to Pyodide. This makes the execution faster and enables interactive input. The PyTamaro library has been updated to support this new mode.',
+    silent: true,
+  },
 ];
 
 export default function ChangelogList({
