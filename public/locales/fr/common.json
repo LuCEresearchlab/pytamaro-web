@@ -167,12 +167,6 @@
         "title": "Exécution échouée",
         "message": "Votre code n'a pas pu être exécuté. Cela pourrait être dû à plusieurs raisons, comme un graphique trop grand ou complexe, ou votre programme utilisant trop de mémoire.\nVous pouvez essayer de simplifier le programme ou l'exécuter dans un autre IDE."
     },
-    "executionMode": {
-        "title": "Exécution Python",
-        "cse": "Nouveau mode",
-        "sse": "Mode hérité",
-        "info": "Le nouveau mode s'exécute dans votre navigateur, est plus rapide et permet d'utiliser l'entrée. Pendant une période limitée, vous pouvez utiliser le mode hérité si vous rencontrez des problèmes."
-    },
     "executionDisabled": {
         "notReady": "L'environnement Python se charge",
         "anotherInProgress": "Une autre exécution est en cours"
