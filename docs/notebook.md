@@ -2,19 +2,11 @@
 
 ## Python Code
 
-All the Python code written in notebooks cells should at least parse (i.e., there should be no syntax errors).
-This includes the Python code that purposefully might have "holes" for learners to fill in.
+Some starter Python code may purposefully have "holes" for learners to fill in.
 You can use an ellipsis (`...`) as a placeholder, e.g. `return ...`.
 
-⚠ The platform automatically checks the syntax of all Python cells before building the application.
-You can run the same check and see eventual errors using:
-
-```sh
-npm run check-python-sources
-```
-
-Additionally, avoid long lines of code (e.g., use a limit of 80 columns as a rule of thumb).
-Not only they are often harder to read, but they also require users to scroll horizontally.
+We recommend also to avoid long lines of code (e.g., use a limit of 80 columns as a rule of thumb).
+Not only are they often harder to read, but they also require users to scroll horizontally.
 
 ## Visibility of Code Cells
 
