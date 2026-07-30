@@ -1,7 +1,6 @@
 import { createContext, ReactNode, useEffect, useRef, useState } from 'react';
 import { OutputAreaRef } from '../../components/input_output/OutputArea';
 import { ToolboxFunction } from '../localStorage/schema';
-import useLocalProfile from '../localStorage/useLocalProfile';
 import { PythonFile } from '../schemas/activitySchema';
 import { ExecutionResponse } from './codeExecution';
 import { ExecutorClient, ExecutorState } from './executorClient';
@@ -35,7 +34,6 @@ export const ExecutorContext = createContext<IExecutor>({
 });
 
 export function ExecutorProvider({ children }: { children: ReactNode }) {
-  const { metadata } = useLocalProfile();
   const [executorState, setExecutorState] = useState<ExecutorState>({
     type: 'loading',
   });
@@ -81,13 +79,6 @@ export function ExecutorProvider({ children }: { children: ReactNode }) {
       setExecutorClientRef(await executorClientRef.current.restartWorker());
     }
   };
-
-  // TMP for transition period: mark immediately as ready if using SSE
-  useEffect(() => {
-    if (metadata.executionMode == 'sse' && executorState.type === 'loading') {
-      setExecutorState({ type: 'available' });
-    }
-  }, [metadata, executorState]);
 
   useEffect(() => {
     if (

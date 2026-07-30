@@ -25,11 +25,6 @@ export type FailedExecutionResponse = {
   stderr: string;
 };
 
-export type LegacyServerSideExecutionFailureResponse = {
-  type: 'sse-failure';
-  error: 'time-limit-exceeded' | 'output-limit-exceeded' | 'network-error';
-};
-
 export function isExecutionNominal(
   res: ExecutionResponse | undefined,
 ): res is NominalExecutionResponse {

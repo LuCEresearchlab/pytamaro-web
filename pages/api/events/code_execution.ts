@@ -18,8 +18,7 @@ export default async function handler(
     executionUUID,
     clientSideExecutionTag,
   } = req.body;
-  const tag = clientSideExecutionTag ?? process.env.GLOT_IMAGE_TAG;
-  if (tag === undefined) {
+  if (clientSideExecutionTag === undefined) {
     res.status(500).send({});
     return;
   }
@@ -29,7 +28,7 @@ export default async function handler(
     sources,
     initialSources,
     activityVariant,
-    tag,
+    clientSideExecutionTag,
     requestedCellSequenceNumber,
     toolboxFunctions,
     extraPythonFiles,

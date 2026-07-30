@@ -178,7 +178,6 @@ Note: since `isolatedModules` is set, the file should contain some import or exp
 <details>
 <summary>Expand</summary>
 
-- Set up an instance of `glot` (see the [pytamaro-glot-docker](https://github.com/LuCEresearchlab/pytamaro-glot-docker) repository).
 - Create an appropriate `.env.production` in the root folder
 - Use `docker compose` to build and start the containers. See how it is currently done in the [luce-server](https://github.com/LuCEresearchlab/luce-server) repository.
 </details>

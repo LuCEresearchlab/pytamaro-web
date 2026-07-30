@@ -10,7 +10,6 @@ import {
 } from 'react';
 import useSessionStorageState from 'use-session-storage-state';
 import { OutputAreaRef } from '../components/input_output/OutputArea';
-import { FailedExecution } from '../pages/api/execute';
 import logAnalyticsEvent, { AnalyticsEventName } from './analyticsEvent';
 import {
   ExecutionResponse,
@@ -19,7 +18,6 @@ import {
 } from './execution/codeExecution';
 import { ExecutorContext } from './execution/executorContext';
 import { CLIENT_SIDE_EXECUTION_TAG } from './execution/versions';
-import { executeServerSide } from './legacyServerSideExecution';
 import {
   CodeCellExecutionState,
   CodeCellState,
@@ -309,10 +307,7 @@ export function useActivity(
       extraPythonFiles,
       liveAnalysis: metadata.liveAnalysis,
       executionUUID,
-      clientSideExecutionTag:
-        metadata.executionMode === 'cse'
-          ? CLIENT_SIDE_EXECUTION_TAG
-          : undefined,
+      clientSideExecutionTag: CLIENT_SIDE_EXECUTION_TAG,
     });
   };
 
@@ -359,68 +354,6 @@ export function useActivity(
       }
       activeCodeCell = nowActive;
     };
-
-    // Legacy code path for transition period
-    if (metadata.executionMode === 'sse') {
-      const setLastCodeCellResponse = (response: ExecutionResponse) => {
-        executionFinished(activeCodeCell, response);
-        postExecuteSingleCell(activeCodeCell, response);
-      };
-      const onRemoteFailure = (response: FailedExecution) => {
-        const errorMessage =
-          response.type === 'time-limit-exceeded'
-            ? 'Execution time limit exceeded'
-            : response.type === 'output-limit-exceeded'
-              ? 'Output size limit exceeded'
-              : 'Network error';
-        const execResponse: ExecutionResponse = {
-          type: 'error',
-          completed: true,
-          stdout: '',
-          stderr: errorMessage,
-        };
-        setCodeExecutionStates((currentCodeExecutionStates) =>
-          produce(currentCodeExecutionStates, (draft) => {
-            for (let i = 0; i <= idx; i += 1) {
-              draft[i].outputSynced = false;
-              draft[i].executionUUID = 'server-side-execution';
-              draft[i].executionResponse = {
-                type: 'error',
-                completed: true,
-                stdout: '',
-                stderr: '',
-              };
-            }
-          }),
-        );
-        setLastCodeCellResponse(execResponse);
-      };
-      setCodeExecutionStates((currentCodeExecutionStates) =>
-        produce(currentCodeExecutionStates, (draft) => {
-          for (let i = 0; i <= idx; i += 1) {
-            draft[i].outputSynced = false;
-            draft[i].executionUUID = 'server-side-execution';
-            draft[i].executionResponse = {
-              type: 'success',
-              completed: false,
-              stdout: '',
-              stderr: '',
-            };
-          }
-        }),
-      );
-      executeServerSide(
-        sources,
-        idx,
-        toolboxFunctions,
-        extraPythonFiles,
-        newPartialExecutionResult,
-        onActiveCellChange,
-        setLastCodeCellResponse,
-        onRemoteFailure,
-      );
-      return;
-    }
 
     const executionMetadata = {
       executionUUID,

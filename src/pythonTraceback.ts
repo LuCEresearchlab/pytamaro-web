@@ -90,12 +90,6 @@ function nicerTraceback(traceback: string) {
   const hidePyodideBase = (s: string) =>
     s.replace(pyodideBaseTracebackEntriesRegex, '');
 
-  const hideGlotBase = (s: string) =>
-    s.replace(
-      /^ {2}File "\/home\/glot\/driver.py", line \d+, in \S+\n.*\n(?:\s*~+\^+\s*\n)?/gm,
-      '',
-    );
-
   // Hide pyodide run folder
   const hidePyodideRunFolder = (s: string) =>
     s.replace(/\/run\/py\/(.*)/g, '$1');
@@ -103,9 +97,6 @@ function nicerTraceback(traceback: string) {
   // Shorten library paths
   const shortenLibraryPaths = (s: string) =>
     s.replaceAll(`/lib/python${PYTHON_VERSION}/site-packages/`, LIBRARY_PATH);
-
-  const shortenGlotLibraryPaths = (s: string) =>
-    s.replaceAll('/usr/local/lib/', LIBRARY_PATH);
 
   // Replace the word ellipsis within backticks or quotes with three dots,
   // to avoid confusion with the ellipse function and to match the source code.
@@ -119,11 +110,9 @@ function nicerTraceback(traceback: string) {
   return [
     removePythonErrorColon,
     hideDriver,
-    hideGlotBase,
     hidePyodideBase,
     hidePyodideRunFolder,
     shortenLibraryPaths,
-    shortenGlotLibraryPaths,
     replaceEllipsis,
     addKeyboardInterruptMessage,
   ].reduce((acc, fn) => fn(acc), traceback);

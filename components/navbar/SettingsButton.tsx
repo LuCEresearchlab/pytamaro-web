@@ -1,6 +1,4 @@
 import {
-  AutoAwesome,
-  History,
   PlaylistAddCheck,
   Report,
   ReportOff,
@@ -29,7 +27,7 @@ import PlatformLanguageControl from './PlatformLanguageControl';
 export default function SettingsButton() {
   const { t } = useLocalTranslation();
   const { metadata, setMetadata } = useLocalProfile();
-  const { liveAnalysis, wideEditor, executionMode } = metadata;
+  const { liveAnalysis, wideEditor } = metadata;
 
   return (
     <Popover placement='bottom'>
@@ -113,44 +111,6 @@ export default function SettingsButton() {
                 >
                   {t('learnMoreAnalysis')}
                 </Link>
-              </Typography>
-            </Box>
-            <Box>
-              <Typography sx={{ ...theme.typography.button }} gutterBottom>
-                {t('executionMode.title')}
-              </Typography>
-              <ToggleButtonGroup
-                color='primary'
-                value={executionMode}
-                exclusive
-                onChange={(_, newValue) => {
-                  if (newValue !== null) {
-                    setMetadata((prevMetadata) => ({
-                      ...prevMetadata,
-                      executionMode: newValue,
-                    }));
-                  }
-                }}
-                size='small'
-                fullWidth
-              >
-                <ToggleButton value='cse'>
-                  <AutoAwesome sx={{ mr: 1 }} /> {t('executionMode.cse')}
-                </ToggleButton>
-                <ToggleButton value='sse'>
-                  <History sx={{ mr: 1 }} /> {t('executionMode.sse')}
-                </ToggleButton>
-              </ToggleButtonGroup>
-              <Typography
-                variant='body2'
-                textAlign={'center'}
-                mt={1}
-                maxWidth={'60ch'}
-                sx={{
-                  textWrapStyle: 'pretty',
-                }}
-              >
-                {t('executionMode.info')}
               </Typography>
             </Box>
           </Stack>
