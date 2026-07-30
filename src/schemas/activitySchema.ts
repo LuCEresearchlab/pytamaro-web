@@ -39,7 +39,7 @@ export interface PlatformConfiguration {
 }
 
 export interface PythonFile {
-  name: string; // 'name' to be consistent with glot, but it is potentially a path
+  name: string; // 'name' to be consistent with glot (back to when it was used for execution), but it is potentially a path
   content: string;
 }
 
