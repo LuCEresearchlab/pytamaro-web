@@ -20,18 +20,19 @@ serde = { version = "1.0", features = ["derive"] }
 serde-wasm-bindgen = "0.6.5"
 
 # From https://github.com/astral-sh/ruff/blob/main/crates/ty_wasm/Cargo.toml and https://github.com/astral-sh/ruff/blob/main/Cargo.toml
-ruff_python_ast = { git = "https://github.com/astral-sh/ruff", tag = "0.15.19" }
-ruff_python_parser = { git = "https://github.com/astral-sh/ruff", tag = "0.15.19" }
-ruff_text_size = { git = "https://github.com/astral-sh/ruff", tag = "0.15.19" }
-ruff_source_file = { git = "https://github.com/astral-sh/ruff", tag = "0.15.19" }
-ruff_notebook = { git = "https://github.com/astral-sh/ruff", tag = "0.15.19" }
-ruff_db = { git = "https://github.com/astral-sh/ruff", tag = "0.15.19", default-features = false, features = [] }
-ty_ide = { git = "https://github.com/astral-sh/ruff", tag = "0.15.19" }
-ty_project = { git = "https://github.com/astral-sh/ruff", tag = "0.15.19", default-features = false, features = [
+ruff_python_ast = { git = "https://github.com/astral-sh/ruff", tag = "0.16.1" }
+ruff_python_parser = { git = "https://github.com/astral-sh/ruff", tag = "0.16.1" }
+ruff_text_size = { git = "https://github.com/astral-sh/ruff", tag = "0.16.1" }
+ruff_source_file = { git = "https://github.com/astral-sh/ruff", tag = "0.16.1" }
+ruff_ranged_value = { git = "https://github.com/astral-sh/ruff", tag = "0.16.1" }
+ruff_notebook = { git = "https://github.com/astral-sh/ruff", tag = "0.16.1" }
+ruff_db = { git = "https://github.com/astral-sh/ruff", tag = "0.16.1", default-features = false, features = [] }
+ty_ide = { git = "https://github.com/astral-sh/ruff", tag = "0.16.1" }
+ty_project = { git = "https://github.com/astral-sh/ruff", tag = "0.16.1", default-features = false, features = [
     "deflate",
 ] }
-ty_python_core = { git = "https://github.com/astral-sh/ruff", tag = "0.15.19" }
-ty_python_semantic = { git = "https://github.com/astral-sh/ruff", tag = "0.15.19" }
+ty_python_core = { git = "https://github.com/astral-sh/ruff", tag = "0.16.1" }
+ty_python_semantic = { git = "https://github.com/astral-sh/ruff", tag = "0.16.1" }
 
 js-sys = { version = "0.3.77" }
 zip = {version = "8.6.0", default-features = false, features = ["deflate"] }

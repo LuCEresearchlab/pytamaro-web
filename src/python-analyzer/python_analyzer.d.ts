@@ -36,20 +36,6 @@ export class Diagnostic {
     toRange(workspace: Workspace): Range | undefined;
 }
 
-export class DocumentHighlight {
-    private constructor();
-    free(): void;
-    [Symbol.dispose](): void;
-    readonly kind: DocumentHighlightKind;
-    readonly range: Range;
-}
-
-export enum DocumentHighlightKind {
-    Text = 1,
-    Read = 2,
-    Write = 3,
-}
-
 export class FileHandle {
     private constructor();
     /**
@@ -64,14 +50,6 @@ export class FileHandle {
     [Symbol.dispose](): void;
     path(): string;
     toString(): string;
-}
-
-export class Hover {
-    private constructor();
-    free(): void;
-    [Symbol.dispose](): void;
-    markdown: string;
-    range: Range;
 }
 
 export class LocationLink {
@@ -110,15 +88,6 @@ export enum LogLevel {
     Info = 2,
     Warn = 3,
     Error = 4,
-}
-
-export class ParameterInformation {
-    private constructor();
-    free(): void;
-    [Symbol.dispose](): void;
-    get documentation(): string | undefined;
-    set documentation(value: string | null | undefined);
-    label: string;
 }
 
 export class ParseError {
@@ -232,27 +201,6 @@ export enum Severity {
     Warning = 1,
     Error = 2,
     Fatal = 3,
-}
-
-export class SignatureHelp {
-    private constructor();
-    free(): void;
-    [Symbol.dispose](): void;
-    get active_signature(): number | undefined;
-    set active_signature(value: number | null | undefined);
-    signatures: SignatureInformation[];
-}
-
-export class SignatureInformation {
-    private constructor();
-    free(): void;
-    [Symbol.dispose](): void;
-    get active_parameter(): number | undefined;
-    set active_parameter(value: number | null | undefined);
-    get documentation(): string | undefined;
-    set documentation(value: string | null | undefined);
-    label: string;
-    parameters: ParameterInformation[];
 }
 
 export class TextRange {

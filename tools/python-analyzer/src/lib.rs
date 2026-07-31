@@ -17,11 +17,11 @@ use ruff_db::system::{
     SystemVirtualPath, WhichError, WhichResult, WritableSystem,
 };
 use ruff_notebook::Notebook;
+use ruff_ranged_value::ValueSource;
 use ruff_source_file::{LineIndex, OneIndexed, SourceLocation};
 use ruff_text_size::{Ranged, TextSize};
 use ty_ide::{NavigationTarget, NavigationTargets, RangedValue, goto_declaration};
 use ty_project::metadata::options::Options;
-use ty_project::metadata::value::ValueSource;
 use ty_project::watch::{ChangeEvent, ChangedKind, CreatedKind, DeletedKind};
 use ty_project::{CheckMode, ProjectMetadata};
 use ty_project::{Db, ProjectDatabase};
@@ -278,13 +278,10 @@ pub fn install_pytamaro(workspace: &mut Workspace) -> Result<(), Error> {
             // Use the path inside the wheel (e.g., "pytamaro/primitives.py")
             // web_sys::console::log_1(&JsValue::from(format!("Writing file: {name} at index {i}")));
             let path = write_file(&workspace, &name, &contents)?;
-            workspace.db.apply_changes(
-                &[ChangeEvent::Created {
-                    path: path.clone(),
-                    kind: CreatedKind::File,
-                }],
-                None,
-            );
+            workspace.db.apply_changes(&[ChangeEvent::Created {
+                path: path.clone(),
+                kind: CreatedKind::File,
+            }]);
         }
     }
 
@@ -749,13 +746,14 @@ impl Workspace {
             &FallibleStrategy,
         )
         .map_err(into_error)?;
-
-        let (program_settings, program_settings_diagnostics) = project
+        
+        let merged_options = project.to_merged_options();
+        let (program_settings, program_settings_diagnostics) = merged_options
             .to_program_settings(&self.system, self.db.vendored(), &FallibleStrategy)
             .map_err(into_error)?;
         Program::get(&self.db).update_from_settings(&mut self.db, program_settings);
 
-        let (settings, settings_diagnostics) = project
+        let (settings, settings_diagnostics) = merged_options
             .to_settings(&self.db, &FallibleStrategy)
             .map_err(into_error)?;
 
@@ -779,13 +777,10 @@ impl Workspace {
             .write_file_all(&path, contents)
             .map_err(into_error)?;
 
-        self.db.apply_changes(
-            &[ChangeEvent::Created {
-                path: path.clone(),
-                kind: CreatedKind::File,
-            }],
-            None,
-        );
+        self.db.apply_changes(&[ChangeEvent::Created {
+            path: path.clone(),
+            kind: CreatedKind::File,
+        }]);
 
         let file = system_path_to_file(&self.db, &path).expect("File to exist");
 
@@ -812,19 +807,16 @@ impl Workspace {
             .write_file(system_path, contents)
             .map_err(into_error)?;
 
-        self.db.apply_changes(
-            &[
-                ChangeEvent::Changed {
-                    path: system_path.to_path_buf(),
-                    kind: ChangedKind::FileContent,
-                },
-                ChangeEvent::Changed {
-                    path: system_path.to_path_buf(),
-                    kind: ChangedKind::FileMetadata,
-                },
-            ],
-            None,
-        );
+        self.db.apply_changes(&[
+            ChangeEvent::Changed {
+                path: system_path.to_path_buf(),
+                kind: ChangedKind::FileContent,
+            },
+            ChangeEvent::Changed {
+                path: system_path.to_path_buf(),
+                kind: ChangedKind::FileMetadata,
+            },
+        ]);
 
         Ok(())
     }
@@ -846,13 +838,10 @@ impl Workspace {
                 .remove_file(system_path)
                 .map_err(into_error)?;
 
-            self.db.apply_changes(
-                &[ChangeEvent::Deleted {
-                    path: system_path.to_path_buf(),
-                    kind: DeletedKind::File,
-                }],
-                None,
-            );
+            self.db.apply_changes(&[ChangeEvent::Deleted {
+                path: system_path.to_path_buf(),
+                kind: DeletedKind::File,
+            }]);
         }
 
         Ok(())
@@ -1689,6 +1678,7 @@ fn location_link_from_navigation_target(
     }
 }
 
+/*
 #[wasm_bindgen]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Hover {
@@ -1698,7 +1688,6 @@ pub struct Hover {
     pub range: Range,
 }
 
-/*
 #[wasm_bindgen]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Completion {
@@ -1834,6 +1823,7 @@ pub struct SemanticToken {
     pub range: Range,
 }
 
+/*
 #[wasm_bindgen]
 #[derive(Clone)]
 pub struct SignatureHelp {
@@ -1888,7 +1878,7 @@ impl From<ty_ide::ReferenceKind> for DocumentHighlightKind {
             ty_ide::ReferenceKind::Other => DocumentHighlightKind::Text,
         }
     }
-}
+} */
 
 #[wasm_bindgen]
 impl SemanticToken {
