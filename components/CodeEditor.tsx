@@ -12,7 +12,7 @@ import {
   pytamaroImportCompletionProvider,
   toolboxImportCompletionProvider,
 } from '../src/monacoSuggestions';
-import { PythonName } from '../src/python-analyzer/python_analyzer';
+import { PythonName, TextRange } from '../src/python-analyzer/python_analyzer';
 import { addErrorAnnotationsFromExecution } from '../src/pythonTraceback';
 import scrollToAnchor from '../src/scrollToAnchor';
 import theme from '../src/theme';
@@ -50,6 +50,8 @@ export default function CodeEditor({
   pythonAnalyzer,
   cellIdx,
   setHoveredName = undefined,
+  minimalMode = false,
+  highlightEvalResult = false,
 }: {
   initialSource: string;
   currentSource: string;
@@ -64,6 +66,9 @@ export default function CodeEditor({
   pythonAnalyzer: PythonAnalyzer | null;
   cellIdx: number;
   setHoveredName?: (name: PythonName | null) => void;
+  minimalMode?: boolean;
+  evalExprRange?: TextRange | undefined;
+  highlightEvalResult?: boolean;
 }) {
   const { list } = useLocalToolbox();
   const { metadata } = useLocalProfile();
@@ -86,6 +91,8 @@ export default function CodeEditor({
     useRef<EditorNamespace.IEditorDecorationsCollection | null>(null);
   const hoveredStaticErrorDecorationRef =
     useRef<EditorNamespace.IEditorDecorationsCollection>(null);
+  const evalResultDecorationRef =
+    useRef<EditorNamespace.IEditorDecorationsCollection | null>(null);
   const customDiagnosticsRef = useRef<CustomDiagnostic[]>([]);
   const shownDiagnosticRef = useRef<CustomDiagnostic | null>(null);
 
@@ -119,6 +126,10 @@ export default function CodeEditor({
           // (re-)scroll the anchor element into view.
           firstHeightUpdate = false;
           scrollToAnchor();
+          if (minimalMode) {
+            // focus the editor to make it recognizeable as such
+            editor.focus();
+          }
         }
       }
     };
@@ -161,6 +172,9 @@ export default function CodeEditor({
       // Remove possible collections of decorations
       runtimeDecorationsCollectionRef.current?.clear();
       runtimeDecorationsCollectionRef.current = null;
+      // Remove possible eval result decorations
+      evalResultDecorationRef.current?.clear();
+      evalResultDecorationRef.current = null;
       // Remove static error annotations
       clearStaticAnnotations();
     }
@@ -261,6 +275,34 @@ export default function CodeEditor({
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monacoInstance, pythonAnalyzer, toolboxFunctionsStatus]);
+
+  // Add last eval diagnostic / decoration, if any
+  useEffect(() => {
+    if (monacoInstance && editorInstance) {
+      if (!highlightEvalResult) {
+        return;
+      }
+      const decoration = pythonAnalyzer?.evalExprDiagnostics(
+        monacoInstance,
+        editorInstance,
+        cellIdx,
+      );
+      if (decoration) {
+        evalResultDecorationRef.current?.clear();
+        evalResultDecorationRef.current =
+          editorInstance.createDecorationsCollection([decoration]);
+        return () => {
+          evalResultDecorationRef.current?.clear();
+        };
+      }
+    }
+  }, [
+    monacoInstance,
+    editorInstance,
+    pythonAnalyzer,
+    cellIdx,
+    highlightEvalResult,
+  ]);
 
   useEffect(() => {
     const handleMouseMoved = (e: EditorNamespace.IEditorMouseEvent) => {
@@ -498,8 +540,12 @@ export default function CodeEditor({
         options={{
           fontFamily: theme.pytamaro.monospaceFontFamily,
           fontSize: theme.pytamaro.monospaceFontSizeRatio * 16,
-          lineNumbers: (n) => (n + firstLineNumber - 1).toString(10),
-          lineNumbersMinChars: 2,
+          lineNumbers: minimalMode
+            ? 'off'
+            : (n) => (n + firstLineNumber - 1).toString(10),
+          lineNumbersMinChars: minimalMode ? 0 : 2,
+          folding: minimalMode ? false : undefined,
+          lineDecorationsWidth: minimalMode ? 0 : undefined,
           minimap: { enabled: false },
           renderLineHighlight: 'none',
           overviewRulerLanes: 0,

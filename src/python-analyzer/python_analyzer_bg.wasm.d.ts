@@ -12,6 +12,7 @@ export const __wbg_get_analysisresult_defined_functions: (a: number, b: number) 
 export const __wbg_get_analysisresult_ellipsis: (a: number, b: number) => void;
 export const __wbg_get_analysisresult_import_ranges: (a: number, b: number) => void;
 export const __wbg_get_analysisresult_imported_names: (a: number, b: number) => void;
+export const __wbg_get_analysisresult_last_expr_range: (a: number) => number;
 export const __wbg_get_analysisresult_parse_errors: (a: number, b: number) => void;
 export const __wbg_get_calledname_name: (a: number, b: number) => void;
 export const __wbg_get_calledname_start: (a: number) => number;
@@ -61,6 +62,7 @@ export const __wbg_set_analysisresult_defined_functions: (a: number, b: number, 
 export const __wbg_set_analysisresult_ellipsis: (a: number, b: number, c: number) => void;
 export const __wbg_set_analysisresult_import_ranges: (a: number, b: number, c: number) => void;
 export const __wbg_set_analysisresult_imported_names: (a: number, b: number, c: number) => void;
+export const __wbg_set_analysisresult_last_expr_range: (a: number, b: number) => void;
 export const __wbg_set_analysisresult_parse_errors: (a: number, b: number, c: number) => void;
 export const __wbg_set_calledname_name: (a: number, b: number, c: number) => void;
 export const __wbg_set_calledname_start: (a: number, b: number) => void;

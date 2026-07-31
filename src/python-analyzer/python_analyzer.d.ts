@@ -11,6 +11,8 @@ export class AnalysisResult {
     ellipsis: Uint32Array;
     import_ranges: TextRange[];
     imported_names: PythonName[];
+    get last_expr_range(): TextRange | undefined;
+    set last_expr_range(value: TextRange | null | undefined);
     parse_errors: ParseError[];
 }
 

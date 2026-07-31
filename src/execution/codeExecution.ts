@@ -49,12 +49,17 @@ export function isExecutionFailed(
   return res?.type === 'failure';
 }
 
+export enum PythonMode {
+  Exec = 'exec',
+  EvalLastExpr = 'eval-last-expr',
+}
+
 /**
  * !!! IMPORTANT !!!
  * Update this version at every change to the process below
  * that turns cells into files for execution.
  */
-export const CODE_EXECUTION_CELLS_TO_FILES_VERSION = 9;
+export const CODE_EXECUTION_CELLS_TO_FILES_VERSION = 10;
 
 export const DRIVER_FILE = 'driver';
 export const CELL_FILE = 'cell_';
@@ -65,7 +70,7 @@ export interface BareboneToolboxFunction {
   source: string;
 }
 
-function driverSource(num_cells: number) {
+function driverSource(num_cells: number, pythonMode: PythonMode) {
   // IMPORTANT, part 1:
   // the entire driver is wrapped in a single function so that `globals_dict`,
   // which contains the shared state between cells,
@@ -77,6 +82,13 @@ function driverSource(num_cells: number) {
   // linecache is necessary to improve the traceback (e.g., to show the source
   // code, and possibly also the caret). The hack is taken from:
   // https://github.com/pyodide/pyodide/blob/3f80192aa814a17dfee7eb20bb24da6509c22049/src/py/_pyodide/_base.py#L312
+
+  // IMPORTANT, part 3:
+  // When PythonMode is EvalLastExpr,
+  // extracting the last expression fails when the source cannot be parsed.
+  // However, we don't want to surface the exception from the ast.parse() call,
+  // because it breaks some assumptions we make when processing the traceback.
+  // When an exception occurs, the driver falls back to executing with `exec()`.
   return `
 from pathlib import Path
 from pytamaro_js_ffi import set_active_cell
@@ -84,7 +96,31 @@ from os import chdir, getcwd
 from shutil import rmtree
 from sys import stderr, stdout
 import atexit
+import ast
 import linecache
+import pytamaro
+
+def normal_exec(source_or_tree, filename, globals_dict):
+    exec(compile(source_or_tree, filename, "exec"), globals_dict)
+
+def extract_last_expr(source):
+    try:
+        tree = ast.parse(source)
+        if tree.body and isinstance(tree.body[-1], ast.Expr):
+            return ast.Module(body=tree.body[:-1]), ast.Expression(body=tree.body[-1].value)
+    except:
+      pass
+    return None, None
+  
+def print_eval_result(result):
+    if result is None:
+        return
+    print("@@@EVAL_RESULT_BEGIN@@@", end="")
+    if isinstance(result, pytamaro.Graphic):
+        pytamaro.show_graphic(result)
+    else:
+        print(result, end="")
+    print("@@@EVAL_RESULT_END@@@", end="")
 
 def main():
   try:
@@ -92,9 +128,17 @@ def main():
     def run_single_cell(name):
         filename = name + ".py"
         source = Path(filename).read_text()
-        code = compile(source, filename, "exec")
         linecache.cache[filename] = [lambda: source]
-        exec(code, globals_dict)
+        if ${pythonMode === 'eval-last-expr' ? 'True' : 'False'}:
+            stmts, last_expr = extract_last_expr(source)
+            if last_expr is not None:
+                normal_exec(stmts, filename, globals_dict)
+                result = eval(compile(last_expr, filename, "eval"), globals_dict)
+                print_eval_result(result)
+            else:
+                normal_exec(source, filename, globals_dict)
+        else:
+            normal_exec(source, filename, globals_dict)
 
     for idx in range(0, ${num_cells}):
       set_active_cell(idx)
@@ -179,6 +223,7 @@ export function cellsToFiles(
   idx: number,
   toolboxFunctions: BareboneToolboxFunction[],
   extraPythonFiles: PythonFile[],
+  pythonMode: PythonMode,
 ): RunPythonFile[] {
   let linesSoFar = 0;
   const sourceRunFiles = sources.map((content, i) => {
@@ -194,7 +239,7 @@ export function cellsToFiles(
   const files = [
     {
       name: `${DRIVER_FILE}.py`,
-      content: driverSource(idx + 1),
+      content: driverSource(idx + 1, pythonMode),
     },
     ...sourceRunFiles,
     ...toolboxFiles(toolboxFunctions),

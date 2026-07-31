@@ -1,8 +1,8 @@
 use std::vec;
 
 use python_analyzer::{
-    analyze_file, find_imported_names, init_workspace, CalledName, ParseError, PythonConstant,
-    PythonFunction, PythonFunctionArgument, PythonName, TextRange,
+    CalledName, ParseError, PythonConstant, PythonFunction, PythonFunctionArgument, PythonName,
+    TextRange, analyze_file, find_imported_names, init_workspace,
 };
 use wasm_bindgen_test::*;
 
@@ -466,4 +466,31 @@ fn test_side_effects_across_files() {
     let f = &result.defined_functions[0];
     assert_eq!(f.name, "f".to_string());
     assert_eq!(f.side_effects, true);
+}
+
+#[wasm_bindgen_test]
+fn test_last_expr_range_empty() {
+    let result = analyze("");
+    assert_eq!(result.last_expr_range, None);
+}
+
+#[wasm_bindgen_test]
+fn test_last_expr_range_single() {
+    let result = analyze("1 + 2");
+    assert_eq!(result.last_expr_range, Some(TextRange { start: 0, end: 5 }));
+}
+
+#[wasm_bindgen_test]
+fn test_last_expr_range_multiple() {
+    let result = analyze("1 + 2\n3 + 4");
+    assert_eq!(
+        result.last_expr_range,
+        Some(TextRange { start: 6, end: 11 })
+    );
+}
+
+#[wasm_bindgen_test]
+fn test_last_expr_range_end_with_stmt() {
+    let result = analyze("1 + 2\nx = 3");
+    assert_eq!(result.last_expr_range, None);
 }

@@ -14,6 +14,7 @@ import {
   isExecutionError,
   isExecutionFailed,
   isExecutionNominal,
+  PythonMode,
 } from '../src/execution/codeExecution';
 import { ExecutorContext } from '../src/execution/executorContext';
 import { CodeCellExecutionState } from '../src/localStorage/schema';
@@ -56,6 +57,9 @@ export default function CodeCell({
   extraActions = null,
   readOnly = false,
   runEnabled = true,
+  pythonMode,
+  getOutputAreaRef = () => null,
+  elevation = undefined,
 }: {
   initialSource: string;
   currentSource: string;
@@ -70,6 +74,7 @@ export default function CodeCell({
   resetCounter: number;
   pythonAnalyzer: PythonAnalyzer | null;
   cellIdx: number;
+  getOutputAreaRef?: () => OutputAreaRef | null;
   setOutputAreaRef: (
     idx: number,
     node: OutputAreaRef | null | undefined,
@@ -78,6 +83,8 @@ export default function CodeCell({
   extraActions?: React.ReactNode;
   readOnly?: boolean;
   runEnabled?: boolean;
+  pythonMode: PythonMode;
+  elevation?: number;
 }) {
   const { t } = useLocalTranslation(['common']);
   const { metadata } = useLocalProfile();
@@ -92,6 +99,8 @@ export default function CodeCell({
     (executionResponse.stdout + executionResponse.stderr).length === 0;
 
   const [isWaitingForInput, setIsWaitingForInput] = useState(false);
+
+  const [highlightEvalResult, setHighlightEvalResult] = useState(false);
 
   const analysisResult = useAnalysisResult(pythonAnalyzer, cellIdx);
 
@@ -153,6 +162,18 @@ export default function CodeCell({
     alreadyClearedPossibleIncompleteExecution,
   ]);
 
+  useEffect(() => {
+    if (
+      executionFinished &&
+      outputSynced &&
+      getOutputAreaRef()?.containsEvalResult() === true
+    ) {
+      setHighlightEvalResult(true);
+    } else {
+      setHighlightEvalResult(false);
+    }
+  }, [executionFinished, analysisResult, outputSynced, getOutputAreaRef]);
+
   const handleExecutionRequest = async () => {
     const executionRequestUUID = crypto.randomUUID();
     // Immediately notify that an execution has been requested,
@@ -211,7 +232,7 @@ export default function CodeCell({
 
   return (
     <Paper
-      elevation={readOnly ? 0 : 4}
+      elevation={elevation !== undefined ? elevation : readOnly ? 0 : 4}
       className='pytamaro-web-code-cell anchor'
     >
       {!readOnly && (
@@ -239,6 +260,8 @@ export default function CodeCell({
             pythonAnalyzer={pythonAnalyzer}
             cellIdx={cellIdx}
             setHoveredName={setHoveredName}
+            minimalMode={pythonMode === PythonMode.EvalLastExpr}
+            highlightEvalResult={highlightEvalResult}
           />
         </CardContent>
         <CardActions disableSpacing sx={{ paddingLeft: 2, display: 'flex' }}>
@@ -250,6 +273,7 @@ export default function CodeCell({
             executionFinished={executionFinished}
             executionError={executionError}
             isWaitingForInput={isWaitingForInput}
+            runCodeLabelKey={`${pythonMode === PythonMode.EvalLastExpr ? 'evaluate' : 'run'}Code`}
           />
           <Stack direction='row' sx={{ marginLeft: 'auto' }}>
             {extraActions}
@@ -282,6 +306,7 @@ export default function CodeCell({
                   dimmed={!outputSynced}
                   setOutputAreaRef={(node) => setOutputAreaRef(cellIdx, node)}
                   setIsWaitingForInput={setIsWaitingForInput}
+                  compact={pythonMode === PythonMode.EvalLastExpr}
                 />
               )}
             </StaleOutputBadge>

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { PythonMode } from '../src/execution/codeExecution';
 import { ToolboxFunction } from '../src/localStorage/schema';
 import {
   ActivityVariant,
@@ -30,6 +31,8 @@ export default function SolitaryCodeCell({
   onExecutionRequest = () => {},
   extraActions = null,
   extraToolboxFunctions = [],
+  pythonMode = PythonMode.Exec,
+  elevation = undefined,
 }: {
   activity: ReturnType<typeof useActivity>;
   activityVariant: ActivityVariant;
@@ -42,6 +45,8 @@ export default function SolitaryCodeCell({
   onExecutionRequest?: () => void;
   extraActions?: React.ReactNode;
   extraToolboxFunctions?: ToolboxFunction[];
+  pythonMode?: PythonMode;
+  elevation?: number;
 }) {
   const outputAreaRef = useRef<OutputAreaRef>(null);
   const getOutputAreaRef = () => outputAreaRef.current;
@@ -79,10 +84,10 @@ export default function SolitaryCodeCell({
       }}
       onExecutionRequested={(executionUUID) => {
         onExecutionRequest();
-        return handleExecute(0, executionUUID, getOutputAreaRef);
+        return handleExecute(0, executionUUID, pythonMode, getOutputAreaRef);
       }}
       onExecutionRequestEvent={(executionUUID) =>
-        handleExecutionRequestEvent(0, executionUUID)
+        handleExecutionRequestEvent(0, executionUUID, pythonMode)
       }
       firstLineNumber={1}
       activityVariant={activityVariant}
@@ -104,7 +109,10 @@ export default function SolitaryCodeCell({
       resetCounter={resetCounter}
       pythonAnalyzer={pythonAnalyzer}
       cellIdx={0}
+      getOutputAreaRef={getOutputAreaRef}
       setOutputAreaRef={(_, node) => setOutputAreaRef(node)}
+      pythonMode={pythonMode}
+      elevation={elevation}
     />
   );
 }

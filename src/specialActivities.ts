@@ -8,9 +8,9 @@ export const toolboxActivityVariant = (functionName: string) => ({
   version: '1',
 });
 
-export const rapidPlaygroundActivityVariant = {
+export const rapidEvaluatorActivityVariant = {
   authorSlug: 'luce',
-  activitySlug: 'rapid-playground',
+  activitySlug: 'rapid-evaluator',
   language: 'en',
   version: 'v1',
 };
@@ -62,7 +62,7 @@ export function isToolboxActivity(variant: ActivityVariant) {
 
 export function isSpecialActivity(variant: ActivityVariant) {
   const otherSpecialActivities = [
-    rapidPlaygroundActivityVariant,
+    rapidEvaluatorActivityVariant,
     toolboxDemoActivityVariant,
     printableGraphicActivityVariant,
     tamaroCardsPageActivityVariant,

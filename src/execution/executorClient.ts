@@ -5,7 +5,7 @@ import logAnalyticsEvent, { AnalyticsEventName } from '../analyticsEvent';
 import { ToolboxFunction } from '../localStorage/schema';
 import { PythonFile } from '../schemas/activitySchema';
 import { EventName, storeDbEvent } from '../storeDbEvent';
-import { cellsToFiles, ExecutionResponse } from './codeExecution';
+import { cellsToFiles, ExecutionResponse, PythonMode } from './codeExecution';
 import { ExecutorDelegate } from './executorDelegate';
 import { Sized } from './graphics/spec';
 import {
@@ -177,6 +177,7 @@ export class ExecutorClient {
     toolboxFunctions: ToolboxFunction[],
     extraPythonFiles: PythonFile[],
     executionMetadata: ExecutionMetadata,
+    pythonMode: PythonMode,
     updateExecutionResult: (
       idx: number,
       response: ExecutionResponse,
@@ -192,6 +193,7 @@ export class ExecutorClient {
       idx,
       toolboxFunctions,
       extraPythonFiles,
+      pythonMode,
     );
 
     const execution = async () => {

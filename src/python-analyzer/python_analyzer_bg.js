@@ -112,6 +112,13 @@ export class AnalysisResult {
         }
     }
     /**
+     * @returns {TextRange | undefined}
+     */
+    get last_expr_range() {
+        const ret = wasm.__wbg_get_analysisresult_last_expr_range(this.__wbg_ptr);
+        return ret === 0 ? undefined : TextRange.__wrap(ret);
+    }
+    /**
      * @returns {ParseError[]}
      */
     get parse_errors() {
@@ -174,6 +181,17 @@ export class AnalysisResult {
         const ptr0 = passArrayJsValueToWasm0(arg0, wasm.__wbindgen_export);
         const len0 = WASM_VECTOR_LEN;
         wasm.__wbg_set_analysisresult_imported_names(this.__wbg_ptr, ptr0, len0);
+    }
+    /**
+     * @param {TextRange | null} [arg0]
+     */
+    set last_expr_range(arg0) {
+        let ptr0 = 0;
+        if (!isLikeNone(arg0)) {
+            _assertClass(arg0, TextRange);
+            ptr0 = arg0.__destroy_into_raw();
+        }
+        wasm.__wbg_set_analysisresult_last_expr_range(this.__wbg_ptr, ptr0);
     }
     /**
      * @param {ParseError[]} arg0

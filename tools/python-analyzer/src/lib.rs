@@ -235,6 +235,7 @@ pub struct AnalysisResult {
     pub ellipsis: Vec<u32>,
     pub import_ranges: Vec<TextRange>,
     pub parse_errors: Vec<ParseError>,
+    pub last_expr_range: Option<TextRange>,
 }
 
 fn write_file(
@@ -645,6 +646,13 @@ pub fn analyze_file(workspace: &mut Workspace, file_id: &FileHandle) -> Analysis
         called_names: expressions_info.called_names,
         ellipsis: expressions_info.ellipsis,
         parse_errors,
+        last_expr_range: stmts.last().and_then(|stmt| {
+            if let Stmt::Expr(expr_stmt) = stmt {
+                Some(TextRange::from(expr_stmt.range))
+            } else {
+                None
+            }
+        }),
     }
 }
 

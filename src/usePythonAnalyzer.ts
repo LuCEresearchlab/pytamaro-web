@@ -324,6 +324,33 @@ export class PythonAnalyzer {
     return this.sources.slice(0, cellIdx + 1);
   }
 
+  evalExprDiagnostics(
+    monacoInstance: Monaco,
+    editorInstance: editor.IStandaloneCodeEditor,
+    cellIdx: number,
+  ): editor.IModelDeltaDecoration | null {
+    const analysisResult = this.getAnalysisResult(cellIdx);
+    const model = editorInstance.getModel();
+    if (!analysisResult || !analysisResult.last_expr_range || !model) {
+      return null;
+    }
+    const { start, end } = analysisResult.last_expr_range;
+    const startPosition = model.getPositionAt(start);
+    const endPosition = model.getPositionAt(end);
+    return {
+      range: new monacoInstance.Range(
+        startPosition.lineNumber,
+        startPosition.column,
+        endPosition.lineNumber,
+        endPosition.column,
+      ),
+      options: {
+        className: 'eval-result-code-highlight',
+        isWholeLine: false,
+      },
+    };
+  }
+
   private emptyRange(range: TyRange): boolean {
     return (
       range.start.line === range.end.line &&

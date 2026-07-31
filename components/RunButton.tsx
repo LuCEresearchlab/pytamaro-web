@@ -84,6 +84,7 @@ export default function RunButton({
   executionFinished,
   executionError,
   isWaitingForInput,
+  runCodeLabelKey,
 }: {
   enabled: boolean;
   onExecutionRequested: () => Promise<void>;
@@ -92,6 +93,7 @@ export default function RunButton({
   executionFinished: boolean;
   executionError: boolean;
   isWaitingForInput: boolean;
+  runCodeLabelKey: string;
 }) {
   const { t } = useLocalTranslation(['common']);
   const { executorState, interruptExecution } = useContext(ExecutorContext);
@@ -107,7 +109,7 @@ export default function RunButton({
           undefined;
 
   const stopLabel = t('stopExecution');
-  const runLabel = t('runCode');
+  const runLabel = t(runCodeLabelKey);
 
   return (
     <Stack direction='row' spacing={2} alignItems='center'>

@@ -13,6 +13,7 @@ import { OutputAreaRef } from '../components/input_output/OutputArea';
 import logAnalyticsEvent, { AnalyticsEventName } from './analyticsEvent';
 import {
   ExecutionResponse,
+  PythonMode,
   importedToolboxNames,
   isExecutionNominal,
 } from './execution/codeExecution';
@@ -292,6 +293,7 @@ export function useActivity(
   const handleExecutionRequestEvent = async (
     idx: number,
     executionUUID: string,
+    pythonMode: PythonMode,
   ) => {
     const sources = sourcesUpTo(idx);
     const toolboxFunctions = await retrieveToolboxSources(idx, sources);
@@ -307,6 +309,7 @@ export function useActivity(
       extraPythonFiles,
       liveAnalysis: metadata.liveAnalysis,
       executionUUID,
+      pythonMode,
       clientSideExecutionTag: CLIENT_SIDE_EXECUTION_TAG,
     });
   };
@@ -314,6 +317,7 @@ export function useActivity(
   const handleExecute = async (
     idx: number,
     executionUUID: string,
+    pythonMode: PythonMode,
     getOutputRef: (execIdx: number) => OutputAreaRef | null,
   ) => {
     if (executorState.type === 'loading') {
@@ -366,6 +370,7 @@ export function useActivity(
       toolboxFunctions,
       extraPythonFiles,
       executionMetadata,
+      pythonMode,
       newPartialExecutionResult,
       onActiveCellChange,
       getOutputRef,

@@ -3,15 +3,15 @@ import { IconButton, Paper, Tooltip } from '@mui/material';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import theme from '../../src/theme';
 import { Popover, PopoverContent, PopoverTrigger } from '../Popover';
-import RapidPlayground from '../RapidPlayground';
+import RapidEvaluator from '../RapidEvaluator';
 
-export default function RapidPlaygroundButton() {
+export default function RapidEvaluatorButton() {
   const { t } = useLocalTranslation(['common']);
 
   return (
     <Popover placement='bottom'>
       <PopoverTrigger>
-        <Tooltip arrow title={t('rapidPlayground')}>
+        <Tooltip arrow title={t('rapidEvaluator')}>
           <div>
             <IconButton sx={{ color: theme.palette.text.primary }}>
               <Code />
@@ -24,7 +24,7 @@ export default function RapidPlaygroundButton() {
           sx={{ minWidth: '80ch', maxWidth: '100ch', marginRight: 2 }}
           elevation={0}
         >
-          <RapidPlayground />
+          <RapidEvaluator />
         </Paper>
       </PopoverContent>
     </Popover>

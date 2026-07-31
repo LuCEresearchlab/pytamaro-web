@@ -23,7 +23,7 @@ import {
 import ToolboxListSidebar from '../sidebar/ToolboxListSidebar';
 import FeedbackButton from './FeedbackButton';
 import NotificationsButton from './NotificationsButton';
-import RapidPlaygroundButton from './RapidPlaygroundButton';
+import RapidEvaluatorButton from './RapidEvaluatorButton';
 import SettingsButton from './SettingsButton';
 
 const navItems = [
@@ -187,7 +187,7 @@ export default function NavigationBar({
           {children}
           {!home && (
             <>
-              <RapidPlaygroundButton />
+              <RapidEvaluatorButton />
               <FeedbackButton />
               <NotificationsButton />
               <SettingsButton />

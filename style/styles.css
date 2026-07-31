@@ -92,6 +92,10 @@ pre:has(code) {
   opacity: 0.2;
 }
 
+.monaco-editor .eval-result-code-highlight {
+  border: 1px dashed var(--mui-palette-primary-main);
+}
+
 /* Nicer Markdown tables, partially inspired by https://github.com/micromark/micromark-extension-gfm-table#css */
 
 .activity-content table {

@@ -16,6 +16,7 @@ export default async function handler(
     extraPythonFiles,
     liveAnalysis,
     executionUUID,
+    pythonMode,
     clientSideExecutionTag,
   } = req.body;
   if (clientSideExecutionTag === undefined) {
@@ -34,6 +35,7 @@ export default async function handler(
     extraPythonFiles,
     liveAnalysis,
     executionUUID,
+    pythonMode,
   );
   res.status(saved ? 200 : 500).send({});
 }

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { useCallback, useContext, useEffect, useRef } from 'react';
 import { allKinds } from '../../src/documentation';
+import { PythonMode } from '../../src/execution/codeExecution';
 import { ExecutorContext } from '../../src/execution/executorContext';
 import { ExecutionMetadata } from '../../src/execution/messageTypes';
 import { JudiciousModule } from '../../src/schemas/documentation';
@@ -47,7 +48,14 @@ imports = [b for b in parsed.body if b.__class__ == ImportFrom]
 [print("IMPORT", v.module, o.name) for v in imports for o in v.names]
 `;
       configuration_timeout.current = undefined;
-      const results = await execute([code], 0, [], [], dummyExecutionMetadata)
+      const results = await execute(
+        [code],
+        0,
+        [],
+        [],
+        dummyExecutionMetadata,
+        PythonMode.Exec,
+      )
         .catch(() => undefined)
         .then((v) => {
           return v?.type === 'success' ? v.stdout : undefined;

@@ -18,7 +18,7 @@ import {
   TideNode,
   TideNodeMetadata,
 } from '../../components/tide/cards';
-import { ExecutionResponse } from '../execution/codeExecution';
+import { ExecutionResponse, PythonMode } from '../execution/codeExecution';
 import { ExecutionMetadata } from '../execution/messageTypes';
 import { ToolboxFunction } from '../localStorage/schema';
 import { PythonFile } from '../schemas/activitySchema';
@@ -48,6 +48,7 @@ let execute: (
   toolboxFunctions: ToolboxFunction[],
   extraPythonFiles: PythonFile[],
   executionMetadata: ExecutionMetadata,
+  pythonMode: PythonMode,
 ) => Promise<ExecutionResponse> = () => new Promise((_, reject) => reject());
 
 export function setExecute(
@@ -57,6 +58,7 @@ export function setExecute(
     toolboxFunctions: ToolboxFunction[],
     extraPythonFiles: PythonFile[],
     executionMetadata: ExecutionMetadata,
+    pythonMode: PythonMode,
   ) => Promise<ExecutionResponse>,
 ) {
   execute = fn;
