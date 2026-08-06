@@ -52,7 +52,9 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # `git` is required to build (to find out the current version's commit hash)
-RUN apk --no-cache add git
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends git && \
+  rm -rf /var/lib/apt/lists/*
 
 # Build Next.js application
 # If you want to speed up Docker rebuilds, you can cache the build artifacts
