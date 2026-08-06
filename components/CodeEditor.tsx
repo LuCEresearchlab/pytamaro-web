@@ -511,6 +511,7 @@ export default function CodeEditor({
             handleMouseWheel: true,
             alwaysConsumeMouseWheel: false,
           },
+          stickyScroll: { enabled: false }, // sticky scroll doesn't make sense with infinite height (there's no vertical scrolling)
           readOnly,
           'semanticHighlighting.enabled':
             liveAnalysis === LiveAnalysisStatus.SyntaxSemantics,
