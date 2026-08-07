@@ -52,9 +52,8 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # `git` is required to build (to find out the current version's commit hash)
-# `wget` is required for the healthcheck
 RUN apt-get update && \
-  apt-get install -y --no-install-recommends git wget && \
+  apt-get install -y --no-install-recommends git && \
   rm -rf /var/lib/apt/lists/*
 
 # Build Next.js application
@@ -78,6 +77,11 @@ RUN if [ -f package-lock.json ]; then \
 # ============================================
 
 FROM node:${NODE_VERSION} AS runner
+
+# `wget` is required for the healthcheck
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends wget && \
+  rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
