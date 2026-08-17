@@ -58,7 +58,6 @@ export default function CodeCell({
   readOnly = false,
   runEnabled = true,
   pythonMode,
-  getOutputAreaRef = () => null,
   elevation = undefined,
 }: {
   initialSource: string;
@@ -99,8 +98,6 @@ export default function CodeCell({
     (executionResponse.stdout + executionResponse.stderr).length === 0;
 
   const [isWaitingForInput, setIsWaitingForInput] = useState(false);
-
-  const [highlightEvalResult, setHighlightEvalResult] = useState(false);
 
   const analysisResult = useAnalysisResult(pythonAnalyzer, cellIdx);
 
@@ -161,18 +158,6 @@ export default function CodeCell({
     isHydrated,
     alreadyClearedPossibleIncompleteExecution,
   ]);
-
-  useEffect(() => {
-    if (
-      executionFinished &&
-      outputSynced &&
-      getOutputAreaRef()?.containsEvalResult() === true
-    ) {
-      setHighlightEvalResult(true);
-    } else {
-      setHighlightEvalResult(false);
-    }
-  }, [executionFinished, analysisResult, outputSynced, getOutputAreaRef]);
 
   const handleExecutionRequest = async () => {
     const executionRequestUUID = crypto.randomUUID();
@@ -260,8 +245,7 @@ export default function CodeCell({
             pythonAnalyzer={pythonAnalyzer}
             cellIdx={cellIdx}
             setHoveredName={setHoveredName}
-            minimalMode={pythonMode === PythonMode.EvalLastExpr}
-            highlightEvalResult={highlightEvalResult}
+            pythonMode={pythonMode}
           />
         </CardContent>
         <CardActions disableSpacing sx={{ paddingLeft: 2, display: 'flex' }}>

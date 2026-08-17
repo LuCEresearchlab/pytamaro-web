@@ -2,7 +2,7 @@ import Editor from '@monaco-editor/react';
 import { debounce } from 'lodash';
 import { type editor as EditorNamespace } from 'monaco-editor';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ExecutionResponse } from '../src/execution/codeExecution';
+import { ExecutionResponse, PythonMode } from '../src/execution/codeExecution';
 import { LiveAnalysisStatus } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
@@ -50,8 +50,7 @@ export default function CodeEditor({
   pythonAnalyzer,
   cellIdx,
   setHoveredName = undefined,
-  minimalMode = false,
-  highlightEvalResult = false,
+  pythonMode = PythonMode.Exec,
 }: {
   initialSource: string;
   currentSource: string;
@@ -66,13 +65,13 @@ export default function CodeEditor({
   pythonAnalyzer: PythonAnalyzer | null;
   cellIdx: number;
   setHoveredName?: (name: PythonName | null) => void;
-  minimalMode?: boolean;
+  pythonMode?: PythonMode;
   evalExprRange?: TextRange | undefined;
-  highlightEvalResult?: boolean;
 }) {
   const { list } = useLocalToolbox();
   const { metadata } = useLocalProfile();
   const { liveAnalysis } = metadata;
+  const minimalistic = pythonMode === PythonMode.EvalLastExpr;
 
   const monacoRef = useRef<MonacoForPyTamaro | null>(null);
   const editorRef = useRef<EditorNamespace.IStandaloneCodeEditor | null>(null);
@@ -126,7 +125,7 @@ export default function CodeEditor({
           // (re-)scroll the anchor element into view.
           firstHeightUpdate = false;
           scrollToAnchor();
-          if (minimalMode) {
+          if (minimalistic) {
             // focus the editor to make it recognizeable as such
             editor.focus();
           }
@@ -275,34 +274,6 @@ export default function CodeEditor({
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monacoInstance, pythonAnalyzer, toolboxFunctionsStatus]);
-
-  // Add last eval diagnostic / decoration, if any
-  useEffect(() => {
-    if (monacoInstance && editorInstance) {
-      if (!highlightEvalResult) {
-        return;
-      }
-      const decoration = pythonAnalyzer?.evalExprDiagnostics(
-        monacoInstance,
-        editorInstance,
-        cellIdx,
-      );
-      if (decoration) {
-        evalResultDecorationRef.current?.clear();
-        evalResultDecorationRef.current =
-          editorInstance.createDecorationsCollection([decoration]);
-        return () => {
-          evalResultDecorationRef.current?.clear();
-        };
-      }
-    }
-  }, [
-    monacoInstance,
-    editorInstance,
-    pythonAnalyzer,
-    cellIdx,
-    highlightEvalResult,
-  ]);
 
   useEffect(() => {
     const handleMouseMoved = (e: EditorNamespace.IEditorMouseEvent) => {
@@ -478,6 +449,18 @@ export default function CodeEditor({
       editorInstance.createDecorationsCollection(
         diagnosticsCurrentCellAdjusted,
       );
+    if (pythonMode === PythonMode.EvalLastExpr) {
+      const decoration = pythonAnalyzer?.evalExprDiagnostics(
+        monacoInstance,
+        editorInstance,
+        cellIdx,
+      );
+      if (decoration) {
+        evalResultDecorationRef.current?.clear();
+        evalResultDecorationRef.current =
+          editorInstance.createDecorationsCollection([decoration]);
+      }
+    }
   }, [
     editorInstance,
     monacoInstance,
@@ -485,6 +468,7 @@ export default function CodeEditor({
     cellIdx,
     liveAnalysis,
     firstLineNumber,
+    pythonMode,
   ]);
 
   const analyzeSource = useCallback(
@@ -540,12 +524,12 @@ export default function CodeEditor({
         options={{
           fontFamily: theme.pytamaro.monospaceFontFamily,
           fontSize: theme.pytamaro.monospaceFontSizeRatio * 16,
-          lineNumbers: minimalMode
+          lineNumbers: minimalistic
             ? 'off'
             : (n) => (n + firstLineNumber - 1).toString(10),
-          lineNumbersMinChars: minimalMode ? 0 : 2,
-          folding: minimalMode ? false : undefined,
-          lineDecorationsWidth: minimalMode ? 0 : undefined,
+          lineNumbersMinChars: minimalistic ? 0 : 2,
+          folding: minimalistic ? false : undefined,
+          lineDecorationsWidth: minimalistic ? 0 : undefined,
           minimap: { enabled: false },
           renderLineHighlight: 'none',
           overviewRulerLanes: 0,
