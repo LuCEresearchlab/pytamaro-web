@@ -1,14 +1,17 @@
 import { TipsAndUpdates } from '@mui/icons-material';
 import { Alert, Box } from '@mui/material';
 import { useContext, useEffect } from 'react';
+import { Trans } from 'react-i18next';
 import { PythonMode } from '../src/execution/codeExecution';
 import { ExecutorContext } from '../src/execution/executorContext';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { rapidEvaluatorActivityVariant } from '../src/specialActivities';
 import theme from '../src/theme';
 import SolitaryCodeCell, { emptySingleCell } from './SolitaryCodeCell';
 
 export default function RapidEvaluator() {
+  const { t } = useLocalTranslation();
   const initialCodeCells = emptySingleCell();
   const activity = useLocalActivity(
     initialCodeCells,
@@ -34,11 +37,18 @@ export default function RapidEvaluator() {
         }}
         severity='info'
       >
-        Type any Python code. The last{' '}
-        <span style={{ border: `1px dashed ${theme.palette.primary.main}` }}>
-          expression
-        </span>{' '}
-        will be <strong>evaluated</strong>.
+        <Trans
+          i18nKey='rapidEvaluatorHint'
+          t={t}
+          components={{
+            exprSpan: (
+              <span
+                style={{ border: `1px dashed ${theme.palette.primary.main}` }}
+              />
+            ),
+            strong: <strong />,
+          }}
+        />
       </Alert>
       <SolitaryCodeCell
         activity={activity}
