@@ -1,6 +1,6 @@
 import { TipsAndUpdates } from '@mui/icons-material';
 import { Alert, Box } from '@mui/material';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Trans } from 'react-i18next';
 import { PythonMode } from '../src/execution/codeExecution';
 import { ExecutorContext } from '../src/execution/executorContext';
@@ -29,6 +29,8 @@ export default function RapidEvaluator() {
 
   const { executorState } = useContext(ExecutorContext);
 
+  const [automaticEvaluation, setAutomaticEvaluation] = useState(true);
+
   return (
     <Box>
       <Alert
@@ -56,6 +58,8 @@ export default function RapidEvaluator() {
         runEnabled={executorState.type === 'available'}
         pythonMode={PythonMode.EvalLastExpr}
         elevation={0}
+        automaticEvaluation={automaticEvaluation}
+        setAutomaticEvaluation={setAutomaticEvaluation}
       />
     </Box>
   );

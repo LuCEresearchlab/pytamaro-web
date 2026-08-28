@@ -183,5 +183,6 @@
         "active": "Type your input and press Enter",
         "inactive": "User input"
     },
-    "rapidEvaluatorHint": "Type any Python code. The last <exprSpan>expression</exprSpan> will be <strong>evaluated</strong>."
+    "rapidEvaluatorHint": "Type any Python code. The last <exprSpan>expression</exprSpan> will be <strong>evaluated</strong>.",
+    "automaticEvaluation": "Automatic Evaluation"
 }

@@ -183,5 +183,6 @@
         "active": "Entrez votre saisie et appuyez sur Entrée",
         "inactive": "Saisie de l'utilisateur"
     },
-    "rapidEvaluatorHint": "Tapez n'importe quel code Python. La dernière <exprSpan>expression</exprSpan> sera <strong>évaluée</strong>."
+    "rapidEvaluatorHint": "Tapez n'importe quel code Python. La dernière <exprSpan>expression</exprSpan> sera <strong>évaluée</strong>.",
+    "automaticEvaluation": "Évaluation automatique"
 }

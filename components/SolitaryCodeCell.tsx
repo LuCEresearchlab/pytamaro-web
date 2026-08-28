@@ -33,6 +33,8 @@ export default function SolitaryCodeCell({
   extraToolboxFunctions = [],
   pythonMode = PythonMode.Exec,
   elevation = undefined,
+  automaticEvaluation = undefined,
+  setAutomaticEvaluation = undefined,
 }: {
   activity: ReturnType<typeof useActivity>;
   activityVariant: ActivityVariant;
@@ -47,6 +49,8 @@ export default function SolitaryCodeCell({
   extraToolboxFunctions?: ToolboxFunction[];
   pythonMode?: PythonMode;
   elevation?: number;
+  automaticEvaluation?: boolean;
+  setAutomaticEvaluation?: (value: boolean) => void;
 }) {
   const outputAreaRef = useRef<OutputAreaRef>(null);
   const getOutputAreaRef = () => outputAreaRef.current;
@@ -72,6 +76,20 @@ export default function SolitaryCodeCell({
     }
   });
 
+  const executeImmediately = (newSource: string) => {
+    // Here we are not calling handleExecutionRequestEvent(), we don't want to log the CodeExecution event
+    // for this automatic evaluation (it would generate far too many events).
+    // Call directly handleExecute() instead, passing the `newSource` to ensure that the latest source is executed
+    // (and not the one coming from the React state, which may have not yet been updated).
+    handleExecute(
+      0,
+      crypto.randomUUID(),
+      pythonMode,
+      getOutputAreaRef,
+      newSource,
+    );
+  };
+
   return (
     <CodeCell
       initialSource={initialCodeCells[0].source}
@@ -79,8 +97,12 @@ export default function SolitaryCodeCell({
       codeCellExecutionState={codeExecutionStates[0]}
       onResetExecutionState={() => handleResetSingleCellExecutionState(0)}
       onSourceChanged={(newSource) => {
-        handleSourceChanged(newSource, 0);
-        postSourceChange(newSource);
+        handleSourceChanged(newSource, 0, (newSource) => {
+          if (automaticEvaluation === true) {
+            executeImmediately(newSource);
+          }
+          postSourceChange(newSource);
+        });
       }}
       onExecutionRequested={(executionUUID) => {
         onExecutionRequest();
@@ -113,6 +135,8 @@ export default function SolitaryCodeCell({
       setOutputAreaRef={(_, node) => setOutputAreaRef(node)}
       pythonMode={pythonMode}
       elevation={elevation}
+      automaticEvaluation={automaticEvaluation}
+      setAutomaticEvaluation={setAutomaticEvaluation}
     />
   );
 }

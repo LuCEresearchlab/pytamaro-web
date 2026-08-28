@@ -185,5 +185,6 @@
         "active": "Scrivi l'input e premi Invio",
         "inactive": "Input utente"
     },
-    "rapidEvaluatorHint": "Scrivi qualsiasi codice Python. L'ultima <exprSpan>espressione</exprSpan> sarà <strong>valutata</strong>."
+    "rapidEvaluatorHint": "Scrivi qualsiasi codice Python. L'ultima <exprSpan>espressione</exprSpan> sarà <strong>valutata</strong>.",
+    "automaticEvaluation": "Valutazione Automatica"
 }

@@ -30,6 +30,7 @@ import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import useAnalysisResult from '../src/useAnalysisResult';
 import { useIsHydrated } from '../src/useIsHydrated';
 import { PythonAnalyzer } from '../src/usePythonAnalyzer';
+import AutomaticEvaluationSwitch from './AutomaticEvaluationSwitch';
 import { EllipsisTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
 import DocumentationStripe from './documentation/DocumentationStripe';
@@ -59,6 +60,8 @@ export default function CodeCell({
   runEnabled = true,
   pythonMode,
   elevation = undefined,
+  automaticEvaluation = undefined,
+  setAutomaticEvaluation = undefined,
 }: {
   initialSource: string;
   currentSource: string;
@@ -84,6 +87,8 @@ export default function CodeCell({
   runEnabled?: boolean;
   pythonMode: PythonMode;
   elevation?: number;
+  automaticEvaluation?: boolean;
+  setAutomaticEvaluation?: (value: boolean) => void;
 }) {
   const { t } = useLocalTranslation(['common']);
   const { metadata } = useLocalProfile();
@@ -260,6 +265,13 @@ export default function CodeCell({
             runCodeLabelKey={`${pythonMode === PythonMode.EvalLastExpr ? 'evaluate' : 'run'}Code`}
           />
           <Stack direction='row' sx={{ marginLeft: 'auto' }}>
+            {automaticEvaluation !== undefined &&
+              setAutomaticEvaluation !== undefined && (
+                <AutomaticEvaluationSwitch
+                  automaticEvaluation={automaticEvaluation}
+                  setAutomaticEvaluation={setAutomaticEvaluation}
+                />
+              )}
             {extraActions}
           </Stack>
         </CardActions>

@@ -181,5 +181,6 @@
         "active": "Geben Sie Ihre Eingabe ein und drücken Sie die Eingabetaste",
         "inactive": "Benutzereingabe"
     },
-    "rapidEvaluatorHint": "Gib beliebigen Python-Code ein. Der letzte <exprSpan>Ausdruck</exprSpan> wird <strong>ausgewertet</strong>."
+    "rapidEvaluatorHint": "Gib beliebigen Python-Code ein. Der letzte <exprSpan>Ausdruck</exprSpan> wird <strong>ausgewertet</strong>.",
+    "automaticEvaluation": "Automatische Auswertung"
 }
