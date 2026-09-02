@@ -86,7 +86,6 @@ export type OutputAreaRef = {
   getInput: () => Promise<string>;
   activateInputField: () => void;
   deactivatePossibleInputField: () => void;
-  containsEvalResult: () => boolean;
 };
 
 export function OutputArea({
@@ -136,11 +135,8 @@ export function OutputArea({
         setInputFieldActive(false);
         setIsWaitingForInput(false);
       },
-      containsEvalResult() {
-        return outputChunks.some((chunk) => chunk.isEvalResult);
-      },
     };
-  }, [setIsWaitingForInput, outputChunks]);
+  }, [setIsWaitingForInput]);
   return (
     <div className='output-area' translate='no' style={sx}>
       {outputChunks.map((outputChunk, outputIdx, chunks) => {
