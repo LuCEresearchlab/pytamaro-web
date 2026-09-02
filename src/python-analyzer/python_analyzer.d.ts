@@ -11,8 +11,8 @@ export class AnalysisResult {
     ellipsis: Uint32Array;
     import_ranges: TextRange[];
     imported_names: PythonName[];
-    get last_expr_range(): TextRange | undefined;
-    set last_expr_range(value: TextRange | null | undefined);
+    get last_expr_range(): Range | undefined;
+    set last_expr_range(value: Range | null | undefined);
     parse_errors: ParseError[];
 }
 
@@ -94,7 +94,7 @@ export class ParseError {
     private constructor();
     free(): void;
     [Symbol.dispose](): void;
-    location: TextRange;
+    location: Range;
     message: string;
 }
 

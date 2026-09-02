@@ -216,7 +216,7 @@ impl SourceOrderVisitor<'_> for ExprInfoCollector {
 #[wasm_bindgen(getter_with_clone)]
 pub struct ParseError {
     pub message: String,
-    pub location: TextRange,
+    pub location: Range,
 }
 
 #[derive(Clone, Eq, PartialEq, Debug)]
@@ -235,7 +235,7 @@ pub struct AnalysisResult {
     pub ellipsis: Vec<u32>,
     pub import_ranges: Vec<TextRange>,
     pub parse_errors: Vec<ParseError>,
-    pub last_expr_range: Option<TextRange>,
+    pub last_expr_range: Option<Range>,
 }
 
 fn write_file(
@@ -574,12 +574,18 @@ pub fn find_imported_names(source: &str) -> Vec<PythonName> {
 pub fn analyze_file(workspace: &mut Workspace, file_id: &FileHandle) -> AnalysisResult {
     let parsed = ruff_db::parsed::parsed_module(&workspace.db, file_id.file).load(&workspace.db);
     let python_source = source_text(&workspace.db, file_id.file);
+    let index = line_index(&workspace.db, file_id.file);
     let parse_errors = parsed
         .errors()
         .iter()
         .map(|e| ParseError {
             message: e.error.to_string(),
-            location: TextRange::from(e.location),
+            location: Range::from_text_range(
+                e.location,
+                &index,
+                &python_source,
+                workspace.position_encoding,
+            ),
         })
         .collect();
     let stmts = parsed.suite();
@@ -645,7 +651,12 @@ pub fn analyze_file(workspace: &mut Workspace, file_id: &FileHandle) -> Analysis
         parse_errors,
         last_expr_range: stmts.last().and_then(|stmt| {
             if let Stmt::Expr(expr_stmt) = stmt {
-                Some(TextRange::from(expr_stmt.range))
+                Some(Range::from_text_range(
+                    expr_stmt.range,
+                    &index,
+                    &python_source,
+                    workspace.position_encoding,
+                ))
             } else {
                 None
             }
@@ -746,7 +757,7 @@ impl Workspace {
             &FallibleStrategy,
         )
         .map_err(into_error)?;
-        
+
         let merged_options = project.to_merged_options();
         let (program_settings, program_settings_diagnostics) = merged_options
             .to_program_settings(&self.system, self.db.vendored(), &FallibleStrategy)

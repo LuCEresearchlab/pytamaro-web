@@ -1,8 +1,8 @@
 use std::vec;
 
 use python_analyzer::{
-    CalledName, ParseError, PythonConstant, PythonFunction, PythonFunctionArgument, PythonName,
-    TextRange, analyze_file, find_imported_names, init_workspace,
+    CalledName, ParseError, Position, PythonConstant, PythonFunction, PythonFunctionArgument,
+    PythonName, Range, TextRange, analyze_file, find_imported_names, init_workspace,
 };
 use wasm_bindgen_test::*;
 
@@ -204,11 +204,23 @@ fn test_imported_names_with_parse_errors() {
         vec![
             ParseError {
                 message: "Trailing comma not allowed".to_string(),
-                location: TextRange { start: 20, end: 21 },
+                location: Range {
+                    start: Position {
+                        line: 1,
+                        column: 21
+                    },
+                    end: Position {
+                        line: 1,
+                        column: 22
+                    }
+                },
             },
             ParseError {
                 message: "Expected an expression".to_string(),
-                location: TextRange { start: 25, end: 25 },
+                location: Range {
+                    start: Position { line: 3, column: 3 },
+                    end: Position { line: 3, column: 3 }
+                },
             },
         ]
     );
@@ -477,15 +489,35 @@ fn test_last_expr_range_empty() {
 #[wasm_bindgen_test]
 fn test_last_expr_range_single() {
     let result = analyze("1 + 2");
-    assert_eq!(result.last_expr_range, Some(TextRange { start: 0, end: 5 }));
+    assert_eq!(
+        result.last_expr_range,
+        Some(Range {
+            start: Position { line: 1, column: 1 },
+            end: Position { line: 1, column: 6 }
+        })
+    );
 }
 
+#[wasm_bindgen_test]
+fn test_last_expr_range_utf16() {
+    let result = analyze("var = 'perché'\nvar");
+    assert_eq!(
+        result.last_expr_range,
+        Some(Range {
+            start: Position { line: 2, column: 1 },
+            end: Position { line: 2, column: 4 }
+        })
+    );
+}
 #[wasm_bindgen_test]
 fn test_last_expr_range_multiple() {
     let result = analyze("1 + 2\n3 + 4");
     assert_eq!(
         result.last_expr_range,
-        Some(TextRange { start: 6, end: 11 })
+        Some(Range {
+            start: Position { line: 2, column: 1 },
+            end: Position { line: 2, column: 6 }
+        })
     );
 }
 

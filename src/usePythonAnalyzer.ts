@@ -331,18 +331,16 @@ export class PythonAnalyzer {
   ): editor.IModelDeltaDecoration | null {
     const analysisResult = this.getAnalysisResult(cellIdx);
     const model = editorInstance.getModel();
-    if (!analysisResult || !analysisResult.last_expr_range || !model) {
+    if (!model || analysisResult?.last_expr_range === undefined) {
       return null;
     }
     const { start, end } = analysisResult.last_expr_range;
-    const startPosition = model.getPositionAt(start);
-    const endPosition = model.getPositionAt(end);
     return {
       range: new monacoInstance.Range(
-        startPosition.lineNumber,
-        startPosition.column,
-        endPosition.lineNumber,
-        endPosition.column,
+        start.line,
+        start.column,
+        end.line,
+        end.column,
       ),
       options: {
         className: 'eval-result-code-highlight',

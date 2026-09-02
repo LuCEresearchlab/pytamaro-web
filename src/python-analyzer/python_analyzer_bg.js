@@ -112,11 +112,11 @@ export class AnalysisResult {
         }
     }
     /**
-     * @returns {TextRange | undefined}
+     * @returns {Range | undefined}
      */
     get last_expr_range() {
         const ret = wasm.__wbg_get_analysisresult_last_expr_range(this.__wbg_ptr);
-        return ret === 0 ? undefined : TextRange.__wrap(ret);
+        return ret === 0 ? undefined : Range.__wrap(ret);
     }
     /**
      * @returns {ParseError[]}
@@ -183,12 +183,12 @@ export class AnalysisResult {
         wasm.__wbg_set_analysisresult_imported_names(this.__wbg_ptr, ptr0, len0);
     }
     /**
-     * @param {TextRange | null} [arg0]
+     * @param {Range | null} [arg0]
      */
     set last_expr_range(arg0) {
         let ptr0 = 0;
         if (!isLikeNone(arg0)) {
-            _assertClass(arg0, TextRange);
+            _assertClass(arg0, Range);
             ptr0 = arg0.__destroy_into_raw();
         }
         wasm.__wbg_set_analysisresult_last_expr_range(this.__wbg_ptr, ptr0);
@@ -542,11 +542,11 @@ export class ParseError {
         wasm.__wbg_parseerror_free(ptr, 0);
     }
     /**
-     * @returns {TextRange}
+     * @returns {Range}
      */
     get location() {
         const ret = wasm.__wbg_get_parseerror_location(this.__wbg_ptr);
-        return TextRange.__wrap(ret);
+        return Range.__wrap(ret);
     }
     /**
      * @returns {string}
@@ -568,10 +568,10 @@ export class ParseError {
         }
     }
     /**
-     * @param {TextRange} arg0
+     * @param {Range} arg0
      */
     set location(arg0) {
-        _assertClass(arg0, TextRange);
+        _assertClass(arg0, Range);
         var ptr0 = arg0.__destroy_into_raw();
         wasm.__wbg_set_parseerror_location(this.__wbg_ptr, ptr0);
     }
