@@ -119,7 +119,7 @@ def print_eval_result(result):
     if isinstance(result, pytamaro.Graphic):
         pytamaro.show_graphic(result)
     else:
-        print(result, end="")
+        print(repr(result), end="")
     print("@@@EVAL_RESULT_END@@@", end="")
 
 def main():
