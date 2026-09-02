@@ -1,8 +1,4 @@
-import {
-  FastForward,
-  PlayDisabled,
-  SvgIconComponent,
-} from '@mui/icons-material';
+import { PlayArrow, PlayDisabled, SvgIconComponent } from '@mui/icons-material';
 import {
   Box,
   FormControl,
@@ -59,7 +55,7 @@ export default function AutomaticEvaluationSwitch({
                 <SwitchIcon Icon={PlayDisabled} backgroundColor='grey.700' />
               }
               checkedIcon={
-                <SwitchIcon Icon={FastForward} backgroundColor='primary.main' />
+                <SwitchIcon Icon={PlayArrow} backgroundColor='primary.main' />
               }
             />
           }
