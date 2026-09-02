@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { debounce } from 'lodash';
+import { useEffect, useMemo, useRef } from 'react';
 import { PythonMode } from '../src/execution/codeExecution';
 import { ToolboxFunction } from '../src/localStorage/schema';
 import {
@@ -76,19 +77,37 @@ export default function SolitaryCodeCell({
     }
   });
 
-  const executeImmediately = (newSource: string) => {
-    // Here we are not calling handleExecutionRequestEvent(), we don't want to log the CodeExecution event
-    // for this automatic evaluation (it would generate far too many events).
-    // Call directly handleExecute() instead, passing the `newSource` to ensure that the latest source is executed
-    // (and not the one coming from the React state, which may have not yet been updated).
-    handleExecute(
-      0,
-      crypto.randomUUID(),
-      pythonMode,
-      getOutputAreaRef,
-      newSource,
-    );
-  };
+  // We "need" this ref to avoid a stale closure in the debounced function below
+  // (handleExecute changes on every render, so it cannot be in the dependency array of the useMemo that wraps the debounced function).
+  const handleExecuteRef = useRef(handleExecute);
+  useEffect(() => {
+    handleExecuteRef.current = handleExecute;
+  }, [handleExecute]);
+
+  const debouncedExecuteDirectly = useMemo(
+    () =>
+      debounce((newSource: string) => {
+        // Here we are not calling handleExecutionRequestEvent(), we don't want to log the CodeExecution event
+        // for this automatic evaluation (it would generate far too many events).
+        // Call directly handleExecute() instead, passing the `newSource` to ensure that the latest source is executed
+        // (and not the one coming from the React state, which may have not yet been updated).
+        handleExecuteRef.current(
+          0,
+          crypto.randomUUID(),
+          pythonMode,
+          () => outputAreaRef.current,
+          newSource,
+        );
+      }, 250),
+    [pythonMode],
+  );
+
+  // Cancel the debounced function on unmount
+  useEffect(() => {
+    return () => {
+      debouncedExecuteDirectly.cancel();
+    };
+  }, [debouncedExecuteDirectly]);
 
   return (
     <CodeCell
@@ -99,7 +118,7 @@ export default function SolitaryCodeCell({
       onSourceChanged={(newSource) => {
         handleSourceChanged(newSource, 0, (newSource) => {
           if (automaticEvaluation === true) {
-            executeImmediately(newSource);
+            debouncedExecuteDirectly(newSource);
           }
           postSourceChange(newSource);
         });
