@@ -343,7 +343,7 @@ export class PythonAnalyzer {
         end.column,
       ),
       options: {
-        className: 'eval-result-code-highlight',
+        className: 'eval-result-code-decoration',
         isWholeLine: false,
       },
     };

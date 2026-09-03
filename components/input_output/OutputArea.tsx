@@ -40,7 +40,6 @@ export const ERROR_MESSAGE_CLASSNAME = 'traceback-error-message';
 
 const EVAL_RESULT_STYLE: CSSProperties = {
   width: '100%',
-  border: `1px dashed ${theme.palette.primary.main}`,
   margin: 0,
   paddingLeft: theme.spacing(1),
   paddingRight: theme.spacing(1),
@@ -187,7 +186,9 @@ export function OutputArea({
                 </Tooltip>
               }
             >
-              <div style={EVAL_RESULT_STYLE}>{renderedChunk}</div>
+              <div className='eval-result-output' style={EVAL_RESULT_STYLE}>
+                {renderedChunk}
+              </div>
             </TopRightBadge>
           </Box>
         ) : (

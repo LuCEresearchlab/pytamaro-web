@@ -7,7 +7,6 @@ import { ExecutorContext } from '../src/execution/executorContext';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { rapidEvaluatorActivityVariant } from '../src/specialActivities';
-import theme from '../src/theme';
 import SolitaryCodeCell, { emptySingleCell } from './SolitaryCodeCell';
 
 export default function RapidEvaluator() {
@@ -32,7 +31,7 @@ export default function RapidEvaluator() {
   const [automaticEvaluation, setAutomaticEvaluation] = useState(true);
 
   return (
-    <Box>
+    <Box className='rapid-evaluator'>
       <Alert
         iconMapping={{
           info: <TipsAndUpdates fontSize='inherit' />,
@@ -43,11 +42,7 @@ export default function RapidEvaluator() {
           i18nKey='rapidEvaluatorHint'
           t={t}
           components={{
-            exprSpan: (
-              <span
-                style={{ border: `1px dashed ${theme.palette.primary.main}` }}
-              />
-            ),
+            exprSpan: <span className='eval-result-hint' />,
             strong: <strong />,
           }}
         />
