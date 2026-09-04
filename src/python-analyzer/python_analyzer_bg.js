@@ -1429,24 +1429,6 @@ export class Workspace {
     }
     /**
      * @param {FileHandle} file_id
-     */
-    closeFile(file_id) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(file_id, FileHandle);
-            var ptr0 = file_id.__destroy_into_raw();
-            wasm.workspace_closeFile(retptr, this.__wbg_ptr, ptr0);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            if (r1) {
-                throw takeObject(r0);
-            }
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
-        }
-    }
-    /**
-     * @param {FileHandle} file_id
      * @param {Position} position
      * @returns {LocationLink[]}
      */

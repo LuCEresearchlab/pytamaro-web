@@ -90,7 +90,6 @@ export const semantictoken_kinds: (a: number) => void;
 export const semantictoken_modifiers: (a: number) => void;
 export const workspace_check: (a: number, b: number) => void;
 export const workspace_checkFile: (a: number, b: number, c: number) => void;
-export const workspace_closeFile: (a: number, b: number, c: number) => void;
 export const workspace_gotoDeclaration: (a: number, b: number, c: number, d: number) => void;
 export const workspace_new: (a: number, b: number, c: number, d: number, e: number) => void;
 export const workspace_openFile: (a: number, b: number, c: number, d: number, e: number, f: number) => void;

@@ -123,11 +123,12 @@ export default function SolitaryCodeCell({
     [pythonMode],
   );
 
-  // Cancel potentially pending debounced functions on unmount.
+  // Clean up potentially pending debounced functions on unmount.
   useEffect(() => {
     return () => {
       debouncedExecuteDirectly.cancel();
-      debouncedLogExecutionRequestEvent.cancel();
+      // flush() to log on close, if any
+      debouncedLogExecutionRequestEvent.flush();
     };
   }, [debouncedExecuteDirectly, debouncedLogExecutionRequestEvent]);
 

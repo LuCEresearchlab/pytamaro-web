@@ -215,7 +215,6 @@ export class Workspace {
      * Checks a single file.
      */
     checkFile(file_id: FileHandle): Diagnostic[];
-    closeFile(file_id: FileHandle): void;
     gotoDeclaration(file_id: FileHandle, position: Position): LocationLink[];
     constructor(root: string, position_encoding: PositionEncoding, options: any);
     openFile(path: string, contents: string): FileHandle;
