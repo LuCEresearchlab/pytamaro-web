@@ -31,8 +31,6 @@ export class Diagnostic {
     display(workspace: Workspace): string;
     id(): string;
     message(): string;
-    severity(): Severity;
-    textRange(): TextRange | undefined;
     toRange(workspace: Workspace): Range | undefined;
 }
 
@@ -194,13 +192,8 @@ export enum SemanticTokenKind {
     Decorator = 12,
     BuiltinConstant = 13,
     TypeParameter = 14,
-}
-
-export enum Severity {
-    Info = 0,
-    Warning = 1,
-    Error = 2,
-    Fatal = 3,
+    Operator = 15,
+    Regexp = 16,
 }
 
 export class TextRange {
@@ -229,7 +222,6 @@ export class Workspace {
     semanticTokens(file_id: FileHandle): SemanticToken[];
     semanticTokensInRange(file_id: FileHandle, range: Range): SemanticToken[];
     updateFile(file_id: FileHandle, contents: string): void;
-    updateOptions(options: any): void;
 }
 
 export function analyzeFile(workspace: Workspace, file_id: FileHandle): AnalysisResult;

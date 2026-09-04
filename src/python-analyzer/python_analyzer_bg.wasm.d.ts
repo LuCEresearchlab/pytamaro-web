@@ -78,8 +78,6 @@ export const analyzeFile: (a: number, b: number) => number;
 export const diagnostic_display: (a: number, b: number) => number;
 export const diagnostic_id: (a: number) => number;
 export const diagnostic_message: (a: number) => number;
-export const diagnostic_severity: (a: number) => number;
-export const diagnostic_textRange: (a: number) => number;
 export const diagnostic_toRange: (a: number, b: number) => number;
 export const filehandle_path: (a: number, b: number) => void;
 export const filehandle_toString: (a: number, b: number) => void;
@@ -99,7 +97,6 @@ export const workspace_openFile: (a: number, b: number, c: number, d: number, e:
 export const workspace_semanticTokens: (a: number, b: number, c: number) => void;
 export const workspace_semanticTokensInRange: (a: number, b: number, c: number, d: number) => void;
 export const workspace_updateFile: (a: number, b: number, c: number, d: number, e: number) => void;
-export const workspace_updateOptions: (a: number, b: number, c: number) => void;
 export const run: () => void;
 export const __wbg_get_semantictoken_modifiers: (a: number) => number;
 export const __wbg_get_textrange_end: (a: number) => number;

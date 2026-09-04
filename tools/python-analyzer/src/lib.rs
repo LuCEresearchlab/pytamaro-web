@@ -7,7 +7,6 @@ use ty_python_semantic::types::ide_support::definition_for_name;
 use std::any::Any;
 
 use js_sys::{Error, JsString};
-use ruff_db::Db as _;
 use ruff_db::diagnostic::{self, DisplayDiagnosticConfig};
 use ruff_db::files::{File, FilePath, FileRange, system_path_to_file};
 use ruff_db::source::{SourceText, line_index, source_text};
@@ -24,8 +23,8 @@ use ty_ide::{NavigationTarget, NavigationTargets, RangedValue, goto_declaration}
 use ty_project::metadata::options::Options;
 use ty_project::watch::{ChangeEvent, ChangedKind, CreatedKind, DeletedKind};
 use ty_project::{CheckMode, ProjectMetadata};
-use ty_project::{Db, ProjectDatabase};
-use ty_python_core::program::{FallibleStrategy, Program};
+use ty_project::{Db, ProjectDatabase, SemanticDb as _};
+use ty_python_core::program::FallibleStrategy;
 use wasm_bindgen::prelude::*;
 
 static PYTAMARO_ZIP_BYTES: &[u8] = include_bytes!("pytamaro-2.0.1-py3-none-any.whl");
@@ -556,8 +555,14 @@ pub fn find_imported_names(source: &str) -> Vec<PythonName> {
     let file_handle = workspace
         .open_file("main.py", source)
         .expect("File to be created");
-    let parsed =
-        ruff_db::parsed::parsed_module(&workspace.db, file_handle.file).load(&workspace.db);
+    let parsed = ruff_db::parsed::parsed_module(
+        &workspace.db,
+        workspace
+            .db
+            .program_file(file_handle.file)
+            .python_file(&workspace.db),
+    )
+    .load(&workspace.db);
     let stmts = parsed.suite();
     let imports_info = {
         let mut collector = ImportsInfoCollector {
@@ -572,7 +577,14 @@ pub fn find_imported_names(source: &str) -> Vec<PythonName> {
 
 #[wasm_bindgen(js_name = "analyzeFile")]
 pub fn analyze_file(workspace: &mut Workspace, file_id: &FileHandle) -> AnalysisResult {
-    let parsed = ruff_db::parsed::parsed_module(&workspace.db, file_id.file).load(&workspace.db);
+    let parsed = ruff_db::parsed::parsed_module(
+        &workspace.db,
+        workspace
+            .db
+            .program_file(file_id.file)
+            .python_file(&workspace.db),
+    )
+    .load(&workspace.db);
     let python_source = source_text(&workspace.db, file_id.file);
     let index = line_index(&workspace.db, file_id.file);
     let parse_errors = parsed
@@ -599,14 +611,18 @@ pub fn analyze_file(workspace: &mut Workspace, file_id: &FileHandle) -> Analysis
     };
     let defined_functions = {
         let mut functions: Vec<PythonFunctionDefinition> = workspace
-            .db
-            .project()
-            .open_files(&workspace.db)
+            .user_files
             .iter()
             .flat_map(|file| {
-                let parsed =
-                    ruff_db::parsed::parsed_module(&workspace.db, *file).load(&workspace.db);
-                let model = ty_python_semantic::SemanticModel::new(&workspace.db, *file);
+                let parsed = ruff_db::parsed::parsed_module(
+                    &workspace.db,
+                    workspace.db.program_file(*file).python_file(&workspace.db),
+                )
+                .load(&workspace.db);
+                let model = ty_python_semantic::SemanticModel::new(
+                    &workspace.db,
+                    workspace.db.program_file(*file),
+                );
                 let mut visitor = FunctionsVisitor {
                     db: &workspace.db,
                     model: &model,
@@ -703,6 +719,8 @@ pub struct Workspace {
     db: ProjectDatabase,
     position_encoding: PositionEncoding,
     system: WasmSystem,
+    // Also keep a set of user file ids
+    user_files: HashSet<File>,
 }
 
 #[wasm_bindgen]
@@ -739,9 +757,11 @@ impl Workspace {
             db,
             position_encoding,
             system,
+            user_files: HashSet::new(),
         })
     }
 
+    /*
     #[wasm_bindgen(js_name = "updateOptions")]
     pub fn update_options(&mut self, options: JsValue) -> Result<(), Error> {
         let options = Options::deserialize_with(
@@ -762,22 +782,25 @@ impl Workspace {
         let (program_settings, program_settings_diagnostics) = merged_options
             .to_program_settings(&self.system, self.db.vendored(), &FallibleStrategy)
             .map_err(into_error)?;
-        Program::get(&self.db).update_from_settings(&mut self.db, program_settings);
+        self.db
+            .project()
+            .update_program(&mut self.db, program_settings);
 
-        let (settings, settings_diagnostics) = merged_options
+        let (settings, mut settings_diagnostics) = merged_options
             .to_settings(&self.db, &FallibleStrategy)
             .map_err(into_error)?;
-
-        self.db.project().reload(
-            &mut self.db,
-            project,
-            Some(settings),
-            settings_diagnostics,
-            program_settings_diagnostics,
+        settings_diagnostics.extend(
+            program_settings_diagnostics
+                .into_iter()
+                .map(|diagnostic| diagnostic.into_diagnostic(&self.db)),
         );
 
+        self.db
+            .project()
+            .reload(&mut self.db, project, Some(settings), settings_diagnostics);
+
         Ok(())
-    }
+    } */
 
     #[wasm_bindgen(js_name = "openFile")]
     pub fn open_file(&mut self, path: &str, contents: &str) -> Result<FileHandle, Error> {
@@ -788,14 +811,13 @@ impl Workspace {
             .write_file_all(&path, contents)
             .map_err(into_error)?;
 
-        self.db.apply_changes(&[ChangeEvent::Created {
-            path: path.clone(),
-            kind: CreatedKind::File,
-        }]);
+        self.db.apply_changes(&[ChangeEvent::Opened(path.clone())]);
 
         let file = system_path_to_file(&self.db, &path).expect("File to exist");
 
         self.db.project().open_file(&mut self.db, file);
+
+        self.user_files.insert(file);
 
         Ok(FileHandle {
             path: path.into(),
@@ -934,7 +956,8 @@ impl Workspace {
 
         let offset = position.to_text_size(&source, &index, self.position_encoding)?;
 
-        let Some(targets) = goto_declaration(&self.db, file_id.file, offset) else {
+        let Some(targets) = goto_declaration(&self.db, self.db.program_file(file_id.file), offset)
+        else {
             return Ok(Vec::new());
         };
 
@@ -1149,7 +1172,8 @@ impl Workspace {
         let index = line_index(&self.db, file_id.file);
         let source = source_text(&self.db, file_id.file);
 
-        let semantic_token = ty_ide::semantic_tokens(&self.db, file_id.file, None);
+        let semantic_token =
+            ty_ide::semantic_tokens(&self.db, self.db.program_file(file_id.file), None);
 
         let result = semantic_token
             .iter()
@@ -1174,7 +1198,7 @@ impl Workspace {
 
         let semantic_token = ty_ide::semantic_tokens(
             &self.db,
-            file_id.file,
+            self.db.program_file(file_id.file),
             Some(range.to_text_range(&index, &source, self.position_encoding)?),
         );
 
@@ -1394,6 +1418,7 @@ impl Diagnostic {
         JsString::from(self.inner.id().to_string())
     }
 
+    /*
     #[wasm_bindgen]
     pub fn severity(&self) -> Severity {
         Severity::from(self.inner.severity())
@@ -1404,7 +1429,7 @@ impl Diagnostic {
         self.inner
             .primary_span()
             .and_then(|span| Some(TextRange::from(span.range()?)))
-    }
+    } */
 
     #[wasm_bindgen(js_name = "toRange")]
     pub fn to_range(&self, workspace: &Workspace) -> Option<Range> {
@@ -1601,6 +1626,7 @@ impl Position {
     }
 }
 
+/*
 #[wasm_bindgen]
 #[derive(Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Severity {
@@ -1619,7 +1645,7 @@ impl From<diagnostic::Severity> for Severity {
             diagnostic::Severity::Fatal => Self::Fatal,
         }
     }
-}
+} */
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[wasm_bindgen]
@@ -1927,6 +1953,8 @@ pub enum SemanticTokenKind {
     Decorator,
     BuiltinConstant,
     TypeParameter,
+    Operator,
+    Regexp,
 }
 
 impl From<ty_ide::SemanticTokenType> for SemanticTokenKind {
@@ -1947,6 +1975,8 @@ impl From<ty_ide::SemanticTokenType> for SemanticTokenKind {
             ty_ide::SemanticTokenType::Decorator => Self::Decorator,
             ty_ide::SemanticTokenType::BuiltinConstant => Self::BuiltinConstant,
             ty_ide::SemanticTokenType::TypeParameter => Self::TypeParameter,
+            ty_ide::SemanticTokenType::Operator => Self::Operator,
+            ty_ide::SemanticTokenType::Regexp => Self::Regexp,
         }
     }
 }
