@@ -11,6 +11,8 @@ export class AnalysisResult {
     ellipsis: Uint32Array;
     import_ranges: TextRange[];
     imported_names: PythonName[];
+    get last_expr_range(): Range | undefined;
+    set last_expr_range(value: Range | null | undefined);
     parse_errors: ParseError[];
 }
 
@@ -29,23 +31,7 @@ export class Diagnostic {
     display(workspace: Workspace): string;
     id(): string;
     message(): string;
-    severity(): Severity;
-    textRange(): TextRange | undefined;
     toRange(workspace: Workspace): Range | undefined;
-}
-
-export class DocumentHighlight {
-    private constructor();
-    free(): void;
-    [Symbol.dispose](): void;
-    readonly kind: DocumentHighlightKind;
-    readonly range: Range;
-}
-
-export enum DocumentHighlightKind {
-    Text = 1,
-    Read = 2,
-    Write = 3,
 }
 
 export class FileHandle {
@@ -62,14 +48,6 @@ export class FileHandle {
     [Symbol.dispose](): void;
     path(): string;
     toString(): string;
-}
-
-export class Hover {
-    private constructor();
-    free(): void;
-    [Symbol.dispose](): void;
-    markdown: string;
-    range: Range;
 }
 
 export class LocationLink {
@@ -110,20 +88,11 @@ export enum LogLevel {
     Error = 4,
 }
 
-export class ParameterInformation {
-    private constructor();
-    free(): void;
-    [Symbol.dispose](): void;
-    get documentation(): string | undefined;
-    set documentation(value: string | null | undefined);
-    label: string;
-}
-
 export class ParseError {
     private constructor();
     free(): void;
     [Symbol.dispose](): void;
-    location: TextRange;
+    location: Range;
     message: string;
 }
 
@@ -223,34 +192,8 @@ export enum SemanticTokenKind {
     Decorator = 12,
     BuiltinConstant = 13,
     TypeParameter = 14,
-}
-
-export enum Severity {
-    Info = 0,
-    Warning = 1,
-    Error = 2,
-    Fatal = 3,
-}
-
-export class SignatureHelp {
-    private constructor();
-    free(): void;
-    [Symbol.dispose](): void;
-    get active_signature(): number | undefined;
-    set active_signature(value: number | null | undefined);
-    signatures: SignatureInformation[];
-}
-
-export class SignatureInformation {
-    private constructor();
-    free(): void;
-    [Symbol.dispose](): void;
-    get active_parameter(): number | undefined;
-    set active_parameter(value: number | null | undefined);
-    get documentation(): string | undefined;
-    set documentation(value: string | null | undefined);
-    label: string;
-    parameters: ParameterInformation[];
+    Operator = 15,
+    Regexp = 16,
 }
 
 export class TextRange {
@@ -272,14 +215,12 @@ export class Workspace {
      * Checks a single file.
      */
     checkFile(file_id: FileHandle): Diagnostic[];
-    closeFile(file_id: FileHandle): void;
     gotoDeclaration(file_id: FileHandle, position: Position): LocationLink[];
     constructor(root: string, position_encoding: PositionEncoding, options: any);
     openFile(path: string, contents: string): FileHandle;
     semanticTokens(file_id: FileHandle): SemanticToken[];
     semanticTokensInRange(file_id: FileHandle, range: Range): SemanticToken[];
     updateFile(file_id: FileHandle, contents: string): void;
-    updateOptions(options: any): void;
 }
 
 export function analyzeFile(workspace: Workspace, file_id: FileHandle): AnalysisResult;

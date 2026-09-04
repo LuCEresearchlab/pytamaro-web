@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { ProgramState } from '.';
 import { dummyExecutionMetadata } from '../../../../components/tide/TideConfigurationCode';
-import { ExecutionResponse as ExecutorExecutionResponse } from '../../../execution/codeExecution';
+import {
+  ExecutionResponse as ExecutorExecutionResponse,
+  PythonMode,
+} from '../../../execution/codeExecution';
 import { ExecutionMetadata } from '../../../execution/messageTypes';
 import { ToolboxFunction } from '../../../localStorage/schema';
 import { PythonFile } from '../../../schemas/activitySchema';
@@ -66,6 +69,7 @@ async function extract_data(
     toolboxFunctions: ToolboxFunction[],
     extraPythonFiles: PythonFile[],
     executionMetadata: ExecutionMetadata,
+    pythonMode: PythonMode,
   ) => Promise<ExecutorExecutionResponse>,
   code_repr: CodeRepresentation,
   type: ValueType,
@@ -87,7 +91,14 @@ async function extract_data(
         definitions.concat(show_graphic_definition),
       );
 
-      return await execute([code], 0, [], [], dummyExecutionMetadata)
+      return await execute(
+        [code],
+        0,
+        [],
+        [],
+        dummyExecutionMetadata,
+        PythonMode.Exec,
+      )
         .then((v) => v as CompletedExecutionResponse)
         .then(({ stdout, stderr }) => {
           if (stderr.trim().length !== 0) {
@@ -116,7 +127,14 @@ async function extract_data(
       };
       const code = turnCodeElementToCode(new_code, definitions.concat());
 
-      return await execute([code], 0, [], [], dummyExecutionMetadata)
+      return await execute(
+        [code],
+        0,
+        [],
+        [],
+        dummyExecutionMetadata,
+        PythonMode.Exec,
+      )
         .then((v) => v as CompletedExecutionResponse)
         .then(({ stdout, stderr }) => {
           if (stderr.trim().length !== 0) {
@@ -151,6 +169,7 @@ export default async function evaluated_phase<U, Tlocal, Timport>(
     toolboxFunctions: ToolboxFunction[],
     extraPythonFiles: PythonFile[],
     executionMetadata: ExecutionMetadata,
+    pythonMode: PythonMode,
   ) => Promise<ExecutorExecutionResponse>,
   base: SourceState<U, Tlocal, Timport>,
 ): Promise<DestinationState<U, Tlocal, Timport>> {

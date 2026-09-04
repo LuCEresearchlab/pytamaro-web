@@ -1,6 +1,7 @@
 import { Alert, AlertTitle, Box, Typography } from '@mui/material';
 import { sum } from 'lodash';
 import { useEffect } from 'react';
+import { PythonMode } from '../src/execution/codeExecution';
 import { CodeCellState } from '../src/localStorage/schema';
 import useLocalActivity from '../src/localStorage/useLocalActivity';
 import {
@@ -41,6 +42,9 @@ function InconsistencyMessage() {
     </Alert>
   );
 }
+
+// Within an activity, we always want Exec mode.
+const pythonMode = PythonMode.Exec;
 
 export default function ActivityCodeCell({
   activityVariant,
@@ -105,10 +109,15 @@ export default function ActivityCodeCell({
         }
         onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
         onExecutionRequestEvent={(executionUUID) =>
-          handleExecutionRequestEvent(cellIdx, executionUUID)
+          handleExecutionRequestEvent(cellIdx, executionUUID, pythonMode)
         }
         onExecutionRequested={(executionUUID) =>
-          handleExecute(cellIdx, executionUUID, getActivityOutputAreaRef)
+          handleExecute(
+            cellIdx,
+            executionUUID,
+            pythonMode,
+            getActivityOutputAreaRef,
+          )
         }
         firstLineNumber={1 + precedingLines}
         activityVariant={activityVariant}
@@ -119,6 +128,7 @@ export default function ActivityCodeCell({
         cellIdx={cellIdx}
         runEnabled={runEnabled}
         setOutputAreaRef={setOutputAreaRef}
+        pythonMode={pythonMode}
         extraActions={
           <>
             <SaveToToolboxButton

@@ -2,7 +2,7 @@ import { createContext, ReactNode, useEffect, useRef, useState } from 'react';
 import { OutputAreaRef } from '../../components/input_output/OutputArea';
 import { ToolboxFunction } from '../localStorage/schema';
 import { PythonFile } from '../schemas/activitySchema';
-import { ExecutionResponse } from './codeExecution';
+import { ExecutionResponse, PythonMode } from './codeExecution';
 import { ExecutorClient, ExecutorState } from './executorClient';
 import { ExecutorDelegate } from './executorDelegate';
 import { ExecutionMetadata } from './messageTypes';
@@ -15,6 +15,7 @@ export interface IExecutor {
     toolboxFunctions: ToolboxFunction[],
     extraPythonFiles: PythonFile[],
     executionMetadata: ExecutionMetadata,
+    pythonMode: PythonMode,
     updateExecutionResult?: (idx: number, response: ExecutionResponse) => void,
     onActiveCellChange?: (before: number | null, after: number) => void,
     getOutputRef?: (idx: number) => OutputAreaRef | null,
@@ -49,6 +50,7 @@ export function ExecutorProvider({ children }: { children: ReactNode }) {
     toolboxFunctions: ToolboxFunction[],
     extraPythonFiles: PythonFile[],
     executionMetadata: ExecutionMetadata,
+    pythonMode: PythonMode,
     updateExecutionResult?: (idx: number, response: ExecutionResponse) => void,
     onActiveCellChange?: (before: number | null, after: number) => void,
     getOutputRef?: (idx: number) => OutputAreaRef | null,
@@ -65,6 +67,7 @@ export function ExecutorProvider({ children }: { children: ReactNode }) {
       toolboxFunctions,
       extraPythonFiles,
       executionMetadata,
+      pythonMode,
       updateExecutionResult ? updateExecutionResult : () => {},
       onActiveCellChange ? onActiveCellChange : () => {},
       getOutputRef ? getOutputRef : () => null,

@@ -14,6 +14,7 @@ import {
   isExecutionError,
   isExecutionFailed,
   isExecutionNominal,
+  PythonMode,
 } from '../src/execution/codeExecution';
 import { ExecutorContext } from '../src/execution/executorContext';
 import { CodeCellExecutionState } from '../src/localStorage/schema';
@@ -29,6 +30,7 @@ import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import useAnalysisResult from '../src/useAnalysisResult';
 import { useIsHydrated } from '../src/useIsHydrated';
 import { PythonAnalyzer } from '../src/usePythonAnalyzer';
+import AutomaticEvaluationSwitch from './AutomaticEvaluationSwitch';
 import { EllipsisTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
 import DocumentationStripe from './documentation/DocumentationStripe';
@@ -56,6 +58,10 @@ export default function CodeCell({
   extraActions = null,
   readOnly = false,
   runEnabled = true,
+  pythonMode,
+  elevation = undefined,
+  automaticEvaluation = undefined,
+  setAutomaticEvaluation = undefined,
 }: {
   initialSource: string;
   currentSource: string;
@@ -70,6 +76,7 @@ export default function CodeCell({
   resetCounter: number;
   pythonAnalyzer: PythonAnalyzer | null;
   cellIdx: number;
+  getOutputAreaRef?: () => OutputAreaRef | null;
   setOutputAreaRef: (
     idx: number,
     node: OutputAreaRef | null | undefined,
@@ -78,6 +85,10 @@ export default function CodeCell({
   extraActions?: React.ReactNode;
   readOnly?: boolean;
   runEnabled?: boolean;
+  pythonMode: PythonMode;
+  elevation?: number;
+  automaticEvaluation?: boolean;
+  setAutomaticEvaluation?: (value: boolean) => void;
 }) {
   const { t } = useLocalTranslation(['common']);
   const { metadata } = useLocalProfile();
@@ -211,7 +222,7 @@ export default function CodeCell({
 
   return (
     <Paper
-      elevation={readOnly ? 0 : 4}
+      elevation={elevation !== undefined ? elevation : readOnly ? 0 : 4}
       className='pytamaro-web-code-cell anchor'
     >
       {!readOnly && (
@@ -239,6 +250,7 @@ export default function CodeCell({
             pythonAnalyzer={pythonAnalyzer}
             cellIdx={cellIdx}
             setHoveredName={setHoveredName}
+            pythonMode={pythonMode}
           />
         </CardContent>
         <CardActions disableSpacing sx={{ paddingLeft: 2, display: 'flex' }}>
@@ -250,8 +262,16 @@ export default function CodeCell({
             executionFinished={executionFinished}
             executionError={executionError}
             isWaitingForInput={isWaitingForInput}
+            runCodeLabelKey={`${pythonMode === PythonMode.EvalLastExpr ? 'evaluate' : 'run'}Code`}
           />
           <Stack direction='row' sx={{ marginLeft: 'auto' }}>
+            {automaticEvaluation !== undefined &&
+              setAutomaticEvaluation !== undefined && (
+                <AutomaticEvaluationSwitch
+                  automaticEvaluation={automaticEvaluation}
+                  setAutomaticEvaluation={setAutomaticEvaluation}
+                />
+              )}
             {extraActions}
           </Stack>
         </CardActions>
@@ -282,6 +302,7 @@ export default function CodeCell({
                   dimmed={!outputSynced}
                   setOutputAreaRef={(node) => setOutputAreaRef(cellIdx, node)}
                   setIsWaitingForInput={setIsWaitingForInput}
+                  compact={pythonMode === PythonMode.EvalLastExpr}
                 />
               )}
             </StaleOutputBadge>

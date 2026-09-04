@@ -1,4 +1,6 @@
 /* eslint-disable react/no-array-index-key */
+import { Calculate } from '@mui/icons-material';
+import { Box, Tooltip } from '@mui/material';
 import { isEmpty, negate } from 'lodash';
 import {
   CSSProperties,
@@ -9,6 +11,7 @@ import {
 } from 'react';
 import { splitLinesWithoutPossibleTrailingNewline } from '../../src/sourceUtils';
 import theme from '../../src/theme';
+import { TopRightBadge } from '../TopRightBadge';
 import ImgElement from './ImgElement';
 import InputArea from './InputArea';
 import PreElement from './PreElement';
@@ -35,6 +38,49 @@ export const OUTPUT_ELEMENT_STYLE = {
 
 export const ERROR_MESSAGE_CLASSNAME = 'traceback-error-message';
 
+const EVAL_RESULT_STYLE: CSSProperties = {
+  width: '100%',
+  margin: 0,
+  paddingLeft: theme.spacing(1),
+  paddingRight: theme.spacing(1),
+  boxSizing: 'border-box',
+};
+
+type OutputChunk = {
+  content: string;
+  isEvalResult: boolean;
+};
+
+function parseEvalResultChunks(data: string): OutputChunk[] {
+  const evalResultRegex =
+    /@@@EVAL_RESULT_BEGIN@@@([\s\S]*?)@@@EVAL_RESULT_END@@@/g;
+  const chunks: OutputChunk[] = [];
+  let lastIndex = 0;
+  let match = evalResultRegex.exec(data);
+
+  while (match) {
+    const [fullMatch, evalResultContent] = match;
+    const matchStart = match.index;
+
+    if (matchStart > lastIndex) {
+      chunks.push({
+        content: data.slice(lastIndex, matchStart),
+        isEvalResult: false,
+      });
+    }
+
+    chunks.push({ content: evalResultContent, isEvalResult: true });
+    lastIndex = matchStart + fullMatch.length;
+    match = evalResultRegex.exec(data);
+  }
+
+  if (lastIndex < data.length) {
+    chunks.push({ content: data.slice(lastIndex), isEvalResult: false });
+  }
+
+  return chunks.filter((chunk) => !isEmpty(chunk.content));
+}
+
 export type OutputAreaRef = {
   getInput: () => Promise<string>;
   activateInputField: () => void;
@@ -60,6 +106,19 @@ export function OutputArea({
     undefined,
   );
   const [inputFieldActive, setInputFieldActive] = useState(false);
+  const pytamaroDataUriRegex =
+    /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
+  const inputArea = (
+    <InputArea
+      onSubmit={(result) => {
+        if (resolveInputPromiseRef.current) {
+          setInputFieldActive(false);
+          resolveInputPromiseRef.current(result);
+        }
+      }}
+    />
+  );
+  const outputChunks = parseEvalResultChunks(data);
   useImperativeHandle(ref, () => {
     return {
       getInput() {
@@ -77,42 +136,68 @@ export function OutputArea({
       },
     };
   }, [setIsWaitingForInput]);
-  const pytamaroDataUriRegex =
-    /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
-  const inputArea = (
-    <InputArea
-      onSubmit={(result) => {
-        if (resolveInputPromiseRef.current) {
-          setInputFieldActive(false);
-          resolveInputPromiseRef.current(result);
-        }
-      }}
-    />
-  );
-  const graphicOrTextChunks = data
-    .split(pytamaroDataUriRegex)
-    .filter(negate(isEmpty));
   return (
     <div className='output-area' translate='no' style={sx}>
-      {graphicOrTextChunks.map((chunk, idx, chunks) =>
-        isPngData(chunk) || isGifData(chunk) ? (
-          <ImgElement key={idx} dataURI={chunk} disabled={disabled} />
+      {outputChunks.map((outputChunk, outputIdx, chunks) => {
+        const graphicOrTextChunks = outputChunk.content
+          .split(pytamaroDataUriRegex)
+          .filter(negate(isEmpty));
+        const isLastOutputChunk = outputIdx === chunks.length - 1;
+
+        const renderedChunk = (
+          <>
+            {graphicOrTextChunks.map((chunk, idx) =>
+              isPngData(chunk) || isGifData(chunk) ? (
+                <ImgElement
+                  key={`${outputIdx}-${idx}`}
+                  dataURI={chunk}
+                  disabled={disabled}
+                />
+              ) : (
+                <PreElement
+                  key={`${outputIdx}-${idx}`}
+                  lines={splitLinesWithoutPossibleTrailingNewline(chunk)}
+                  style={preStyle}
+                  activeInput={
+                    isLastOutputChunk &&
+                    idx === graphicOrTextChunks.length - 1 &&
+                    inputFieldActive
+                      ? inputArea
+                      : undefined
+                  }
+                />
+              ),
+            )}
+          </>
+        );
+
+        return outputChunk.isEvalResult ? (
+          <Box key={outputIdx} sx={{ width: '100%' }}>
+            <TopRightBadge
+              sx={{
+                '& .MuiBadge-badge': {
+                  top: theme.spacing(0.25),
+                  backgroundColor: theme.palette.primary.main,
+                },
+              }}
+              badgeContent={
+                <Tooltip arrow placement='bottom' title='Evaluation result'>
+                  <Calculate fontSize='small' />
+                </Tooltip>
+              }
+            >
+              <div className='eval-result-output' style={EVAL_RESULT_STYLE}>
+                {renderedChunk}
+              </div>
+            </TopRightBadge>
+          </Box>
         ) : (
-          <PreElement
-            key={idx}
-            lines={splitLinesWithoutPossibleTrailingNewline(chunk)}
-            style={preStyle}
-            activeInput={
-              idx === chunks.length - 1 && inputFieldActive
-                ? inputArea
-                : undefined
-            }
-          />
-        ),
-      )}
+          <div key={outputIdx}>{renderedChunk}</div>
+        );
+      })}
       {
         /* As a special case, render a lone input area if it is active and there is no other output */
-        inputFieldActive && graphicOrTextChunks.length === 0 && (
+        inputFieldActive && outputChunks.length === 0 && (
           <PreElement lines={[]} style={preStyle} activeInput={inputArea} />
         )
       }

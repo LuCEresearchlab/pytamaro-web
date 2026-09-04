@@ -13,6 +13,7 @@ import { OutputAreaRef } from '../components/input_output/OutputArea';
 import logAnalyticsEvent, { AnalyticsEventName } from './analyticsEvent';
 import {
   ExecutionResponse,
+  PythonMode,
   importedToolboxNames,
   isExecutionNominal,
 } from './execution/codeExecution';
@@ -292,8 +293,13 @@ export function useActivity(
   const handleExecutionRequestEvent = async (
     idx: number,
     executionUUID: string,
+    pythonMode: PythonMode,
+    sourceIdxOverride?: string,
   ) => {
     const sources = sourcesUpTo(idx);
+    if (sourceIdxOverride !== undefined) {
+      sources[idx] = sourceIdxOverride;
+    }
     const toolboxFunctions = await retrieveToolboxSources(idx, sources);
     logAnalyticsEvent(AnalyticsEventName.CodeExecution, {
       activity: variantId,
@@ -307,6 +313,7 @@ export function useActivity(
       extraPythonFiles,
       liveAnalysis: metadata.liveAnalysis,
       executionUUID,
+      pythonMode,
       clientSideExecutionTag: CLIENT_SIDE_EXECUTION_TAG,
     });
   };
@@ -314,7 +321,9 @@ export function useActivity(
   const handleExecute = async (
     idx: number,
     executionUUID: string,
+    pythonMode: PythonMode,
     getOutputRef: (execIdx: number) => OutputAreaRef | null,
+    sourceIdxOverride?: string,
   ) => {
     if (executorState.type === 'loading') {
       // eslint-disable-next-line no-console
@@ -330,6 +339,9 @@ export function useActivity(
     }
 
     const sources = sourcesUpTo(idx);
+    if (sourceIdxOverride !== undefined) {
+      sources[idx] = sourceIdxOverride;
+    }
     const toolboxFunctions = await retrieveToolboxSources(idx, sources);
 
     // (Re-)Execute all cells from the first one to the current one, included.
@@ -366,6 +378,7 @@ export function useActivity(
       toolboxFunctions,
       extraPythonFiles,
       executionMetadata,
+      pythonMode,
       newPartialExecutionResult,
       onActiveCellChange,
       getOutputRef,

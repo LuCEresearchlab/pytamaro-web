@@ -10,7 +10,10 @@ import { getNode } from './utils';
 
 import { Edge } from '@xyflow/react';
 import { getParameterName } from '../../components/tide/cards/function';
-import { ExecutionResponse as ExecutorExecutionResponse } from '../execution/codeExecution';
+import {
+  ExecutionResponse as ExecutorExecutionResponse,
+  PythonMode,
+} from '../execution/codeExecution';
 import { ExecutionMetadata } from '../execution/messageTypes';
 import { ToolboxFunction } from '../localStorage/schema';
 import { PythonFile } from '../schemas/activitySchema';
@@ -215,6 +218,7 @@ export function evaluation(
     toolboxFunctions: ToolboxFunction[],
     extraPythonFiles: PythonFile[],
     executionMetadata: ExecutionMetadata,
+    pythonMode: PythonMode,
   ) => Promise<ExecutorExecutionResponse>,
   state: ProgramState<
     TideNodeMetadata,

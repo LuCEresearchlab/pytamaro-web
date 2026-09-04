@@ -6,10 +6,11 @@
     "about": "About",
     "selectActivityVariant": "Seleziona una variante (lingua o versione) per questa attività:",
     "playground": "Playground",
-    "rapidPlayground": "Playground rapido",
+    "rapidEvaluator": "Valutatore rapido",
     "documentation": "Documentazione",
     "myToolbox": "La mia Toolbox",
     "runCode": "Esegui",
+    "evaluateCode": "Valuta",
     "runningCode": "In Esecuzione",
     "waitingRunningCode": "In attesa che le celle precedenti vengano eseguite",
     "waitingForInput": "In attesa di input dell'utente",
@@ -183,5 +184,7 @@
     "inputHint": {
         "active": "Scrivi l'input e premi Invio",
         "inactive": "Input utente"
-    }
+    },
+    "rapidEvaluatorHint": "Scrivi qualsiasi codice Python. L'ultima <exprSpan>espressione</exprSpan> sarà <strong>valutata</strong>.",
+    "automaticEvaluation": "Valutazione Automatica"
 }

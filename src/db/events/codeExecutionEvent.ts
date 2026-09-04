@@ -1,5 +1,8 @@
 import postgres from 'postgres';
-import { CODE_EXECUTION_CELLS_TO_FILES_VERSION } from '../../execution/codeExecution';
+import {
+  CODE_EXECUTION_CELLS_TO_FILES_VERSION,
+  PythonMode,
+} from '../../execution/codeExecution';
 import { LiveAnalysisStatus, ToolboxFunction } from '../../localStorage/schema';
 import { ActivityVariant, PythonFile } from '../../schemas/activitySchema';
 import { EventName } from '../../storeDbEvent';
@@ -62,6 +65,7 @@ async function storeEventCodeExecution(
   requested_cell_seq_number: number,
   live_analysis: LiveAnalysisStatus,
   executionUUID: string,
+  pythonMode: PythonMode,
 ) {
   return storeRow(sql, eventTableName(EventName.CodeExecution), {
     id: event_id,
@@ -71,6 +75,7 @@ async function storeEventCodeExecution(
     cells_to_files_version: CODE_EXECUTION_CELLS_TO_FILES_VERSION,
     live_analysis,
     execution_uuid: executionUUID,
+    python_mode: pythonMode,
   });
 }
 
@@ -86,6 +91,7 @@ export default async function saveCodeExecutionEvent(
   extraPythonFiles: PythonFile[],
   liveAnalysis: LiveAnalysisStatus,
   executionUUID: string,
+  pythonMode: PythonMode,
 ): Promise<boolean> {
   try {
     await conn.begin(async (sql) => {
@@ -105,6 +111,7 @@ export default async function saveCodeExecutionEvent(
         requested_cell_seq_number,
         liveAnalysis,
         executionUUID,
+        pythonMode,
       );
       await Promise.all(
         [

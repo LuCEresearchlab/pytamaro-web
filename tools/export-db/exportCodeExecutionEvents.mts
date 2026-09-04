@@ -38,7 +38,7 @@ async function main() {
 
   // Find all relevant code execution events (matching the experiment key and date range)
   const events =
-    await sql`SELECT events.id, requested_cell_seq_number FROM events
+    await sql`SELECT events.id, requested_cell_seq_number, python_mode FROM events
                              INNER JOIN events_code_execution ON events.id = events_code_execution.id
                              WHERE experiment_key LIKE ${EXPERIMENT_KEY}
                              AND event_type = ${EventName.CodeExecution}
@@ -65,6 +65,7 @@ async function main() {
         event.requested_cell_seq_number,
         toolboxFunctions,
         extraPythonFiles,
+        event.python_mode,
       );
       const eventFolder = join(OUTPUT_DIR, `${event.id}`);
       await mkdir(eventFolder);

@@ -1,4 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { debounce } from 'lodash';
+import { useEffect, useMemo, useRef } from 'react';
+import { PythonMode } from '../src/execution/codeExecution';
 import { ToolboxFunction } from '../src/localStorage/schema';
 import {
   ActivityVariant,
@@ -30,6 +32,10 @@ export default function SolitaryCodeCell({
   onExecutionRequest = () => {},
   extraActions = null,
   extraToolboxFunctions = [],
+  pythonMode = PythonMode.Exec,
+  elevation = undefined,
+  automaticEvaluation = undefined,
+  setAutomaticEvaluation = undefined,
 }: {
   activity: ReturnType<typeof useActivity>;
   activityVariant: ActivityVariant;
@@ -42,6 +48,10 @@ export default function SolitaryCodeCell({
   onExecutionRequest?: () => void;
   extraActions?: React.ReactNode;
   extraToolboxFunctions?: ToolboxFunction[];
+  pythonMode?: PythonMode;
+  elevation?: number;
+  automaticEvaluation?: boolean;
+  setAutomaticEvaluation?: (value: boolean) => void;
 }) {
   const outputAreaRef = useRef<OutputAreaRef>(null);
   const getOutputAreaRef = () => outputAreaRef.current;
@@ -60,12 +70,67 @@ export default function SolitaryCodeCell({
   const source = codeCells[0].source;
   const pythonAnalyzer = usePythonAnalyzer([], extraToolboxFunctions);
 
+  const AUTOMATIC_EXECUTION_DEBOUNCE_DELAY = 250;
+  const LOG_AUTOMATIC_EXECUTION_DEBOUNCE_DELAY = 5000;
+
   useEffect(() => {
     if (requireNewExecution) {
       // Simulate a change in the source code to invalidate an eventual previous execution
       handleSourceChanged(source, 0);
     }
   });
+
+  // We "need" this ref to avoid a stale closure in the debounced function below
+  // (handleExecute changes on every render, so it cannot be in the dependency array of the useMemo that wraps the debounced function).
+  const handleExecuteRef = useRef(handleExecute);
+  useEffect(() => {
+    handleExecuteRef.current = handleExecute;
+  }, [handleExecute]);
+
+  const handleExecutionRequestEventRef = useRef(handleExecutionRequestEvent);
+  useEffect(() => {
+    handleExecutionRequestEventRef.current = handleExecutionRequestEvent;
+  }, [handleExecutionRequestEvent]);
+
+  const debouncedExecuteDirectly = useMemo(
+    () =>
+      debounce((newSource: string, executionUUID: string) => {
+        // Here we are not calling `handleExecutionRequestEvent` because we don't want to log the CodeExecution event
+        // for *each* automatic evaluation (it would generate far too many events).
+        // Call directly handleExecute() instead, passing the `newSource` to ensure that the latest source is executed
+        // (and not the one coming from the React state, which may have not yet been updated).
+        handleExecuteRef.current(
+          0,
+          executionUUID,
+          pythonMode,
+          () => outputAreaRef.current,
+          newSource,
+        );
+      }, AUTOMATIC_EXECUTION_DEBOUNCE_DELAY),
+    [pythonMode],
+  );
+
+  const debouncedLogExecutionRequestEvent = useMemo(
+    () =>
+      debounce((newSource: string, executionUUID: string) => {
+        handleExecutionRequestEventRef.current(
+          0,
+          executionUUID,
+          pythonMode,
+          newSource,
+        );
+      }, LOG_AUTOMATIC_EXECUTION_DEBOUNCE_DELAY),
+    [pythonMode],
+  );
+
+  // Clean up potentially pending debounced functions on unmount.
+  useEffect(() => {
+    return () => {
+      debouncedExecuteDirectly.cancel();
+      // flush() to log on close, if any
+      debouncedLogExecutionRequestEvent.flush();
+    };
+  }, [debouncedExecuteDirectly, debouncedLogExecutionRequestEvent]);
 
   return (
     <CodeCell
@@ -75,14 +140,19 @@ export default function SolitaryCodeCell({
       onResetExecutionState={() => handleResetSingleCellExecutionState(0)}
       onSourceChanged={(newSource) => {
         handleSourceChanged(newSource, 0);
+        if (automaticEvaluation === true) {
+          const executionUUID = crypto.randomUUID();
+          debouncedExecuteDirectly(newSource, executionUUID);
+          debouncedLogExecutionRequestEvent(newSource, executionUUID);
+        }
         postSourceChange(newSource);
       }}
       onExecutionRequested={(executionUUID) => {
         onExecutionRequest();
-        return handleExecute(0, executionUUID, getOutputAreaRef);
+        return handleExecute(0, executionUUID, pythonMode, getOutputAreaRef);
       }}
       onExecutionRequestEvent={(executionUUID) =>
-        handleExecutionRequestEvent(0, executionUUID)
+        handleExecutionRequestEvent(0, executionUUID, pythonMode)
       }
       firstLineNumber={1}
       activityVariant={activityVariant}
@@ -104,7 +174,12 @@ export default function SolitaryCodeCell({
       resetCounter={resetCounter}
       pythonAnalyzer={pythonAnalyzer}
       cellIdx={0}
+      getOutputAreaRef={getOutputAreaRef}
       setOutputAreaRef={(_, node) => setOutputAreaRef(node)}
+      pythonMode={pythonMode}
+      elevation={elevation}
+      automaticEvaluation={automaticEvaluation}
+      setAutomaticEvaluation={setAutomaticEvaluation}
     />
   );
 }

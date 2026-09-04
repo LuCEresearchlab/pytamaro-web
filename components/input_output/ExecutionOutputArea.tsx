@@ -131,6 +131,7 @@ export default function ExecutionOutputArea({
   firstLineNumber = 1,
   dimmed = false,
   sx = {},
+  compact = false,
 }: {
   executionResponse: ExecutionResponse;
   setOutputAreaRef: (node: OutputAreaRef | null | undefined) => void;
@@ -138,6 +139,7 @@ export default function ExecutionOutputArea({
   firstLineNumber?: number;
   dimmed?: boolean;
   sx?: CSSProperties;
+  compact?: boolean;
 }) {
   const errored = isExecutionError(executionResponse);
   const failed = isExecutionFailed(executionResponse);
@@ -164,7 +166,7 @@ export default function ExecutionOutputArea({
           {stdout.length > 0 && (
             <Box
               sx={{ backgroundColor: OUTPUT_AREA_BACKGROUND_COLOR }}
-              paddingX={3}
+              paddingX={compact ? 2 : 3}
               paddingY={1}
             >
               <OutputArea
@@ -181,7 +183,7 @@ export default function ExecutionOutputArea({
                 backgroundColor: theme.pytamaro.palette.background.errorRed,
                 color: theme.pytamaro.palette.red,
               }}
-              paddingX={3}
+              paddingX={compact ? 2 : 3}
               paddingY={1}
             >
               <StderrElement content={stderr} />

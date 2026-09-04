@@ -2,7 +2,7 @@ import Editor from '@monaco-editor/react';
 import { debounce } from 'lodash';
 import { type editor as EditorNamespace } from 'monaco-editor';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ExecutionResponse } from '../src/execution/codeExecution';
+import { ExecutionResponse, PythonMode } from '../src/execution/codeExecution';
 import { LiveAnalysisStatus } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
@@ -12,7 +12,7 @@ import {
   pytamaroImportCompletionProvider,
   toolboxImportCompletionProvider,
 } from '../src/monacoSuggestions';
-import { PythonName } from '../src/python-analyzer/python_analyzer';
+import { PythonName, TextRange } from '../src/python-analyzer/python_analyzer';
 import { addErrorAnnotationsFromExecution } from '../src/pythonTraceback';
 import scrollToAnchor from '../src/scrollToAnchor';
 import theme from '../src/theme';
@@ -50,6 +50,7 @@ export default function CodeEditor({
   pythonAnalyzer,
   cellIdx,
   setHoveredName = undefined,
+  pythonMode = PythonMode.Exec,
 }: {
   initialSource: string;
   currentSource: string;
@@ -64,10 +65,13 @@ export default function CodeEditor({
   pythonAnalyzer: PythonAnalyzer | null;
   cellIdx: number;
   setHoveredName?: (name: PythonName | null) => void;
+  pythonMode?: PythonMode;
+  evalExprRange?: TextRange | undefined;
 }) {
   const { list } = useLocalToolbox();
   const { metadata } = useLocalProfile();
   const { liveAnalysis } = metadata;
+  const minimalistic = pythonMode === PythonMode.EvalLastExpr;
 
   const monacoRef = useRef<MonacoForPyTamaro | null>(null);
   const editorRef = useRef<EditorNamespace.IStandaloneCodeEditor | null>(null);
@@ -86,6 +90,8 @@ export default function CodeEditor({
     useRef<EditorNamespace.IEditorDecorationsCollection | null>(null);
   const hoveredStaticErrorDecorationRef =
     useRef<EditorNamespace.IEditorDecorationsCollection>(null);
+  const evalResultDecorationRef =
+    useRef<EditorNamespace.IEditorDecorationsCollection | null>(null);
   const customDiagnosticsRef = useRef<CustomDiagnostic[]>([]);
   const shownDiagnosticRef = useRef<CustomDiagnostic | null>(null);
 
@@ -119,6 +125,10 @@ export default function CodeEditor({
           // (re-)scroll the anchor element into view.
           firstHeightUpdate = false;
           scrollToAnchor();
+          if (minimalistic) {
+            // focus the editor to make it recognizeable as such
+            editor.focus();
+          }
         }
       }
     };
@@ -161,6 +171,9 @@ export default function CodeEditor({
       // Remove possible collections of decorations
       runtimeDecorationsCollectionRef.current?.clear();
       runtimeDecorationsCollectionRef.current = null;
+      // Remove possible eval result decorations
+      evalResultDecorationRef.current?.clear();
+      evalResultDecorationRef.current = null;
       // Remove static error annotations
       clearStaticAnnotations();
     }
@@ -436,6 +449,18 @@ export default function CodeEditor({
       editorInstance.createDecorationsCollection(
         diagnosticsCurrentCellAdjusted,
       );
+    if (pythonMode === PythonMode.EvalLastExpr) {
+      const decoration = pythonAnalyzer?.evalExprDiagnostics(
+        monacoInstance,
+        editorInstance,
+        cellIdx,
+      );
+      if (decoration) {
+        evalResultDecorationRef.current?.clear();
+        evalResultDecorationRef.current =
+          editorInstance.createDecorationsCollection([decoration]);
+      }
+    }
   }, [
     editorInstance,
     monacoInstance,
@@ -443,6 +468,7 @@ export default function CodeEditor({
     cellIdx,
     liveAnalysis,
     firstLineNumber,
+    pythonMode,
   ]);
 
   const analyzeSource = useCallback(
@@ -498,8 +524,12 @@ export default function CodeEditor({
         options={{
           fontFamily: theme.pytamaro.monospaceFontFamily,
           fontSize: theme.pytamaro.monospaceFontSizeRatio * 16,
-          lineNumbers: (n) => (n + firstLineNumber - 1).toString(10),
-          lineNumbersMinChars: 2,
+          lineNumbers: minimalistic
+            ? 'off'
+            : (n) => (n + firstLineNumber - 1).toString(10),
+          lineNumbersMinChars: minimalistic ? 0 : 2,
+          folding: minimalistic ? false : undefined,
+          lineDecorationsWidth: minimalistic ? 0 : undefined,
           minimap: { enabled: false },
           renderLineHighlight: 'none',
           overviewRulerLanes: 0,

@@ -92,6 +92,26 @@ pre:has(code) {
   opacity: 0.2;
 }
 
+:is(
+  .eval-result-hint,
+  .eval-result-output,
+  .eval-result-code-decoration
+) {
+  border: 1px dashed var(--mui-palette-primary-main);
+}
+
+.rapid-evaluator:has(.eval-result-output:hover) :is(
+  .eval-result-hint,
+  .eval-result-output,
+  .eval-result-code-decoration
+) {
+  background-color: color-mix(
+    in srgb,
+    var(--mui-palette-primary-main) 25%,
+    transparent
+  );
+}
+
 /* Nicer Markdown tables, partially inspired by https://github.com/micromark/micromark-extension-gfm-table#css */
 
 .activity-content table {
