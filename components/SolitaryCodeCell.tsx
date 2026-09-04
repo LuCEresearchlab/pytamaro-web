@@ -139,14 +139,13 @@ export default function SolitaryCodeCell({
       codeCellExecutionState={codeExecutionStates[0]}
       onResetExecutionState={() => handleResetSingleCellExecutionState(0)}
       onSourceChanged={(newSource) => {
-        handleSourceChanged(newSource, 0, (newSource) => {
-          if (automaticEvaluation === true) {
-            const executionUUID = crypto.randomUUID();
-            debouncedExecuteDirectly(newSource, executionUUID);
-            debouncedLogExecutionRequestEvent(newSource, executionUUID);
-          }
-          postSourceChange(newSource);
-        });
+        handleSourceChanged(newSource, 0);
+        if (automaticEvaluation === true) {
+          const executionUUID = crypto.randomUUID();
+          debouncedExecuteDirectly(newSource, executionUUID);
+          debouncedLogExecutionRequestEvent(newSource, executionUUID);
+        }
+        postSourceChange(newSource);
       }}
       onExecutionRequested={(executionUUID) => {
         onExecutionRequest();

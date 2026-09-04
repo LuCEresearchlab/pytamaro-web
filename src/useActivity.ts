@@ -181,29 +181,21 @@ export function useActivity(
   // Small debounce because this is potentially called on every keystroke.
   // The setters persist data on Local/Session Storage
   // and we don't want to write synchronously too often.
-  const handleSourceChanged = debounce(
-    (
-      newSource: string,
-      idx: number,
-      postPersist: (newSource: string) => void = () => {},
-    ) => {
-      setCodeCells((currentCodeCells) =>
-        produce(currentCodeCells, (draft) => {
-          draft[idx].source = newSource;
-        }),
-      );
-      setCodeExecutionStates((currentCodeExecutionStates) =>
-        produce(currentCodeExecutionStates, (draft) => {
-          // Output of all the cells from `idx` is (potentially) no longer in sync
-          for (let i = idx; i < codeCells.length; i += 1) {
-            draft[i].outputSynced = false;
-          }
-        }),
-      );
-      postPersist(newSource);
-    },
-    50,
-  );
+  const handleSourceChanged = debounce((newSource: string, idx: number) => {
+    setCodeCells((currentCodeCells) =>
+      produce(currentCodeCells, (draft) => {
+        draft[idx].source = newSource;
+      }),
+    );
+    setCodeExecutionStates((currentCodeExecutionStates) =>
+      produce(currentCodeExecutionStates, (draft) => {
+        // Output of all the cells from `idx` is (potentially) no longer in sync
+        for (let i = idx; i < codeCells.length; i += 1) {
+          draft[i].outputSynced = false;
+        }
+      }),
+    );
+  }, 50);
 
   const sourcesUpTo = (idx: number) =>
     codeCells.slice(0, idx + 1).map(sourceFromCell);

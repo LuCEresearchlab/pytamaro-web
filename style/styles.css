@@ -110,8 +110,6 @@ pre:has(code) {
     var(--mui-palette-primary-main) 25%,
     transparent
   );
-   
-  
 }
 
 /* Nicer Markdown tables, partially inspired by https://github.com/micromark/micromark-extension-gfm-table#css */
