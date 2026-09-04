@@ -302,8 +302,12 @@ export function useActivity(
     idx: number,
     executionUUID: string,
     pythonMode: PythonMode,
+    sourceIdxOverride?: string,
   ) => {
     const sources = sourcesUpTo(idx);
+    if (sourceIdxOverride !== undefined) {
+      sources[idx] = sourceIdxOverride;
+    }
     const toolboxFunctions = await retrieveToolboxSources(idx, sources);
     logAnalyticsEvent(AnalyticsEventName.CodeExecution, {
       activity: variantId,

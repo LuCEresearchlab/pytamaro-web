@@ -70,6 +70,9 @@ export default function SolitaryCodeCell({
   const source = codeCells[0].source;
   const pythonAnalyzer = usePythonAnalyzer([], extraToolboxFunctions);
 
+  const AUTOMATIC_EXECUTION_DEBOUNCE_DELAY = 250;
+  const LOG_AUTOMATIC_EXECUTION_DEBOUNCE_DELAY = 5000;
+
   useEffect(() => {
     if (requireNewExecution) {
       // Simulate a change in the source code to invalidate an eventual previous execution
@@ -84,30 +87,49 @@ export default function SolitaryCodeCell({
     handleExecuteRef.current = handleExecute;
   }, [handleExecute]);
 
+  const handleExecutionRequestEventRef = useRef(handleExecutionRequestEvent);
+  useEffect(() => {
+    handleExecutionRequestEventRef.current = handleExecutionRequestEvent;
+  }, [handleExecutionRequestEvent]);
+
   const debouncedExecuteDirectly = useMemo(
     () =>
-      debounce((newSource: string) => {
-        // Here we are not calling handleExecutionRequestEvent(), we don't want to log the CodeExecution event
-        // for this automatic evaluation (it would generate far too many events).
+      debounce((newSource: string, executionUUID: string) => {
+        // Here we are not calling `handleExecutionRequestEvent` because we don't want to log the CodeExecution event
+        // for *each* automatic evaluation (it would generate far too many events).
         // Call directly handleExecute() instead, passing the `newSource` to ensure that the latest source is executed
         // (and not the one coming from the React state, which may have not yet been updated).
         handleExecuteRef.current(
           0,
-          crypto.randomUUID(),
+          executionUUID,
           pythonMode,
           () => outputAreaRef.current,
           newSource,
         );
-      }, 250),
+      }, AUTOMATIC_EXECUTION_DEBOUNCE_DELAY),
     [pythonMode],
   );
 
-  // Cancel the debounced function on unmount
+  const debouncedLogExecutionRequestEvent = useMemo(
+    () =>
+      debounce((newSource: string, executionUUID: string) => {
+        handleExecutionRequestEventRef.current(
+          0,
+          executionUUID,
+          pythonMode,
+          newSource,
+        );
+      }, LOG_AUTOMATIC_EXECUTION_DEBOUNCE_DELAY),
+    [pythonMode],
+  );
+
+  // Cancel potentially pending debounced functions on unmount.
   useEffect(() => {
     return () => {
       debouncedExecuteDirectly.cancel();
+      debouncedLogExecutionRequestEvent.cancel();
     };
-  }, [debouncedExecuteDirectly]);
+  }, [debouncedExecuteDirectly, debouncedLogExecutionRequestEvent]);
 
   return (
     <CodeCell
@@ -118,7 +140,9 @@ export default function SolitaryCodeCell({
       onSourceChanged={(newSource) => {
         handleSourceChanged(newSource, 0, (newSource) => {
           if (automaticEvaluation === true) {
-            debouncedExecuteDirectly(newSource);
+            const executionUUID = crypto.randomUUID();
+            debouncedExecuteDirectly(newSource, executionUUID);
+            debouncedLogExecutionRequestEvent(newSource, executionUUID);
           }
           postSourceChange(newSource);
         });
