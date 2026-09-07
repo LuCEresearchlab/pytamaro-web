@@ -21,7 +21,11 @@ export default function RapidEvaluatorButton() {
       </PopoverTrigger>
       <PopoverContent>
         <Paper
-          sx={{ minWidth: '80ch', maxWidth: '100ch', marginRight: 2 }}
+          sx={{
+            minWidth: 'min(80ch, 97vw)',
+            maxWidth: 'min(100ch, 97vw)',
+            marginRight: 2,
+          }}
           elevation={0}
         >
           <RapidEvaluator />
