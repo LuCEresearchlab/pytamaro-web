@@ -319,8 +319,8 @@ const IMPURE_RANDOM_FUNCTIONS: [&'static str; 6] = [
 struct PythonFunctionDefinition {
     python_function: PythonFunction,
     path: String,
-    called_functions: Vec<String>, // qualified name (path + name)
-    non_local_names: Vec<String>,  // includes globals and nonlocals
+    called_functions: HashSet<String>, // qualified name (path + name)
+    non_local_names: HashSet<String>,  // includes globals and nonlocals
 }
 struct FunctionsVisitor<'db> {
     db: &'db dyn Db,
@@ -346,10 +346,12 @@ impl<'db> FunctionsVisitor<'db> {
     fn add_called_function(&mut self, path: &str, name: &str) {
         self.current_fndef()
             .called_functions
-            .push(qualified_function_name(path, name));
+            .insert(qualified_function_name(path, name));
     }
     fn add_non_local_name(&mut self, name: String) {
-        self.current_fndef().non_local_names.push(name);
+        if self.in_fn_def {
+            self.current_fndef().non_local_names.insert(name);
+        }
     }
     fn check_target_for_impurity(&mut self, target: &ruff_python_ast::Expr) {
         if self.in_fn_def
@@ -366,7 +368,7 @@ impl<'db> FunctionsVisitor<'db> {
     }
 }
 
-fn propagate_impurity(functions: &mut Vec<PythonFunctionDefinition>) {
+fn propagate_impurity(functions: &mut [PythonFunctionDefinition]) {
     let name_to_idx: HashMap<String, usize> = functions
         .iter()
         .enumerate()
@@ -459,8 +461,8 @@ impl<'db> SourceOrderVisitor<'db> for FunctionsVisitor<'db> {
                 let fn_def = PythonFunctionDefinition {
                     path: self.model.file().path(self.db).to_string(),
                     python_function: function,
-                    called_functions: Vec::new(),
-                    non_local_names: Vec::new(),
+                    called_functions: HashSet::new(),
+                    non_local_names: HashSet::new(),
                 };
                 self.functions.push(fn_def);
                 self.in_fn_def = true;
