@@ -360,7 +360,7 @@ impl<'db> FunctionsVisitor<'db> {
             if self
                 .current_fndef()
                 .non_local_names
-                .contains(&name_expr.id.to_string())
+                .contains(name_expr.id.as_str())
             {
                 self.mark_function_impure();
             }
@@ -512,15 +512,15 @@ impl<'db> SourceOrderVisitor<'db> for FunctionsVisitor<'db> {
                             name_expr,
                             ty_python_semantic::ImportAliasResolution::ResolveAliases,
                         ) {
-                            let name = name_expr.id.clone();
+                            let name = name_expr.id.as_str();
                             let path = def.file(self.db).path(self.db).as_str();
                             if path.starts_with("stdlib") || path.starts_with("/pytamaro") {
                                 let bultins_impure = path == "stdlib/builtins.pyi"
-                                    && IMPURE_BUILTINS.contains(&name.as_str());
+                                    && IMPURE_BUILTINS.contains(&name);
                                 let random_impure = path == "stdlib/random.pyi"
-                                    && IMPURE_RANDOM_FUNCTIONS.contains(&name.as_str());
+                                    && IMPURE_RANDOM_FUNCTIONS.contains(&name);
                                 let pytamaro_impure = path.starts_with("/pytamaro/")
-                                    && PYTAMARO_IMPURE_FUNCTIONS.contains(&name.as_str());
+                                    && PYTAMARO_IMPURE_FUNCTIONS.contains(&name);
                                 if bultins_impure || random_impure || pytamaro_impure {
                                     self.mark_function_impure();
                                 }
