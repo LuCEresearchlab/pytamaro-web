@@ -1,8 +1,8 @@
 use std::vec;
 
 use python_analyzer::{
-    CalledName, ParseError, Position, PythonConstant, PythonFunction, PythonFunctionArgument,
-    PythonName, Range, TextRange, analyze_file, find_imported_names, init_workspace,
+    analyze_file, find_imported_names, init_workspace, CalledName, ParseError, Position,
+    PythonConstant, PythonFunction, PythonFunctionArgument, PythonName, Range, TextRange,
 };
 use wasm_bindgen_test::*;
 
@@ -462,6 +462,16 @@ def f():
     let f = &result.defined_functions[0];
     assert_eq!(f.name, "f".to_string());
     assert_eq!(f.side_effects, false);
+}
+
+#[wasm_bindgen_test]
+fn test_side_effects_global_outside_function() {
+    let result = analyze(
+        "
+global x
+",
+    );
+    assert_eq!(result.defined_functions.len(), 0);
 }
 
 #[wasm_bindgen_test]
