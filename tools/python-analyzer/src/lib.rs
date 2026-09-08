@@ -1,6 +1,7 @@
 use ruff_python_ast::statement_visitor::StatementVisitor;
 use ruff_python_ast::visitor::source_order::{self, SourceOrderVisitor};
-use ruff_python_ast::{Expr, ParameterWithDefault, Parameters, Stmt, StmtExpr};
+use ruff_python_ast::{Expr, ParameterWithDefault, Parameters, PySourceType, Stmt, StmtExpr};
+use ruff_python_parser::parse_unchecked_source;
 use std::collections::{HashMap, HashSet, VecDeque};
 use ty_python_semantic::types::ide_support::definition_for_name;
 // Taken from https://github.com/astral-sh/ruff/blob/main/crates/ty_wasm/src/lib.rs
@@ -548,23 +549,7 @@ pub fn init_workspace() -> Result<Workspace, Error> {
 /// Importantly, this does not cache any state (e.g., the parsed AST) between calls.
 #[wasm_bindgen(js_name = "findImportedNames")]
 pub fn find_imported_names(source: &str) -> Vec<PythonName> {
-    let mut workspace = Workspace::new(
-        "/",
-        PositionEncoding::Utf16,
-        js_sys::JSON::parse("{}").expect("Config to be valid JSON"),
-    )
-    .expect("Workspace to be initialized");
-    let file_handle = workspace
-        .open_file("main.py", source)
-        .expect("File to be created");
-    let parsed = ruff_db::parsed::parsed_module(
-        &workspace.db,
-        workspace
-            .db
-            .program_file(file_handle.file)
-            .python_file(&workspace.db),
-    )
-    .load(&workspace.db);
+    let parsed = parse_unchecked_source(source, PySourceType::Python);
     let stmts = parsed.suite();
     let imports_info = {
         let mut collector = ImportsInfoCollector {
