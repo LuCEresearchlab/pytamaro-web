@@ -128,24 +128,38 @@ export default function Academy() {
           <Typography
             variant='h3'
             align='center'
-            marginTop={6}
-            marginBottom={3}
+            sx={{
+              marginTop: 6,
+              marginBottom: 3,
+            }}
           >
             PyTamaro Academy @ USI in Lugano
           </Typography>
-          <Typography align='center' marginY={3}>
+          <Typography
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Workshops to support teachers who consider using PyTamaro in their
             classroom.
           </Typography>
           <Typography
             variant='h4'
             align='center'
-            marginTop={6}
-            marginBottom={3}
+            sx={{
+              marginTop: 6,
+              marginBottom: 3,
+            }}
           >
             Upcoming Editions
           </Typography>
-          <Typography align='center' marginY={3}>
+          <Typography
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Are you interested in participating in one of our workshops to learn
             how to teach programming in an engaging but deep way? Would you like
             to bring along a group of fellow teachers? For a day? Or two? Or an
@@ -156,12 +170,20 @@ export default function Academy() {
           <Typography
             variant='h4'
             align='center'
-            marginTop={6}
-            marginBottom={3}
+            sx={{
+              marginTop: 6,
+              marginBottom: 3,
+            }}
           >
             Prior Editions
           </Typography>
-          <Grid container spacing={5} alignItems='flex-end'>
+          <Grid
+            container
+            spacing={5}
+            sx={{
+              alignItems: 'flex-end',
+            }}
+          >
             {[
               {
                 past: true,
@@ -198,8 +220,9 @@ export default function Academy() {
                 key={instance.slug}
                 size={{
                   xs: 12,
-                  md: 4
-                }}>
+                  md: 4,
+                }}
+              >
                 <Card>
                   <CardActionArea
                     LinkComponent={NextLink}
@@ -369,20 +392,29 @@ export default function Academy() {
           <Typography
             variant='h4'
             align='center'
-            marginTop={6}
-            marginBottom={3}
+            sx={{
+              marginTop: 6,
+              marginBottom: 3,
+            }}
           >
             Programming: Deep like Mathematics, Creative like Art
           </Typography>
         </Container>
 
         <Container maxWidth='lg' component='main'>
-          <Grid container spacing={5} alignItems='flex-end'>
+          <Grid
+            container
+            spacing={5}
+            sx={{
+              alignItems: 'flex-end',
+            }}
+          >
             <Grid
               size={{
                 xs: 12,
-                sm: 6
-              }}>
+                sm: 6,
+              }}
+            >
               <Card>
                 <CardMedia>
                   <div
@@ -411,8 +443,9 @@ export default function Academy() {
 
                     subheader: {
                       align: 'center',
-                    }
-                  }} />
+                    },
+                  }}
+                />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     The contents is informed by concepts from algebra you might
@@ -426,8 +459,9 @@ export default function Academy() {
             <Grid
               size={{
                 xs: 12,
-                sm: 6
-              }}>
+                sm: 6,
+              }}
+            >
               <Card>
                 <CardMedia>
                   <div
@@ -456,8 +490,9 @@ export default function Academy() {
 
                     subheader: {
                       align: 'center',
-                    }
-                  }} />
+                    },
+                  }}
+                />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     Starting with the composition of simple geometric shapes, we
@@ -474,8 +509,10 @@ export default function Academy() {
           <Typography
             variant='h4'
             align='center'
-            marginTop={9}
-            marginBottom={3}
+            sx={{
+              marginTop: 9,
+              marginBottom: 3,
+            }}
           >
             Location
           </Typography>
@@ -665,12 +702,22 @@ export default function Academy() {
         </Container>
 
         <Container maxWidth='lg'>
-          <Typography align='center' marginY={3}>
+          <Typography
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             The PyTamaro Academy is organized by the Lugano Computing Education
             Research Lab (<Link href='https://luce.si.usi.ch/'>LuCE</Link>) at
             the Software Institute of the Faculty of Informatics at USI.
           </Typography>
-          <Typography align='center' marginY={3}>
+          <Typography
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             For more information contact&nbsp;
             <Link href='mailto:Matthias.Hauswirth@usi.ch'>
               Matthias.Hauswirth@usi.ch
@@ -682,12 +729,19 @@ export default function Academy() {
           <Typography
             variant='h4'
             align='center'
-            marginTop={9}
-            marginBottom={3}
+            sx={{
+              marginTop: 9,
+              marginBottom: 3,
+            }}
           >
             Can&apos;t make it to Lugano?
           </Typography>
-          <Typography align='center' marginY={3}>
+          <Typography
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Check out the{' '}
             <Link component={NextLink} href='/teaching-resources'>
               teaching resources

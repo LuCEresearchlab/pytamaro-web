@@ -30,12 +30,14 @@ export default function ActivityFooter({
   return (
     <>
       <Stack
-        mt={12}
-        mb={6}
         direction={{ xs: 'column', sm: 'row' }}
-        justifyContent='space-around'
         spacing={4}
-        alignItems='center'
+        sx={{
+          mt: 12,
+          mb: 6,
+          justifyContent: 'space-around',
+          alignItems: 'center',
+        }}
       >
         {curriculum && (
           <NavigateToActivity

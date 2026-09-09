@@ -64,21 +64,29 @@ export default function FunctionDocumentation({
 
   return (
     <>
-      <Box mb={1}>
+      <Box
+        sx={{
+          mb: 1,
+        }}
+      >
         <Box sx={{ display: 'flex' }}>
           <span>
             <Typography
               color={theme.pytamaro.palette.red}
-              fontWeight='bold'
               component='span'
+              sx={{
+                fontWeight: 'bold',
+              }}
             >
               {t('Function')}
             </Typography>
             &nbsp;
             <Typography
-              color='text.secondary'
               component='span'
               {...hoverProps(moduleId(), hoverElement, setHoverElement)}
+              sx={{
+                color: 'text.secondary',
+              }}
             >
               {module === '.'
                 ? t('definedInYourCode', { context: 'female' })
@@ -156,7 +164,13 @@ export default function FunctionDocumentation({
       )}
       <Box sx={{ mt: 2 }} />
       {description.p.map((p, idx) => (
-        <Typography key={idx} color='text.secondary' gutterBottom>
+        <Typography
+          key={idx}
+          gutterBottom
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           {toSpanAndCodeElements(sentence(p))}
         </Typography>
       ))}
@@ -176,7 +190,13 @@ export default function FunctionDocumentation({
             height={200}
             crossOrigin='anonymous'
           />
-          <Typography color='text.secondary' sx={{ mt: 1 }} variant='caption'>
+          <Typography
+            variant='caption'
+            sx={{
+              color: 'text.secondary',
+              mt: 1,
+            }}
+          >
             {description.figure.caption}
           </Typography>
         </Box>
@@ -191,7 +211,13 @@ export default function FunctionDocumentation({
                 {...hoverProps(paramId(i), hoverElement, setHoverElement)}
               >
                 <CodeElement>{param.name}</CodeElement>
-                <Typography color='text.secondary' component='span' ml='1ch'>
+                <Typography
+                  component='span'
+                  sx={{
+                    color: 'text.secondary',
+                    ml: '1ch',
+                  }}
+                >
                   {toSpanAndCodeElements(param.description)}
                 </Typography>
               </Typography>
@@ -202,9 +228,11 @@ export default function FunctionDocumentation({
         <>
           <SectionDivider title={t('return')} />
           <Typography
-            color='text.secondary'
             component='span'
             {...hoverProps(returnId(), hoverElement, setHoverElement)}
+            sx={{
+              color: 'text.secondary',
+            }}
           >
             {toSpanAndCodeElements(sentence(returnValue.description))}
           </Typography>

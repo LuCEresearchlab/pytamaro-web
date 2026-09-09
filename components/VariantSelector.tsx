@@ -58,7 +58,13 @@ export default function VariantSelector({
         <Card elevation={0}>
           <Stack sx={{ p: 2 }} spacing={2}>
             <Typography>{t('selectActivityVariant')}</Typography>
-            <Stack direction='row' justifyContent='space-around' spacing={2}>
+            <Stack
+              direction='row'
+              spacing={2}
+              sx={{
+                justifyContent: 'space-around',
+              }}
+            >
               {(activityVariant.version !== selectedVersion ||
                 activityVariant.language !== selectedLanguage) && (
                 <CircularProgress color='primary' size='2rem' />

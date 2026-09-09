@@ -85,13 +85,19 @@ export default function DocumentationStripe({
     : false;
 
   return (
-    <Box bgcolor={theme.pytamaro.palette.background.light}>
+    <Box
+      sx={{
+        bgcolor: theme.pytamaro.palette.background.light,
+      }}
+    >
       <Stack
         direction='row'
-        columnGap={0.7}
-        alignItems='baseline'
         useFlexGap
-        marginX={0.5}
+        sx={{
+          columnGap: 0.7,
+          alignItems: 'baseline',
+          marginX: 0.5,
+        }}
       >
         <Tooltip arrow title={t('documentation')} placement='top'>
           <MenuBookOutlined
@@ -105,15 +111,17 @@ export default function DocumentationStripe({
         </Tooltip>
         <Stack
           direction='row'
-          rowGap={0.5}
-          columnGap={0.5}
-          paddingY={0.25}
-          alignItems='baseline'
           useFlexGap
-          flexWrap='wrap'
-          overflow='hidden'
           ref={elementsRef}
-          maxHeight={namesExpanded ? 'none' : COLLAPSED_HEIGHT}
+          sx={{
+            rowGap: 0.5,
+            columnGap: 0.5,
+            paddingY: 0.25,
+            alignItems: 'baseline',
+            flexWrap: 'wrap',
+            overflow: 'hidden',
+            maxHeight: namesExpanded ? 'none' : COLLAPSED_HEIGHT,
+          }}
         >
           {namesToDocElement.map(({ module, element }) => (
             <DocElement

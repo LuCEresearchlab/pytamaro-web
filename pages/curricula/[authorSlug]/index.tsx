@@ -31,7 +31,12 @@ export default function CurriculaPage({
       <Box>
         <NavigationBar />
         <Container>
-          <Typography variant='h3' marginY={3}>
+          <Typography
+            variant='h3'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Curricula by {authorProfile.name}
           </Typography>
           <CurriculaList curricula={curricula} />

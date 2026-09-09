@@ -83,7 +83,11 @@ function PermanentlySaveToToolboxButton({
     onSave();
   };
   return (
-    <Box textAlign='center'>
+    <Box
+      sx={{
+        textAlign: 'center',
+      }}
+    >
       <Button
         onClick={() => saveFunction()}
         disabled={!enabled}
@@ -319,7 +323,13 @@ export default function SaveToToolboxDialog({
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <Typography color='text.secondary' fontWeight='bold' marginBottom={2}>
+        <Typography
+          sx={{
+            color: 'text.secondary',
+            fontWeight: 'bold',
+            marginBottom: 2,
+          }}
+        >
           {t('toolbox.implementation')}
         </Typography>
         {!replaceExistingFunction && (
@@ -353,19 +363,27 @@ export default function SaveToToolboxDialog({
           pythonAnalyzer={implementationPythonAnalyzer}
           cellIdx={0}
         />
-        <Box marginTop={4} />
+        <Box
+          sx={{
+            marginTop: 4,
+          }}
+        />
         {functions.length > 0 ? (
           <>
             <Stack
               direction='row'
               spacing='2ch'
-              alignItems='baseline'
-              marginBottom={2}
+              sx={{
+                alignItems: 'baseline',
+                marginBottom: 2,
+              }}
             >
               <Typography
-                color='text.secondary'
-                minWidth='max-content'
-                fontWeight='bold'
+                sx={{
+                  color: 'text.secondary',
+                  minWidth: 'max-content',
+                  fontWeight: 'bold',
+                }}
               >
                 {replaceExistingFunction
                   ? t('toolbox.functionToEdit')
@@ -373,9 +391,11 @@ export default function SaveToToolboxDialog({
               </Typography>
               {replaceExistingFunction ? (
                 <Typography
-                  color='text.secondary'
-                  fontWeight='bold'
-                  fontFamily={theme.pytamaro.monospaceFontFamily}
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 'bold',
+                    fontFamily: theme.pytamaro.monospaceFontFamily,
+                  }}
                 >
                   {initialName}
                 </Typography>
@@ -431,10 +451,12 @@ export default function SaveToToolboxDialog({
               ) : (
                 <div id='usage'>
                   <Typography
-                    color='text.secondary'
-                    marginTop={2}
-                    marginBottom={2}
-                    fontWeight='bold'
+                    sx={{
+                      color: 'text.secondary',
+                      marginTop: 2,
+                      marginBottom: 2,
+                      fontWeight: 'bold',
+                    }}
                   >
                     {t('toolbox.usageExample')}
                   </Typography>

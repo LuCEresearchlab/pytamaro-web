@@ -88,10 +88,10 @@ export default function ActivityCompetenciesSidebar({
       <SidebarTitle>{t('competencies')}</SidebarTitle>
       <Stack
         direction='row'
-        flexWrap='wrap'
         useFlexGap
         spacing={1}
         sx={{
+          flexWrap: 'wrap',
           maxWidth: `calc(6 * (${AVATAR_SIZE}px + ${theme.spacing(1)}))`,
         }}
       >

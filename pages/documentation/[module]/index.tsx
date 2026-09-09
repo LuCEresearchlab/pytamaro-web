@@ -71,7 +71,12 @@ export default function DocumentationModule({
           <PageTitle>{t('documentation')}</PageTitle>
           <Container maxWidth='md'>
             <DocBreadcrumbs module={moduleData.module} />
-            <Typography mb={4} textAlign='center'>
+            <Typography
+              sx={{
+                mb: 4,
+                textAlign: 'center',
+              }}
+            >
               {moduleData.summary}
             </Typography>
             <div>
@@ -79,7 +84,12 @@ export default function DocumentationModule({
                 <Accordion key={section}>
                   {section !== 'undefined' && (
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <Typography variant='h6' fontWeight='normal'>
+                      <Typography
+                        variant='h6'
+                        sx={{
+                          fontWeight: 'normal',
+                        }}
+                      >
                         {section}
                       </Typography>
                     </AccordionSummary>
@@ -128,7 +138,12 @@ export default function DocumentationModule({
               ))}
             </div>
             {moduleData.officialBaseUrl !== undefined && (
-              <Typography mt={10} textAlign='center'>
+              <Typography
+                sx={{
+                  mt: 10,
+                  textAlign: 'center',
+                }}
+              >
                 See also the{' '}
                 <Link href={moduleData.officialBaseUrl}>
                   official documentation of the {moduleData.module} module

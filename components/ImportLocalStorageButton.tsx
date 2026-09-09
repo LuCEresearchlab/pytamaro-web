@@ -48,7 +48,13 @@ export default function ImportLocalStorageButton({
   };
 
   return (
-    <Box textAlign='center' sx={{ m: 4 }} onClick={handleClick}>
+    <Box
+      onClick={handleClick}
+      sx={{
+        textAlign: 'center',
+        m: 4,
+      }}
+    >
       <Button variant='contained' color='primary' startIcon={<UploadIcon />}>
         Import
       </Button>

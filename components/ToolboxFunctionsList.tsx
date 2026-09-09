@@ -54,8 +54,10 @@ export default function ToolboxFunctionsList({
               components={{
                 code: (
                   <Typography
-                    fontFamily={theme.pytamaro.monospaceFontFamily}
                     component='span'
+                    sx={{
+                      fontFamily: theme.pytamaro.monospaceFontFamily,
+                    }}
                   />
                 ),
               }}
@@ -80,11 +82,21 @@ export default function ToolboxFunctionsList({
   };
 
   return functions.length === 0 ? (
-    <Typography variant='body1' marginY={3}>
+    <Typography
+      variant='body1'
+      sx={{
+        marginY: 3,
+      }}
+    >
       {t('toolbox.toolboxEmpty')}
     </Typography>
   ) : filteredFunctions.length === 0 ? (
-    <Typography variant='body1' marginY={3}>
+    <Typography
+      variant='body1'
+      sx={{
+        marginY: 3,
+      }}
+    >
       {t('toolbox.noFunctionSearch')}
     </Typography>
   ) : (

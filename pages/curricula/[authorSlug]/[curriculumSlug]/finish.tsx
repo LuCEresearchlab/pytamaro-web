@@ -32,10 +32,12 @@ export default function CurriculumInfoPage({
           {curriculum.competencies.length > 0 && (
             <>
               <Box
-                display='flex'
-                alignItems='baseline'
-                marginTop={9}
-                marginBottom={3}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  marginTop: 9,
+                  marginBottom: 3,
+                }}
               >
                 <Typography variant='h5'>
                   Review the competencies practiced in this curriculum

@@ -35,7 +35,12 @@ function UserCompetencyChip({
           id={myCompetencyChipId(competency)}
           clickable
           label={
-            <Box display='flex' justifyContent='space-between'>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+              }}
+            >
               <Box sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {competency.name}
               </Box>
@@ -102,8 +107,10 @@ export default function UserCompetenciesStack({
     <Stack
       spacing={1}
       direction={direction}
-      flexWrap={direction === 'row' ? 'wrap' : undefined}
       useFlexGap
+      sx={{
+        flexWrap: direction === 'row' ? 'wrap' : undefined,
+      }}
     >
       {sortBy(userCompetencies, ({ competency }) =>
         competency.category === 'programming' ? 0 : 1,

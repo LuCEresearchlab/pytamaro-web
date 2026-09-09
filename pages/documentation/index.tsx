@@ -55,7 +55,12 @@ export default function Documentation({
         <CentralContent>
           <PageTitle>{t('documentation')}</PageTitle>
           <Container maxWidth='md'>
-            <Typography my={4} textAlign='center'>
+            <Typography
+              sx={{
+                my: 4,
+                textAlign: 'center',
+              }}
+            >
               {t('selectToSeeDoc')}
             </Typography>
             <Autocomplete
@@ -125,7 +130,12 @@ export default function Documentation({
                 </div>
               ))}
             </List>
-            <Typography mt={10} textAlign='center'>
+            <Typography
+              sx={{
+                mt: 10,
+                textAlign: 'center',
+              }}
+            >
               See also the official documentation of{' '}
               <Link href='https://docs.python.org/3/library/index.html'>
                 The Python Standard Library

@@ -165,9 +165,11 @@ export default function ExecutionOutputArea({
         <Stack sx={{ width: 'fit-content', minWidth: '100%' }}>
           {stdout.length > 0 && (
             <Box
-              sx={{ backgroundColor: OUTPUT_AREA_BACKGROUND_COLOR }}
-              paddingX={compact ? 2 : 3}
-              paddingY={1}
+              sx={{
+                paddingX: compact ? 2 : 3,
+                paddingY: 1,
+                backgroundColor: OUTPUT_AREA_BACKGROUND_COLOR,
+              }}
             >
               <OutputArea
                 data={stdout}
@@ -180,11 +182,11 @@ export default function ExecutionOutputArea({
           {stderr.length > 0 && (
             <Box
               sx={{
+                paddingX: compact ? 2 : 3,
+                paddingY: 1,
                 backgroundColor: theme.pytamaro.palette.background.errorRed,
                 color: theme.pytamaro.palette.red,
               }}
-              paddingX={compact ? 2 : 3}
-              paddingY={1}
             >
               <StderrElement content={stderr} />
             </Box>

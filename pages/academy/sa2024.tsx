@@ -57,16 +57,38 @@ export default function Academy() {
             </Link>
             <Typography sx={{ color: 'text.primary' }}>Summer 2024</Typography>
           </Breadcrumbs>
-          <Typography variant='h4' align='center' marginY={3}>
+          <Typography
+            variant='h4'
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Five-Day Summer Academy at the Software Institute at USI in Lugano
           </Typography>
-          <Typography variant='h5' align='center' marginY={3}>
+          <Typography
+            variant='h5'
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Monday, July 22 to Friday, July 26, 2024
           </Typography>
-          <Typography variant='h6' align='center' marginY={3}>
+          <Typography
+            variant='h6'
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Daily Schedule: 9:00 to 17:00
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             This was a week-long summer course for teachers. It included
             activities with{' '}
             <Link component={NextLink} href='/tamarocards'>
@@ -98,8 +120,10 @@ export default function Academy() {
           <Typography
             variant='h5'
             align='center'
-            marginY={3}
-            sx={{ fontWeight: 'bold' }}
+            sx={{
+              marginY: 3,
+              fontWeight: 'bold',
+            }}
           >
             We had a great time with wonderful teachers! Thank you for the
             PAC-MAN game-in-a-tin!
@@ -110,14 +134,21 @@ export default function Academy() {
           <Typography
             variant='h4'
             align='center'
-            marginTop={6}
-            marginBottom={3}
+            sx={{
+              marginTop: 6,
+              marginBottom: 3,
+            }}
           >
             Organizers
           </Typography>
         </Container>
         <Container maxWidth='lg'>
-          <Typography align='center' marginY={3}>
+          <Typography
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             The 2024 PyTamaro Summer Academy was organized by the{' '}
             <Link href='https://luce.si.usi.ch/'>
               Lugano Computing Education Research Lab
@@ -128,12 +159,19 @@ export default function Academy() {
         </Container>
 
         <Container maxWidth='lg' component='main'>
-          <Grid container spacing={5} alignItems='flex-end'>
+          <Grid
+            container
+            spacing={5}
+            sx={{
+              alignItems: 'flex-end',
+            }}
+          >
             <Grid
               size={{
                 xs: 12,
-                sm: 4
-              }}>
+                sm: 4,
+              }}
+            >
               <Card>
                 <Box
                   sx={{
@@ -155,8 +193,9 @@ export default function Academy() {
 
                     subheader: {
                       align: 'center',
-                    }
-                  }} />
+                    },
+                  }}
+                />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     Luca is leading the PyTamaro effort with the goal of making
@@ -170,8 +209,9 @@ export default function Academy() {
             <Grid
               size={{
                 xs: 12,
-                sm: 4
-              }}>
+                sm: 4,
+              }}
+            >
               <Card>
                 <Box
                   sx={{
@@ -193,8 +233,9 @@ export default function Academy() {
 
                     subheader: {
                       align: 'center',
-                    }
-                  }} />
+                    },
+                  }}
+                />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     Joey is interested in software engineering and is studying
@@ -207,8 +248,9 @@ export default function Academy() {
             <Grid
               size={{
                 xs: 12,
-                sm: 4
-              }}>
+                sm: 4,
+              }}
+            >
               <Card>
                 <Box
                   sx={{
@@ -230,8 +272,9 @@ export default function Academy() {
 
                     subheader: {
                       align: 'center',
-                    }
-                  }} />
+                    },
+                  }}
+                />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     Matthias has been teaching programming, at university and
@@ -245,8 +288,9 @@ export default function Academy() {
             <Grid
               size={{
                 xs: 12,
-                sm: 4
-              }}>
+                sm: 4,
+              }}
+            >
               <Card>
                 <Box
                   sx={{
@@ -268,8 +312,9 @@ export default function Academy() {
 
                     subheader: {
                       align: 'center',
-                    }
-                  }} />
+                    },
+                  }}
+                />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     Costanza is studying informatics at USI, and she is
@@ -283,8 +328,9 @@ export default function Academy() {
             <Grid
               size={{
                 xs: 12,
-                sm: 4
-              }}>
+                sm: 4,
+              }}
+            >
               <Card>
                 <Box
                   sx={{
@@ -306,8 +352,9 @@ export default function Academy() {
 
                     subheader: {
                       align: 'center',
-                    }
-                  }} />
+                    },
+                  }}
+                />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     Davide is studying informatics at USI. He is passionate
@@ -321,8 +368,9 @@ export default function Academy() {
             <Grid
               size={{
                 xs: 12,
-                sm: 4
-              }}>
+                sm: 4,
+              }}
+            >
               <Card>
                 <Box
                   sx={{
@@ -341,8 +389,9 @@ export default function Academy() {
 
                     subheader: {
                       align: 'center',
-                    }
-                  }} />
+                    },
+                  }}
+                />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     At the Software Institute at USI we discover, design, and
@@ -356,7 +405,12 @@ export default function Academy() {
         </Container>
 
         <Container maxWidth='lg'>
-          <Typography align='center' marginY={3}>
+          <Typography
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             For more information contact&nbsp;
             <Link href='mailto:Matthias.Hauswirth@usi.ch'>
               Matthias.Hauswirth@usi.ch

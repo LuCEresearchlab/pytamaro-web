@@ -68,7 +68,12 @@ export default function ActivityInfoPage({
       <Box>
         <NavigationBar />
         <Container>
-          <Typography variant='h2' marginY={3}>
+          <Typography
+            variant='h2'
+            sx={{
+              marginY: 3,
+            }}
+          >
             {title}
           </Typography>
           <div
@@ -93,7 +98,13 @@ export default function ActivityInfoPage({
               }}
             />
           </div>
-          <Typography variant='h4' marginTop={4} marginBottom={2}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginTop: 4,
+              marginBottom: 2,
+            }}
+          >
             Author & License
           </Typography>
           <ActivityAuthorInfo
@@ -103,13 +114,25 @@ export default function ActivityInfoPage({
           />
           {activity.concepts.length > 0 && (
             <>
-              <Typography variant='h4' marginTop={4} marginBottom={2}>
+              <Typography
+                variant='h4'
+                sx={{
+                  marginTop: 4,
+                  marginBottom: 2,
+                }}
+              >
                 Concepts
               </Typography>
               <ActivityConcepts concepts={activity.concepts} />
             </>
           )}
-          <Typography variant='h4' marginTop={4} marginBottom={2}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginTop: 4,
+              marginBottom: 2,
+            }}
+          >
             Languages
           </Typography>
           <Typography variant='body1'>
@@ -142,10 +165,21 @@ export default function ActivityInfoPage({
           </ul>
           {includingCurricula.length > 0 && (
             <>
-              <Typography variant='h4' marginTop={4} marginBottom={2}>
+              <Typography
+                variant='h4'
+                sx={{
+                  marginTop: 4,
+                  marginBottom: 2,
+                }}
+              >
                 Curricula
               </Typography>
-              <Typography variant='body1' marginBottom={2}>
+              <Typography
+                variant='body1'
+                sx={{
+                  marginBottom: 2,
+                }}
+              >
                 {`${format(includingCurricula.length, 'curriculum includes', 'curricula include')} this activity:`}
               </Typography>
               <CurriculaList curricula={includingCurricula} />
@@ -153,10 +187,21 @@ export default function ActivityInfoPage({
           )}
           {visibleUses.length > 0 && (
             <>
-              <Typography variant='h4' marginTop={4} marginBottom={2}>
+              <Typography
+                variant='h4'
+                sx={{
+                  marginTop: 4,
+                  marginBottom: 2,
+                }}
+              >
                 Uses
               </Typography>
-              <Typography variant='body1' marginBottom={3}>
+              <Typography
+                variant='body1'
+                sx={{
+                  marginBottom: 3,
+                }}
+              >
                 {`This activity has been used in ${format(visibleUses.length, 'course', 'courses')}:`}
               </Typography>
               <Stack spacing={2}>
@@ -165,16 +210,23 @@ export default function ActivityInfoPage({
                   <Card key={idx}>
                     <CardContent>
                       <Typography
-                        sx={{ fontSize: 14 }}
-                        color='text.secondary'
                         gutterBottom
+                        sx={{
+                          color: 'text.secondary',
+                          fontSize: 14,
+                        }}
                       >
                         {use.institution}
                       </Typography>
                       <Typography variant='h5' component='div'>
                         {use.course}
                       </Typography>
-                      <Typography sx={{ mb: 1.5 }} color='text.secondary'>
+                      <Typography
+                        sx={{
+                          color: 'text.secondary',
+                          mb: 1.5,
+                        }}
+                      >
                         {use.assignment}
                       </Typography>
                       <Typography variant='body2'>

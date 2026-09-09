@@ -23,7 +23,14 @@ export default function ActivityConcepts({
   );
 
   return (
-    <Stack direction='row' spacing={1} useFlexGap flexWrap='wrap'>
+    <Stack
+      direction='row'
+      spacing={1}
+      useFlexGap
+      sx={{
+        flexWrap: 'wrap',
+      }}
+    >
       {sortedConcepts.map((concept) => (
         <Tooltip key={concept} title={knownConcepts[concept].description} arrow>
           <Chip

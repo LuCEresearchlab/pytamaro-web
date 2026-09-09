@@ -224,7 +224,12 @@ function PythonCodeCard() {
           endIcon={<PlayCircle />}
         >
           <div style={{ textAlign: 'center' }}>
-            <Typography fontWeight='bold' component={'span'}>
+            <Typography
+              component={'span'}
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Try it Now!
             </Typography>{' '}
             <br />
@@ -275,14 +280,20 @@ function Documentation() {
     [],
   );
   return (
-    <Box bgcolor={theme.pytamaro.palette.background.light}>
+    <Box
+      sx={{
+        bgcolor: theme.pytamaro.palette.background.light,
+      }}
+    >
       <Stack
         direction='row'
-        columnGap={0.7}
-        alignItems='baseline'
         useFlexGap
-        marginX={0.5}
-        minHeight={'1.25em'}
+        sx={{
+          columnGap: 0.7,
+          alignItems: 'baseline',
+          marginX: 0.5,
+          minHeight: '1.25em',
+        }}
       >
         <MenuBookOutlined
           sx={{
@@ -294,12 +305,14 @@ function Documentation() {
         />
         <Stack
           direction='row'
-          rowGap={0.5}
-          columnGap={0.5}
-          alignItems='baseline'
           useFlexGap
-          flexWrap='wrap'
-          overflow='hidden'
+          sx={{
+            rowGap: 0.5,
+            columnGap: 0.5,
+            alignItems: 'baseline',
+            flexWrap: 'wrap',
+            overflow: 'hidden',
+          }}
         >
           {namesToDocElement.map(({ module, element }) =>
             module === 'builtins' && element?.name === 'range' ? (
@@ -392,7 +405,13 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
         </Button>
       </NavigationBar>
       <Container maxWidth='xl'>
-        <Box display='flex' justifyContent='center' marginY={10}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginY: 10,
+          }}
+        >
           <Box sx={{ width: { xs: '35vw', md: '25vw', xl: '15vw' } }}>
             <svg viewBox='0 0 600 108' display='block' overflow='visible'>
               <g id='pytamaro-logo-text'>
@@ -430,34 +449,53 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
         </Box>
         <Typography
           variant='h3'
-          fontWeight='bold'
-          textAlign='center'
-          marginY={10}
-          sx={{ textWrap: 'balance' }}
+          sx={{
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginY: 10,
+            textWrap: 'balance',
+          }}
         >
           Learn{' '}
           <Typography
             variant='h3'
-            fontWeight='bold'
             component='span'
             color='primary'
+            sx={{
+              fontWeight: 'bold',
+            }}
           >
             Programming
           </Typography>{' '}
           in Python with{' '}
           <Typography
             variant='h3'
-            fontWeight='bold'
             component='span'
             color={theme.pytamaro.palette.red}
+            sx={{
+              fontWeight: 'bold',
+            }}
           >
             Graphics
           </Typography>
         </Typography>
-        <Box maxWidth={'md'} marginX={'auto'} marginY={10}>
+        <Box
+          sx={{
+            maxWidth: 'md',
+            marginX: 'auto',
+            marginY: 10,
+          }}
+        >
           <PythonCodeCard />
         </Box>
-        <Typography variant='h4' mt={14} mb={2} fontWeight='bold'>
+        <Typography
+          variant='h4'
+          sx={{
+            mt: 14,
+            mb: 2,
+            fontWeight: 'bold',
+          }}
+        >
           Learn with PyTamaro
         </Typography>
         <Grid container spacing={2}>
@@ -476,20 +514,26 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                       variant: 'h5',
                       color: 'primary',
                       fontWeight: 'bold',
-                    }
+                    },
                   }}
                 />
                 <CardContent sx={{ pY: 1 }}>
                   <Typography
                     variant='body1'
                     color='textSecondary'
-                    fontSize='1.1rem'
+                    sx={{
+                      fontSize: '1.1rem',
+                    }}
                   >
                     Learn programming in connection to art, data science,
                     colors, animations, and more.
                   </Typography>
                 </CardContent>
-                <Box padding={2}>
+                <Box
+                  sx={{
+                    padding: 2,
+                  }}
+                >
                   <Carousel interval={2000}>
                     {shuffle(activities).map((activity) => (
                       <ActivityCardMedia
@@ -519,22 +563,27 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                       variant: 'h5',
                       color: 'primary',
                       fontWeight: 'bold',
-                    }
+                    },
                   }}
                 />
                 <CardContent sx={{ pY: 1 }}>
                   <Typography
                     variant='body1'
                     color='textSecondary'
-                    fontSize='1.1rem'
+                    sx={{
+                      fontSize: '1.1rem',
+                    }}
                   >
                     Choose a beginner or advanced curriculum that guides you
                     through the activities.
                   </Typography>
                 </CardContent>
                 <Box
-                  padding={2}
-                  sx={{ display: 'flex', justifyContent: 'center' }}
+                  sx={{
+                    padding: 2,
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}
                 >
                   <img src='Curriculum.png' alt='Curriculum' height='250rem' />
                 </Box>
@@ -542,7 +591,14 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
             </Card>
           </Grid>
         </Grid>
-        <Typography variant='h4' mt={8} mb={2} fontWeight='bold'>
+        <Typography
+          variant='h4'
+          sx={{
+            mt: 8,
+            mb: 2,
+            fontWeight: 'bold',
+          }}
+        >
           Teach with PyTamaro
         </Typography>
         <Grid container spacing={2}>
@@ -560,14 +616,16 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                       variant: 'h5',
                       color: 'primary',
                       fontWeight: 'bold',
-                    }
+                    },
                   }}
                 />
                 <CardContent sx={{ pt: 0 }}>
                   <Typography
                     variant='body1'
                     color='textSecondary'
-                    fontSize='1.1rem'
+                    sx={{
+                      fontSize: '1.1rem',
+                    }}
                   >
                     Start teaching programming with <strong>unplugged</strong>{' '}
                     activities, and check out other resources for teachers.
@@ -587,14 +645,16 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                       variant: 'h5',
                       color: 'primary',
                       fontWeight: 'bold',
-                    }
+                    },
                   }}
                 />
                 <CardContent sx={{ pt: 0 }}>
                   <Typography
                     variant='body1'
                     color='textSecondary'
-                    fontSize='1.1rem'
+                    sx={{
+                      fontSize: '1.1rem',
+                    }}
                   >
                     Read our <strong>research papers</strong> to learn about the
                     design of PyTamaro and this web platform.
@@ -614,14 +674,16 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                       variant: 'h5',
                       color: 'primary',
                       fontWeight: 'bold',
-                    }
+                    },
                   }}
                 />
                 <CardContent sx={{ pt: 0 }}>
                   <Typography
                     variant='body1'
                     color='textSecondary'
-                    fontSize='1.1rem'
+                    sx={{
+                      fontSize: '1.1rem',
+                    }}
                   >
                     Installation instructions if you prefer to use PyTamaro{' '}
                     <strong>offline</strong> in your favorite IDE.
@@ -635,9 +697,12 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
       <Typography
         variant='h6'
         align='center'
-        mt={8}
-        sx={{ fontWeight: 'normal', textWrap: 'balance' }}
         gutterBottom
+        sx={{
+          mt: 8,
+          fontWeight: 'normal',
+          textWrap: 'balance',
+        }}
       >
         PyTamaro is a synergistic collaboration between{' '}
         <Link

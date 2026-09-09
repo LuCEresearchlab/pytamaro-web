@@ -44,12 +44,19 @@ export default function CurriculumUnitSidebar({
             curriculum.slug,
             anchor,
           )}
-          display='flex'
+          sx={{
+            display: 'flex',
+          }}
         >
           <Route fontSize='small' />
           <span style={{ marginLeft: gap }}>{curriculum.title}</span>
         </Link>
-        <Typography variant='body2' marginLeft={`calc(20px + ${gap})`}>
+        <Typography
+          variant='body2'
+          sx={{
+            marginLeft: `calc(20px + ${gap})`,
+          }}
+        >
           {unit.title}
         </Typography>
       </Stack>

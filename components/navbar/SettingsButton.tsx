@@ -99,7 +99,13 @@ export default function SettingsButton() {
                   </ToggleButton>
                 </ToggleButtonGroup>
               </Stack>
-              <Typography fontSize={'.95em'} textAlign={'center'} mt={1}>
+              <Typography
+                sx={{
+                  fontSize: '.95em',
+                  textAlign: 'center',
+                  mt: 1,
+                }}
+              >
                 <Link
                   href={activityVariantPathname({
                     authorSlug: 'luce',

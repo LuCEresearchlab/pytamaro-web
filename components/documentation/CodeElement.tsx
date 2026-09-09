@@ -15,11 +15,15 @@ export default function CodeElement({
   return (
     <Box
       component={noMonospace ? 'span' : 'code'}
-      sx={{ display: 'inline-block' }}
-      fontFamily={noMonospace ? undefined : theme.pytamaro.monospaceFontFamily}
-      fontWeight={bold ? 'bold' : 'normal'}
-      fontStyle={type ? 'italic' : 'normal'}
       translate='no'
+      sx={{
+        fontFamily: noMonospace
+          ? undefined
+          : theme.pytamaro.monospaceFontFamily,
+        fontWeight: bold ? 'bold' : 'normal',
+        fontStyle: type ? 'italic' : 'normal',
+        display: 'inline-block',
+      }}
     >
       {children}
     </Box>

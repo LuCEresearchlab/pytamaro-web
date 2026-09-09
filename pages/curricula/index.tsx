@@ -43,7 +43,12 @@ export default function CurriculaPage({
       <Box>
         <NavigationBar />
         <Container>
-          <Typography variant='h3' marginY={3}>
+          <Typography
+            variant='h3'
+            sx={{
+              marginY: 3,
+            }}
+          >
             All Curricula
           </Typography>
           <Stack spacing={4}>
@@ -54,7 +59,12 @@ export default function CurriculaPage({
               )?.name;
               return (
                 <Stack spacing={2} key={author.slug}>
-                  <Typography variant='h4' marginY={2}>
+                  <Typography
+                    variant='h4'
+                    sx={{
+                      marginY: 2,
+                    }}
+                  >
                     <Link
                       href={curriculaByAuthorPathname(author.slug)}
                       sx={{ textDecoration: 'none' }}

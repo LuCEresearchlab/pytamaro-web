@@ -87,7 +87,13 @@ export default function HocCastlePage() {
             }}
           />
 
-          <Grid container justifyContent='center' spacing={2}>
+          <Grid
+            container
+            spacing={2}
+            sx={{
+              justifyContent: 'center',
+            }}
+          >
             {RESOURCES.map((lang) => (
               <Grid key={`lang_selector_${lang.code}`} size={4}>
                 <Card elevation={1}>
@@ -96,9 +102,11 @@ export default function HocCastlePage() {
                   >
                     <CardContent>
                       <Typography
-                        sx={{ fontSize: '2rem' }}
-                        color='text.secondary'
                         gutterBottom
+                        sx={{
+                          color: 'text.secondary',
+                          fontSize: '2rem',
+                        }}
                       >
                         {lang.locale.flag}
                       </Typography>

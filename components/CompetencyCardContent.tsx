@@ -20,7 +20,15 @@ function LongDescriptionTypography({
 }: {
   children?: React.ReactNode;
 }) {
-  return <Typography color='text.secondary'>{children}</Typography>;
+  return (
+    <Typography
+      sx={{
+        color: 'text.secondary',
+      }}
+    >
+      {children}
+    </Typography>
+  );
 }
 
 export default function CompetencyCardContent({
@@ -46,13 +54,26 @@ export default function CompetencyCardContent({
     <CardContent
       sx={{ minWidth: '80ch', maxWidth: fullWidth ? 'none' : '100ch' }}
     >
-      <Box display='flex' alignItems='center' mb={2}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          mb: 2,
+        }}
+      >
         <GenericMuiIcon
           fontSize='1.5em'
           iconName={competency.icon}
           color={color}
         />
-        <Typography fontSize='1.3em' fontWeight='bold' mx='1ch' color={color}>
+        <Typography
+          color={color}
+          sx={{
+            fontSize: '1.3em',
+            fontWeight: 'bold',
+            mx: '1ch',
+          }}
+        >
           {competency.name}
         </Typography>
         <Chip
@@ -61,12 +82,21 @@ export default function CompetencyCardContent({
           sx={{ ml: '1ch' }}
         />
       </Box>
-      <Typography fontWeight='bold' marginY={1}>
+      <Typography
+        sx={{
+          fontWeight: 'bold',
+          marginY: 1,
+        }}
+      >
         {competency.description}
       </Typography>
       {!noActivities && allActivities.length > 0 && (
         <>
-          <Typography marginTop={2}>
+          <Typography
+            sx={{
+              marginTop: 2,
+            }}
+          >
             {t('practicedInOutOf', {
               done: completedActivities.length,
               total: allActivities.length,
@@ -74,8 +104,20 @@ export default function CompetencyCardContent({
             })}
           </Typography>
           <Box sx={{ overflow: 'auto' }}>
-            <Box sx={{ display: 'flex', width: 'fit-content' }} p={1}>
-              <Stack mt={2} direction='row' spacing={2}>
+            <Box
+              sx={{
+                p: 1,
+                display: 'flex',
+                width: 'fit-content',
+              }}
+            >
+              <Stack
+                direction='row'
+                spacing={2}
+                sx={{
+                  mt: 2,
+                }}
+              >
                 {allActivities.map((activityWithVariant) => (
                   <VariantCard
                     key={activityVariantId(activityWithVariant.variant)}
@@ -92,7 +134,11 @@ export default function CompetencyCardContent({
       )}
       {/* eslint-disable-next-line @typescript-eslint/strict-boolean-expressions */}
       {competency.longDescription && (
-        <Box marginTop={3}>
+        <Box
+          sx={{
+            marginTop: 3,
+          }}
+        >
           <MDXRemote
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...competency.longDescription}

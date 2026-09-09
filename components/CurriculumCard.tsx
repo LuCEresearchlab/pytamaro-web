@@ -27,7 +27,13 @@ function CurriculumDescriptionTypography({
   children?: React.ReactNode;
 }) {
   return (
-    <Typography variant='subtitle1' color='text.secondary' component='div'>
+    <Typography
+      variant='subtitle1'
+      component='div'
+      sx={{
+        color: 'text.secondary',
+      }}
+    >
       {children}
     </Typography>
   );
@@ -115,13 +121,20 @@ export default function CurriculumCard({
           </Grid>
           <Grid
             size={3}
-            display='flex'
-            alignItems='center'
-            justifyContent='center'
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
             {/* <div> needed so that the inner Grid does not inherit from the outer one */}
             <div>
-              <Grid container justifyContent='center'>
+              <Grid
+                container
+                sx={{
+                  justifyContent: 'center',
+                }}
+              >
                 {previewActivities.slice(0, 4).map((activity) => (
                   <Grid size={{ xs: 12, md: 6 }} key={activity.id}>
                     <ActivityCardMedia

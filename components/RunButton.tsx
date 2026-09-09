@@ -112,7 +112,13 @@ export default function RunButton({
   const runLabel = t(runCodeLabelKey);
 
   return (
-    <Stack direction='row' spacing={2} alignItems='center'>
+    <Stack
+      direction='row'
+      spacing={2}
+      sx={{
+        alignItems: 'center',
+      }}
+    >
       <Tooltip arrow placement='left' title={tooltipMessage}>
         {/* https://mui.com/material-ui/react-tooltip/#disabled-elements */}
         <div>

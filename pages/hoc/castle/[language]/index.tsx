@@ -28,11 +28,13 @@ export default function HocCastlePage() {
         <NavigationBar />
         <Container maxWidth='md'>
           <Typography
-            marginTop={5}
             variant='h5'
             align='center'
             color='textSecondary'
             paragraph
+            sx={{
+              marginTop: 5,
+            }}
           >
             {t('hourOfCodeWithPyTamaro')}
           </Typography>
@@ -45,7 +47,13 @@ export default function HocCastlePage() {
           >
             {t('start.programYourOwnCastle')}
           </Typography>
-          <Typography marginY={3} variant='h6' color='textSecondary'>
+          <Typography
+            variant='h6'
+            color='textSecondary'
+            sx={{
+              marginY: 3,
+            }}
+          >
             {t('start.welcome')}
           </Typography>
 
@@ -61,7 +69,11 @@ export default function HocCastlePage() {
             }}
           />
 
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             <Trans
               t={t}
               i18nKey='start.build'
@@ -69,7 +81,11 @@ export default function HocCastlePage() {
             />
           </Typography>
 
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             <Trans
               t={t}
               i18nKey='start.technology'
@@ -90,7 +106,11 @@ export default function HocCastlePage() {
             }}
           />
 
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             <Trans
               t={t}
               i18nKey='start.succeed'
@@ -98,7 +118,11 @@ export default function HocCastlePage() {
             />
           </Typography>
 
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             <Trans
               t={t}
               i18nKey='start.fail'
@@ -106,7 +130,12 @@ export default function HocCastlePage() {
             />
           </Typography>
 
-          <Typography marginY={3} align='center'>
+          <Typography
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             <NextLink href={t('start.castleCurriculumPathname')} passHref>
               <Button
                 startIcon={<PlayArrow />}
@@ -118,10 +147,20 @@ export default function HocCastlePage() {
             </NextLink>
           </Typography>
 
-          <Typography marginY={3} align='center'>
+          <Typography
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             {t('start.goodLuck')}
           </Typography>
-          <Typography marginY={3} align='center'>
+          <Typography
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             <Trans
               t={t}
               i18nKey='start.unesco'

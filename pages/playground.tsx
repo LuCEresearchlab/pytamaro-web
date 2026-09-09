@@ -369,10 +369,12 @@ export default function Playground({
             </Container>
             <Container maxWidth='md'>
               <Grid
-                sx={{ marginTop: 12 }}
-                justifyContent='center'
                 spacing={2}
                 container
+                sx={{
+                  justifyContent: 'center',
+                  marginTop: 12,
+                }}
               >
                 <PlaygroundCodeDownloadButton
                   initialCodeCells={initialCodeCells}

@@ -127,9 +127,12 @@ export default function HocCastlePage() {
         <Container maxWidth='md'>
           <Grid
             container
-            justifyContent='center'
             spacing={2}
-            sx={{ mt: '2rem', mb: '2rem' }}
+            sx={{
+              justifyContent: 'center',
+              mt: '2rem',
+              mb: '2rem',
+            }}
           >
             <Grid size={4}>
               <Image
@@ -182,7 +185,13 @@ export default function HocCastlePage() {
             />
           </Container>
 
-          <Grid container justifyContent='center' spacing={2}>
+          <Grid
+            container
+            spacing={2}
+            sx={{
+              justifyContent: 'center',
+            }}
+          >
             {['en', 'it', 'de'].map((lang) => {
               const langT = i18n.getFixedT(lang, 'hourofcode');
               return (
@@ -190,15 +199,18 @@ export default function HocCastlePage() {
                   key={`lang_selector_${lang}`}
                   size={{
                     xs: 6,
-                    md: 4
-                  }}>
+                    md: 4,
+                  }}
+                >
                   <Card elevation={1}>
                     <CardActionArea onClick={() => handleLangSelection(lang)}>
                       <CardContent>
                         <Typography
-                          sx={{ fontSize: '2rem' }}
-                          color='text.secondary'
                           gutterBottom
+                          sx={{
+                            color: 'text.secondary',
+                            fontSize: '2rem',
+                          }}
                         >
                           {langT('locale.flag')}
                         </Typography>
@@ -224,7 +236,14 @@ export default function HocCastlePage() {
             <DialogTitle>{t('age.title')}</DialogTitle>
 
             <DialogContent>
-              <Grid container justifyContent='center' spacing={2} marginY={2}>
+              <Grid
+                container
+                spacing={2}
+                sx={{
+                  justifyContent: 'center',
+                  marginY: 2,
+                }}
+              >
                 <Grid size={5}>
                   <TextField
                     label={t('age.year')}

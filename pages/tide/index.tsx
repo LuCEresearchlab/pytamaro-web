@@ -185,9 +185,11 @@ function TidePage() {
           <Container>
             <Typography
               variant='body1'
-              marginTop={8}
               align='center'
-              fontSize={'1.3em'}
+              sx={{
+                marginTop: 8,
+                fontSize: '1.3em',
+              }}
             >
               Curious to know more about the design of TIDE? Read the research
               paper!{' '}

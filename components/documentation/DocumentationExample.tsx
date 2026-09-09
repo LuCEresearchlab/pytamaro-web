@@ -19,9 +19,9 @@ function RotatedHeading({
 }) {
   return (
     <Box
-      p={0.75}
-      mr={1}
       sx={{
+        p: 0.75,
+        mr: 1,
         fontVariant: 'all-small-caps',
         display: 'inline-block',
         writingMode: 'vertical-lr',
@@ -51,7 +51,12 @@ export default function DocumentationExample({
   return (
     <Card sx={{ height: '100%' }} variant='outlined'>
       <CardContent sx={{ padding: 0, '&:last-child': { pb: 0 } }}>
-        <Box display='flex' alignItems='center'>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
           <RotatedHeading tooltip={t('codeTooltip')}>
             {t('code')}
           </RotatedHeading>
@@ -75,9 +80,11 @@ export default function DocumentationExample({
         </Box>
         {(example.stdout || example.stdin) && (
           <Box
-            display='flex'
-            alignItems='center'
-            sx={{ backgroundColor: theme.palette.grey[50] }}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: theme.palette.grey[50],
+            }}
           >
             <RotatedHeading tooltip={t('outputTooltip')}>
               {t(
@@ -104,9 +111,11 @@ export default function DocumentationExample({
         )}
         {example.result && (
           <Box
-            display='flex'
-            alignItems='center'
-            sx={{ backgroundColor: theme.palette.grey[200] }}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: theme.palette.grey[200],
+            }}
           >
             <RotatedHeading tooltip={t('resultTooltip')}>
               {t('result')}
@@ -122,9 +131,9 @@ export default function DocumentationExample({
         )}
         {example.error && (
           <Box
-            display='flex'
-            alignItems='center'
             sx={{
+              display: 'flex',
+              alignItems: 'center',
               color: 'red',
               backgroundColor: theme.pytamaro.palette.background.errorRed,
             }}

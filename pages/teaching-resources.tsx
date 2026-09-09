@@ -40,7 +40,13 @@ export default function Teaching() {
         <NavigationBar />
         <Container maxWidth='lg'>
           <PageTitle>Resources for Teachers</PageTitle>
-          <Typography textAlign='center' fontSize='1.2rem' sx={{ mb: 4 }}>
+          <Typography
+            sx={{
+              textAlign: 'center',
+              fontSize: '1.2rem',
+              mb: 4,
+            }}
+          >
             This page contains assorted resources to help you teach Python
             programming with PyTamaro.
           </Typography>
@@ -56,13 +62,21 @@ export default function Teaching() {
             }}
           />
           <Typography
-            textAlign='center'
-            fontSize='1.2rem'
-            sx={{ mb: 2, mt: 4 }}
+            sx={{
+              textAlign: 'center',
+              fontSize: '1.2rem',
+              mb: 2,
+              mt: 4,
+            }}
           >
             Stay informed about new resources and updates?
           </Typography>
-          <Typography textAlign='center' sx={{ mb: 2 }}>
+          <Typography
+            sx={{
+              textAlign: 'center',
+              mb: 2,
+            }}
+          >
             <Button
               variant='contained'
               size='large'
@@ -71,7 +85,13 @@ export default function Teaching() {
               Sign up for our newsletter
             </Button>
           </Typography>
-          <Typography textAlign='center' fontSize='0.8rem' sx={{ mb: 4 }}>
+          <Typography
+            sx={{
+              textAlign: 'center',
+              fontSize: '0.8rem',
+              mb: 4,
+            }}
+          >
             This button is just a mailto link. It will open your email client so
             you can send us an email. This way we don't have to handle
             personally identifiable information on this web site.
@@ -83,8 +103,9 @@ export default function Teaching() {
                   <Grid
                     size={{
                       xs: 12,
-                      md: 7
-                    }}>
+                      md: 7,
+                    }}
+                  >
                     <CardHeader
                       avatar={<School color='primary' />}
                       title='Unplugged Programming With TamaroCards!'
@@ -94,15 +115,27 @@ export default function Teaching() {
                           variant: 'h5',
                           color: 'primary',
                           fontWeight: 'bold',
-                        }
+                        },
                       }}
                     />
                     <CardContent>
-                      <Typography fontSize='1.1rem' paragraph gutterBottom>
+                      <Typography
+                        paragraph
+                        gutterBottom
+                        sx={{
+                          fontSize: '1.1rem',
+                        }}
+                      >
                         Use our simple paper cards to teach programming with
                         PyTamaro.
                       </Typography>
-                      <Typography fontSize='1.1rem' paragraph gutterBottom>
+                      <Typography
+                        paragraph
+                        gutterBottom
+                        sx={{
+                          fontSize: '1.1rem',
+                        }}
+                      >
                         Let students compose PyTamaro code by arranging and
                         connecting cards, and let them interpret other
                         students&apos; card compositions.
@@ -113,14 +146,17 @@ export default function Teaching() {
                     sx={{ background: '#B6A99B' }}
                     size={{
                       xs: 12,
-                      md: 5
-                    }}>
+                      md: 5,
+                    }}
+                  >
                     <Box
-                      position='relative'
-                      height='100%'
-                      alignItems='center'
-                      justifyContent='center'
-                      display='flex'
+                      sx={{
+                        position: 'relative',
+                        height: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        display: 'flex',
+                      }}
                     >
                       <Image
                         src='/TamaroCardsUse.jpg'
@@ -142,8 +178,9 @@ export default function Teaching() {
                   <Grid
                     size={{
                       xs: 12,
-                      md: 7
-                    }}>
+                      md: 7,
+                    }}
+                  >
                     <CardHeader
                       avatar={<Schema color='primary' />}
                       title='From Unplugged to Plugged TamaroCards With TIDE'
@@ -153,15 +190,27 @@ export default function Teaching() {
                           variant: 'h5',
                           color: 'primary',
                           fontWeight: 'bold',
-                        }
+                        },
                       }}
                     />
                     <CardContent>
-                      <Typography fontSize='1.1rem' paragraph gutterBottom>
+                      <Typography
+                        paragraph
+                        gutterBottom
+                        sx={{
+                          fontSize: '1.1rem',
+                        }}
+                      >
                         TIDE is a web-based interactive environment for
                         TamaroCards with live evaluation of graphics and colors.
                       </Typography>
-                      <Typography fontSize='1.1rem' paragraph gutterBottom>
+                      <Typography
+                        paragraph
+                        gutterBottom
+                        sx={{
+                          fontSize: '1.1rem',
+                        }}
+                      >
                         A teaching sequence can start unplugged, with
                         paper-based cards that students manually evaluate, and
                         then transition to TIDE, where students can use the same
@@ -173,14 +222,17 @@ export default function Teaching() {
                     sx={{ background: theme.palette.grey[100] }}
                     size={{
                       xs: 12,
-                      md: 5
-                    }}>
+                      md: 5,
+                    }}
+                  >
                     <Box
-                      position='relative'
-                      height='100%'
-                      alignItems='center'
-                      justifyContent='center'
-                      display='flex'
+                      sx={{
+                        position: 'relative',
+                        height: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        display: 'flex',
+                      }}
                     >
                       <Image
                         src='/tide.png'
@@ -206,8 +258,9 @@ export default function Teaching() {
                   <Grid
                     size={{
                       xs: 12,
-                      md: 7
-                    }}>
+                      md: 7,
+                    }}
+                  >
                     <CardHeader
                       avatar={<AccountBalance color='primary' />}
                       title='Explore the Mathematical Foundations of PyTamaro'
@@ -217,14 +270,26 @@ export default function Teaching() {
                           variant: 'h5',
                           color: 'primary',
                           fontWeight: 'bold',
-                        }
+                        },
                       }}
                     />
                     <CardContent>
-                      <Typography fontSize='1.1rem' paragraph gutterBottom>
+                      <Typography
+                        paragraph
+                        gutterBottom
+                        sx={{
+                          fontSize: '1.1rem',
+                        }}
+                      >
                         Are you a mathematician? Then check this out!
                       </Typography>
-                      <Typography fontSize='1.1rem' paragraph gutterBottom>
+                      <Typography
+                        paragraph
+                        gutterBottom
+                        sx={{
+                          fontSize: '1.1rem',
+                        }}
+                      >
                         PyTamaro is based on a principled foundation: algebra.
                         The reasoning about PyTamaro graphics corresponds to the
                         reasoning about algebraic expressions.
@@ -235,15 +300,18 @@ export default function Teaching() {
                     sx={{ background: '#E1F6FF' }}
                     size={{
                       xs: 12,
-                      md: 5
-                    }}>
+                      md: 5,
+                    }}
+                  >
                     <Box
-                      padding={2}
-                      position='relative'
-                      height='100%'
-                      alignItems='center'
-                      justifyContent='center'
-                      display='flex'
+                      sx={{
+                        padding: 2,
+                        position: 'relative',
+                        height: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        display: 'flex',
+                      }}
                     >
                       <Image
                         src='/mathematical-foundations.png'
@@ -267,8 +335,9 @@ export default function Teaching() {
                   <Grid
                     size={{
                       xs: 12,
-                      md: 7
-                    }}>
+                      md: 7,
+                    }}
+                  >
                     <CardHeader
                       avatar={<Translate color='primary' />}
                       title='Find Out About Support for Multiple Languages'
@@ -278,15 +347,27 @@ export default function Teaching() {
                           variant: 'h5',
                           color: 'primary',
                           fontWeight: 'bold',
-                        }
+                        },
                       }}
                     />
                     <CardContent>
-                      <Typography fontSize='1.1rem' paragraph gutterBottom>
+                      <Typography
+                        paragraph
+                        gutterBottom
+                        sx={{
+                          fontSize: '1.1rem',
+                        }}
+                      >
                         Unlike most libraries, PyTamaro is available in several
                         natural languages.
                       </Typography>
-                      <Typography fontSize='1.1rem' paragraph gutterBottom>
+                      <Typography
+                        paragraph
+                        gutterBottom
+                        sx={{
+                          fontSize: '1.1rem',
+                        }}
+                      >
                         Language choice is not just about the PyTamaro library,
                         but also about the PyTamaro Web platform, and the
                         available activities. Find out more!
@@ -297,15 +378,18 @@ export default function Teaching() {
                     sx={{ background: '#5C2382' }}
                     size={{
                       xs: 12,
-                      md: 5
-                    }}>
+                      md: 5,
+                    }}
+                  >
                     <Box
-                      padding={2}
-                      position='relative'
-                      height='100%'
-                      alignItems='center'
-                      justifyContent='center'
-                      display='flex'
+                      sx={{
+                        padding: 2,
+                        position: 'relative',
+                        height: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        display: 'flex',
+                      }}
                     >
                       <Image
                         src='/multiple-languages.svg'
@@ -329,8 +413,9 @@ export default function Teaching() {
                   <Grid
                     size={{
                       xs: 12,
-                      md: 7
-                    }}>
+                      md: 7,
+                    }}
+                  >
                     <CardHeader
                       avatar={<Print color='primary' />}
                       title='Print Ready-To-Cut Pieces From Your Own Graphic!'
@@ -340,15 +425,27 @@ export default function Teaching() {
                           variant: 'h5',
                           color: 'primary',
                           fontWeight: 'bold',
-                        }
+                        },
                       }}
                     />
                     <CardContent>
-                      <Typography fontSize='1.1rem' paragraph gutterBottom>
+                      <Typography
+                        paragraph
+                        gutterBottom
+                        sx={{
+                          fontSize: '1.1rem',
+                        }}
+                      >
                         Do you want students to compose a graphic starting from
                         basic pieces?
                       </Typography>
-                      <Typography fontSize='1.1rem' paragraph gutterBottom>
+                      <Typography
+                        paragraph
+                        gutterBottom
+                        sx={{
+                          fontSize: '1.1rem',
+                        }}
+                      >
                         We offer a fully automated service that you can use to
                         quickly produce pages ready to print and easy to cut,
                         with all the pieces needed by students.
@@ -359,15 +456,18 @@ export default function Teaching() {
                     sx={{ background: '#FDFBDE' }}
                     size={{
                       xs: 12,
-                      md: 5
-                    }}>
+                      md: 5,
+                    }}
+                  >
                     <Box
-                      padding={2}
-                      position='relative'
-                      height='100%'
-                      alignItems='center'
-                      justifyContent='center'
-                      display='flex'
+                      sx={{
+                        padding: 2,
+                        position: 'relative',
+                        height: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        display: 'flex',
+                      }}
                     >
                       <Image
                         src='/paper-cutouts-transparent.png'
@@ -389,8 +489,9 @@ export default function Teaching() {
                   <Grid
                     size={{
                       xs: 12,
-                      md: 7
-                    }}>
+                      md: 7,
+                    }}
+                  >
                     <CardHeader
                       avatar={<Hiking color='primary' />}
                       title='Ready for an Adventure?'
@@ -400,15 +501,27 @@ export default function Teaching() {
                           variant: 'h5',
                           color: 'primary',
                           fontWeight: 'bold',
-                        }
+                        },
                       }}
                     />
                     <CardContent>
-                      <Typography fontSize='1.1rem' paragraph gutterBottom>
+                      <Typography
+                        paragraph
+                        gutterBottom
+                        sx={{
+                          fontSize: '1.1rem',
+                        }}
+                      >
                         Become a part of our community of practice by spending a
                         few days in Lugano.
                       </Typography>
-                      <Typography fontSize='1.1rem' paragraph gutterBottom>
+                      <Typography
+                        paragraph
+                        gutterBottom
+                        sx={{
+                          fontSize: '1.1rem',
+                        }}
+                      >
                         Learn new teaching approaches, exchange successes and
                         failures, and have fun!
                       </Typography>
@@ -418,15 +531,18 @@ export default function Teaching() {
                     sx={{ background: '#81B4E9' }}
                     size={{
                       xs: 12,
-                      md: 5
-                    }}>
+                      md: 5,
+                    }}
+                  >
                     <Box
-                      padding={2}
-                      position='relative'
-                      height='100%'
-                      alignItems='center'
-                      justifyContent='center'
-                      display='flex'
+                      sx={{
+                        padding: 2,
+                        position: 'relative',
+                        height: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        display: 'flex',
+                      }}
                     >
                       <Image
                         src='/PyTamaroAcademy-Banner.jpg'

@@ -41,7 +41,12 @@ export default function AuthorPage({
       <Box>
         <NavigationBar />
         <Container>
-          <Typography variant='h3' marginY={3}>
+          <Typography
+            variant='h3'
+            sx={{
+              marginY: 3,
+            }}
+          >
             {authorProfile.name}
           </Typography>
           {/* eslint-disable-next-line @typescript-eslint/strict-boolean-expressions */}
@@ -50,7 +55,12 @@ export default function AuthorPage({
             <MDXRemote {...authorProfile.description} />
           )}
           <Divider />
-          <Typography variant='h5' marginY={3}>
+          <Typography
+            variant='h5'
+            sx={{
+              marginY: 3,
+            }}
+          >
             <Link
               href={curriculaByAuthorPathname(authorProfile.slug)}
               underline='none'
@@ -60,7 +70,12 @@ export default function AuthorPage({
           </Typography>
           <CurriculaList curricula={curricula} />
           <Divider sx={{ my: 3 }} />
-          <Typography variant='h5' marginY={3}>
+          <Typography
+            variant='h5'
+            sx={{
+              marginY: 3,
+            }}
+          >
             <Link
               href={activitiesByAuthorPathname(authorProfile.slug)}
               underline='none'

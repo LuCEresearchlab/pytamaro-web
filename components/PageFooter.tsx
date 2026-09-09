@@ -6,7 +6,13 @@ import PyTamaroLogo from '../public/PyTamaroLogo.png';
 export default function PageFooter() {
   return (
     <Container maxWidth='lg' sx={{ mt: 'auto', mb: 2 }}>
-      <Typography variant='body2' align='center' mt={6}>
+      <Typography
+        variant='body2'
+        align='center'
+        sx={{
+          mt: 6,
+        }}
+      >
         <Image
           src={PyTamaroLogo}
           alt='Logo of PyTamaro'
@@ -27,7 +33,14 @@ export default function PageFooter() {
         &nbsp;of&nbsp;
         <Link href='https://www.usi.ch/'>USI</Link>
       </Typography>
-      <Typography variant='body2' align='center' color='grey' mt={1}>
+      <Typography
+        variant='body2'
+        align='center'
+        color='grey'
+        sx={{
+          mt: 1,
+        }}
+      >
         <Link component={NextLink} href='/privacy'>
           Privacy Policy
         </Link>

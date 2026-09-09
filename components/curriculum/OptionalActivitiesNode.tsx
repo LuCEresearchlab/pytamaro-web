@@ -61,14 +61,19 @@ export default function OptionalActivitiesNode({
         aria-describedby='modal-modal-description'
       >
         <Box sx={style}>
-          <Typography variant='h6' textAlign='center'>
+          <Typography
+            variant='h6'
+            sx={{
+              textAlign: 'center',
+            }}
+          >
             {text.toUpperCase()}
           </Typography>
           <Stack
             spacing={2}
-            marginTop={2}
             direction='row'
             sx={{
+              marginTop: 2,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',

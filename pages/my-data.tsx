@@ -84,16 +84,32 @@ export default function MyData() {
         <NavigationBar />
         <Container maxWidth='md'>
           <PageTitle>My Data</PageTitle>
-          <Typography variant='body1' marginY={3}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Your data is stored in your browser&apos;s local storage. On this
             page you can see what is stored there, and you can import and export
             all your data if you wish. You also can configure your privacy
             settings, which influence what data gets sent to our server.
           </Typography>
-          <Typography variant='h4' align='center' marginY={3}>
+          <Typography
+            variant='h4'
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Export and Import
           </Typography>
-          <Typography variant='body1' marginY={3}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: 3,
+            }}
+          >
             The data (e.g., source code) you enter in PyTamaro Web is stored in
             your browser, inside its local storage. You may want to export the
             data into a file you can carry around (e.g., if you work at home and
@@ -102,9 +118,11 @@ export default function MyData() {
           </Typography>
           <Stack
             direction='row'
-            alignItems='center'
-            justifyContent='center'
             spacing={10}
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
             <ExportLocalStorageButton getData={getEntireLocalStorage} />
             <ImportLocalStorageButton
@@ -118,11 +136,18 @@ export default function MyData() {
             id='privacy-settings'
             variant='h4'
             align='center'
-            marginY={3}
+            sx={{
+              marginY: 3,
+            }}
           >
             Privacy Settings
           </Typography>
-          <Typography variant='body1' marginY={3}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: 3,
+            }}
+          >
             PyTamaro Web is run by{' '}
             <Link href='https://luce.si.usi.ch/'>Luce</Link>, the computing
             education research group at USI in Lugano, Switzerland. We run
@@ -135,10 +160,20 @@ export default function MyData() {
             data.
           </Typography>
           <Paper sx={{ padding: '2rem' }}>
-            <Typography variant='h5' marginBottom={3}>
+            <Typography
+              variant='h5'
+              sx={{
+                marginBottom: 3,
+              }}
+            >
               Anonymous data sharing for research
             </Typography>
-            <Typography variant='body1' marginBottom={3}>
+            <Typography
+              variant='body1'
+              sx={{
+                marginBottom: 3,
+              }}
+            >
               {`Current preference: ${currentSharingPreferenceDesc}.`}
             </Typography>
             <Stack direction='row' spacing={2}>
@@ -159,11 +194,21 @@ export default function MyData() {
                 Disable
               </Button>
             </Stack>
-            <Typography variant='body1' marginTop={3}>
+            <Typography
+              variant='body1'
+              sx={{
+                marginTop: 3,
+              }}
+            >
               Please select whether you consent to anonymously use your data.
             </Typography>
           </Paper>
-          <Typography variant='body1' marginY={3}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Even if you allow sharing data for research purposes, we do not
             collect any personally-identifiable data. You remain completely
             anonymous. We will not know who you are, we will not know where you

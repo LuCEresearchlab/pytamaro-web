@@ -6,8 +6,10 @@ export default function SectionDivider({ title }: { title: string }) {
       <Typography
         component={'span'}
         variant='body2'
-        textTransform={'uppercase'}
-        color='text.secondary'
+        sx={{
+          textTransform: 'uppercase',
+          color: 'text.secondary',
+        }}
       >
         {title}
       </Typography>

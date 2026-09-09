@@ -14,13 +14,30 @@ export default function PrivacyPolicy() {
       <Box>
         <NavigationBar />
         <Container maxWidth='md'>
-          <Typography variant='h3' align='center' marginY={margin}>
+          <Typography
+            variant='h3'
+            align='center'
+            sx={{
+              marginY: margin,
+            }}
+          >
             Privacy Policy
           </Typography>
-          <Typography variant='h6' align='center' marginY={margin}>
+          <Typography
+            variant='h6'
+            align='center'
+            sx={{
+              marginY: margin,
+            }}
+          >
             Last updated: March 24, 2023
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             The privacy of your data is important to us. In this policy, we lay
             out:
           </Typography>
@@ -29,14 +46,24 @@ export default function PrivacyPolicy() {
             <li>how your data is handled;</li>
             <li>and your rights with respect to your data.</li>
           </ul>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             This policy applies to our{' '}
             <Link component={NextLink} href='https://pytamaro.si.usi.ch/'>
               PyTamaro Web application
             </Link>
             .
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             If you disagree with our terms, you can always{' '}
             <Link component={NextLink} href='/install'>
               install our open-source PyTamaro library
@@ -44,10 +71,20 @@ export default function PrivacyPolicy() {
             , and develop and run your code on your computer instead of using
             PyTamaro Web.
           </Typography>
-          <Typography variant='h4' marginY={margin}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: margin,
+            }}
+          >
             Who we are
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             PyTamaro Web is developed and operated in Switzerland by the{' '}
             <Link href='https://luce.si.usi.ch/'>
               Lugano Computing Education Research Lab
@@ -65,10 +102,20 @@ export default function PrivacyPolicy() {
             as this website) as well as exploratory and evaluative empirical
             studies.
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             Our infrastructure is located in Lugano, Switzerland.
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             To contact us, please write to:
           </Typography>
           <pre>
@@ -90,37 +137,82 @@ export default function PrivacyPolicy() {
             information you provide to us will be transferred to and stored in
             Switzerland.
           </Typography>
-          <Typography variant='h4' marginY={margin}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: margin,
+            }}
+          >
             What we collect and why
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             Our guiding principle is to collect only what we need. Here’s what
             that means in practice:
           </Typography>
-          <Typography variant='h5' marginY={margin}>
+          <Typography
+            variant='h5'
+            sx={{
+              marginY: margin,
+            }}
+          >
             Advertising
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             We do not use any third-party advertising services.
           </Typography>
-          <Typography variant='h5' marginY={margin}>
+          <Typography
+            variant='h5'
+            sx={{
+              marginY: margin,
+            }}
+          >
             Personally Identifiable Information
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             We do not collect any personally-identifiable information. PyTamaro
             Web has no user accounts.
           </Typography>
-          <Typography variant='h5' marginY={margin}>
+          <Typography
+            variant='h5'
+            sx={{
+              marginY: margin,
+            }}
+          >
             Voluntarily Provided Content (e.g., Source Code You Enter)
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             Our website allows you to practice programming. For this purpose you
             enter source code into the website, and you receive the output
             produced by that code. You also may provide other content, e.g., by
             marking an activity you solved as completed, or by requesting help
             about a specific PyTamaro API function.
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             The content you enter on our website gets stored in two places:
           </Typography>
           <ul>
@@ -151,17 +243,32 @@ export default function PrivacyPolicy() {
               better understand how people learn to program.
             </li>
           </ul>
-          <Typography variant='h5' marginY={margin}>
+          <Typography
+            variant='h5'
+            sx={{
+              marginY: margin,
+            }}
+          >
             Cookies
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             We do not use any third-party cookies.
             {/*
               Some activities may embed explanatory videos that are hosted on YouTube.
               We use a YouTube embed plugin that minimizes the use of cookies.
             */}
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             If you approve our use of our own (first-party) cookies, we store a
             randomly generated unique identifier (e.g., the number 123456789) in
             your browser&apos;s local storage. This identifier does not allow us
@@ -174,10 +281,20 @@ export default function PrivacyPolicy() {
             (E.g., we can tell that two specific source code fragments came from
             the browser storing the number 123456789.)
           </Typography>
-          <Typography variant='h5' marginY={margin}>
+          <Typography
+            variant='h5'
+            sx={{
+              marginY: margin,
+            }}
+          >
             Website Interactions
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             We use Plausible Analytics, a GDPR, CCPA and cookie law compliant
             site analytics tool, to track overall trends in the usage of our
             website. Plausible Analytics collects only aggregated information,
@@ -188,17 +305,32 @@ export default function PrivacyPolicy() {
             </Link>
             .
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             You can see the analytics data we collect at our{' '}
             <Link href='https://analytics.luce.si.usi.ch/pytamaro.si.usi.ch'>
               PyTamaro Plausible dashboard
             </Link>
             .
           </Typography>
-          <Typography variant='h4' marginY={margin}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: margin,
+            }}
+          >
             When we access or share your information
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             Given that we do not collect personally identifiable information,
             the only information we can access is:
           </Typography>
@@ -222,10 +354,20 @@ export default function PrivacyPolicy() {
               the usage analytics data we collect.
             </li>
           </ul>
-          <Typography variant='h4' marginY={margin}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: margin,
+            }}
+          >
             Your rights with respect to your information
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             We strive to apply the same data rights to all users, regardless of
             their location. Some of these rights include:
           </Typography>
@@ -308,7 +450,12 @@ export default function PrivacyPolicy() {
               your personal data, so we could not discriminate against you.)
             </li>
           </ul>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             If you have questions about exercising these rights or need
             assistance, contact us. If an authorized agent is corresponding on
             your behalf, we will need written consent with your signature before
@@ -316,18 +463,38 @@ export default function PrivacyPolicy() {
             protection authority to file a complaint or learn more about local
             privacy laws.
           </Typography>
-          <Typography variant='h4' marginY={margin}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: margin,
+            }}
+          >
             How we secure your data
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             We do not store personally-identifiable data. The source code you
             submit for execution and the corresponding output is encrypted via
             SSL/TLS when transmitted between your browser and our servers.
           </Typography>
-          <Typography variant='h4' marginY={margin}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: margin,
+            }}
+          >
             When transferring personal data from the EU
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             The European Data Protection Board (EDPB) has issued guidance that
             personal data transferred out of the EU must be treated with the
             same level of protection that is granted under EU privacy law. UK
@@ -335,10 +502,20 @@ export default function PrivacyPolicy() {
             out of the UK. However, we do not collect personally-identifiable
             data.
           </Typography>
-          <Typography variant='h4' marginY={margin}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: margin,
+            }}
+          >
             Changes & questions
           </Typography>
-          <Typography variant='body1' marginY={margin}>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: margin,
+            }}
+          >
             We may update this policy as needed to comply with relevant
             regulations and reflect any new practices. Whenever we make a
             significant change to our policies, we will refresh the date at the

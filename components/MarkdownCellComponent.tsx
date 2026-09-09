@@ -51,10 +51,12 @@ function imgComponent(
 
   return (
     <Box
-      display='flex'
-      justifyContent='center'
-      alignItems='center'
       component='span'
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
     >
       <picture>
         <img

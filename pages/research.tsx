@@ -45,11 +45,17 @@ function ResearchCard({
             variant: 'h5',
             color: 'primary',
             fontWeight: 'bold',
-          }
+          },
         }}
       />
       <CardContent>
-        <Stack direction='row' spacing={1} mb={2}>
+        <Stack
+          direction='row'
+          spacing={1}
+          sx={{
+            mb: 2,
+          }}
+        >
           <Chip
             sx={{ minHeight: 24, height: 'auto' }}
             label={conference}
@@ -83,7 +89,13 @@ function ResearchCard({
         >
           {abstract}
         </Typography>
-        <Stack direction='row' spacing={2} mt={2}>
+        <Stack
+          direction='row'
+          spacing={2}
+          sx={{
+            mt: 2,
+          }}
+        >
           <Button
             href={pdf}
             size='small'
@@ -122,7 +134,13 @@ export default function Research() {
         <NavigationBar />
         <Container maxWidth='md'>
           <PageTitle>Research Behind PyTamaro</PageTitle>
-          <Typography variant='h6' gutterBottom fontWeight='normal'>
+          <Typography
+            variant='h6'
+            gutterBottom
+            sx={{
+              fontWeight: 'normal',
+            }}
+          >
             This doctoral dissertation describes the entire PyTamaro project,
             from the motivations to the design of the library and this web
             platform, to the evaluation of the approach:
@@ -161,7 +179,14 @@ use at three educational levels paves the way for future empirical investigation
               authors='Luca Chiodini'
             />
           </Stack>
-          <Typography variant='h6' gutterBottom fontWeight='normal' mt={4}>
+          <Typography
+            variant='h6'
+            gutterBottom
+            sx={{
+              fontWeight: 'normal',
+              mt: 4,
+            }}
+          >
             These research papers describe and evaluate the design of the
             PyTamaro library and its pedagogical approach:
           </Typography>
@@ -239,7 +264,14 @@ use at three educational levels paves the way for future empirical investigation
               authors='Luca Chiodini, Juha Sorva, Arto Hellas, Otto Seppälä, Matthias Hauswirth'
             />
           </Stack>
-          <Typography variant='h6' gutterBottom fontWeight='normal' mt={4}>
+          <Typography
+            variant='h6'
+            gutterBottom
+            sx={{
+              fontWeight: 'normal',
+              mt: 4,
+            }}
+          >
             These research papers explain the design of the pedagogical aspects
             of this web platform:
           </Typography>

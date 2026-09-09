@@ -27,10 +27,20 @@ export default function ConceptPage({
       <Box>
         <NavigationBar />
         <Container>
-          <Typography variant='h3' marginY={3}>
+          <Typography
+            variant='h3'
+            sx={{
+              marginY: 3,
+            }}
+          >
             {concept.title}
           </Typography>
-          <Typography variant='h6' marginY={3}>
+          <Typography
+            variant='h6'
+            sx={{
+              marginY: 3,
+            }}
+          >
             {concept.description}
           </Typography>
           <Divider sx={{ my: 3 }} />

@@ -49,21 +49,34 @@ export default function TypeConstantDocumentation({
   const gender = isConstant ? 'female' : 'male';
   return (
     <>
-      <Box mb={1}>
-        <Box sx={{ display: 'flex' }} minHeight='2em'>
+      <Box
+        sx={{
+          mb: 1,
+        }}
+      >
+        <Box
+          sx={{
+            minHeight: '2em',
+            display: 'flex',
+          }}
+        >
           <span>
             <Typography
               color={isConstant ? 'primary' : 'warning'}
-              fontWeight='bold'
               component='span'
+              sx={{
+                fontWeight: 'bold',
+              }}
             >
               {t(isConstant ? 'Constant' : 'Type')}
             </Typography>
             &nbsp;
             <Typography
-              color='text.secondary'
               component='span'
               {...hoverProps(moduleId(), hoverElement, setHoverElement)}
+              sx={{
+                color: 'text.secondary',
+              }}
             >
               {module === '.'
                 ? t('definedInYourCode', {
@@ -99,7 +112,13 @@ export default function TypeConstantDocumentation({
         />
       )}
       {description.p.map((p, idx) => (
-        <Typography key={idx} color='text.secondary' gutterBottom>
+        <Typography
+          key={idx}
+          gutterBottom
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           {toSpanAndCodeElements(sentence(p))}
         </Typography>
       ))}

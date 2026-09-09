@@ -93,12 +93,28 @@ export default function CurriculumPage({
           <CurriculumCompetenciesSidebar curriculum={curriculum} />
         </Sidebar>
         <CentralContent>
-          <Stack spacing={2} alignItems='center' ref={mainContentRef}>
+          <Stack
+            spacing={2}
+            ref={mainContentRef}
+            sx={{
+              alignItems: 'center',
+            }}
+          >
             <Container maxWidth='md'>
-              <Typography variant='h3' marginY={3}>
+              <Typography
+                variant='h3'
+                sx={{
+                  marginY: 3,
+                }}
+              >
                 {curriculum.title}
               </Typography>
-              <Typography variant='subtitle1' marginY={3}>
+              <Typography
+                variant='subtitle1'
+                sx={{
+                  marginY: 3,
+                }}
+              >
                 {/* eslint-disable-next-line react/jsx-props-no-spreading */}
                 <MDXRemote {...curriculum.description} />
               </Typography>

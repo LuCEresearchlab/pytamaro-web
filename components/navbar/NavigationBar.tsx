@@ -132,7 +132,11 @@ export default function NavigationBar({
               },
             }}
           >
-            <Box m={1}>
+            <Box
+              sx={{
+                m: 1,
+              }}
+            >
               <Stack direction='column'>
                 <PyTamaroHomeLogo />
                 {navItems.map((item) => (
@@ -149,14 +153,15 @@ export default function NavigationBar({
 
         <Stack
           direction='row'
-          display={{
-            lg: 'flex',
-            xs: 'none',
-          }}
           divider={<Divider flexItem orientation='vertical' variant='middle' />}
           useFlexGap
           spacing={1}
           sx={{
+            display: {
+              lg: 'flex',
+              xs: 'none',
+            },
+
             flexGrow: 1,
           }}
         >

@@ -8,7 +8,13 @@ import { activityVariantPathnameFromParts } from '../src/urlUtils';
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <Typography variant='h3' mt={6} align='center'>
+    <Typography
+      variant='h3'
+      align='center'
+      sx={{
+        mt: 6,
+      }}
+    >
       {children}
     </Typography>
   );
@@ -16,7 +22,12 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 
 function QuestionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <Typography variant='h6' mt={4}>
+    <Typography
+      variant='h6'
+      sx={{
+        mt: 4,
+      }}
+    >
       {children}
     </Typography>
   );

@@ -49,11 +49,13 @@ export default function FinishHocCastlePage({
         <NavigationBar />
         <Container maxWidth='md'>
           <Typography
-            marginTop={5}
             variant='h5'
             align='center'
             color='textSecondary'
             paragraph
+            sx={{
+              marginTop: 5,
+            }}
           >
             {t('hourOfCodeWithPyTamaro')}
           </Typography>
@@ -66,7 +68,13 @@ export default function FinishHocCastlePage({
           >
             {t('finish.missionAccomplished')}
           </Typography>
-          <Typography marginY={3} variant='h6' color='textSecondary'>
+          <Typography
+            variant='h6'
+            color='textSecondary'
+            sx={{
+              marginY: 3,
+            }}
+          >
             {t('finish.castleHelp')}
           </Typography>
           <Image
@@ -80,29 +88,46 @@ export default function FinishHocCastlePage({
               height: 'auto',
             }}
           />
-          <Typography marginY={3}>{t('finish.despiteThat')}</Typography>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
+            {t('finish.despiteThat')}
+          </Typography>
           <Grid container spacing={2} sx={{ marginY: 3 }}>
             <Grid
               size={{
                 xs: 12,
-                sm: 8
-              }}>
+                sm: 8,
+              }}
+            >
               <Typography
-                marginTop={0}
                 variant='h5'
                 color='textSecondary'
                 paragraph
+                sx={{
+                  marginTop: 0,
+                }}
               >
                 {t('finish.leonardo')}
               </Typography>
-              <Typography marginY={3}>
+              <Typography
+                sx={{
+                  marginY: 3,
+                }}
+              >
                 <Trans
                   t={t}
                   i18nKey='finish.tsunamiWave'
                   components={{ strong: <strong /> }}
                 />
               </Typography>
-              <Typography marginY={3}>
+              <Typography
+                sx={{
+                  marginY: 3,
+                }}
+              >
                 <Trans
                   t={t}
                   i18nKey='finish.buzzaBiasca'
@@ -113,7 +138,11 @@ export default function FinishHocCastlePage({
                   }}
                 />
               </Typography>
-              <Typography marginY={3}>
+              <Typography
+                sx={{
+                  marginY: 3,
+                }}
+              >
                 <Trans
                   t={t}
                   i18nKey='finish.sketch'
@@ -131,14 +160,20 @@ export default function FinishHocCastlePage({
             <Grid
               size={{
                 xs: 12,
-                sm: 4
-              }}>
+                sm: 4,
+              }}
+            >
               <Card>
                 <CardContent>
                   <Typography gutterBottom variant='h5'>
                     {t('finish.claimYourCertificate')}
                   </Typography>
-                  <Typography variant='body2' color='text.secondary'>
+                  <Typography
+                    variant='body2'
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     {t('finish.claimYourCertificateDesc')}
                   </Typography>
                 </CardContent>
@@ -162,7 +197,12 @@ export default function FinishHocCastlePage({
                   </div>
                 </CardMedia>
                 <CardContent>
-                  <Typography marginY={0} align='center'>
+                  <Typography
+                    align='center'
+                    sx={{
+                      marginY: 0,
+                    }}
+                  >
                     <Link href='https://code.org/api/hour/finish' passHref>
                       <Button variant='contained' size='large' color='success'>
                         <Trans
@@ -182,11 +222,18 @@ export default function FinishHocCastlePage({
             <Grid
               size={{
                 xs: 12,
-                sm: 4
-              }}>
+                sm: 4,
+              }}
+            >
               <Card>
                 <CardContent>
-                  <Typography variant='h5' color='text.secondary' paragraph>
+                  <Typography
+                    variant='h5'
+                    paragraph
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     <Trans
                       t={t}
                       i18nKey='finish.keepCastle'
@@ -194,7 +241,13 @@ export default function FinishHocCastlePage({
                     />
                   </Typography>
 
-                  <Typography variant='body2' color='text.secondary' paragraph>
+                  <Typography
+                    variant='body2'
+                    paragraph
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     {t('finish.keepCastleDesc1')}
                   </Typography>
                   <HourOfCodeCastle
@@ -203,16 +256,20 @@ export default function FinishHocCastlePage({
                   />
                   <Typography
                     variant='body2'
-                    color='text.secondary'
                     paragraph
-                    sx={{ mt: 2 }}
+                    sx={{
+                      color: 'text.secondary',
+                      mt: 2,
+                    }}
                   >
                     {t('finish.keepCastleDesc2')}
                   </Typography>
                   <Typography
                     variant='body2'
-                    color='text.secondary'
                     gutterBottom
+                    sx={{
+                      color: 'text.secondary',
+                    }}
                   >
                     {t('finish.keepCastleDesc3')}
                   </Typography>
@@ -223,18 +280,31 @@ export default function FinishHocCastlePage({
             <Grid
               size={{
                 xs: 12,
-                sm: 4
-              }}>
+                sm: 4,
+              }}
+            >
               <Card>
                 <CardContent>
-                  <Typography variant='h5' color='text.secondary' paragraph>
+                  <Typography
+                    variant='h5'
+                    paragraph
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     <Trans
                       t={t}
                       i18nKey='finish.learnPython'
                       components={{ br: <br /> }}
                     />
                   </Typography>
-                  <Typography variant='body2' color='text.secondary' paragraph>
+                  <Typography
+                    variant='body2'
+                    paragraph
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     {t('finish.learnPythonDesc1')}
                   </Typography>
 
@@ -295,11 +365,23 @@ export default function FinishHocCastlePage({
                     ))}
                   </Carousel>
 
-                  <Typography variant='body2' color='text.secondary' paragraph>
+                  <Typography
+                    variant='body2'
+                    paragraph
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     {t('finish.learnPythonDesc2')}
                   </Typography>
 
-                  <Typography variant='body2' color='text.secondary' paragraph>
+                  <Typography
+                    variant='body2'
+                    paragraph
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     <Trans
                       t={t}
                       i18nKey='finish.learnPythonDesc3'
@@ -312,8 +394,10 @@ export default function FinishHocCastlePage({
                   </Typography>
                   <Typography
                     variant='body2'
-                    color='text.secondary'
                     gutterBottom
+                    sx={{
+                      color: 'text.secondary',
+                    }}
                   >
                     <Trans
                       t={t}
@@ -330,8 +414,9 @@ export default function FinishHocCastlePage({
             <Grid
               size={{
                 xs: 12,
-                sm: 4
-              }}>
+                sm: 4,
+              }}
+            >
               <Card>
                 <CardContent>
                   <Typography variant='h5' color='textSecondary' paragraph>
@@ -343,8 +428,10 @@ export default function FinishHocCastlePage({
                   </Typography>
                   <Typography
                     variant='body2'
-                    color='text.secondary'
                     gutterBottom
+                    sx={{
+                      color: 'text.secondary',
+                    }}
                   >
                     <Trans
                       t={t}
@@ -374,8 +461,10 @@ export default function FinishHocCastlePage({
                   </div>
                   <Typography
                     variant='body2'
-                    color='text.secondary'
                     gutterBottom
+                    sx={{
+                      color: 'text.secondary',
+                    }}
                   >
                     {t('finish.visitFortezzaDesc2')}
                   </Typography>
@@ -384,7 +473,13 @@ export default function FinishHocCastlePage({
             </Grid>
           </Grid>
 
-          <Typography marginY={3}>{t('finish.finish')}</Typography>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
+            {t('finish.finish')}
+          </Typography>
 
           <HourOfCodeFooter />
         </Container>

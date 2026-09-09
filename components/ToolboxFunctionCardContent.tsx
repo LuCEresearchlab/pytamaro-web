@@ -57,7 +57,11 @@ export default function ToolboxFunctionCardContent({
         fn={toolboxToJudiciousFunction(fn)}
         module='toolbox'
       />
-      <Box my={2}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         <Button
           component={Link}
           href={
@@ -76,7 +80,13 @@ export default function ToolboxFunctionCardContent({
       </Box>
       {!summary && (
         <Box sx={{ my: 1 }}>
-          <Typography color='text.secondary' fontWeight='bold' component='span'>
+          <Typography
+            component='span'
+            sx={{
+              color: 'text.secondary',
+              fontWeight: 'bold',
+            }}
+          >
             {t('toolbox.implementation')}
           </Typography>
           <FormGroup sx={{ display: 'inline', marginLeft: 2 }}>
@@ -85,7 +95,11 @@ export default function ToolboxFunctionCardContent({
                 <Switch checked={showSource} onChange={toggleShowSource} />
               }
               label={
-                <Typography color='text.secondary'>
+                <Typography
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   {showSource ? t('toolbox.hide') : t('toolbox.show')}
                 </Typography>
               }
@@ -103,10 +117,12 @@ export default function ToolboxFunctionCardContent({
         </Box>
       )}
       <Typography
-        color='text.secondary'
-        fontWeight='bold'
         component='span'
         gutterBottom
+        sx={{
+          color: 'text.secondary',
+          fontWeight: 'bold',
+        }}
       >
         {t('toolbox.usage')}
       </Typography>
@@ -115,7 +131,11 @@ export default function ToolboxFunctionCardContent({
           <FormControlLabel
             control={<Switch checked={showUsage} onChange={toggleShowUsage} />}
             label={
-              <Typography color='text.secondary'>
+              <Typography
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 {showUsage ? t('toolbox.hide') : t('toolbox.show')}
               </Typography>
             }

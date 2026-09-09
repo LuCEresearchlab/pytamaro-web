@@ -89,10 +89,20 @@ export default function TamaroCardsPage() {
       <Box>
         <NavigationBar />
         <Container>
-          <Typography variant='h3' marginY={3}>
+          <Typography
+            variant='h3'
+            sx={{
+              marginY: 3,
+            }}
+          >
             TamaroCards - A Tangible Way to Compose Programs
           </Typography>
-          <Typography variant='h4' marginY={3}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Version 1, August 2023
           </Typography>
 
@@ -104,7 +114,11 @@ export default function TamaroCardsPage() {
             .
           </Alert>
 
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             PyTamaro is often used to teach complete novices. For them, writing
             Python code on a computer can be challenging. To support novices in
             reasoning about a graphic and its composition, we developed
@@ -148,7 +162,11 @@ export default function TamaroCardsPage() {
             }}
           />
 
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             The{' '}
             <Link href='https://pytamaro.readthedocs.io/en/stable/'>
               PyTamaro API
@@ -159,10 +177,19 @@ export default function TamaroCardsPage() {
             ideal for multi-lingual environments.
           </Typography>
 
-          <Typography variant='h4' marginY={3}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: 3,
+            }}
+          >
             API Documentation Pages
           </Typography>
-          <Typography marginY={1}>
+          <Typography
+            sx={{
+              marginY: 1,
+            }}
+          >
             When using the TamaroCards, we provide each student (or student
             team) with the &quot;API documentation&quot; in the form of a few
             printed pages. Each page shows part of the API.
@@ -185,14 +212,21 @@ export default function TamaroCardsPage() {
               margin: '1rem 0',
             }}
           />
-          <Grid container spacing={5} alignItems='flex-end'>
+          <Grid
+            container
+            spacing={5}
+            sx={{
+              alignItems: 'flex-end',
+            }}
+          >
             {api.map(({ name, desc, img }) => (
               <Grid
                 key={name}
                 size={{
                   xs: 12,
-                  sm: 6
-                }}>
+                  sm: 6,
+                }}
+              >
                 <Card key={name}>
                   <CardActionArea
                     LinkComponent={NextLink}
@@ -225,20 +259,30 @@ export default function TamaroCardsPage() {
 
                         subheader: {
                           align: 'center',
-                        }
-                      }} />
+                        },
+                      }}
+                    />
                   </CardActionArea>
                 </Card>
               </Grid>
             ))}
           </Grid>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             The API documentation pages are not to be cut. They are to be kept
             whole and used as a reference by students when they try to
             understand the meaning of a specific card.
           </Typography>
 
-          <Typography variant='h4' marginY={3}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Printable Card Sheets
           </Typography>
           <Typography>
@@ -246,7 +290,11 @@ export default function TamaroCardsPage() {
             They can use the blue constant cards (colors and points for
             pinning), and they can use the red function cards.
           </Typography>
-          <Typography marginY={1}>
+          <Typography
+            sx={{
+              marginY: 1,
+            }}
+          >
             Expressions are tree structures composed of cards. The evaluation of
             the expression flows from left to right. Each constant or function
             emits a value on its right. Function parameters enter functions from
@@ -255,7 +303,11 @@ export default function TamaroCardsPage() {
             large sheets of paper on the table, so students can easily draw
             between cards.
           </Typography>
-          <Typography marginY={1}>
+          <Typography
+            sx={{
+              marginY: 1,
+            }}
+          >
             When composing or interpreting an expression, students can annotate
             the visual expression with the values emitted by the cards. Values
             of built-in types (int, float, str, bool) are written as normal
@@ -263,7 +315,11 @@ export default function TamaroCardsPage() {
             are drawn graphically; graphics can even be cut out from colored
             sheets of paper.
           </Typography>
-          <Typography marginY={1}>
+          <Typography
+            sx={{
+              marginY: 1,
+            }}
+          >
             The four sheets contain cards arranged in a way so they can be
             printed and easily cut out. The sheets contain more copies of more
             commonly needed cards.
@@ -275,14 +331,21 @@ export default function TamaroCardsPage() {
               margin: '1rem 0',
             }}
           />
-          <Grid container spacing={5} alignItems='flex-end'>
+          <Grid
+            container
+            spacing={5}
+            sx={{
+              alignItems: 'flex-end',
+            }}
+          >
             {sheets.map(({ name, desc, img }) => (
               <Grid
                 key={name}
                 size={{
                   xs: 12,
-                  sm: 6
-                }}>
+                  sm: 6,
+                }}
+              >
                 <Card key={name}>
                   <CardActionArea
                     LinkComponent={NextLink}
@@ -315,14 +378,19 @@ export default function TamaroCardsPage() {
 
                         subheader: {
                           align: 'center',
-                        }
-                      }} />
+                        },
+                      }}
+                    />
                   </CardActionArea>
                 </Card>
               </Grid>
             ))}
           </Grid>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             Note that the individual cards, unlike the API documentation, do not
             contain any annotations on parameters, return values, or constant
             values. This is akin to code: when you call a function, you just
@@ -330,7 +398,12 @@ export default function TamaroCardsPage() {
             the names of the parameters.
           </Typography>
 
-          <Typography variant='h4' marginY={3}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Individual Card PDFs
           </Typography>
           <Typography>

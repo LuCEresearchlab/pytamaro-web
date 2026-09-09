@@ -68,16 +68,24 @@ export default function TitleNode({ data }: NodeProps<Node<NodeData>>) {
             </Button>
           </Tooltip>
         ) : type === 'unit' ? (
-          <Typography variant='h5' textAlign='center' noWrap>
+          <Typography
+            variant='h5'
+            noWrap
+            sx={{
+              textAlign: 'center',
+            }}
+          >
             {text}
           </Typography>
         ) : (
           <Typography
             variant='h6'
-            textTransform='uppercase'
-            letterSpacing='.08rem'
-            textAlign='center'
             noWrap
+            sx={{
+              textTransform: 'uppercase',
+              letterSpacing: '.08rem',
+              textAlign: 'center',
+            }}
           >
             {t(text.toLowerCase())}
           </Typography>

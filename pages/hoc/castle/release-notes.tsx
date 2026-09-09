@@ -17,11 +17,13 @@ export default function ReleaseNotesPage() {
         <NavigationBar />
         <Container maxWidth='md'>
           <Typography
-            marginTop={5}
             variant='h5'
             align='center'
             color='textSecondary'
             paragraph
+            sx={{
+              marginTop: 5,
+            }}
           >
             Hour of Code ® with PyTamaro
           </Typography>
@@ -34,11 +36,21 @@ export default function ReleaseNotesPage() {
           >
             Program Your Own Castle
           </Typography>
-          <Typography marginY={3} align='center'>
+          <Typography
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Created by students at USI, the Università della Svizzera italiana
           </Typography>
 
-          <Typography marginY={3} align='center'>
+          <Typography
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             <NextLink href='/hoc/castle' passHref>
               <Button variant='contained'>Landing Page</Button>
             </NextLink>{' '}
@@ -50,35 +62,77 @@ export default function ReleaseNotesPage() {
           <Typography variant='h2' color='textPrimary'>
             Release Notes
           </Typography>
-          <Typography marginY={3} variant='h6' color='textSecondary'>
+          <Typography
+            variant='h6'
+            color='textSecondary'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Our tutorial should be fully functional in English, Italian, and
             German. We are working on a French translation.
           </Typography>
 
-          <Typography marginTop={5} variant='h4' color='textSecondary'>
+          <Typography
+            variant='h4'
+            color='textSecondary'
+            sx={{
+              marginTop: 5,
+            }}
+          >
             Release 2023-11-06
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             Completed German translation. Improvements based on user observation
             session.
           </Typography>
 
-          <Typography marginTop={5} variant='h4' color='textSecondary'>
+          <Typography
+            variant='h4'
+            color='textSecondary'
+            sx={{
+              marginTop: 5,
+            }}
+          >
             Release 2023-10-15
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             Significantly expanded Teacher Notes (English version).
           </Typography>
 
-          <Typography marginTop={5} variant='h4' color='textSecondary'>
+          <Typography
+            variant='h4'
+            color='textSecondary'
+            sx={{
+              marginTop: 5,
+            }}
+          >
             Release 2023-09-30
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             Completed English and Italian versions. German version only
             partially translated.
           </Typography>
 
-          <Typography marginY={3} variant='h6' color='textSecondary'>
+          <Typography
+            variant='h6'
+            color='textSecondary'
+            sx={{
+              marginY: 3,
+            }}
+          >
             If you find any problems or bugs, we would greatly appreciate if you
             could report them to us (e.g., by using the <FeedbackIcon /> button
             at the top right of the page).

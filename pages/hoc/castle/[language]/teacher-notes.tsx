@@ -53,8 +53,9 @@ function ContributorCard({
     <Grid
       size={{
         xs: 12,
-        sm: 3
-      }}>
+        sm: 3,
+      }}
+    >
       <Card>
         <Box
           sx={{
@@ -82,8 +83,9 @@ function ContributorCard({
 
             subheader: {
               align: 'center',
-            }
-          }} />
+            },
+          }}
+        />
       </Card>
     </Grid>
   );
@@ -108,11 +110,13 @@ export default function FinishHocCastlePage({
         <NavigationBar />
         <Container maxWidth='md'>
           <Typography
-            marginTop={5}
             variant='h5'
             align='center'
             color='textSecondary'
             paragraph
+            sx={{
+              marginTop: 5,
+            }}
           >
             {t('hourOfCodeWithPyTamaro')}
           </Typography>
@@ -128,10 +132,12 @@ export default function FinishHocCastlePage({
             {t('notes.teacherNotes')}
           </Typography>
           <Typography
-            marginY={3}
             variant='h6'
             align='center'
             color='textSecondary'
+            sx={{
+              marginY: 3,
+            }}
           >
             {t('notes.intro')}
           </Typography>
@@ -149,27 +155,49 @@ export default function FinishHocCastlePage({
           />
 
           <Typography
-            marginTop={5}
             variant='h4'
             align='center'
             color='textSecondary'
             paragraph
+            sx={{
+              marginTop: 5,
+            }}
           >
             {t('notes.guidance')}
           </Typography>
-          <Typography marginY={3}>{t('notes.guidanceDesc')}</Typography>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
+            {t('notes.guidanceDesc')}
+          </Typography>
 
           <Typography
-            marginTop={5}
             variant='h4'
             align='center'
             color='textSecondary'
             paragraph
+            sx={{
+              marginTop: 5,
+            }}
           >
             {t('notes.students')}
           </Typography>
-          <Typography marginY={3}>{t('notes.studentsDesc')}</Typography>
-          <Grid container spacing={5} alignItems='flex-end'>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
+            {t('notes.studentsDesc')}
+          </Typography>
+          <Grid
+            container
+            spacing={5}
+            sx={{
+              alignItems: 'flex-end',
+            }}
+          >
             <ContributorCard
               firstName='Agnese'
               lastName='Zamboni'
@@ -196,7 +224,11 @@ export default function FinishHocCastlePage({
             />
           </Grid>
 
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             <Trans
               t={t}
               i18nKey='notes.usi'
@@ -206,8 +238,10 @@ export default function FinishHocCastlePage({
           <Grid
             container
             spacing={5}
-            alignItems='flex-end'
-            justifyContent='center'
+            sx={{
+              alignItems: 'flex-end',
+              justifyContent: 'center',
+            }}
           >
             <ContributorCard
               firstName='Luca'
@@ -234,7 +268,11 @@ export default function FinishHocCastlePage({
               imageName='MatthiasHauswirth.jpg'
             />
           </Grid>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             <Trans
               t={t}
               i18nKey='notes.luce'
@@ -243,15 +281,23 @@ export default function FinishHocCastlePage({
           </Typography>
 
           <Typography
-            marginTop={5}
             variant='h4'
             align='center'
             color='textSecondary'
             paragraph
+            sx={{
+              marginTop: 5,
+            }}
           >
             {t('notes.pedagogy')}
           </Typography>
-          <Typography marginY={3}>{t('notes.pedagogyIntro')}</Typography>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
+            {t('notes.pedagogyIntro')}
+          </Typography>
           <List sx={{ width: '100%' }}>
             {[
               {
@@ -338,15 +384,21 @@ export default function FinishHocCastlePage({
           </List>
 
           <Typography
-            marginTop={5}
             variant='h5'
             align='center'
             color='textSecondary'
             paragraph
+            sx={{
+              marginTop: 5,
+            }}
           >
             {t('notes.beyond')}
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             <Trans
               t={t}
               i18nKey='notes.beyondDesc'
@@ -355,24 +407,32 @@ export default function FinishHocCastlePage({
           </Typography>
 
           <Typography
-            marginTop={5}
             variant='h4'
             align='center'
             color='textSecondary'
             paragraph
+            sx={{
+              marginTop: 5,
+            }}
           >
             {t('notes.contentProgramming')}
           </Typography>
           <Typography
-            marginTop={5}
             variant='h5'
             align='center'
             color='textSecondary'
             paragraph
+            sx={{
+              marginTop: 5,
+            }}
           >
             {t('notes.compositionCastle')}
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             {t('notes.compositionCastleDesc')}
           </Typography>
 
@@ -390,7 +450,11 @@ export default function FinishHocCastlePage({
             />
           </div>
 
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             <Trans
               t={t}
               i18nKey='notes.function'
@@ -400,9 +464,11 @@ export default function FinishHocCastlePage({
           <Grid
             container
             direction='row'
-            justifyContent='center'
-            alignItems='center'
             spacing={2}
+            sx={{
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
           >
             <Grid size={12}>
               <div
@@ -452,14 +518,22 @@ export default function FinishHocCastlePage({
               </div>
             </Grid>
           </Grid>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             <Trans
               t={t}
               i18nKey='notes.pureFunction'
               components={{ strong: <strong /> }}
             />
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             <Trans
               t={t}
               i18nKey='notes.problemDecomposition'
@@ -479,11 +553,25 @@ export default function FinishHocCastlePage({
               }}
             />
           </div>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             {t('notes.independentSubproblems')}
           </Typography>
-          <Typography marginY={3}>{t('notes.pytamaroPure')}</Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
+            {t('notes.pytamaroPure')}
+          </Typography>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             <Trans
               t={t}
               i18nKey='notes.playWithGraphics'
@@ -491,29 +579,47 @@ export default function FinishHocCastlePage({
             />
           </Typography>
           <Typography
-            marginTop={5}
             variant='h5'
             align='center'
             color='textSecondary'
             paragraph
+            sx={{
+              marginTop: 5,
+            }}
           >
             {t('notes.truthPieces')}
           </Typography>
-          <Typography marginY={3}>{t('notes.truthPiecesDesc')}</Typography>
           <Typography
-            marginTop={5}
+            sx={{
+              marginY: 3,
+            }}
+          >
+            {t('notes.truthPiecesDesc')}
+          </Typography>
+          <Typography
             variant='h5'
             align='center'
             color='textSecondary'
             paragraph
+            sx={{
+              marginTop: 5,
+            }}
           >
             {t('notes.learningObjectives')}
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             {t('notes.matrixIntro', { curriculumTitle: curriculum.title })}
           </Typography>
           <ActivitiesCompetenciesMatrix curriculum={curriculum} />
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             <Trans
               t={t}
               i18nKey='notes.matrixMore'
@@ -530,16 +636,29 @@ export default function FinishHocCastlePage({
             />
           </Typography>
           <Typography
-            marginTop={5}
             variant='h5'
             align='center'
             color='textSecondary'
             paragraph
+            sx={{
+              marginTop: 5,
+            }}
           >
             {t('notes.moreActivities')}
           </Typography>
-          <Typography marginY={3}>{t('notes.moreActivitiesDesc')}</Typography>
-          <Typography marginY={3} align='center'>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
+            {t('notes.moreActivitiesDesc')}
+          </Typography>
+          <Typography
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             <NextLink href='/curricula/luce/welcome' passHref>
               <Button variant='contained'>
                 {t('notes.welcomeCurriculum')}
@@ -549,18 +668,32 @@ export default function FinishHocCastlePage({
               <Button variant='contained'>{t('notes.activityGallery')}</Button>
             </NextLink>
           </Typography>
-          <Typography marginY={3}>{t('notes.hearFromYou')}</Typography>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
+            {t('notes.hearFromYou')}
+          </Typography>
 
           <Typography
-            marginTop={5}
             variant='h4'
             align='center'
             color='textSecondary'
             paragraph
+            sx={{
+              marginTop: 5,
+            }}
           >
             {t('notes.contentHistory')}
           </Typography>
-          <Typography marginY={3}>{t('notes.medievalCastles')}</Typography>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
+            {t('notes.medievalCastles')}
+          </Typography>
 
           <Image
             src={FortezzaBellinzonaHistory}
@@ -574,7 +707,11 @@ export default function FinishHocCastlePage({
             }}
           />
 
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             <Trans
               t={t}
               i18nKey='notes.learnMoreFortezza'
@@ -582,15 +719,21 @@ export default function FinishHocCastlePage({
             />
           </Typography>
           <Typography
-            marginTop={5}
             variant='h5'
             align='center'
             color='textSecondary'
             paragraph
+            sx={{
+              marginTop: 5,
+            }}
           >
             {t('notes.glossaryCastle')}
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             <Trans
               t={t}
               i18nKey='notes.glossaryCastleDesc'
@@ -624,8 +767,9 @@ export default function FinishHocCastlePage({
                 key={term}
                 size={{
                   xs: 12,
-                  sm: 6
-                }}>
+                  sm: 6,
+                }}
+              >
                 <Card variant='outlined' sx={{ height: '100%' }}>
                   <CardMedia>
                     <div
@@ -650,7 +794,12 @@ export default function FinishHocCastlePage({
                     <Typography gutterBottom variant='h5' component='div'>
                       {term}
                     </Typography>
-                    <Typography variant='body2' color='text.secondary'>
+                    <Typography
+                      variant='body2'
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       {definition}
                     </Typography>
                   </CardContent>
@@ -660,15 +809,21 @@ export default function FinishHocCastlePage({
           </Grid>
 
           <Typography
-            marginTop={5}
             variant='h5'
             align='center'
             color='textSecondary'
             paragraph
+            sx={{
+              marginTop: 5,
+            }}
           >
             {t('notes.literatureCastles')}
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             J. E. Kaufmann &amp; H. W. Kaufmann; Robert M. Jurga (Illustrator).{' '}
             <Link href='https://www.dacapopress.com/titles/j-e-kaufmann/the-medieval-fortress/9780306813580/'>
               The Medieval Fortress: Castles, Forts, And Walled Cities Of The
@@ -676,14 +831,22 @@ export default function FinishHocCastlePage({
             </Link>
             . Da Capo Press, 2004. ISBN 978-0-306-81358-0.
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             David Macaulay.{' '}
             <Link href='https://www.harpercollins.com/products/castle-david-macaulay'>
               Castle
             </Link>
             . Clarion Books, 2013. ISBN 978-0-544-10226-2.
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             Horst Wolfgang Böhme, Reinhard Friedrich, Barbara Schock-Werner
             (Hrsg.){' '}
             <Link href='https://books.ub.uni-heidelberg.de/arthistoricum/catalog/book/535'>

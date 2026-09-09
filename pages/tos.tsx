@@ -12,7 +12,13 @@ export default function TermsOfService() {
       <Box>
         <NavigationBar />
         <Container maxWidth='md'>
-          <Typography variant='h3' align='center' marginY={3}>
+          <Typography
+            variant='h3'
+            align='center'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Terms of Service
           </Typography>
           <Typography variant='h6'>.</Typography>

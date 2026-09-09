@@ -291,7 +291,12 @@ export default function NotebookPage({
           </Sidebar>
           <CentralContent>
             <Container maxWidth='md'>
-              <Typography variant='h3' marginY={3}>
+              <Typography
+                variant='h3'
+                sx={{
+                  marginY: 3,
+                }}
+              >
                 {title}
               </Typography>
               {!curriculum && <GoToCurriculaBanner curricula={curricula} />}

@@ -162,14 +162,24 @@ export default function ActivitiesPage({
           allowedLanguages.length === 1 ? allowedLanguages[0] : undefined
         }
       />
-      <Typography color='textSecondary' textAlign='center' paddingTop={2}>
+      <Typography
+        color='textSecondary'
+        sx={{
+          textAlign: 'center',
+          paddingTop: 2,
+        }}
+      >
         {`${format(filteredActivities.length, 'activity matches', 'activities match')} the search criteria`}
       </Typography>
       {filteredActivities.length === 0 &&
         allowedConcepts.length > 0 &&
         allowedAuthors.length > 0 &&
         allowedLanguages.length > 0 && (
-          <Box textAlign='center'>
+          <Box
+            sx={{
+              textAlign: 'center',
+            }}
+          >
             <Typography gutterBottom>
               Activities might not yet be tagged with the selected concepts!
             </Typography>

@@ -91,7 +91,7 @@ export default function MyProgress({
                 <CardHeader
                   title='My Curricula'
                   slotProps={{
-                    title: { align: 'center' }
+                    title: { align: 'center' },
                   }}
                 />
                 <CardContent>
@@ -122,7 +122,7 @@ export default function MyProgress({
                 <CardHeader
                   title='My Activities'
                   slotProps={{
-                    title: { align: 'center' }
+                    title: { align: 'center' },
                   }}
                 />
                 <CardContent>
@@ -159,7 +159,7 @@ export default function MyProgress({
                 <CardHeader
                   title='My Toolbox'
                   slotProps={{
-                    title: { align: 'center' }
+                    title: { align: 'center' },
                   }}
                 />
                 <CardContent>
@@ -195,7 +195,12 @@ export default function MyProgress({
             }}
             sx={{ my: 3, display: 'flex', '.MuiAlert-message': { pt: 0.5 } }}
           >
-            <Typography component='span' mr={2}>
+            <Typography
+              component='span'
+              sx={{
+                mr: 2,
+              }}
+            >
               Do you want to export or import all your data? Review or change
               your privacy settings?
             </Typography>

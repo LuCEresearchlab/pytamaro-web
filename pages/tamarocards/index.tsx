@@ -134,14 +134,28 @@ export default function TamaroCardsPage() {
       <Box>
         <NavigationBar />
         <Container>
-          <Typography variant='h3' marginY={3}>
+          <Typography
+            variant='h3'
+            sx={{
+              marginY: 3,
+            }}
+          >
             TamaroCards - A Tangible Way to Compose Programs
           </Typography>
-          <Typography variant='h4' marginY={3}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Version 2, September 2024
           </Typography>
 
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             PyTamaro is often used to teach complete novices. For them, writing
             Python code on a computer can be challenging. To support novices in
             reasoning about a graphic and its composition, we developed
@@ -184,11 +198,20 @@ export default function TamaroCardsPage() {
             }}
           />
 
-          <Typography variant='h5' marginY={3}>
+          <Typography
+            variant='h5'
+            sx={{
+              marginY: 3,
+            }}
+          >
             TamaroCards
           </Typography>
 
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             Literals are white empty pieces of paper, constants are blue
             rectangles, functions are red rounded rectangles, and operators are
             green circles.
@@ -203,7 +226,11 @@ export default function TamaroCardsPage() {
             }}
           />
 
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             <strong>Function cards</strong> are the most important. They are
             needed to produce or compose graphics. They represent calls to
             functions such as <API name='rectangle' />. Functions have
@@ -220,10 +247,19 @@ export default function TamaroCardsPage() {
             binary, and ternary operators.
           </Typography>
 
-          <Typography variant='h5' marginY={3}>
+          <Typography
+            variant='h5'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Composing Cards into Expressions
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             To express a computation (i.e., the creation of a graphic), students
             connect together individual cards into an expression. They can place
             cards next to each other, and where necessary they can draw
@@ -239,14 +275,23 @@ export default function TamaroCardsPage() {
             }}
           />
 
-          <Typography marginY={1}>
+          <Typography
+            sx={{
+              marginY: 1,
+            }}
+          >
             To enable the drawing of connecting lines (and possible
             annotations), it is best to arrange the cards on a big piece of
             paper. We found that taping packaging paper on top of students'
             desks works particularly well.
           </Typography>
 
-          <Typography variant='h5' marginY={3}>
+          <Typography
+            variant='h5'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Evaluating Expressions
           </Typography>
           <Typography>
@@ -265,7 +310,11 @@ export default function TamaroCardsPage() {
             }}
           />
 
-          <Typography marginY={1}>
+          <Typography
+            sx={{
+              marginY: 1,
+            }}
+          >
             Students can annotate the visual expression with the values emitted
             by the cards. They don't necessarily need to annotate each card:
             showing the values produced by the literal cards (which literally
@@ -276,7 +325,12 @@ export default function TamaroCardsPage() {
             placing a paper cut-out of that graphic.
           </Typography>
 
-          <Typography variant='h5' marginY={3}>
+          <Typography
+            variant='h5'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Translating Cards to Python Code
           </Typography>
           <Typography>
@@ -304,10 +358,19 @@ export default function TamaroCardsPage() {
             closing parenthesis.
           </Typography>
 
-          <Typography variant='h4' marginY={3}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Printable Documentation Pages
           </Typography>
-          <Typography marginY={1}>
+          <Typography
+            sx={{
+              marginY: 1,
+            }}
+          >
             When using the TamaroCards, we provide each student (or student
             team) with the "documentation" in the form of a few printed pages.
           </Typography>
@@ -327,14 +390,21 @@ export default function TamaroCardsPage() {
               margin: '1rem 0',
             }}
           />
-          <Grid container spacing={5} alignItems='flex-end'>
+          <Grid
+            container
+            spacing={5}
+            sx={{
+              alignItems: 'flex-end',
+            }}
+          >
             {api.map(({ name, img }) => (
               <Grid
                 key={name}
                 size={{
                   xs: 12,
-                  sm: 6
-                }}>
+                  sm: 6,
+                }}
+              >
                 <Card key={name}>
                   <CardActionArea
                     LinkComponent={NextLink}
@@ -364,7 +434,11 @@ export default function TamaroCardsPage() {
               </Grid>
             ))}
           </Grid>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             Students use the documentation pages as a reference when they try to
             understand the meaning of a specific card. Using these pages is
             training students to use reference documentation. We often initially
@@ -373,11 +447,20 @@ export default function TamaroCardsPage() {
             page, and later provide more pages as needed.
           </Typography>
 
-          <Typography variant='h4' marginY={3}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Printable Card Sheets
           </Typography>
 
-          <Typography marginY={1}>
+          <Typography
+            sx={{
+              marginY: 1,
+            }}
+          >
             The six sheets contain cards arranged in a way so they can be
             printed and easily cut out. The sheets contain more copies of more
             commonly needed cards.
@@ -389,14 +472,21 @@ export default function TamaroCardsPage() {
               margin: '1rem 0',
             }}
           />
-          <Grid container spacing={5} alignItems='flex-end'>
+          <Grid
+            container
+            spacing={5}
+            sx={{
+              alignItems: 'flex-end',
+            }}
+          >
             {sheets.map(({ name, desc, img }) => (
               <Grid
                 key={name}
                 size={{
                   xs: 12,
-                  sm: 6
-                }}>
+                  sm: 6,
+                }}
+              >
                 <Card key={name}>
                   <CardActionArea
                     LinkComponent={NextLink}
@@ -429,21 +519,31 @@ export default function TamaroCardsPage() {
 
                         subheader: {
                           align: 'center',
-                        }
-                      }} />
+                        },
+                      }}
+                    />
                   </CardActionArea>
                 </Card>
               </Grid>
             ))}
           </Grid>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             Note that the individual cards, unlike the documentation, do not
             contain any annotations on parameters, return values, or constant
             values. This is akin to code: when you call a function, you just
             write its name and provide arguments.
           </Typography>
 
-          <Typography variant='h4' marginY={3}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Individual Cards
           </Typography>
           <Typography>
@@ -468,10 +568,19 @@ export default function TamaroCardsPage() {
             </ListItem>
           </List>
 
-          <Typography variant='h4' marginY={3}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Individual Documentation Pictures
           </Typography>
-          <Typography marginY={1}>
+          <Typography
+            sx={{
+              marginY: 1,
+            }}
+          >
             In some situations it can make sense to include task-specific
             subsets of the documentation in teaching material. For example, you
             may write a Word document with an exercise for your students, and
@@ -494,7 +603,11 @@ export default function TamaroCardsPage() {
               reason, use cards, not documentation pictures, to construct a
               TamaroCard expression.
             </Typography>
-            <Typography marginY={1}>
+            <Typography
+              sx={{
+                marginY: 1,
+              }}
+            >
               We recommend handing out the documentation pages (shown above) to
               students. Those pages meaningfully group the documentation for
               related cards together.
@@ -515,10 +628,19 @@ export default function TamaroCardsPage() {
             </ListItem>
           </List>
 
-          <Typography variant='h4' marginY={3}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: 3,
+            }}
+          >
             When NOT To Use TamaroCards
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             TamaroCards are designed for composing relatively simple Python
             expressions, mostly involving calls to PyTamaro functions. However,
             when including the function definition cards (from the "Names" card
@@ -526,14 +648,22 @@ export default function TamaroCardsPage() {
             TamaroCards actually represent a <strong>Turing-complete</strong>{' '}
             programming language!
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             You can implement any algorithm with TamaroCards. Even algorithms
             for which you normally would use loops! Why? Because loops are not
             the only way to repeat computations. There are other ways, one of
             them being recursion. And TamaroCards could be used to define
             recursive functions.
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             TamaroCards focus on a functional subset of Python: they contain
             pure functions (except <API name='show_graphic' />) and immutable
             variables (which we call constants). We recommend to use TamaroCards
@@ -541,17 +671,30 @@ export default function TamaroCardsPage() {
             expressions, constant definitions, and the definition of pure
             functions.
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             And once you introduce imperative Python features, such as mutable
             variables or loops in Python, you go beyond the TamaroCard notional
             machine. You can still use them, but only to reason about the pure
             and immutable parts of the code.
           </Typography>
 
-          <Typography variant='h4' marginY={3}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Working With TamaroCards Can Prevent Misconceptions
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             Teaching students to compose programs using TamaroCards, and
             translating TamaroCard expressions to Python code systematically,
             helps to combat known Python programming misconceptions, such as{' '}
@@ -569,10 +712,19 @@ export default function TamaroCardsPage() {
             .
           </Typography>
 
-          <Typography variant='h4' marginY={3}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: 3,
+            }}
+          >
             TamaroCards: A Variant of the "Expression As Tree" Notional Machine
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             The{' '}
             <Link href='https://notionalmachines.github.io/nms/ExpressionAsTree-1.html'>
               "Expression as Tree" notional machine
@@ -588,10 +740,19 @@ export default function TamaroCardsPage() {
             that are used to produce PyTamaro graphics.
           </Typography>
 
-          <Typography variant='h4' marginY={3}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Natural Languages
           </Typography>
-          <Typography marginY={3}>
+          <Typography
+            sx={{
+              marginY: 3,
+            }}
+          >
             The{' '}
             <Link href='https://pytamaro.readthedocs.io/en/stable/'>
               PyTamaro API
@@ -603,7 +764,12 @@ export default function TamaroCardsPage() {
             A future version may include the French names as well.
           </Typography>
 
-          <Typography variant='h4' marginY={3}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: 3,
+            }}
+          >
             Prior Version of TamaroCards
           </Typography>
           <Typography>

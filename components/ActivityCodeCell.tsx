@@ -33,7 +33,11 @@ function InconsistencyMessage() {
         all the code you previosuly wrote for this activity!
       </Typography>
       {process.env.NODE_ENV === 'development' && (
-        <Typography fontWeight='bold'>
+        <Typography
+          sx={{
+            fontWeight: 'bold',
+          }}
+        >
           If you are a content author, either increase the version number of
           this activity or delete the code previously saved in your browser
           using the reset button.
@@ -99,7 +103,11 @@ export default function ActivityCodeCell({
   return localCodeCellsWrongLength ? (
     <InconsistencyMessage />
   ) : (
-    <Box marginY={2}>
+    <Box
+      sx={{
+        marginY: 2,
+      }}
+    >
       <CodeCell
         initialSource={initialCodeCells[cellIdx].source}
         currentSource={currentCodeCell.source}

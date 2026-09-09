@@ -57,7 +57,12 @@ export default function VariantCard({
                   {langInfo.title}
                 </Typography>
                 {!noVariantInfo && (
-                  <Typography variant='body2' color='text.secondary'>
+                  <Typography
+                    variant='body2'
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     {`${getLanguageDisplayName(variant.language)} - ${variant.version}`}
                   </Typography>
                 )}

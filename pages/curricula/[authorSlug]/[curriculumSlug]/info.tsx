@@ -54,7 +54,12 @@ export default function CurriculumInfoPage({
         <Container>
           <PageTitle>{`${t('curriculumInformation')} - ${title}`}</PageTitle>
           <CurriculumCard curriculum={curriculum} />
-          <Typography variant='h4' marginY={3}>
+          <Typography
+            variant='h4'
+            sx={{
+              marginY: 3,
+            }}
+          >
             {t('authorLicense')}
           </Typography>
           <AttributionInfo
@@ -64,9 +69,19 @@ export default function CurriculumInfoPage({
           />
           {curriculum.competencies.length > 0 && (
             <>
-              <Box display='flex' alignItems='baseline' marginY={3}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  marginY: 3,
+                }}
+              >
                 <Typography variant='h4'>{t('competencies')}</Typography>
-                <Box marginLeft='auto'>
+                <Box
+                  sx={{
+                    marginLeft: 'auto',
+                  }}
+                >
                   <FormControlLabel
                     control={
                       <Switch
@@ -76,7 +91,11 @@ export default function CurriculumInfoPage({
                       />
                     }
                     label={
-                      <Typography color='text.secondary'>
+                      <Typography
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         {t('showMatrix')}
                       </Typography>
                     }
@@ -85,7 +104,11 @@ export default function CurriculumInfoPage({
                 </Box>
               </Box>
               {showMatrix && (
-                <Box mb={6}>
+                <Box
+                  sx={{
+                    mb: 6,
+                  }}
+                >
                   <ActivitiesCompetenciesMatrix curriculum={curriculum} />
                 </Box>
               )}

@@ -12,7 +12,13 @@ export default function ExportLocalStorageButton({
     saveAs(contentBlob, 'pytamaro-web-data.json');
   };
   return (
-    <Box textAlign='center' sx={{ m: 4 }} onClick={handleClick}>
+    <Box
+      onClick={handleClick}
+      sx={{
+        textAlign: 'center',
+        m: 4,
+      }}
+    >
       <Button variant='contained' color='primary' startIcon={<DownloadIcon />}>
         Export
       </Button>

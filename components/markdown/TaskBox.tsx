@@ -21,8 +21,9 @@ export default function TaskBox({ children }: { children: React.ReactNode }) {
     >
       <AlertTitle>{t('yourTask')}</AlertTitle>
       <Box
-        marginTop='1em'
         sx={{
+          marginTop: '1em',
+
           '& > *:last-child': {
             marginBottom: 0,
           },
