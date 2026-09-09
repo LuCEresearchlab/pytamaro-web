@@ -126,9 +126,11 @@ export default function NavigationBar({
             sx={{
               display: { xs: 'block', lg: 'none' },
             }}
-            PaperProps={{
-              style: {
-                backgroundColor: theme.pytamaro.palette.background.default,
+            slotProps={{
+              paper: {
+                style: {
+                  backgroundColor: theme.pytamaro.palette.background.default,
+                },
               },
             }}
           >
