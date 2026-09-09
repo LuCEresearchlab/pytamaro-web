@@ -63,19 +63,21 @@ export default function MoreOptionsButton({
       </IconButton>
       <Menu
         id='long-menu'
-        MenuListProps={{
-          'aria-labelledby': 'long-button',
-        }}
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
         transformOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
-        PaperProps={{
-          elevation: 0,
-          sx: {
-            overflow: 'visible',
-            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+        slotProps={{
+          list: {
+            'aria-labelledby': 'long-button',
+          },
+          paper: {
+            elevation: 0,
+            sx: {
+              overflow: 'visible',
+              filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+            },
           },
         }}
       >
