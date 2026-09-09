@@ -31,9 +31,9 @@ export default function HocCastlePage() {
             variant='h5'
             align='center'
             color='textSecondary'
-            paragraph
             sx={{
               marginTop: 5,
+              marginBottom: '16px',
             }}
           >
             {t('hourOfCodeWithPyTamaro')}

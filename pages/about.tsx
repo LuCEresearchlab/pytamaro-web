@@ -95,10 +95,21 @@ export default function AboutPage({
           >
             About PyTamaro Web
           </Typography>
-          <Typography variant='h4' color='textPrimary' paragraph>
+          <Typography
+            variant='h4'
+            color='textPrimary'
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             ✨ What is new on the platform?
           </Typography>
-          <Typography variant='body1' paragraph>
+          <Typography
+            variant='body1'
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             We constantly improve our platform. These are the highlights of our
             updates:
           </Typography>
@@ -125,7 +136,12 @@ export default function AboutPage({
           <Typography id='who' variant='h4' gutterBottom>
             🧑‍🤝‍🧑 Who?
           </Typography>
-          <Typography variant='body1' paragraph>
+          <Typography
+            variant='body1'
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             This web platform for PyTamaro has been developed at the{' '}
             <Link href='https://luce.si.usi.ch/'>
               Lugano Computing Education research lab
@@ -223,7 +239,12 @@ export default function AboutPage({
           <Typography variant='h4' sx={{ mt: 4 }} gutterBottom>
             🧑‍💻 Why?
           </Typography>
-          <Typography variant='body1' paragraph>
+          <Typography
+            variant='body1'
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Graphics can be an excellent domain to learn programming. We
             developed PyTamaro exactly with this goal in mind, and we have been
             using it in several courses: students loved it! This web platform

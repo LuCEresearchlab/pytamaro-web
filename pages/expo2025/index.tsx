@@ -199,7 +199,11 @@ export default function Expo2025() {
           >
             We are LuCE
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             LuCE is a research group at USI, Università della Svizzera italiana,
             in Lugano. LuCE, lead by Prof. Matthias Hauswirth, is based at the
             Software Institute of the Faculty of Informatics. Our goal is to
@@ -216,7 +220,11 @@ export default function Expo2025() {
           >
             Our Motivation: Programming for Democracy
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Switzerland is successful because of our empowered population. In
             our direct democracy, we Swiss <b>co-create</b> our{' '}
             <b>societal structures</b>. To actively participate in designing our
@@ -227,7 +235,11 @@ export default function Expo2025() {
             <b>identify similarities and differences</b>, and to <b>abstract</b>{' '}
             over differences.
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             These are not just essential competencies of citizens in a
             democracy. These also happen to be{' '}
             <b>core competencies in informatics</b>, software engineering, and
@@ -236,7 +248,12 @@ export default function Expo2025() {
             <b>potential benefits for society far beyond</b> the mere technical
             programming skills.
           </Typography>
-          <Typography paragraph variant='caption'>
+          <Typography
+            variant='caption'
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             * Up to now there is little scientific evidence that learning to
             program improves general reasoning abilities. Our research aims at
             studying the effectiveness of programming education. It is our
@@ -250,7 +267,11 @@ export default function Expo2025() {
           >
             Our Proposal for Swissnex @ the Swiss Pavilion
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             We propose to design and run “
             <b>The Visually Swiss Programming Experience</b>
             ”, a highly interactive <b>in-person learning experience</b>{' '}
@@ -306,11 +327,19 @@ export default function Expo2025() {
               />
             </ListItem>
           </List>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             The duration of a workshop could be about 3 hours, but shorter or
             longer options are possible.
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             The language of the workshop is English (or a Swiss national
             language). Materials could be provided in Swiss national languages
             and potentially also in Japanese.
@@ -322,7 +351,11 @@ export default function Expo2025() {
           >
             Our Approach: Decompose Graphics to Compose Programs
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Our approach is <b>simple</b>: Learners look at everyday graphics
             and analyze their <b>structure</b>. Do we see patterns? Can we
             identify repeated components? What are their similarities and
@@ -365,7 +398,11 @@ export default function Expo2025() {
               '#C2EBFF',
             )}
           </Grid>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             From a shopping receipt to a railway clock, from a computer game to
             a passenger information display on the train, our world is full of
             graphics. And many of these graphics have a <b>structure</b>. We can{' '}
@@ -385,7 +422,11 @@ export default function Expo2025() {
           >
             Meaningful Graphics Related to Everyday Life
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Some graphics we use are playful, others have a deeper meaning. Such
             as the{' '}
             <Link
@@ -428,7 +469,11 @@ export default function Expo2025() {
                 sm: 6,
               }}
             >
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 <Image
                   key={10}
                   src={PyTamaroLogoExplained}
@@ -449,11 +494,19 @@ export default function Expo2025() {
                 sm: 6,
               }}
             >
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 <b>Swissness</b> is at the core of our approach. It starts with
                 the name and the logo:
               </Typography>
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 PyTamaro is a homage to our beloved Monte Tamaro in the heart of
                 Ticino.
               </Typography>
@@ -466,7 +519,11 @@ export default function Expo2025() {
           >
             PyTamaro &mdash; Swiss Content
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             PyTamaro is about decomposing geometric graphics. Switzerland has
             some iconic graphics that lend themselves to decomposition, such as
             the wonderfully clear <b>Swiss Hiking Trail</b> signage.
@@ -511,7 +568,11 @@ export default function Expo2025() {
           >
             PyTamaro &mdash; Swiss Essence
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Like the Swiss Pavilion, PyTamaro focuses on the essential. Instead
             of overwhelming learners with irrelevant complexity, the approach
             distills the challenge to its <b>most essential core</b>. We focus
@@ -549,7 +610,11 @@ export default function Expo2025() {
                 sm: 6,
               }}
             >
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 <Image
                   key={10}
                   src={RotatingSnakes}
@@ -570,13 +635,21 @@ export default function Expo2025() {
                 sm: 6,
               }}
             >
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 Teachers can adopt existing activities and develop their own.
                 The PyTamaro library, with its simple, compositional approach,
                 allows them to focus on the essence, while empowering them to
                 develop attractive visual programming exercises.
               </Typography>
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 Creativity abounds, like in the activities about optical
                 illusions developed by a high school teacher in Ticino, Nicola
                 Dal Pian, which culminate in an{' '}
@@ -591,7 +664,11 @@ export default function Expo2025() {
               </Typography>
             </Grid>
           </Grid>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             PyTamaro is not one central resource, but a{' '}
             <b>co-created ecosystem</b> that keeps evolving thanks to a
             community of empowered participants. Just a bit like Switzerland!
@@ -738,7 +815,11 @@ export default function Expo2025() {
               </Card>
             </Grid>
           </Grid>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Our unplugged activities include <b>multilingual</b>{' '}
             <Link component={NextLink} href='/tamarocards'>
               TamaroCards
@@ -757,7 +838,11 @@ export default function Expo2025() {
               height: 'auto',
             }}
           />
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Like multilingual labeling of Swiss products, TamaroCards expose
             students to other languages.
           </Typography>
@@ -768,7 +853,11 @@ export default function Expo2025() {
           >
             Our Track-Record
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Education is our passion. We have over a decade of experience in
             designing extraordinary computer science learning experiences in
             informal and formal contexts. We have a tendency to embark on
@@ -795,13 +884,21 @@ export default function Expo2025() {
                 sm: 7,
               }}
             >
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 Our track-record goes back over a decade, when we organized and
                 co-designed <b>INFO1010</b>, a 4-day “pop-up” science center in
                 Lugano, to celebrate the tenth anniversary of the USI Faculty of
                 Informatics.
               </Typography>
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 At 42 interactive stations,{' '}
                 <b>co-designed and run by our students</b>, over 1000 visitors
                 experienced the different facets of informatics hands-on.
@@ -880,7 +977,11 @@ export default function Expo2025() {
                 sm: 5,
               }}
             >
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 <Image
                   key={10}
                   src={GymInfLogo}
@@ -903,7 +1004,11 @@ export default function Expo2025() {
           >
             PyTamaro Summer Academy &mdash; A Community of Practice
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             To support the <b>community</b> of teachers, we organize the yearly{' '}
             <Link component={NextLink} href='/summeracademy'>
               PyTamaro Summer Academy
@@ -1003,7 +1108,12 @@ export default function Expo2025() {
           >
             Hour of Code &mdash; Co-Designed by Students for Teachers World-Wide
           </Typography>
-          <Typography paragraph style={{ marginBottom: '2rem' }}>
+          <Typography
+            style={{ marginBottom: '2rem' }}
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             To make our ideas available world-wide, we put together a{' '}
             <b>team of students</b> to co-create an{' '}
             <Link href='https://hourofcode.com/usicastle'>
@@ -1027,7 +1137,12 @@ export default function Expo2025() {
             {personCard('GiorgiaLillo.jpg', 'Giorgia Lillo')}
             {personCard('JamilaOubenali.jpg', 'Jamila Oubenali')}
           </Grid>
-          <Typography paragraph style={{ marginTop: '1rem' }}>
+          <Typography
+            style={{ marginTop: '1rem' }}
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Inspired by the imposing Fortezza Bellinzona, our team developed a
             one-hour self-guided virtual tutorial where learners can compose
             their own castle using the PyTamaro approach.
@@ -1044,12 +1159,20 @@ export default function Expo2025() {
               height: 'auto',
             }}
           />
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Teachers world-wide can now find our student-designed “Build Your
             Own Castle” tutorial <b>next to tutorials developed by giants</b>{' '}
             like Disney, Microsoft, NASA, or MIT.
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Since its release in December 2023, over <b>20’000 visitors</b> from
             countries like the US, UK, Canada, and even Japan,{' '}
             <b>have experienced our students’ tutorial</b>.
@@ -1061,7 +1184,11 @@ export default function Expo2025() {
           >
             Our Vision
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             With this project want to{' '}
             <b>
               bring the abstract world of computing to life in a fun and
@@ -1069,19 +1196,31 @@ export default function Expo2025() {
             </b>
             .
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             We want to <b>excite visitors about programming</b> and leave them
             with an impression of its key ideas. We want to showcase a Swiss way
             of co-creating educational experiences rooted in local culture and
             languages.
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             We want middle and high school teachers to learn about an engaging
             but foundational approach to introducing their students to
             programming, and we would love to{' '}
             <b>grow a community of teachers beyond Switzerland</b>.
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             In the long term we would love to form a world-wide community of
             educators who combine learning to program with collaboration across
             languages and cultures and the goal of{' '}

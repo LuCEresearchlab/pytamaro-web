@@ -113,9 +113,9 @@ export default function FinishHocCastlePage({
             variant='h5'
             align='center'
             color='textSecondary'
-            paragraph
             sx={{
               marginTop: 5,
+              marginBottom: '16px',
             }}
           >
             {t('hourOfCodeWithPyTamaro')}
@@ -158,9 +158,9 @@ export default function FinishHocCastlePage({
             variant='h4'
             align='center'
             color='textSecondary'
-            paragraph
             sx={{
               marginTop: 5,
+              marginBottom: '16px',
             }}
           >
             {t('notes.guidance')}
@@ -177,9 +177,9 @@ export default function FinishHocCastlePage({
             variant='h4'
             align='center'
             color='textSecondary'
-            paragraph
             sx={{
               marginTop: 5,
+              marginBottom: '16px',
             }}
           >
             {t('notes.students')}
@@ -284,9 +284,9 @@ export default function FinishHocCastlePage({
             variant='h4'
             align='center'
             color='textSecondary'
-            paragraph
             sx={{
               marginTop: 5,
+              marginBottom: '16px',
             }}
           >
             {t('notes.pedagogy')}
@@ -387,9 +387,9 @@ export default function FinishHocCastlePage({
             variant='h5'
             align='center'
             color='textSecondary'
-            paragraph
             sx={{
               marginTop: 5,
+              marginBottom: '16px',
             }}
           >
             {t('notes.beyond')}
@@ -410,9 +410,9 @@ export default function FinishHocCastlePage({
             variant='h4'
             align='center'
             color='textSecondary'
-            paragraph
             sx={{
               marginTop: 5,
+              marginBottom: '16px',
             }}
           >
             {t('notes.contentProgramming')}
@@ -421,9 +421,9 @@ export default function FinishHocCastlePage({
             variant='h5'
             align='center'
             color='textSecondary'
-            paragraph
             sx={{
               marginTop: 5,
+              marginBottom: '16px',
             }}
           >
             {t('notes.compositionCastle')}
@@ -582,9 +582,9 @@ export default function FinishHocCastlePage({
             variant='h5'
             align='center'
             color='textSecondary'
-            paragraph
             sx={{
               marginTop: 5,
+              marginBottom: '16px',
             }}
           >
             {t('notes.truthPieces')}
@@ -600,9 +600,9 @@ export default function FinishHocCastlePage({
             variant='h5'
             align='center'
             color='textSecondary'
-            paragraph
             sx={{
               marginTop: 5,
+              marginBottom: '16px',
             }}
           >
             {t('notes.learningObjectives')}
@@ -639,9 +639,9 @@ export default function FinishHocCastlePage({
             variant='h5'
             align='center'
             color='textSecondary'
-            paragraph
             sx={{
               marginTop: 5,
+              marginBottom: '16px',
             }}
           >
             {t('notes.moreActivities')}
@@ -680,9 +680,9 @@ export default function FinishHocCastlePage({
             variant='h4'
             align='center'
             color='textSecondary'
-            paragraph
             sx={{
               marginTop: 5,
+              marginBottom: '16px',
             }}
           >
             {t('notes.contentHistory')}
@@ -722,9 +722,9 @@ export default function FinishHocCastlePage({
             variant='h5'
             align='center'
             color='textSecondary'
-            paragraph
             sx={{
               marginTop: 5,
+              marginBottom: '16px',
             }}
           >
             {t('notes.glossaryCastle')}
@@ -812,9 +812,9 @@ export default function FinishHocCastlePage({
             variant='h5'
             align='center'
             color='textSecondary'
-            paragraph
             sx={{
               marginTop: 5,
+              marginBottom: '16px',
             }}
           >
             {t('notes.literatureCastles')}

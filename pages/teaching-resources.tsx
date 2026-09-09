@@ -120,20 +120,20 @@ export default function Teaching() {
                     />
                     <CardContent>
                       <Typography
-                        paragraph
                         gutterBottom
                         sx={{
                           fontSize: '1.1rem',
+                          marginBottom: '16px',
                         }}
                       >
                         Use our simple paper cards to teach programming with
                         PyTamaro.
                       </Typography>
                       <Typography
-                        paragraph
                         gutterBottom
                         sx={{
                           fontSize: '1.1rem',
+                          marginBottom: '16px',
                         }}
                       >
                         Let students compose PyTamaro code by arranging and
@@ -195,20 +195,20 @@ export default function Teaching() {
                     />
                     <CardContent>
                       <Typography
-                        paragraph
                         gutterBottom
                         sx={{
                           fontSize: '1.1rem',
+                          marginBottom: '16px',
                         }}
                       >
                         TIDE is a web-based interactive environment for
                         TamaroCards with live evaluation of graphics and colors.
                       </Typography>
                       <Typography
-                        paragraph
                         gutterBottom
                         sx={{
                           fontSize: '1.1rem',
+                          marginBottom: '16px',
                         }}
                       >
                         A teaching sequence can start unplugged, with
@@ -275,19 +275,19 @@ export default function Teaching() {
                     />
                     <CardContent>
                       <Typography
-                        paragraph
                         gutterBottom
                         sx={{
                           fontSize: '1.1rem',
+                          marginBottom: '16px',
                         }}
                       >
                         Are you a mathematician? Then check this out!
                       </Typography>
                       <Typography
-                        paragraph
                         gutterBottom
                         sx={{
                           fontSize: '1.1rem',
+                          marginBottom: '16px',
                         }}
                       >
                         PyTamaro is based on a principled foundation: algebra.
@@ -352,20 +352,20 @@ export default function Teaching() {
                     />
                     <CardContent>
                       <Typography
-                        paragraph
                         gutterBottom
                         sx={{
                           fontSize: '1.1rem',
+                          marginBottom: '16px',
                         }}
                       >
                         Unlike most libraries, PyTamaro is available in several
                         natural languages.
                       </Typography>
                       <Typography
-                        paragraph
                         gutterBottom
                         sx={{
                           fontSize: '1.1rem',
+                          marginBottom: '16px',
                         }}
                       >
                         Language choice is not just about the PyTamaro library,
@@ -430,20 +430,20 @@ export default function Teaching() {
                     />
                     <CardContent>
                       <Typography
-                        paragraph
                         gutterBottom
                         sx={{
                           fontSize: '1.1rem',
+                          marginBottom: '16px',
                         }}
                       >
                         Do you want students to compose a graphic starting from
                         basic pieces?
                       </Typography>
                       <Typography
-                        paragraph
                         gutterBottom
                         sx={{
                           fontSize: '1.1rem',
+                          marginBottom: '16px',
                         }}
                       >
                         We offer a fully automated service that you can use to
@@ -506,20 +506,20 @@ export default function Teaching() {
                     />
                     <CardContent>
                       <Typography
-                        paragraph
                         gutterBottom
                         sx={{
                           fontSize: '1.1rem',
+                          marginBottom: '16px',
                         }}
                       >
                         Become a part of our community of practice by spending a
                         few days in Lugano.
                       </Typography>
                       <Typography
-                        paragraph
                         gutterBottom
                         sx={{
                           fontSize: '1.1rem',
+                          marginBottom: '16px',
                         }}
                       >
                         Learn new teaching approaches, exchange successes and

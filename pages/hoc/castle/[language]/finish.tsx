@@ -52,9 +52,9 @@ export default function FinishHocCastlePage({
             variant='h5'
             align='center'
             color='textSecondary'
-            paragraph
             sx={{
               marginTop: 5,
+              marginBottom: '16px',
             }}
           >
             {t('hourOfCodeWithPyTamaro')}
@@ -105,9 +105,9 @@ export default function FinishHocCastlePage({
               <Typography
                 variant='h5'
                 color='textSecondary'
-                paragraph
                 sx={{
                   marginTop: 0,
+                  marginBottom: '16px',
                 }}
               >
                 {t('finish.leonardo')}
@@ -229,9 +229,9 @@ export default function FinishHocCastlePage({
                 <CardContent>
                   <Typography
                     variant='h5'
-                    paragraph
                     sx={{
                       color: 'text.secondary',
+                      marginBottom: '16px',
                     }}
                   >
                     <Trans
@@ -243,9 +243,9 @@ export default function FinishHocCastlePage({
 
                   <Typography
                     variant='body2'
-                    paragraph
                     sx={{
                       color: 'text.secondary',
+                      marginBottom: '16px',
                     }}
                   >
                     {t('finish.keepCastleDesc1')}
@@ -256,10 +256,10 @@ export default function FinishHocCastlePage({
                   />
                   <Typography
                     variant='body2'
-                    paragraph
                     sx={{
                       color: 'text.secondary',
                       mt: 2,
+                      marginBottom: '16px',
                     }}
                   >
                     {t('finish.keepCastleDesc2')}
@@ -287,9 +287,9 @@ export default function FinishHocCastlePage({
                 <CardContent>
                   <Typography
                     variant='h5'
-                    paragraph
                     sx={{
                       color: 'text.secondary',
+                      marginBottom: '16px',
                     }}
                   >
                     <Trans
@@ -300,9 +300,9 @@ export default function FinishHocCastlePage({
                   </Typography>
                   <Typography
                     variant='body2'
-                    paragraph
                     sx={{
                       color: 'text.secondary',
+                      marginBottom: '16px',
                     }}
                   >
                     {t('finish.learnPythonDesc1')}
@@ -367,9 +367,9 @@ export default function FinishHocCastlePage({
 
                   <Typography
                     variant='body2'
-                    paragraph
                     sx={{
                       color: 'text.secondary',
+                      marginBottom: '16px',
                     }}
                   >
                     {t('finish.learnPythonDesc2')}
@@ -377,9 +377,9 @@ export default function FinishHocCastlePage({
 
                   <Typography
                     variant='body2'
-                    paragraph
                     sx={{
                       color: 'text.secondary',
+                      marginBottom: '16px',
                     }}
                   >
                     <Trans
@@ -419,7 +419,13 @@ export default function FinishHocCastlePage({
             >
               <Card>
                 <CardContent>
-                  <Typography variant='h5' color='textSecondary' paragraph>
+                  <Typography
+                    variant='h5'
+                    color='textSecondary'
+                    sx={{
+                      marginBottom: '16px',
+                    }}
+                  >
                     <Trans
                       t={t}
                       i18nKey='finish.visitFortezza'
