@@ -50,7 +50,7 @@ export default function SelectAll({
         ];
       }}
       limitTags={maxTagsShown}
-      renderTags={(value, getConceptProps) =>
+      renderValue={(value, getConceptProps) =>
         value.map((option, index) => {
           const { key, ...customConceptProps } = getConceptProps({ index });
           return (
