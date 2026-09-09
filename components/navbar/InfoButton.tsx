@@ -1,4 +1,4 @@
-import { InfoOutline } from '@mui/icons-material';
+import { InfoOutlined } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { activityPathname, curriculumInfoPathname } from '../../src/urlUtils';
 import NavBarButton from './NavBarButton';
@@ -25,7 +25,7 @@ export default function InfoButton({
       label={`Information about this ${type}`}
       onClick={handleClick}
     >
-      <InfoOutline />
+      <InfoOutlined />
     </NavBarButton>
   );
 }
