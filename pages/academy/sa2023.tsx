@@ -9,7 +9,7 @@ import {
   CardContent,
   CardHeader,
   Container,
-  GridLegacy as Grid,
+  Grid,
   Link,
   Typography,
 } from '@mui/material';
@@ -76,7 +76,12 @@ export default function Academy() {
 
         <Container maxWidth='lg' component='main'>
           <Grid container spacing={5} alignItems='flex-end'>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 4
+              }}>
               <Card>
                 <Box
                   sx={{
@@ -104,7 +109,12 @@ export default function Academy() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 4
+              }}>
               <Card>
                 <Box
                   sx={{
@@ -132,7 +142,12 @@ export default function Academy() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 4
+              }}>
               <Card>
                 <Box
                   sx={{
@@ -173,7 +188,12 @@ export default function Academy() {
             The PyTamaro Summer Academy 2023 is History!
           </Typography>
           <Grid container spacing={1} alignItems='flex-end'>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 3
+              }}>
               <Image
                 src={SA23_TableImage}
                 alt='Photo of Table'
@@ -186,7 +206,12 @@ export default function Academy() {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 3
+              }}>
               <Image
                 src={SA23_ColorImage}
                 alt='Photo of Table'
@@ -199,7 +224,12 @@ export default function Academy() {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 3
+              }}>
               <Image
                 src={SA23_FoppaImage}
                 alt='Photo of Table2'
@@ -212,7 +242,12 @@ export default function Academy() {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 3
+              }}>
               <Image
                 src={SA23_TableImage2}
                 alt='Photo of Table2'
@@ -261,7 +296,11 @@ export default function Academy() {
 
         <Container maxWidth='lg' component='main'>
           <Grid container spacing={5} alignItems='flex-end'>
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4
+              }}>
               <Card>
                 <Box
                   sx={{
@@ -293,7 +332,11 @@ export default function Academy() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4
+              }}>
               <Card>
                 <Box
                   sx={{
@@ -325,7 +368,11 @@ export default function Academy() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4
+              }}>
               <Card>
                 <Box
                   sx={{
@@ -357,7 +404,11 @@ export default function Academy() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4
+              }}>
               <Card>
                 <Box
                   sx={{
@@ -389,7 +440,11 @@ export default function Academy() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4
+              }}>
               <Card>
                 <Box
                   sx={{
@@ -421,7 +476,11 @@ export default function Academy() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4
+              }}>
               <Card>
                 <Box
                   sx={{

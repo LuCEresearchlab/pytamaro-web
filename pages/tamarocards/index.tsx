@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardMedia,
   Container,
-  GridLegacy as Grid,
+  Grid,
   Link,
   List,
   ListItem,
@@ -329,7 +329,12 @@ export default function TamaroCardsPage() {
           />
           <Grid container spacing={5} alignItems='flex-end'>
             {api.map(({ name, img }) => (
-              <Grid key={name} item xs={12} sm={6}>
+              <Grid
+                key={name}
+                size={{
+                  xs: 12,
+                  sm: 6
+                }}>
                 <Card key={name}>
                   <CardActionArea
                     LinkComponent={NextLink}
@@ -386,7 +391,12 @@ export default function TamaroCardsPage() {
           />
           <Grid container spacing={5} alignItems='flex-end'>
             {sheets.map(({ name, desc, img }) => (
-              <Grid key={name} item xs={12} sm={6}>
+              <Grid
+                key={name}
+                size={{
+                  xs: 12,
+                  sm: 6
+                }}>
                 <Card key={name}>
                   <CardActionArea
                     LinkComponent={NextLink}

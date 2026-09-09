@@ -10,7 +10,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  GridLegacy as Grid,
+  Grid,
   MenuItem,
   TextField,
   Typography,
@@ -131,7 +131,7 @@ export default function HocCastlePage() {
             spacing={2}
             sx={{ mt: '2rem', mb: '2rem' }}
           >
-            <Grid xs={4} item>
+            <Grid size={4}>
               <Image
                 src={PyTamaroLogoImage}
                 alt='PyTamaro Logo'
@@ -143,7 +143,7 @@ export default function HocCastlePage() {
                 }}
               />
             </Grid>
-            <Grid xs={4} item>
+            <Grid size={4}>
               <Image
                 src={HourOfCodeLogoImage}
                 alt='Hour Of Code Logo'
@@ -155,7 +155,7 @@ export default function HocCastlePage() {
                 }}
               />
             </Grid>
-            <Grid xs={4} item>
+            <Grid size={4}>
               <Image
                 src={USIInfLogoImage}
                 alt='USI Logo'
@@ -186,7 +186,12 @@ export default function HocCastlePage() {
             {['en', 'it', 'de'].map((lang) => {
               const langT = i18n.getFixedT(lang, 'hourofcode');
               return (
-                <Grid key={`lang_selector_${lang}`} xs={6} md={4} item>
+                <Grid
+                  key={`lang_selector_${lang}`}
+                  size={{
+                    xs: 6,
+                    md: 4
+                  }}>
                   <Card elevation={1}>
                     <CardActionArea onClick={() => handleLangSelection(lang)}>
                       <CardContent>
@@ -220,7 +225,7 @@ export default function HocCastlePage() {
 
             <DialogContent>
               <Grid container justifyContent='center' spacing={2} marginY={2}>
-                <Grid item xs={5}>
+                <Grid size={5}>
                   <TextField
                     label={t('age.year')}
                     value={yearOfBirth}
@@ -230,7 +235,7 @@ export default function HocCastlePage() {
                     type='number'
                   />
                 </Grid>
-                <Grid item xs={5}>
+                <Grid size={5}>
                   <TextField
                     select
                     label={t('age.month')}

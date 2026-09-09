@@ -5,7 +5,7 @@ import {
   CardContent,
   CardMedia,
   Container,
-  GridLegacy as Grid,
+  Grid,
   Typography,
 } from '@mui/material';
 import { Trans } from 'next-i18next';
@@ -82,7 +82,11 @@ export default function FinishHocCastlePage({
           />
           <Typography marginY={3}>{t('finish.despiteThat')}</Typography>
           <Grid container spacing={2} sx={{ marginY: 3 }}>
-            <Grid item xs={12} sm={8}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 8
+              }}>
               <Typography
                 marginTop={0}
                 variant='h5'
@@ -124,7 +128,11 @@ export default function FinishHocCastlePage({
               <Typography>{t('finish.amazing')}</Typography>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4
+              }}>
               <Card>
                 <CardContent>
                   <Typography gutterBottom variant='h5'>
@@ -171,7 +179,11 @@ export default function FinishHocCastlePage({
           </Grid>
 
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4
+              }}>
               <Card>
                 <CardContent>
                   <Typography variant='h5' color='text.secondary' paragraph>
@@ -208,7 +220,11 @@ export default function FinishHocCastlePage({
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4
+              }}>
               <Card>
                 <CardContent>
                   <Typography variant='h5' color='text.secondary' paragraph>
@@ -311,7 +327,11 @@ export default function FinishHocCastlePage({
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4
+              }}>
               <Card>
                 <CardContent>
                   <Typography variant='h5' color='textSecondary' paragraph>

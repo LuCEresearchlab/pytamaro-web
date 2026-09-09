@@ -4,7 +4,7 @@ import {
   CardActionArea,
   CardContent,
   Container,
-  GridLegacy as Grid,
+  Grid,
   Typography,
 } from '@mui/material';
 import Head from 'next/head';
@@ -89,7 +89,7 @@ export default function HocCastlePage() {
 
           <Grid container justifyContent='center' spacing={2}>
             {RESOURCES.map((lang) => (
-              <Grid key={`lang_selector_${lang.code}`} xs={4} item>
+              <Grid key={`lang_selector_${lang.code}`} size={4}>
                 <Card elevation={1}>
                   <CardActionArea
                     href={`/hoc/castle/${lang.code}/teacher-notes`}

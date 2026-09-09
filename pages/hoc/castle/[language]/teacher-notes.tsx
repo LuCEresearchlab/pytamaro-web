@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardMedia,
   Container,
-  GridLegacy as Grid,
+  Grid,
   Link,
   List,
   ListItem,
@@ -50,7 +50,11 @@ function ContributorCard({
   imageName: string;
 }) {
   return (
-    <Grid item xs={12} sm={3}>
+    <Grid
+      size={{
+        xs: 12,
+        sm: 3
+      }}>
       <Card>
         <Box
           sx={{
@@ -398,7 +402,7 @@ export default function FinishHocCastlePage({
             alignItems='center'
             spacing={2}
           >
-            <Grid item xs={12}>
+            <Grid size={12}>
               <div
                 style={{
                   color: '#E50201',
@@ -409,12 +413,12 @@ export default function FinishHocCastlePage({
                 {t('notes.noInput')}
               </div>
             </Grid>
-            <Grid item xs={4}>
+            <Grid size={4}>
               <div style={{ display: 'flex', justifyContent: 'right' }}>
                 {t('notes.arguments')}
               </div>
             </Grid>
-            <Grid item xs={4}>
+            <Grid size={4}>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <Image
                   src={PureFunctionImage}
@@ -429,12 +433,12 @@ export default function FinishHocCastlePage({
                 />
               </div>
             </Grid>
-            <Grid item xs={4}>
+            <Grid size={4}>
               <div style={{ display: 'flex', justifyContent: 'left' }}>
                 {t('notes.returnValue')}
               </div>
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <div
                 style={{
                   color: '#E50201',
@@ -614,7 +618,12 @@ export default function FinishHocCastlePage({
                 definition: t('notes.merlonDesc'),
               },
             ].map(({ term, image, definition }) => (
-              <Grid item xs={12} sm={6} key={term}>
+              <Grid
+                key={term}
+                size={{
+                  xs: 12,
+                  sm: 6
+                }}>
                 <Card variant='outlined' sx={{ height: '100%' }}>
                   <CardMedia>
                     <div

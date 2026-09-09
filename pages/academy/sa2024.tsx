@@ -6,7 +6,7 @@ import {
   CardContent,
   CardHeader,
   Container,
-  GridLegacy as Grid,
+  Grid,
   Link,
   Typography,
 } from '@mui/material';
@@ -129,7 +129,11 @@ export default function Academy() {
 
         <Container maxWidth='lg' component='main'>
           <Grid container spacing={5} alignItems='flex-end'>
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4
+              }}>
               <Card>
                 <Box
                   sx={{
@@ -161,7 +165,11 @@ export default function Academy() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4
+              }}>
               <Card>
                 <Box
                   sx={{
@@ -192,7 +200,11 @@ export default function Academy() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4
+              }}>
               <Card>
                 <Box
                   sx={{
@@ -224,7 +236,11 @@ export default function Academy() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4
+              }}>
               <Card>
                 <Box
                   sx={{
@@ -256,7 +272,11 @@ export default function Academy() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4
+              }}>
               <Card>
                 <Box
                   sx={{
@@ -288,7 +308,11 @@ export default function Academy() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4
+              }}>
               <Card>
                 <Box
                   sx={{

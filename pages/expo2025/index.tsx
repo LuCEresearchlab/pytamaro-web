@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardMedia,
   Container,
-  GridLegacy as Grid,
+  Grid,
   Link,
   List,
   ListItem,
@@ -47,7 +47,11 @@ function activityGraphic(
 ) {
   const imagePath = `../../expo/${imageName}`;
   return (
-    <Grid item xs={12} sm={sm}>
+    <Grid
+      size={{
+        xs: 12,
+        sm: sm
+      }}>
       <Card elevation={0} style={{ background }}>
         <CardMedia>
           <div
@@ -80,7 +84,11 @@ function activityGraphic(
 function personCard(imageName: string, name: string) {
   const imagePath = `../people/${imageName}`;
   return (
-    <Grid item xs={12} sm={3}>
+    <Grid
+      size={{
+        xs: 12,
+        sm: 3
+      }}>
       <Card elevation={0}>
         <Box
           sx={{
@@ -399,7 +407,11 @@ export default function Expo2025() {
             alignItems='center'
             style={{ marginTop: '0rem', marginBottom: '2rem' }}
           >
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6
+              }}>
               <Typography paragraph>
                 <Image
                   key={10}
@@ -415,7 +427,11 @@ export default function Expo2025() {
                 />
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6
+              }}>
               <Typography paragraph>
                 <b>Swissness</b> is at the core of our approach. It starts with
                 the name and the logo:
@@ -506,7 +522,11 @@ export default function Expo2025() {
             alignItems='center'
             style={{ marginTop: '0rem', marginBottom: '2rem' }}
           >
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6
+              }}>
               <Typography paragraph>
                 <Image
                   key={10}
@@ -522,7 +542,11 @@ export default function Expo2025() {
                 />
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6
+              }}>
               <Typography paragraph>
                 Teachers can adopt existing activities and develop their own.
                 The PyTamaro library, with its simple, compositional approach,
@@ -568,7 +592,11 @@ export default function Expo2025() {
             alignItems='center'
             style={{ marginTop: '0rem', marginBottom: '2rem' }}
           >
-            <Grid item xs={12} sm={5}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 5
+              }}>
               <Image
                 key={10}
                 src={SwissFlagTask}
@@ -582,10 +610,18 @@ export default function Expo2025() {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={2}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 2
+              }}>
               {' '}
             </Grid>
-            <Grid item xs={12} sm={5}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 5
+              }}>
               <Image
                 key={10}
                 src={SwissFlagDecomposition}
@@ -610,7 +646,11 @@ export default function Expo2025() {
             alignItems='center'
             style={{ marginTop: '0rem', marginBottom: '0rem' }}
           >
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6
+              }}>
               <b>Deutsch</b>
               <Card>
                 <Box sx={{ marginLeft: '1rem', fontFamily: 'Monospace' }}>
@@ -618,7 +658,11 @@ export default function Expo2025() {
                 </Box>
               </Card>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6
+              }}>
               <b>English</b>
               <Card>
                 <Box sx={{ marginLeft: '1rem', fontFamily: 'Monospace' }}>
@@ -633,7 +677,11 @@ export default function Expo2025() {
             alignItems='center'
             style={{ marginTop: '0rem', marginBottom: '2rem' }}
           >
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6
+              }}>
               <b>Italiano</b>
               <Card>
                 <Box sx={{ marginLeft: '1rem', fontFamily: 'Monospace' }}>
@@ -641,7 +689,11 @@ export default function Expo2025() {
                 </Box>
               </Card>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6
+              }}>
               <b>Français</b>
               <Card>
                 <Box sx={{ marginLeft: '1rem', fontFamily: 'Monospace' }}>
@@ -699,7 +751,11 @@ export default function Expo2025() {
             alignItems='center'
             style={{ marginTop: '0rem', marginBottom: '1rem' }}
           >
-            <Grid item xs={12} sm={7}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 7
+              }}>
               <Typography paragraph>
                 Our track-record goes back over a decade, when we organized and
                 co-designed <b>INFO1010</b>, a 4-day “pop-up” science center in
@@ -712,7 +768,11 @@ export default function Expo2025() {
                 experienced the different facets of informatics hands-on.
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={5}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 5
+              }}>
               <Image
                 key={10}
                 src={Info1010}
@@ -758,7 +818,11 @@ export default function Expo2025() {
             alignItems='center'
             style={{ marginTop: '0rem', marginBottom: '2rem' }}
           >
-            <Grid item xs={12} sm={7}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 7
+              }}>
               <Typography>
                 We were part of the program committee designing the national
                 retraining program and we taught courses on{' '}
@@ -767,7 +831,11 @@ export default function Expo2025() {
                 Switzerland.
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={5}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 5
+              }}>
               <Typography paragraph>
                 <Image
                   key={10}
@@ -801,7 +869,12 @@ export default function Expo2025() {
             informatics.
           </Typography>
           <Grid container spacing={1} alignItems='flex-end'>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 3
+              }}>
               <Image
                 src={SA23_TableImage}
                 alt='Photo of Table'
@@ -814,7 +887,12 @@ export default function Expo2025() {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 3
+              }}>
               <Image
                 src={SA23_ColorImage}
                 alt='Photo of Table'
@@ -827,7 +905,12 @@ export default function Expo2025() {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 3
+              }}>
               <Image
                 src={SA23_FoppaImage}
                 alt='Photo of Table2'
@@ -840,7 +923,12 @@ export default function Expo2025() {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 3
+              }}>
               <Image
                 src={SA23_TableImage2}
                 alt='Photo of Table2'

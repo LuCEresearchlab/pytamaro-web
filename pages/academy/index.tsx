@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardMedia,
   Container,
-  GridLegacy as Grid,
+  Grid,
   Link,
   List,
   ListItem,
@@ -194,7 +194,12 @@ export default function Academy() {
                   'A week-long summer course for 16 Swiss high & middle school teachers and students.',
               },
             ].map((instance) => (
-              <Grid key={instance.slug} item xs={12} md={4}>
+              <Grid
+                key={instance.slug}
+                size={{
+                  xs: 12,
+                  md: 4
+                }}>
                 <Card>
                   <CardActionArea
                     LinkComponent={NextLink}
@@ -373,7 +378,11 @@ export default function Academy() {
 
         <Container maxWidth='lg' component='main'>
           <Grid container spacing={5} alignItems='flex-end'>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6
+              }}>
               <Card>
                 <CardMedia>
                   <div
@@ -412,7 +421,11 @@ export default function Academy() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6
+              }}>
               <Card>
                 <CardMedia>
                   <div

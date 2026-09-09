@@ -13,7 +13,7 @@ import {
   CardContent,
   CardHeader,
   Container,
-  GridLegacy as Grid,
+  Grid,
   Stack,
   Typography,
 } from '@mui/material';
@@ -80,7 +80,11 @@ export default function Teaching() {
             <Card elevation={4}>
               <CardActionArea href='/tamarocards'>
                 <Grid container>
-                  <Grid xs={12} md={7}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      md: 7
+                    }}>
                     <CardHeader
                       avatar={<School color='primary' />}
                       title='Unplugged Programming With TamaroCards!'
@@ -103,7 +107,12 @@ export default function Teaching() {
                       </Typography>
                     </CardContent>
                   </Grid>
-                  <Grid xs={12} md={5} sx={{ background: '#B6A99B' }}>
+                  <Grid
+                    sx={{ background: '#B6A99B' }}
+                    size={{
+                      xs: 12,
+                      md: 5
+                    }}>
                     <Box
                       position='relative'
                       height='100%'
@@ -128,7 +137,11 @@ export default function Teaching() {
             <Card elevation={4}>
               <CardActionArea href='/tide'>
                 <Grid container>
-                  <Grid xs={12} md={7}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      md: 7
+                    }}>
                     <CardHeader
                       avatar={<Schema color='primary' />}
                       title='From Unplugged to Plugged TamaroCards With TIDE'
@@ -153,10 +166,11 @@ export default function Teaching() {
                     </CardContent>
                   </Grid>
                   <Grid
-                    xs={12}
-                    md={5}
                     sx={{ background: theme.palette.grey[100] }}
-                  >
+                    size={{
+                      xs: 12,
+                      md: 5
+                    }}>
                     <Box
                       position='relative'
                       height='100%'
@@ -185,7 +199,11 @@ export default function Teaching() {
                 )}
               >
                 <Grid container>
-                  <Grid xs={12} md={7}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      md: 7
+                    }}>
                     <CardHeader
                       avatar={<AccountBalance color='primary' />}
                       title='Explore the Mathematical Foundations of PyTamaro'
@@ -207,7 +225,12 @@ export default function Teaching() {
                       </Typography>
                     </CardContent>
                   </Grid>
-                  <Grid xs={12} md={5} sx={{ background: '#E1F6FF' }}>
+                  <Grid
+                    sx={{ background: '#E1F6FF' }}
+                    size={{
+                      xs: 12,
+                      md: 5
+                    }}>
                     <Box
                       padding={2}
                       position='relative'
@@ -235,7 +258,11 @@ export default function Teaching() {
                 href={activityVariantPathname(multipleLanguagesActivityVariant)}
               >
                 <Grid container>
-                  <Grid xs={12} md={7}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      md: 7
+                    }}>
                     <CardHeader
                       avatar={<Translate color='primary' />}
                       title='Find Out About Support for Multiple Languages'
@@ -258,7 +285,12 @@ export default function Teaching() {
                       </Typography>
                     </CardContent>
                   </Grid>
-                  <Grid xs={12} md={5} sx={{ background: '#5C2382' }}>
+                  <Grid
+                    sx={{ background: '#5C2382' }}
+                    size={{
+                      xs: 12,
+                      md: 5
+                    }}>
                     <Box
                       padding={2}
                       position='relative'
@@ -286,7 +318,11 @@ export default function Teaching() {
                 href={activityVariantPathname(printableGraphicActivityVariant)}
               >
                 <Grid container>
-                  <Grid xs={12} md={7}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      md: 7
+                    }}>
                     <CardHeader
                       avatar={<Print color='primary' />}
                       title='Print Ready-To-Cut Pieces From Your Own Graphic!'
@@ -309,7 +345,12 @@ export default function Teaching() {
                       </Typography>
                     </CardContent>
                   </Grid>
-                  <Grid xs={12} md={5} sx={{ background: '#FDFBDE' }}>
+                  <Grid
+                    sx={{ background: '#FDFBDE' }}
+                    size={{
+                      xs: 12,
+                      md: 5
+                    }}>
                     <Box
                       padding={2}
                       position='relative'
@@ -335,7 +376,11 @@ export default function Teaching() {
             <Card elevation={4}>
               <CardActionArea href='/summeracademy'>
                 <Grid container>
-                  <Grid xs={12} md={7}>
+                  <Grid
+                    size={{
+                      xs: 12,
+                      md: 7
+                    }}>
                     <CardHeader
                       avatar={<Hiking color='primary' />}
                       title='Ready for an Adventure?'
@@ -357,7 +402,12 @@ export default function Teaching() {
                       </Typography>
                     </CardContent>
                   </Grid>
-                  <Grid xs={12} md={5} sx={{ background: '#81B4E9' }}>
+                  <Grid
+                    sx={{ background: '#81B4E9' }}
+                    size={{
+                      xs: 12,
+                      md: 5
+                    }}>
                     <Box
                       padding={2}
                       position='relative'
