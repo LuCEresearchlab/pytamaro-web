@@ -257,14 +257,16 @@ export default function MyData() {
               </Typography>
               <TextField
                 sx={{ mt: 2 }}
-                inputProps={{
-                  style: { fontFamily: theme.pytamaro.monospaceFontFamily },
-                  maxLength: 100,
-                }}
                 fullWidth
                 label='Experiment key'
                 value={metadata.experimentKey}
                 onChange={(e) => changeExperimentKey(e.target.value)}
+                slotProps={{
+                  htmlInput: {
+                    style: { fontFamily: theme.pytamaro.monospaceFontFamily },
+                    maxLength: 100,
+                  },
+                }}
               />
             </AccordionDetails>
           </Accordion>

@@ -415,7 +415,6 @@ export default function SaveToToolboxDialog({
                 size='small'
                 helperText={t('toolbox.documentationHelp')}
                 sx={{ '& .MuiInputBase-root': { pt: 0.5 } }}
-                FormHelperTextProps={{ sx: { textAlign: 'center' } }}
                 fullWidth
                 multiline
                 value={description}
@@ -423,6 +422,9 @@ export default function SaveToToolboxDialog({
                   setDescription(event.target.value);
                 }}
                 className='function-description'
+                slotProps={{
+                  formHelperText: { sx: { textAlign: 'center' } },
+                }}
               />
             </Stack>
             {alreadyExists && !replaceExistingFunction && (
