@@ -357,10 +357,12 @@ export default function Academy() {
                 <AccountTreeIcon fontSize='large' color='primary' />
               </ListItemIcon>
               <ListItemText
-                primaryTypographyProps={{ sx: { fontSize: 24 } }}
                 primary='Problem Solving'
-                secondaryTypographyProps={{ sx: { fontSize: 20 } }}
                 secondary='Learn programming by decomposing graphics and recomposing them as programs.'
+                slotProps={{
+                  primary: { sx: { fontSize: 24 } },
+                  secondary: { sx: { fontSize: 20 } },
+                }}
               />
             </ListItem>
             <ListItem>
@@ -368,10 +370,12 @@ export default function Academy() {
                 <TipsAndUpdatesIcon fontSize='large' color='primary' />
               </ListItemIcon>
               <ListItemText
-                primaryTypographyProps={{ sx: { fontSize: 24 } }}
                 primary='Theory & Creativity'
-                secondaryTypographyProps={{ sx: { fontSize: 20 } }}
                 secondary='Experience the sound theoretical foundations of programming combined with the unbounded creativity and playfulness of computer graphics.'
+                slotProps={{
+                  primary: { sx: { fontSize: 24 } },
+                  secondary: { sx: { fontSize: 20 } },
+                }}
               />
             </ListItem>
             <ListItem>
@@ -379,10 +383,12 @@ export default function Academy() {
                 <Image width='32' alt='PyTamaro Logo' src={PyTamaroLogo} />
               </ListItemAvatar>
               <ListItemText
-                primaryTypographyProps={{ sx: { fontSize: 24 } }}
                 primary='Python & PyTamaro'
-                secondaryTypographyProps={{ sx: { fontSize: 20 } }}
                 secondary='Use the most prevalent programming language, Python, and the greatest (we think) educational graphics library, PyTamaro.'
+                slotProps={{
+                  primary: { sx: { fontSize: 24 } },
+                  secondary: { sx: { fontSize: 20 } },
+                }}
               />
             </ListItem>
           </List>
