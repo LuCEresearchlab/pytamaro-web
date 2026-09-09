@@ -88,12 +88,14 @@ export default function Teaching() {
                     <CardHeader
                       avatar={<School color='primary' />}
                       title='Unplugged Programming With TamaroCards!'
-                      titleTypographyProps={{
-                        variant: 'h5',
-                        color: 'primary',
-                        fontWeight: 'bold',
-                      }}
                       sx={{ pb: 0 }}
+                      slotProps={{
+                        title: {
+                          variant: 'h5',
+                          color: 'primary',
+                          fontWeight: 'bold',
+                        }
+                      }}
                     />
                     <CardContent>
                       <Typography fontSize='1.1rem' paragraph gutterBottom>
@@ -145,12 +147,14 @@ export default function Teaching() {
                     <CardHeader
                       avatar={<Schema color='primary' />}
                       title='From Unplugged to Plugged TamaroCards With TIDE'
-                      titleTypographyProps={{
-                        variant: 'h5',
-                        color: 'primary',
-                        fontWeight: 'bold',
-                      }}
                       sx={{ pb: 0 }}
+                      slotProps={{
+                        title: {
+                          variant: 'h5',
+                          color: 'primary',
+                          fontWeight: 'bold',
+                        }
+                      }}
                     />
                     <CardContent>
                       <Typography fontSize='1.1rem' paragraph gutterBottom>
@@ -207,12 +211,14 @@ export default function Teaching() {
                     <CardHeader
                       avatar={<AccountBalance color='primary' />}
                       title='Explore the Mathematical Foundations of PyTamaro'
-                      titleTypographyProps={{
-                        variant: 'h5',
-                        color: 'primary',
-                        fontWeight: 'bold',
-                      }}
                       sx={{ pb: 0 }}
+                      slotProps={{
+                        title: {
+                          variant: 'h5',
+                          color: 'primary',
+                          fontWeight: 'bold',
+                        }
+                      }}
                     />
                     <CardContent>
                       <Typography fontSize='1.1rem' paragraph gutterBottom>
@@ -266,12 +272,14 @@ export default function Teaching() {
                     <CardHeader
                       avatar={<Translate color='primary' />}
                       title='Find Out About Support for Multiple Languages'
-                      titleTypographyProps={{
-                        variant: 'h5',
-                        color: 'primary',
-                        fontWeight: 'bold',
-                      }}
                       sx={{ pb: 0 }}
+                      slotProps={{
+                        title: {
+                          variant: 'h5',
+                          color: 'primary',
+                          fontWeight: 'bold',
+                        }
+                      }}
                     />
                     <CardContent>
                       <Typography fontSize='1.1rem' paragraph gutterBottom>
@@ -326,12 +334,14 @@ export default function Teaching() {
                     <CardHeader
                       avatar={<Print color='primary' />}
                       title='Print Ready-To-Cut Pieces From Your Own Graphic!'
-                      titleTypographyProps={{
-                        variant: 'h5',
-                        color: 'primary',
-                        fontWeight: 'bold',
-                      }}
                       sx={{ pb: 0 }}
+                      slotProps={{
+                        title: {
+                          variant: 'h5',
+                          color: 'primary',
+                          fontWeight: 'bold',
+                        }
+                      }}
                     />
                     <CardContent>
                       <Typography fontSize='1.1rem' paragraph gutterBottom>
@@ -384,12 +394,14 @@ export default function Teaching() {
                     <CardHeader
                       avatar={<Hiking color='primary' />}
                       title='Ready for an Adventure?'
-                      titleTypographyProps={{
-                        variant: 'h5',
-                        color: 'primary',
-                        fontWeight: 'bold',
-                      }}
                       sx={{ pb: 0 }}
+                      slotProps={{
+                        title: {
+                          variant: 'h5',
+                          color: 'primary',
+                          fontWeight: 'bold',
+                        }
+                      }}
                     />
                     <CardContent>
                       <Typography fontSize='1.1rem' paragraph gutterBottom>

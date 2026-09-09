@@ -150,11 +150,13 @@ export default function Academy() {
                 <CardHeader
                   title='Luca Chiodini'
                   subheader='PhD Student of Informatics'
-                  titleTypographyProps={{ align: 'center' }}
-                  subheaderTypographyProps={{
-                    align: 'center',
-                  }}
-                />
+                  slotProps={{
+                    title: { align: 'center' },
+
+                    subheader: {
+                      align: 'center',
+                    }
+                  }} />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     Luca is leading the PyTamaro effort with the goal of making
@@ -186,11 +188,13 @@ export default function Academy() {
                 <CardHeader
                   title='Joey Bevilacqua'
                   subheader='PhD Student of Informatics'
-                  titleTypographyProps={{ align: 'center' }}
-                  subheaderTypographyProps={{
-                    align: 'center',
-                  }}
-                />
+                  slotProps={{
+                    title: { align: 'center' },
+
+                    subheader: {
+                      align: 'center',
+                    }
+                  }} />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     Joey is interested in software engineering and is studying
@@ -221,11 +225,13 @@ export default function Academy() {
                 <CardHeader
                   title='Matthias Hauswirth'
                   subheader='Professor of Informatics'
-                  titleTypographyProps={{ align: 'center' }}
-                  subheaderTypographyProps={{
-                    align: 'center',
-                  }}
-                />
+                  slotProps={{
+                    title: { align: 'center' },
+
+                    subheader: {
+                      align: 'center',
+                    }
+                  }} />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     Matthias has been teaching programming, at university and

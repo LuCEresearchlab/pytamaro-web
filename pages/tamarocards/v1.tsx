@@ -220,11 +220,13 @@ export default function TamaroCardsPage() {
                     <CardHeader
                       title={name}
                       subheader={desc}
-                      titleTypographyProps={{ align: 'center' }}
-                      subheaderTypographyProps={{
-                        align: 'center',
-                      }}
-                    />
+                      slotProps={{
+                        title: { align: 'center' },
+
+                        subheader: {
+                          align: 'center',
+                        }
+                      }} />
                   </CardActionArea>
                 </Card>
               </Grid>
@@ -308,11 +310,13 @@ export default function TamaroCardsPage() {
                     <CardHeader
                       title={name}
                       subheader={desc}
-                      titleTypographyProps={{ align: 'center' }}
-                      subheaderTypographyProps={{
-                        align: 'center',
-                      }}
-                    />
+                      slotProps={{
+                        title: { align: 'center' },
+
+                        subheader: {
+                          align: 'center',
+                        }
+                      }} />
                   </CardActionArea>
                 </Card>
               </Grid>

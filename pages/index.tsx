@@ -469,13 +469,15 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
               >
                 <CardHeader
                   title='Learning Activities For All Tastes'
-                  titleTypographyProps={{
-                    variant: 'h5',
-                    color: 'primary',
-                    fontWeight: 'bold',
-                  }}
                   sx={{ pb: 0 }}
                   avatar={<TipsAndUpdates color='primary' />}
+                  slotProps={{
+                    title: {
+                      variant: 'h5',
+                      color: 'primary',
+                      fontWeight: 'bold',
+                    }
+                  }}
                 />
                 <CardContent sx={{ pY: 1 }}>
                   <Typography
@@ -510,13 +512,15 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
               >
                 <CardHeader
                   title='Guided Curricula Designed By Teachers'
-                  titleTypographyProps={{
-                    variant: 'h5',
-                    color: 'primary',
-                    fontWeight: 'bold',
-                  }}
                   sx={{ pb: 0 }}
                   avatar={<Route color='primary' />}
+                  slotProps={{
+                    title: {
+                      variant: 'h5',
+                      color: 'primary',
+                      fontWeight: 'bold',
+                    }
+                  }}
                 />
                 <CardContent sx={{ pY: 1 }}>
                   <Typography
@@ -550,12 +554,14 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
               >
                 <CardHeader
                   title='Free Teaching Resources'
-                  titleTypographyProps={{
-                    variant: 'h5',
-                    color: 'primary',
-                    fontWeight: 'bold',
-                  }}
                   avatar={<School color='primary' />}
+                  slotProps={{
+                    title: {
+                      variant: 'h5',
+                      color: 'primary',
+                      fontWeight: 'bold',
+                    }
+                  }}
                 />
                 <CardContent sx={{ pt: 0 }}>
                   <Typography
@@ -575,12 +581,14 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
               <CardActionArea href='/research' sx={{ height: '100%' }}>
                 <CardHeader
                   title='Based on Research'
-                  titleTypographyProps={{
-                    variant: 'h5',
-                    color: 'primary',
-                    fontWeight: 'bold',
-                  }}
                   avatar={<Science color='primary' />}
+                  slotProps={{
+                    title: {
+                      variant: 'h5',
+                      color: 'primary',
+                      fontWeight: 'bold',
+                    }
+                  }}
                 />
                 <CardContent sx={{ pt: 0 }}>
                   <Typography
@@ -600,12 +608,14 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
               <CardActionArea href='/install' sx={{ height: '100%' }}>
                 <CardHeader
                   title='Install for Offline Use'
-                  titleTypographyProps={{
-                    variant: 'h5',
-                    color: 'primary',
-                    fontWeight: 'bold',
-                  }}
                   avatar={<Download color='primary' />}
+                  slotProps={{
+                    title: {
+                      variant: 'h5',
+                      color: 'primary',
+                      fontWeight: 'bold',
+                    }
+                  }}
                 />
                 <CardContent sx={{ pt: 0 }}>
                   <Typography

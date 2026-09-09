@@ -90,7 +90,9 @@ export default function MyProgress({
                 </CardIcon>
                 <CardHeader
                   title='My Curricula'
-                  titleTypographyProps={{ align: 'center' }}
+                  slotProps={{
+                    title: { align: 'center' }
+                  }}
                 />
                 <CardContent>
                   <Typography>
@@ -119,7 +121,9 @@ export default function MyProgress({
                 </CardIcon>
                 <CardHeader
                   title='My Activities'
-                  titleTypographyProps={{ align: 'center' }}
+                  slotProps={{
+                    title: { align: 'center' }
+                  }}
                 />
                 <CardContent>
                   <Typography>
@@ -154,7 +158,9 @@ export default function MyProgress({
                 </CardIcon>
                 <CardHeader
                   title='My Toolbox'
-                  titleTypographyProps={{ align: 'center' }}
+                  slotProps={{
+                    title: { align: 'center' }
+                  }}
                 />
                 <CardContent>
                   <Typography>

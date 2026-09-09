@@ -406,11 +406,13 @@ export default function Academy() {
                 <CardHeader
                   title='Theoretical Foundations'
                   subheader='Connect to Algebra and Logic'
-                  titleTypographyProps={{ align: 'center' }}
-                  subheaderTypographyProps={{
-                    align: 'center',
-                  }}
-                />
+                  slotProps={{
+                    title: { align: 'center' },
+
+                    subheader: {
+                      align: 'center',
+                    }
+                  }} />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     The contents is informed by concepts from algebra you might
@@ -449,11 +451,13 @@ export default function Academy() {
                 <CardHeader
                   title='Creativity &amp; Playfulness'
                   subheader='(De)Compose Art, Design, and Games'
-                  titleTypographyProps={{ align: 'center' }}
-                  subheaderTypographyProps={{
-                    align: 'center',
-                  }}
-                />
+                  slotProps={{
+                    title: { align: 'center' },
+
+                    subheader: {
+                      align: 'center',
+                    }
+                  }} />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     Starting with the composition of simple geometric shapes, we

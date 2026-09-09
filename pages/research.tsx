@@ -38,13 +38,15 @@ function ResearchCard({
     <Card sx={{ height: '100%' }}>
       <CardHeader
         title={title}
-        titleTypographyProps={{
-          variant: 'h5',
-          color: 'primary',
-          fontWeight: 'bold',
-        }}
         sx={{ pb: 0 }}
         avatar={<Description color='primary' />}
+        slotProps={{
+          title: {
+            variant: 'h5',
+            color: 'primary',
+            fontWeight: 'bold',
+          }
+        }}
       />
       <CardContent>
         <Stack direction='row' spacing={1} mb={2}>

@@ -77,11 +77,13 @@ function ContributorCard({
             </>
           }
           subheader={contribution}
-          titleTypographyProps={{ align: 'center' }}
-          subheaderTypographyProps={{
-            align: 'center',
-          }}
-        />
+          slotProps={{
+            title: { align: 'center' },
+
+            subheader: {
+              align: 'center',
+            }
+          }} />
       </Card>
     </Grid>
   );

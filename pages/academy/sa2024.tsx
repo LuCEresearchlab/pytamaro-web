@@ -150,11 +150,13 @@ export default function Academy() {
                 <CardHeader
                   title='Luca Chiodini'
                   subheader='PhD Student of Informatics'
-                  titleTypographyProps={{ align: 'center' }}
-                  subheaderTypographyProps={{
-                    align: 'center',
-                  }}
-                />
+                  slotProps={{
+                    title: { align: 'center' },
+
+                    subheader: {
+                      align: 'center',
+                    }
+                  }} />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     Luca is leading the PyTamaro effort with the goal of making
@@ -186,11 +188,13 @@ export default function Academy() {
                 <CardHeader
                   title='Joey Bevilacqua'
                   subheader='PhD Student of Informatics'
-                  titleTypographyProps={{ align: 'center' }}
-                  subheaderTypographyProps={{
-                    align: 'center',
-                  }}
-                />
+                  slotProps={{
+                    title: { align: 'center' },
+
+                    subheader: {
+                      align: 'center',
+                    }
+                  }} />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     Joey is interested in software engineering and is studying
@@ -221,11 +225,13 @@ export default function Academy() {
                 <CardHeader
                   title='Matthias Hauswirth'
                   subheader='Professor of Informatics'
-                  titleTypographyProps={{ align: 'center' }}
-                  subheaderTypographyProps={{
-                    align: 'center',
-                  }}
-                />
+                  slotProps={{
+                    title: { align: 'center' },
+
+                    subheader: {
+                      align: 'center',
+                    }
+                  }} />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     Matthias has been teaching programming, at university and
@@ -257,11 +263,13 @@ export default function Academy() {
                 <CardHeader
                   title='Costanza Rodriguez Gavazzi'
                   subheader='Student of Informatics'
-                  titleTypographyProps={{ align: 'center' }}
-                  subheaderTypographyProps={{
-                    align: 'center',
-                  }}
-                />
+                  slotProps={{
+                    title: { align: 'center' },
+
+                    subheader: {
+                      align: 'center',
+                    }
+                  }} />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     Costanza is studying informatics at USI, and she is
@@ -293,11 +301,13 @@ export default function Academy() {
                 <CardHeader
                   title='Davide Frova'
                   subheader='Student of Informatics'
-                  titleTypographyProps={{ align: 'center' }}
-                  subheaderTypographyProps={{
-                    align: 'center',
-                  }}
-                />
+                  slotProps={{
+                    title: { align: 'center' },
+
+                    subheader: {
+                      align: 'center',
+                    }
+                  }} />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     Davide is studying informatics at USI. He is passionate
@@ -326,11 +336,13 @@ export default function Academy() {
                 <CardHeader
                   title='Software Institute'
                   subheader='Award-Winning Teaching &amp; Research'
-                  titleTypographyProps={{ align: 'center' }}
-                  subheaderTypographyProps={{
-                    align: 'center',
-                  }}
-                />
+                  slotProps={{
+                    title: { align: 'center' },
+
+                    subheader: {
+                      align: 'center',
+                    }
+                  }} />
                 <CardContent>
                   <Typography component='p' variant='subtitle1'>
                     At the Software Institute at USI we discover, design, and
