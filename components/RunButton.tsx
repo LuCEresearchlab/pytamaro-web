@@ -1,6 +1,6 @@
 import { DownloadingOutlined, Keyboard, StopCircle } from '@mui/icons-material';
 import Done from '@mui/icons-material/Done';
-import ErrorOutline from '@mui/icons-material/ErrorOutline';
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import PlayCircleFilled from '@mui/icons-material/PlayCircleFilled';
 import { Button, CircularProgress, Stack, Tooltip } from '@mui/material';
 import { useContext } from 'react';
@@ -63,7 +63,7 @@ function StatusIndicator({
   } else if (executionFinished) {
     if (executionError) {
       tooltipTitle = t('executionCompletedWithErrors');
-      icon = <ErrorOutline fontSize='large' color='error' />;
+      icon = <ErrorOutlineOutlinedIcon fontSize='large' color='error' />;
     } else {
       tooltipTitle = t('executionCompletedSuccessfully');
       icon = <Done fontSize='large' color='success' />;
