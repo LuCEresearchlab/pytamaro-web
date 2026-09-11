@@ -6,7 +6,7 @@ import {
   Divider,
   Drawer,
   IconButton,
-  MenuItem,
+  ListItemButton,
   Stack,
   Toolbar,
 } from '@mui/material';
@@ -142,9 +142,14 @@ export default function NavigationBar({
               <Stack direction='column'>
                 <PyTamaroHomeLogo />
                 {navItems.map((item) => (
-                  <MenuItem component='a' key={item.url} href={item.url}>
+                  <ListItemButton
+                    component='a'
+                    key={item.url}
+                    href={item.url}
+                    sx={{ px: 0.5 }}
+                  >
                     {t(item.name)}
-                  </MenuItem>
+                  </ListItemButton>
                 ))}
               </Stack>
               <Divider sx={{ m: 1 }} />
