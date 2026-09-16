@@ -513,7 +513,9 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                     title: {
                       variant: 'h5',
                       color: 'primary',
-                      fontWeight: 'bold',
+                      sx: {
+                        fontWeight: 'bold',
+                      },
                     },
                   }}
                 />
@@ -562,7 +564,9 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                     title: {
                       variant: 'h5',
                       color: 'primary',
-                      fontWeight: 'bold',
+                      sx: {
+                        fontWeight: 'bold',
+                      },
                     },
                   }}
                 />
@@ -615,7 +619,9 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                     title: {
                       variant: 'h5',
                       color: 'primary',
-                      fontWeight: 'bold',
+                      sx: {
+                        fontWeight: 'bold',
+                      },
                     },
                   }}
                 />
@@ -644,7 +650,9 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                     title: {
                       variant: 'h5',
                       color: 'primary',
-                      fontWeight: 'bold',
+                      sx: {
+                        fontWeight: 'bold',
+                      },
                     },
                   }}
                 />
@@ -673,7 +681,9 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                     title: {
                       variant: 'h5',
                       color: 'primary',
-                      fontWeight: 'bold',
+                      sx: {
+                        fontWeight: 'bold',
+                      },
                     },
                   }}
                 />

@@ -114,7 +114,9 @@ export default function Teaching() {
                         title: {
                           variant: 'h5',
                           color: 'primary',
-                          fontWeight: 'bold',
+                          sx: {
+                            fontWeight: 'bold',
+                          },
                         },
                       }}
                     />
@@ -189,7 +191,9 @@ export default function Teaching() {
                         title: {
                           variant: 'h5',
                           color: 'primary',
-                          fontWeight: 'bold',
+                          sx: {
+                            fontWeight: 'bold',
+                          },
                         },
                       }}
                     />
@@ -269,7 +273,9 @@ export default function Teaching() {
                         title: {
                           variant: 'h5',
                           color: 'primary',
-                          fontWeight: 'bold',
+                          sx: {
+                            fontWeight: 'bold',
+                          },
                         },
                       }}
                     />
@@ -346,7 +352,9 @@ export default function Teaching() {
                         title: {
                           variant: 'h5',
                           color: 'primary',
-                          fontWeight: 'bold',
+                          sx: {
+                            fontWeight: 'bold',
+                          },
                         },
                       }}
                     />
@@ -424,7 +432,9 @@ export default function Teaching() {
                         title: {
                           variant: 'h5',
                           color: 'primary',
-                          fontWeight: 'bold',
+                          sx: {
+                            fontWeight: 'bold',
+                          },
                         },
                       }}
                     />
@@ -500,7 +510,9 @@ export default function Teaching() {
                         title: {
                           variant: 'h5',
                           color: 'primary',
-                          fontWeight: 'bold',
+                          sx: {
+                            fontWeight: 'bold',
+                          },
                         },
                       }}
                     />

@@ -23,7 +23,7 @@ export default function PageFooter() {
           }}
         />
       </Typography>
-      <Typography variant='body2' align='center' color='grey'>
+      <Typography variant='body2' align='center' color='textSecondary'>
         PyTamaro is a project created by the&nbsp;
         <Link href='https://luce.si.usi.ch/'>
           Lugano Computing Education Research Lab
@@ -36,7 +36,7 @@ export default function PageFooter() {
       <Typography
         variant='body2'
         align='center'
-        color='grey'
+        color='textSecondary'
         sx={{
           mt: 1,
         }}
