@@ -312,6 +312,94 @@
             "urlSuffix": "#func-str"
         },
         {
+            "name": "bool",
+            "kind": "function",
+            "description": {
+                "p": [
+                    "Converts a value to a boolean.",
+                    "(Technical note: this function is actually a constructor of bool objects.)"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "value",
+                    "type": "Any",
+                    "description": "value to convert to a boolean",
+                    "default": "False"
+                }
+            ],
+            "returnValue": {
+                "type": "bool",
+                "description": "a boolean representation of the value"
+            },
+            "examples": [
+                {
+                    "code": "bool()",
+                    "result": "False"
+                },
+                {
+                    "code": "bool(0)",
+                    "result": "False",
+                    "usesOptional": true
+                },
+                {
+                    "code": "bool(1)",
+                    "result": "True",
+                    "usesOptional": true
+                },
+                {
+                    "code": "bool('')",
+                    "result": "False",
+                    "usesOptional": true
+                },
+                {
+                    "code": "bool('False')",
+                    "result": "True",
+                    "usesOptional": true
+                }
+            ],
+            "urlSuffix": "#bool"
+        },
+        {
+            "name": "float",
+            "kind": "function",
+            "description": {
+                "p": [
+                    "Converts a string or a number to a floating point number.",
+                    "(Technical note: this function is actually a constructor of float objects.)"
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "value",
+                    "type": "str | int",
+                    "description": "value to convert to a float",
+                    "default": "0.0"
+                }
+            ],
+            "returnValue": {
+                "type": "float",
+                "description": "a floating point representation of the value"
+            },
+            "examples": [
+                {
+                    "code": "float()",
+                    "result": "0.0"
+                },
+                {
+                    "code": "float('3.14')",
+                    "result": "3.14",
+                    "usesOptional": true
+                },
+                {
+                    "code": "float(5)",
+                    "result": "5.0",
+                    "usesOptional": true
+                }
+            ],
+            "urlSuffix": "#float"
+        },
+        {
             "kind": "function",
             "name": "chr",
             "description": {
@@ -966,6 +1054,209 @@
                 }
             ],
             "urlSuffix": "#any"
+        },
+        {
+            "kind": "function",
+            "name": "bin",
+            "description": {
+                "p": [
+                    "Returns the binary representation of an integer as a string.",
+                    "The binary number starts with the prefix '0b' so that the resulting string is a valid numeric literal in Python."
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "number",
+                    "type": "int",
+                    "description": "integer number to convert to binary"
+                }
+            ],
+            "returnValue": {
+                "type": "str",
+                "description": "binary representation of the integer"
+            },
+            "examples": [
+                {
+                    "code": "bin(3)",
+                    "result": "'0b11'"
+                },
+                {
+                    "code": "bin(-3)",
+                    "result": "'-0b11'"
+                }
+            ],
+            "urlSuffix": "#bin"
+        },
+        {
+            "kind": "function",
+            "name": "hex",
+            "description": {
+                "p": [
+                    "Returns the hexadecimal representation of an integer as a string.",
+                    "The hexadecimal number starts with the prefix '0x' so that the resulting string is a valid numeric literal in Python."
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "number",
+                    "type": "int",
+                    "description": "integer number to convert to hexadecimal"
+                }
+            ],
+            "returnValue": {
+                "type": "str",
+                "description": "hexadecimal representation of the integer"
+            },
+            "examples": [
+                {
+                    "code": "hex(255)",
+                    "result": "'0xff'"
+                },
+                {
+                    "code": "hex(-16)",
+                    "result": "'-0x10'"
+                }
+            ],
+            "urlSuffix": "#hex"
+        },
+        {
+            "kind": "function",
+            "name": "oct",
+            "description": {
+                "p": [
+                    "Returns the octal representation of an integer as a string.",
+                    "The octal number starts with the prefix '0o' so that the resulting string is a valid numeric literal in Python."
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "number",
+                    "type": "int",
+                    "description": "integer number to convert to octal"
+                }
+            ],
+            "returnValue": {
+                "type": "str",
+                "description": "octal representation of the integer"
+            },
+            "examples": [
+                {
+                    "code": "oct(8)",
+                    "result": "'0o10'"
+                },
+                {
+                    "code": "oct(-8)",
+                    "result": "'-0o10'"
+                }
+            ],
+            "urlSuffix": "#oct"
+        },
+        {
+            "kind": "function",
+            "name": "hash",
+            "description": {
+                "p": [
+                    "Returns the hash value of an object.",
+                    "Hash values are integers used to quickly compare objects (e.g., keys in a dictionary when doing a lookup)."
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "object",
+                    "type": "Any",
+                    "description": "object to compute the hash value for"
+                }
+            ],
+            "returnValue": {
+                "type": "int",
+                "description": "hash value of the object"
+            },
+            "examples": [
+                {
+                    "code": "hash('Python')",
+                    "result": "7659224494485679784"
+                },
+                {
+                    "code": "hash('python')",
+                    "result": "-8305685934456145759"
+                }
+            ],
+            "urlSuffix": "#hash"
+        },
+        {
+            "kind": "function",
+            "name": "isinstance",
+            "description": {
+                "p": [
+                    "Returns True if an object is an instance of a class (or one of its subclasses)."
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "object",
+                    "type": "Any",
+                    "description": "object to check"
+                },
+                {
+                    "name": "class",
+                    "type": "type",
+                    "description": "class to check against"
+                }
+            ],
+            "returnValue": {
+                "type": "bool",
+                "description": "True if the object is an instance of the class (or one of its subclasses), False otherwise"
+            },
+            "examples": [
+                {
+                    "code": "isinstance(42, int)",
+                    "result": "True"
+                },
+                {
+                    "code": "isinstance(42, str)",
+                    "result": "False"
+                },
+                {
+                    "code": "isinstance(red, Color)",
+                    "result": "True"
+                }
+            ],
+            "urlSuffix": "#isinstance"
+        },
+        {
+            "kind": "function",
+            "name": "type",
+            "description": {
+                "p": [
+                    "Returns the type (at runtime) of an object."
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "object",
+                    "type": "Any",
+                    "description": "object to get the type of"
+                }
+            ],
+            "returnValue": {
+                "type": "type",
+                "description": "type of the object at runtime"
+            },
+            "examples": [
+                {
+                    "code": "type(42)",
+                    "result": "<class 'int'>"
+                },
+                {
+                    "code": "type('42')",
+                    "result": "<class 'str'>"
+                },
+                {
+                    "code": "type(red)",
+                    "result": "<class 'Color'>"
+                }
+            ],
+            "urlSuffix": "#type"
         },
         {
             "kind": "type",
