@@ -471,9 +471,9 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
           <Typography
             variant='h3'
             component='span'
-            color={theme.pytamaro.palette.red}
             sx={{
               fontWeight: 'bold',
+              color: theme.pytamaro.palette.red,
             }}
           >
             Graphics
