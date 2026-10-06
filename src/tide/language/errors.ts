@@ -9,14 +9,14 @@ export type TideSyntaxError =
   | TideSyntaxErrorInvalidConstantIdentifier
   | TideSyntaxErrorInvalidFunctionIdentifier
   | TideSyntaxErrorConstantHasNoValue
-  | TideSyntaxErrorInvalidLiteral;
+  | TideSyntaxErrorInvalidLiteral
+  | TideSyntaxErrorMissingParameter;
 
 export type TideNameError =
   | TideNameErrorMultipleDefinition
   | TideNameErrorUnknownConstant
   | TideNameErrorUnknownFunction
   | TideNameErrorCyclicalDependencies
-  | TideNameErrorMissingParameter
   | TideNameErrorNodeKindMismatch;
 
 export interface TideSyntaxErrorInvalidConstantIdentifier {
@@ -53,8 +53,8 @@ export interface TideSyntaxErrorConstantHasNoValue {
   args: [{ name: 'name'; value: string }];
 }
 
-export interface TideNameErrorMissingParameter {
-  kind: 'name-error';
+export interface TideSyntaxErrorMissingParameter {
+  kind: 'syntax-error';
   subkind: 'missing_parameter';
   args: [{ name: 'name'; value: string }];
 }

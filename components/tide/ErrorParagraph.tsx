@@ -21,6 +21,8 @@ function getRawContent(annotation: TideError): {
           return { title, message: 'Constant *{name}* has no value.' };
         case 'invalid_literal':
           return { title, message: 'Literal value *{value}* is invalid.' };
+        case 'missing_parameter':
+          return { title, message: 'Missing argument for parameter *{name}*.' };
         default:
           return { title, message: 'Syntax error.' };
       }
@@ -39,8 +41,6 @@ function getRawContent(annotation: TideError): {
             title,
             message: 'The constant *{name}* is defined multiple times.',
           };
-        case 'missing_parameter':
-          return { title, message: 'Missing argument for parameter *{name}*.' };
         case 'node_kind_mismatch':
           return { title, message: 'Node kind mismatch.' };
         case 'cyclical_dependencies':

@@ -2,16 +2,16 @@ import {
   TideGenericError,
   TideNameErrorCyclicalDependencies,
   TideNameErrorMultipleDefinition,
+  TideNameErrorNodeKindMismatch,
   TideNameErrorUnknownConstant,
   TideNameErrorUnknownFunction,
+  TideRuntimeError,
   TideSyntaxErrorConstantHasNoValue,
   TideSyntaxErrorInvalidConstantIdentifier,
   TideSyntaxErrorInvalidFunctionIdentifier,
   TideSyntaxErrorInvalidLiteral,
-  TideNameErrorMissingParameter,
-  TideNameErrorNodeKindMismatch,
+  TideSyntaxErrorMissingParameter,
   TideTypeError,
-  TideRuntimeError,
 } from './errors';
 
 export function TideNameErrorNodeKindMismatch_builder(
@@ -72,9 +72,9 @@ export function TideSyntaxErrorConstantHasNoValue_builder(
 
 export function TideSyntaxErrorMissingParameter_builder(
   name: string,
-): TideNameErrorMissingParameter {
+): TideSyntaxErrorMissingParameter {
   return {
-    kind: 'name-error',
+    kind: 'syntax-error',
     subkind: 'missing_parameter',
     args: [{ name: 'name', value: name }],
   };

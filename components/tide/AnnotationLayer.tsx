@@ -66,7 +66,7 @@ export function createAnnotationComponents(
   const { edges, nodes, mousePosition } = store;
 
   const param =
-    (annotation.kind === 'name-error'
+    (annotation.kind === 'syntax-error'
       ? annotation.subkind === 'missing_parameter'
         ? annotation.args[0].value
         : undefined
@@ -203,7 +203,7 @@ export function createAnnotationComponents(
       </div>
     ) : undefined,
 
-    annotation.kind === 'name-error' &&
+    annotation.kind === 'syntax-error' &&
     annotation.subkind === 'missing_parameter' ? (
       <div
         style={{
