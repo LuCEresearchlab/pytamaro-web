@@ -163,7 +163,10 @@ function PythonCodeCard() {
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <Code>color = black</Code>
           </div>
-          <div>&nbsp;&nbsp;&nbsp;&nbsp;else:</div>
+          <div>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <Code>else:</Code>
+          </div>
           <div>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <Code>color = white</Code>
