@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { MenuBookOutlined } from '@mui/icons-material';
+import { MenuBookOutlined, Translate } from '@mui/icons-material';
 import Download from '@mui/icons-material/Download';
 import PlayCircle from '@mui/icons-material/PlayCircle';
 import Route from '@mui/icons-material/Route';
@@ -15,12 +15,14 @@ import {
   CardHeader,
   Container,
   Link,
+  Paper,
   Stack,
   Tooltip,
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import anime from 'animejs';
+import { t } from 'i18next';
 import { shuffle } from 'lodash';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -30,7 +32,10 @@ import Carousel from '../components/Carousel';
 import DocElement from '../components/documentation/DocElement';
 import { STRICT_PYTHON3_LANG_ID } from '../components/editor/strictPython3';
 import ExecutionOutputArea from '../components/input_output/ExecutionOutputArea';
+import NavBarButton from '../components/navbar/NavBarButton';
 import NavigationBar from '../components/navbar/NavigationBar';
+import PlatformLanguageControl from '../components/navbar/PlatformLanguageControl';
+import { Popover, PopoverContent, PopoverTrigger } from '../components/Popover';
 import { useDocumentationElements } from '../src/documentation';
 import {
   basicActivities,
@@ -233,7 +238,7 @@ function PythonCodeCard() {
                 fontWeight: 'bold',
               }}
             >
-              Try it Now!
+              Run This Example!
             </Typography>{' '}
             <br />
             Directly in Your Browser
@@ -399,20 +404,25 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
         />
       </Head>
       <NavigationBar home>
-        <Button
-          variant='contained'
-          href={playgroundPathname()}
-          endIcon={<PlayCircle />}
-        >
-          Playground
-        </Button>
+        <Popover placement='bottom'>
+          <PopoverTrigger>
+            <NavBarButton label={t('settings')} onClick={() => {}}>
+              <Translate />
+            </NavBarButton>
+          </PopoverTrigger>
+          <PopoverContent>
+            <Paper sx={{ padding: 2, minWidth: 300, marginRight: 2 }}>
+              <PlatformLanguageControl />
+            </Paper>
+          </PopoverContent>
+        </Popover>
       </NavigationBar>
       <Container maxWidth='xl'>
         <Box
           sx={{
             display: 'flex',
             justifyContent: 'center',
-            marginY: 10,
+            marginY: 6,
           }}
         >
           <Box sx={{ width: { xs: '35vw', md: '25vw', xl: '15vw' } }}>
@@ -455,7 +465,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
           sx={{
             fontWeight: 'bold',
             textAlign: 'center',
-            marginY: 10,
+            marginY: 6,
             textWrap: 'balance',
           }}
         >
@@ -482,11 +492,28 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
             Graphics
           </Typography>
         </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', marginY: 8 }}>
+          <Button
+            variant='contained'
+            size='large'
+            href={playgroundPathname()}
+            endIcon={<PlayCircle sx={{ fontSize: '2rem !important' }} />}
+            sx={{
+              px: { xs: 2, md: 4 },
+              py: { xs: 0.5, md: 1 },
+              fontSize: { xs: '1.1rem', md: '1.4rem' },
+              borderRadius: 50,
+              textTransform: 'none',
+            }}
+          >
+            Start Programming in the Playground
+          </Button>
+        </Box>
         <Box
           sx={{
             maxWidth: 'md',
             marginX: 'auto',
-            marginY: 10,
+            marginY: 6,
           }}
         >
           <PythonCodeCard />
