@@ -184,5 +184,11 @@
         "inactive": "User input"
     },
     "rapidEvaluatorHint": "Type any Python code. The last <exprSpan>expression</exprSpan> will be <strong>evaluated</strong>.",
-    "automaticEvaluation": "Automatic Evaluation"
+    "automaticEvaluation": "Automatic Evaluation",
+    "footer": {
+        "logoAlt": "PyTamaro logo",
+        "projectDescription": "PyTamaro is a project created by the <lab>Lugano Computing Education Research Lab</lab> at the <institute>Software Institute</institute> of <university>USI</university>",
+        "privacyPolicy": "Privacy Policy",
+        "platformVersion": "Platform Version {{version}}"
+    }
 }

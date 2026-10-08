@@ -182,5 +182,11 @@
         "inactive": "Benutzereingabe"
     },
     "rapidEvaluatorHint": "Gib beliebigen Python-Code ein. Der letzte <exprSpan>Ausdruck</exprSpan> wird <strong>ausgewertet</strong>.",
-    "automaticEvaluation": "Automatische Auswertung"
+    "automaticEvaluation": "Automatische Auswertung",
+    "footer": {
+        "logoAlt": "PyTamaro-Logo",
+        "projectDescription": "PyTamaro ist ein Projekt des <lab>Lugano Computing Education Research Lab</lab> am <institute>Software Institute</institute> der <university>USI</university>",
+        "privacyPolicy": "Datenschutzerklärung",
+        "platformVersion": "Plattformversion {{version}}"
+    }
 }

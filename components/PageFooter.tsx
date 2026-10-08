@@ -1,9 +1,21 @@
 import { Container, Link, Typography } from '@mui/material';
+import { Trans } from 'next-i18next';
 import Image from 'next/image';
 import NextLink from 'next/link';
 import PyTamaroLogo from '../public/PyTamaroLogo.png';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 
 export default function PageFooter() {
+  const { i18n, t } = useLocalTranslation(['common']);
+  const buildTimestamp =
+    process.env.BUILD_TIMESTAMP !== undefined
+      ? new Intl.DateTimeFormat(i18n.language, {
+          dateStyle: 'long',
+          timeStyle: 'long',
+          timeZone: 'UTC',
+        }).format(new Date(parseInt(process.env.BUILD_TIMESTAMP, 10)))
+      : undefined;
+
   return (
     <Container maxWidth='lg' sx={{ mt: 'auto', mb: 2 }}>
       <Typography
@@ -15,7 +27,7 @@ export default function PageFooter() {
       >
         <Image
           src={PyTamaroLogo}
-          alt='Logo of PyTamaro'
+          alt={t('footer.logoAlt')}
           sizes='100vw'
           style={{
             width: '2.25rem',
@@ -24,14 +36,14 @@ export default function PageFooter() {
         />
       </Typography>
       <Typography variant='body2' align='center' color='textSecondary'>
-        PyTamaro is a project created by the&nbsp;
-        <Link href='https://luce.si.usi.ch/'>
-          Lugano Computing Education Research Lab
-        </Link>
-        &nbsp;at the&nbsp;
-        <Link href='https://si.usi.ch/'>Software Institute</Link>
-        &nbsp;of&nbsp;
-        <Link href='https://www.usi.ch/'>USI</Link>
+        <Trans
+          i18nKey='footer.projectDescription'
+          components={{
+            lab: <Link href='https://luce.si.usi.ch/' />,
+            institute: <Link href='https://si.usi.ch/' />,
+            university: <Link href='https://www.usi.ch/' />,
+          }}
+        />
       </Typography>
       <Typography
         variant='body2'
@@ -42,12 +54,13 @@ export default function PageFooter() {
         }}
       >
         <Link component={NextLink} href='/privacy'>
-          Privacy Policy
+          {t('footer.privacyPolicy')}
         </Link>
         {' • '}
-        {`Platform Version ${process.env.PLATFORM_VERSION}`}
-        {process.env.BUILD_TIMESTAMP !== undefined &&
-          ` (${new Date(parseInt(process.env.BUILD_TIMESTAMP, 10)).toUTCString()})`}
+        {t('footer.platformVersion', {
+          version: process.env.PLATFORM_VERSION,
+        })}
+        {buildTimestamp !== undefined && ` (${buildTimestamp})`}
       </Typography>
     </Container>
   );
