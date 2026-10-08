@@ -1,0 +1,40 @@
+{
+  "metaDescription": "PyTamaro: Learn programming in Python with graphics. Explore activities connected to data science, colors, animations, and more. Completely free, in your browser!",
+  "heroTitle": "Learn <programming>Programming</programming> in Python with <graphics>Graphics</graphics>",
+  "startProgramming": "Start Programming in the Playground",
+  "runExample": "Run This Example!",
+  "directlyInBrowser": "Directly in Your Browser",
+  "learnWith": "Learn with PyTamaro",
+  "activities": {
+    "title": "Learning Activities For All Tastes",
+    "description": "Learn programming in connection to art, data science, colors, animations, and more."
+  },
+  "curricula": {
+    "title": "Guided Curricula Designed By Teachers",
+    "description": "Choose a beginner or advanced curriculum that guides you through the activities."
+  },
+  "curriculumImageAlt": "Illustration of a curriculum",
+  "teachWith": "Teach with PyTamaro",
+  "teachingResources": {
+    "title": "Free Teaching Resources",
+    "description": "Start teaching programming with <strong>unplugged</strong> activities, and check out other resources for teachers."
+  },
+  "research": {
+    "title": "Based on Research",
+    "description": "Read our <strong>research papers</strong> to learn about the design of PyTamaro and this web platform."
+  },
+  "offline": {
+    "title": "Install for Offline Use",
+    "description": "Installation instructions if you prefer to use PyTamaro <strong>offline</strong> in your favorite IDE."
+  },
+  "collaboration": "PyTamaro is a synergistic collaboration between <teachers>university and school teachers</teachers>",
+  "openSource": "The library is an open-source project hosted on <github>GitHub</github>",
+  "tooltips": {
+    "variable": "Variable",
+    "loop": "Loop",
+    "condition": "Condition",
+    "primitiveGraphics": "Primitive Graphics",
+    "graphicsComposition": "Graphics Composition",
+    "output": "Output"
+  }
+}

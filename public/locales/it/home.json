@@ -1,0 +1,40 @@
+{
+  "metaDescription": "PyTamaro: impara a programmare in Python con le grafiche. Esplora attività legate a data science, ai colori, alle animazioni e molto altro. Completamente gratuito, direttamente nel browser!",
+  "heroTitle": "Impara a <programming>programmare</programming> in Python con le <graphics>grafiche</graphics>",
+  "startProgramming": "Inizia a programmare nel Playground",
+  "runExample": "Esegui questo esempio!",
+  "directlyInBrowser": "Direttamente nel browser",
+  "learnWith": "Impara con PyTamaro",
+  "activities": {
+    "title": "Attività per tutti i gusti",
+    "description": "Impara a programmare attraverso l'arte, la data science, i colori, le animazioni e molto altro."
+  },
+  "curricula": {
+    "title": "Percorsi guidati progettati da insegnanti",
+    "description": "Scegli un percorso per principianti o avanzato che ti guiderà attraverso le attività."
+  },
+  "curriculumImageAlt": "Illustrazione di un percorso didattico",
+  "teachWith": "Insegna con PyTamaro",
+  "teachingResources": {
+    "title": "Risorse didattiche gratuite",
+    "description": "Inizia a insegnare la programmazione con attività <strong>unplugged (senza computer)</strong> e scopri altre risorse per insegnanti."
+  },
+  "research": {
+    "title": "Basato sulla ricerca",
+    "description": "Leggi i nostri <strong>articoli di ricerca</strong> per scoprire come sono stati progettati PyTamaro e questa piattaforma web."
+  },
+  "offline": {
+    "title": "Installa per l'uso offline",
+    "description": "Istruzioni per l'installazione se preferisci usare PyTamaro <strong>offline</strong> nel tuo IDE preferito."
+  },
+  "collaboration": "PyTamaro è una collaborazione sinergica tra <teachers>docenti universitari e scolastici</teachers>",
+  "openSource": "La libreria è un progetto open source ospitato su <github>GitHub</github>",
+  "tooltips": {
+    "variable": "Variabile",
+    "loop": "Ciclo",
+    "condition": "Condizione",
+    "primitiveGraphics": "Grafiche primitive",
+    "graphicsComposition": "Composizione di grafiche",
+    "output": "Output"
+  }
+}

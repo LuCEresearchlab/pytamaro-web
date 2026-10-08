@@ -1,0 +1,40 @@
+{
+  "metaDescription": "PyTamaro : apprenez à programmer en Python avec des graphiques. Explorez des activités liées à la science des données, aux couleurs, aux animations et bien plus encore. Entièrement gratuit, dans votre navigateur !",
+  "heroTitle": "Apprenez la <programming>programmation</programming> en Python avec des <graphics>graphiques</graphics>",
+  "startProgramming": "Commencer à programmer dans le Playground",
+  "runExample": "Exécuter cet exemple !",
+  "directlyInBrowser": "Directement dans votre navigateur",
+  "learnWith": "Apprendre avec PyTamaro",
+  "activities": {
+    "title": "Des activités pour tous les goûts",
+    "description": "Apprenez à programmer en lien avec l'art, la data science, les couleurs, les animations et bien plus encore."
+  },
+  "curricula": {
+    "title": "Des parcours guidés conçus par des enseignants",
+    "description": "Choisissez un parcours pour débutants ou avancés qui vous guidera à travers les activités."
+  },
+  "curriculumImageAlt": "Illustration d'un parcours pédagogique",
+  "teachWith": "Enseigner avec PyTamaro",
+  "teachingResources": {
+    "title": "Ressources pédagogiques gratuites",
+    "description": "Commencez à enseigner la programmation avec des activités <strong>unplugged (sans ordinateur)</strong> et découvrez d'autres ressources pour les enseignants."
+  },
+  "research": {
+    "title": "Fondé sur la recherche",
+    "description": "Lisez nos <strong>articles de recherche</strong> pour découvrir la conception de PyTamaro et de cette plateforme web."
+  },
+  "offline": {
+    "title": "Installer pour une utilisation hors ligne",
+    "description": "Consultez les instructions d'installation si vous préférez utiliser PyTamaro <strong>hors ligne</strong> dans votre IDE préféré."
+  },
+  "collaboration": "PyTamaro est une collaboration synergique entre <teachers>enseignants universitaires et scolaires</teachers>",
+  "openSource": "La bibliothèque est un projet open source hébergé sur <github>GitHub</github>",
+  "tooltips": {
+    "variable": "Variable",
+    "loop": "Boucle",
+    "condition": "Condition",
+    "primitiveGraphics": "Graphiques primitifs",
+    "graphicsComposition": "Composition de graphiques",
+    "output": "Output"
+  }
+}

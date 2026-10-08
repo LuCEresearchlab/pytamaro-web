@@ -1,0 +1,40 @@
+{
+  "metaDescription": "PyTamaro: Lerne mit Grafiken in Python zu programmieren. Entdecke Aktivitäten zu Datenwissenschaft, Farben, Animationen und vielem mehr. Vollständig kostenlos, direkt im Browser!",
+  "heroTitle": "Lerne <programming>Programmieren</programming> in Python mit <graphics>Grafiken</graphics>",
+  "startProgramming": "Starte mit dem Programmieren im Playground",
+  "runExample": "Dieses Beispiel ausführen!",
+  "directlyInBrowser": "Direkt im Browser",
+  "learnWith": "Lerne mit PyTamaro",
+  "activities": {
+    "title": "Lernaktivitäten für jeden Geschmack",
+    "description": "Lerne Programmieren anhand von Kunst, Data Science, Farben, Animationen und vielem mehr."
+  },
+  "curricula": {
+    "title": "Von Lehrpersonen entwickelte Lernpfade",
+    "description": "Wähle einen Lernpfad für Anfänger oder Fortgeschrittene, der dich durch die Aktivitäten führt."
+  },
+  "curriculumImageAlt": "Illustration eines Lernpfads",
+  "teachWith": "Unterrichte mit PyTamaro",
+  "teachingResources": {
+    "title": "Kostenlose Unterrichtsmaterialien",
+    "description": "Beginne mit dem Programmierunterricht anhand von <strong>Unplugged-Aktivitäten (ohne Computer)</strong> und entdecke weitere Materialien für Lehrpersonen."
+  },
+  "research": {
+    "title": "Forschungsbasiert",
+    "description": "Lies unsere <strong>Forschungsarbeiten</strong>, um mehr über die Gestaltung von PyTamaro und dieser Webplattform zu erfahren."
+  },
+  "offline": {
+    "title": "Für die Offline-Nutzung installieren",
+    "description": "Hier findest du die Installationsanleitung, falls du PyTamaro lieber <strong>offline</strong> in deiner bevorzugten IDE verwendest."
+  },
+  "collaboration": "PyTamaro ist eine synergetische Zusammenarbeit zwischen <teachers>Hochschul- und Schullehrpersonen</teachers>",
+  "openSource": "Die Bibliothek ist ein Open-Source-Projekt auf <github>GitHub</github>",
+  "tooltips": {
+    "variable": "Variable",
+    "loop": "Schleife",
+    "condition": "Bedingung",
+    "primitiveGraphics": "Primitive Grafiken",
+    "graphicsComposition": "Zusammensetzung von Grafiken",
+    "output": "Output"
+  }
+}

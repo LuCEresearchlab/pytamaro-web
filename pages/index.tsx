@@ -22,11 +22,11 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import anime from 'animejs';
-import { t } from 'i18next';
 import { shuffle } from 'lodash';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import { Trans } from 'next-i18next';
 import ActivityCardMedia from '../components/ActivityCardMedia';
 import Carousel from '../components/Carousel';
 import DocElement from '../components/documentation/DocElement';
@@ -45,6 +45,7 @@ import useMonacoColorizer, { COLORIZE_CLASSNAME } from '../src/monacoColorizer';
 import { playgroundActivityVariant } from '../src/playground';
 import { PythonName } from '../src/python-analyzer/python_analyzer';
 import { BasicActivity } from '../src/schemas/activitySchema';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
 import {
@@ -131,6 +132,8 @@ show_graphic(finish_line)`;
 const EXAMPLE_STDOUT =
   '@@@PYTAMARO_DATA_URI_BEGIN@@@data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAAyCAYAAAByHI2dAAAA+ElEQVR4nO3XwYkEMAwEQWu5/FP2piAafI+lKgExr0ZzzrnnsXufnzgz8/yGHXt27NmxZ8fef+z4PL8AwE8SEAASAQEgERAAEgEBIBEQABIBASAREAASAQEgERAAEgEBIBEQABIBASAREAASAQEgERAAEgEBIBEQABIBASAREAASAQEgERAAEgEBIBEQAJK/e+/zIzPz/IYde3bs2bFnx96v7PCBAJAICACJgACQCAgAiYAAkAgIAImAAJAICACJgACQCAgAiYAAkAgIAImAAJAICACJgACQCAgAiYAAkAgIAImAAJAICACJgACQCAgAiYAAkAgIAMkX+JkxYgh26wcAAAAASUVORK5CYII=@@@PYTAMARO_DATA_URI_END@@@';
 function PythonCodeCard() {
+  const { t } = useLocalTranslation(['home']);
+
   return (
     <Card sx={{ height: '100%', position: 'relative' }}>
       <Documentation />
@@ -149,18 +152,24 @@ function PythonCodeCard() {
             <Code>num_blocks = 16</Code>
           </div>
           <div>
-            <AnnotationTooltip title='Variable' placement='left'>
+            <AnnotationTooltip
+              title={t('home:tooltips.variable')}
+              placement='left'
+            >
               <Code>line = empty_graphic()</Code>
             </AnnotationTooltip>
           </div>
           <div>
-            <AnnotationTooltip title='Loop' placement='right'>
+            <AnnotationTooltip title={t('home:tooltips.loop')} placement='right'>
               <Code>for col in range(num_blocks):</Code>
             </AnnotationTooltip>
           </div>
           <div>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <AnnotationTooltip title='Condition' placement='left'>
+            <AnnotationTooltip
+              title={t('home:tooltips.condition')}
+              placement='left'
+            >
               <Code>if col % 2 == 0:</Code>
             </AnnotationTooltip>
           </div>
@@ -179,7 +188,7 @@ function PythonCodeCard() {
           <div>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <AnnotationTooltip
-              title='Primitive Graphics'
+              title={t('home:tooltips.primitiveGraphics')}
               placement='right'
               type='graphics'
             >
@@ -189,7 +198,7 @@ function PythonCodeCard() {
           <div>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <AnnotationTooltip
-              title='Graphics Composition'
+              title={t('home:tooltips.graphicsComposition')}
               placement='right'
               type='graphics'
             >
@@ -203,7 +212,10 @@ function PythonCodeCard() {
             <Code>finish_line = above(line, second_line)</Code>
           </div>
           <div>
-            <AnnotationTooltip title='Output' placement='left'>
+            <AnnotationTooltip
+              title={t('home:tooltips.output')}
+              placement='left'
+            >
               <Code>show_graphic(finish_line)</Code>
             </AnnotationTooltip>
           </div>
@@ -238,10 +250,10 @@ function PythonCodeCard() {
                 fontWeight: 'bold',
               }}
             >
-              Run This Example!
+              {t('home:runExample')}
             </Typography>{' '}
             <br />
-            Directly in Your Browser
+            {t('home:directlyInBrowser')}
           </div>
         </Button>
       </CardContent>
@@ -266,6 +278,7 @@ function PythonCodeCard() {
 
 function Documentation() {
   const router = useRouter();
+  const { t } = useLocalTranslation(['common']);
   useEffect(() => {
     // Preload the documentation information for pytamaro and builtins
     router.prefetch(judiciousDocPathname('pytamaro'));
@@ -326,7 +339,7 @@ function Documentation() {
             module === 'builtins' && element?.name === 'range' ? (
               <AnnotationTooltip
                 key={`${module}-${element?.name}`}
-                title={'Documentation'}
+                title={t('documentation')}
                 placement='bottom'
                 type='other'
               >
@@ -354,6 +367,8 @@ function Documentation() {
 }
 
 export default function Home({ activities }: { activities: BasicActivity[] }) {
+  const { t } = useLocalTranslation(['home', 'common']);
+
   useEffect(() => {
     const tl = anime.timeline({
       easing: 'easeOutCirc',
@@ -400,13 +415,13 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
         <title>PyTamaro</title>
         <meta
           name='description'
-          content='PyTamaro: Learn programming in Python with graphics. Explore activities connected to data science, colors, animations, and more. Completely free, in your browser!'
+          content={t('home:metaDescription')}
         />
       </Head>
       <NavigationBar home>
         <Popover placement='bottom'>
           <PopoverTrigger>
-            <NavBarButton label={t('settings')} onClick={() => {}}>
+            <NavBarButton label={t('common:settings')} onClick={() => {}}>
               <Translate />
             </NavBarButton>
           </PopoverTrigger>
@@ -469,28 +484,29 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
             textWrap: 'balance',
           }}
         >
-          Learn{' '}
-          <Typography
-            variant='h3'
-            component='span'
-            color='primary'
-            sx={{
-              fontWeight: 'bold',
+          <Trans
+            i18nKey='home:heroTitle'
+            components={{
+              programming: (
+                <Typography
+                  variant='h3'
+                  component='span'
+                  color='primary'
+                  sx={{ fontWeight: 'bold' }}
+                />
+              ),
+              graphics: (
+                <Typography
+                  variant='h3'
+                  component='span'
+                  sx={{
+                    fontWeight: 'bold',
+                    color: theme.pytamaro.palette.red,
+                  }}
+                />
+              ),
             }}
-          >
-            Programming
-          </Typography>{' '}
-          in Python with{' '}
-          <Typography
-            variant='h3'
-            component='span'
-            sx={{
-              fontWeight: 'bold',
-              color: theme.pytamaro.palette.red,
-            }}
-          >
-            Graphics
-          </Typography>
+          />
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'center', marginY: 8 }}>
           <Button
@@ -506,7 +522,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
               textTransform: 'none',
             }}
           >
-            Start Programming in the Playground
+            {t('home:startProgramming')}
           </Button>
         </Box>
         <Box
@@ -526,7 +542,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
             fontWeight: 'bold',
           }}
         >
-          Learn with PyTamaro
+          {t('home:learnWith')}
         </Typography>
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, md: 6 }}>
@@ -536,7 +552,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                 sx={{ height: '100%' }}
               >
                 <CardHeader
-                  title='Learning Activities For All Tastes'
+                  title={t('home:activities.title')}
                   sx={{ pb: 0 }}
                   avatar={<TipsAndUpdates color='primary' />}
                   slotProps={{
@@ -557,8 +573,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                       fontSize: '1.1rem',
                     }}
                   >
-                    Learn programming in connection to art, data science,
-                    colors, animations, and more.
+                    {t('home:activities.description')}
                   </Typography>
                 </CardContent>
                 <Box
@@ -587,7 +602,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                 sx={{ height: '100%' }}
               >
                 <CardHeader
-                  title='Guided Curricula Designed By Teachers'
+                  title={t('home:curricula.title')}
                   sx={{ pb: 0 }}
                   avatar={<Route color='primary' />}
                   slotProps={{
@@ -608,8 +623,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                       fontSize: '1.1rem',
                     }}
                   >
-                    Choose a beginner or advanced curriculum that guides you
-                    through the activities.
+                    {t('home:curricula.description')}
                   </Typography>
                 </CardContent>
                 <Box
@@ -619,7 +633,11 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                     justifyContent: 'center',
                   }}
                 >
-                  <img src='Curriculum.png' alt='Curriculum' height='250rem' />
+                  <img
+                    src='Curriculum.png'
+                    alt={t('home:curriculumImageAlt')}
+                    height='250rem'
+                  />
                 </Box>
               </CardActionArea>
             </Card>
@@ -633,7 +651,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
             fontWeight: 'bold',
           }}
         >
-          Teach with PyTamaro
+          {t('home:teachWith')}
         </Typography>
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, md: 4 }}>
@@ -643,7 +661,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                 sx={{ height: '100%' }}
               >
                 <CardHeader
-                  title='Free Teaching Resources'
+                  title={t('home:teachingResources.title')}
                   avatar={<School color='primary' />}
                   slotProps={{
                     title: {
@@ -663,8 +681,10 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                       fontSize: '1.1rem',
                     }}
                   >
-                    Start teaching programming with <strong>unplugged</strong>{' '}
-                    activities, and check out other resources for teachers.
+                    <Trans
+                      i18nKey='home:teachingResources.description'
+                      components={{ strong: <strong /> }}
+                    />
                   </Typography>
                 </CardContent>
               </CardActionArea>
@@ -674,7 +694,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
             <Card sx={{ height: '100%' }}>
               <CardActionArea href='/research' sx={{ height: '100%' }}>
                 <CardHeader
-                  title='Based on Research'
+                  title={t('home:research.title')}
                   avatar={<Science color='primary' />}
                   slotProps={{
                     title: {
@@ -694,8 +714,10 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                       fontSize: '1.1rem',
                     }}
                   >
-                    Read our <strong>research papers</strong> to learn about the
-                    design of PyTamaro and this web platform.
+                    <Trans
+                      i18nKey='home:research.description'
+                      components={{ strong: <strong /> }}
+                    />
                   </Typography>
                 </CardContent>
               </CardActionArea>
@@ -705,7 +727,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
             <Card sx={{ height: '100%' }}>
               <CardActionArea href='/install' sx={{ height: '100%' }}>
                 <CardHeader
-                  title='Install for Offline Use'
+                  title={t('home:offline.title')}
                   avatar={<Download color='primary' />}
                   slotProps={{
                     title: {
@@ -725,8 +747,10 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                       fontSize: '1.1rem',
                     }}
                   >
-                    Installation instructions if you prefer to use PyTamaro{' '}
-                    <strong>offline</strong> in your favorite IDE.
+                    <Trans
+                      i18nKey='home:offline.description'
+                      components={{ strong: <strong /> }}
+                    />
                   </Typography>
                 </CardContent>
               </CardActionArea>
@@ -744,13 +768,17 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
           textWrap: 'balance',
         }}
       >
-        PyTamaro is a synergistic collaboration between{' '}
-        <Link
-          href={`${aboutPathname()}#who`}
-          style={{ textDecoration: 'none' }}
-        >
-          university and school teachers
-        </Link>
+        <Trans
+          i18nKey='home:collaboration'
+          components={{
+            teachers: (
+              <Link
+                href={`${aboutPathname()}#who`}
+                style={{ textDecoration: 'none' }}
+              />
+            ),
+          }}
+        />
       </Typography>
       <Typography
         variant='h6'
@@ -758,13 +786,17 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
         sx={{ fontWeight: 'normal' }}
         gutterBottom
       >
-        The library is an open-source project hosted on{' '}
-        <Link
-          href='https://github.com/LuCEresearchlab/pytamaro'
-          style={{ textDecoration: 'none' }}
-        >
-          GitHub
-        </Link>
+        <Trans
+          i18nKey='home:openSource'
+          components={{
+            github: (
+              <Link
+                href='https://github.com/LuCEresearchlab/pytamaro'
+                style={{ textDecoration: 'none' }}
+              />
+            ),
+          }}
+        />
       </Typography>
     </div>
   );
@@ -778,7 +810,7 @@ export async function getStaticProps() {
   return {
     props: {
       activities: featuredActivities,
-      ...(await translationProps([])),
+      ...(await translationProps(['home'])),
     },
   };
 }
