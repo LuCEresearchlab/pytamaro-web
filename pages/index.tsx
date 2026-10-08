@@ -23,10 +23,10 @@ import {
 import Grid from '@mui/material/Grid';
 import anime from 'animejs';
 import { shuffle } from 'lodash';
+import { Trans } from 'next-i18next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import { Trans } from 'next-i18next';
 import ActivityCardMedia from '../components/ActivityCardMedia';
 import Carousel from '../components/Carousel';
 import DocElement from '../components/documentation/DocElement';
@@ -41,11 +41,11 @@ import {
   basicActivities,
   listVisibleActivities,
 } from '../src/fs-content/activities';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import useMonacoColorizer, { COLORIZE_CLASSNAME } from '../src/monacoColorizer';
 import { playgroundActivityVariant } from '../src/playground';
 import { PythonName } from '../src/python-analyzer/python_analyzer';
 import { BasicActivity } from '../src/schemas/activitySchema';
-import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
 import {
@@ -160,7 +160,10 @@ function PythonCodeCard() {
             </AnnotationTooltip>
           </div>
           <div>
-            <AnnotationTooltip title={t('home:tooltips.loop')} placement='right'>
+            <AnnotationTooltip
+              title={t('home:tooltips.loop')}
+              placement='right'
+            >
               <Code>for col in range(num_blocks):</Code>
             </AnnotationTooltip>
           </div>
@@ -413,10 +416,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
     <div>
       <Head>
         <title>PyTamaro</title>
-        <meta
-          name='description'
-          content={t('home:metaDescription')}
-        />
+        <meta name='description' content={t('home:metaDescription')} />
       </Head>
       <NavigationBar home>
         <Popover placement='bottom'>
@@ -515,11 +515,12 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
             href={playgroundPathname()}
             endIcon={<PlayCircle sx={{ fontSize: '2rem !important' }} />}
             sx={{
-              px: { xs: 2, md: 4 },
+              px: 4,
               py: { xs: 0.5, md: 1 },
               fontSize: { xs: '1.1rem', md: '1.4rem' },
               borderRadius: 50,
               textTransform: 'none',
+              textWrap: 'balance',
             }}
           >
             {t('home:startProgramming')}
