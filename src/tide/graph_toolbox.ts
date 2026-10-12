@@ -188,8 +188,8 @@ export function onDrop(
   }
 
   const topLeftPosition = screenToFlowPosition({
-    x: event.clientX,
-    y: event.clientY,
+    x: event.clientX - dragged.grabOffset.x,
+    y: event.clientY - dragged.grabOffset.y,
   });
 
   const id = `${dragged.type}-${Date.now()}`;
@@ -200,28 +200,9 @@ export function onDrop(
     position: topLeftPosition,
     data: { ...dragged.data, outdated: true },
     dragHandle: '.drag-handle',
-    className: 'node_hidden',
   } as TideNode;
 
   setNodes(getNodes().concat(newNode));
-
-  setTimeout(() => {
-    const newNodes = getNodes();
-    setNodes(
-      newNodes.map((v) =>
-        v.id === newNode.id
-          ? {
-              ...v,
-              position: {
-                x: v.position.x - (v.measured?.width || 0) / 2,
-                y: v.position.y - (v.measured?.height || 0) / 2,
-              },
-              className: '',
-            }
-          : v,
-      ),
-    );
-  });
 }
 
 export function onDocumentKeyDown(

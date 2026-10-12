@@ -81,7 +81,12 @@ export function TidePalettePane({
     type: T['type'],
     data: T['data'],
   ) {
-    setDragged({ type, data });
+    const rect = event.currentTarget.getBoundingClientRect();
+    setDragged({
+      type,
+      data,
+      grabOffset: { x: event.clientX - rect.left, y: event.clientY - rect.top },
+    });
     // eslint-disable-next-line no-param-reassign
     event.dataTransfer!.effectAllowed = 'move';
   };

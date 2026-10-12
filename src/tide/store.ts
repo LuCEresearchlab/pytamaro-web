@@ -37,6 +37,11 @@ import {
   getSubTreeFromRoot,
 } from './utils';
 
+export type DraggedCard = Pick<TamaroCardNode, 'type' | 'data'> & {
+  // Pointer position relative to the item's top-left corner at drag start
+  grabOffset: XYPosition;
+};
+
 export interface DraggedElementData {
   type: string;
   data: TideNode['data'];
@@ -66,7 +71,7 @@ export function setExecute(
 
 let evaluation_timeout: NodeJS.Timeout | undefined = undefined;
 export interface GraphStateSlice {
-  dragged: Pick<TamaroCardNode, 'data' | 'type'> | undefined;
+  dragged: DraggedCard | undefined;
   judicious: JudiciousModule[];
   setJudicious: (modules: JudiciousModule[]) => void;
   initialized: 'before' | 'wait' | 'done';
@@ -93,9 +98,7 @@ export interface GraphStateSlice {
   setEdges: (edges: Edge[]) => void;
   getNodes: () => TideNode[];
   getEdges: () => Edge[];
-  setDragged: (
-    dragged: Pick<TamaroCardNode, 'type' | 'data'> | undefined,
-  ) => void;
+  setDragged: (dragged: DraggedCard | undefined) => void;
   updateNodeData: <
     C extends TideNode['type'],
     T extends TideNode & { type: C },
@@ -469,7 +472,7 @@ export const createGraphSlice: StateCreator<
       },
     ]);
   },
-  setDragged: (dragged: Pick<TamaroCardNode, 'type' | 'data'> | undefined) => {
+  setDragged: (dragged: DraggedCard | undefined) => {
     set({ dragged });
   },
   setNodes: (new_nodes) => {
