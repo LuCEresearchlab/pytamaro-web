@@ -15,7 +15,7 @@ import {
 } from '../../src/tide/language/typing';
 import { extract_error } from '../../src/tide/language/utils';
 import { useStore } from '../../src/tide/store';
-import { getHandleDiv, getNode } from '../../src/tide/utils';
+import { getNode } from '../../src/tide/utils';
 import { TideNode } from './cards';
 import { getParameterName } from './cards/function';
 
@@ -140,12 +140,10 @@ function CustomEdge({
 
 export function CustomEdgeLine({
   fromX,
-  fromY: sourceY,
+  fromY,
   toX,
-  toY: targetY,
+  toY,
   connectionLineStyle,
-  fromNode,
-  toNode,
   fromHandle,
   toHandle,
 }: Pick<
@@ -155,28 +153,26 @@ export function CustomEdgeLine({
   | 'toX'
   | 'toY'
   | 'connectionLineStyle'
-  | 'fromNode'
-  | 'toNode'
   | 'fromHandle'
   | 'toHandle'
 >) {
-  const sourceHandleDiv =
-    getHandleDiv(fromNode.id, fromHandle.id || '')?.clientWidth || 0;
-  const targetHandleDiv =
-    (toNode &&
-      toHandle &&
-      getHandleDiv(toNode.id, toHandle.id || '')?.clientWidth) ||
-    0;
-
-  const sourceX = fromX + sourceHandleDiv / 2;
-  const targetX = toX - targetHandleDiv / 2;
-
-  const [edgePath] = getSmoothStepWithPaddingPath({
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-  });
+  const fromWidth = fromHandle.width || 0;
+  const toWidth = toHandle?.width || 0;
+  const [edgePath] = getSmoothStepWithPaddingPath(
+    fromHandle.type === 'source'
+      ? {
+          sourceX: fromX + fromWidth / 2,
+          sourceY: fromY,
+          targetX: toX - toWidth / 2,
+          targetY: toY,
+        }
+      : {
+          sourceX: toX + toWidth / 2,
+          sourceY: toY,
+          targetX: fromX - fromWidth / 2,
+          targetY: fromY,
+        },
+  );
   return (
     <path style={{ ...connectionLineStyle, zIndex: '-1000' }} d={edgePath} />
   );
