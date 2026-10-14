@@ -18,7 +18,6 @@ import {
 } from '../../src/tide/language/phases/syntax';
 import { LiteralType, SoundType } from '../../src/tide/language/typing';
 import { useStore } from '../../src/tide/store';
-import { ConstantTamaroCard, FunctionTamaroCard } from '../TamaroCard';
 import {
   ConstantNode,
   FunctionNode,
@@ -28,6 +27,7 @@ import {
 import { check_const_name } from './cards/constant_definition';
 import { TideConstantUse } from './cards/constant_use';
 import { TideLiteral } from './cards/literal';
+import { ConstantTamaroCard, FunctionTamaroCard } from './cards/TamaroCard';
 
 export function TidePalettePane({
   values,

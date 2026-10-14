@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 /* eslint-disable @next/next/no-img-element */
 import N_Image from 'next/image';
-import { iconPath } from '../components/documentation/utils';
+import { iconPath } from '../../documentation/utils';
 
 import { Tooltip } from '@mui/material';
 import { Handle, Position } from '@xyflow/react';
@@ -10,7 +10,7 @@ import {
   JudiciousConstant,
   JudiciousElement,
   JudiciousFunction,
-} from '../src/schemas/documentation';
+} from '../../../src/schemas/documentation';
 
 interface IArrow {
   parameter_index: number;

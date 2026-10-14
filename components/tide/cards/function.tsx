@@ -1,17 +1,17 @@
 import { NodeProps } from '@xyflow/react';
-import { ExtraneousNodeProps, FunctionNode } from '.';
-import { FunctionTamaroCard } from '../../TamaroCard';
-import { JudiciousFunction } from '../../../src/schemas/documentation';
-import ResultIcon from '../ResultIcon';
 import { useEffect, useMemo, useState } from 'react';
-import { useStore } from '../../../src/tide/store';
 import { useShallow } from 'zustand/shallow';
+import { ExtraneousNodeProps, FunctionNode } from '.';
+import { JudiciousFunction } from '../../../src/schemas/documentation';
 import { Location } from '../../../src/tide/language/types';
 import {
   EvaluatedValueType,
   SoundType,
 } from '../../../src/tide/language/typing';
+import { useStore } from '../../../src/tide/store';
 import { module_elements } from '../../../src/tide/utils';
+import ResultIcon from '../ResultIcon';
+import { FunctionTamaroCard } from './TamaroCard';
 
 export function getHandleName(parameter_name: string) {
   return `input_${parameter_name}`;
