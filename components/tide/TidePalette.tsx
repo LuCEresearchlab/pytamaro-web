@@ -108,7 +108,12 @@ export default function TidePalette() {
         }
         action={
           <IconButton onClick={() => setCollasped(!collapsed)}>
-            <ExpandMore></ExpandMore>
+            <ExpandMore
+              sx={{
+                transform: collapsed ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: (t) => t.transitions.create('transform'),
+              }}
+            />
           </IconButton>
         }
       />
