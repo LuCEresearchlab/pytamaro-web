@@ -101,7 +101,7 @@ export function TidePalettePane({
           flexDirection: 'row',
           flexWrap: 'wrap',
           gap: '5px',
-          overflow: 'scroll',
+          overflow: 'auto',
         }}
       >
         {values
