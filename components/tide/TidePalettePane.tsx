@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
-import { Card, CardActions, CardContent, Input } from '@mui/material';
+import { Card, CardContent } from '@mui/material';
 import { DragEvent, useEffect, useState } from 'react';
 import {
   JudiciousConstant,
@@ -31,12 +31,13 @@ import { ConstantTamaroCard, FunctionTamaroCard } from './cards/TamaroCard';
 
 export function TidePalettePane({
   values,
+  filter,
 }: {
   values: ImportedDefinition<TideJudiciousMetadata, 'evaluated'>[];
+  filter: string;
 }) {
   const { setDragged, reserved_names } = useStore();
 
-  const [filter, setFilter] = useState('');
   const [constant_name, setConstantName] = useState('' as string | undefined);
 
   const [literals, setLiterals] = useState(
@@ -237,20 +238,6 @@ export function TidePalettePane({
           </div>
         )}
       </CardContent>
-      <CardActions>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            width: '100%',
-            justifyContent: 'center',
-            gap: '20px',
-          }}
-        >
-          Filter :
-          <Input value={filter} onChange={(v) => setFilter(v.target.value)} />
-        </div>
-      </CardActions>
     </Card>
   );
 }

@@ -1,12 +1,16 @@
-import { ExpandMore } from '@mui/icons-material';
+import { Close, ExpandMore, Search, Style } from '@mui/icons-material';
 import {
   Box,
   Card,
   CardHeader,
   Collapse,
   IconButton,
+  InputAdornment,
+  Stack,
   Tab,
   Tabs,
+  TextField,
+  Typography,
 } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { JudiciousElement } from '../../src/schemas/documentation';
@@ -44,6 +48,7 @@ function TabPanel(props: React.PropsWithChildren<TabPanelProps>) {
 
 export default function TidePalette() {
   const [collapsed, setCollasped] = useState(false);
+  const [filter, setFilter] = useState('');
 
   const { imported_definitions: values } = useStore();
 
@@ -61,7 +66,46 @@ export default function TidePalette() {
     <Card id='card_selection_pane'>
       <CardHeader
         sx={{ gap: '10px', minWidth: '200px' }}
-        subheader='Cards Palette'
+        subheader={
+          <Stack direction='row' spacing={4} sx={{ alignItems: 'center' }}>
+            <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
+              <Style />
+              <Typography variant='subtitle1' sx={{ fontWeight: 'bold' }}>
+                Cards Palette
+              </Typography>
+            </Stack>
+            {collapsed && (
+              <TextField
+                variant='standard'
+                value={filter}
+                onChange={(event) => setFilter(event.target.value)}
+                placeholder='Search...'
+                sx={{ minWidth: 0, flex: 1 }}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position='start'>
+                        <Search />
+                      </InputAdornment>
+                    ),
+                    endAdornment: filter !== '' && (
+                      <InputAdornment position='end'>
+                        <IconButton
+                          aria-label='Clear search'
+                          edge='end'
+                          size='small'
+                          onClick={() => setFilter('')}
+                        >
+                          <Close fontSize='small' />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+            )}
+          </Stack>
+        }
         action={
           <IconButton onClick={() => setCollasped(!collapsed)}>
             <ExpandMore></ExpandMore>
@@ -73,9 +117,7 @@ export default function TidePalette() {
           <div className='card_selection_content' style={{}}>
             {N < N_LIMIT ||
             new Set(values.map((v) => v.location.module)).size === 1 ? (
-              <>
-                <TidePalettePane values={values} />
-              </>
+              <TidePalettePane values={values} filter={filter} />
             ) : (
               <>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -94,6 +136,7 @@ export default function TidePalette() {
                     <TabPanel value={tab} index={v} key={v}>
                       <TidePalettePane
                         values={values.filter((o) => o.location.module === v)}
+                        filter={filter}
                       />
                     </TabPanel>
                   );
