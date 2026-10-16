@@ -54,7 +54,7 @@ export function usePopover({
     middleware: [
       offset(8),
       flip({
-        crossAxis: placement.includes('-'),
+        crossAxis: true,
         fallbackAxisSideDirection: 'end',
         padding: 5,
       }),
