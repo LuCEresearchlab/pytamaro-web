@@ -8,7 +8,7 @@
             "name": "ascii_lowercase",
             "type": "str",
             "description": {
-                "p": ["Sequence of lowercase letters 'abcdefghijklmnopqrstuvwxyz'."]
+                "p": ["Sequence of lowercase letters in the English alphabet."]
             },
             "examples": [
                 {
@@ -23,7 +23,7 @@
             "name": "ascii_uppercase",
             "type": "str",
             "description": {
-                "p": ["Sequence of uppercase letters 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'."]
+                "p": ["Sequence of uppercase letters in the English alphabet."]
             },
             "examples": [
                 {
@@ -38,7 +38,7 @@
             "name": "ascii_letters",
             "type": "str",
             "description": {
-                "p": ["Concatenation of the `ascii_lowercas` and `ascii_uppercase` constants."]
+                "p": ["Concatenation of the `ascii_lowercase` and `ascii_uppercase` constants."]
             },
             "examples": [
                 {
