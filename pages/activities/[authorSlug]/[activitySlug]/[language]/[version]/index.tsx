@@ -132,8 +132,20 @@ function NotebookCells({
   useMonacoColorizer();
 
   useEffect(() => {
-    sanitizeIframes();
-    sanitizeImgs();
+    const runSanitizers = () => {
+      sanitizeIframes();
+      sanitizeImgs();
+    };
+
+    if (document.readyState === 'complete') {
+      runSanitizers();
+    } else {
+      window.addEventListener('load', runSanitizers, { once: true });
+    }
+
+    return () => {
+      window.removeEventListener('load', runSanitizers);
+    };
   }, []);
 
   const outputAreaRefs = useRef<Map<number, OutputAreaRef | null> | null>(null);
