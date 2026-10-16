@@ -60,7 +60,7 @@ export default function TypeConstantDocumentation({
             display: 'flex',
           }}
         >
-          <span>
+          <Box sx={{ mr: 3 }}>
             <Typography
               color={isConstant ? 'primary' : 'warning'}
               component='span'
@@ -87,7 +87,7 @@ export default function TypeConstantDocumentation({
                     context: gender,
                   })}
             </Typography>
-          </span>
+          </Box>
           <ConfigButtons available={availableOptions} />
         </Box>
         <Typography>

@@ -70,7 +70,7 @@ export default function FunctionDocumentation({
         }}
       >
         <Box sx={{ display: 'flex' }}>
-          <span>
+          <Box sx={{ mr: 3 }}>
             <Typography
               color={theme.pytamaro.palette.red}
               component='span'
@@ -101,7 +101,7 @@ export default function FunctionDocumentation({
                 sx={{ ml: 1 }}
               />
             )}
-          </span>
+          </Box>
           <ConfigButtons available={availableOptions} />
         </Box>
         <Typography>

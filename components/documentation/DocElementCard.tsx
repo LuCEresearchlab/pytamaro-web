@@ -16,10 +16,7 @@ export default function DocElementCard({
   sx?: CSSProperties;
 }) {
   return (
-    <Card
-      elevation={elevation}
-      sx={{ minWidth: 'min(60ch, 95vw)', maxWidth: 'min(90ch, 95vw)', ...sx }}
-    >
+    <Card elevation={elevation} sx={{ maxWidth: 'min(90ch, 95vw)', ...sx }}>
       <CardContent sx={{ '&:last-child': { pb: 2 } }}>
         {element.kind === 'function' ? (
           <FunctionDocumentation fn={element} module={module} />
