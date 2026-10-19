@@ -46,6 +46,7 @@ wasm-bindgen-test = "0.3.77"
 strip = true
 lto = "fat"
 codegen-units = 1
+opt-level = "s"  # ask rustc to optimize for size (https://doc.rust-lang.org/cargo/reference/profiles.html#opt-level)
 
 # -Oz optimizes "aggressively for size" (https://docs.rs/wasm-opt/latest/wasm_opt/struct.OptimizationOptions.html#method.new_optimize_for_size_aggressively)
 # For the last two options, see https://github.com/drager/wasm-pack/issues/1441#issuecomment-2886461752
