@@ -10,7 +10,7 @@
                 "p": [
                     "Returns a sequence of numbers from 0 (inclusive) to stop (exclusive).",
                     "Optionally, one can specify a different starting number, and also a step between numbers.",
-                    "(Technical note: this function is actually a constructor of range objects.)"
+                    "(Technical note: this function is actually a constructor of `range` objects.)"
                 ]
             },
             "parameters": [
@@ -233,7 +233,7 @@
                 "p": [
                     "Converts a value to an integer.",
                     "If the value is a string, it is parsed as an integer with an optional base.",
-                    "(Technical note: this function is actually a constructor of int objects.)"
+                    "(Technical note: this function is actually a constructor of `int` objects.)"
                 ]
             },
             "parameters": [
@@ -283,7 +283,7 @@
             "description": {
                 "p": [
                     "Converts a value to a string.",
-                    "(Technical note: this function is actually a constructor of str objects.)"
+                    "(Technical note: this function is actually a constructor of `str` objects.)"
                 ]
             },
             "parameters": [
@@ -317,7 +317,7 @@
             "description": {
                 "p": [
                     "Converts a value to a boolean.",
-                    "(Technical note: this function is actually a constructor of bool objects.)"
+                    "(Technical note: this function is actually a constructor of `bool` objects.)"
                 ]
             },
             "parameters": [
@@ -366,7 +366,7 @@
             "description": {
                 "p": [
                     "Converts a string or a number to a floating point number.",
-                    "(Technical note: this function is actually a constructor of float objects.)"
+                    "(Technical note: this function is actually a constructor of `float` objects.)"
                 ]
             },
             "parameters": [
@@ -514,7 +514,7 @@
                 {
                     "name": "predicate",
                     "type": "T -> bool",
-                    "description": "function (boolean predicate) that given an element returns True iff the element is to be kept"
+                    "description": "function (boolean predicate) that given an element returns `True` iff the element is to be kept"
                 },
                 {
                     "name": "sequence",
@@ -540,7 +540,7 @@
             "description": {
                 "p": [
                     "Given a function and a sequence, constructs a sequence of the results of applying the function to the elements of the sequence.",
-                    "(Technical note: this function is actually a constructor of map objects.)"
+                    "(Technical note: this function is actually a constructor of `map` objects.)"
                 ]
             },
             "parameters": [
@@ -577,7 +577,7 @@
             "description": {
                 "p": [
                     "Converts a sequence to a list.",
-                    "(Technical note: this function is actually a constructor of list objects.)"
+                    "(Technical note: this function is actually a constructor of `list` objects.)"
                 ]
             },
             "parameters": [
@@ -616,7 +616,7 @@
             "description": {
                 "p": [
                     "Converts a sequence to a tuple, i.e., an immutable sequence of elements of possibly different types.",
-                    "(Technical note: this function is actually a constructor of tuple objects.)"
+                    "(Technical note: this function is actually a constructor of `tuple` objects.)"
                 ]
             },
             "parameters": [
@@ -655,7 +655,7 @@
             "description": {
                 "p": [
                     "Converts a sequence to a set, i.e., a collection of distinct elements. A set does not guarantee any particular order of its elements.",
-                    "(Technical note: this function is actually a constructor of set objects.)"
+                    "(Technical note: this function is actually a constructor of `set` objects.)"
                 ]
             },
             "parameters": [
@@ -694,7 +694,7 @@
             "description": {
                 "p": [
                     "Converts a sequence of pairs of keys and values to a dictionary, i.e., a collection of key-value pairs.",
-                    "(Technical note: this function is actually a constructor of dict objects.)"
+                    "(Technical note: this function is actually a constructor of `dict` objects.)"
                 ]
             },
             "parameters": [
@@ -988,7 +988,7 @@
             "name": "all",
             "description": {
                 "p": [
-                    "Returns True if all elements of a sequence are true.",
+                    "Returns `True` if all elements of a sequence are true.",
                     "Empty sequences are considered to have all elements true."
                 ]
             },
@@ -1001,7 +1001,7 @@
             ],
             "returnValue": {
                 "type": "bool",
-                "description": "True if all elements are true, False otherwise"
+                "description": "`True` if all elements are true, `False` otherwise"
             },
             "examples": [
                 {
@@ -1024,7 +1024,7 @@
             "name": "any",
             "description": {
                 "p": [
-                    "Returns True if any element of a sequence is true.",
+                    "Returns `True` if any element of a sequence is true.",
                     "Empty sequences are considered to have no elements true."
                 ]
             },
@@ -1037,7 +1037,7 @@
             ],
             "returnValue": {
                 "type": "bool",
-                "description": "True if any element is true, False otherwise"
+                "description": "`True` if any element is true, `False` otherwise"
             },
             "examples": [
                 {
@@ -1188,7 +1188,7 @@
             "name": "isinstance",
             "description": {
                 "p": [
-                    "Returns True if an object is an instance of a class (or one of its subclasses)."
+                    "Returns `True` if an object is an instance of a class (or one of its subclasses)."
                 ]
             },
             "parameters": [
@@ -1205,7 +1205,7 @@
             ],
             "returnValue": {
                 "type": "bool",
-                "description": "True if the object is an instance of the class (or one of its subclasses), False otherwise"
+                "description": "`True` if the object is an instance of the class (or one of its subclasses), `False` otherwise"
             },
             "examples": [
                 {
@@ -1428,7 +1428,7 @@
             "type": "ass",
             "description": {
                 "p": [
-                    "Python raises an assertion error when an assert statement fails (when the condition in the assert statement evaluates to False)."
+                    "Python raises an assertion error when an assert statement fails (when the condition in the assert statement evaluates to `False`)."
                 ]
             },
             "examples": [

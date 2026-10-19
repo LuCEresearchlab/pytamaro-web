@@ -71,7 +71,8 @@
             "name": "choice",
             "description": {
                 "p": [
-                    "Returns a random element from the given sequence."
+                    "Returns a random element from the given sequence.",
+                    "Each element has an equal probability of being chosen."
                 ]
             },
             "parameters": [

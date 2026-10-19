@@ -53,7 +53,7 @@
             "name": "digits",
             "type": "str",
             "description": {
-                "p": ["Sequence of decimal digits '0123456789'."]
+                "p": ["Sequence of decimal digits from `0` to `9`."]
             }
         },
         {
@@ -61,7 +61,7 @@
             "name": "hexdigits",
             "type": "str",
             "description": {
-                "p": ["Sequence of hexadecimal digits '0123456789abcdefABCDEF'."]
+                "p": ["Sequence of hexadecimal digits from `0` to `9`, `a` to `f`, and also `A` to `F`."]
             },
             "examples": [
                 {
@@ -76,7 +76,7 @@
             "name": "octdigits",
             "type": "str",
             "description": {
-                "p": ["Sequence of octal digits '01234567'."]
+                "p": ["Sequence of octal digits from `0` to `7`."]
             },
             "examples": [
                 {
