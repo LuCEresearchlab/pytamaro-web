@@ -208,18 +208,18 @@ export class Workspace {
     free(): void;
     [Symbol.dispose](): void;
     /**
-     * Checks all open files
-     */
-    check(): Diagnostic[];
-    /**
      * Checks a single file.
      */
     checkFile(file_id: FileHandle): Diagnostic[];
+    /**
+     * Checks all open files
+     */
+    check(): Diagnostic[];
     gotoDeclaration(file_id: FileHandle, position: Position): LocationLink[];
     constructor(root: string, position_encoding: PositionEncoding, options: any);
     openFile(path: string, contents: string): FileHandle;
-    semanticTokens(file_id: FileHandle): SemanticToken[];
     semanticTokensInRange(file_id: FileHandle, range: Range): SemanticToken[];
+    semanticTokens(file_id: FileHandle): SemanticToken[];
     updateFile(file_id: FileHandle, contents: string): void;
 }
 
