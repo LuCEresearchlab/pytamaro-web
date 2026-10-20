@@ -44,6 +44,9 @@ const translation_object = {
   str: {
     _: 'str',
   },
+  bool: {
+    _: 'bool',
+  },
 };
 
 export type TideJudiciousMetadata = {
@@ -62,9 +65,11 @@ export function toTideType(v?: string): SoundType | UnsoundType {
         ? SoundType.Color
         : translated_type === 'float'
           ? SoundType.Float
-          : translated_type === 'str'
-            ? SoundType.Str
-            : UnsoundType.Bottom;
+          : translated_type === 'bool'
+            ? SoundType.Bool
+            : translated_type === 'str'
+              ? SoundType.Str
+              : UnsoundType.Bottom;
 }
 
 export function toTideParameter(p: JudiciousParameter): FunctionParameter {

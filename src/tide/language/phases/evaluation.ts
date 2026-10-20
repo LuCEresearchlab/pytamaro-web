@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { ProgramState } from '.';
-import { dummyExecutionMetadata } from '../../../../components/tide/TideConfigurationCode';
 import {
   ExecutionResponse as ExecutorExecutionResponse,
   PythonMode,
@@ -19,6 +18,14 @@ import { TideRuntimeError_builder } from '../error_builders';
 import { CodeRepresentation } from '../types';
 import { EvaluatedValueType, SoundType, ValueType } from '../typing';
 import { turnCodeElementToCode } from './code_created';
+
+// Do not record events from TIDE internals
+const dummyExecutionMetadata: ExecutionMetadata = {
+  executionUUID: crypto.randomUUID(),
+  allowSharingAnonData: 'no',
+  userUuid: '',
+  experimentKey: '',
+};
 
 export type ExecutionResponse = CompletedExecutionResponse | FailedExecution;
 
@@ -155,7 +162,35 @@ async function extract_data(
     case SoundType.Int:
     case SoundType.Float:
     case SoundType.Str:
-    case SoundType.Bool:
+    case SoundType.Bool: {
+      const new_code: CodeRepresentation = {
+        expression: `print(repr(${code_repr.expression}))`,
+        imports: code_repr.imports,
+      };
+      const code = turnCodeElementToCode(new_code, definitions.concat());
+
+      return await execute(
+        [code],
+        0,
+        [],
+        [],
+        dummyExecutionMetadata,
+        PythonMode.Exec,
+      )
+        .then((v) => v as CompletedExecutionResponse)
+        .then(({ stdout, stderr }) => {
+          if (stderr.trim().length !== 0) {
+            return {
+              error: stderr
+                .trim()
+                .substring(stderr.trim().lastIndexOf('\n'))
+                .trim(),
+            };
+          }
+          const repr = stdout.replace(/\r?\n$/, '');
+          return repr.length === 0 ? undefined : { repr };
+        });
+    }
     case SoundType.Point:
       return undefined;
   }
