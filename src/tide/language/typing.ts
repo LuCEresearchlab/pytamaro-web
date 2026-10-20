@@ -23,7 +23,13 @@ export type EvaluatedValueType = {
     ? string
     : k extends SoundType.Color
       ? { red: number; green: number; blue: number; alpha: number }
-      : undefined;
+      : k extends
+            | SoundType.Int
+            | SoundType.Float
+            | SoundType.Str
+            | SoundType.Bool
+        ? { repr: string }
+        : undefined;
 };
 
 export type ErrorType<

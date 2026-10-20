@@ -1,7 +1,12 @@
 import { Handle, NodeProps, Position } from '@xyflow/react';
 import { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import { ExtraneousNodeProps, LiteralNode } from '.';
+import {
+  EvaluatedValueType,
+  SoundType,
+} from '../../../src/tide/language/typing';
 import { useStore } from '../../../src/tide/store';
+import ResultIcon from '../ResultIcon';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
@@ -48,7 +53,7 @@ export function ContentEditableDiv(props: {
 export function TideLiteral({
   id,
   show_handles,
-  data: { input: value },
+  data: { input: value, tide_node },
 }: Pick<
   NodeProps<LiteralNode> & ExtraneousNodeProps,
   'id' | 'show_handles' | 'data'
@@ -63,6 +68,12 @@ export function TideLiteral({
     },
     [id, updateNodeData],
   );
+
+  const evaluated =
+    tide_node && 'data' in tide_node
+      ? (tide_node.data as EvaluatedValueType[SoundType])
+      : undefined;
+  const result = ResultIcon({ value: evaluated });
 
   return (
     <div className='tamaro_card literal_card'>
@@ -150,6 +161,12 @@ export function TideLiteral({
         </div>
 
         <div className='triangle_right'></div>
+
+        {result && (
+          <div className='output_pane constant_icon_pane literal_result'>
+            <div className='returns_icon'>{result}</div>
+          </div>
+        )}
       </div>
     </div>
   );

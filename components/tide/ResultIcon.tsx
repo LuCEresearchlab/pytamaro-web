@@ -80,5 +80,11 @@ export default function ResultIcon({
   if (!value) return undefined;
 
   if (typeof value === 'string') return <GraphicIcon data={value} />;
-  if (typeof value === 'object') return <ColorIcon data={value} />;
+  if ('repr' in value)
+    return (
+      <span style={{ fontFamily: 'monospace', whiteSpace: 'pre' }}>
+        {value.repr}
+      </span>
+    );
+  return <ColorIcon data={value} />;
 }

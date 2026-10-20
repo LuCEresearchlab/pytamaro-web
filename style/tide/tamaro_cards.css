@@ -370,3 +370,13 @@
 .arrow_handles .handle_mover.left {
   right: var(--inner-handle);
 }
+
+.literal_card .literal_result {
+  position: absolute;
+  left: 100%;
+  bottom: 50%;
+  min-width: 0;
+  transform: translate(8px, -6px);
+  white-space: nowrap;
+  pointer-events: none;
+}
