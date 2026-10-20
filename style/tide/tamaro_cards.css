@@ -205,6 +205,8 @@
 
 .card_name {
   font-size: large;
+  padding-left: 3px;
+  padding-right: 3px;
 }
 
 .hide_labels .arrow_label_type_separator {
