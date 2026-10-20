@@ -2,61 +2,30 @@
   pointer-events: none;
 }
 
-.graph_options .column-container {
+.graph_options .items-container {
   pointer-events: auto;
-}
-
-.graph_options .row-container {
-  pointer-events: auto;
-}
-
-.column-container .item:first-child {
-  border-radius: 5px 0 0 0;
-}
-
-.graph_options button {
-  pointer-events: auto;
-  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  border-left: solid gray 1px;
+  border-top: solid gray 1px;
+  border-top-left-radius: 5px;
+  overflow: hidden;
 }
 
 .graph_options .item {
-  width: 100%;
-  height: 100%;
+  background-color: #eee;
+  color: gray;
+  border: none;
+  border-bottom: solid gray 1px;
+  border-radius: 0;
   user-select: none;
   cursor: pointer;
-  color: gray;
 }
 
-.column-container .item {
-  padding: 4px 10px;
-  background-color: #eee;
-  border-top: solid gray 1px;
-  border-left: solid gray 1px;
-  align-items: start;
-  text-align: start;
+.graph_options .item:last-child {
+  border-bottom: none;
 }
 
-.row-container .item {
-  padding: 2px;
-  background-color: #eee;
-  border-top: solid gray 1px;
-  border-left: solid gray 1px;
-  align-items: end;
-  text-align: end;
-}
-
-.row-container .item:first-child {
-  border-radius: 5px 0 0 0;
-}
-
-.graph_options .item.red {
-  background-color: #D2071D;
-}
-
-.graph_options .item.red:hover {
-  background-color: #d00 !important;
-}
-
-.graph_options .item:not(.red):hover {
+.graph_options .item:hover {
   background-color: #ddd !important;
 }
