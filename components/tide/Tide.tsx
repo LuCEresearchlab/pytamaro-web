@@ -7,7 +7,14 @@ import {
   ReactFlow,
   useReactFlow,
 } from '@xyflow/react';
-import { Ref, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Ref,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   JudiciousConstant,
   JudiciousFunction,
@@ -25,7 +32,7 @@ import {
 } from '../../src/tide/graph_toolbox';
 import { TideError, TideRuntimeError } from '../../src/tide/language/errors';
 import { ErrorType } from '../../src/tide/language/typing';
-import { useStore } from '../../src/tide/store';
+import { setExecute, useStore } from '../../src/tide/store';
 import { getNode, module_elements } from '../../src/tide/utils';
 import FunctionDocumentation from '../documentation/FunctionDocumentation';
 import TypeConstantDocumentation from '../documentation/TypeConstantDocumentation';
@@ -39,14 +46,11 @@ import TidePalette, { JudiciousModuleElement } from './TidePalette';
 
 import '@xyflow/react/dist/style.css';
 import theme from '../../src/theme';
-import { ConfigurationState } from '../../src/tide/configuration';
 import { extract_error } from '../../src/tide/language/utils';
+import { ExecutorContext } from '../../src/execution/executorContext';
 
-export default function Tide({
-  configuration = undefined,
-}: {
-  configuration?: Partial<ConfigurationState>;
-}) {
+export default function Tide() {
+  const { executorState, execute } = useContext(ExecutorContext);
   const [pane, setPane] = useState(
     undefined as 'error' | 'documentation' | undefined,
   );
@@ -78,14 +82,28 @@ export default function Tide({
     initialized,
     fullscreen,
     setFullscreen,
-    setConfiguration,
     mousePosition,
     judicious: documentation,
   } = store;
 
+  // `execute` changes identity on every render; always forward the latest one
+  if (executorState.type === 'available') setExecute(execute);
+
+  // The executor toggles between states while running code, so only react once
+  const initialEvaluationDone = useRef(false);
+  const executorAvailable = executorState.type === 'available';
+
   useEffect(() => {
-    setConfiguration(configuration || {});
-  }, [configuration, setConfiguration]);
+    if (!executorAvailable || initialEvaluationDone.current) return;
+    initialEvaluationDone.current = true;
+    // Re-evaluate everything that was processed before the executor was ready
+    const { getNodes, setNodes } = useStore.getState();
+    setNodes(
+      getNodes().map(
+        (v) => ({ ...v, data: { ...v.data, outdated: true } }) as TideNode,
+      ),
+    );
+  }, [executorAvailable]);
 
   const onNodeContextMenu: NodeMouseHandler = useCallback(
     (event, node) => {
@@ -156,7 +174,11 @@ export default function Tide({
         const data = node.data;
         const elements = module_elements(documentation);
 
-        return elements.find((v) => v.name === data.input);
+        return elements.find(
+          (v) =>
+            v.name === data.input &&
+            (data.module === undefined || v.module === data.module),
+        );
       })(),
     });
   }, [documentation, error_level, getNodes, nodes]);
@@ -201,7 +223,9 @@ export default function Tide({
   });
 
   return (
-    <Paper className={`${fullscreen ? 'fullscreen' : 'normal'} graph_view `}>
+    <Paper
+      className={`${fullscreen ? 'fullscreen' : 'normal'} graph_view ${store.evaluating ? 'evaluating' : ''}`}
+    >
       <ReactFlow
         id='graph_element'
         tabIndex={0}

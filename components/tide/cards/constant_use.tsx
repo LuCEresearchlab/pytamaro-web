@@ -141,7 +141,7 @@ export function TideConstantUse({
   const setName = useCallback(
     (newName: string) => {
       if (newName === data.input) return;
-      updateNodeData(id, 'constant', { input: newName });
+      updateNodeData(id, 'constant', { input: newName, module: undefined });
     },
     [data.input, id, updateNodeData],
   );

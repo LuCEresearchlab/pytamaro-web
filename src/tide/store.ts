@@ -47,14 +47,16 @@ export interface DraggedElementData {
   data: TideNode['data'];
 }
 
-let execute: (
-  sources: string[],
-  idx: number,
-  toolboxFunctions: ToolboxFunction[],
-  extraPythonFiles: PythonFile[],
-  executionMetadata: ExecutionMetadata,
-  pythonMode: PythonMode,
-) => Promise<ExecutionResponse> = () => new Promise((_, reject) => reject());
+let execute:
+  | ((
+      sources: string[],
+      idx: number,
+      toolboxFunctions: ToolboxFunction[],
+      extraPythonFiles: PythonFile[],
+      executionMetadata: ExecutionMetadata,
+      pythonMode: PythonMode,
+    ) => Promise<ExecutionResponse>)
+  | undefined = undefined;
 
 export function setExecute(
   fn: (
@@ -276,11 +278,17 @@ export const createGraphSlice: StateCreator<
           nodes: state.nodes.map((node) => {
             const el = flat_sync.find((v) => v.metadata.node_id === node.id);
             if (!el) return node;
+            // Keep the previous result visible until the new evaluation ends
+            const previous = node.data.tide_node;
+            const stale =
+              !('error_phase' in el) && previous && 'data' in previous
+                ? { data: previous.data }
+                : {};
             return {
               ...node,
               data: {
                 ...node.data,
-                tide_node: el,
+                tide_node: { ...el, ...stale },
                 outdated: undefined,
               },
             } as TideNode;
@@ -294,6 +302,13 @@ export const createGraphSlice: StateCreator<
       evaluation_timeout = setTimeout(
         async () => {
           const prev = evaluation_timeout;
+
+          // Evaluation is re-triggered once the executor is registered
+          if (!execute) {
+            evaluation_timeout = undefined;
+            set({ evaluating: false });
+            return;
+          }
 
           const async = await evaluation(execute, sync);
           if (prev !== evaluation_timeout || !evaluation_timeout) return;

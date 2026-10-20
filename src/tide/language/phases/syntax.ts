@@ -86,9 +86,9 @@ function dependencies_extraction<T>(
         .map(dependencies_extraction)
         .toArray()
         .flat()
-        .concat(value.function_name);
+        .concat(value.module === undefined ? [value.function_name] : []);
     case 'constant_use':
-      return [value.constant_name];
+      return value.module === undefined ? [value.constant_name] : [];
     case 'literal':
       return [];
   }

@@ -7,6 +7,7 @@ import {
   LocalDefinition,
 } from '../definitions';
 import { CodeRepresentation, Location } from '../types';
+import { eqLocation, locationKey } from '../utils';
 
 type SourceState<U, Tlocal, Timport> = ProgramState<
   U,
@@ -31,7 +32,7 @@ export function turnCodeElementToCode(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (definitions as any).find(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (v: any) => v.location.name === location.name,
+      (v: any) => eqLocation(v.location, location),
     )! as Definition<unknown, unknown, unknown, 'code_element'>;
   }
 
@@ -53,8 +54,8 @@ export function turnCodeElementToCode(
   const sorted: string[] = [];
 
   function visit(location: Location) {
-    if (visited.has(location.name)) return;
-    visited.add(location.name);
+    if (visited.has(locationKey(location))) return;
+    visited.add(locationKey(location));
 
     for (const dep of getDependencies(location)) {
       visit(dep);

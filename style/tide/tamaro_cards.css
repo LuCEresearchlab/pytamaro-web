@@ -344,7 +344,7 @@
 
 .function_card_pane .right .handle {
   transform: translateY(-50%) translateX(-15px);
-} 
+}
 
 .constant_card .handle {
   width: 30px;
@@ -379,4 +379,11 @@
   transform: translate(8px, -6px);
   white-space: nowrap;
   pointer-events: none;
+}
+
+/* Results are stale while a new evaluation is running */
+.graph_view.evaluating .returns_icon,
+.graph_view.evaluating .literal_result {
+  opacity: 0.38;
+  transition: opacity 0.2s;
 }
