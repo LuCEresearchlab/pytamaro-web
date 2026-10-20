@@ -8,7 +8,7 @@ import {
 import { useStore } from '../../../src/tide/store';
 import ResultIcon from '../ResultIcon';
 
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { DragIndicator } from '@mui/icons-material';
 
 // eslint-disable-next-line react/require-default-props
 export function ContentEditableDiv(props: {
@@ -92,7 +92,7 @@ export function TideLiteral({
             borderTopLeftRadius: '5px',
             borderBottomLeftRadius: '5px',
             backgroundColor: '#DEDEDE',
-            width: '30px',
+            width: '20px',
             display: 'flex',
             flexDirection: 'row',
             borderLeft: '2px solid #7F7F7F',
@@ -102,21 +102,11 @@ export function TideLiteral({
             position: 'relative',
           }}
         >
-          <MoreVertIcon
+          <DragIndicator
             sx={{
               margin: 'none',
               position: 'absolute',
-              left: '0px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: '#969696',
-            }}
-          />
-          <MoreVertIcon
-            sx={{
-              margin: 'none',
-              position: 'absolute',
-              left: '5px',
+              left: '-3px',
               top: '50%',
               transform: 'translateY(-50%)',
               color: '#969696',
