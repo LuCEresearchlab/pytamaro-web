@@ -18,8 +18,8 @@ export type TamaroCard<U, S extends State = State> =
 //
 type BaseConstantUseStates<U> = {
   unconstructed: { metadata: U };
-  constructed: { metadata: U; constant_name: string };
-  syntax_checked: { metadata: U; constant_name: string };
+  constructed: { metadata: U; constant_name: string; module?: string };
+  syntax_checked: { metadata: U; constant_name: string; module?: string };
   name_checked: { metadata: U; constant_name: string; location: Location };
   type_checked: {
     metadata: U;
@@ -112,10 +112,12 @@ type BaseFunctionUseStates<U> = AttachmentIntersection<
     constructed: {
       metadata: U;
       function_name: string;
+      module?: string;
     };
     syntax_checked: {
       metadata: U;
       function_name: string;
+      module?: string;
     };
     name_checked: {
       metadata: U;

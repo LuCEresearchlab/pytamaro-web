@@ -112,7 +112,11 @@ export function getHandleType(
   switch (node.type as CardType) {
     case 'function': {
       const { data } = node as FunctionNode;
-      const def = definitions.find((v) => v.location.name === data.input);
+      const def = definitions.find(
+        (v) =>
+          v.location.name === data.input &&
+          (data.module === undefined || v.location.module === data.module),
+      );
       if (!def || def.kind !== 'function_definition') return UnsoundType.Bottom;
       const arg_name = getParameterName(handle);
       const param = def.parameters.find((v) => v.name === arg_name);

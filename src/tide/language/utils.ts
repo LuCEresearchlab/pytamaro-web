@@ -20,6 +20,11 @@ export function toFlat<T>(card: TamaroCard<T>): TamaroCard<T>[] {
   }
 }
 
+// Definitions are identified by module and name together
+export function locationKey(location: Location) {
+  return `${String(location.module)}:${location.name}`;
+}
+
 export function eqLocation(a: Location, b: Location) {
   return compareLocation(a, b) === 0;
 }

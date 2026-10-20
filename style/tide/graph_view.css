@@ -29,11 +29,18 @@
 
 .fullscreen.graph_view .card_selection_content .selection_pane_content {
   height: calc(80vh);
-  width: 30vw;
 }
 
 .normal.graph_view .card_selection_content .selection_pane_content {
   height: calc(50vh);
+}
+
+/* Limit the width of the entire palette (header included) while expanded */
+.fullscreen.graph_view #card_selection_pane:has(.card_selection_content) {
+  width: 30vw;
+}
+
+.normal.graph_view #card_selection_pane:has(.card_selection_content) {
   width: 25vw;
 }
 

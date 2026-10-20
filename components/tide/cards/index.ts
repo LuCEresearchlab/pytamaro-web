@@ -39,6 +39,8 @@ export type ExtraneousNodeProps = { show_handles?: boolean };
 export type CommonNodeData = {
   parent?: string;
   outdated?: true;
+  // Library the card was picked from, for imported definitions
+  module?: string;
 };
 export type TideNodeMetadata = { node_id: string };
 

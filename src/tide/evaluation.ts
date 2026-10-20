@@ -147,6 +147,7 @@ function constructed_phase(
         return {
           ...card,
           function_name: node.data.input,
+          module: node.data.module,
           children: new Map(
             edges
               .filter((v) => v.target === card.metadata.node_id)
@@ -163,6 +164,7 @@ function constructed_phase(
         return {
           ...card,
           constant_name: node.data.input,
+          module: node.data.module,
         };
       }
       case 'literal':

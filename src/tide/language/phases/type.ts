@@ -9,6 +9,7 @@ import {
   LocalDefinition,
 } from '../definitions';
 import { TideTypeError_builder } from '../error_builders';
+import { locationKey } from '../utils';
 import {
   SoundType,
   type_equality_rule,
@@ -40,7 +41,7 @@ export default function type_checked_phase<U, Tlocal, Timport>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (previous_definitions as any).map(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (v: any) => [v.location.name, v] as any,
+      (v: any) => [locationKey(v.location), v] as any,
     ) as [string, Definition<U, Tlocal, Timport, 'name_checked'>][],
   );
 
@@ -80,13 +81,13 @@ export default function type_checked_phase<U, Tlocal, Timport>(
   function definition_phase_cache(
     def: Definition<U, Tlocal, Timport, 'name_checked'>,
   ): Definition<U, Tlocal, Timport, 'type_checked'> {
-    const cached = computed_definition.get(def.location.name);
+    const cached = computed_definition.get(locationKey(def.location));
     if (cached) return cached;
     const value =
       def.subkind === 'local'
         ? local_definition_phase(def)
         : imported_definition_phase(def);
-    computed_definition.set(def.location.name, value);
+    computed_definition.set(locationKey(def.location), value);
     return value;
   }
 
@@ -118,7 +119,7 @@ export default function type_checked_phase<U, Tlocal, Timport>(
         }
 
         const function_def = definition_phase_cache(
-          nameToDefinition.get(exp.location.name)!,
+          nameToDefinition.get(locationKey(exp.location))!,
         ) as FunctionDefinition<U, Tlocal, Timport, 'type_checked'>;
 
         if ('error_phase' in function_def && function_def.error_phase)
@@ -175,7 +176,7 @@ export default function type_checked_phase<U, Tlocal, Timport>(
       case 'constant_use': {
         if ('error_phase' in exp) return exp;
         const constant_def = definition_phase_cache(
-          nameToDefinition.get(exp.location.name)!,
+          nameToDefinition.get(locationKey(exp.location))!,
         ) as ConstantDefinition<U, Tlocal, Timport, 'type_checked'>;
 
         if ('error_phase' in constant_def)

@@ -1,66 +1,125 @@
 import { Close, ExpandMore, Search, Style } from '@mui/icons-material';
 import {
-  Box,
   Card,
   CardHeader,
   Collapse,
   IconButton,
   InputAdornment,
+  MenuItem,
   Stack,
-  Tab,
-  Tabs,
   TextField,
   Typography,
 } from '@mui/material';
-import { useMemo, useState } from 'react';
+import { sortBy } from 'lodash';
+import { useEffect, useMemo, useState } from 'react';
 import { JudiciousElement } from '../../src/schemas/documentation';
+import { synchronous_phases } from '../../src/tide/evaluation';
+import {
+  TideJudiciousMetadata,
+  toTideConstant,
+  toTideFunction,
+} from '../../src/tide/judiciours_to_tide';
+import { ImportedDefinition } from '../../src/tide/language/definitions';
 import { useStore } from '../../src/tide/store';
-import { ImportReference } from './cards';
-import { TidePalettePane } from './TidePalettePane';
+import { KNOWN_JUDICIOUS_MODULES } from '../documentation/utils';
+import {
+  CONSTANT_LIBRARY,
+  LITERALS_LIBRARY,
+  TidePalettePane,
+} from './TidePalettePane';
 
 export type JudiciousModuleElement = JudiciousElement & { module: string };
-const N_LIMIT = 10;
 
-export function getModules(values: ImportReference[]): string[] {
-  return Array.from(new Set(values.map((v) => v.module)));
-}
-interface TabPanelProps {
-  index: string;
-  value: string;
-}
-
-function TabPanel(props: React.PropsWithChildren<TabPanelProps>) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role='tabpanel'
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...other}
-    >
-      {value === index && children}
-    </div>
-  );
-}
+const isSpecial = (library: string) =>
+  library === LITERALS_LIBRARY || library === CONSTANT_LIBRARY;
 
 export default function TidePalette() {
   const [collapsed, setCollasped] = useState(false);
   const [filter, setFilter] = useState('');
+  const [selectedLibrary, setSelectedLibrary] = useState('pytamaro');
 
-  const { imported_definitions: values } = useStore();
+  const { judicious, setConfiguration } = useStore();
 
-  const modules = useMemo(
-    () => Array.from(new Set(values.map((v) => v.location.module))),
-    [values],
+  const orderedModules = sortBy(
+    KNOWN_JUDICIOUS_MODULES,
+    (module) =>
+      module === 'pytamaro' ? 0 : module.startsWith('pytamaro.') ? 1 : 2,
+    (module) => module,
   );
 
-  const [tab, setTab] = useState(
-    values.length === 0 ? '' : (values[0].location.module as string),
+  const allDefinitions = useMemo(() => {
+    const definitions = sortBy(judicious, (m) =>
+      orderedModules.indexOf(m.module),
+    )
+      .flatMap(({ module, elements }) =>
+        elements
+          .filter(
+            (element) =>
+              element.kind === 'constant' || element.kind === 'function',
+          )
+          .filter(
+            (element) => !(module === 'builtins' && element.name === 'input'),
+          )
+          .map((element) => ({ module, element })),
+      )
+      .map(({ module, element }) => {
+        try {
+          return element.kind === 'constant'
+            ? toTideConstant(element, module)
+            : toTideFunction(element, module);
+        } catch {
+          return undefined;
+        }
+      })
+      .filter((definition) => definition !== undefined);
+
+    return sortBy(
+      definitions,
+      (definition) => (definition.kind === 'constant_definition' ? 0 : 1),
+      (definition) =>
+        definition.kind === 'function_definition'
+          ? definition.location.name
+          : '',
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [judicious]);
+
+  const availableDefinitions = useMemo(
+    () =>
+      synchronous_phases({
+        imported_definitions: allDefinitions,
+        expressions: [],
+        local_definitions: [],
+      }).imported_definitions as ImportedDefinition<
+        TideJudiciousMetadata,
+        'evaluated'
+      >[],
+    [allDefinitions],
   );
-  const N = values.length;
+
+  const libraries = useMemo(() => {
+    const nonEmpty = new Set(allDefinitions.map((d) => d.location.module));
+    return [
+      LITERALS_LIBRARY,
+      CONSTANT_LIBRARY,
+      ...orderedModules.filter(
+        (module) => nonEmpty.has(module) || module === selectedLibrary,
+      ),
+    ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allDefinitions, selectedLibrary]);
+
+  useEffect(() => {
+    setConfiguration({ imported_definitions: availableDefinitions });
+  }, [availableDefinitions, setConfiguration]);
+
+  const values = useMemo(
+    () =>
+      allDefinitions.filter(
+        (definition) => selectedLibrary === definition.location.module,
+      ) as unknown as ImportedDefinition<TideJudiciousMetadata, 'evaluated'>[],
+    [allDefinitions, selectedLibrary],
+  );
 
   return (
     <Card id='card_selection_pane'>
@@ -75,34 +134,64 @@ export default function TidePalette() {
               </Typography>
             </Stack>
             {collapsed && (
-              <TextField
-                variant='standard'
-                value={filter}
-                onChange={(event) => setFilter(event.target.value)}
-                placeholder='Search...'
-                sx={{ minWidth: 0, flex: 1 }}
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position='start'>
-                        <Search />
-                      </InputAdornment>
-                    ),
-                    endAdornment: filter !== '' && (
-                      <InputAdornment position='end'>
-                        <IconButton
-                          aria-label='Clear search'
-                          edge='end'
-                          size='small'
-                          onClick={() => setFilter('')}
-                        >
-                          <Close fontSize='small' />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-              />
+              <Stack spacing={1} sx={{ minWidth: 0, flex: 1 }}>
+                <TextField
+                  select
+                  variant='standard'
+                  value={selectedLibrary}
+                  slotProps={{
+                    select: {
+                      sx: isSpecial(selectedLibrary)
+                        ? { fontStyle: 'italic', color: 'primary.main' }
+                        : undefined,
+                    },
+                  }}
+                  onChange={(event) => {
+                    setSelectedLibrary(event.target.value);
+                    setFilter('');
+                  }}
+                >
+                  {libraries.map((module) => (
+                    <MenuItem
+                      value={module}
+                      key={module}
+                      sx={
+                        isSpecial(module) ? { fontStyle: 'italic' } : undefined
+                      }
+                      divider={module === CONSTANT_LIBRARY}
+                    >
+                      {module}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <TextField
+                  variant='standard'
+                  value={filter}
+                  onChange={(event) => setFilter(event.target.value)}
+                  placeholder='Search...'
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position='start'>
+                          <Search />
+                        </InputAdornment>
+                      ),
+                      endAdornment: filter !== '' && (
+                        <InputAdornment position='end'>
+                          <IconButton
+                            aria-label='Clear search'
+                            edge='end'
+                            size='small'
+                            onClick={() => setFilter('')}
+                          >
+                            <Close fontSize='small' />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+              </Stack>
             )}
           </Stack>
         }
@@ -117,39 +206,14 @@ export default function TidePalette() {
           </IconButton>
         }
       />
-      <Collapse in={collapsed} orientation='vertical'>
-        <Collapse in={collapsed} orientation='horizontal' unmountOnExit>
-          <div className='card_selection_content' style={{}}>
-            {N < N_LIMIT ||
-            new Set(values.map((v) => v.location.module)).size === 1 ? (
-              <TidePalettePane values={values} filter={filter} />
-            ) : (
-              <>
-                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                  <Tabs
-                    value={tab}
-                    onChange={(_, v) => setTab(v)}
-                    aria-label='lab API tabs example'
-                  >
-                    {modules.map((v) => (
-                      <Tab label={v} value={v} key={v} />
-                    ))}
-                  </Tabs>
-                </Box>
-                {modules.map((v) => {
-                  return (
-                    <TabPanel value={tab} index={v} key={v}>
-                      <TidePalettePane
-                        values={values.filter((o) => o.location.module === v)}
-                        filter={filter}
-                      />
-                    </TabPanel>
-                  );
-                })}
-              </>
-            )}
-          </div>
-        </Collapse>
+      <Collapse in={collapsed} orientation='vertical' unmountOnExit>
+        <div className='card_selection_content'>
+          <TidePalettePane
+            values={values}
+            filter={filter}
+            library={selectedLibrary}
+          />
+        </div>
       </Collapse>
     </Card>
   );

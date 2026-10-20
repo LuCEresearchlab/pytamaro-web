@@ -38,7 +38,11 @@ export function TideFunctionuse({
     data.tide_node && 'location' in data.tide_node
       ? (data.tide_node.location as Location<string>)
       : elements
-          .filter((v) => v.name === data.input)
+          .filter(
+            (v) =>
+              v.name === data.input &&
+              (data.module === undefined || v.module === data.module),
+          )
           .map((v) => ({ module: v.module, name: v.name }))
           .find(() => true);
 
