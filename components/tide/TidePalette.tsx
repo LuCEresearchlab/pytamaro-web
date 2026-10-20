@@ -21,7 +21,7 @@ import {
 } from '../../src/tide/judiciours_to_tide';
 import { ImportedDefinition } from '../../src/tide/language/definitions';
 import { useStore } from '../../src/tide/store';
-import { KNOWN_JUDICIOUS_MODULES } from '../documentation/utils';
+import { iconPath, KNOWN_JUDICIOUS_MODULES } from '../documentation/utils';
 import {
   CONSTANT_LIBRARY,
   LITERALS_LIBRARY,
@@ -142,7 +142,7 @@ export default function TidePalette() {
                   slotProps={{
                     select: {
                       sx: isSpecial(selectedLibrary)
-                        ? { fontStyle: 'italic', color: 'primary.main' }
+                        ? { fontStyle: 'italic' }
                         : undefined,
                     },
                   }}
@@ -160,7 +160,22 @@ export default function TidePalette() {
                       }
                       divider={module === CONSTANT_LIBRARY}
                     >
-                      {module}
+                      <Stack
+                        direction='row'
+                        sx={{ alignItems: 'center' }}
+                        spacing={1}
+                      >
+                        {!isSpecial(module) && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={iconPath(module)}
+                            alt={module}
+                            width={20}
+                            height={20}
+                          />
+                        )}
+                        <span>{module}</span>
+                      </Stack>
                     </MenuItem>
                   ))}
                 </TextField>
