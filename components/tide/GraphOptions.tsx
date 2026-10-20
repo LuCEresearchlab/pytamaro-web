@@ -14,6 +14,7 @@ import {
 } from '@mui/icons-material';
 import { useReactFlow } from '@xyflow/react';
 import { saveAs } from 'file-saver';
+import { useConfirm } from 'material-ui-confirm';
 import { useState } from 'react';
 import { parseGraphFile, serializeGraphFile } from '../../src/tide/graphFile';
 import { useStore } from '../../src/tide/store';
@@ -69,6 +70,22 @@ export function GraphOptions() {
   const { setNodes, setEdges, getNodes, getEdges, setFullscreen, fullscreen } =
     useStore();
   const { fitView } = useReactFlow();
+  const confirm = useConfirm();
+
+  const handleReset = () => {
+    confirm({
+      title: 'Are you sure?',
+      description:
+        'You are about to delete everything, including all the cards you have added. This action cannot be undone! ⚠️',
+      confirmationText: 'OK, delete everything',
+      cancellationText: 'Cancel',
+    }).then(({ confirmed }) => {
+      if (confirmed) {
+        setNodes([]);
+        setEdges([]);
+      }
+    });
+  };
 
   return (
     <>
@@ -194,13 +211,7 @@ export function GraphOptions() {
           }}
         >
           <div className='item red'>
-            <IconButton
-              size='large'
-              onClick={() => {
-                setNodes([]);
-                setEdges([]);
-              }}
-            >
+            <IconButton size='large' onClick={handleReset}>
               <Delete />
             </IconButton>
           </div>
