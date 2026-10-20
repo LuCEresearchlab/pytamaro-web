@@ -116,6 +116,7 @@ export function TideLiteral({
         <ContentEditableDiv
           value={value}
           style={{
+            fontWeight: 'bold',
             minWidth: '85px',
             backgroundColor: 'white',
             padding: '5px 20px',
