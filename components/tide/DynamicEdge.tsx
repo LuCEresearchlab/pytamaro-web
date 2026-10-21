@@ -15,9 +15,8 @@ import {
 } from '../../src/tide/language/typing';
 import { extract_error } from '../../src/tide/language/utils';
 import { useStore } from '../../src/tide/store';
-import { getNode } from '../../src/tide/utils';
+import { getNode, getParameterName } from '../../src/tide/utils';
 import { TideNode } from './cards';
-import { getParameterName } from './cards/function';
 
 export function getValue(
   node: TideNode['data'],

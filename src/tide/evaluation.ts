@@ -6,10 +6,9 @@ import {
 } from '../../components/tide/cards';
 import { TamaroCard } from './language/cards';
 import { ImportedDefinition, LocalDefinition } from './language/definitions';
-import { getNode } from './utils';
+import { getNode, getParameterName } from './utils';
 
 import { Edge } from '@xyflow/react';
-import { getParameterName } from '../../components/tide/cards/function';
 import {
   ExecutionResponse as ExecutorExecutionResponse,
   PythonMode,

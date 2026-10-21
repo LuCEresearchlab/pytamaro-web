@@ -5,10 +5,9 @@ import { TideError, TideRuntimeError } from '../../src/tide/language/errors';
 import { ErrorType } from '../../src/tide/language/typing';
 import { extract_error } from '../../src/tide/language/utils';
 import { StoreType, useStore } from '../../src/tide/store';
-import { getNode } from '../../src/tide/utils';
+import { getHandleName, getNode } from '../../src/tide/utils';
 import { ErrorBubble } from './Bubble';
 import { TideNodeMetadata } from './cards';
-import { getHandleName } from './cards/function';
 import { ErrorParagraph } from './ErrorParagraph';
 
 const MISSING_PARAMETER = (

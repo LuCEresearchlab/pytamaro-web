@@ -13,16 +13,6 @@ import { module_elements } from '../../../src/tide/utils';
 import ResultIcon from '../ResultIcon';
 import { FunctionTamaroCard } from './TamaroCard';
 
-export function getHandleName(parameter_name: string) {
-  return `input_${parameter_name}`;
-}
-
-export function getParameterName(handle_name: string) {
-  return handle_name.startsWith('input_')
-    ? handle_name.substring('input_'.length)
-    : undefined;
-}
-
 export function TideFunctionuse({
   data,
   show_handles,

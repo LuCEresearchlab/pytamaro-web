@@ -7,13 +7,25 @@ import {
   ImportReference,
   TideNode,
 } from '../../components/tide/cards';
-import {
-  getHandleName,
-  getParameterName,
-} from '../../components/tide/cards/function';
 import { JudiciousFunction, JudiciousModule } from '../schemas/documentation';
 import { Definition } from './language/definitions';
 import { SoundType, UnsoundType } from './language/typing';
+
+/**
+ * Names of the handles used to connect the arguments of a function call.
+ *
+ * These helpers live here, and not in the card component, to avoid circular
+ * imports between the TIDE core and the React components.
+ */
+export function getHandleName(parameter_name: string) {
+  return `input_${parameter_name}`;
+}
+
+export function getParameterName(handle_name: string) {
+  return handle_name.startsWith('input_')
+    ? handle_name.substring('input_'.length)
+    : undefined;
+}
 
 export function getNode(nodes: TideNode[], id: string) {
   return nodes.find((v) => v.id === id);
