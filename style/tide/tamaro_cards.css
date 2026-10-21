@@ -269,61 +269,42 @@
   bottom: calc(-3 * var(--outline-width));
 }
 
-.constant_card_pane .triangle_right {
-  --outline-width: 1px;
+.literal_card .triangle_right,
+.literal_card .triangle_right_border,
+.constant_card_pane .triangle_right,
+.constant_card_pane .triangle_right_border {
+  --triangle-size: 10px;
+  --triangle-outline: 3px;
   width: 0;
   height: 0;
-  border-top: calc(10 * var(--outline-width)) solid transparent;
-  border-bottom: calc(10 * var(--outline-width)) solid transparent;
-  border-left: calc(10 * var(--outline-width)) solid #008bcb;
-
+  border-top: var(--triangle-size) solid transparent;
+  border-bottom: var(--triangle-size) solid transparent;
   display: inline-block;
   position: absolute;
-  right: calc(-12 * var(--outline-width));
   top: 50%;
-  transform: translateY(-50%);
-}
-
-.constant_card_pane .triangle_right_fill {
-  --outline-width: 1px;
-  width: 0;
-  height: 0;
-  border-top: calc(10 * var(--outline-width)) solid transparent;
-  border-bottom: calc(10 * var(--outline-width)) solid transparent;
-  border-left: calc(10 * var(--outline-width)) solid #d1f0ff;
-
-  display: inline-block;
-  position: absolute;
-  right: calc(-8 * var(--outline-width));
-  top: 50%;
-  transform: translateY(-50%);
 }
 
 .literal_card .triangle_right {
-  --outline-width: 2px;
-  width: 0;
-  height: 0;
-  border-top: calc(5 * var(--outline-width)) solid transparent;
-  border-bottom: calc(5 * var(--outline-width)) solid transparent;
-  border-left: calc(5 * var(--outline-width)) solid white;
-  display: inline-block;
-  position: absolute;
+  border-left: var(--triangle-size) solid white;
   left: 100%;
-  top: 50%;
-  transform: translateY(-50%) translateX(-3px);
+  transform: translateY(-50%) translateX(calc(-1 * var(--triangle-outline)));
 }
 
 .literal_card .triangle_right_border {
-  --outline-width: 2px;
-  width: 0;
-  height: 0;
-  border-top: calc(5 * var(--outline-width)) solid transparent;
-  border-bottom: calc(5 * var(--outline-width)) solid transparent;
-  border-left: calc(5 * var(--outline-width)) solid #7f7f7f;
-  display: inline-block;
-  position: absolute;
+  border-left: var(--triangle-size) solid #7f7f7f;
   left: 100%;
-  top: 50%;
+  transform: translateY(-50%);
+}
+
+.constant_card_pane .triangle_right {
+  border-left: var(--triangle-size) solid #d1f0ff;
+  right: -12px;
+  transform: translateY(-50%) translateX(calc(-1 * var(--triangle-outline)));
+}
+
+.constant_card_pane .triangle_right_border {
+  border-left: var(--triangle-size) solid #008bcb;
+  right: -12px;
   transform: translateY(-50%);
 }
 
