@@ -221,8 +221,8 @@ export function TideConstantUse({
             </h5>
           </div>
 
-          <div className='triangle_right arrow_handles' />
-          <div className='triangle_right_fill' />
+          <div className='triangle_right_border arrow_handles' />
+          <div className='triangle_right' />
         </div>
 
         <div
