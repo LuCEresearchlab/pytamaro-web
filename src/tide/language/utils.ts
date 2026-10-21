@@ -42,8 +42,11 @@ export function compareLocation(a: Location, b: Location) {
 export function extract_error(
   value:
     | TamaroCard<unknown, State>
-    | Definition<unknown, unknown, unknown, State>,
+    | Definition<unknown, unknown, unknown, State>
+    | undefined,
 ): ErrorType | { error: TideRuntimeError } | false | undefined {
+  if (!value) return undefined;
+
   if ('error_phase' in value) {
     if (value.error_phase === 'evaluated') {
       return value.value === false ? false : { error: value.value };
