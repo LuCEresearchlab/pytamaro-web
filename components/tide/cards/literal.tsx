@@ -132,26 +132,28 @@ export function TideLiteral({
         />
 
         <div className='triangle_right_border arrow_handles'>
-          <div className='right'>
-            {show_handles === true && (
-              <Handle
-                type='source'
-                position={Position.Right}
-                id={'output'}
-                className='handle'
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  transform: 'translateY(-50%) translateX(-5px)',
-                  opacity: '0',
-                }}
-              />
-            )}
-          </div>
           <div className='right_white' />
         </div>
 
         <div className='triangle_right'></div>
+
+        {show_handles === true && (
+          <Handle
+            type='source'
+            position={Position.Right}
+            id={'output'}
+            className='handle'
+            style={{
+              position: 'absolute',
+              right: '-10px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: '20px',
+              height: '40px',
+              opacity: '0',
+            }}
+          />
+        )}
 
         {result && (
           <div className='output_pane constant_icon_pane literal_result'>

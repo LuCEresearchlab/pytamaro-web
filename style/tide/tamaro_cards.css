@@ -306,7 +306,6 @@
   border-top: calc(5 * var(--outline-width)) solid transparent;
   border-bottom: calc(5 * var(--outline-width)) solid transparent;
   border-left: calc(5 * var(--outline-width)) solid white;
-  z-index: 100;
   display: inline-block;
   position: absolute;
   left: 100%;
@@ -321,7 +320,6 @@
   border-top: calc(5 * var(--outline-width)) solid transparent;
   border-bottom: calc(5 * var(--outline-width)) solid transparent;
   border-left: calc(5 * var(--outline-width)) solid #7f7f7f;
-  z-index: 100;
   display: inline-block;
   position: absolute;
   left: 100%;
