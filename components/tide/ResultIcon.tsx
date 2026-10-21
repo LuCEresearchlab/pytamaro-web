@@ -1,43 +1,38 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { EvaluatedValueType, SoundType } from '../../src/tide/language/typing';
 
 function GraphicIcon({ data }: { data: string | undefined }) {
-  const [dimension, setDimension] = useState(
-    undefined as { width: number; height: number } | undefined,
+  const [measured, setMeasured] = useState(
+    undefined as { data: string; width: number; height: number } | undefined,
   );
 
   const IMG_SCALE = 0.2;
 
-  useEffect(() => {
-    if (!data) return;
-    new Promise<string>(function (resolved, rejected) {
-      const i = new Image();
-      i.onload = function () {
-        setDimension({
-          width: i.naturalWidth * IMG_SCALE,
-          height: i.naturalHeight * IMG_SCALE,
-        });
-        resolved(data);
-      };
-      i.onerror = rejected;
-      i.src = data;
-    });
-  });
+  if (!data) return <div />;
 
-  return dimension ? (
+  const dimension = measured?.data === data ? measured : undefined;
+
+  return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       style={{
-        width: `${dimension.width}px`,
-        height: `${dimension.height}px`,
+        visibility: dimension ? 'visible' : 'hidden',
+        width: dimension ? dimension.width * IMG_SCALE : undefined,
+        height: dimension ? dimension.height * IMG_SCALE : undefined,
       }}
       className='img'
       alt='Expression Result'
       src={data}
+      onLoad={(ev) => {
+        const img = ev.currentTarget;
+        setMeasured({
+          data,
+          width: img.naturalWidth,
+          height: img.naturalHeight,
+        });
+      }}
     />
-  ) : (
-    <div />
   );
 }
 
