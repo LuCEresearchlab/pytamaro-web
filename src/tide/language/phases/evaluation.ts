@@ -159,10 +159,7 @@ async function extract_data(
           return { red, green, blue, alpha };
         });
     }
-    case SoundType.Int:
-    case SoundType.Float:
-    case SoundType.Str:
-    case SoundType.Bool: {
+    default: {
       const new_code: CodeRepresentation = {
         expression: `print(repr(${code_repr.expression}))`,
         imports: code_repr.imports,
@@ -191,8 +188,6 @@ async function extract_data(
           return repr.length === 0 ? undefined : { repr };
         });
     }
-    case SoundType.Point:
-      return undefined;
   }
   return undefined;
 }
