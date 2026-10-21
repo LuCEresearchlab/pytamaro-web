@@ -29,6 +29,7 @@ import { construct, evaluation, synchronous_phases } from './evaluation';
 import { updateParent } from './graph_toolbox';
 import { TideJudiciousMetadata } from './judiciours_to_tide';
 import { Definition } from './language/definitions';
+import { ProgramState } from './language/phases';
 import { toFlat } from './language/utils';
 import {
   compute_edge_change,
@@ -45,6 +46,22 @@ export type DraggedCard = Pick<TamaroCardNode, 'type' | 'data'> & {
 export interface DraggedElementData {
   type: string;
   data: TideNode['data'];
+}
+
+function flatten_program(
+  state: ProgramState<
+    TideNodeMetadata,
+    TideNodeMetadata,
+    TideJudiciousMetadata,
+    'code_created' | 'evaluated'
+  >,
+): { metadata: TideNodeMetadata }[] {
+  return [
+    ...state.expressions.map(toFlat).flat(),
+    ...state.local_definitions.flatMap((v) =>
+      v.root ? [v, ...toFlat(v.root)] : [v],
+    ),
+  ] as { metadata: TideNodeMetadata }[];
 }
 
 let execute:
@@ -263,15 +280,7 @@ export const createGraphSlice: StateCreator<
 
       const sync = synchronous_phases(constructed);
 
-      const flat_sync = sync.expressions
-        .map(toFlat)
-        .flat()
-        .map((v) => v as { metadata: TideNodeMetadata })
-        .concat(
-          sync.local_definitions
-            .map((v) => (v.root ? [v, v.root] : [v]))
-            .flat(),
-        );
+      const flat_sync = flatten_program(sync);
 
       set((state) => {
         return {
@@ -314,15 +323,7 @@ export const createGraphSlice: StateCreator<
           if (prev !== evaluation_timeout || !evaluation_timeout) return;
           evaluation_timeout = undefined;
 
-          const flat_async = async.expressions
-            .map(toFlat)
-            .flat()
-            .map((v) => v as { metadata: TideNodeMetadata })
-            .concat(
-              async.local_definitions
-                .map((v) => (v.root ? [v, v.root] : [v]))
-                .flat(),
-            );
+          const flat_async = flatten_program(async);
 
           set((state) => {
             return {
