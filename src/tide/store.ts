@@ -542,12 +542,17 @@ export const useStore = create<StoreType>()(
           state.setInitialized('wait');
 
           state.setNodes(
-            state
-              .getNodes()
-              .map(
-                (v) =>
-                  ({ ...v, data: { ...v.data, outdated: true } }) as TideNode,
-              ),
+            state.getNodes().map(
+              (v) =>
+                ({
+                  ...v,
+                  data: {
+                    ...v.data,
+                    outdated: true,
+                    tide_node: undefined,
+                  },
+                }) as TideNode,
+            ),
           );
 
           state.setInitialized('done');
