@@ -54,9 +54,9 @@ export type TideJudiciousMetadata = {
   module: string;
 };
 
-export function toTideType(v?: string): SoundType | UnsoundType {
-  const translated_type = v ? toEnglishName(v) : undefined;
-
+function toSoundType(
+  translated_type: string | undefined,
+): SoundType | UnsoundType {
   return translated_type === 'Graphic'
     ? SoundType.Graphic
     : translated_type === 'Point'
@@ -72,12 +72,28 @@ export function toTideType(v?: string): SoundType | UnsoundType {
               : UnsoundType.Bottom;
 }
 
+export function toTideType(v?: string): SoundType | UnsoundType {
+  if (!v) return UnsoundType.Bottom;
+
+  // Union types (e.g. "int | float") are supported when all their members
+  // correspond to the same sound type; "None" is not modelled at all.
+  const members = v
+    .split('|')
+    .map((v) => v.trim())
+    .filter((v) => v.length !== 0 && v !== 'None' && v !== 'NoneType');
+
+  const types = members.map((v) => toSoundType(toEnglishName(v)));
+
+  if (types.length === 0) return UnsoundType.Bottom;
+
+  const [first] = types;
+  return types.every((t) => t === first) ? first : UnsoundType.Bottom;
+}
+
 export function toTideParameter(p: JudiciousParameter): FunctionParameter {
   const { name, type } = p;
 
-  const translated_type = toEnglishName(type);
-
-  const parsed_type: SoundType | UnsoundType = toTideType(translated_type);
+  const parsed_type: SoundType | UnsoundType = toTideType(type);
 
   if (parsed_type === UnsoundType.Bottom)
     throw new Error(`Could not parse judicious type ${type}`);
