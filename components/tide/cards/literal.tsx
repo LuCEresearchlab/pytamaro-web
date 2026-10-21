@@ -120,6 +120,7 @@ export function TideLiteral({
             minWidth: '85px',
             backgroundColor: 'white',
             padding: '5px 20px',
+            textAlign: 'center',
             borderTopRightRadius: '5px',
             borderBottomRightRadius: '5px',
             borderLeft: 'solid #7F7F7F 2px',
