@@ -331,6 +331,11 @@ export function onDocumentPasteCatpure(
       position: { x: v.position.x + diff.x, y: v.position.y + diff.y },
       data: {
         ...v.data,
+        // The pasted cards are new cards: the evaluation state of the copied
+        // ones refers to the original nodes, so it has to be discarded and
+        // computed again (otherwise the cards would show stale results)
+        tide_node: undefined,
+        outdated: true,
         parent: v.data.parent
           ? getOrCreateNodeMap(v.data.parent as string)
           : undefined,
