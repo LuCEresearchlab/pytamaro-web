@@ -19,6 +19,7 @@ import {
   toTideConstant,
   toTideFunction,
 } from '../../src/tide/judiciours_to_tide';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { ImportedDefinition } from '../../src/tide/language/definitions';
 import { useStore } from '../../src/tide/store';
 import { iconPath, KNOWN_JUDICIOUS_MODULES } from '../documentation/utils';
@@ -34,6 +35,7 @@ const isSpecial = (library: string) =>
   library === LITERALS_LIBRARY || library === CONSTANT_LIBRARY;
 
 export default function TidePalette() {
+  const { t } = useLocalTranslation(['tide']);
   const [collapsed, setCollasped] = useState(false);
   const [filter, setFilter] = useState('');
   const [selectedLibrary, setSelectedLibrary] = useState('pytamaro');
@@ -130,7 +132,7 @@ export default function TidePalette() {
             <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
               <Style />
               <Typography variant='subtitle1' sx={{ fontWeight: 'bold' }}>
-                Cards Palette
+                {t('palette.title')}
               </Typography>
             </Stack>
             {collapsed && (
@@ -174,7 +176,13 @@ export default function TidePalette() {
                             height={20}
                           />
                         )}
-                        <span>{module}</span>
+                        <span>
+                          {module === LITERALS_LIBRARY
+                            ? t('palette.literals')
+                            : module === CONSTANT_LIBRARY
+                              ? t('palette.userConstants')
+                              : module}
+                        </span>
                       </Stack>
                     </MenuItem>
                   ))}
@@ -183,7 +191,7 @@ export default function TidePalette() {
                   variant='standard'
                   value={filter}
                   onChange={(event) => setFilter(event.target.value)}
-                  placeholder='Search...'
+                  placeholder={t('palette.search')}
                   slotProps={{
                     input: {
                       startAdornment: (
@@ -194,7 +202,7 @@ export default function TidePalette() {
                       endAdornment: filter !== '' && (
                         <InputAdornment position='end'>
                           <IconButton
-                            aria-label='Clear search'
+                            aria-label={t('palette.clearSearch')}
                             edge='end'
                             size='small'
                             onClick={() => setFilter('')}

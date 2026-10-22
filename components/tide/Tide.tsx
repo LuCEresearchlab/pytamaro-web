@@ -32,6 +32,7 @@ import {
 } from '../../src/tide/graph_toolbox';
 import { TideError, TideRuntimeError } from '../../src/tide/language/errors';
 import { ErrorType } from '../../src/tide/language/typing';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { setExecute, useStore } from '../../src/tide/store';
 import { getNode, module_elements } from '../../src/tide/utils';
 import FunctionDocumentation from '../documentation/FunctionDocumentation';
@@ -50,6 +51,7 @@ import { extract_error } from '../../src/tide/language/utils';
 import { ExecutorContext } from '../../src/execution/executorContext';
 
 export default function Tide() {
+  const { t } = useLocalTranslation(['tide']);
   const { executorState, execute } = useContext(ExecutorContext);
   const [pane, setPane] = useState(
     undefined as 'error' | 'documentation' | undefined,
@@ -327,7 +329,7 @@ export default function Tide() {
               zIndex: '100',
             }}
           >
-            <h3 style={{ margin: '10px 5px' }}>Errors:</h3>
+            <h3 style={{ margin: '10px 5px' }}>{t('errorsPanel.title')}</h3>
 
             <div
               style={{

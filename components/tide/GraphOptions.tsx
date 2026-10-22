@@ -11,6 +11,7 @@ import { useReactFlow } from '@xyflow/react';
 import { saveAs } from 'file-saver';
 import { useConfirm } from 'material-ui-confirm';
 import { ChangeEvent, useRef, useState } from 'react';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { parseGraphFile, serializeGraphFile } from '../../src/tide/graphFile';
 import { useStore } from '../../src/tide/store';
 import CustomSnackbar from '../CustomSnackbar';
@@ -24,6 +25,7 @@ function exportFileName() {
 }
 
 export function GraphOptions() {
+  const { t } = useLocalTranslation(['tide']);
   const [importError, setImportError] = useState<string | undefined>(undefined);
   const [importSuccessVisible, setImportSuccessVisible] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -46,14 +48,12 @@ export function GraphOptions() {
     reader.onload = (e) => {
       const content = e.target?.result;
       if (typeof content !== 'string') {
-        setImportError('Could not read the file.');
+        setImportError(t('graphOptions.importReadError'));
         return;
       }
       const graph = parseGraphFile(content);
       if (!graph) {
-        setImportError(
-          'This file is not a valid TIDE export. Please select a file exported from TIDE.',
-        );
+        setImportError(t('graphOptions.importInvalidFile'));
         return;
       }
       setNodes(graph.nodes);
@@ -61,7 +61,7 @@ export function GraphOptions() {
       setImportSuccessVisible(true);
     };
     reader.onerror = () => {
-      setImportError('Could not read the file.');
+      setImportError(t('graphOptions.importReadError'));
     };
     reader.readAsText(file);
   };
@@ -75,11 +75,10 @@ export function GraphOptions() {
 
   const handleReset = () => {
     confirm({
-      title: 'Are you sure?',
-      description:
-        'You are about to delete everything, including all the cards you have added. This action cannot be undone! ⚠️',
-      confirmationText: 'OK, delete everything',
-      cancellationText: 'Cancel',
+      title: t('graphOptions.resetConfirmTitle'),
+      description: t('graphOptions.resetConfirmDescription'),
+      confirmationText: t('graphOptions.resetConfirm'),
+      cancellationText: t('graphOptions.cancel'),
     }).then(({ confirmed }) => {
       if (confirmed) {
         setNodes([]);
@@ -92,7 +91,11 @@ export function GraphOptions() {
     <>
       <div className='graph_options'>
         <div className='items-container'>
-          <Tooltip arrow title='Import from a file' placement='left'>
+          <Tooltip
+            arrow
+            title={t('graphOptions.importFromFile')}
+            placement='left'
+          >
             <IconButton
               className='item'
               size='large'
@@ -101,32 +104,46 @@ export function GraphOptions() {
               <Upload />
             </IconButton>
           </Tooltip>
-          <Tooltip arrow title='Export to a file' placement='left'>
+          <Tooltip
+            arrow
+            title={t('graphOptions.exportToFile')}
+            placement='left'
+          >
             <IconButton className='item' size='large' onClick={handleExport}>
               <Download />
             </IconButton>
           </Tooltip>
           <Tooltip
             arrow
-            title={fullscreen ? 'Exit fullscreen' : 'Show TIDE in fullscreen'}
+            title={
+              fullscreen
+                ? t('graphOptions.exitFullscreen')
+                : t('graphOptions.showFullscreen')
+            }
             placement='left'
           >
             <IconButton
               className='item'
               size='large'
               aria-label={
-                fullscreen ? 'Exit fullscreen' : 'Show TIDE in fullscreen'
+                fullscreen
+                  ? t('graphOptions.exitFullscreen')
+                  : t('graphOptions.showFullscreen')
               }
               onClick={() => setFullscreen(!fullscreen)}
             >
               {fullscreen ? <FullscreenExit /> : <Fullscreen />}
             </IconButton>
           </Tooltip>
-          <Tooltip arrow title='Center on the screen' placement='left'>
+          <Tooltip
+            arrow
+            title={t('graphOptions.centerOnScreen')}
+            placement='left'
+          >
             <IconButton
               className='item'
               size='large'
-              aria-label='Center on the screen'
+              aria-label={t('graphOptions.centerOnScreen')}
               onClick={() => {
                 fitView({
                   duration: 1,
@@ -137,7 +154,7 @@ export function GraphOptions() {
               <CenterFocusStrong />
             </IconButton>
           </Tooltip>
-          <Tooltip arrow title='Reset TIDE' placement='left'>
+          <Tooltip arrow title={t('graphOptions.resetTide')} placement='left'>
             <IconButton className='item' size='large' onClick={handleReset}>
               <Delete />
             </IconButton>
@@ -160,7 +177,7 @@ export function GraphOptions() {
         visible={importSuccessVisible}
         setVisible={setImportSuccessVisible}
         severity='success'
-        message='Import completed successfully!'
+        message={t('graphOptions.importSuccess')}
       />
     </>
   );

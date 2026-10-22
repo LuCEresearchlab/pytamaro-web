@@ -11,6 +11,7 @@ import {
 import { useReactFlow } from '@xyflow/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/shallow';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { useStore } from '../../src/tide/store';
 import {
   getConstantDefinition,
@@ -36,6 +37,7 @@ export default function NodeContextMenu({
   click_outside?: boolean;
   close: () => void;
 }) {
+  const { t } = useLocalTranslation(['tide']);
   const [openNameModal, setNameModalOpen] = useState(false);
   const { fitView } = useReactFlow();
   const { getNodes, setNodes, getEdges, setEdges } = useStore(
@@ -169,7 +171,7 @@ export default function NodeContextMenu({
         }}
         onClick={() => setNameModalOpen(true)}
       >
-        Extract sub expression tree as constant
+        {t('contextMenu.extractConstant')}
         <span
           style={{
             display: 'inline-block',
@@ -199,7 +201,7 @@ export default function NodeContextMenu({
           setNodes(getNodes().filter((v) => v.id !== id));
         }}
       >
-        Delete node
+        {t('contextMenu.deleteNode')}
       </button>
 
       {constant_reference && (
@@ -214,7 +216,7 @@ export default function NodeContextMenu({
           }}
           onClick={() => goToParentDefinition()}
         >
-          Go to constant definition
+          {t('contextMenu.goToConstantDefinition')}
         </button>
       )}
       <Dialog
@@ -237,7 +239,7 @@ export default function NodeContextMenu({
         }}
       >
         <Box>
-          <DialogTitle>Create a new constant node</DialogTitle>
+          <DialogTitle>{t('contextMenu.createConstantTitle')}</DialogTitle>
           <DialogContent>
             <TextField
               autoFocus
@@ -245,15 +247,17 @@ export default function NodeContextMenu({
               margin='dense'
               id='name'
               name='name'
-              label='Constant name'
+              label={t('contextMenu.constantName')}
               type='name'
               fullWidth
               variant='standard'
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setNameModalOpen(false)}>Cancel</Button>
-            <Button type='submit'>Confirm</Button>
+            <Button onClick={() => setNameModalOpen(false)}>
+              {t('contextMenu.cancel')}
+            </Button>
+            <Button type='submit'>{t('contextMenu.confirm')}</Button>
           </DialogActions>
         </Box>
       </Dialog>

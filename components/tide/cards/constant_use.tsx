@@ -18,6 +18,7 @@ import {
   EvaluatedValueType,
   SoundType,
 } from '../../../src/tide/language/typing';
+import useLocalTranslation from '../../../src/localStorage/useLocalTranslation';
 import { useStore } from '../../../src/tide/store';
 import { iconPath } from '../../documentation/utils';
 import ResultIcon from '../ResultIcon';
@@ -126,6 +127,7 @@ export function TideConstantUse({
   NodeProps<ConstantNode> & ExtraneousNodeProps,
   'id' | 'show_handles' | 'data'
 >) {
+  const { t } = useLocalTranslation();
   const { updateNodeData } = useStore(
     useShallow((state) => ({
       updateNodeData: state.updateNodeData,
@@ -153,8 +155,8 @@ export function TideConstantUse({
       ? (data.tide_node.data as EvaluatedValueType[SoundType])
       : undefined;
   const returns_icon = useMemo(() => {
-    return ResultIcon({ value });
-  }, [value]);
+    return ResultIcon({ value, alt: t('resultTooltip') });
+  }, [t, value]);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useMutationObserver(returnsIconRef, () => {
@@ -185,7 +187,7 @@ export function TideConstantUse({
               className='card_library hovergroup hovergroup_marker'
               data-hovergroup={'library'}
               src={iconPath(i.module)}
-              alt='Library icon'
+              alt={t('library')}
             />
           )}
 

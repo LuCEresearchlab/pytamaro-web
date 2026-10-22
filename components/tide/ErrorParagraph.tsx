@@ -1,58 +1,120 @@
+import { TFunction } from 'i18next';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import theme from '../../src/theme';
 import {
   TideError,
   TideNameError,
+  TideNameErrorCyclicalDependencies,
   TideSyntaxError,
 } from '../../src/tide/language/errors';
 
-function getRawContent(annotation: TideError): {
+function getRawContent(
+  annotation: TideError,
+  t: TFunction,
+): {
   title: string;
   message: string;
 } {
   switch (annotation.kind) {
     case 'syntax-error': {
-      const title = 'Syntax Error';
+      const title = t('errors.syntaxError');
       switch ((annotation as TideSyntaxError).subkind) {
         case 'invalid_constant_identifier':
-          return { title, message: 'Constant identifier *{name}* is invalid.' };
+          return {
+            title,
+            message: t('errors.invalidConstantIdentifier', {
+              name: annotation.args[0].value,
+            }),
+          };
         case 'invalid_function_identifier':
-          return { title, message: 'Function identifier *{name}* is invalid.' };
+          return {
+            title,
+            message: t('errors.invalidFunctionIdentifier', {
+              name: annotation.args[0].value,
+            }),
+          };
         case 'constant_has_no_value':
-          return { title, message: 'Constant *{name}* has no value.' };
+          return {
+            title,
+            message: t('errors.constantHasNoValue', {
+              name: annotation.args[0].value,
+            }),
+          };
         case 'invalid_literal':
-          return { title, message: 'Literal value *{value}* is invalid.' };
+          return {
+            title,
+            message: t('errors.invalidLiteral', {
+              value: annotation.args[0].value,
+            }),
+          };
         case 'missing_parameter':
-          return { title, message: 'Missing argument for parameter *{name}*.' };
+          return {
+            title,
+            message: t('errors.missingParameter', {
+              name: annotation.args[0].value,
+            }),
+          };
         default:
-          return { title, message: 'Syntax error.' };
+          return { title, message: t('errors.syntaxErrorGeneric') };
       }
     }
     case 'type-error': {
-      const title = 'Type Error';
-      return { title, message: 'Expected *{expected}*, got *{got}*.' };
+      const title = t('errors.typeError');
+      return {
+        title,
+        message: t('errors.typeMismatch', {
+          expected: annotation.args[0].value,
+          got: annotation.args[1].value,
+        }),
+      };
     }
     case 'name-error': {
-      const title = 'Name Error';
+      const title = t('errors.nameError');
       switch ((annotation as TideNameError).subkind) {
         case 'unknown_constant':
-          return { title, message: 'The constant *{name}* is not defined.' };
+          return {
+            title,
+            message: t('errors.unknownConstant', {
+              name: annotation.args[0].value,
+            }),
+          };
         case 'multiple_definitions':
           return {
             title,
-            message: 'The constant *{name}* is defined multiple times.',
+            message: t('errors.multipleDefinitions', {
+              name: annotation.args[0].value,
+            }),
           };
         case 'node_kind_mismatch':
-          return { title, message: 'Node kind mismatch.' };
-        case 'cyclical_dependencies':
+          return { title, message: t('errors.nodeKindMismatch') };
+        case 'cyclical_dependencies': {
+          const names = (annotation as TideNameErrorCyclicalDependencies)
+            .args[0].value;
+          const dependencies = names
+            .map((v, i) => [
+              v,
+              i !== names.length - 1 ? names[i + 1] : names[0],
+            ])
+            .toReversed()
+            .map(([dependency, constant]) =>
+              t('errors.dependsOn', { constant, dependency }),
+            )
+            .join(t('errors.dependsOnSeparator'));
+
           return {
             title,
-            message:
-              'Cyclic dependencies between constant definitions: \n{names}.',
+            message: t('errors.cyclicalDependencies', { names: dependencies }),
           };
+        }
         case 'unknown_function':
-          return { title, message: 'The function *{name}* is not defined.' };
+          return {
+            title,
+            message: t('errors.unknownFunction', {
+              name: annotation.args[0].value,
+            }),
+          };
         default:
-          return { title, message: 'Name error.' };
+          return { title, message: t('errors.nameErrorGeneric') };
       }
     }
     case 'runtime-error': {
@@ -64,30 +126,15 @@ function getRawContent(annotation: TideError): {
     default:
       // eslint-disable-next-line no-console
       console.error(JSON.stringify(annotation));
-      return { title: 'Error', message: 'Unknown error.' };
+      return { title: t('errors.error'), message: t('errors.unknownError') };
   }
 }
 
 export function ErrorParagraph(props: { annotation: TideError }) {
+  const { t } = useLocalTranslation(['tide']);
   const { annotation } = props;
 
-  const { title, message: raw_message } = getRawContent(annotation);
-
-  const message = annotation.args.reduce((a, b) => {
-    if (b.name === 'names')
-      return a.replaceAll(
-        `{${b.name}}`,
-        b.value
-          .map((v, i) => [
-            v,
-            i != b.value.length - 1 ? b.value[i + 1] : b.value[0],
-          ])
-          .toReversed()
-          .map((v) => `the meaning of *${v[1]}* depends on *${v[0]}*`)
-          .join(', and \n'),
-      );
-    return a.replaceAll(`{${b.name}}`, String(b.value));
-  }, raw_message);
+  const { title, message } = getRawContent(annotation, t);
 
   return (
     <div>

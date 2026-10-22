@@ -2,7 +2,13 @@
 import { useState } from 'react';
 import { EvaluatedValueType, SoundType } from '../../src/tide/language/typing';
 
-function GraphicIcon({ data }: { data: string | undefined }) {
+function GraphicIcon({
+  data,
+  alt = undefined,
+}: {
+  data: string | undefined;
+  alt?: string;
+}) {
   const [measured, setMeasured] = useState(
     undefined as { data: string; width: number; height: number } | undefined,
   );
@@ -22,7 +28,7 @@ function GraphicIcon({ data }: { data: string | undefined }) {
         height: dimension ? dimension.height * IMG_SCALE : undefined,
       }}
       className='img'
-      alt='Expression Result'
+      alt={alt}
       src={data}
       onLoad={(ev) => {
         const img = ev.currentTarget;
@@ -69,12 +75,14 @@ function ColorIcon({
 
 export default function ResultIcon({
   value = undefined,
+  alt = undefined,
 }: {
   value?: EvaluatedValueType[SoundType];
+  alt?: string;
 }) {
   if (!value) return undefined;
 
-  if (typeof value === 'string') return <GraphicIcon data={value} />;
+  if (typeof value === 'string') return <GraphicIcon data={value} alt={alt} />;
   if ('repr' in value)
     return (
       <span style={{ fontFamily: 'monospace', whiteSpace: 'pre' }}>

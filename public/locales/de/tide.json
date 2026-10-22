@@ -1,0 +1,63 @@
+{
+    "page": {
+        "title": "TIDE: Eine IDE für TamaroCards",
+        "previewAlert": "TIDE ist derzeit als frühe Vorschau verfügbar. Wenn dir ein Fehler auffällt, sende uns bitte Feedback über die Schaltfläche oben rechts auf der Seite.",
+        "researchPaper": "Möchtest du mehr über das Design von TIDE erfahren? Lies das Forschungspapier!"
+    },
+    "palette": {
+        "title": "Kartenpalette",
+        "search": "Suchen...",
+        "clearSearch": "Suche löschen",
+        "literals": "Literale",
+        "userConstants": "Eigene Konstanten"
+    },
+    "graphOptions": {
+        "importFromFile": "Aus Datei importieren",
+        "exportToFile": "In Datei exportieren",
+        "exitFullscreen": "Vollbild verlassen",
+        "showFullscreen": "TIDE im Vollbild anzeigen",
+        "centerOnScreen": "Auf dem Bildschirm zentrieren",
+        "resetTide": "TIDE zurücksetzen",
+        "resetConfirmTitle": "Bist du sicher?",
+        "resetConfirmDescription": "Du bist dabei, alles zu löschen, einschließlich aller Karten, die du hinzugefügt hast. Diese Aktion kann nicht rückgängig gemacht werden! ⚠️",
+        "resetConfirm": "OK, alles löschen",
+        "cancel": "Abbrechen",
+        "importReadError": "Die Datei konnte nicht gelesen werden.",
+        "importInvalidFile": "Diese Datei ist kein gültiger TIDE-Export. Bitte wähle eine aus TIDE exportierte Datei aus.",
+        "importSuccess": "Import erfolgreich abgeschlossen!"
+    },
+    "contextMenu": {
+        "extractConstant": "Teilausdrucksbaum als Konstante extrahieren",
+        "deleteNode": "Knoten löschen",
+        "goToConstantDefinition": "Zur Konstantendefinition gehen",
+        "createConstantTitle": "Neuen Konstantenknoten erstellen",
+        "constantName": "Name der Konstante",
+        "cancel": "Abbrechen",
+        "confirm": "Bestätigen"
+    },
+    "errorsPanel": {
+        "title": "Fehler:"
+    },
+    "errors": {
+        "syntaxError": "Syntaxfehler",
+        "typeError": "Typfehler",
+        "nameError": "Namensfehler",
+        "error": "Fehler",
+        "unknownError": "Unbekannter Fehler.",
+        "syntaxErrorGeneric": "Syntaxfehler.",
+        "invalidConstantIdentifier": "Der Konstantenbezeichner *{{name}}* ist ungültig.",
+        "invalidFunctionIdentifier": "Der Funktionsbezeichner *{{name}}* ist ungültig.",
+        "constantHasNoValue": "Die Konstante *{{name}}* hat keinen Wert.",
+        "invalidLiteral": "Der Literalwert *{{value}}* ist ungültig.",
+        "missingParameter": "Fehlendes Argument für den Parameter *{{name}}*.",
+        "typeMismatch": "Erwartet *{{expected}}*, erhalten *{{got}}*.",
+        "unknownConstant": "Die Konstante *{{name}}* ist nicht definiert.",
+        "multipleDefinitions": "Die Konstante *{{name}}* ist mehrfach definiert.",
+        "nodeKindMismatch": "Knotenart stimmt nicht überein.",
+        "cyclicalDependencies": "Zyklische Abhängigkeiten zwischen Konstantendefinitionen: \n{{names}}.",
+        "dependsOn": "die Bedeutung von *{{constant}}* hängt von *{{dependency}}* ab",
+        "dependsOnSeparator": ", und \n",
+        "unknownFunction": "Die Funktion *{{name}}* ist nicht definiert.",
+        "nameErrorGeneric": "Namensfehler."
+    }
+}
