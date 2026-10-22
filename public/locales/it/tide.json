@@ -11,6 +11,7 @@
         "literals": "Letterali",
         "userConstants": "Costanti utente"
     },
+    "emptyState": "Per iniziare, trascina qui una carta dalla palette",
     "graphOptions": {
         "importFromFile": "Importa da un file",
         "exportToFile": "Esporta in un file",

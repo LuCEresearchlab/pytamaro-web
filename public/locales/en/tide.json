@@ -11,6 +11,7 @@
         "literals": "Literals",
         "userConstants": "User Constants"
     },
+    "emptyState": "To get started, drag a card here from the palette",
     "graphOptions": {
         "importFromFile": "Import from a file",
         "exportToFile": "Export to a file",
