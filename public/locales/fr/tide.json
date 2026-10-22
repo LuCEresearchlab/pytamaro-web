@@ -9,7 +9,8 @@
         "search": "Rechercher...",
         "clearSearch": "Effacer la recherche",
         "literals": "Littéraux",
-        "userConstants": "Constantes utilisateur"
+        "userConstants": "Constantes utilisateur",
+        "noResults": "Aucune carte trouvée avec la recherche actuelle"
     },
     "emptyState": "Pour commencer, faites glisser une carte ici depuis la palette",
     "graphOptions": {
