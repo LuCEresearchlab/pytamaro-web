@@ -212,14 +212,16 @@ export function onDocumentKeyDown(
   {
     if (e.key === 'Escape') setFullscreen(false);
     if (e.key === 'F11') setFullscreen(true);
-    if (e.ctrlKey && e.key === 'Z' && e.shiftKey) {
+    const isMac = navigator.userAgent.indexOf('Macintosh') >= 0;
+    const modifierPressed = isMac ? e.metaKey : e.ctrlKey;
+    if (modifierPressed && e.key.toLowerCase() === 'z') {
       e.preventDefault();
       e.stopPropagation();
-      redoChange();
-    } else if (e.ctrlKey && e.key === 'z') {
-      e.preventDefault();
-      revertLastChange();
-      e.stopPropagation();
+      if (e.shiftKey) {
+        redoChange();
+      } else {
+        revertLastChange();
+      }
     }
   }
 }
