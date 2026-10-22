@@ -9,7 +9,8 @@
         "search": "Search...",
         "clearSearch": "Clear search",
         "literals": "Literals",
-        "userConstants": "User Constants"
+        "userConstants": "User Constants",
+        "noResults": "No cards found with the current search"
     },
     "emptyState": "To get started, drag a card here from the palette",
     "graphOptions": {

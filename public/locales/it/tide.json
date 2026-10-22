@@ -9,7 +9,8 @@
         "search": "Cerca...",
         "clearSearch": "Cancella ricerca",
         "literals": "Letterali",
-        "userConstants": "Costanti utente"
+        "userConstants": "Costanti utente",
+        "noResults": "Nessuna carta trovata con la ricerca attuale"
     },
     "emptyState": "Per iniziare, trascina qui una carta dalla palette",
     "graphOptions": {

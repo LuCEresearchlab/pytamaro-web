@@ -9,7 +9,8 @@
         "search": "Suchen...",
         "clearSearch": "Suche löschen",
         "literals": "Literale",
-        "userConstants": "Eigene Konstanten"
+        "userConstants": "Eigene Konstanten",
+        "noResults": "Keine Karten mit der aktuellen Suche gefunden"
     },
     "emptyState": "Ziehe zum Starten eine Karte aus der Palette hierher",
     "graphOptions": {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
-import { Card, CardContent } from '@mui/material';
+import { Card, CardContent, Typography } from '@mui/material';
 import { uniq } from 'lodash';
-import { DragEvent, useEffect, useState } from 'react';
+import { DragEvent, useEffect, useMemo, useState } from 'react';
 import {
   JudiciousConstant,
   JudiciousFunction,
@@ -19,6 +19,7 @@ import {
 } from '../../src/tide/language/phases/syntax';
 import { LiteralType, SoundType } from '../../src/tide/language/typing';
 import { useStore } from '../../src/tide/store';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import {
   ConstantNode,
   FunctionNode,
@@ -43,6 +44,7 @@ export function TidePalettePane({
   library: string;
 }) {
   const { setDragged, reserved_names, nodes } = useStore();
+  const { t } = useLocalTranslation(['tide']);
 
   const defined_constants = uniq(
     nodes
@@ -54,6 +56,23 @@ export function TidePalettePane({
   );
 
   const [constant_name, setConstantName] = useState('' as string | undefined);
+
+  const module_values = useMemo(
+    () =>
+      values
+        .filter(
+          (el) =>
+            el.kind === 'function_definition' ||
+            el.kind === 'constant_definition',
+        )
+        .filter((v) => v.location.name.toLowerCase().startsWith(filter)),
+    [values, filter],
+  );
+
+  const constant_names = uniq([
+    ...(constant_name != null ? [constant_name] : []),
+    ...defined_constants,
+  ]);
 
   const [literals, setLiterals] = useState(
     [] as { regex: RegExp; value: string; type: LiteralType }[],
@@ -92,6 +111,12 @@ export function TidePalettePane({
     else setConstantName(undefined);
   }, [filter, reserved_names, setLiterals]);
 
+  const no_results =
+    filter !== '' &&
+    library !== LITERALS_LIBRARY &&
+    library !== CONSTANT_LIBRARY &&
+    module_values.length === 0;
+
   const onDragStart = function <T extends TamaroCardNode>(
     event: DragEvent<HTMLDivElement>,
     type: T['type'],
@@ -122,13 +147,7 @@ export function TidePalettePane({
       >
         {library !== LITERALS_LIBRARY &&
           library !== CONSTANT_LIBRARY &&
-          values
-            .filter(
-              (el) =>
-                el.kind === 'function_definition' ||
-                el.kind === 'constant_definition',
-            )
-            .filter((v) => v.location.name.toLowerCase().startsWith(filter))
+          module_values
             .map(
               (
                 el,
@@ -228,10 +247,7 @@ export function TidePalettePane({
             ))}
 
         {library === CONSTANT_LIBRARY &&
-          uniq([
-            ...(constant_name != null ? [constant_name] : []),
-            ...defined_constants,
-          ]).map((name) => (
+          constant_names.map((name) => (
             <div
               className='compact_view hide_types hide_labels hide_icons hide_handles hide_optionals'
               style={{ userSelect: 'none' }}
@@ -266,6 +282,20 @@ export function TidePalettePane({
               </div>
             </div>
           ))}
+
+        {no_results && (
+          <Typography
+            sx={{
+              width: '100%',
+              textAlign: 'center',
+              color: 'text.secondary',
+              fontStyle: 'italic',
+              padding: '8px',
+            }}
+          >
+            {t('palette.noResults')}
+          </Typography>
+        )}
       </CardContent>
     </Card>
   );
