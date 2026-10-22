@@ -284,6 +284,26 @@ export default function Tide() {
           <GraphOptions />
         </div>
         <AnnotationLayer />
+        {nodes.length === 0 && (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0 20px',
+              textAlign: 'center',
+              color: theme.palette.text.secondary,
+              fontSize: '1.1rem',
+              pointerEvents: 'none',
+              userSelect: 'none',
+              zIndex: 1,
+            }}
+          >
+            <span style={{ maxWidth: '100%' }}>{t('emptyState')}</span>
+          </div>
+        )}
         <div
           style={{
             position: 'absolute',

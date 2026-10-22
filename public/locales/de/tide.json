@@ -11,6 +11,7 @@
         "literals": "Literale",
         "userConstants": "Eigene Konstanten"
     },
+    "emptyState": "Ziehe zum Starten eine Karte aus der Palette hierher",
     "graphOptions": {
         "importFromFile": "Aus Datei importieren",
         "exportToFile": "In Datei exportieren",
