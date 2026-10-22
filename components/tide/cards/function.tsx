@@ -8,6 +8,7 @@ import {
   EvaluatedValueType,
   SoundType,
 } from '../../../src/tide/language/typing';
+import useLocalTranslation from '../../../src/localStorage/useLocalTranslation';
 import { useStore } from '../../../src/tide/store';
 import { module_elements } from '../../../src/tide/utils';
 import ResultIcon from '../ResultIcon';
@@ -20,6 +21,7 @@ export function TideFunctionuse({
   NodeProps<FunctionNode> & ExtraneousNodeProps,
   'id' | 'data' | 'show_handles'
 >) {
+  const { t } = useLocalTranslation();
   const judicious = useStore(useShallow((state) => state.judicious));
 
   const elements = useMemo(() => module_elements(judicious), [judicious]);
@@ -57,8 +59,8 @@ export function TideFunctionuse({
       : undefined;
 
   const result_icon = useMemo(() => {
-    return ResultIcon({ value });
-  }, [value]);
+    return ResultIcon({ value, alt: t('resultTooltip') });
+  }, [t, value]);
 
   return (
     <div className='drag-handle compact_view hide_types hide_icons hide_output hide_optionals hide_labels'>

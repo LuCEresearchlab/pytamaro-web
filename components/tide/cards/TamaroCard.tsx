@@ -6,6 +6,7 @@ import { iconPath } from '../../documentation/utils';
 import { Tooltip } from '@mui/material';
 import { Handle, Position } from '@xyflow/react';
 import { ReactElement, useEffect, useRef, useState } from 'react';
+import useLocalTranslation from '../../../src/localStorage/useLocalTranslation';
 import {
   JudiciousConstant,
   JudiciousElement,
@@ -65,15 +66,6 @@ export function Arrow({
         <h3 className='arrow_type'> {type}</h3>
 
         <div style={{ flexGrow: '1', minWidth: '10px' }} />
-        {/*icon && (
-          <div>
-            <img
-              className='arrow_icon'
-              alt={`${name} icon`}
-              src={`data:image/svg+xml;utf8,${encodeURIComponent(icon)}`}
-            />
-          </div>
-        )*/}
       </div>
 
       {Array.from({ length: multiple ? 3 : 1 }).map((_, i) => {
@@ -138,7 +130,7 @@ export default function TamaroCard({
         show_handles,
       });
   }
-  return <div>Invalid Kind</div>;
+  return <div />;
 }
 
 export function FunctionTamaroCard({
@@ -152,6 +144,7 @@ export function FunctionTamaroCard({
   show_handles?: boolean;
   returns_icon?: ReactElement;
 }) {
+  const { t } = useLocalTranslation();
   const needed_parameters = el.parameters.filter((v) => v.default == null);
   const parameters = el.parameters;
 
@@ -237,7 +230,7 @@ export function FunctionTamaroCard({
           className='card_library hovergroup hovergroup_marker'
           data-hovergroup={'library'}
           src={iconPath(module)}
-          alt='Library Icon'
+          alt={t('library')}
         />
 
         <div
@@ -267,7 +260,7 @@ export function FunctionTamaroCard({
         </div>
 
         {el.sideEffects && (
-          <Tooltip title='Calling this function causes side effects' arrow>
+          <Tooltip title={t('callingFunctionCausesSideEffects')} arrow>
             <N_Image
               style={{
                 position: 'absolute',
@@ -275,7 +268,7 @@ export function FunctionTamaroCard({
                 right: '5%',
               }}
               src={'/boom.png'}
-              alt='side effect icon'
+              alt={t('sideEffects')}
               width='36'
               height='36'
             />
@@ -328,6 +321,7 @@ export function ConstantTamaroCard({
   show_handles?: boolean;
   returns_icon?: ReactElement;
 }) {
+  const { t } = useLocalTranslation();
   //const returnsIconRef = useRef() as React.MutableRefObject<HTMLDivElement>;
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
@@ -353,7 +347,7 @@ export function ConstantTamaroCard({
           className='card_library hovergroup hovergroup_marker'
           data-hovergroup={'library'}
           src={iconPath(module)}
-          alt='Library icon'
+          alt={t('library')}
         />
 
         <div

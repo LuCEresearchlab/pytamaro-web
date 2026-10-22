@@ -1,0 +1,63 @@
+{
+    "page": {
+        "title": "TIDE : un IDE pour les TamaroCards",
+        "previewAlert": "TIDE est actuellement disponible en aperçu. Si vous rencontrez une erreur, envoyez-nous vos commentaires à l'aide du bouton en haut à droite de la page.",
+        "researchPaper": "Vous voulez en savoir plus sur la conception de TIDE ? Lisez l'article de recherche !"
+    },
+    "palette": {
+        "title": "Palette de cartes",
+        "search": "Rechercher...",
+        "clearSearch": "Effacer la recherche",
+        "literals": "Littéraux",
+        "userConstants": "Constantes utilisateur"
+    },
+    "graphOptions": {
+        "importFromFile": "Importer depuis un fichier",
+        "exportToFile": "Exporter vers un fichier",
+        "exitFullscreen": "Quitter le plein écran",
+        "showFullscreen": "Afficher TIDE en plein écran",
+        "centerOnScreen": "Centrer sur l'écran",
+        "resetTide": "Réinitialiser TIDE",
+        "resetConfirmTitle": "Êtes-vous sûr(e) ?",
+        "resetConfirmDescription": "Vous êtes sur le point de tout supprimer, y compris toutes les cartes que vous avez ajoutées. Cette action est irréversible ! ⚠️",
+        "resetConfirm": "OK, tout supprimer",
+        "cancel": "Annuler",
+        "importReadError": "Impossible de lire le fichier.",
+        "importInvalidFile": "Ce fichier n'est pas un export TIDE valide. Veuillez sélectionner un fichier exporté depuis TIDE.",
+        "importSuccess": "Importation terminée avec succès !"
+    },
+    "contextMenu": {
+        "extractConstant": "Extraire le sous-arbre d'expression comme constante",
+        "deleteNode": "Supprimer le nœud",
+        "goToConstantDefinition": "Aller à la définition de la constante",
+        "createConstantTitle": "Créer un nouveau nœud constante",
+        "constantName": "Nom de la constante",
+        "cancel": "Annuler",
+        "confirm": "Confirmer"
+    },
+    "errorsPanel": {
+        "title": "Erreurs :"
+    },
+    "errors": {
+        "syntaxError": "Erreur de syntaxe",
+        "typeError": "Erreur de type",
+        "nameError": "Erreur de nom",
+        "error": "Erreur",
+        "unknownError": "Erreur inconnue.",
+        "syntaxErrorGeneric": "Erreur de syntaxe.",
+        "invalidConstantIdentifier": "L'identifiant de constante *{{name}}* n'est pas valide.",
+        "invalidFunctionIdentifier": "L'identifiant de fonction *{{name}}* n'est pas valide.",
+        "constantHasNoValue": "La constante *{{name}}* n'a pas de valeur.",
+        "invalidLiteral": "La valeur littérale *{{value}}* n'est pas valide.",
+        "missingParameter": "Argument manquant pour le paramètre *{{name}}*.",
+        "typeMismatch": "Attendu *{{expected}}*, obtenu *{{got}}*.",
+        "unknownConstant": "La constante *{{name}}* n'est pas définie.",
+        "multipleDefinitions": "La constante *{{name}}* est définie plusieurs fois.",
+        "nodeKindMismatch": "Le type de nœud ne correspond pas.",
+        "cyclicalDependencies": "Dépendances cycliques entre les définitions de constantes : \n{{names}}.",
+        "dependsOn": "la signification de *{{constant}}* dépend de *{{dependency}}*",
+        "dependsOnSeparator": ", et \n",
+        "unknownFunction": "La fonction *{{name}}* n'est pas définie.",
+        "nameErrorGeneric": "Erreur de nom."
+    }
+}

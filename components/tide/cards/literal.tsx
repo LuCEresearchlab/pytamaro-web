@@ -5,6 +5,7 @@ import {
   EvaluatedValueType,
   SoundType,
 } from '../../../src/tide/language/typing';
+import useLocalTranslation from '../../../src/localStorage/useLocalTranslation';
 import { useStore } from '../../../src/tide/store';
 import ResultIcon from '../ResultIcon';
 
@@ -58,6 +59,7 @@ export function TideLiteral({
   NodeProps<LiteralNode> & ExtraneousNodeProps,
   'id' | 'show_handles' | 'data'
 >) {
+  const { t } = useLocalTranslation();
   const updateNodeData = useStore((state) => state.updateNodeData);
 
   const setValue = useCallback(
@@ -73,7 +75,7 @@ export function TideLiteral({
     tide_node && 'data' in tide_node
       ? (tide_node.data as EvaluatedValueType[SoundType])
       : undefined;
-  const result = ResultIcon({ value: evaluated });
+  const result = ResultIcon({ value: evaluated, alt: t('resultTooltip') });
 
   return (
     <div className='tamaro_card literal_card'>

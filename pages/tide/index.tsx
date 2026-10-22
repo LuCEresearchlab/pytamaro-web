@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 
 import Tide from '../../components/tide/Tide';
 import useJudiciousDocData from '../../src/documentation';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { translationProps } from '../../src/serverSideTranslationProps';
 import { useStore } from '../../src/tide/store';
 
@@ -10,11 +11,12 @@ import { FeedbackOutlined } from '@mui/icons-material';
 import { Alert, Box, Container, Link, Typography } from '@mui/material';
 import Head from 'next/head';
 import PageTitle from '../../components/PageTitle';
+import { KNOWN_JUDICIOUS_MODULES } from '../../components/documentation/utils';
 import NavigationBar from '../../components/navbar/NavigationBar';
 import theme from '../../src/theme';
-import { KNOWN_JUDICIOUS_MODULES } from '../../components/documentation/utils';
 
 function TidePage() {
+  const { t } = useLocalTranslation(['tide']);
   const { setJudicious } = useStore();
 
   const cached_modules = useRef('');
@@ -36,7 +38,7 @@ function TidePage() {
       <Box>
         <div className='graph_page'>
           <NavigationBar />
-          <PageTitle>TIDE: An IDE for TamaroCards</PageTitle>
+          <PageTitle>{t('page.title')}</PageTitle>
           <Container>
             <Alert
               icon={<FeedbackOutlined />}
@@ -48,9 +50,7 @@ function TidePage() {
                 marginBottom: 2,
               }}
             >
-              TIDE is currently available in early preview. If you encounter any
-              error, send us feedback using the button at the top right of the
-              page.
+              {t('page.previewAlert')}
             </Alert>
           </Container>
 
@@ -74,8 +74,7 @@ function TidePage() {
                 fontSize: '1.3em',
               }}
             >
-              Curious to know more about the design of TIDE? Read the research
-              paper!{' '}
+              {t('page.researchPaper')}{' '}
               <Link href='https://luce.si.usi.ch/assets/publications/bevilacquaTIDEEducationalLive2025.pdf'>
                 [PDF]
               </Link>{' '}
@@ -93,7 +92,7 @@ export default TidePage;
 export async function getStaticProps() {
   return {
     props: {
-      ...(await translationProps()),
+      ...(await translationProps(['tide'])),
     },
   };
 }

@@ -1,0 +1,63 @@
+{
+    "page": {
+        "title": "TIDE: An IDE for TamaroCards",
+        "previewAlert": "TIDE is currently available in early preview. If you encounter any error, send us feedback using the button at the top right of the page.",
+        "researchPaper": "Curious to know more about the design of TIDE? Read the research paper!"
+    },
+    "palette": {
+        "title": "Cards Palette",
+        "search": "Search...",
+        "clearSearch": "Clear search",
+        "literals": "Literals",
+        "userConstants": "User Constants"
+    },
+    "graphOptions": {
+        "importFromFile": "Import from a file",
+        "exportToFile": "Export to a file",
+        "exitFullscreen": "Exit fullscreen",
+        "showFullscreen": "Show TIDE in fullscreen",
+        "centerOnScreen": "Center on the screen",
+        "resetTide": "Reset TIDE",
+        "resetConfirmTitle": "Are you sure?",
+        "resetConfirmDescription": "You are about to delete everything, including all the cards you have added. This action cannot be undone! ⚠️",
+        "resetConfirm": "OK, delete everything",
+        "cancel": "Cancel",
+        "importReadError": "Could not read the file.",
+        "importInvalidFile": "This file is not a valid TIDE export. Please select a file exported from TIDE.",
+        "importSuccess": "Import completed successfully!"
+    },
+    "contextMenu": {
+        "extractConstant": "Extract sub expression tree as constant",
+        "deleteNode": "Delete node",
+        "goToConstantDefinition": "Go to constant definition",
+        "createConstantTitle": "Create a new constant node",
+        "constantName": "Constant name",
+        "cancel": "Cancel",
+        "confirm": "Confirm"
+    },
+    "errorsPanel": {
+        "title": "Errors:"
+    },
+    "errors": {
+        "syntaxError": "Syntax Error",
+        "typeError": "Type Error",
+        "nameError": "Name Error",
+        "error": "Error",
+        "unknownError": "Unknown error.",
+        "syntaxErrorGeneric": "Syntax error.",
+        "invalidConstantIdentifier": "Constant identifier *{{name}}* is invalid.",
+        "invalidFunctionIdentifier": "Function identifier *{{name}}* is invalid.",
+        "constantHasNoValue": "Constant *{{name}}* has no value.",
+        "invalidLiteral": "Literal value *{{value}}* is invalid.",
+        "missingParameter": "Missing argument for parameter *{{name}}*.",
+        "typeMismatch": "Expected *{{expected}}*, got *{{got}}*.",
+        "unknownConstant": "The constant *{{name}}* is not defined.",
+        "multipleDefinitions": "The constant *{{name}}* is defined multiple times.",
+        "nodeKindMismatch": "Node kind mismatch.",
+        "cyclicalDependencies": "Cyclic dependencies between constant definitions: \n{{names}}.",
+        "dependsOn": "the meaning of *{{constant}}* depends on *{{dependency}}*",
+        "dependsOnSeparator": ", and \n",
+        "unknownFunction": "The function *{{name}}* is not defined.",
+        "nameErrorGeneric": "Name error."
+    }
+}
