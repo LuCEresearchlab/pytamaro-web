@@ -15,6 +15,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import {
   JudiciousConstant,
   JudiciousFunction,
@@ -32,7 +33,6 @@ import {
 } from '../../src/tide/graph_toolbox';
 import { TideError, TideRuntimeError } from '../../src/tide/language/errors';
 import { ErrorType } from '../../src/tide/language/typing';
-import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { setExecute, useStore } from '../../src/tide/store';
 import { getNode, module_elements } from '../../src/tide/utils';
 import FunctionDocumentation from '../documentation/FunctionDocumentation';
@@ -46,9 +46,9 @@ import NodeContextMenu from './NodeContextMenu';
 import TidePalette, { JudiciousModuleElement } from './TidePalette';
 
 import '@xyflow/react/dist/style.css';
+import { ExecutorContext } from '../../src/execution/executorContext';
 import theme from '../../src/theme';
 import { extract_error } from '../../src/tide/language/utils';
-import { ExecutorContext } from '../../src/execution/executorContext';
 
 export default function Tide() {
   const { t } = useLocalTranslation(['tide']);
@@ -403,7 +403,7 @@ export default function Tide() {
                             getNode(getNodes() as TideNode[], v[0].node_id)!,
                           ],
                           duration: 2,
-                          padding: 0.125,
+                          padding: 1,
                         })
                       }
                     >
