@@ -234,9 +234,9 @@ export const createGraphSlice: StateCreator<
 
     const interm_nodes = applyNodeChanges(changes_step_1, get().nodes);
     const changes_step_2 = changes_step_1.concat(
-      Array.from(parents_to_update).map((parent) =>
-        updateParent(interm_nodes, parent),
-      ),
+      Array.from(parents_to_update)
+        .filter((parent) => getNode(interm_nodes, parent) != null)
+        .map((parent) => updateParent(interm_nodes, parent)),
     );
 
     // Only structural changes and moves are user actions: skip `select`,

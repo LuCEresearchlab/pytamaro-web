@@ -40,12 +40,13 @@ export default function NodeContextMenu({
   const { t } = useLocalTranslation(['tide']);
   const [openNameModal, setNameModalOpen] = useState(false);
   const { fitView } = useReactFlow();
-  const { getNodes, setNodes, getEdges, setEdges } = useStore(
+  const { getNodes, setNodes, getEdges, setEdges, asSingleChange } = useStore(
     useShallow((state) => ({
       getNodes: state.getNodes,
       setNodes: state.setNodes,
       getEdges: state.getEdges,
       setEdges: state.setEdges,
+      asSingleChange: state.asSingleChange,
     })),
   );
 
@@ -57,78 +58,80 @@ export default function NodeContextMenu({
 
   const extractAsConstant = useCallback(
     (name: string) => {
-      const nodes = getNodes();
-      const edges = getEdges();
+      asSingleChange(() => {
+        const nodes = getNodes();
+        const edges = getEdges();
 
-      const descendants: string[] = getSubTreeFromRoot(nodes, edges, id);
+        const descendants: string[] = getSubTreeFromRoot(nodes, edges, id);
 
-      const existing_edge = edges.find((v) => v.source === id);
+        const existing_edge = edges.find((v) => v.source === id);
 
-      const newNodeId = `${new Date().getTime()}-parent`;
+        const newNodeId = `${new Date().getTime()}-parent`;
 
-      const newNode: ConstantDefinitionNode = {
-        id: newNodeId,
-        type: 'constant_definition',
-        data: {
-          input: name,
-        },
-        position: { x: 0, y: 0 },
-        zIndex: -100,
-      };
-
-      const replacedByNodeId = `${new Date().getTime()}-replacement`;
-      const replacedByNode: ConstantNode = {
-        id: replacedByNodeId,
-        type: 'constant',
-        data: {
-          input: name,
-        },
-        position: getNode(nodes, id)!.position,
-      };
-
-      setNodes(
-        nodes
-          .map((v) =>
-            !descendants.includes(v.id)
-              ? v
-              : ({
-                  ...v,
-                  data: { ...v.data, parent: newNode.id },
-                } as TideNode),
-          )
-          .concat(replacedByNode, newNode),
-      );
-
-      setEdges(
-        getEdges()
-          .filter((v) => v.source !== id)
-          .concat(
-            existing_edge
-              ? [
-                  {
-                    ...existing_edge,
-                    id: `${id}-${replacedByNode.id}-edge`,
-                    source: replacedByNode.id,
-                    sourceHandle: 'output',
-                  },
-                ]
-              : [],
-          ),
-      );
-
-      setEdges(
-        getEdges().concat([
-          {
-            id: `${id}-${newNode.id}-edge`,
-            source: id,
-            sourceHandle: 'output',
-            target: newNode.id,
-            targetHandle: 'output',
+        const newNode: ConstantDefinitionNode = {
+          id: newNodeId,
+          type: 'constant_definition',
+          data: {
+            input: name,
           },
-        ]),
-      );
+          position: { x: 0, y: 0 },
+          zIndex: -100,
+        };
+
+        const replacedByNodeId = `${new Date().getTime()}-replacement`;
+        const replacedByNode: ConstantNode = {
+          id: replacedByNodeId,
+          type: 'constant',
+          data: {
+            input: name,
+          },
+          position: getNode(nodes, id)!.position,
+        };
+
+        setNodes(
+          nodes
+            .map((v) =>
+              !descendants.includes(v.id)
+                ? v
+                : ({
+                    ...v,
+                    data: { ...v.data, parent: newNode.id },
+                  } as TideNode),
+            )
+            .concat(replacedByNode, newNode),
+        );
+
+        setEdges(
+          getEdges()
+            .filter((v) => v.source !== id)
+            .concat(
+              existing_edge
+                ? [
+                    {
+                      ...existing_edge,
+                      id: `${id}-${replacedByNode.id}-edge`,
+                      source: replacedByNode.id,
+                      sourceHandle: 'output',
+                    },
+                  ]
+                : [],
+            ),
+        );
+
+        setEdges(
+          getEdges().concat([
+            {
+              id: `${id}-${newNode.id}-edge`,
+              source: id,
+              sourceHandle: 'output',
+              target: newNode.id,
+              targetHandle: 'output',
+            },
+          ]),
+        );
+      });
     },
-    [getNodes, getEdges, id, setNodes, setEdges],
+    [asSingleChange, getNodes, getEdges, id, setNodes, setEdges],
   );
 
   const node = getNode(getNodes(), id);
@@ -195,10 +198,12 @@ export default function NodeContextMenu({
           padding: '10px 20px',
         }}
         onClick={() => {
-          setEdges(
-            getEdges().filter((v) => !(v.source === id || v.target === id)),
-          );
-          setNodes(getNodes().filter((v) => v.id !== id));
+          asSingleChange(() => {
+            setEdges(
+              getEdges().filter((v) => !(v.source === id || v.target === id)),
+            );
+            setNodes(getNodes().filter((v) => v.id !== id));
+          });
         }}
       >
         {t('contextMenu.deleteNode')}

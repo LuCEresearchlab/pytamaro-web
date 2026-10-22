@@ -4,7 +4,7 @@ import { StateCreator } from 'zustand';
 import { TideNode } from '../../components/tide/cards';
 import { GraphStateSlice } from './store';
 
-type FlowChange = NodeFlowChange | EdgeFlowChange;
+type FlowChange = NodeFlowChange | EdgeFlowChange | SnapshotFlowChange;
 
 interface NodeFlowChange {
   kind: 'node';
@@ -20,16 +20,33 @@ interface EdgeFlowChange {
   after?: Edge;
 }
 
+interface GraphSnapshot {
+  nodes: TideNode[];
+  edges: Edge[];
+}
+
+interface SnapshotFlowChange {
+  kind: 'snapshot';
+  before: GraphSnapshot;
+  after: GraphSnapshot;
+}
+
 const MAX_STACK_SIZE = 50;
 
 export interface ChangeSliceState {
   newChange: (change: FlowChange) => void;
+  /**
+   * Runs `action` and records its whole effect as a single undoable change.
+   * Use it for user actions made of several `setNodes`/`setEdges` calls.
+   */
+  asSingleChange: (action: () => void) => void;
   revertLastChange: () => void;
   redoChange: () => void;
 
   stack: FlowChange[];
   index: number;
   isReverting: boolean;
+  isBatching: boolean;
 }
 
 export const createChangeSlice: StateCreator<
@@ -39,9 +56,10 @@ export const createChangeSlice: StateCreator<
   ChangeSliceState
 > = (set, get) => ({
   isReverting: false,
+  isBatching: false,
   newChange(change) {
     const state = get();
-    if (state.isReverting) return;
+    if (state.isReverting || state.isBatching) return;
     const stack = state.stack;
     const index = state.index;
 
@@ -67,6 +85,26 @@ export const createChangeSlice: StateCreator<
     );
 
     set({ stack: trimmed_stack, index: trimmed_stack.length });
+  },
+  asSingleChange(action) {
+    // Nested calls are already covered by the outermost snapshot
+    if (get().isReverting || get().isBatching) {
+      action();
+      return;
+    }
+
+    const before = { nodes: get().nodes, edges: get().edges };
+    set({ isBatching: true });
+    try {
+      action();
+    } finally {
+      set({ isBatching: false });
+    }
+
+    const after = { nodes: get().nodes, edges: get().edges };
+    if (before.nodes === after.nodes && before.edges === after.edges) return;
+
+    get().newChange({ kind: 'snapshot', before, after });
   },
   revertLastChange() {
     const state = get();
@@ -104,6 +142,17 @@ export const createChangeSlice: StateCreator<
             .filter((v) => v.id !== change.after?.id)
             .concat([change.before].filter((v) => v).map((v) => v!)),
         );
+        break;
+      }
+      case 'snapshot': {
+        const change = unsafe_change as SnapshotFlowChange;
+        set({
+          index: index - 1,
+          isReverting: true,
+        });
+
+        get().setNodes(change.before.nodes);
+        get().setEdges(change.before.edges);
         break;
       }
     }
@@ -145,6 +194,17 @@ export const createChangeSlice: StateCreator<
             .filter((v) => v.id !== change.before?.id)
             .concat([change.after].filter((v) => v).map((v) => v!)),
         );
+        break;
+      }
+      case 'snapshot': {
+        const change = unsafe_change as SnapshotFlowChange;
+        set({
+          index: index + 1,
+          isReverting: true,
+        });
+
+        get().setNodes(change.after.nodes);
+        get().setEdges(change.after.edges);
         break;
       }
     }
