@@ -239,13 +239,11 @@ export const createGraphSlice: StateCreator<
       ),
     );
 
+    // Only structural changes and moves are user actions: skip `select`,
+    // `dimensions`, and `replace` changes, which React Flow and the cards
+    // produce for selection, measurement, and auto-layout.
     const changes = changes_step_2.filter(
-      (v) =>
-        v.type !== 'select' ||
-        v.selected ||
-        changes_step_2.find(
-          (o) => o.type === 'select' && o.id === v.id && o.selected,
-        ) == null,
+      (v) => v.type === 'add' || v.type === 'remove' || v.type === 'position',
     );
 
     set({
@@ -253,23 +251,20 @@ export const createGraphSlice: StateCreator<
     });
     const afters = get().nodes;
 
-    changes
-      .filter((v) => v.type != 'select')
-      .forEach((change) => {
-        get().newChange({
-          kind: 'node',
-          native: change,
-          before:
-            change.type === 'add'
-              ? undefined
-              : befores.find((v) => change.id === v.id),
-
-          after:
-            change.type === 'add'
-              ? undefined
-              : afters.find((v) => change.id === v.id),
-        });
+    changes.forEach((change) => {
+      // `add` changes don't carry an `id`, only the added `item`
+      const id = change.type === 'add' ? change.item.id : change.id;
+      get().newChange({
+        kind: 'node',
+        native: change,
+        before:
+          change.type === 'add' ? undefined : befores.find((v) => id === v.id),
+        after:
+          change.type === 'remove'
+            ? undefined
+            : afters.find((v) => id === v.id),
       });
+    });
 
     if (get().nodes.find((v) => v.data.outdated)) {
       const constructed = construct(

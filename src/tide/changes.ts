@@ -60,13 +60,6 @@ export const createChangeSlice: StateCreator<
       } else if (last) redo_revert_stack.push(last);
     }
 
-    if (
-      change.kind === 'node' &&
-      change.native.type === 'replace' &&
-      change.native.item.type === 'function'
-    )
-      return;
-
     if (change.kind === 'edge' && change.native.type === 'replace') return;
     const newlength = redo_revert_stack.push(change);
     const trimmed_stack = redo_revert_stack.filter(
