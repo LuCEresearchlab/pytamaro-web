@@ -1,13 +1,19 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
-import { useReactFlow, ViewportPortal, XYPosition } from '@xyflow/react';
+import {
+  InternalNode,
+  useReactFlow,
+  useStore as useFlowStore,
+  ViewportPortal,
+  XYPosition,
+} from '@xyflow/react';
 import { JSX } from 'react';
 import { TideError, TideRuntimeError } from '../../src/tide/language/errors';
 import { ErrorType } from '../../src/tide/language/typing';
 import { extract_error } from '../../src/tide/language/utils';
 import { StoreType, useStore } from '../../src/tide/store';
-import { getHandleName, getNode } from '../../src/tide/utils';
+import { getHandleName } from '../../src/tide/utils';
 import { ErrorBubble } from './Bubble';
-import { TideNodeMetadata } from './cards';
+import { TideNode, TideNodeMetadata } from './cards';
 import { ErrorParagraph } from './ErrorParagraph';
 
 const MISSING_PARAMETER = (
@@ -55,14 +61,9 @@ const MISSING_PARAMETER = (
 export function createAnnotationComponents(
   store: StoreType,
   [{ node_id }, annotation]: [TideNodeMetadata, TideError],
-  screenToFlowPosition: (
-    clientPosition: XYPosition,
-    options?: {
-      snapToGrid: boolean;
-    },
-  ) => XYPosition,
+  getInternalNode: (id: string) => InternalNode<TideNode> | undefined,
 ): JSX.Element[] {
-  const { edges, nodes, mousePosition } = store;
+  const { edges, mousePosition } = store;
 
   const param =
     (annotation.kind === 'syntax-error'
@@ -72,84 +73,86 @@ export function createAnnotationComponents(
       : undefined) ||
     (annotation.kind === 'type-error' ? annotation.args[2].value : undefined);
   const position = 'target';
+
+  function getHandlePosition(
+    node_id: string,
+    handle_id: string,
+    type: 'source' | 'target',
+  ): XYPosition | undefined {
+    const node = getInternalNode(node_id);
+    const handle = node?.internals.handleBounds?.[type]?.find(
+      (v) => v.id === handle_id,
+    );
+    if (!node || !handle) return undefined;
+
+    return {
+      x: node.internals.positionAbsolute.x + handle.x + handle.width / 2,
+      y: node.internals.positionAbsolute.y + handle.y + handle.height / 2,
+    };
+  }
+
   function getPosition(
     node_id: string,
     handle: string | undefined,
     position: 'target' | 'middle' | 'source' | undefined,
   ): XYPosition | undefined {
-    let bubble_position: XYPosition | undefined;
-
     if (!handle || !position) {
-      const node = getNode(nodes, node_id);
-
-      if (!node) return { x: 0, y: 0 };
+      const node = getInternalNode(node_id);
+      if (!node) return undefined;
 
       return {
-        x: node?.position.x + (node?.measured?.width || 0) / 3,
-        y: node.position.y,
+        x: node.internals.positionAbsolute.x + (node.measured.width || 0) / 3,
+        y: node.internals.positionAbsolute.y,
       };
-    } else {
-      const edge = edges.find(
-        (v) => v.target === node_id && v.targetHandle === getHandleName(handle),
-      );
-
-      if (position === 'target' || position === 'source') {
-        const nodeDiv = document.querySelector(
-          `[data-id="${position === 'target' ? node_id : edge?.source}"]`,
-        )! as HTMLDivElement;
-        if (!nodeDiv) return undefined;
-
-        const handleDiv = nodeDiv.querySelector(
-          `[data-handleid="${position === 'target' ? getHandleName(handle) : 'output'}"]`,
-        )! as HTMLDivElement;
-        if (!handleDiv) return undefined;
-
-        const rect = handleDiv.getBoundingClientRect();
-
-        bubble_position = {
-          x: rect.x + rect.width / 2,
-          y: rect.y + rect.height / 2,
-        };
-
-        bubble_position = screenToFlowPosition(bubble_position);
-      } else {
-        // position === 'middle'
-
-        const edgeDiv = document.querySelector(
-          `[data-id="${edge?.id}"]`,
-        )! as HTMLDivElement;
-
-        if (!edgeDiv) return undefined;
-
-        const rect = edgeDiv.getBoundingClientRect();
-
-        bubble_position = {
-          x: rect.x + rect.width / 2,
-          y: rect.y + rect.height / 2,
-        };
-
-        bubble_position = screenToFlowPosition(bubble_position);
-      }
     }
 
-    return bubble_position;
+    if (position === 'target')
+      return getHandlePosition(node_id, getHandleName(handle), 'target');
+
+    const edge = edges.find(
+      (v) => v.target === node_id && v.targetHandle === getHandleName(handle),
+    );
+    if (!edge) return undefined;
+
+    const source_position = getHandlePosition(
+      edge.source,
+      edge.sourceHandle || 'output',
+      'source',
+    );
+    if (position === 'source') return source_position;
+
+    // position === 'middle'
+    const target_position = getHandlePosition(
+      edge.target,
+      edge.targetHandle || getHandleName(handle),
+      'target',
+    );
+    if (!source_position || !target_position) return undefined;
+
+    return {
+      x: (source_position.x + target_position.x) / 2,
+      y: (source_position.y + target_position.y) / 2,
+    };
   }
 
-  const node = getNode(nodes, node_id);
+  const node = getInternalNode(node_id);
   const target_position = getPosition(node_id, param, position);
   if (!target_position) return [];
   const source_position = getPosition(node_id, param, 'source');
 
   const NODE_PADDING = 10;
+  const node_position = node?.internals.positionAbsolute;
+  const node_width = node?.measured.width || 0;
+  const node_height = node?.measured.height || 0;
   const isNearEnough =
     param === undefined
       ? node?.selected ||
-        (mousePosition.x + NODE_PADDING > (node?.position?.x || 0) &&
+        (mousePosition.x + NODE_PADDING > (node_position?.x || 0) &&
           mousePosition.x - NODE_PADDING <
-            (node?.position?.x || 0) + (node?.measured?.width || 0) &&
-          mousePosition.y + NODE_PADDING > (node?.position?.y || 0) &&
+            (node_position?.x || 0) + node_width &&
+          mousePosition.y + NODE_PADDING > (node_position?.y || 0) &&
           mousePosition.y - NODE_PADDING <
-            (node?.position?.y || 0) + (node?.measured?.height || 0))
+            (node_position?.y || 0) + node_height)
       : Math.abs(mousePosition.x - target_position.x + 50) < 100 &&
         Math.abs(mousePosition.y - target_position.y) < 35;
 
@@ -223,7 +226,13 @@ export function createAnnotationComponents(
 
 export function AnnotationLayer() {
   const store = useStore();
-  const { screenToFlowPosition } = useReactFlow();
+  const { getInternalNode } = useReactFlow<TideNode>();
+
+  // Re-render whenever React Flow commits new internal node positions, so
+  // annotations are placed from the same state as the cards (and therefore
+  // move with them instead of lagging a frame behind).
+  useFlowStore((state) => state.nodes);
+
   const values = store.nodes
     .map((v) => v.data.tide_node)
     .map(
@@ -262,7 +271,7 @@ export function AnnotationLayer() {
   return (
     <ViewportPortal>
       {values
-        .map((v) => createAnnotationComponents(store, v, screenToFlowPosition))
+        .map((v) => createAnnotationComponents(store, v, getInternalNode))
         .reduce((a, b) => a!.concat(b!), [])}
     </ViewportPortal>
   );
