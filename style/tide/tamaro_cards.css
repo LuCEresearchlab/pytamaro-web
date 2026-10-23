@@ -363,7 +363,7 @@
   left: 100%;
   bottom: 50%;
   min-width: 0;
-  transform: translate(8px, -6px);
+  transform: translate(12px, -6px);
   white-space: nowrap;
   pointer-events: none;
 }
