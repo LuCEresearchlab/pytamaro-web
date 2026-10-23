@@ -30,8 +30,15 @@ export function GraphOptions() {
   const [importSuccessVisible, setImportSuccessVisible] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { setNodes, setEdges, getNodes, getEdges, setFullscreen, fullscreen } =
-    useStore();
+  const {
+    setNodes,
+    setEdges,
+    getNodes,
+    getEdges,
+    setFullscreen,
+    fullscreen,
+    asSingleChange,
+  } = useStore();
   const { fitView } = useReactFlow();
   const confirm = useConfirm();
 
@@ -56,8 +63,14 @@ export function GraphOptions() {
         setImportError(t('graphOptions.importInvalidFile'));
         return;
       }
-      setNodes(graph.nodes);
-      setEdges(graph.edges);
+      asSingleChange(() => {
+        // Start from an empty graph, so that no node or edge from the
+        // current graph is left around while importing the new one.
+        setNodes([]);
+        setEdges([]);
+        setNodes(graph.nodes);
+        setEdges(graph.edges);
+      });
       setImportSuccessVisible(true);
     };
     reader.onerror = () => {
