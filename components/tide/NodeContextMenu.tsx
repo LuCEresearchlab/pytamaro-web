@@ -63,6 +63,7 @@ export default function NodeContextMenu({
         const edges = getEdges();
 
         const descendants: string[] = getSubTreeFromRoot(nodes, edges, id);
+        const descendants_nodes = descendants.map((v) => getNode(nodes, v)!);
 
         const existing_edge = edges.find((v) => v.source === id);
 
@@ -78,6 +79,14 @@ export default function NodeContextMenu({
           zIndex: -100,
         };
 
+        // Place the use card below the whole extracted subtree, which is the
+        // area the definition will be drawn around
+        const subtree_bottom = Math.max(
+          ...descendants_nodes.map(
+            (v) => v.position.y + (v.measured?.height ?? 0),
+          ),
+        );
+
         const replacedByNodeId = `${new Date().getTime()}-replacement`;
         const replacedByNode: ConstantNode = {
           id: replacedByNodeId,
@@ -85,7 +94,10 @@ export default function NodeContextMenu({
           data: {
             input: name,
           },
-          position: getNode(nodes, id)!.position,
+          position: {
+            x: getNode(nodes, id)!.position.x,
+            y: subtree_bottom + 100, // 100px below the subtree
+          },
         };
 
         setNodes(
