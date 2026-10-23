@@ -7,17 +7,29 @@ export interface TideGraphFile {
   edges: Edge[];
 }
 
+function stripComputedData(nodes: TideNode[]): TideNode[] {
+  return nodes.map((node) => {
+    const data = { ...node.data } as unknown as Record<string, unknown>;
+    delete data.tide_node;
+    delete data.outdated;
+    return { ...node, data } as TideNode;
+  });
+}
+
 /**
  * Serialize the graph to the format used by the import/export feature.
  */
 export function serializeGraphFile(nodes: TideNode[], edges: Edge[]): string {
-  return JSON.stringify({ nodes, edges });
+  return JSON.stringify({ nodes: stripComputedData(nodes), edges });
 }
 
 /**
  * Parse the content of an imported file.
  * Returns undefined (instead of throwing) when the content is not a valid
  * TIDE graph file.
+ *
+ * The returned nodes are marked as outdated, so that TIDE recomputes all the
+ * data that is not stored in the file (e.g., evaluation results).
  */
 export function parseGraphFile(content: string): TideGraphFile | undefined {
   let parsed: unknown;
@@ -55,5 +67,14 @@ export function parseGraphFile(content: string): TideGraphFile | undefined {
   );
   if (!valid_edges) return undefined;
 
-  return { nodes: nodes as TideNode[], edges: edges as Edge[] };
+  return {
+    nodes: stripComputedData(nodes as TideNode[]).map(
+      (node) =>
+        ({
+          ...node,
+          data: { ...node.data, outdated: true },
+        }) as TideNode,
+    ),
+    edges: edges as Edge[],
+  };
 }
