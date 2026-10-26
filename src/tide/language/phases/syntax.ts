@@ -64,9 +64,11 @@ function check_identifier_name(name: string): boolean {
 }
 
 export const BOOL_REGEX = /(True)|(False)/;
-export const INT_REGEX = /^-?[0-9]+$/g;
-export const FLOAT_REGEX = /^-?[0-9]+(\.[0-9]*)?$/g;
-export const STR_REGEX = /^"([^\\"]|(\\")|\\\\)*"$/g;
+export const INT_REGEX =
+  /^-?(?:0(?:_?0)*|[1-9](?:_?[0-9])*|0[bB]_?[01](?:_?[01])*|0[oO]_?[0-7](?:_?[0-7])*|0[xX]_?[0-9a-fA-F](?:_?[0-9a-fA-F])*)$/;
+export const FLOAT_REGEX =
+  /^-?(?:(?:[0-9](?:_?[0-9])*\.(?:[0-9](?:_?[0-9])*)?|\.[0-9](?:_?[0-9])*)(?:[eE][+-]?[0-9](?:_?[0-9])*)?|[0-9](?:_?[0-9])*[eE][+-]?[0-9](?:_?[0-9])*)$/;
+export const STR_REGEX = /^"([^\\"]|(\\")|\\\\)*"$/;
 function inferRawValueType(v: string): LiteralType | false {
   if (v.match(BOOL_REGEX)) return SoundType.Bool;
   if (v.match(STR_REGEX)) return SoundType.Str;
