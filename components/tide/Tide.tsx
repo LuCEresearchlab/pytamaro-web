@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
-import { Article, Error } from '@mui/icons-material';
+import { Error, MenuBook } from '@mui/icons-material';
 import { IconButton, Paper, Tooltip } from '@mui/material';
 import {
   Background,
   NodeMouseHandler,
+  NodeToolbar,
+  Position,
   ReactFlow,
+  useStore as useFlowStore,
   useReactFlow,
 } from '@xyflow/react';
 import {
@@ -12,6 +15,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react';
@@ -37,6 +41,7 @@ import { setExecute, useStore } from '../../src/tide/store';
 import { getNode, module_elements } from '../../src/tide/utils';
 import FunctionDocumentation from '../documentation/FunctionDocumentation';
 import TypeConstantDocumentation from '../documentation/TypeConstantDocumentation';
+import { Popover, PopoverContent, PopoverTrigger } from '../Popover';
 import { AnnotationLayer } from './AnnotationLayer';
 import { node_types, TideNode, TideNodeMetadata } from './cards';
 import edge_type, { CustomEdgeLine } from './DynamicEdge';
@@ -50,12 +55,97 @@ import { ExecutorContext } from '../../src/execution/executorContext';
 import theme from '../../src/theme';
 import { extract_error } from '../../src/tide/language/utils';
 
+function DocumentationToolbar({
+  node_id,
+  element,
+}: {
+  node_id: string;
+  element: JudiciousModuleElement;
+}) {
+  const { t } = useLocalTranslation(['tide']);
+  const [offset_x, setOffsetX] = useState(0);
+
+  // `NodeToolbar` centers on the whole node bounds, which also include the
+  // parameter and output arrow panes. Measure the actual card body instead so
+  // the button is centered over the visible card.
+  const nodes = useFlowStore((state) => state.nodes);
+  const transform = useFlowStore((state) => state.transform);
+
+  useLayoutEffect(() => {
+    const node = document.querySelector<HTMLElement>(
+      `.react-flow__node[data-id="${CSS.escape(node_id)}"]`,
+    );
+    const card = node?.querySelector<HTMLElement>('.tamaro_card');
+    if (!node || !card) return;
+
+    const node_rect = node.getBoundingClientRect();
+    const card_rect = card.getBoundingClientRect();
+
+    setOffsetX(
+      card_rect.left +
+        card_rect.width / 2 -
+        (node_rect.left + node_rect.width / 2),
+    );
+  }, [node_id, nodes, transform]);
+
+  return (
+    <NodeToolbar
+      nodeId={node_id}
+      position={Position.Top}
+      align='center'
+      offset={4}
+    >
+      <div style={{ transform: `translateX(${offset_x}px)` }}>
+        <Popover placement='top'>
+          <PopoverTrigger>
+            <Tooltip arrow title={t('documentationButton')}>
+              <IconButton
+                size='small'
+                sx={{
+                  backgroundColor: 'background.paper',
+                  boxShadow: 1,
+                  '&:hover': { backgroundColor: 'grey.100' },
+                }}
+              >
+                <MenuBook color='info' fontSize='small' />
+              </IconButton>
+            </Tooltip>
+          </PopoverTrigger>
+          <PopoverContent>
+            <Paper
+              elevation={0}
+              sx={{
+                width: '40vw',
+                minWidth: '300px',
+                maxWidth: '90vw',
+                maxHeight: '70vh',
+                padding: '20px',
+                borderRadius: '5px',
+                overflow: 'auto',
+              }}
+            >
+              {element.kind === 'function' ? (
+                <FunctionDocumentation
+                  fn={element as JudiciousFunction}
+                  module={element.module}
+                />
+              ) : (
+                <TypeConstantDocumentation
+                  element={element as JudiciousConstant}
+                  module={element.module}
+                />
+              )}
+            </Paper>
+          </PopoverContent>
+        </Popover>
+      </div>
+    </NodeToolbar>
+  );
+}
+
 export default function Tide() {
   const { t } = useLocalTranslation(['tide']);
   const { executorState, execute } = useContext(ExecutorContext);
-  const [pane, setPane] = useState(
-    undefined as 'error' | 'documentation' | undefined,
-  );
 
   const [menu, setMenu] = useState(
     null as {
@@ -127,7 +217,9 @@ export default function Tide() {
 
   const [availabilities, setAvailabilities] = useState({
     error: undefined as [TideNodeMetadata, TideError | false][] | undefined,
-    documentation: undefined as JudiciousModuleElement | undefined,
+    documentation: undefined as
+      | { element: JudiciousModuleElement; node_id: string }
+      | undefined,
   });
 
   useEffect(() => {
@@ -176,19 +268,16 @@ export default function Tide() {
         const data = node.data;
         const elements = module_elements(documentation);
 
-        return elements.find(
+        const element = elements.find(
           (v) =>
             v.name === data.input &&
             (data.module === undefined || v.module === data.module),
         );
+
+        return element ? { element, node_id: node.id } : undefined;
       })(),
     });
   }, [documentation, error_level, getNodes, nodes]);
-
-  useEffect(() => {
-    if (!pane) return;
-    if (!availabilities[pane]) setPane(undefined);
-  }, [availabilities, pane, setPane]);
 
   const [isSelecting, setIsSelecting] = useState({
     x: 0,
@@ -223,6 +312,8 @@ export default function Tide() {
       document.removeEventListener('mousemove', _onMouseMove);
     };
   });
+
+  const documented = availabilities.documentation;
 
   return (
     <Paper
@@ -304,140 +395,110 @@ export default function Tide() {
             <span style={{ maxWidth: '100%' }}>{t('emptyState')}</span>
           </div>
         )}
-        <div
-          style={{
-            position: 'absolute',
-            display: 'flex',
-            flexDirection: 'column',
-            right: '5px',
-            top: '5px',
-            background: 'white',
-            padding: '2px',
-            zIndex: '100',
-          }}
-        >
-          {availabilities.error && initialized === 'done' && (
-            <IconButton
-              size='large'
-              onClick={() => setPane(pane !== 'error' ? 'error' : undefined)}
-              sx={{
-                color: 'black',
-                backgroundColor: '#ffe600',
-                filter: 'drop-shadow(0px 0px 2px black)',
-                '&:hover': { backgroundColor: '#ffd000' },
-              }}
-            >
-              <Error />
-            </IconButton>
-          )}
-
-          {availabilities.documentation && initialized === 'done' && (
-            <IconButton
-              onClick={() =>
-                setPane(pane !== 'documentation' ? 'documentation' : undefined)
-              }
-            >
-              <Article color='info' />
-            </IconButton>
-          )}
-        </div>
-
-        {availabilities.error && pane === 'error' && (
+        {availabilities.error && initialized === 'done' && (
           <div
             style={{
               position: 'absolute',
-              right: '100px',
-              width: '400px',
-              border: '#ddd solid 2px',
-              padding: '5px',
-              borderRadius: '5px',
-              top: '10px',
+              display: 'flex',
+              flexDirection: 'column',
+              right: '5px',
+              top: '5px',
               background: 'white',
+              padding: '2px',
               zIndex: '100',
             }}
           >
-            <h2 style={{ margin: '8px 5px' }}>{t('errorsPanel.title')}</h2>
+            <Popover placement='left'>
+              <PopoverTrigger>
+                <IconButton
+                  size='large'
+                  sx={{
+                    color: 'black',
+                    backgroundColor: '#ffe600',
+                    filter: 'drop-shadow(0px 0px 2px black)',
+                    '&:hover': { backgroundColor: '#ffd000' },
+                  }}
+                >
+                  <Error />
+                </IconButton>
+              </PopoverTrigger>
+              <PopoverContent>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    width: '400px',
+                    maxWidth: '90vw',
+                    padding: '5px',
+                    borderRadius: '5px',
+                  }}
+                >
+                  <h2 style={{ margin: '8px 5px' }}>
+                    {t('errorsPanel.title')}
+                  </h2>
 
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                position: 'relative',
-                maxHeight: '300px',
-                width: '100%',
-                overflowY: 'auto',
-                overflowX: 'hidden',
-                padding: '5px 5px',
-                gap: '8px',
-              }}
-            >
-              {availabilities.error
-                .filter((v) => v[1] !== false)
-                .map((v) => v as [TideNodeMetadata, TideError])
-                .map((v, i) => (
-                  <Tooltip
-                    arrow
-                    title={t('errorsPanel.goToErrorCard')}
-                    placement='left'
-                    // eslint-disable-next-line react/no-array-index-key
-                    key={`${v[0].node_id}_${i}`}
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      position: 'relative',
+                      maxHeight: '300px',
+                      width: '100%',
+                      overflowY: 'auto',
+                      overflowX: 'hidden',
+                      padding: '5px 5px',
+                      gap: '8px',
+                    }}
                   >
-                    <div
-                      style={{
-                        position: 'relative',
-                        padding: '15px 25px 20px',
-                        color: 'black',
-                        background: '#ffe600',
-                        borderRadius: '15px',
-                        filter: 'drop-shadow(0px 0px 2px black)',
-                        cursor: 'pointer',
-                      }}
-                      onClick={() =>
-                        fitView({
-                          nodes: [
-                            getNode(getNodes() as TideNode[], v[0].node_id)!,
-                          ],
-                          duration: 2,
-                          padding: 2,
-                        })
-                      }
-                    >
-                      <ErrorParagraph annotation={v[1]} />
-                    </div>
-                  </Tooltip>
-                ))}
-            </div>
+                    {availabilities.error
+                      .filter((v) => v[1] !== false)
+                      .map((v) => v as [TideNodeMetadata, TideError])
+                      .map((v, i) => (
+                        <Tooltip
+                          arrow
+                          title={t('errorsPanel.goToErrorCard')}
+                          placement='left'
+                          // eslint-disable-next-line react/no-array-index-key
+                          key={`${v[0].node_id}_${i}`}
+                        >
+                          <div
+                            style={{
+                              position: 'relative',
+                              padding: '15px 25px 20px',
+                              color: 'black',
+                              background: '#ffe600',
+                              borderRadius: '15px',
+                              filter: 'drop-shadow(0px 0px 2px black)',
+                              cursor: 'pointer',
+                            }}
+                            onClick={() =>
+                              fitView({
+                                nodes: [
+                                  getNode(
+                                    getNodes() as TideNode[],
+                                    v[0].node_id,
+                                  )!,
+                                ],
+                                duration: 2,
+                                padding: 2,
+                              })
+                            }
+                          >
+                            <ErrorParagraph annotation={v[1]} />
+                          </div>
+                        </Tooltip>
+                      ))}
+                  </div>
+                </Paper>
+              </PopoverContent>
+            </Popover>
           </div>
         )}
 
-        {availabilities.documentation && pane === 'documentation' && (
-          <div
-            style={{
-              position: 'absolute',
-              right: '50px',
-              width: '40%',
-              maxHeight: '100%',
-              border: '#ddd solid 2px',
-              padding: '20px',
-              borderRadius: '5px',
-              top: '50px',
-              background: 'white',
-              zIndex: '100',
-              overflow: 'scroll',
-            }}
-          >
-            {availabilities.documentation?.kind === 'function' ? (
-              <FunctionDocumentation
-                fn={availabilities.documentation! as JudiciousFunction}
-                module={availabilities.documentation!.module}
-              />
-            ) : (
-              <TypeConstantDocumentation
-                element={availabilities.documentation! as JudiciousConstant}
-                module={availabilities.documentation!.module}
-              />
-            )}
-          </div>
+        {documented && initialized === 'done' && (
+          <DocumentationToolbar
+            node_id={documented.node_id}
+            element={documented.element}
+          />
         )}
 
         <div

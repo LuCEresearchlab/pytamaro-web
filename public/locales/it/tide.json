@@ -13,6 +13,7 @@
         "noResults": "Nessuna carta trovata con la ricerca attuale"
     },
     "emptyState": "Per iniziare, trascina qui una carta dalla palette",
+    "documentationButton": "Mostra la documentazione",
     "graphOptions": {
         "importFromFile": "Importa da un file",
         "exportToFile": "Esporta in un file",

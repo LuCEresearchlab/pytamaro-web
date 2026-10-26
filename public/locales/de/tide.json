@@ -13,6 +13,7 @@
         "noResults": "Keine Karten mit der aktuellen Suche gefunden"
     },
     "emptyState": "Ziehe zum Starten eine Karte aus der Palette hierher",
+    "documentationButton": "Dokumentation anzeigen",
     "graphOptions": {
         "importFromFile": "Aus Datei importieren",
         "exportToFile": "In Datei exportieren",

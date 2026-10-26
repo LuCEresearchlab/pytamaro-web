@@ -24,7 +24,9 @@
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 1500;
+  /* Above the sticky AppBar (1100), but below MUI portals (drawer 1200,
+     modal/popover 1300, tooltip 1500) so they stay usable in fullscreen. */
+  z-index: 1101;
 }
 
 .fullscreen.graph_view .card_selection_content .selection_pane_content {
