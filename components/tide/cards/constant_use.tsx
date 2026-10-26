@@ -13,34 +13,15 @@ import {
 } from 'react';
 import { useShallow } from 'zustand/shallow';
 import { ConstantNode, ExtraneousNodeProps } from '.';
+import useLocalTranslation from '../../../src/localStorage/useLocalTranslation';
 import { Location } from '../../../src/tide/language/types';
 import {
   EvaluatedValueType,
   SoundType,
 } from '../../../src/tide/language/typing';
-import useLocalTranslation from '../../../src/localStorage/useLocalTranslation';
 import { useStore } from '../../../src/tide/store';
 import { iconPath } from '../../documentation/utils';
 import ResultIcon from '../ResultIcon';
-
-const useMutationObserver = (
-  ref: RefObject<Node | null>,
-  callback: () => void,
-  options = {
-    attributes: true,
-    characterData: true,
-    childList: true,
-    subtree: true,
-  },
-) => {
-  useEffect(() => {
-    if (ref.current) {
-      const observer = new MutationObserver(callback);
-      observer.observe(ref.current, options);
-      return () => observer.disconnect();
-    }
-  }, [callback, options, ref]);
-};
 
 export function AutoWidthInput({
   value,
@@ -157,22 +138,6 @@ export function TideConstantUse({
   const returns_icon = useMemo(() => {
     return ResultIcon({ value, alt: t('resultTooltip') });
   }, [t, value]);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-
-  useMutationObserver(returnsIconRef, () => {
-    setDimensions({
-      width: returnsIconRef.current?.clientWidth || 0,
-      height: returnsIconRef.current?.clientHeight || 0,
-    });
-  });
-
-  useEffect(() => {
-    if (returns_icon != null) return;
-    setDimensions({
-      width: 0,
-      height: 0,
-    });
-  }, [returns_icon]);
 
   const [editing, setEditing] = useState(false);
 
@@ -261,26 +226,13 @@ export function TideConstantUse({
               style={{
                 position: 'absolute',
                 borderRadius: '0px',
-                width: `${dimensions.width === 0 ? 20 : dimensions.width + 8}px`,
+                width: '20px',
                 minHeight: `20px`,
-                right: `${dimensions.width === 0 ? 0 : (dimensions.width + 8) / 2}px`,
+                right: '-4px',
                 transform: 'translateY(-50%) translateX(-5px)',
                 opacity: '0',
               }}
             />
-          )}
-          {returns_icon && (
-            <div
-              style={{
-                position: 'relative',
-                zIndex: '-1000',
-                left: '-5px',
-                top: '0px',
-                margin: 'auto',
-                width: `${dimensions.width === 0 ? 0 : dimensions.width + 8}px`,
-                borderBottom: '2px solid black',
-              }}
-            ></div>
           )}
         </div>
       </div>
