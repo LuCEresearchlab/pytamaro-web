@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
-import { Article, Error, RemoveRedEye } from '@mui/icons-material';
-import { IconButton, Paper } from '@mui/material';
+import { Article, Error } from '@mui/icons-material';
+import { IconButton, Paper, Tooltip } from '@mui/material';
 import {
   Background,
   NodeMouseHandler,
@@ -318,9 +318,16 @@ export default function Tide() {
         >
           {availabilities.error && initialized === 'done' && (
             <IconButton
+              size='large'
               onClick={() => setPane(pane !== 'error' ? 'error' : undefined)}
+              sx={{
+                color: 'black',
+                backgroundColor: '#ffe600',
+                filter: 'drop-shadow(0px 0px 2px black)',
+                '&:hover': { backgroundColor: '#ffd000' },
+              }}
             >
-              <Error color='error' />
+              <Error />
             </IconButton>
           )}
 
@@ -349,16 +356,7 @@ export default function Tide() {
               zIndex: '100',
             }}
           >
-            <h3 style={{ margin: '10px 5px' }}>{t('errorsPanel.title')}</h3>
-
-            <div
-              style={{
-                position: 'relative',
-                borderTop: '#ddd solid 2px',
-                top: '-5px',
-                margin: '0px',
-              }}
-            ></div>
+            <h2 style={{ margin: '8px 5px' }}>{t('errorsPanel.title')}</h2>
 
             <div
               style={{
@@ -367,35 +365,32 @@ export default function Tide() {
                 position: 'relative',
                 maxHeight: '300px',
                 width: '100%',
-                overflowY: 'scroll',
+                overflowY: 'auto',
                 overflowX: 'hidden',
                 padding: '5px 5px',
-                gap: '5px',
+                gap: '8px',
               }}
             >
               {availabilities.error
                 .filter((v) => v[1] !== false)
                 .map((v) => v as [TideNodeMetadata, TideError])
                 .map((v, i) => (
-                  <div
-                    style={{
-                      position: 'relative',
-                      padding: '5px',
-                      borderRadius: '10px',
-                      border: 'solid #f99 4px',
-                      background: '#fcc',
-                      userSelect: 'none',
-                    }}
+                  <Tooltip
+                    arrow
+                    title={t('errorsPanel.goToErrorCard')}
+                    placement='left'
                     // eslint-disable-next-line react/no-array-index-key
                     key={`${v[0].node_id}_${i}`}
                   >
-                    <ErrorParagraph annotation={v[1]} />
-
-                    <IconButton
-                      sx={{
-                        position: 'absolute',
-                        top: '0',
-                        right: '0',
+                    <div
+                      style={{
+                        position: 'relative',
+                        padding: '15px 25px 20px',
+                        color: 'black',
+                        background: '#ffe600',
+                        borderRadius: '15px',
+                        filter: 'drop-shadow(0px 0px 2px black)',
+                        cursor: 'pointer',
                       }}
                       onClick={() =>
                         fitView({
@@ -403,13 +398,13 @@ export default function Tide() {
                             getNode(getNodes() as TideNode[], v[0].node_id)!,
                           ],
                           duration: 2,
-                          padding: 1,
+                          padding: 2,
                         })
                       }
                     >
-                      <RemoveRedEye />
-                    </IconButton>
-                  </div>
+                      <ErrorParagraph annotation={v[1]} />
+                    </div>
+                  </Tooltip>
                 ))}
             </div>
           </div>

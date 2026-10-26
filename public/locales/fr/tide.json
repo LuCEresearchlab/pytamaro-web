@@ -38,7 +38,8 @@
         "confirm": "Confirmer"
     },
     "errorsPanel": {
-        "title": "Erreurs :"
+        "title": "Erreurs :",
+        "goToErrorCard": "Aller à la carte avec l'erreur"
     },
     "errors": {
         "syntaxError": "Erreur de syntaxe",

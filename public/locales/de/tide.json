@@ -38,7 +38,8 @@
         "confirm": "Bestätigen"
     },
     "errorsPanel": {
-        "title": "Fehler:"
+        "title": "Fehler:",
+        "goToErrorCard": "Zur Karte mit dem Fehler"
     },
     "errors": {
         "syntaxError": "Syntaxfehler",
