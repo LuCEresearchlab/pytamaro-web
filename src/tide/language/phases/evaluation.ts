@@ -222,7 +222,19 @@ export default async function evaluated_phase<U, Tlocal, Timport>(
     const root = def.root ? await expression_phase(def.root) : undefined;
     if ('error_phase' in def) return { ...def, root };
 
-    if (!root || 'error_phase' in root) {
+    // A runtime error can only surface in this phase, so the definition is
+    // not marked as erroneous yet. Record it as a secondary error (the card
+    // at fault already carries the actual error).
+    if (root && 'error_phase' in root) {
+      return {
+        ...def,
+        root,
+        error_phase: 'evaluated',
+        value: false,
+      };
+    }
+
+    if (!root) {
       throw new Error('Error should have been recorded previously');
     }
 
@@ -249,11 +261,20 @@ export default async function evaluated_phase<U, Tlocal, Timport>(
         ) as Map<string, TamaroCard<U, 'evaluated'>>;
         if ('error_phase' in exp) return { ...exp, children };
 
+        // Children errors can be introduced by this phase itself (a runtime
+        // error in an argument, for example), so the invariant used by the
+        // earlier phases does not hold here. Mark the card as a secondary
+        // error instead of throwing: the child holds the actual error.
         if (
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (children.values() as any).find((v: any) => 'error_phase' in v) as any
         ) {
-          throw new Error('Error should have been recorded previously');
+          return {
+            ...exp,
+            children,
+            error_phase: 'evaluated',
+            value: false,
+          };
         }
 
         const data = await extract_data(
