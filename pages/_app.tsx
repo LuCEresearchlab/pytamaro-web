@@ -9,6 +9,7 @@ import { appWithTranslation } from 'next-i18next';
 import PlausibleProvider from 'next-plausible';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
+import { useState } from 'react';
 import PageFooter from '../components/PageFooter';
 import config from '../next-i18next.config';
 import theme from '../src/theme';
@@ -31,7 +32,7 @@ import { ExecutorProvider } from '../src/execution/executorContext';
 
 function MyApp(props: AppProps) {
   const { Component, pageProps } = props;
-  const queryClient = new QueryClient();
+  const [queryClient] = useState(() => new QueryClient());
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
     <AppCacheProvider {...props}>
