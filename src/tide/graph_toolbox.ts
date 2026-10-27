@@ -128,6 +128,8 @@ export function isValidConnection(
   const sourceNode = getNode(nodes, source);
   const targetNode = getNode(nodes, target);
 
+  if (!sourceNode || !targetNode) return false;
+
   const handleUsed = edges.find(
     (v) =>
       (v.source === source && v.sourceHandle === params.sourceHandle) ||
