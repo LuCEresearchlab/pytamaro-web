@@ -13,6 +13,24 @@ export async function drawWithSuperSampling(
   // even in case of crashes
   using ds = new DisposableStack();
 
+  if (scalingFactor === 1) {
+    // "Fast path" (but especially *memory-saving* path):
+    // if the scaling factor is 1, we don't need to do any super-sampling.
+    // For large graphics this can be the difference between success and exhausting the wasm heap.
+    const canvas = new OffscreenCanvas(width, height);
+    const ckSurface = ds.adopt(
+      ck.MakeSWCanvasSurface(canvas),
+      disposeOfSurface,
+    );
+    if (!ckSurface) {
+      throw new Error('Could not create CanvasKit surface');
+    }
+    const ckCanvas = ckSurface.getCanvas();
+    drawImage(ckCanvas);
+    ckSurface.flush();
+    return await canvas.convertToBlob();
+  }
+
   // We to set the size before the CK surface is initialized.
   // We use the superCanvas as a super-sampled canvas...
   // [continued before declaration of baseCanvas]
