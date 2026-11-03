@@ -2,15 +2,18 @@ import Topo from '@hapi/topo';
 import lodash from 'lodash';
 import { ToolboxFunction } from '../localStorage/schema';
 import { findImportedNames } from '../python-analyzer/python_analyzer';
-import { PythonFile } from '../schemas/activitySchema';
 import { countLines, emptyLines, joinLines } from '../sourceUtils';
-import { RunPythonFile } from './messageTypes';
+import { RunPythonFile, WorkspaceChanges } from './messageTypes';
 
 const { uniq } = lodash;
 
-export type ExecutionResponse =
+export type ExecutionResponse = (
   | NominalExecutionResponse
-  | FailedExecutionResponse;
+  | FailedExecutionResponse
+) & {
+  /** Files of the IDE workspace created, modified, or deleted by the run. */
+  workspaceChanges?: WorkspaceChanges;
+};
 
 export type NominalExecutionResponse = {
   type: 'success' | 'error';
@@ -59,7 +62,11 @@ export enum PythonMode {
  * Update this version at every change to the process below
  * that turns cells into files for execution.
  */
-export const CODE_EXECUTION_CELLS_TO_FILES_VERSION = 10;
+export const CODE_EXECUTION_CELLS_TO_FILES_VERSION = 11;
+
+export function cellFileName(idx: number) {
+  return `${CELL_FILE}${idx}.py`;
+}
 
 export const DRIVER_FILE = 'driver';
 export const CELL_FILE = 'cell_';
@@ -70,7 +77,7 @@ export interface BareboneToolboxFunction {
   source: string;
 }
 
-function driverSource(num_cells: number, pythonMode: PythonMode) {
+function driverSource(cellFileNames: string[], pythonMode: PythonMode) {
   // IMPORTANT, part 1:
   // the entire driver is wrapped in a single function so that `globals_dict`,
   // which contains the shared state between cells,
@@ -92,8 +99,6 @@ function driverSource(num_cells: number, pythonMode: PythonMode) {
   return `
 from pathlib import Path
 from pytamaro_js_ffi import set_active_cell
-from os import chdir, getcwd
-from shutil import rmtree
 from sys import stderr, stdout
 import atexit
 import ast
@@ -125,10 +130,22 @@ def print_eval_result(result):
 def main():
   try:
     globals_dict = {}
-    def run_single_cell(name):
-        filename = name + ".py"
+    for path in Path(".").rglob("*.py"):
+        try:
+            text = path.read_text()
+        except (OSError, ValueError):
+            # Not a text file (e.g., a binary file that happens to be named
+            # *.py): it can't be exec'd, so there is nothing to cache for it.
+            continue
+        entry = [lambda text=text: text]
+        # Traceback frames use the name the code was compiled with: the relative
+        # path for the files we exec (e.g., "main.py"), and the absolute path for
+        # imported modules. Register both, otherwise frames of exec'd files miss
+        # the cache (and, by the time the traceback is printed, the files are gone).
+        linecache.cache[str(path)] = entry
+        linecache.cache[str(path.resolve())] = entry
+    def run_single_cell(filename):
         source = Path(filename).read_text()
-        linecache.cache[filename] = [lambda: source]
         if ${pythonMode === 'eval-last-expr' ? 'True' : 'False'}:
             stmts, last_expr = extract_last_expr(source)
             if last_expr is not None:
@@ -140,17 +157,16 @@ def main():
         else:
             normal_exec(source, filename, globals_dict)
 
-    for idx in range(0, ${num_cells}):
+    for idx, filename in enumerate(${JSON.stringify(cellFileNames)}):
       set_active_cell(idx)
-      run_single_cell(f"${CELL_FILE}{idx}")
+      run_single_cell(filename)
       if stdout is not None:
         stdout.flush()
       if stderr is not None:
         stderr.flush()
   finally:
-    cwd = Path(getcwd())
-    chdir(cwd.parent.absolute())
-    rmtree(cwd.absolute())
+    # Run exit handlers while the working directory (and the files the script
+    # created) still exist. The worker snapshots the directory afterwards.
     atexit._run_exitfuncs()
 main()
 `;
@@ -222,13 +238,15 @@ export function cellsToFiles(
   sources: string[],
   idx: number,
   toolboxFunctions: BareboneToolboxFunction[],
-  extraPythonFiles: PythonFile[],
+  extraPythonFiles: RunPythonFile[],
   pythonMode: PythonMode,
+  fileNames: string[] = [],
 ): RunPythonFile[] {
+  const nameOf = (i: number) => fileNames[i] ?? cellFileName(i);
   let linesSoFar = 0;
   const sourceRunFiles = sources.map((content, i) => {
     const runFile = {
-      name: `${CELL_FILE}${i}.py`,
+      name: nameOf(i),
       // Pad with empty lines to account for the previous cells so that the
       // stack trace still reports the correct line number
       content: emptyLines(linesSoFar) + content,
@@ -236,19 +254,16 @@ export function cellsToFiles(
     linesSoFar += countLines(content);
     return runFile;
   });
-  const files = [
+  return [
     {
       name: `${DRIVER_FILE}.py`,
-      content: driverSource(idx + 1, pythonMode),
+      content: driverSource(
+        Array.from({ length: idx + 1 }, (_, i) => nameOf(i)),
+        pythonMode,
+      ),
     },
     ...sourceRunFiles,
     ...toolboxFiles(toolboxFunctions),
     ...extraPythonFiles,
   ];
-  // code-runner does not allow empty files, we work around this by including
-  // a no-op stmt
-  return files.map((file) => ({
-    ...file,
-    content: file.content.length > 0 ? file.content : 'pass',
-  }));
 }

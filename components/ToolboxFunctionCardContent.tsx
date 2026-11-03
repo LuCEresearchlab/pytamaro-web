@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { useContext, useState } from 'react';
+import useActivitySession from '../src/activitySession';
 import { ExecutorContext } from '../src/execution/executorContext';
 import { ToolboxFunction } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
@@ -19,10 +20,9 @@ import {
   playgroundPathname,
   toolboxFunctionPathname,
 } from '../src/urlUtils';
-import usePythonAnalyzer from '../src/usePythonAnalyzer';
-import useReadOnlyTemporaryActivity from '../src/useReadOnlyTemporaryActivity';
+import useTemporaryActivity from '../src/useTemporaryActivity';
 import CodeEditor from './CodeEditor';
-import SolitaryCodeCell, { initialStateSingleCell } from './SolitaryCodeCell';
+import SolitaryCodeCell, { singleCodeCell } from './SolitaryCodeCell';
 import FunctionCardContent from './documentation/FunctionDocumentation';
 import { toolboxToJudiciousFunction } from './documentation/utils';
 
@@ -38,13 +38,10 @@ export default function ToolboxFunctionCardContent({
   const [showUsage, setShowUsage] = useState(summary);
   const toggleShowSource = () => setShowSource(!showSource);
   const toggleShowUsage = () => setShowUsage(!showUsage);
-  const usageCodeCells = initialStateSingleCell(fn.usage);
+  const usageCodeCells = singleCodeCell(fn.usage);
   const activityVariant = toolboxActivityVariant(fn.name);
-  const fnPythonAnalyzer = usePythonAnalyzer();
-  const activity = useReadOnlyTemporaryActivity(
-    usageCodeCells,
-    activityVariant,
-  );
+  const fnActivitySession = useActivitySession(singleCodeCell(fn.source));
+  const activityState = useTemporaryActivity(usageCodeCells, activityVariant);
   const originalActivityPathname = isPlaygroundVariant(fn.originalActivity)
     ? playgroundPathname()
     : activityVariantPathname(fn.originalActivity);
@@ -106,13 +103,7 @@ export default function ToolboxFunctionCardContent({
             />
           </FormGroup>
           {showSource && (
-            <CodeEditor
-              initialSource={fn.source}
-              currentSource={fn.source}
-              readOnly
-              pythonAnalyzer={fnPythonAnalyzer}
-              cellIdx={0}
-            />
+            <CodeEditor readOnly context={fnActivitySession.editorContext(0)} />
           )}
         </Box>
       )}
@@ -144,7 +135,7 @@ export default function ToolboxFunctionCardContent({
       )}
       {showUsage && (
         <SolitaryCodeCell
-          activity={activity}
+          activityState={activityState}
           activityVariant={activityVariant}
           runEnabled={executorState.type === 'available'}
           readOnly

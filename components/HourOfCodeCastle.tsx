@@ -18,7 +18,7 @@ export default function HourOfCodeCastle({
     version: 'v1',
     language,
   };
-  const { codeCells, codeExecutionStates } = useLocalActivity(
+  const { activitySession, codeExecutionStates } = useLocalActivity(
     [],
     activityVariant,
   );
@@ -33,7 +33,7 @@ export default function HourOfCodeCastle({
         />
       )}
       <DownloadCodeButton
-        codeCells={codeCells}
+        activitySession={activitySession}
         extraPythonFiles={extraPythonFiles}
       />
     </Stack>

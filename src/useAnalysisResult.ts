@@ -1,28 +1,22 @@
-import { reverse, uniqWith } from 'lodash';
+import { uniqBy } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
-import {
-  AnalysisResult,
-  PythonFunction,
-} from './python-analyzer/python_analyzer';
-import { PythonAnalyzer } from './usePythonAnalyzer';
+import type { ActivitySession } from './activitySession';
+import type { PythonFunction } from './python-analyzer/python_analyzer';
+import { AnalysisResult } from './pythonWorkspace';
 
 export function visibleDefinedFunctions(
-  analysisResult?: AnalysisResult | undefined,
+  analysisResult?: Pick<AnalysisResult, 'defined_functions'>,
 ): PythonFunction[] {
   if (!analysisResult) {
     return [];
   }
-  // Double reverse to bias uniqWith towards the latest definition, in case of duplicates
-  return reverse(
-    uniqWith(
-      reverse(analysisResult.defined_functions),
-      (f1, f2) => f1.name === f2.name,
-    ),
-  );
+  // Double reverse to bias uniqBy towards the latest definition, in case of duplicates
+  const latestFirst = analysisResult.defined_functions.slice().reverse();
+  return uniqBy(latestFirst, (fn) => fn.name).reverse();
 }
 
 export default function useAnalysisResult(
-  pythonAnalyzer: PythonAnalyzer | null,
+  activitySession: ActivitySession,
   cellIdx: number,
 ): AnalysisResult | undefined {
   // Register for analysis results for this cell
@@ -30,23 +24,21 @@ export default function useAnalysisResult(
     AnalysisResult | undefined
   >(undefined);
   const handleNewAnalysisResult = useCallback(() => {
-    setAnalysisResult(pythonAnalyzer?.getAnalysisResult(cellIdx));
-  }, [cellIdx, pythonAnalyzer]);
+    setAnalysisResult(activitySession.getAnalysisResult(cellIdx));
+  }, [activitySession, cellIdx]);
   useEffect(() => {
-    if (pythonAnalyzer) {
-      pythonAnalyzer.addNewAnalysisResultListener(
+    activitySession.addNewAnalysisResultListener(
+      cellIdx,
+      handleNewAnalysisResult,
+    );
+    // The analysis may have completed before this listener was registered.
+    handleNewAnalysisResult();
+    return () => {
+      activitySession.removeNewAnalysisResultListener(
         cellIdx,
         handleNewAnalysisResult,
       );
-    }
-    return () => {
-      if (pythonAnalyzer) {
-        pythonAnalyzer.removeNewAnalysisResultListener(
-          cellIdx,
-          handleNewAnalysisResult,
-        );
-      }
     };
-  }, [handleNewAnalysisResult, pythonAnalyzer, cellIdx]);
+  }, [handleNewAnalysisResult, activitySession, cellIdx]);
   return analysisResult;
 }

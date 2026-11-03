@@ -105,6 +105,14 @@ export function playgroundPathname(initialCode?: string) {
   return `${basePath}?${queryParams.toString()}`;
 }
 
+export function evaluatorPathname() {
+  return '/evaluator';
+}
+
+export function idePathname() {
+  return '/ide';
+}
+
 export function curriculaPathname() {
   return '/curricula';
 }

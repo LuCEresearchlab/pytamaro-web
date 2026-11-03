@@ -23,8 +23,12 @@ import {
   SetStateAction,
   useContext,
   useEffect,
+  useMemo,
+  useRef,
   useState,
+  useSyncExternalStore,
 } from 'react';
+import useActivitySession from '../src/activitySession';
 import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
 import {
   ExecutionResponse,
@@ -32,7 +36,7 @@ import {
   TOOLBOX_FILE,
 } from '../src/execution/codeExecution';
 import { ExecutorContext } from '../src/execution/executorContext';
-import { CodeCellState, ToolboxFunction } from '../src/localStorage/schema';
+import { ToolboxFunction } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
@@ -46,10 +50,9 @@ import { toolboxFunctionPathname } from '../src/urlUtils';
 import useAnalysisResult, {
   visibleDefinedFunctions,
 } from '../src/useAnalysisResult';
-import usePythonAnalyzer from '../src/usePythonAnalyzer';
 import useTemporaryActivity from '../src/useTemporaryActivity';
 import CodeEditor from './CodeEditor';
-import SolitaryCodeCell, { initialStateSingleCell } from './SolitaryCodeCell';
+import SolitaryCodeCell, { singleCodeCell } from './SolitaryCodeCell';
 
 function PermanentlySaveToToolboxButton({
   fn,
@@ -182,16 +185,26 @@ export default function SaveToToolboxDialog({
   setSavingError: Dispatch<SetStateAction<boolean>>;
 }) {
   const { t } = useLocalTranslation();
-  const [implementation, setImplementation] = useState(externalImplementation);
+  const implementationActivitySession = useActivitySession(
+    singleCodeCell(externalImplementation),
+  );
+  const implementation = useSyncExternalStore(
+    implementationActivitySession.subscribe,
+    () => implementationActivitySession.getSource(0),
+    () => implementationActivitySession.getSource(0),
+  );
   const [functions, setFunctions] = useState<PythonFunction[]>([]);
   const [selectedFunction, setSelectedFunction] = useState<string>(
     initialName ?? '',
   );
   const [description, setDescription] = useState(initialDescription ?? '');
-  const [usage, setUsage] = useState(initialUsage ?? '');
   const [usageExecutedSuccessfully, setUsageExecutedSuccessfully] =
     useState(false);
   const [usageEdited, setUsageEdited] = useState(false);
+  // True while we replace the usage ourselves, so that the resulting content
+  // change is not mistaken for an edit made by the user.
+  const replacingUsageRef = useRef(false);
+
   const [invalidUsageExecution, setInvalidUsageExecution] = useState(false);
   const selectedPythonFunction = functions.find(
     (f) => f.name === selectedFunction,
@@ -200,24 +213,22 @@ export default function SaveToToolboxDialog({
   const { exists } = useLocalToolbox();
   const alreadyExists = exists(selectedFunction);
 
-  const newToolboxFunction =
-    selectedPythonFunction &&
-    functionForToolbox(
-      selectedPythonFunction,
-      implementation,
-      description,
-      originalActivity,
-    );
-
-  const getExtraToolboxFunction = () => {
-    return newToolboxFunction;
-  };
+  const newToolboxFunction = useMemo(
+    () =>
+      selectedPythonFunction &&
+      functionForToolbox(
+        selectedPythonFunction,
+        implementation,
+        description,
+        originalActivity,
+      ),
+    [selectedPythonFunction, implementation, description, originalActivity],
+  );
 
   const { executorState } = useContext(ExecutorContext);
 
-  const implementationPythonAnalyzer = usePythonAnalyzer();
   const implementationAnalysisResult = useAnalysisResult(
-    implementationPythonAnalyzer,
+    implementationActivitySession,
     0,
   );
 
@@ -231,8 +242,15 @@ export default function SaveToToolboxDialog({
   };
 
   useEffect(() => {
-    setImplementation(externalImplementation);
-  }, [externalImplementation]);
+    if (
+      implementationActivitySession.getInitialSource(0) !==
+      externalImplementation
+    ) {
+      implementationActivitySession.replaceInitialCodeCells(
+        singleCodeCell(externalImplementation),
+      );
+    }
+  }, [externalImplementation, implementationActivitySession]);
 
   const clearSelectedFunction = () => {
     setSelectedFunction('');
@@ -256,14 +274,14 @@ export default function SaveToToolboxDialog({
 
   const activityVariant = toolboxActivityVariant(selectedFunction);
 
-  const initialCodeCells = initialStateSingleCell(usage);
-  const [codeCells, setCodeCells] = useState<CodeCellState[]>(initialCodeCells);
-  const activity = useTemporaryActivity(
-    initialCodeCells,
-    codeCells,
-    setCodeCells,
+  const extraToolboxFunctions = useMemo(
+    () => (newToolboxFunction ? [newToolboxFunction] : []),
+    [newToolboxFunction],
+  );
+  const activityState = useTemporaryActivity(
+    singleCodeCell(initialUsage ?? ''),
     activityVariant,
-    getExtraToolboxFunction,
+    extraToolboxFunctions,
     postExecuteSingleCell,
   );
 
@@ -280,8 +298,16 @@ export default function SaveToToolboxDialog({
         '',
         '...',
       ]);
-      activity.handleSourceChanged(newUsage, 0);
-      setUsage(newUsage);
+      replacingUsageRef.current = true;
+      try {
+        activityState.activitySession.replaceInitialCodeCells(
+          singleCodeCell(newUsage),
+        );
+      } finally {
+        replacingUsageRef.current = false;
+      }
+      // The new usage invalidates any previous output of the cell.
+      activityState.handleInvalidateOutputsFrom(0);
       setUsageExecutedSuccessfully(false);
     }
   };
@@ -297,8 +323,7 @@ export default function SaveToToolboxDialog({
     }
   };
 
-  const handleImplementationChange = (newImplementation: string) => {
-    setImplementation(newImplementation);
+  const handleImplementationChange = () => {
     setUsageExecutedSuccessfully(false);
     setInvalidUsageExecution(true);
   };
@@ -359,11 +384,8 @@ export default function SaveToToolboxDialog({
           </Alert>
         )}
         <CodeEditor
-          initialSource={externalImplementation}
-          currentSource={implementation}
           onChange={handleImplementationChange}
-          pythonAnalyzer={implementationPythonAnalyzer}
-          cellIdx={0}
+          context={implementationActivitySession.editorContext(0)}
         />
         <Box
           sx={{
@@ -465,20 +487,20 @@ export default function SaveToToolboxDialog({
                     {t('toolbox.usageExample')}
                   </Typography>
                   <SolitaryCodeCell
-                    activity={activity}
+                    activityState={activityState}
                     activityVariant={activityVariant}
                     runEnabled={executorState.type === 'available'}
                     requireNewExecution={invalidUsageExecution}
                     postSourceChange={() => {
+                      if (replacingUsageRef.current) {
+                        return;
+                      }
                       setUsageEdited(true);
                       setUsageExecutedSuccessfully(false);
                     }}
                     onExecutionRequest={() => {
                       setInvalidUsageExecution(false);
                     }}
-                    extraToolboxFunctions={
-                      newToolboxFunction ? [newToolboxFunction] : []
-                    }
                   />
                 </div>
               ))}
@@ -497,7 +519,7 @@ export default function SaveToToolboxDialog({
                       implementation,
                       description,
                       originalActivity,
-                      activity.codeCells[0].source,
+                      activityState.activitySession.getSource(0),
                     )}
                     replace={replaceExistingFunction}
                     enabled={usageExecutedSuccessfully}

@@ -1,16 +1,12 @@
 import { Alert, AlertTitle, Box, Typography } from '@mui/material';
-import { sum } from 'lodash';
 import { useEffect } from 'react';
 import { PythonMode } from '../src/execution/codeExecution';
-import { CodeCellState } from '../src/localStorage/schema';
-import useLocalActivity from '../src/localStorage/useLocalActivity';
+import type { LocalActivityState } from '../src/localStorage/useLocalActivity';
 import {
   ActivityVariant,
   PlatformConfiguration,
   PythonFile,
 } from '../src/schemas/activitySchema';
-import { countLines } from '../src/sourceUtils';
-import { PythonAnalyzer } from '../src/usePythonAnalyzer';
 import useReset from '../src/useReset';
 import CodeCell from './CodeCell';
 import { OutputAreaRef } from './input_output/OutputArea';
@@ -51,24 +47,22 @@ function InconsistencyMessage() {
 const pythonMode = PythonMode.Exec;
 
 export default function ActivityCodeCell({
+  activityState,
   activityVariant,
-  initialCodeCells,
   cellIdx,
   extraPythonFiles,
   platformConfig,
   activityResetCounter,
-  pythonAnalyzer,
   runEnabled,
   setOutputAreaRef,
   getActivityOutputAreaRef,
 }: {
+  activityState: LocalActivityState;
   activityVariant: ActivityVariant;
-  initialCodeCells: CodeCellState[];
   cellIdx: number;
   extraPythonFiles: PythonFile[];
   platformConfig: PlatformConfiguration;
   activityResetCounter: number;
-  pythonAnalyzer: PythonAnalyzer | null;
   runEnabled: boolean;
   setOutputAreaRef: (
     idx: number,
@@ -77,9 +71,8 @@ export default function ActivityCodeCell({
   getActivityOutputAreaRef: (execIdx: number) => OutputAreaRef | null;
 }) {
   const {
-    codeCells,
     codeExecutionStates,
-    handleSourceChanged,
+    handleInvalidateOutputsFrom,
     handleExecutionRequestEvent,
     handleExecute,
     handleToggleOutputArea,
@@ -87,7 +80,8 @@ export default function ActivityCodeCell({
     handleResetSingleCellExecutionState,
     handleRestartPyodide,
     localCodeCellsWrongLength,
-  } = useLocalActivity(initialCodeCells, activityVariant, extraPythonFiles);
+    activitySession,
+  } = activityState;
 
   const { resetCounter, newReset } = useReset();
   useEffect(() => {
@@ -96,10 +90,7 @@ export default function ActivityCodeCell({
     }
   }, [newReset, activityResetCounter]);
 
-  const precedingLines = sum(
-    codeCells.slice(0, cellIdx).map((cell) => countLines(cell.source)),
-  );
-  const currentCodeCell = codeCells[cellIdx];
+  const precedingLines = activitySession.precedingLines(cellIdx);
   return localCodeCellsWrongLength ? (
     <InconsistencyMessage />
   ) : (
@@ -109,13 +100,11 @@ export default function ActivityCodeCell({
       }}
     >
       <CodeCell
-        initialSource={initialCodeCells[cellIdx].source}
-        currentSource={currentCodeCell.source}
         codeCellExecutionState={codeExecutionStates[cellIdx]}
         onResetExecutionState={() =>
           handleResetSingleCellExecutionState(cellIdx)
         }
-        onSourceChanged={(newSource) => handleSourceChanged(newSource, cellIdx)}
+        onSourceChanged={() => handleInvalidateOutputsFrom(cellIdx)}
         onExecutionRequestEvent={(executionUUID) =>
           handleExecutionRequestEvent(cellIdx, executionUUID, pythonMode)
         }
@@ -127,12 +116,13 @@ export default function ActivityCodeCell({
             getActivityOutputAreaRef,
           )
         }
+        onRuntimeErrorDismissed={() => handleInvalidateOutputsFrom(cellIdx)}
         firstLineNumber={1 + precedingLines}
         activityVariant={activityVariant}
         platformConfig={platformConfig}
         resetCounter={resetCounter}
         extraPythonFiles={extraPythonFiles}
-        pythonAnalyzer={pythonAnalyzer}
+        activitySession={activitySession}
         cellIdx={cellIdx}
         runEnabled={runEnabled}
         setOutputAreaRef={setOutputAreaRef}
@@ -140,12 +130,13 @@ export default function ActivityCodeCell({
         extraActions={
           <>
             <SaveToToolboxButton
-              pythonAnalyzer={pythonAnalyzer}
+              activitySession={activitySession}
               cellIdx={cellIdx}
               originalActivity={activityVariant}
             />
             <MoreOptionsButton
-              codeCellState={currentCodeCell}
+              activitySession={activitySession}
+              cellIdx={cellIdx}
               codeCellExecutionState={codeExecutionStates[cellIdx]}
               onShowHideOutput={() => handleToggleOutputArea(cellIdx)}
               onReset={() => handleResetSingleCell(cellIdx, newReset)}

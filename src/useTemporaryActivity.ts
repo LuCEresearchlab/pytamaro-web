@@ -1,16 +1,15 @@
-import { Dispatch, SetStateAction, useState } from 'react';
-import { ExecutionResponse } from './execution/codeExecution';
-import { CodeCellState, ToolboxFunction } from './localStorage/schema';
+import { useState } from 'react';
+import useActivitySession from './activitySession';
+import type { ExecutionResponse } from './execution/codeExecution';
+import type { CodeCellState, ToolboxFunction } from './localStorage/schema';
 import useLocalProfile from './localStorage/useLocalProfile';
-import { ActivityVariant } from './schemas/activitySchema';
+import type { ActivityVariant } from './schemas/activitySchema';
 import { useActivity } from './useActivity';
 
 export default function useTemporaryActivity(
   initialCodeCells: CodeCellState[],
-  codeCells: CodeCellState[],
-  setCodeCells: Dispatch<SetStateAction<CodeCellState[]>>,
   activityVariant: ActivityVariant,
-  getExtraToolboxFunction: () => ToolboxFunction | undefined = () => undefined,
+  extraToolboxFunctions?: ToolboxFunction[],
   postExecuteSingleCell: (
     idx: number,
     response: ExecutionResponse | undefined,
@@ -18,15 +17,18 @@ export default function useTemporaryActivity(
 ) {
   const { metadata } = useLocalProfile();
   const [temporaryMetadata, setTemporaryMetadata] = useState(metadata);
-  return useActivity(
+  const activitySession = useActivitySession(
     initialCodeCells,
-    codeCells,
-    setCodeCells,
+    undefined,
+    undefined,
+    extraToolboxFunctions,
+  );
+  return useActivity(
+    activitySession,
     temporaryMetadata,
     setTemporaryMetadata,
     activityVariant,
     [],
-    getExtraToolboxFunction,
     postExecuteSingleCell,
   );
 }

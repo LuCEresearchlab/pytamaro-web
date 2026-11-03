@@ -10,11 +10,17 @@ import {
 } from '../components/documentation/utils';
 import { TOOLBOX_FILE } from './execution/codeExecution';
 import useLocalToolbox from './localStorage/useLocalToolbox';
-import { PythonFunction, PythonName } from './python-analyzer/python_analyzer';
-import { JudiciousElement, JudiciousModule } from './schemas/documentation';
+import type {
+  PythonFunction,
+  PythonName,
+} from './python-analyzer/python_analyzer';
+import type { FilesAnalysisResult } from './pythonWorkspace';
+import type {
+  JudiciousElement,
+  JudiciousModule,
+} from './schemas/documentation';
 import { judiciousDocPathname } from './urlUtils';
 import { visibleDefinedFunctions } from './useAnalysisResult';
-import { FilesAnalysisResult } from './usePythonAnalyzer';
 
 export default function useJudiciousDocData(modules: string[]) {
   const results = useQueries({

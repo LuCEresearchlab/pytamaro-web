@@ -9,7 +9,7 @@ export function ShareButton({
   message,
   failureMessage = undefined,
 }: {
-  getTextToCopy: () => string;
+  getTextToCopy: () => string | Promise<string>;
   message: string;
   failureMessage?: string;
 }) {
@@ -18,14 +18,28 @@ export function ShareButton({
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarContent, setSnackbarContent] = useState('');
 
-  const copyTextToClipboard = () => {
-    navigator.clipboard
-      .writeText(getTextToCopy())
-      .then(() => setSnackbarContent(message))
-      .catch(() =>
-        setSnackbarContent(failureMessage ?? t('errorCategory.other')),
-      )
-      .then(() => setSnackbarVisible(true));
+  const copyTextToClipboard = async () => {
+    try {
+      const pendingText = Promise.resolve(getTextToCopy());
+      if (typeof ClipboardItem !== 'undefined') {
+        // Start the write synchronously (inside the user gesture) and let the
+        // text resolve later: Safari rejects writes that follow an async gap.
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'text/plain': pendingText.then(
+              (text) => new Blob([text], { type: 'text/plain' }),
+            ),
+          }),
+        ]);
+      } else {
+        await navigator.clipboard.writeText(await pendingText);
+      }
+      setSnackbarContent(message);
+    } catch {
+      setSnackbarContent(failureMessage ?? t('errorCategory.other'));
+    } finally {
+      setSnackbarVisible(true);
+    }
   };
 
   return (

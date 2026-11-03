@@ -3,7 +3,6 @@ import PQueue from 'p-queue';
 import { OutputAreaRef } from '../../components/input_output/OutputArea';
 import logAnalyticsEvent, { AnalyticsEventName } from '../analyticsEvent';
 import { ToolboxFunction } from '../localStorage/schema';
-import { PythonFile } from '../schemas/activitySchema';
 import { EventName, storeDbEvent } from '../storeDbEvent';
 import { cellsToFiles, ExecutionResponse, PythonMode } from './codeExecution';
 import { ExecutorDelegate } from './executorDelegate';
@@ -17,6 +16,7 @@ import {
   ExecutorWorkerMessage,
   InputRequestData,
   MessageType,
+  RunPythonFile,
   SaveRequestData,
   SizeRequestData,
 } from './messageTypes';
@@ -175,7 +175,7 @@ export class ExecutorClient {
     sources: string[],
     idx: number,
     toolboxFunctions: ToolboxFunction[],
-    extraPythonFiles: PythonFile[],
+    extraPythonFiles: RunPythonFile[],
     executionMetadata: ExecutionMetadata,
     pythonMode: PythonMode,
     updateExecutionResult: (
@@ -187,6 +187,8 @@ export class ExecutorClient {
       after: number,
     ) => void = () => {},
     getOutputRef: (idx: number) => OutputAreaRef | null = () => null,
+    fileNames: string[] = [],
+    workspaceFiles: string[] | undefined = undefined,
   ): Promise<ExecutionResponse> {
     const files = cellsToFiles(
       sources,
@@ -194,6 +196,7 @@ export class ExecutorClient {
       toolboxFunctions,
       extraPythonFiles,
       pythonMode,
+      fileNames,
     );
 
     const execution = async () => {
@@ -230,7 +233,7 @@ export class ExecutorClient {
             onActiveCellChange(oldIdx, newIdx);
           } else if (type === MessageType.FINAL_RESULT) {
             // Final execution result
-            const { result } = event.data;
+            const { result, workspaceChanges } = event.data;
             if (result.type === 'failure') {
               captureErrorWithSentry(event.data.pythonError, {
                 fatalError: true,
@@ -239,7 +242,11 @@ export class ExecutorClient {
 
             // Unsubscribe from further messages
             this.executorWorker.removeEventListener('message', resultsListener);
-            resolve(result);
+            resolve(
+              workspaceChanges === undefined
+                ? result
+                : { ...result, workspaceChanges },
+            );
           }
         };
 
@@ -248,6 +255,7 @@ export class ExecutorClient {
           type: MessageType.RUN,
           executionMetadata,
           files,
+          workspaceFiles,
         });
       }).finally(() => {
         this.setExecutorState({ type: 'available' });

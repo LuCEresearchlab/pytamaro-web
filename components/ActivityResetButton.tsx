@@ -1,31 +1,25 @@
 import { isEqual } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
-import {
-  CodeCellState,
-  getDefaultActivityVariantMetadata,
-} from '../src/localStorage/schema';
-import useLocalActivity from '../src/localStorage/useLocalActivity';
+import { getDefaultActivityVariantMetadata } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import {
   ActivityVariant,
   activityVariantId,
 } from '../src/schemas/activitySchema';
+import type { ActivityState } from '../src/useActivity';
 import ResetButton from './navbar/ResetButton';
 
 export default function ActivityResetButton({
+  activityState,
   activityVariant,
-  initialCodeCells,
   newReset,
 }: {
+  activityState: ActivityState;
   activityVariant: ActivityVariant;
-  initialCodeCells: CodeCellState[];
   newReset: () => void;
 }) {
-  const { cellsModified, handleResetAllCellsNoConfirm } = useLocalActivity(
-    initialCodeCells,
-    activityVariant,
-  );
+  const { cellsModified, handleResetAllCellsNoConfirm } = activityState;
   const { getActivityMetadata, setActivityMetadata } = useLocalProfile();
   const currentMetadata = getActivityMetadata(activityVariant);
   const defaultMetadata = getDefaultActivityVariantMetadata(

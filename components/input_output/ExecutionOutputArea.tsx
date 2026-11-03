@@ -38,6 +38,7 @@ function StderrElement({ content }: { content: string }) {
 
   const { errorLines, userTracebackLines, libraryTracebackLines, collapsed } =
     processTraceback(content);
+  const { t } = useLocalTranslation();
 
   return (
     <div className='stderr'>
@@ -55,7 +56,9 @@ function StderrElement({ content }: { content: string }) {
             }}
             size='small'
           >
-            {`${showAllStackFrames ? 'Hide' : 'Show All '} Stack Frames`}
+            {showAllStackFrames
+              ? t('hideStackFrames')
+              : t('showAllStackFrames')}
           </ToggleButton>
           <Collapse in={showAllStackFrames} timeout='auto' unmountOnExit>
             <PreElement lines={libraryTracebackLines} />

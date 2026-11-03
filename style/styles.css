@@ -100,7 +100,7 @@ pre:has(code) {
   border: 1px dashed var(--mui-palette-primary-main);
 }
 
-.rapid-evaluator:has(.eval-result-output:hover) :is(
+.evaluator:has(.eval-result-output:hover) :is(
   .eval-result-hint,
   .eval-result-output,
   .eval-result-code-decoration

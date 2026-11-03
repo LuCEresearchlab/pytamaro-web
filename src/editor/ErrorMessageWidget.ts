@@ -5,9 +5,9 @@ import type {
   IRange,
 } from 'monaco-editor';
 import { TFunction } from 'next-i18next';
-import { convertMarkdownCodeTagsToHTML } from '../../src/basicMarkdown';
-import theme from '../../src/theme';
-import { ERROR_MESSAGE_CLASSNAME } from '../input_output/OutputArea';
+import { ERROR_MESSAGE_CLASSNAME } from '../../components/input_output/OutputArea';
+import { convertMarkdownCodeTagsToHTML } from '../basicMarkdown';
+import theme from '../theme';
 import { displayErrorCategory, ErrorCategory, simplifyTypes } from './errors';
 
 const STATIC_ERROR_MESSAGE_ID = 'static-error-message-widget';

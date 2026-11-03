@@ -6,10 +6,9 @@ import type {
   languages,
   Position,
 } from 'monaco-editor';
-import { TOOLBOX_FILE } from './execution/codeExecution';
-import { ToolboxFunction } from './localStorage/schema';
-import PyTamaroNames from './pytamaroNames';
-import { retrieveCellIdx, retrievePythonAnalyzer } from './usePythonAnalyzer';
+import { retrieveEditorSession } from '../editorSession';
+import { TOOLBOX_FILE } from '../execution/codeExecution';
+import PyTamaroNames from '../pytamaroNames';
 
 function kind(monacoInstance: Monaco, type: string) {
   const map: Record<string, languages.CompletionItemKind> = {
@@ -46,10 +45,7 @@ function getRangeLastWord(
   };
 }
 
-export function toolboxImportCompletionProvider(
-  monacoInstance: Monaco,
-  toolboxFunctions: ToolboxFunction[],
-) {
+export function toolboxImportCompletionProvider(monacoInstance: Monaco) {
   return {
     provideCompletionItems(
       model: EditorNamespace.ITextModel,
@@ -58,16 +54,17 @@ export function toolboxImportCompletionProvider(
       const isToolboxImport = currentLineText(model, position).match(
         `from\\s+${TOOLBOX_FILE}\\s+import\\s+`,
       );
+      if (!isToolboxImport) return { suggestions: [] };
+      const toolboxFunctions =
+        retrieveEditorSession(model)?.getToolboxFunctions() ?? [];
       return {
-        suggestions: isToolboxImport
-          ? toolboxFunctions.map((fn) => ({
-              label: fn.name,
-              kind: kind(monacoInstance, 'function'),
-              detail: fn.description,
-              insertText: fn.name,
-              range: getRangeLastWord(model, position),
-            }))
-          : [],
+        suggestions: toolboxFunctions.map((fn) => ({
+          label: fn.name,
+          kind: kind(monacoInstance, 'function'),
+          detail: fn.description,
+          insertText: fn.name,
+          range: getRangeLastWord(model, position),
+        })),
       };
     },
   };
@@ -91,10 +88,15 @@ export function moduleImportCompletionProvider(monacoInstance: Monaco) {
       const text = currentLineText(model, position);
       const isFromImport =
         text.match('from\\s+([^\\s]+)') && !text.match('import\\s');
+      const workspaceModules =
+        retrieveEditorSession(model)?.moduleNames() ?? [];
+      const modules = Array.from(
+        new Set([...KNOWN_MODULES, ...workspaceModules]),
+      );
       return {
         suggestions:
           isFromImport === true
-            ? KNOWN_MODULES.map((module) => ({
+            ? modules.map((module) => ({
                 label: module,
                 kind: kind(monacoInstance, 'module'),
                 insertText: module,
@@ -112,9 +114,11 @@ export function pytamaroImportCompletionProvider(monacoInstance: Monaco) {
       model: EditorNamespace.ITextModel,
       position: Position,
     ) {
-      const pythonAnalyzer = retrievePythonAnalyzer(model);
-      const cellIdx = retrieveCellIdx(model);
-      const analysisResult = pythonAnalyzer.getAnalysisResult(cellIdx);
+      const analysisResult =
+        retrieveEditorSession(model)?.getAnalysisResultForModel(model);
+      if (!analysisResult) {
+        return { suggestions: [] };
+      }
       const offset = model.getOffsetAt(position);
       const importStmt = analysisResult?.import_ranges.find(
         (range) => range.start <= offset && offset <= range.end,

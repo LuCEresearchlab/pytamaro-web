@@ -48,10 +48,30 @@ export type RunMessage = {
   type: MessageType.RUN;
   files: RunPythonFile[];
   executionMetadata: ExecutionMetadata;
+  /**
+   * Names of the files that belong to the IDE workspace. When present, the
+   * worker reports which of them were created, modified, or deleted during the
+   * execution.
+   */
+  workspaceFiles?: string[];
 };
 export type RunPythonFile = {
   name: string;
-  content: string;
+  content: string | Uint8Array;
+};
+/**
+ * A file of the IDE workspace whose content changed during an execution.
+ */
+export type WorkspaceFileChange = {
+  name: string;
+  content: Uint8Array;
+};
+/**
+ * The changes made by an execution to the files of the IDE workspace.
+ */
+export type WorkspaceChanges = {
+  changed: WorkspaceFileChange[];
+  deleted: string[];
 };
 
 /* ==== Worker -> Client Messages ==== */
@@ -77,6 +97,8 @@ export type ResultMessage = {
   executionMetadata: ExecutionMetadata;
   pythonError?: TransferablePythonError;
   result: ExecutionResponse;
+  /** Present when the run asked the worker to report workspace changes. */
+  workspaceChanges?: WorkspaceChanges;
 };
 export type TransferablePythonError = {
   columnNumber: number;

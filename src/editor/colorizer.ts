@@ -5,7 +5,7 @@ import {
   LUCE_THEME_NAME,
   MonacoForPyTamaro,
   registerPyTamaroLanguageAndTheme,
-} from '../components/editor/utils';
+} from './utils';
 
 export const COLORIZE_CLASSNAME = 'monaco-colorize';
 

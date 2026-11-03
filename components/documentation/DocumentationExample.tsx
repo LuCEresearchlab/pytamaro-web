@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { Box, Card, CardContent, Tooltip } from '@mui/material';
-import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import useMonacoColorizer, {
   COLORIZE_CLASSNAME,
-} from '../../src/monacoColorizer';
+} from '../../src/editor/colorizer';
+import { STRICT_PYTHON3_LANG_ID } from '../../src/editor/strictPython3';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { JudiciousExample } from '../../src/schemas/documentation';
 import theme from '../../src/theme';
-import { STRICT_PYTHON3_LANG_ID } from '../editor/strictPython3';
 import InputArea from '../input_output/InputArea';
 import { OutputArea } from '../input_output/OutputArea';
 

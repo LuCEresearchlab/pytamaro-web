@@ -1,6 +1,7 @@
 import throttle from 'lodash/throttle';
 import { PyodideAPI } from 'pyodide';
 import { PyProxy, PythonError } from 'pyodide/ffi';
+import { contentBytes, sameContent } from '../ideFiles';
 import { INPUT_BEGIN, INPUT_END } from '../ioMarkers';
 import { joinLines } from '../sourceUtils';
 import { ExecutionResponse } from './codeExecution';
@@ -14,11 +15,26 @@ import {
   ResultMessage,
   RunPythonFile,
   TransferablePythonError,
+  WorkspaceChanges,
+  WorkspaceFileChange,
 } from './messageTypes';
 import { PYODIDE_VERSION, PYTAMARO_VERSION } from './versions';
 
 const EXEC_BASE_PATH = '/run/py';
 const DRIVER_FILE_NAME = 'driver.py';
+
+type ExecutionEnvironment = {
+  code: string;
+  workspaceBaseline: Map<string, Uint8Array>;
+  generatedFiles: Set<string>;
+  collectWorkspaceChanges: boolean;
+};
+
+/** The directory that contains `path`, which must be absolute. */
+function parentDirectory(path: string): string {
+  const idx = path.lastIndexOf('/');
+  return idx <= 0 ? '/' : path.slice(0, idx);
+}
 
 type ThisWorker = typeof globalThis;
 type OnActiveCodeCellChangeListener = (idx: number) => void;
@@ -113,6 +129,7 @@ class WorkerExecutor {
   private readonly resultLengthBuffer: Int32Array;
 
   private activeCellChanged: OnActiveCodeCellChangeListener | null;
+  private pytamaroFfiSaveToWorkspace = false;
 
   static async init(
     worker: ThisWorker,
@@ -194,75 +211,110 @@ class WorkerExecutor {
   async run(
     executionMetadata: ExecutionMetadata,
     files: RunPythonFile[],
+    workspaceFiles?: string[],
   ): Promise<ResultMessage> {
     this.destroyLeftoverProxies();
 
     const out = this.executionSetupIO(executionMetadata);
-    const driverCode = this.executionSetupEnvironment(files);
+    const environment = this.executionSetupEnvironment(files, workspaceFiles);
+    this.pytamaroFfiSaveToWorkspace = environment.collectWorkspaceChanges;
 
     // New empty globals
     const globals = this.pyodide.toPy({});
 
-    try {
-      await this.pyodide.runPython(driverCode, {
-        globals,
-        filename: DRIVER_FILE_NAME,
-      });
+    let result: ExecutionResponse;
+    let pythonError: TransferablePythonError | undefined;
+    let workspaceChanges: WorkspaceChanges | undefined;
 
-      return {
-        type: MessageType.FINAL_RESULT,
-        executionMetadata,
-        result: {
+    try {
+      try {
+        await this.pyodide.runPython(environment.code, {
+          globals,
+          filename: DRIVER_FILE_NAME,
+        });
+
+        result = {
           type: 'success',
           completed: true,
           stdout: out.getStdout(),
           stderr: out.getStderr(),
-        },
-      };
-    } catch (err) {
-      // Handle unhandled python exceptions
-      const pythonError = err as PythonError;
-      const transferableError = getTransferableError(pythonError);
-      const { isFatal } = transferableError;
+        };
+      } catch (err) {
+        // Handle unhandled python exceptions
+        const error = err as PythonError;
+        const transferableError = getTransferableError(error);
+        const { isFatal } = transferableError;
+        pythonError = isFatal ? transferableError : undefined;
 
-      return {
-        type: MessageType.FINAL_RESULT,
-        executionMetadata,
-        pythonError: isFatal ? transferableError : undefined,
-        result: {
+        result = {
           type: isFatal ? 'failure' : 'error',
           completed: true,
           stdout: out.getStdout(),
-          stderr: out.getStderr() + pythonError,
-        },
-      };
+          stderr: out.getStderr() + error,
+        };
+      }
+
+      // Collect the files before destroying `globals`, since releasing it may
+      // trigger finalizers that write files.
+      workspaceChanges = this.collectWorkspaceChanges(environment);
     } finally {
       // Cleanup
+      this.clearExecutionEnvironment();
       this.activeCellChanged = null;
       globals.destroy();
     }
+
+    return {
+      type: MessageType.FINAL_RESULT,
+      executionMetadata,
+      pythonError,
+      result,
+      workspaceChanges,
+    };
   }
 
   /**
    * Set up the execution environment.
    *
-   * @returns The entry point code (a.k.a. the "driver") to run.
+   * @returns The entry point code (a.k.a. the "driver") to run, together with
+   * the information needed to detect the workspace files it changed.
    */
-  private executionSetupEnvironment(files: RunPythonFile[]): string {
+  private executionSetupEnvironment(
+    files: RunPythonFile[],
+    workspaceFiles?: string[],
+  ): ExecutionEnvironment {
     const fs = this.pyodide.FS;
+    this.clearExecutionEnvironment();
     fs.mkdirTree(EXEC_BASE_PATH);
+
+    const collectWorkspaceChanges = workspaceFiles !== undefined;
+    const workspaceNames = new Set(workspaceFiles ?? []);
+    const workspaceBaseline = new Map<string, Uint8Array>();
+    const generatedFiles = new Set<string>();
 
     let driverFile: RunPythonFile | null = null;
     for (const file of files) {
       if (file.name === DRIVER_FILE_NAME) {
         driverFile = file;
+        continue;
+      }
+      const target = `${EXEC_BASE_PATH}/${file.name}`;
+      fs.mkdirTree(parentDirectory(target));
+      fs.writeFile(target, file.content);
+      if (collectWorkspaceChanges && workspaceNames.has(file.name)) {
+        workspaceBaseline.set(file.name, contentBytes(file.content));
       } else {
-        fs.writeFile(`${EXEC_BASE_PATH}/${file.name}`, file.content);
+        generatedFiles.add(file.name);
       }
     }
 
     if (driverFile == null) {
-      return 'pass';
+      return {
+        code: '',
+        workspaceBaseline,
+        generatedFiles,
+        collectWorkspaceChanges,
+      };
     }
 
     // CPython caches the modules that it loads, so we need to forcefully unload
@@ -272,26 +324,121 @@ class WorkerExecutor {
       .map((file) => file.name)
       .filter((name) => name.endsWith('.py') && name !== DRIVER_FILE_NAME)
       .map((name) => name.replaceAll('/', '.').replace(/\.py$/, ''));
+    const driverCode =
+      typeof driverFile.content === 'string'
+        ? driverFile.content
+        : new TextDecoder().decode(driverFile.content);
 
-    return joinLines([
-      // Clear cached modules
-      'import sys',
-      ...modulesToClear.flatMap((module) => [
-        `if '${module}' in sys.modules: `,
-        `  del sys.modules['${module}']`,
+    return {
+      code: joinLines([
+        // Clear cached modules
+        'import sys',
+        ...modulesToClear.flatMap((module) => [
+          `if '${module}' in sys.modules: `,
+          `  del sys.modules['${module}']`,
+        ]),
+        // Set max recursion depth.
+        // Note: this might be problematic for non-desktop devices.
+        // There are several limitations at play here, both from the JS and the
+        // wasm worlds. It could be that we'll have to decrease this number in the
+        // future. See: https://github.com/pyodide/pyodide/issues/5959
+        'sys.setrecursionlimit(2000)',
+        // Set CWD to $basePath
+        'import os',
+        `os.chdir('${EXEC_BASE_PATH}')`,
+        // Run code
+        driverCode,
       ]),
-      // Set max recursion depth.
-      // Note: this might be problematic for non-desktop devices.
-      // There are several limitations at play here, both from the JS and the
-      // wasm worlds. It could be that we'll have to decrease this number in the
-      // future. See: https://github.com/pyodide/pyodide/issues/5959
-      'sys.setrecursionlimit(2000)',
-      // Set CWD to $basePath
-      'import os',
-      `os.chdir('${EXEC_BASE_PATH}')`,
-      // Run code
-      driverFile.content,
-    ]);
+      workspaceBaseline,
+      generatedFiles,
+      collectWorkspaceChanges,
+    };
+  }
+
+  /**
+   * Collects the workspace files created, modified, or deleted by the run.
+   * Returns undefined when the run did not ask for workspace changes.
+   */
+  private collectWorkspaceChanges(
+    environment: ExecutionEnvironment,
+  ): WorkspaceChanges | undefined {
+    if (!environment.collectWorkspaceChanges) {
+      return undefined;
+    }
+
+    try {
+      const fs = this.pyodide.FS;
+      const changed: WorkspaceFileChange[] = [];
+      const seen = new Set<string>();
+
+      const walk = (directory: string, prefix: string): void => {
+        for (const name of fs.readdir(directory)) {
+          if (name === '.' || name === '..' || name === '__pycache__') {
+            continue;
+          }
+          const fullPath = `${directory}/${name}`;
+          const relativePath = prefix.length > 0 ? `${prefix}/${name}` : name;
+          if (fs.isDir(fs.stat(fullPath).mode)) {
+            walk(fullPath, relativePath);
+            continue;
+          }
+          // Python bytecode is an artifact of running the code, not a file
+          // that the script intended to create.
+          if (
+            environment.generatedFiles.has(relativePath) ||
+            relativePath.endsWith('.pyc') ||
+            relativePath.endsWith('.pyo')
+          ) {
+            continue;
+          }
+          seen.add(relativePath);
+          const bytes = fs.readFile(fullPath).slice();
+          const baseline = environment.workspaceBaseline.get(relativePath);
+          if (baseline === undefined || !sameContent(baseline, bytes)) {
+            changed.push({ name: relativePath, content: bytes });
+          }
+        }
+      };
+
+      walk(EXEC_BASE_PATH, '');
+
+      return {
+        changed,
+        deleted: Array.from(environment.workspaceBaseline.keys()).filter(
+          (name) => !seen.has(name),
+        ),
+      };
+    } catch {
+      // Never turn a snapshot failure into an execution failure.
+      return { changed: [], deleted: [] };
+    }
+  }
+
+  /** Removes everything in the execution directory, if it exists. */
+  private clearExecutionEnvironment(): void {
+    const fs = this.pyodide.FS;
+    try {
+      fs.stat(EXEC_BASE_PATH);
+    } catch {
+      return;
+    }
+    this.removeTree(EXEC_BASE_PATH);
+  }
+
+  private removeTree(path: string): void {
+    const fs = this.pyodide.FS;
+    for (const name of fs.readdir(path)) {
+      if (name === '.' || name === '..') {
+        continue;
+      }
+      const child = `${path}/${name}`;
+      if (fs.isDir(fs.stat(child).mode)) {
+        this.removeTree(child);
+        fs.rmdir(child);
+      } else {
+        fs.unlink(child);
+      }
+    }
   }
 
   /**
@@ -453,10 +600,25 @@ class WorkerExecutor {
   }
 
   private ffSaveOnClient(fileName: string, content: string): void {
+    if (this.pytamaroFfiSaveToWorkspace) {
+      this.saveInExecutionDirectory(fileName, content);
+      return;
+    }
     this.executeFFOnClient(MessageType.SAVE, {
       fileName,
       contentUri: content,
     });
+  }
+
+  private saveInExecutionDirectory(fileName: string, dataUri: string): void {
+    const payload = dataUri.slice(dataUri.indexOf(',') + 1);
+    const bytes = Uint8Array.from(atob(payload), (char) => char.charCodeAt(0));
+
+    const target = fileName.startsWith('/')
+      ? fileName
+      : `${EXEC_BASE_PATH}/${fileName}`;
+
+    this.pyodide.FS.writeFile(target, bytes);
   }
 
   private ffSetActiveCell(idx: number): void {
@@ -561,7 +723,11 @@ addEventListener(
       case MessageType.RUN:
         if (executor !== null) {
           self.postMessage(
-            await executor.run(data.executionMetadata, data.files),
+            await executor.run(
+              data.executionMetadata,
+              data.files,
+              data.workspaceFiles,
+            ),
           );
         }
         break;

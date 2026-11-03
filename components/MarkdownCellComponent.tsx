@@ -2,16 +2,16 @@
 import { Box, Link, Stack } from '@mui/material';
 import { MDXRemote } from 'next-mdx-remote';
 import { ReactNode, useMemo } from 'react';
-import { COLORIZE_CLASSNAME } from '../src/monacoColorizer';
+import { COLORIZE_CLASSNAME } from '../src/editor/colorizer';
+import { STRICT_PYTHON3_LANG_ID } from '../src/editor/strictPython3';
+import type { FilesAnalysisResult } from '../src/pythonWorkspace';
 import {
   ActivityVariant,
   MarkdownCell,
   NotebookCell,
 } from '../src/schemas/activitySchema';
 import { activityAssetPathname } from '../src/urlUtils';
-import { FilesAnalysisResult } from '../src/usePythonAnalyzer';
 import InlineAPI from './documentation/InlineAPI';
-import { STRICT_PYTHON3_LANG_ID } from './editor/strictPython3';
 import ActivityLink from './markdown/ActivityLink';
 import DoNowBox from './markdown/DoNowBox';
 import TaskBox from './markdown/TaskBox';

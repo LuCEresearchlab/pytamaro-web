@@ -2,19 +2,19 @@ import Construction from '@mui/icons-material/Construction';
 import { IconButton, Tooltip } from '@mui/material';
 import { useState } from 'react';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import { ActivityVariant } from '../src/schemas/activitySchema';
+import type { ActivityVariant } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
 import useAnalysisResult from '../src/useAnalysisResult';
-import { PythonAnalyzer } from '../src/usePythonAnalyzer';
+import type { ActivitySession } from '../src/activitySession';
 import CustomSnackbar from './CustomSnackbar';
 import SaveToToolboxDialog from './SaveToToolboxDialog';
 
 export default function SaveToToolboxButton({
-  pythonAnalyzer,
+  activitySession,
   cellIdx,
   originalActivity,
 }: {
-  pythonAnalyzer: PythonAnalyzer | null;
+  activitySession: ActivitySession;
   cellIdx: number;
   originalActivity: ActivityVariant;
 }) {
@@ -23,11 +23,10 @@ export default function SaveToToolboxButton({
   const [savingSuccess, setSavingSuccess] = useState(false);
   const [savingError, setSavingError] = useState(false);
 
-  const analysisResult = useAnalysisResult(pythonAnalyzer, cellIdx);
-  const sources = pythonAnalyzer?.getSourcesUpTo(cellIdx) ?? [];
+  const analysisResult = useAnalysisResult(activitySession, cellIdx);
+  const sources = activitySession.getSourcesUpTo(cellIdx);
   const implementation = joinLines(sources);
-  const functionsThisCell =
-    pythonAnalyzer?.functionsDefinedInCell(cellIdx) ?? [];
+  const functionsThisCell = activitySession.functionsDefinedInCell(cellIdx);
   const atLeastOneFunction = functionsThisCell.length > 0;
   const noErrors = analysisResult?.parse_errors.length === 0;
   const enabled = atLeastOneFunction && noErrors;

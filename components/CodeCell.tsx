@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
+import type { ActivitySession } from '../src/activitySession';
 import {
   isExecutionError,
   isExecutionFailed,
@@ -29,7 +30,6 @@ import {
 import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import useAnalysisResult from '../src/useAnalysisResult';
 import { useIsHydrated } from '../src/useIsHydrated';
-import { PythonAnalyzer } from '../src/usePythonAnalyzer';
 import AutomaticEvaluationSwitch from './AutomaticEvaluationSwitch';
 import { EllipsisTip, NoOutputTip } from './CodeCellTips';
 import CodeEditor from './CodeEditor';
@@ -40,18 +40,17 @@ import RunButton from './RunButton';
 import StaleOutputBadge from './StaleOutputBadge';
 
 export default function CodeCell({
-  initialSource,
-  currentSource,
   codeCellExecutionState,
   onResetExecutionState,
   onSourceChanged,
   onExecutionRequestEvent,
   onExecutionRequested,
+  onRuntimeErrorDismissed = undefined,
   firstLineNumber,
   activityVariant,
   platformConfig,
   resetCounter,
-  pythonAnalyzer,
+  activitySession,
   cellIdx,
   setOutputAreaRef,
   extraPythonFiles = [],
@@ -63,18 +62,17 @@ export default function CodeCell({
   automaticEvaluation = undefined,
   setAutomaticEvaluation = undefined,
 }: {
-  initialSource: string;
-  currentSource: string;
   codeCellExecutionState: CodeCellExecutionState;
   onResetExecutionState: () => void;
   onSourceChanged: (newSource: string) => void;
   onExecutionRequestEvent: (executionUUID: string) => void;
   onExecutionRequested: (executionUUID: string) => Promise<void>;
+  onRuntimeErrorDismissed?: () => void;
   firstLineNumber: number;
   activityVariant: ActivityVariant;
   platformConfig: PlatformConfiguration;
   resetCounter: number;
-  pythonAnalyzer: PythonAnalyzer | null;
+  activitySession: ActivitySession;
   cellIdx: number;
   getOutputAreaRef?: () => OutputAreaRef | null;
   setOutputAreaRef: (
@@ -104,17 +102,11 @@ export default function CodeCell({
 
   const [isWaitingForInput, setIsWaitingForInput] = useState(false);
 
-  const analysisResult = useAnalysisResult(pythonAnalyzer, cellIdx);
+  const analysisResult = useAnalysisResult(activitySession, cellIdx);
 
   const extraPythonFilesAnalysisResults = useMemo(() => {
-    if (!pythonAnalyzer) {
-      return [];
-    }
-    return extraPythonFiles.map((file) => ({
-      name: file.name,
-      analysisResult: pythonAnalyzer.analyzeExtraPythonFile(file),
-    }));
-  }, [pythonAnalyzer, extraPythonFiles]);
+    return activitySession.analyzeExtraPythonFiles(extraPythonFiles);
+  }, [activitySession, extraPythonFiles]);
 
   const ellipsis = (analysisResult?.ellipsis.length ?? 0) > 0;
 
@@ -171,10 +163,10 @@ export default function CodeCell({
     onExecutionRequestEvent(executionRequestUUID);
 
     // Check for static errors before executing
-    const diagnosticsUpToCurrentCell =
-      pythonAnalyzer!.getDiagnosticsCountUpTo(cellIdx);
-    const diagnosticsUpToPreviousCells =
-      pythonAnalyzer!.getDiagnosticsCountUpTo(cellIdx - 1);
+    const {
+      upToCell: diagnosticsUpToCurrentCell,
+      beforeCell: diagnosticsUpToPreviousCells,
+    } = activitySession.diagnosticCounts(cellIdx, metadata.liveAnalysis);
     const currentCellDiagnostics =
       diagnosticsUpToCurrentCell - diagnosticsUpToPreviousCells;
     if (diagnosticsUpToCurrentCell === 0) {
@@ -237,18 +229,16 @@ export default function CodeCell({
       <Card sx={{ overflow: 'visible' }}>
         <CardContent>
           <CodeEditor
-            initialSource={initialSource}
-            currentSource={currentSource}
             onChange={onSourceChanged}
             onExecutionRequested={handleExecutionRequest}
             executionAllowed={runButtonEnabled}
             showRuntimeAnnotations={executionFinished && outputSynced}
+            onRuntimeErrorDismissed={onRuntimeErrorDismissed}
             firstLineNumber={firstLineNumber}
             readOnly={readOnly}
             executionResponse={executionResponse}
             resetCounter={resetCounter}
-            pythonAnalyzer={pythonAnalyzer}
-            cellIdx={cellIdx}
+            context={activitySession.editorContext(cellIdx)}
             setHoveredName={setHoveredName}
             pythonMode={pythonMode}
           />

@@ -7,6 +7,7 @@ import {
   Drawer,
   IconButton,
   ListItemButton,
+  Paper,
   Stack,
   Toolbar,
 } from '@mui/material';
@@ -18,15 +19,25 @@ import {
   activitiesByAuthorPathname,
   curriculaPathname,
   documentationPathname,
+  evaluatorPathname,
+  idePathname,
   myProgressPathname,
+  playgroundPathname,
 } from '../../src/urlUtils';
+import { Popover, PopoverContent, PopoverTrigger } from '../Popover';
 import ToolboxListSidebar from '../sidebar/ToolboxListSidebar';
 import FeedbackButton from './FeedbackButton';
 import NotificationsButton from './NotificationsButton';
 import RapidEvaluatorButton from './RapidEvaluatorButton';
 import SettingsButton from './SettingsButton';
 
-const navItems = [
+type NavItem = {
+  name: string;
+  url?: string;
+  children?: { name: string; url: string }[];
+};
+
+const navItems: NavItem[] = [
   {
     name: 'activities',
     url: activitiesByAuthorPathname('luce'),
@@ -34,6 +45,14 @@ const navItems = [
   {
     name: 'curricula',
     url: curriculaPathname(),
+  },
+  {
+    name: 'program',
+    children: [
+      { name: 'playground', url: playgroundPathname() },
+      { name: 'evaluator', url: evaluatorPathname() },
+      { name: 'ide', url: idePathname() },
+    ],
   },
   {
     name: 'my-progress',
@@ -48,6 +67,33 @@ const navItems = [
     url: aboutPathname(),
   },
 ];
+
+function NavPopoverButton({ item }: { item: NavItem }) {
+  const { t } = useLocalTranslation();
+  return (
+    <Popover placement='bottom'>
+      <PopoverTrigger>
+        <Button
+          style={{ textTransform: 'none' }}
+          sx={{ color: theme.palette.text.primary }}
+        >
+          {t(item.name)}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent>
+        <Paper sx={{ paddingY: 0.5, minWidth: 160 }}>
+          <Stack>
+            {(item.children || []).map((child) => (
+              <ListItemButton component='a' key={child.url} href={child.url}>
+                {t(child.name)}
+              </ListItemButton>
+            ))}
+          </Stack>
+        </Paper>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 function PyTamaroHomeLogo() {
   return (
@@ -141,16 +187,18 @@ export default function NavigationBar({
             >
               <Stack direction='column'>
                 <PyTamaroHomeLogo />
-                {navItems.map((item) => (
-                  <ListItemButton
-                    component='a'
-                    key={item.url}
-                    href={item.url}
-                    sx={{ px: 0.5 }}
-                  >
-                    {t(item.name)}
-                  </ListItemButton>
-                ))}
+                {navItems.flatMap((item) =>
+                  (item.children ?? [item]).map((link) => (
+                    <ListItemButton
+                      component='a'
+                      key={link.url}
+                      href={link.url}
+                      sx={{ px: 0.5 }}
+                    >
+                      {t(link.name)}
+                    </ListItemButton>
+                  )),
+                )}
               </Stack>
               <Divider sx={{ m: 1 }} />
               <ToolboxListSidebar skipPopup />
@@ -173,20 +221,24 @@ export default function NavigationBar({
           }}
         >
           <PyTamaroHomeLogo />
-          {navItems.map((item) => (
-            <Button
-              href={item.url}
-              key={item.url}
-              style={{
-                textTransform: 'none',
-              }}
-              sx={{
-                color: theme.palette.text.primary,
-              }}
-            >
-              {t(item.name)}
-            </Button>
-          ))}
+          {navItems.map((item) =>
+            item.children !== undefined ? (
+              <NavPopoverButton key={item.name} item={item} />
+            ) : (
+              <Button
+                href={item.url}
+                key={item.url}
+                style={{
+                  textTransform: 'none',
+                }}
+                sx={{
+                  color: theme.palette.text.primary,
+                }}
+              >
+                {t(item.name)}
+              </Button>
+            ),
+          )}
         </Stack>
 
         <Stack

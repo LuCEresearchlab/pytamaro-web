@@ -2,14 +2,14 @@ import DownloadIcon from '@mui/icons-material/Download';
 import { Button } from '@mui/material';
 import { useTranslation } from 'next-i18next';
 import downloadSourceCode from '../src/codeDownload';
-import { CodeCellState } from '../src/localStorage/schema';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
-import { PythonFile } from '../src/schemas/activitySchema';
+import type { ActivitySession } from '../src/activitySession';
+import type { PythonFile } from '../src/schemas/activitySchema';
 import { joinLines } from '../src/sourceUtils';
 import { sourceFromCell } from '../src/useActivity';
 
-function formatCells(codeCells: CodeCellState[]) {
-  const sources = codeCells.map(sourceFromCell);
+function formatCells(activitySession: ActivitySession) {
+  const sources = activitySession.getCodeCells().map(sourceFromCell);
   const formattedSources = sources.flatMap((source, idx) => [
     `# === Code Cell ${idx + 1} ===`,
     source,
@@ -19,10 +19,10 @@ function formatCells(codeCells: CodeCellState[]) {
 }
 
 export default function DownloadCodeButton({
-  codeCells,
+  activitySession,
   extraPythonFiles = [],
 }: {
-  codeCells: CodeCellState[];
+  activitySession: ActivitySession;
   extraPythonFiles?: PythonFile[];
 }) {
   const { getFunction } = useLocalToolbox();
@@ -34,7 +34,7 @@ export default function DownloadCodeButton({
       startIcon={<DownloadIcon />}
       onClick={() =>
         downloadSourceCode(
-          formatCells(codeCells),
+          formatCells(activitySession),
           extraPythonFiles,
           getFunction,
         )

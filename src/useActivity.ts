@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { debounce, uniqBy } from 'lodash';
+import { uniqBy } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import {
   Dispatch,
@@ -7,9 +7,11 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useSyncExternalStore,
 } from 'react';
 import useSessionStorageState from 'use-session-storage-state';
 import { OutputAreaRef } from '../components/input_output/OutputArea';
+import type { ActivitySession } from './activitySession';
 import logAnalyticsEvent, { AnalyticsEventName } from './analyticsEvent';
 import {
   ExecutionResponse,
@@ -27,7 +29,6 @@ import {
   extractMetadataForEvent,
   getDefaultActivityVariantMetadata,
 } from './localStorage/schema';
-import useLocalToolbox from './localStorage/useLocalToolbox';
 import {
   ActivityVariant,
   PythonFile,
@@ -86,22 +87,29 @@ export function sourceFromCell(cell: CodeCellState) {
 }
 
 export function useActivity(
-  initialCodeCells: CodeCellState[],
-  codeCells: CodeCellState[],
-  setCodeCells: Dispatch<SetStateAction<CodeCellState[]>>,
+  activitySession: ActivitySession,
   metadata: Metadata,
   setMetadata: Dispatch<SetStateAction<Metadata>>,
   activityVariant: ActivityVariant,
   extraPythonFiles: PythonFile[],
-  getExtraToolboxFunction: () => ToolboxFunction | undefined = () => undefined,
   postExecuteSingleCell: (
     idx: number,
     executionResponse: ExecutionResponse,
   ) => void = () => {},
 ) {
-  const { getFunction } = useLocalToolbox();
   const variantId = activityVariantId(activityVariant);
   const variantMetadata = metadata.activities.find((a) => a.id === variantId);
+
+  const codeCells = useSyncExternalStore(
+    activitySession.subscribe,
+    activitySession.getCodeCells,
+    activitySession.getCodeCells,
+  );
+  const initialCodeCells = useSyncExternalStore(
+    activitySession.subscribe,
+    activitySession.getInitialCodeCells,
+    activitySession.getInitialCodeCells,
+  );
 
   const { executorState, execute, restart } = useContext(ExecutorContext);
 
@@ -150,10 +158,10 @@ export function useActivity(
   }, [variantId, setMetadata]);
 
   useEffect(() => {
-    if (codeCells.length === 0 && !completed) {
+    if (activitySession.getCodeCells().length === 0 && !completed) {
       markAsCompleted();
     }
-  }, [codeCells, completed, markAsCompleted]);
+  }, [activitySession, completed, markAsCompleted]);
 
   const initialCodeCellsSerialized = JSON.stringify(initialCodeCells);
   const codeCellsSerialized = JSON.stringify(codeCells);
@@ -178,27 +186,19 @@ export function useActivity(
     );
   }, [codeCellsSerialized, initialCodeCellsSerialized, variantId, setMetadata]);
 
-  // Small debounce because this is potentially called on every keystroke.
-  // The setters persist data on Local/Session Storage
-  // and we don't want to write synchronously too often.
-  const handleSourceChanged = debounce((newSource: string, idx: number) => {
-    setCodeCells((currentCodeCells) =>
-      produce(currentCodeCells, (draft) => {
-        draft[idx].source = newSource;
-      }),
-    );
+  // For example after a source change,
+  // the output of all the cells from `idx` is (potentially) no longer in sync
+  const handleInvalidateOutputsFrom = (idx: number) => {
     setCodeExecutionStates((currentCodeExecutionStates) =>
       produce(currentCodeExecutionStates, (draft) => {
-        // Output of all the cells from `idx` is (potentially) no longer in sync
-        for (let i = idx; i < codeCells.length; i += 1) {
+        for (let i = idx; i < draft.length; i += 1) {
           draft[i].outputSynced = false;
         }
       }),
     );
-  }, 50);
+  };
 
-  const sourcesUpTo = (idx: number) =>
-    codeCells.slice(0, idx + 1).map(sourceFromCell);
+  const sourcesUpTo = (idx: number) => activitySession.getSourcesUpTo(idx);
 
   const executionPartiallyCompleted = (idx: number) => {
     setCodeExecutionStates((currentCodeExecutionStates) =>
@@ -224,7 +224,10 @@ export function useActivity(
           draft[idx].executionResponse = response;
           draft[idx].outputSynced = true;
           draft[idx].outputAreaVisible = hasOutput(response);
-          if (response.type === 'success' && idx === codeCells.length - 1) {
+          if (
+            response.type === 'success' &&
+            idx === activitySession.getCodeCells().length - 1
+          ) {
             // Mark the activity as completed when the last cell has been executed successfully.
             markAsCompleted();
           } else if (response.type === 'failure') {
@@ -268,39 +271,28 @@ export function useActivity(
     );
   };
 
-  const retrieveToolboxSources = async (idx: number, sources: string[]) => {
-    const extraToolboxFn = getExtraToolboxFunction();
-
-    const functionLookup = (name: string) => {
-      if (extraToolboxFn && extraToolboxFn.name === name) {
-        return extraToolboxFn;
-      }
-      return getFunction(name);
-    };
+  const retrieveToolboxSources = async (sources: string[]) => {
+    // The session already merges the extra functions with the saved toolbox
+    // (extras first), so analysis and execution see the same functions.
+    const toolboxFunctions = activitySession.getToolboxFunctions();
+    const functionLookup = (name: string) =>
+      toolboxFunctions.find((fn) => fn.name === name);
 
     const toolboxFunctionsByCell = await Promise.all(
       sources.map((source) =>
         transitivelyImportedToolboxFunctions(source, functionLookup),
       ),
     );
-    const toolboxFunctions = uniqBy(
-      toolboxFunctionsByCell.flat(),
-      (fn) => fn.name,
-    );
-    return toolboxFunctions;
+    return uniqBy(toolboxFunctionsByCell.flat(), (fn) => fn.name);
   };
 
   const handleExecutionRequestEvent = async (
     idx: number,
     executionUUID: string,
     pythonMode: PythonMode,
-    sourceIdxOverride?: string,
   ) => {
     const sources = sourcesUpTo(idx);
-    if (sourceIdxOverride !== undefined) {
-      sources[idx] = sourceIdxOverride;
-    }
-    const toolboxFunctions = await retrieveToolboxSources(idx, sources);
+    const toolboxFunctions = await retrieveToolboxSources(sources);
     logAnalyticsEvent(AnalyticsEventName.CodeExecution, {
       activity: variantId,
     });
@@ -323,7 +315,6 @@ export function useActivity(
     executionUUID: string,
     pythonMode: PythonMode,
     getOutputRef: (execIdx: number) => OutputAreaRef | null,
-    sourceIdxOverride?: string,
   ) => {
     if (executorState.type === 'loading') {
       // eslint-disable-next-line no-console
@@ -339,10 +330,7 @@ export function useActivity(
     }
 
     const sources = sourcesUpTo(idx);
-    if (sourceIdxOverride !== undefined) {
-      sources[idx] = sourceIdxOverride;
-    }
-    const toolboxFunctions = await retrieveToolboxSources(idx, sources);
+    const toolboxFunctions = await retrieveToolboxSources(sources);
 
     // (Re-)Execute all cells from the first one to the current one, included.
     // Before starting, we mark the output of these cells as not synced.
@@ -409,7 +397,7 @@ export function useActivity(
 
   const confirm = useConfirm();
   const handleResetAllCellsNoConfirm = () => {
-    setCodeCells(initialCodeCells);
+    activitySession.setCodeCells(initialCodeCells);
     setCodeExecutionStates(initialCodeExecutionStates());
   };
 
@@ -428,8 +416,8 @@ export function useActivity(
       confirmationText: 'Ok, delete my code',
     }).then(({ confirmed }) => {
       if (confirmed) {
-        setCodeCells((currentCodeCells) =>
-          produce(currentCodeCells, (draft) => {
+        activitySession.setCodeCells(
+          produce(activitySession.getCodeCells(), (draft) => {
             draft[idx] = initialCodeCells[idx];
           }),
         );
@@ -451,13 +439,12 @@ export function useActivity(
     });
 
   return {
-    initialCodeCells,
+    activitySession,
     codeCells,
     codeExecutionStates,
     completed,
     cellsModified,
-    sourcesUpTo,
-    handleSourceChanged,
+    handleInvalidateOutputsFrom,
     handleExecutionRequestEvent,
     handleExecute,
     handleToggleOutputArea,
@@ -467,3 +454,5 @@ export function useActivity(
     handleRestartPyodide,
   };
 }
+
+export type ActivityState = ReturnType<typeof useActivity>;

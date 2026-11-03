@@ -31,19 +31,21 @@ import { useEffect } from 'react';
 import ActivityCardMedia from '../components/ActivityCardMedia';
 import Carousel from '../components/Carousel';
 import DocElement from '../components/documentation/DocElement';
-import { STRICT_PYTHON3_LANG_ID } from '../components/editor/strictPython3';
 import ExecutionOutputArea from '../components/input_output/ExecutionOutputArea';
 import NavBarButton from '../components/navbar/NavBarButton';
 import NavigationBar from '../components/navbar/NavigationBar';
 import PlatformLanguageControl from '../components/navbar/PlatformLanguageControl';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/Popover';
 import { useDocumentationElements } from '../src/documentation';
+import useMonacoColorizer, {
+  COLORIZE_CLASSNAME,
+} from '../src/editor/colorizer';
+import { STRICT_PYTHON3_LANG_ID } from '../src/editor/strictPython3';
 import {
   basicActivities,
   listVisibleActivities,
 } from '../src/fs-content/activities';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import useMonacoColorizer, { COLORIZE_CLASSNAME } from '../src/monacoColorizer';
 import { playgroundActivityVariant } from '../src/playground';
 import { PythonName } from '../src/python-analyzer/python_analyzer';
 import { BasicActivity } from '../src/schemas/activitySchema';

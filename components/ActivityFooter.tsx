@@ -1,31 +1,27 @@
 import { Container, Divider, Stack } from '@mui/material';
-import { CodeCellState } from '../src/localStorage/schema';
-import useLocalActivity from '../src/localStorage/useLocalActivity';
 import { Activity, ActivityVariant } from '../src/schemas/activitySchema';
 import { AuthorProfile } from '../src/schemas/authorSchema';
 import { Curriculum } from '../src/schemas/curriculumSchema';
+import type { ActivityState } from '../src/useActivity';
 import AttributionInfo from './AttributionInfo';
 import CodeDownloadButton from './CodeDownloadButton';
 import FinishHourOfCodeButton from './FinishHourOfCodeButton';
 import NavigateToActivity from './NavigateToActivityButton';
 
 export default function ActivityFooter({
+  activityState,
   activityVariant,
-  initialCodeCells,
   author,
   activity,
   curriculum,
 }: {
+  activityState: ActivityState;
   activityVariant: ActivityVariant;
-  initialCodeCells: CodeCellState[];
   author: AuthorProfile;
   activity: Activity;
   curriculum: Curriculum | undefined;
 }) {
-  const { codeCells, completed } = useLocalActivity(
-    initialCodeCells,
-    activityVariant,
-  );
+  const { codeCells, completed } = activityState;
 
   return (
     <>
@@ -49,7 +45,7 @@ export default function ActivityFooter({
         )}
         {codeCells.length > 0 && (
           <CodeDownloadButton
-            codeCells={codeCells}
+            activitySession={activityState.activitySession}
             extraPythonFiles={activity.extraPythonFiles}
           />
         )}

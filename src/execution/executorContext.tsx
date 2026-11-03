@@ -1,11 +1,10 @@
 import { createContext, ReactNode, useEffect, useRef, useState } from 'react';
 import { OutputAreaRef } from '../../components/input_output/OutputArea';
 import { ToolboxFunction } from '../localStorage/schema';
-import { PythonFile } from '../schemas/activitySchema';
 import { ExecutionResponse, PythonMode } from './codeExecution';
 import { ExecutorClient, ExecutorState } from './executorClient';
 import { ExecutorDelegate } from './executorDelegate';
-import { ExecutionMetadata } from './messageTypes';
+import { ExecutionMetadata, RunPythonFile } from './messageTypes';
 
 export interface IExecutor {
   executorState: ExecutorState;
@@ -13,12 +12,14 @@ export interface IExecutor {
     sources: string[],
     idx: number,
     toolboxFunctions: ToolboxFunction[],
-    extraPythonFiles: PythonFile[],
+    extraPythonFiles: RunPythonFile[],
     executionMetadata: ExecutionMetadata,
     pythonMode: PythonMode,
     updateExecutionResult?: (idx: number, response: ExecutionResponse) => void,
     onActiveCellChange?: (before: number | null, after: number) => void,
     getOutputRef?: (idx: number) => OutputAreaRef | null,
+    fileNames?: string[],
+    workspaceFiles?: string[],
   ) => Promise<ExecutionResponse>;
   interruptExecution: () => void;
   restart: () => Promise<void>;
@@ -48,12 +49,14 @@ export function ExecutorProvider({ children }: { children: ReactNode }) {
     sources: string[],
     idx: number,
     toolboxFunctions: ToolboxFunction[],
-    extraPythonFiles: PythonFile[],
+    extraPythonFiles: RunPythonFile[],
     executionMetadata: ExecutionMetadata,
     pythonMode: PythonMode,
     updateExecutionResult?: (idx: number, response: ExecutionResponse) => void,
     onActiveCellChange?: (before: number | null, after: number) => void,
     getOutputRef?: (idx: number) => OutputAreaRef | null,
+    fileNames: string[] = [],
+    workspaceFiles: string[] | undefined = undefined,
   ) => {
     if (
       executorState.type !== 'available' ||
@@ -71,6 +74,8 @@ export function ExecutorProvider({ children }: { children: ReactNode }) {
       updateExecutionResult ? updateExecutionResult : () => {},
       onActiveCellChange ? onActiveCellChange : () => {},
       getOutputRef ? getOutputRef : () => null,
+      fileNames,
+      workspaceFiles,
     );
   };
 

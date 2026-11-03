@@ -22,7 +22,7 @@ use ruff_source_file::{LineIndex, OneIndexed, SourceLocation};
 use ruff_text_size::{Ranged, TextSize};
 use ty_ide::{NavigationTarget, NavigationTargets, RangedValue, goto_declaration};
 use ty_project::metadata::options::Options;
-use ty_project::watch::{ChangeEvent, ChangedKind, CreatedKind};
+use ty_project::watch::{ChangeEvent, ChangedKind, CreatedKind, DeletedKind};
 use ty_project::{CheckMode, ProjectMetadata};
 use ty_project::{Db, ProjectDatabase, SemanticDb as _};
 use ty_python_core::program::FallibleStrategy;
@@ -841,7 +841,6 @@ impl Workspace {
         Ok(())
     }
 
-    /*
     #[wasm_bindgen(js_name = "closeFile")]
     #[allow(
         clippy::needless_pass_by_value,
@@ -868,7 +867,6 @@ impl Workspace {
 
         Ok(())
     }
-    */
 
     /// Checks a single file.
     #[wasm_bindgen(js_name = "checkFile")]
@@ -903,6 +901,7 @@ impl Workspace {
 
         Ok(format!("{:#?}", parsed.tokens()))
     }
+    */
 
     #[wasm_bindgen(js_name = "sourceText")]
     pub fn source_text(&self, file_id: &FileHandle) -> Result<String, Error> {
@@ -911,6 +910,7 @@ impl Workspace {
         Ok(source_text.to_string())
     }
 
+    /*
     #[wasm_bindgen(js_name = "gotoTypeDefinition")]
     pub fn goto_type_definition(
         &self,

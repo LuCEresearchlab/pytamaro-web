@@ -43,8 +43,7 @@ export default function useLocalToolbox() {
     );
   };
 
-  // List by default in reverse insertion order
-  const list = () => metadata.toolbox.slice().reverse();
+  const list = () => listToolboxFunctions(metadata.toolbox);
 
   return {
     add,
@@ -54,4 +53,9 @@ export default function useLocalToolbox() {
     list,
     exists,
   };
+}
+
+// List by default in reverse insertion order
+export function listToolboxFunctions(toolbox: ToolboxFunction[]) {
+  return toolbox.slice().reverse();
 }
