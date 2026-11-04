@@ -26,15 +26,6 @@ export function EvaluatorContent({
   const [automaticEvaluation, setAutomaticEvaluation] = useState(true);
   const { executorState } = useContext(ExecutorContext);
 
-  // Effect to reset to the initial state when mounting and unmounting.
-  useEffect(() => {
-    activityState.handleResetAllCellsNoConfirm();
-    return () => {
-      activityState.handleResetAllCellsNoConfirm();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <Box className='evaluator'>
       <Alert
@@ -87,6 +78,15 @@ export default function RapidEvaluator() {
     initialCodeCells,
     rapidEvaluatorActivityVariant,
   );
+
+  // Effect to reset to the initial state when mounting and unmounting.
+  useEffect(() => {
+    activityState.handleResetAllCellsNoConfirm();
+    return () => {
+      activityState.handleResetAllCellsNoConfirm();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return <EvaluatorContent activityState={activityState} />;
 }
