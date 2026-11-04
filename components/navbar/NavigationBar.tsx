@@ -1,3 +1,10 @@
+import {
+  AccountTree,
+  Code,
+  PlayCircle,
+  PlayLesson,
+  Route,
+} from '@mui/icons-material';
 import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar,
@@ -7,11 +14,12 @@ import {
   Drawer,
   IconButton,
   ListItemButton,
+  ListItemIcon,
   Paper,
   Stack,
   Toolbar,
 } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState, type ReactNode } from 'react';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import theme from '../../src/theme';
 import {
@@ -34,24 +42,31 @@ import SettingsButton from './SettingsButton';
 type NavItem = {
   name: string;
   url?: string;
-  children?: { name: string; url: string }[];
+  children?: { name: string; url: string; icon: ReactNode }[];
 };
 
 const navItems: NavItem[] = [
   {
-    name: 'activities',
-    url: activitiesByAuthorPathname('luce'),
-  },
-  {
-    name: 'curricula',
-    url: curriculaPathname(),
+    name: 'learn',
+    children: [
+      {
+        name: 'activities',
+        url: activitiesByAuthorPathname('luce'),
+        icon: <PlayLesson />,
+      },
+      { name: 'curricula', url: curriculaPathname(), icon: <Route /> },
+    ],
   },
   {
     name: 'program',
     children: [
-      { name: 'playground', url: playgroundPathname() },
-      { name: 'evaluator', url: evaluatorPathname() },
-      { name: 'ide', url: idePathname() },
+      { name: 'evaluator', url: evaluatorPathname(), icon: <Code /> },
+      {
+        name: 'playground',
+        url: playgroundPathname(),
+        icon: <PlayCircle />,
+      },
+      { name: 'ide', url: idePathname(), icon: <AccountTree /> },
     ],
   },
   {
@@ -71,7 +86,7 @@ const navItems: NavItem[] = [
 function NavPopoverButton({ item }: { item: NavItem }) {
   const { t } = useLocalTranslation();
   return (
-    <Popover placement='bottom'>
+    <Popover placement='bottom-start'>
       <PopoverTrigger>
         <Button
           style={{ textTransform: 'none' }}
@@ -83,11 +98,16 @@ function NavPopoverButton({ item }: { item: NavItem }) {
       <PopoverContent>
         <Paper sx={{ paddingY: 0.5, minWidth: 160 }}>
           <Stack>
-            {(item.children || []).map((child) => (
-              <ListItemButton component='a' key={child.url} href={child.url}>
-                {t(child.name)}
-              </ListItemButton>
-            ))}
+            {(item.children || []).map((child) => {
+              return (
+                <ListItemButton component='a' key={child.url} href={child.url}>
+                  <ListItemIcon sx={{ minWidth: 36 }}>
+                    {child.icon}
+                  </ListItemIcon>
+                  {t(child.name)}
+                </ListItemButton>
+              );
+            })}
           </Stack>
         </Paper>
       </PopoverContent>

@@ -1,12 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
-import { MenuBookOutlined, Translate } from '@mui/icons-material';
+import { MenuBookOutlined, PlayLesson, Translate } from '@mui/icons-material';
 import Download from '@mui/icons-material/Download';
 import GitHub from '@mui/icons-material/GitHub';
 import PlayCircle from '@mui/icons-material/PlayCircle';
 import Route from '@mui/icons-material/Route';
 import School from '@mui/icons-material/School';
 import Science from '@mui/icons-material/Science';
-import TipsAndUpdates from '@mui/icons-material/TipsAndUpdates';
 import {
   Box,
   Button,
@@ -558,7 +557,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                 <CardHeader
                   title={t('home:activities.title')}
                   sx={{ pb: 0 }}
-                  avatar={<TipsAndUpdates color='primary' />}
+                  avatar={<PlayLesson color='primary' />}
                   slotProps={{
                     title: {
                       variant: 'h5',
