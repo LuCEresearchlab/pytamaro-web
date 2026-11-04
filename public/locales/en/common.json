@@ -47,7 +47,7 @@
     "overwriteFilesAreYouSure": "Overwrite existing files?",
     "overwriteFilesWarning": "The following files already exist: {{names}}. Do you want to replace them with the imported files?",
     "overwriteFiles": "Overwrite",
-    "files": "File manager",
+    "fileManager": "File manager",
     "closeFileTab": "Close {{name}}",
     "noFileOpen": "No file open",
     "noFileOpenHint": "Open a file from the file manager to start editing, or create a new one.",

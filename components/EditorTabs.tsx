@@ -35,6 +35,7 @@ export default function EditorTabs({
             backgroundColor: theme.pytamaro.palette.background.light,
           },
         }}
+        data-testid='editor-tabs'
       >
         {fileNames.map((name) => (
           <Tab

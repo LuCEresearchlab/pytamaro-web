@@ -292,7 +292,7 @@ export default function Ide() {
                 }}
               >
                 <SidebarTitle sx={{ paddingBottom: 0 }}>
-                  {t('files')}
+                  {t('fileManager')}
                 </SidebarTitle>
                 <Stack direction='row' sx={{ flexWrap: 'wrap' }}>
                   <Tooltip arrow title={t('downloadFilesAsZip')}>

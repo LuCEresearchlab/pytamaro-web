@@ -1,5 +1,6 @@
 import {
   dismissDataCollectionModal,
+  typeMonacoCode,
   waitForMonacoEditor,
 } from '../support/utils';
 
@@ -10,50 +11,49 @@ describe('Playground Page', () => {
     cy.visit('/playground');
   });
 
-  it('should contain 1 card with at least 1 line', () => {
-    cy.get('.MuiCard-root').should('have.length', 1);
+  it('should contain some initial code', () => {
+    waitForMonacoEditor();
     cy.get('.view-line').should('have.length.at.least', 2);
   });
 
   it('should allow sharing a link to the current code', () => {
     dismissDataCollectionModal();
     waitForMonacoEditor();
-    cy.get('.monaco-editor').first().type('{selectall}{backspace}');
+
     const code = 'print("Shared!")';
-    cy.get('.monaco-editor').first().type(code);
-    // The share button is currently 1s debounced because it takes data from window.location.
-    // Ideally, clicking the share button would immediately reflect the latest code.
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(1000);
+    typeMonacoCode(code);
 
+    // Capture what the share button writes to the clipboard instead of reading
+    // the real clipboard: Chrome refuses clipboard reads when the document is
+    // not focused, which is the case in Cypress.
     // https://github.com/cypress-io/cypress/issues/18198
-    cy.get('[data-testid="share-button"]').focus();
-    cy.get('[data-testid="share-button"]').dblclick();
-
-    // Grant clipboard permissions
-    cy.wrap(
-      Cypress.automation('remote:debugger:protocol', {
-        command: 'Browser.grantPermissions',
-        params: {
-          permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'],
-          origin: window.location.origin,
+    let sharedUrl = '';
+    cy.window().then((win) => {
+      cy.stub(win.navigator.clipboard, 'write').callsFake(
+        async (items: ClipboardItem[]) => {
+          const blob = await items[0].getType('text/plain');
+          sharedUrl = await blob.text();
         },
-      }),
-    );
+      );
+      cy.stub(win.navigator.clipboard, 'writeText').callsFake(
+        async (text: string) => {
+          sharedUrl = text;
+        },
+      );
+    });
 
-    cy.window()
-      .then((win) => win.navigator.clipboard.readText())
-      .then((url) => {
-        // Clear the editor
-        cy.get('.monaco-editor')
-          .first()
-          .type('{selectall}{backspace}gibberish');
-        cy.get('.monaco-editor').first().should('not.contain.text', code);
-        // Expect the content to be back after visiting the shared URL
-        cy.visit(url);
-        cy.contains('button', 'replace my code').click();
-        cy.get('.monaco-editor').first().should('contain.text', code);
-      });
+    cy.get('[data-testid="share-button"]').click();
+    cy.wrap(null).should(() => {
+      expect(sharedUrl).to.contain('c=');
+    });
+
+    typeMonacoCode('gibberish');
+    cy.get('.monaco-editor').first().should('not.contain.text', code);
+
+    // Expect the content to be back after visiting the shared URL
+    cy.then(() => cy.visit(sharedUrl));
+    cy.contains('button', 'replace my code').click();
+    cy.get('.monaco-editor').first().should('contain.text', code);
   });
 
   it('should load uncompressed base64 code from URL', () => {

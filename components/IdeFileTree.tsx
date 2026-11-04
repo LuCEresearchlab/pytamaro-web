@@ -527,6 +527,7 @@ export default function IdeFileTree({
             onOpenFile(itemId);
           }
         }}
+        data-testid='file-tree'
       >
         {tree.map(renderNode)}
         {createRowFor('')}
@@ -536,7 +537,7 @@ export default function IdeFileTree({
           title={t('addEmptyFile')}
           onClick={() => startCreate('file', '')}
         >
-          <NoteAddOutlined fontSize='small' />
+          <NoteAddOutlined fontSize='small' data-testid='new-file-button' />
         </ActionButton>
         <ActionButton
           title={t('addFolder')}

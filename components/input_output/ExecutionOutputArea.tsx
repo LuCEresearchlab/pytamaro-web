@@ -41,7 +41,7 @@ function StderrElement({ content }: { content: string }) {
   const { t } = useLocalTranslation();
 
   return (
-    <div className='stderr'>
+    <div data-testid='stderr'>
       <PreElement lines={userTracebackLines} />
       {collapsed && (
         <div>

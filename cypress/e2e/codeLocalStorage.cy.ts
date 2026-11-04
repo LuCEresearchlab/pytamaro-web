@@ -1,14 +1,11 @@
 import { activityVariantPathnameFromParts } from '../../src/urlUtils';
+import {
+  dismissDataCollectionModal,
+  typeMonacoCode,
+  waitForMonacoEditor,
+} from '../support/utils';
 
 export {};
-
-function dismissDataCollectionModal() {
-  cy.contains('OK').click();
-}
-
-function waitForMonacoEditor() {
-  cy.contains('from pytamaro import').should('be.visible');
-}
 
 describe('Code Local Storage', () => {
   it('should persist state after refresh', () => {
@@ -18,8 +15,7 @@ describe('Code Local Storage', () => {
     dismissDataCollectionModal();
     waitForMonacoEditor();
     const source = 'dummy_source = 42';
-    cy.get('.monaco-editor').first().type('{selectall}{backspace}');
-    cy.get('.monaco-editor').first().type(source);
+    typeMonacoCode(source);
     cy.reload();
     waitForMonacoEditor();
     cy.get('.monaco-editor').first().contains(source);

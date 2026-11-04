@@ -46,7 +46,7 @@
     "overwriteFilesAreYouSure": "Vorhandene Dateien überschreiben?",
     "overwriteFilesWarning": "Die folgenden Dateien existieren bereits: {{names}}. Möchtest du sie durch die importierten Dateien ersetzen?",
     "overwriteFiles": "Überschreiben",
-    "files": "Dateimanager",
+    "fileManager": "Dateimanager",
     "closeFileTab": "{{name}} schließen",
     "noFileOpen": "Keine Datei geöffnet",
     "noFileOpenHint": "Öffne eine Datei im Dateimanager, um mit dem Bearbeiten zu beginnen, oder erstelle eine neue.",

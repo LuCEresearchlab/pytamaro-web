@@ -47,7 +47,7 @@
     "overwriteFilesAreYouSure": "Sovrascrivere i file esistenti?",
     "overwriteFilesWarning": "I seguenti file esistono già: {{names}}. Vuoi sostituirli con quelli importati?",
     "overwriteFiles": "Sovrascrivi",
-    "files": "Gestore file",
+    "fileManager": "Gestore file",
     "closeFileTab": "Chiudi {{name}}",
     "noFileOpen": "Nessun file aperto",
     "noFileOpenHint": "Apri un file dal gestore file per iniziare a modificare, oppure creane uno nuovo.",

@@ -137,7 +137,7 @@ export function OutputArea({
     };
   }, [setIsWaitingForInput]);
   return (
-    <div className='output-area' translate='no' style={sx}>
+    <div data-testid='output-area' translate='no' style={sx}>
       {outputChunks.map((outputChunk, outputIdx, chunks) => {
         const graphicOrTextChunks = outputChunk.content
           .split(pytamaroDataUriRegex)
