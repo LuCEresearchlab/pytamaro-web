@@ -60,5 +60,9 @@ describe('IDE', () => {
     cy.get('[data-testid="file-tree"]').should('contain.text', 'out.png');
     cy.get('[data-testid="file-tree"]').contains('out.png').click();
     cy.get('img[alt="out.png"]').should('be.visible');
+    cy.get('[data-testid="binary-file-hex-toggle"]').click();
+    cy.get('[data-testid="hex-file-view"]').should('contain.text', '89504e47');
+    cy.get('[data-testid="binary-file-preview-toggle"]').click();
+    cy.get('img[alt="out.png"]').should('be.visible');
   });
 });
