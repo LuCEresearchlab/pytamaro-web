@@ -3,7 +3,7 @@ import { changelogEntries } from '../../components/ChangelogList';
 import { type ExecutionResponse } from '../execution/codeExecution';
 import { ActivityVariant } from '../schemas/activitySchema';
 
-export const CURRENT_VERSION = '9';
+export const CURRENT_VERSION = '10';
 
 export interface Metadata {
   dataModelVersion: string;
@@ -18,6 +18,7 @@ export interface Metadata {
   lastNotificationSeen: number;
   liveAnalysis: LiveAnalysisStatus;
   wideEditor: boolean;
+  ideLibraries: string[];
 }
 
 export type MetadataForEvent = Pick<
@@ -126,6 +127,7 @@ export function getDefaultMetadata(): Metadata {
     lastNotificationSeen: changelogEntries.length - 1,
     liveAnalysis: LiveAnalysisStatus.Syntax,
     wideEditor: false,
+    ideLibraries: [],
   };
 }
 

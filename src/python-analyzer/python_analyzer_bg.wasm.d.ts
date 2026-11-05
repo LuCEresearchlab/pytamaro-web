@@ -108,6 +108,7 @@ export const filehandle_toString: (a: number, b: number) => void;
 export const findImportedNames: (a: number, b: number, c: number) => void;
 export const initLogging: (a: number) => void;
 export const initWorkspace: (a: number) => void;
+export const initWorkspaceWithLibraries: (a: number, b: number, c: number) => void;
 export const position_new: (a: number, b: number) => number;
 export const pythonname_new: (a: number, b: number, c: number, d: number) => number;
 export const range_new: (a: number, b: number) => number;

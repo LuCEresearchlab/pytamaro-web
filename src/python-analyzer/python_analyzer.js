@@ -5,5 +5,5 @@ import { __wbg_set_wasm } from "./python_analyzer_bg.js";
 __wbg_set_wasm(wasm);
 wasm.__wbindgen_start();
 export {
-    AnalysisResult, CalledName, Diagnostic, FileHandle, LocationLink, LogLevel, ParseError, Position, PositionEncoding, PythonConstant, PythonFunction, PythonFunctionArgument, PythonName, Range, SemanticToken, SemanticTokenKind, TextRange, Workspace, analyzeFile, findImportedNames, initLogging, initWorkspace, run
+    AnalysisResult, CalledName, Diagnostic, FileHandle, LocationLink, LogLevel, ParseError, Position, PositionEncoding, PythonConstant, PythonFunction, PythonFunctionArgument, PythonName, Range, SemanticToken, SemanticTokenKind, TextRange, Workspace, analyzeFile, findImportedNames, initLogging, initWorkspace, initWorkspaceWithLibraries, run
 } from "./python_analyzer_bg.js";

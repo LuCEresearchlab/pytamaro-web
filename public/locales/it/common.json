@@ -55,7 +55,6 @@
     "binaryFilePreview": "Anteprima",
     "binaryFileHex": "Hex",
     "downloadFile": "Scarica file",
-    "readOnly": "Sola lettura",
     "renameFile": "Rinomina file",
     "deleteFile": "Elimina file",
     "fileName": "Nome del file",
@@ -105,6 +104,13 @@
     "library": "Libreria",
     "libraries": "Librerie",
     "selectLibrary": "Seleziona una libreria",
+    "ideLibraries": {
+        "button": "Librerie",
+        "title": "Librerie Python",
+        "description": "Seleziona quali librerie Python installare nell'ambiente di esecuzione.",
+        "close": "Chiudi",
+        "installationFailed": "Impossibile installare la libreria selezionata."
+    },
     "kind": "Genere",
     "selectKind": "Seleziona un genere",
     "textualSearch": "Ricerca testuale",

@@ -14,6 +14,8 @@ export enum MessageType {
   INPUT = 'input',
   PARTIAL_RESULT = 'partial_result',
   SET_ACTIVE_CELL = 'set_active_cell',
+  INSTALL_LIBRARIES = 'install_libraries',
+  LIBRARIES_INSTALLED = 'libraries_installed',
 }
 
 export type MessageData =
@@ -29,7 +31,10 @@ export interface ExecutionMetadata extends MetadataForEvent {
 
 /* ==== Client -> Worker Messages ==== */
 
-export type ExecutorClientMessage = InitMessage | RunMessage;
+export type ExecutorClientMessage =
+  | InitMessage
+  | RunMessage
+  | InstallLibrariesMessage;
 
 /**
  * Initialization message.
@@ -59,6 +64,15 @@ export type RunPythonFile = {
   name: string;
   content: string | Uint8Array;
 };
+
+/**
+ * "Install additional Python libraries" message.
+ */
+export type InstallLibrariesMessage = {
+  type: MessageType.INSTALL_LIBRARIES;
+  uuid: string;
+  libraries: string[];
+};
 /**
  * A file of the IDE workspace whose content changed during an execution.
  */
@@ -80,7 +94,8 @@ export type ExecutorWorkerMessage =
   | ReadyMessage
   | ResultMessage
   | ClientExecutionMessage
-  | SetActiveCellMessage;
+  | SetActiveCellMessage
+  | LibrariesInstalledMessage;
 
 /**
  * Message sent by the executor to signal that it can now accept requests
@@ -168,4 +183,14 @@ export type ClientExecutionResultRequestMessage = {
 export type SetActiveCellMessage = {
   type: MessageType.SET_ACTIVE_CELL;
   idx: number;
+};
+
+/**
+ * Message that signals the outcome of an "install additional Python libraries"
+ * request.
+ */
+export type LibrariesInstalledMessage = {
+  type: MessageType.LIBRARIES_INSTALLED;
+  uuid: string;
+  error?: string;
 };

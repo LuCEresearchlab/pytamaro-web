@@ -5,7 +5,6 @@ import {
   Folder,
   FolderOpen,
   InsertDriveFile,
-  LockOutlined,
   NoteAddOutlined,
   UploadFile,
 } from '@mui/icons-material';
@@ -253,7 +252,6 @@ function RowLabel({
 export type IdeFileTreeProps = {
   fileNames: readonly string[];
   folderNames: readonly string[];
-  readOnlyFiles: ReadonlySet<string>;
   activeFile: string;
   onOpenFile: (path: string) => void;
   onAddFile: (path: string) => boolean;
@@ -273,7 +271,6 @@ export type IdeFileTreeProps = {
 export default function IdeFileTree({
   fileNames,
   folderNames,
-  readOnlyFiles,
   activeFile,
   onOpenFile,
   onAddFile,
@@ -368,9 +365,7 @@ export default function IdeFileTree({
 
   const renderFile = (node: Extract<FileTreeNode, { type: 'file' }>) => {
     const { path, name } = node;
-    const isReadOnly = readOnlyFiles.has(path);
     const isRenaming = edit?.mode === 'rename' && edit.path === path;
-    const showActions = !isReadOnly && !isRenaming;
     return (
       <TreeItem
         key={path}
@@ -381,7 +376,7 @@ export default function IdeFileTree({
           <RowLabel
             actionCount={2}
             actions={
-              showActions ? (
+              isRenaming ? undefined : (
                 <>
                   <ActionButton
                     title={t('renameFile')}
@@ -396,7 +391,7 @@ export default function IdeFileTree({
                     <DeleteOutlined fontSize='small' />
                   </ActionButton>
                 </>
-              ) : undefined
+              )
             }
           >
             {isRenaming ? (
@@ -425,11 +420,6 @@ export default function IdeFileTree({
               >
                 {name}
               </Typography>
-            )}
-            {isReadOnly && (
-              <Tooltip arrow title={t('readOnly')}>
-                <LockOutlined fontSize='small' color='disabled' />
-              </Tooltip>
             )}
           </RowLabel>
         }

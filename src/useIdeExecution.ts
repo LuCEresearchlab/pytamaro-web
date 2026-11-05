@@ -23,7 +23,6 @@ import useLocalProfile from './localStorage/useLocalProfile';
 export default function useIdeExecution(
   workspace: IdeWorkspace,
   activeFile: string,
-  readOnlyFiles: ReadonlySet<string>,
   onWorkspaceChanges: (changes: WorkspaceChanges) => void,
 ) {
   const { execute, executorState, restart } = useContext(ExecutorContext);
@@ -74,7 +73,7 @@ export default function useIdeExecution(
         const content = workspace.content(name);
         return content === undefined ? [] : [{ name, content }];
       });
-    const workspaceFileNames = names.filter((name) => !readOnlyFiles.has(name));
+    const workspaceFileNames = names;
 
     const uuid = crypto.randomUUID();
     setExecutionUUID(uuid);
@@ -87,7 +86,7 @@ export default function useIdeExecution(
       const response = await execute(
         [source],
         0,
-        [],
+        metadata.toolbox,
         extraFiles,
         {
           executionUUID: uuid,
@@ -123,7 +122,6 @@ export default function useIdeExecution(
     executorState.type,
     metadata,
     onWorkspaceChanges,
-    readOnlyFiles,
     restart,
     workspace,
   ]);

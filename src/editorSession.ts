@@ -123,6 +123,19 @@ export class EditorSession {
     return changed;
   }
 
+  /**
+   * Adds files that belong to the toolbox. They are available to the analyzer,
+   * but are not part of the workspace's files.
+   */
+  addToolboxFiles(files: readonly WorkspaceFile[]): boolean {
+    const changed = this.workspace.addToolboxFiles(files);
+    if (changed) {
+      this.notify();
+      fireSemanticTokensChange();
+    }
+    return changed;
+  }
+
   setFileContent(path: string, content: string): void {
     const changed = this.workspace.setFileContent(path, content);
     // Workspace first, so that listeners of the model see the new analysis.
@@ -133,7 +146,23 @@ export class EditorSession {
     }
   }
 
-  /** Returns the paths of all files known to the workspace, open or not. */
+  /**
+   * Tells the analyzer which optional libraries are installed.
+   *
+   * Imports of these libraries are accepted even though the analyzer cannot
+   * read Pyodide's packages.
+   */
+  setKnownLibraries(libraries: readonly string[]): void {
+    if (this.workspace.setKnownLibraries(libraries)) {
+      this.notify();
+      fireSemanticTokensChange();
+    }
+  }
+
+  /**
+   * Returns the paths of the workspace files, open or not. Toolbox files are
+   * not included.
+   */
   files(): readonly string[] {
     return this.workspace.files();
   }

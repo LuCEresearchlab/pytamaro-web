@@ -1,8 +1,10 @@
 import produce from 'immer';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useMemo } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
+import { isOptionalIdeLibrary } from '../ideLibraries';
 import { ActivityVariant, activityVariantId } from '../schemas/activitySchema';
 import { Curriculum, curriculumToId } from '../schemas/curriculumSchema';
+import migrateToV10 from './migrations/v10';
 import migrateToV2 from './migrations/v2';
 import migrateToV3 from './migrations/v3';
 import migrateToV4 from './migrations/v4';
@@ -30,6 +32,7 @@ function migrations(metadata: { dataModelVersion: string }): Metadata {
     6: migrateToV7,
     7: migrateToV8,
     8: migrateToV9,
+    9: migrateToV10,
   };
   const possibleMigration = migrationForVersion[metadata.dataModelVersion];
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
@@ -120,6 +123,11 @@ export default function useLocalProfile() {
     );
   };
 
+  const selectedIdeLibrariesIds = useMemo(
+    () => metadata.ideLibraries.filter(isOptionalIdeLibrary),
+    [metadata.ideLibraries],
+  );
+
   return {
     metadata,
     dataSharingAllowed,
@@ -133,5 +141,6 @@ export default function useLocalProfile() {
     setPlatformLocale,
     docsMetadata,
     setDocsMetadata,
+    selectedIdeLibrariesIds,
   };
 }

@@ -54,7 +54,6 @@
     "binaryFilePreview": "Vorschau",
     "binaryFileHex": "Hex",
     "downloadFile": "Datei herunterladen",
-    "readOnly": "Schreibgeschützt",
     "renameFile": "Datei umbenennen",
     "deleteFile": "Datei löschen",
     "fileName": "Dateiname",
@@ -104,6 +103,13 @@
     "library": "Bibliothek",
     "libraries": "Bibliotheken",
     "selectLibrary": "Wähle eine Bibliothek",
+    "ideLibraries": {
+        "button": "Bibliotheken",
+        "title": "Python-Bibliotheken",
+        "description": "Wähle aus, welche Python-Bibliotheken in der Ausführungsumgebung installiert werden sollen.",
+        "close": "Schließen",
+        "installationFailed": "Die ausgewählte Bibliothek konnte nicht installiert werden."
+    },
     "kind": "Art",
     "selectKind": "Wähle eine Art",
     "textualSearch": "Textsuche",

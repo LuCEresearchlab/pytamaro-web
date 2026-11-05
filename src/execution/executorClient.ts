@@ -85,6 +85,14 @@ export class ExecutorClient {
 
   private readonly executionQueue: PQueue;
 
+  /** The selection of libraries to restore when the worker restarts. */
+  private libraries: string[];
+  /**
+   * Libraries that the current worker has loaded. Pyodide cannot unload
+   * them, so they stay until the worker is replaced.
+   */
+  private readonly loadedLibraries: Set<string>;
+
   private activeCodeCell: number | null;
   private getOutputAreaRef: (idx: number) => OutputAreaRef | null;
 
@@ -155,6 +163,9 @@ export class ExecutorClient {
     this.interruptBuffer = interruptBuffer;
 
     this.executionQueue = new PQueue({ concurrency: 1 });
+
+    this.libraries = [];
+    this.loadedLibraries = new Set();
 
     this.activeCodeCell = null;
     this.setExecutorState = (newState: ExecutorState) => {
@@ -265,6 +276,32 @@ export class ExecutorClient {
     return (await this.executionQueue.add(execution)) as ExecutionResponse;
   }
 
+  /**
+   * Make the given libraries available in the Python environment.
+   *
+   * Idempotent: libraries that are already loaded are skipped. The selection is
+   * remembered, so that a restart of the worker (e.g., after a fatal error)
+   * installs the same libraries again, but only once the installation has
+   * succeeded; a failed attempt leaves the previous selection in place.
+   */
+  async configureLibraries(libraries: readonly string[]): Promise<void> {
+    const unique = Array.from(new Set(libraries));
+    const missing = unique.filter((id) => !this.loadedLibraries.has(id));
+    if (missing.length > 0) {
+      await this.executionQueue.add(() =>
+        this.sendInstallLibrariesRequest(missing),
+      );
+      missing.forEach((id) => this.loadedLibraries.add(id));
+    }
+    this.libraries = unique;
+  }
+
+  hasStaleLibraries(libraries: readonly string[]): boolean {
+    return Array.from(this.loadedLibraries).some(
+      (id) => !libraries.includes(id),
+    );
+  }
+
   interruptExecution(): void {
     this.interruptBuffer[0] = 2; // 2 for SIGINT
     this.getActiveOutputAreaRef()?.deactivatePossibleInputField();
@@ -276,7 +313,20 @@ export class ExecutorClient {
     this.interruptExecution();
     this.pendingResults.clear();
     this.executorWorker.terminate();
-    return ExecutorClient.init(this.delegate, this.setExecutorState);
+    const client = await ExecutorClient.init(
+      this.delegate,
+      this.setExecutorState,
+    );
+    // Remember the selection even if installing it fails below, so that a
+    // later `configureLibraries` call retries the missing libraries.
+    client.libraries = this.libraries;
+
+    try {
+      await client.configureLibraries(this.libraries);
+    } catch {
+      // The packages may not be available (e.g., a network failure).
+    }
+    return client;
   }
 
   private getActiveOutputAreaRef(): OutputAreaRef | null {
@@ -285,7 +335,38 @@ export class ExecutorClient {
       : this.getOutputAreaRef(this.activeCodeCell);
   }
 
+  private sendInstallLibrariesRequest(libraries: string[]): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const uuid = crypto.randomUUID();
+      const listener = (event: MessageEvent<ExecutorWorkerMessage>) => {
+        const { data } = event;
+        if (
+          data.type !== MessageType.LIBRARIES_INSTALLED ||
+          data.uuid !== uuid
+        ) {
+          return;
+        }
+        this.executorWorker.removeEventListener('message', listener);
+        if (data.error !== undefined) {
+          reject(new Error(data.error));
+        } else {
+          resolve();
+        }
+      };
+      this.executorWorker.addEventListener('message', listener);
+      this.executorWorker.postMessage({
+        type: MessageType.INSTALL_LIBRARIES,
+        uuid,
+        libraries,
+      });
+    });
+  }
+
   private handleWorkerMessage(message: ExecutorWorkerMessage): void {
+    if (message.type === MessageType.LIBRARIES_INSTALLED) {
+      // Handled by the listener in sendInstallLibrariesRequest.
+      return;
+    }
     // In this listener, we only process execution requests (messages with an uuid).
     // Messages with the execution result are received by a specific listener in
     // sendExecutionRequestToWorkerAndWaitForResponse.

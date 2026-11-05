@@ -1,4 +1,11 @@
-import { createContext, ReactNode, useEffect, useRef, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { OutputAreaRef } from '../../components/input_output/OutputArea';
 import { ToolboxFunction } from '../localStorage/schema';
 import { ExecutionResponse, PythonMode } from './codeExecution';
@@ -23,6 +30,7 @@ export interface IExecutor {
   ) => Promise<ExecutionResponse>;
   interruptExecution: () => void;
   restart: () => Promise<void>;
+  configureLibraries: (libraries: readonly string[]) => Promise<void>;
 }
 
 export const ExecutorContext = createContext<IExecutor>({
@@ -33,6 +41,9 @@ export const ExecutorContext = createContext<IExecutor>({
     ),
   interruptExecution: () => {},
   restart: async () => {},
+  configureLibraries: async () => {
+    throw new Error('Pyodide Worker is not ready');
+  },
 });
 
 export function ExecutorProvider({ children }: { children: ReactNode }) {
@@ -82,11 +93,30 @@ export function ExecutorProvider({ children }: { children: ReactNode }) {
   const interruptExecution = () =>
     executorClientRef?.current?.interruptExecution();
 
-  const restart = async () => {
+  const restart = useCallback(async () => {
     if (executorClientRef.current !== null) {
       setExecutorClientRef(await executorClientRef.current.restartWorker());
     }
-  };
+  }, []);
+
+  const executorAvailable = executorState.type === 'available';
+
+  const configureLibraries = useCallback(
+    async (libraries: readonly string[]) => {
+      const client = executorClientRef.current;
+      if (!executorAvailable || client === null) {
+        throw new Error('Executor Worker is not (yet) available');
+      }
+      await client.configureLibraries(libraries);
+      if (client.hasStaleLibraries(libraries)) {
+        await restart();
+        // The restart swallows install errors. Retrying on the new client is
+        // a no-op on success and reports the failure otherwise.
+        await executorClientRef.current?.configureLibraries(libraries);
+      }
+    },
+    [executorAvailable, restart],
+  );
 
   useEffect(() => {
     if (
@@ -111,6 +141,7 @@ export function ExecutorProvider({ children }: { children: ReactNode }) {
         execute,
         interruptExecution,
         restart,
+        configureLibraries,
       }}
     >
       {children}

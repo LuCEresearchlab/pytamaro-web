@@ -242,4 +242,6 @@ export function initLogging(level: LogLevel): void;
 
 export function initWorkspace(): Workspace;
 
+export function initWorkspaceWithLibraries(libraries: string[]): Workspace;
+
 export function run(): void;

@@ -1,6 +1,7 @@
+import { isEqual } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { EditorSession } from './editorSession';
-import { toolboxFiles } from './execution/codeExecution';
+import { toolboxFiles as generateToolboxFiles } from './execution/codeExecution';
 import type { WorkspaceChanges } from './execution/messageTypes';
 import {
   decodeUtf8,
@@ -13,23 +14,13 @@ import { IdeFilesPersistence, StoredWorkspace } from './ideFilesPersistence';
 import { IdeWorkspace } from './ideWorkspace';
 import { ToolboxFunction } from './localStorage/schema';
 import useLocalProfile from './localStorage/useLocalProfile';
+import { PythonWorkspace } from './pythonWorkspace';
 
 const INITIAL_FILE_NAME = 'main.py';
 
 /** The files of a workspace that has never been used. */
 function initialFiles(): IdeFile[] {
   return [{ path: INITIAL_FILE_NAME, content: '' }];
-}
-
-function snapshot(
-  workspace: IdeWorkspace,
-  excluded: ReadonlySet<string>,
-): IdeFile[] {
-  return workspace.snapshot().filter((file) => !excluded.has(file.path));
-}
-
-function sameList(a: readonly string[], b: readonly string[]): boolean {
-  return a.length === b.length && a.every((item, idx) => item === b[idx]);
 }
 
 /** Whether two file lists contain the same files with the same contents. */
@@ -68,18 +59,17 @@ function sortedFileNames(workspace: IdeWorkspace): string[] {
 
 /**
  * Makes `workspace` contain exactly `files` and `folders`, removing the files
- * that are no longer there. Generated (read-only) files are left untouched.
+ * that are no longer there.
  */
 function replaceWorkspace(
   workspace: IdeWorkspace,
-  readOnly: ReadonlySet<string>,
   files: readonly IdeFile[],
   folders: readonly string[],
 ): void {
   const next = new Set(files.map((file) => file.path));
   workspace
     .files()
-    .filter((name) => !next.has(name) && !readOnly.has(name))
+    .filter((name) => !next.has(name))
     .forEach((name) => workspace.removeFile(name));
   workspace.addFiles(files);
   workspace.setFolders(folders);
@@ -93,7 +83,8 @@ function replaceWorkspace(
  * document, and files may be text or binary.
  */
 export default function useIdeSession() {
-  const { metadata } = useLocalProfile();
+  const { metadata, selectedIdeLibrariesIds: knownLibraries } =
+    useLocalProfile();
   // Read through a ref, so that the session (created once) always sees the
   // current toolbox functions, e.g. for `from toolbox import ...` completions.
   const toolboxFunctionsRef = useRef<ToolboxFunction[]>(metadata.toolbox);
@@ -101,7 +92,7 @@ export default function useIdeSession() {
 
   const [workspace] = useState(() => {
     const editorSession = new EditorSession(
-      undefined,
+      new PythonWorkspace(knownLibraries),
       undefined,
       () => toolboxFunctionsRef.current,
       undefined,
@@ -112,23 +103,17 @@ export default function useIdeSession() {
   });
   const [persistence] = useState(() => new IdeFilesPersistence());
 
-  // Toolbox functions are exposed as generated modules. They are read-only, and
-  // they live only in the workspace: persistence must never contain them.
-  const virtualFiles = useMemo<IdeFile[]>(
-    () =>
-      toolboxFiles(metadata.toolbox, true).map(({ name, content }) => ({
-        path: name,
-        content,
-      })),
+  useEffect(() => {
+    workspace.editorSession.setKnownLibraries(knownLibraries);
+  }, [knownLibraries, workspace]);
+
+  // Toolbox functions are exposed to the analyzer as modules, so that imports
+  // resolve, but they are not files of the IDE workspace.
+  const toolboxFiles = useMemo(
+    () => generateToolboxFiles(metadata.toolbox, true),
     [metadata.toolbox],
   );
-  const readOnlyFiles = useMemo(
-    () => new Set(virtualFiles.map((file) => file.path)),
-    [virtualFiles],
-  );
-  const readOnlyFilesRef = useRef<ReadonlySet<string>>(readOnlyFiles);
-  readOnlyFilesRef.current = readOnlyFiles;
-  const appliedVirtualFileNamesRef = useRef<Set<string>>(new Set());
+  const appliedToolboxFileNamesRef = useRef<Set<string>>(new Set());
   const [fileNames, setFileNames] = useState<string[]>(() =>
     sortedFileNames(workspace),
   );
@@ -147,42 +132,31 @@ export default function useIdeSession() {
   useEffect(() => {
     const refreshNames = () => {
       const next = sortedFileNames(workspace);
-      setFileNames((prev) => (sameList(prev, next) ? prev : next));
+      setFileNames((prev) => (isEqual(prev, next) ? prev : next));
       const nextFolders = [...workspace.folders()].sort((a, b) =>
         a.localeCompare(b),
       );
       setFolderNames((prev) =>
-        sameList(prev, nextFolders) ? prev : nextFolders,
+        isEqual(prev, nextFolders) ? prev : nextFolders,
       );
     };
 
     const persist = () =>
-      persistence.save(
-        snapshot(workspace, readOnlyFilesRef.current),
-        workspace.folders(),
-      );
+      persistence.save(workspace.snapshot(), workspace.folders());
 
     const refreshModified = () => {
       setModified(
         workspace.folders().length > 0 ||
-          !sameFiles(
-            snapshot(workspace, readOnlyFilesRef.current),
-            initialFiles(),
-          ),
+          !sameFiles(workspace.snapshot(), initialFiles()),
       );
     };
 
     // Applies stored files (first load, or a change made in another tab).
     // Open editors follow, because the workspace updates their models.
     const apply = (saved: StoredWorkspace | null) => {
-      // Generated files are owned by the toolbox, not by storage.
-      const files = (saved?.files ?? initialFiles()).filter(
-        (file) => !readOnlyFilesRef.current.has(file.path),
-      );
       replaceWorkspace(
         workspace,
-        readOnlyFilesRef.current,
-        files,
+        saved?.files ?? initialFiles(),
         saved?.folders ?? [],
       );
       refreshNames();
@@ -222,18 +196,18 @@ export default function useIdeSession() {
     };
   }, [workspace, persistence]);
 
-  // Keep the generated toolbox modules in the workspace, and drop modules
-  // whose toolbox function no longer exists.
+  // Keep the generated toolbox modules available to the analyzer, and drop
+  // modules whose toolbox function no longer exists.
   useEffect(() => {
-    const nextNames = new Set(virtualFiles.map((file) => file.path));
-    workspace.addFiles(virtualFiles);
-    appliedVirtualFileNamesRef.current.forEach((name) => {
+    const nextNames = new Set(toolboxFiles.map((file) => file.name));
+    workspace.editorSession.addToolboxFiles(toolboxFiles);
+    appliedToolboxFileNamesRef.current.forEach((name) => {
       if (!nextNames.has(name)) {
-        workspace.removeFile(name);
+        workspace.editorSession.closeDocument(name);
       }
     });
-    appliedVirtualFileNamesRef.current = nextNames;
-  }, [workspace, virtualFiles]);
+    appliedToolboxFileNamesRef.current = nextNames;
+  }, [workspace, toolboxFiles]);
 
   // Tabs and selection can refer to files that another tab has deleted:
   // derive the valid ones instead of syncing them with an effect. Closing
@@ -270,24 +244,24 @@ export default function useIdeSession() {
   );
 
   /**
-   * Deletes a file and closes its tab. Returns false for read-only files and
-   * files that do not exist.
+   * Deletes a file and closes its tab. Returns false for files that do not
+   * exist.
    */
   const deleteFile = useCallback(
     (name: string) => {
-      if (readOnlyFiles.has(name) || !workspace.hasFile(name)) {
+      if (!workspace.hasFile(name)) {
         return false;
       }
       workspace.removeFile(name);
       closeFile(name);
       return true;
     },
-    [closeFile, readOnlyFiles, workspace],
+    [closeFile, workspace],
   );
 
   /**
-   * Renames (or moves) a file and updates its tab. Returns false for read-only
-   * files, missing files, and unavailable names.
+   * Renames (or moves) a file and updates its tab. Returns false for missing
+   * files and unavailable names.
    */
   const renameFile = useCallback(
     (oldName: string, newName: string) => {
@@ -295,17 +269,12 @@ export default function useIdeSession() {
       if (
         target === undefined ||
         target === oldName ||
-        readOnlyFiles.has(oldName) ||
-        readOnlyFiles.has(target) ||
         !workspace.hasFile(oldName)
       ) {
         return false;
       }
       const otherNames = workspace.files().filter((name) => name !== oldName);
-      if (
-        pathConflicts(target, otherNames) ||
-        pathConflicts(target, readOnlyFiles)
-      ) {
+      if (pathConflicts(target, otherNames)) {
         return false;
       }
       if (!workspace.renameFile(oldName, target)) {
@@ -317,12 +286,12 @@ export default function useIdeSession() {
       setSelectedFile((current) => (current === oldName ? target : current));
       return true;
     },
-    [readOnlyFiles, workspace],
+    [workspace],
   );
 
   /**
    * Creates a file, and opens it in a tab unless `open` is false. Returns false
-   * if the name is empty, taken (unless `overwrite` is set), or read-only.
+   * if the name is empty or taken (unless `overwrite` is set).
    */
   const addFile = useCallback(
     (
@@ -334,11 +303,7 @@ export default function useIdeSession() {
       }: { overwrite?: boolean; open?: boolean } = {},
     ) => {
       const path = normalizeWorkspacePath(name);
-      if (
-        path === undefined ||
-        readOnlyFiles.has(path) ||
-        pathConflicts(path, readOnlyFiles)
-      ) {
+      if (path === undefined) {
         return false;
       }
       const exists = workspace.hasFile(path);
@@ -357,19 +322,18 @@ export default function useIdeSession() {
       }
       return true;
     },
-    [openFile, readOnlyFiles, workspace],
+    [openFile, workspace],
   );
 
   /**
    * Creates a (possibly empty) folder. Returns false if the path is invalid or
-   * conflicts with an existing file or read-only module.
+   * conflicts with an existing file.
    */
   const addFolder = useCallback(
     (name: string) => {
       const path = normalizeWorkspacePath(name);
       if (
         path === undefined ||
-        pathConflicts(path, readOnlyFiles) ||
         workspace
           .files()
           .some((file) => file === path || path.startsWith(`${file}/`))
@@ -379,13 +343,12 @@ export default function useIdeSession() {
       workspace.addFolder(path);
       return true;
     },
-    [readOnlyFiles, workspace],
+    [workspace],
   );
 
   /**
    * Renames (or moves) a folder together with everything inside it. Returns
-   * false if the target is invalid or unavailable, or the folder holds a
-   * read-only file.
+   * false if the target is invalid or unavailable.
    */
   const renameFolder = useCallback(
     (oldPath: string, newName: string) => {
@@ -394,16 +357,12 @@ export default function useIdeSession() {
       if (
         target === undefined ||
         target === oldPath ||
-        target.startsWith(prefix) ||
-        pathConflicts(target, readOnlyFiles)
+        target.startsWith(prefix)
       ) {
         return false;
       }
       const inside = (name: string) => name.startsWith(prefix);
       const moved = workspace.files().filter(inside);
-      if (moved.some((name) => readOnlyFiles.has(name))) {
-        return false;
-      }
       const others = [
         ...workspace.files().filter((name) => !inside(name)),
         ...workspace.folders(),
@@ -425,7 +384,7 @@ export default function useIdeSession() {
       setSelectedFile(rename);
       return true;
     },
-    [readOnlyFiles, workspace],
+    [workspace],
   );
 
   /** Deletes a folder together with everything inside it. */
@@ -434,38 +393,32 @@ export default function useIdeSession() {
       const prefix = `${path}/`;
       workspace
         .files()
-        .filter((name) => name.startsWith(prefix) && !readOnlyFiles.has(name))
+        .filter((name) => name.startsWith(prefix))
         .forEach((name) => workspace.removeFile(name));
       workspace
         .folders()
         .filter((name) => name === path || name.startsWith(prefix))
         .forEach((name) => workspace.removeFolder(name));
     },
-    [readOnlyFiles, workspace],
+    [workspace],
   );
 
   /**
    * Restores the workspace to its initial files, discarding every file and
-   * edit made by the user. Generated toolbox files are left untouched.
+   * edit made by the user.
    */
   const resetWorkspace = useCallback(() => {
     const initial = initialFiles();
-    replaceWorkspace(workspace, readOnlyFilesRef.current, initial, []);
+    replaceWorkspace(workspace, initial, []);
     setOpenTabs(initial.map((file) => file.path));
     setSelectedFile(initial[0]?.path ?? '');
-    persistence.save(snapshot(workspace, readOnlyFilesRef.current), []);
+    persistence.save(workspace.snapshot(), []);
   }, [persistence, workspace]);
 
-  /**
-   * Applies the files that a Python run created, modified, or deleted.
-   * Generated and read-only files are never touched.
-   */
+  /** Applies the files that a Python run created, modified, or deleted. */
   const syncWorkspaceChanges = useCallback(
     (changes: WorkspaceChanges) => {
       changes.changed.forEach(({ name, content }) => {
-        if (readOnlyFilesRef.current.has(name)) {
-          return;
-        }
         const otherNames = workspace.files().filter((path) => path !== name);
         if (pathConflicts(name, otherNames)) {
           return;
@@ -474,9 +427,6 @@ export default function useIdeSession() {
         workspace.setFile({ path: name, content: text ?? content });
       });
       changes.deleted.forEach((name) => {
-        if (readOnlyFilesRef.current.has(name)) {
-          return;
-        }
         workspace.removeFile(name);
       });
     },
@@ -487,7 +437,6 @@ export default function useIdeSession() {
     workspace,
     loaded,
     fileNames,
-    readOnlyFiles,
     openFiles,
     activeFile,
     modified,

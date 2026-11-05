@@ -1,8 +1,9 @@
 use std::vec;
 
 use python_analyzer::{
-    analyze_file, find_imported_names, init_workspace, CalledName, ParseError, Position,
-    PythonConstant, PythonFunction, PythonFunctionArgument, PythonName, Range, TextRange,
+    CalledName, ParseError, Position, PythonConstant, PythonFunction, PythonFunctionArgument,
+    PythonName, Range, TextRange, analyze_file, find_imported_names, init_workspace,
+    init_workspace_with_libraries,
 };
 use wasm_bindgen_test::*;
 
@@ -288,6 +289,35 @@ fn test_pytamaro_success_import() {
         .unwrap();
     let result = workspace.check().unwrap();
     assert_eq!(result.len(), 0);
+}
+
+#[wasm_bindgen_test]
+fn test_optional_library_import_is_any() {
+    let mut workspace = init_workspace_with_libraries(vec!["numpy".to_string()])
+        .expect("Workspace to be initialized");
+    workspace
+        .open_file(
+            "main.py",
+            "import numpy as np\nfrom numpy.linalg import norm\nnp.array([1, 2, 3])\nnorm([1, 2])",
+        )
+        .unwrap();
+    let result = workspace.check().unwrap();
+    assert_eq!(result.len(), 0);
+}
+
+#[wasm_bindgen_test]
+fn test_unselected_optional_library_is_unresolved() {
+    let mut workspace = init_workspace_with_libraries(vec!["numpy".to_string()])
+        .expect("Workspace to be initialized");
+    workspace
+        .open_file("main.py", "import pandas as pd")
+        .unwrap();
+    let result = workspace.check().unwrap();
+    assert_eq!(result.len(), 1);
+    assert_eq!(
+        result[0].message(),
+        "Cannot resolve imported module `pandas`"
+    );
 }
 
 #[wasm_bindgen_test]

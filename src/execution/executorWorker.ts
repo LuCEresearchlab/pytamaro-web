@@ -123,6 +123,7 @@ class WorkerExecutor {
   private readonly pyodide: PyodideAPI;
 
   private readonly remainingPyProxies: PyProxy[];
+  private readonly installedLibraries: Set<string>;
 
   private readonly decoder: TextDecoder;
   private readonly syncBuffer: Int32Array;
@@ -178,6 +179,7 @@ class WorkerExecutor {
     this.pyodide = pyodide;
 
     this.remainingPyProxies = [];
+    this.installedLibraries = new Set();
 
     this.decoder = new TextDecoder('utf-8');
     this.syncBuffer = syncBuffer;
@@ -204,6 +206,19 @@ class WorkerExecutor {
         this.ffSaveOnClient(fileName, content),
       set_active_cell: (idx: number) => this.ffSetActiveCell(idx),
     });
+  }
+
+  async installLibraries(libraries: readonly string[]): Promise<void> {
+    const missing = Array.from(new Set(libraries)).filter(
+      (library) => !this.installedLibraries.has(library),
+    );
+    if (missing.length === 0) {
+      return;
+    }
+    await this.pyodide.loadPackage(missing, {
+      messageCallback: () => {},
+    });
+    missing.forEach((library) => this.installedLibraries.add(library));
   }
 
   /* ==== Code Execution ==== */
@@ -368,12 +383,13 @@ class WorkerExecutor {
 
     try {
       const fs = this.pyodide.FS;
+      const { workspaceBaseline, generatedFiles } = environment;
       const changed: WorkspaceFileChange[] = [];
       const seen = new Set<string>();
 
       const walk = (directory: string, prefix: string): void => {
         for (const name of fs.readdir(directory)) {
-          if (name === '.' || name === '..' || name === '__pycache__') {
+          if (name === '.' || name === '..') {
             continue;
           }
           const fullPath = `${directory}/${name}`;
@@ -382,18 +398,18 @@ class WorkerExecutor {
             walk(fullPath, relativePath);
             continue;
           }
-          // Python bytecode is an artifact of running the code, not a file
-          // that the script intended to create.
+          const baseline = workspaceBaseline.get(relativePath);
+          // Files that were in the workspace are always tracked, even if they
+          // look like artifacts (e.g. an imported `.env`): skipping them would
+          // report them as deleted.
           if (
-            environment.generatedFiles.has(relativePath) ||
-            relativePath.endsWith('.pyc') ||
-            relativePath.endsWith('.pyo')
+            generatedFiles.has(relativePath) ||
+            (baseline === undefined && this.isRunArtifact(relativePath))
           ) {
             continue;
           }
           seen.add(relativePath);
           const bytes = fs.readFile(fullPath).slice();
-          const baseline = environment.workspaceBaseline.get(relativePath);
           if (baseline === undefined || !sameContent(baseline, bytes)) {
             changed.push({ name: relativePath, content: bytes });
           }
@@ -404,7 +420,7 @@ class WorkerExecutor {
 
       return {
         changed,
-        deleted: Array.from(environment.workspaceBaseline.keys()).filter(
+        deleted: Array.from(workspaceBaseline.keys()).filter(
           (name) => !seen.has(name),
         ),
       };
@@ -412,6 +428,18 @@ class WorkerExecutor {
       // Never turn a snapshot failure into an execution failure.
       return { changed: [], deleted: [] };
     }
+  }
+
+  private isRunArtifact(path: string): boolean {
+    return (
+      path
+        .split('/')
+        .some(
+          (segment) => segment.startsWith('.') || segment === '__pycache__',
+        ) ||
+      path.endsWith('.pyc') ||
+      path.endsWith('.pyo')
+    );
   }
 
   /** Removes everything in the execution directory, if it exists. */
@@ -729,6 +757,24 @@ addEventListener(
               data.workspaceFiles,
             ),
           );
+        }
+        break;
+      case MessageType.INSTALL_LIBRARIES:
+        try {
+          if (executor === null) {
+            throw new Error('The Python environment is not ready');
+          }
+          await executor.installLibraries(data.libraries);
+          self.postMessage({
+            type: MessageType.LIBRARIES_INSTALLED,
+            uuid: data.uuid,
+          });
+        } catch (error) {
+          self.postMessage({
+            type: MessageType.LIBRARIES_INSTALLED,
+            uuid: data.uuid,
+            error: error instanceof Error ? error.message : String(error),
+          });
         }
         break;
     }

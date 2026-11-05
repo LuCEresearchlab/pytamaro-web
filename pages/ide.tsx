@@ -21,6 +21,7 @@ import EditorTabs from '../components/EditorTabs';
 import IdeFileTree from '../components/IdeFileTree';
 import ExecutionOutputArea from '../components/input_output/ExecutionOutputArea';
 import { OUTPUT_AREA_BACKGROUND_COLOR } from '../components/input_output/OutputArea';
+import LibrariesButton from '../components/navbar/LibrariesButton';
 import NavigationBar from '../components/navbar/NavigationBar';
 import ResetButton from '../components/navbar/ResetButton';
 import RunButton from '../components/RunButton';
@@ -63,7 +64,6 @@ export default function Ide() {
     workspace,
     loaded,
     fileNames,
-    readOnlyFiles,
     openFiles,
     activeFile,
     modified,
@@ -82,7 +82,6 @@ export default function Ide() {
   const execution = useIdeExecution(
     workspace,
     activeFile,
-    readOnlyFiles,
     syncWorkspaceChanges,
   );
   const analysisResult = useEditorAnalysisResult(
@@ -166,7 +165,7 @@ export default function Ide() {
   const importFiles = (files: readonly IdeFile[], open: boolean) => {
     const conflictingNames = files
       .map(({ path }) => path.trim())
-      .filter((path) => fileNames.includes(path) && !readOnlyFiles.has(path));
+      .filter((path) => fileNames.includes(path));
     const conflicts = new Set(conflictingNames);
 
     const importAll = (overwriteConflicts: boolean) => {
@@ -254,6 +253,7 @@ export default function Ide() {
         }}
       >
         <NavigationBar>
+          <LibrariesButton />
           <ResetButton
             enabled={modified}
             onReset={handleReset}
@@ -319,7 +319,6 @@ export default function Ide() {
                 <IdeFileTree
                   fileNames={fileNames}
                   folderNames={folderNames}
-                  readOnlyFiles={readOnlyFiles}
                   activeFile={activeFile}
                   onOpenFile={openFile}
                   onAddFile={addFile}
@@ -383,7 +382,6 @@ export default function Ide() {
                             modelPath={activeFile}
                             context={editorContext}
                             autoHeight={false}
-                            readOnly={readOnlyFiles.has(activeFile)}
                             onChange={execution.markOutputStale}
                             onExecutionRequested={execution.run}
                             executionAllowed={execution.runEnabled}

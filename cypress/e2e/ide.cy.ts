@@ -49,6 +49,42 @@ describe('IDE', () => {
       .contains('Hello, World!');
   });
 
+  it('should install and use additional Python libraries', () => {
+    cy.visit(idePathname());
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    // Wait for the Python environment to be ready before installing a library.
+    cy.get('.run-button').should('not.be.disabled');
+    // Install numpy and verify that it works.
+    cy.get('[data-testid="libraries-button"]').click();
+    cy.contains('[role="dialog"] label', 'NumPy').find('input').check();
+    cy.contains('[role="dialog"] label', 'NumPy')
+      .find('input')
+      .should('be.checked')
+      .and('not.be.disabled');
+    cy.contains('[role="dialog"] button', 'Close').click();
+    cy.get('[role="dialog"]').should('not.exist');
+    typeMonacoCode('import numpy as np\nprint(np.array([1, 2, 3, 4, 5]))');
+    cy.get('.run-button').first().click();
+    cy.get('[data-testid="output-area"]')
+      .should('be.visible')
+      .contains('[1 2 3 4 5]');
+    // Uninstall numpy and verify that it is no longer available.
+    cy.get('[data-testid="libraries-button"]').click();
+    cy.contains('[role="dialog"] label', 'NumPy').find('input').uncheck();
+    cy.contains('[role="dialog"] label', 'NumPy')
+      .find('input')
+      .should('not.be.checked')
+      .and('not.be.disabled');
+    cy.contains('[role="dialog"] button', 'Close').click();
+    cy.get('[role="dialog"]').should('not.exist');
+    typeMonacoCode('import numpy as np\nprint(np.array([1, 2, 3]))');
+    cy.get('.run-button').first().click();
+    cy.get('[data-testid="stderr"]')
+      .should('be.visible')
+      .contains('ModuleNotFoundError');
+  });
+
   it('should save generated files', () => {
     cy.visit(idePathname());
     dismissDataCollectionModal();

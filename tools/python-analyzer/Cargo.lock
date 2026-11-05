@@ -1086,6 +1086,7 @@ dependencies = [
  "ruff_text_size",
  "serde",
  "serde-wasm-bindgen",
+ "serde_json",
  "ty_ide",
  "ty_project",
  "ty_python_core",

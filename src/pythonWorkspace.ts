@@ -1,3 +1,4 @@
+import { isEqual } from 'lodash';
 import type { IRange } from 'monaco-editor';
 import type {
   FileHandle,
@@ -10,7 +11,7 @@ import type {
 } from './python-analyzer/python_analyzer';
 import {
   analyzeFile as analyzeFileWithWorkspace,
-  initWorkspace,
+  initWorkspaceWithLibraries,
   Workspace as TyWorkspace,
 } from './python-analyzer/python_analyzer';
 
@@ -70,6 +71,10 @@ type Cached<T> = {
   value: T;
 };
 
+function normalizedLibraries(libraries: readonly string[]): string[] {
+  return Array.from(new Set(libraries)).sort();
+}
+
 /**
  * Wraps a Python analyzer workspace and tracks the files in it.
  *
@@ -90,18 +95,43 @@ type Cached<T> = {
  */
 export class PythonWorkspace {
   private tyWorkspace: TyWorkspace;
+  private knownLibraries: string[];
   private fileHandles = new Map<string, FileHandle>();
+  // Files that belong to the toolbox rather than to the user's workspace.
+  // They are analyzable but are not listed as workspace files.
+  private toolboxFiles = new Set<string>();
   private analysisResults = new Map<string, Cached<AnalysisResult>>();
   private diagnostics = new Map<string, Cached<FileDiagnostic[]>>();
   private revision = 0;
 
-  constructor() {
-    this.tyWorkspace = initWorkspace();
+  constructor(libraries: readonly string[] = []) {
+    this.knownLibraries = normalizedLibraries(libraries);
+    this.tyWorkspace = initWorkspaceWithLibraries(this.knownLibraries);
   }
 
   addFiles(files: readonly WorkspaceFile[]): boolean {
     let changed = false;
     files.forEach((file) => {
+      if (this.writeFile(file.name, file.content)) {
+        changed = true;
+      }
+    });
+    if (changed) {
+      this.invalidate();
+    }
+    return changed;
+  }
+
+  /**
+   * Adds files that belong to the toolbox.
+   *
+   * Like {@link addFiles}, but the files are not listed by {@link files}: they
+   * are visible to the analyzer only, not to the user's workspace.
+   */
+  addToolboxFiles(files: readonly WorkspaceFile[]): boolean {
+    let changed = false;
+    files.forEach((file) => {
+      this.toolboxFiles.add(file.name);
       if (this.writeFile(file.name, file.content)) {
         changed = true;
       }
@@ -120,8 +150,38 @@ export class PythonWorkspace {
     return changed;
   }
 
+  /**
+   * Changes the optional libraries whose imports the analyzer accepts.
+   *
+   * The libraries themselves live in Pyodide's file system, which the analyzer
+   * cannot see. Changing this list requires a fresh analyzer workspace;
+   * existing files are carried over, and cached analysis is discarded.
+   */
+  setKnownLibraries(libraries: readonly string[]): boolean {
+    const next = normalizedLibraries(libraries);
+    if (isEqual(this.knownLibraries, next)) {
+      return false;
+    }
+
+    const files = Array.from(this.fileHandles, ([path, handle]) => ({
+      path,
+      content: this.tyWorkspace.sourceText(handle),
+    }));
+    this.tyWorkspace = initWorkspaceWithLibraries(next);
+    this.fileHandles.clear();
+    files.forEach(({ path, content }) => {
+      this.fileHandles.set(path, this.tyWorkspace.openFile(path, content));
+    });
+    this.knownLibraries = next;
+    this.invalidate();
+    return true;
+  }
+
+  /** The workspace files, excluding those that belong to the toolbox. */
   files(): readonly string[] {
-    return Array.from(this.fileHandles.keys());
+    return Array.from(this.fileHandles.keys()).filter(
+      (path) => !this.toolboxFiles.has(path),
+    );
   }
 
   hasFile(path: string): boolean {
@@ -143,6 +203,7 @@ export class PythonWorkspace {
     }
     this.tyWorkspace.closeFile(fileHandle);
     this.fileHandles.delete(path);
+    this.toolboxFiles.delete(path);
     this.invalidate();
   }
 
