@@ -16,12 +16,16 @@ const libraries: readonly Library[] = [
     alwaysInstalled: true,
   },
   {
-    id: 'numpy',
-    name: 'NumPy',
+    id: 'pytest',
+    name: 'pytest',
   },
   {
     id: 'pandas',
-    name: 'Pandas',
+    name: 'pandas',
+  },
+  {
+    id: 'numpy',
+    name: 'NumPy',
   },
   {
     id: 'scipy',
@@ -30,10 +34,6 @@ const libraries: readonly Library[] = [
   {
     id: 'sympy',
     name: 'SymPy',
-  },
-  {
-    id: 'pytest',
-    name: 'Pytest',
   },
 ];
 
