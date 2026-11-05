@@ -5,7 +5,7 @@
     "deleteFolderAreYouSure": "Ordner löschen?",
     "deleteFolderWarning": "Möchtest du den Ordner {{name}} und seinen gesamten Inhalt wirklich löschen? Dies kann nicht rückgängig gemacht werden.",
     "deleteFolder": "Ordner löschen",
-    "addEmptyFile": "Neue leere Datei hinzufügen",
+    "addEmptyFile": "Neue Datei",
     "addFileFromDevice": "Neue Datei vom Gerät hinzufügen",
     "downloadFilesAsZip": "Alle Dateien als ZIP herunterladen",
     "uploadFilesFromZip": "Dateien aus ZIP hochladen",

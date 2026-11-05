@@ -5,7 +5,7 @@
     "deleteFolderAreYouSure": "Supprimer le dossier ?",
     "deleteFolderWarning": "Voulez-vous vraiment supprimer le dossier {{name}} et tout son contenu ? Cette action est irréversible.",
     "deleteFolder": "Supprimer le dossier",
-    "addEmptyFile": "Ajouter un nouveau fichier vide",
+    "addEmptyFile": "Nouveau fichier",
     "addFileFromDevice": "Ajouter un nouveau fichier depuis l'appareil",
     "downloadFilesAsZip": "Télécharger tous les fichiers en ZIP",
     "uploadFilesFromZip": "Importer des fichiers depuis un ZIP",

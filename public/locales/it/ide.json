@@ -5,7 +5,7 @@
     "deleteFolderAreYouSure": "Eliminare la cartella?",
     "deleteFolderWarning": "Vuoi davvero eliminare la cartella {{name}} e tutto il suo contenuto? Questa azione non può essere annullata.",
     "deleteFolder": "Elimina cartella",
-    "addEmptyFile": "Aggiungi un nuovo file vuoto",
+    "addEmptyFile": "Nuovo file",
     "addFileFromDevice": "Aggiungi un nuovo file dal dispositivo",
     "downloadFilesAsZip": "Scarica tutti i file come ZIP",
     "uploadFilesFromZip": "Carica file da ZIP",
