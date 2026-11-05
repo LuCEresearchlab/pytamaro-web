@@ -9,6 +9,7 @@ import {
   NoteAddOutlined,
   Unarchive,
 } from '@mui/icons-material';
+import DescriptionIcon from '@mui/icons-material/Description';
 import {
   Box,
   IconButton,
@@ -138,11 +139,13 @@ function InlineNameInput({
   placeholder,
   onSubmit,
   onCancel,
+  onNameChange = undefined,
 }: {
   initialName?: string;
   placeholder: string;
   onSubmit: (name: string) => boolean;
   onCancel: () => void;
+  onNameChange?: (name: string) => void;
 }) {
   const { t } = useLocalTranslation(['ide']);
   const [name, setName] = useState(initialName);
@@ -174,6 +177,7 @@ function InlineNameInput({
       onClick={(event) => event.stopPropagation()}
       onChange={(event) => {
         setName(event.target.value);
+        onNameChange?.(event.target.value);
         setError(null);
       }}
       onFocus={(event) => event.target.select()}
@@ -205,9 +209,12 @@ function PythonFileIcon() {
   );
 }
 
-/** The icon the tree shows next to a file, chosen by its extension. */
-function fileIcon(name: string) {
-  return isPythonFileName(name) ? PythonFileIcon : InsertDriveFile;
+/** The icon the tree shows next to a file, chosen by its kind and extension. */
+function fileIcon(name: string, binary: boolean) {
+  if (binary) {
+    return InsertDriveFile;
+  }
+  return isPythonFileName(name) ? PythonFileIcon : DescriptionIcon;
 }
 
 const HOVER_ACTIONS_SX = {
@@ -296,6 +303,7 @@ function RowLabel({
 export type IdeFileManagerProps = {
   fileNames: readonly string[];
   folderNames: readonly string[];
+  binaryFileNames: readonly string[];
   activeFile: string;
   onOpenFile: (path: string) => void;
   onAddFile: (path: string) => boolean;
@@ -328,6 +336,7 @@ export type IdeFileManagerProps = {
 export default function IdeFileManager({
   fileNames,
   folderNames,
+  binaryFileNames,
   activeFile,
   onOpenFile,
   onAddFile,
@@ -344,6 +353,8 @@ export default function IdeFileManager({
   const { t } = useLocalTranslation(['ide', 'common']);
   const confirm = useConfirm();
   const [edit, setEdit] = useState<TreeEdit>(null);
+  /** The name currently typed into the inline input, for the row's icon. */
+  const [draftName, setDraftName] = useState('');
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   /** The folder that files are being dragged over; null if there is no drag. */
   const [dropTarget, setDropTarget] = useState<string | null>(null);
@@ -353,6 +364,10 @@ export default function IdeFileManager({
     [fileNames, folderNames],
   );
   const folderItems = useMemo(() => folderItemIds(tree), [tree]);
+  const binaryFiles = useMemo(
+    () => new Set(binaryFileNames),
+    [binaryFileNames],
+  );
 
   // A folder is expanded when it first appears (e.g., as soon as the first
   // file inside it exists). Later changes to the tree must not touch folders
@@ -377,6 +392,7 @@ export default function IdeFileManager({
         previous.includes(itemId) ? previous : [...previous, itemId],
       );
     }
+    setDraftName('');
     setEdit({ mode: 'create', kind, parent });
   };
 
@@ -439,11 +455,12 @@ export default function IdeFileManager({
     <TreeItem
       key={`__new-${kind}__`}
       itemId={`__new-${kind}__:${parent}`}
-      slots={{ icon: kind === 'file' ? InsertDriveFile : Folder }}
+      slots={{ icon: kind === 'file' ? fileIcon(draftName, false) : Folder }}
       label={
         <RowLabel actionCount={0}>
           <InlineNameInput
             placeholder={t(kind === 'file' ? 'fileName' : 'folderName')}
+            onNameChange={setDraftName}
             onSubmit={(name) => {
               const created = (kind === 'file' ? onAddFile : onAddFolder)(
                 joinPath(parent, name),
@@ -473,7 +490,9 @@ export default function IdeFileManager({
       <TreeItem
         key={path}
         itemId={path}
-        slots={{ icon: fileIcon(path) }}
+        slots={{
+          icon: fileIcon(isRenaming ? draftName : path, binaryFiles.has(path)),
+        }}
         sx={HOVER_ACTIONS_SX}
         data-drop-folder={parentPath(path)}
         label={
@@ -484,7 +503,10 @@ export default function IdeFileManager({
                 <>
                   <ActionButton
                     title={t('renameFile')}
-                    onClick={() => setEdit({ mode: 'rename', path })}
+                    onClick={() => {
+                      setDraftName(path);
+                      setEdit({ mode: 'rename', path });
+                    }}
                   >
                     <DriveFileRenameOutline fontSize='small' />
                   </ActionButton>
@@ -502,6 +524,7 @@ export default function IdeFileManager({
               <InlineNameInput
                 initialName={path}
                 placeholder={t('fileName')}
+                onNameChange={setDraftName}
                 onSubmit={(newPath) => {
                   if (newPath === path || onRenameFile(path, newPath)) {
                     setEdit(null);
@@ -569,7 +592,10 @@ export default function IdeFileManager({
                   </ActionButton>
                   <ActionButton
                     title={t('renameFolder')}
-                    onClick={() => setEdit({ mode: 'rename', path: node.path })}
+                    onClick={() => {
+                      setDraftName(node.path);
+                      setEdit({ mode: 'rename', path: node.path });
+                    }}
                   >
                     <DriveFileRenameOutline fontSize='small' />
                   </ActionButton>
@@ -587,6 +613,7 @@ export default function IdeFileManager({
               <InlineNameInput
                 initialName={node.path}
                 placeholder={t('folderName')}
+                onNameChange={setDraftName}
                 onSubmit={(newPath) => {
                   if (
                     newPath === node.path ||

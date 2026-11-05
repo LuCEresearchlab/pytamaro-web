@@ -119,6 +119,9 @@ export default function useIdeSession() {
   );
   // Folders created explicitly, so possibly empty.
   const [folderNames, setFolderNames] = useState<string[]>([]);
+  const [binaryFileNames, setBinaryFileNames] = useState<string[]>(() =>
+    workspace.files().filter((name) => workspace.isBinary(name)),
+  );
   // False until the stored files have been loaded into the workspace: the
   // editor must not create its model before that, since workspace writes
   // don't reach an already open model.
@@ -138,6 +141,12 @@ export default function useIdeSession() {
       );
       setFolderNames((prev) =>
         isEqual(prev, nextFolders) ? prev : nextFolders,
+      );
+      const nextBinaries = workspace
+        .files()
+        .filter((name) => workspace.isBinary(name));
+      setBinaryFileNames((prev) =>
+        isEqual(prev, nextBinaries) ? prev : nextBinaries,
       );
     };
 
@@ -437,6 +446,7 @@ export default function useIdeSession() {
     workspace,
     loaded,
     fileNames,
+    binaryFileNames,
     openFiles,
     activeFile,
     modified,

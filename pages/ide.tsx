@@ -62,6 +62,7 @@ export default function Ide() {
     workspace,
     loaded,
     fileNames,
+    binaryFileNames,
     openFiles,
     activeFile,
     modified,
@@ -278,6 +279,7 @@ export default function Ide() {
             <IdeFileManager
               fileNames={fileNames}
               folderNames={folderNames}
+              binaryFileNames={binaryFileNames}
               activeFile={activeFile}
               onOpenFile={openFile}
               onAddFile={addFile}
