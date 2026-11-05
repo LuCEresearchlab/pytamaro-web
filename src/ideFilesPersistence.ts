@@ -47,6 +47,32 @@ function readAll(store: IDBObjectStore): Promise<StoredRecord[]> {
   });
 }
 
+function broadcastChange(): void {
+  const channel = new BroadcastChannel(CHANNEL_NAME);
+  channel.postMessage({ type: 'changed' });
+  channel.close();
+}
+
+export async function clearStoredIdeWorkspace(): Promise<void> {
+  try {
+    const db = await openDatabase();
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const transaction = db.transaction(FILES_STORE, 'readwrite');
+        transaction.objectStore(FILES_STORE).clear();
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+        transaction.onabort = () => reject(transaction.error);
+      });
+    } finally {
+      db.close();
+    }
+    broadcastChange();
+  } catch {
+    // IndexedDB may be unavailable (e.g., in some private-browsing modes).
+  }
+}
+
 /**
  * Persists the files of the IDE workspace in IndexedDB.
  *

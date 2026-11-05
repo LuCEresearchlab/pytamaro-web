@@ -21,6 +21,7 @@ import ExportLocalStorageButton from '../components/ExportLocalStorageButton';
 import ImportLocalStorageButton from '../components/ImportLocalStorageButton';
 import NavigationBar from '../components/navbar/NavigationBar';
 import PageTitle from '../components/PageTitle';
+import { clearStoredIdeWorkspace } from '../src/ideFilesPersistence';
 import getEntireLocalStorage, {
   clearEntireLocalStorage,
   replaceEntireLocalStorage,
@@ -28,6 +29,7 @@ import getEntireLocalStorage, {
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
+import { idePathname } from '../src/urlUtils';
 
 export default function MyData() {
   const { metadata, setMetadata } = useLocalProfile();
@@ -58,10 +60,12 @@ export default function MyData() {
       description:
         'You are about to delete ALL the data. This action cannot be undone! ⚠️',
       confirmationText: 'Ok, delete everything',
-    }).then(({ confirmed }) => {
+    }).then(async ({ confirmed }) => {
       if (confirmed) {
+        // Local storage + session storage + IndexedDB (IDE)
         clearEntireLocalStorage();
         sessionStorage.clear();
+        await clearStoredIdeWorkspace();
         setLocalStorageChanged(localStorageChanged + 1);
       }
     });
@@ -132,6 +136,19 @@ export default function MyData() {
               }}
             />
           </Stack>
+          <Typography
+            variant='body1'
+            sx={{
+              marginY: 3,
+            }}
+          >
+            If you have used the IDE, its files are not included in this export.
+            To export or import your IDE files, go to the{' '}
+            <Link component={NextLink} href={idePathname()}>
+              IDE page
+            </Link>{' '}
+            and use the download and upload buttons in the file manager.
+          </Typography>
           <Typography
             id='privacy-settings'
             variant='h4'
