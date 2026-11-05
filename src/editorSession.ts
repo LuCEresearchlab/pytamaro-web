@@ -1,3 +1,4 @@
+import { debounce } from 'lodash';
 import type {
   editor,
   IDisposable,
@@ -8,6 +9,7 @@ import type {
 } from 'monaco-editor';
 import { toCustomDiagnostics } from './editor/diagnostics';
 import type { EditorContext } from './editor/editorContext';
+import { isPythonFileName } from './ideFiles';
 import type { ToolboxFunction } from './localStorage/schema';
 import {
   PythonName,
@@ -20,7 +22,6 @@ import type {
   FileDiagnostic,
   WorkspaceFile,
 } from './pythonWorkspace';
-import { isPythonFileName } from './ideFiles';
 import { PythonWorkspace, toMonacoRange } from './pythonWorkspace';
 
 const editorSessionsByModel = new WeakMap<editor.ITextModel, EditorSession>();
@@ -576,8 +577,6 @@ export function onSemanticTokensChange(listener: () => void): IDisposable {
   };
 }
 
-function fireSemanticTokensChange() {
-  Array.from(semanticTokensListeners).forEach((listener) => {
-    listener();
-  });
-}
+const fireSemanticTokensChange = debounce(() => {
+  Array.from(semanticTokensListeners).forEach((listener) => listener());
+}, 150);

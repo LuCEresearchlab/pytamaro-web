@@ -239,8 +239,16 @@ export class ActivitySession {
     // The line offset of this cell and of all the following ones may change.
     this.updateModelMappingsFrom(cellIdx);
 
-    // Prefix files from this cell onward include the new source.
-    this.rewriteCellsFrom(cellIdx);
+    // Edited cell updated immediately
+    this.rewriteCells(cellIdx, cellIdx + 1);
+    // Later cells updated with a small debounce
+    if (cellIdx + 1 < this.sources.length) {
+      this.downstreamFrom = Math.min(
+        this.downstreamFrom ?? Infinity,
+        cellIdx + 1,
+      );
+      this.flushDownstream();
+    }
 
     if (changed) {
       this.scheduleNotify();
@@ -445,15 +453,29 @@ export class ActivitySession {
 
   private recomposeAndAnalyzeAll() {
     this.analysisResults = [];
+    this.flushDownstream.cancel();
+    this.downstreamFrom = null;
     this.rewriteCellsFrom(0);
     this.updateModelMappingsFrom(0);
   }
 
-  /**
-   * Rewrites the prefix files of cells `from..end` in one batch (a single
-   * cache invalidation), then analyzes them. Later cells are refreshed
-   * eagerly so that their analysis never lags behind an upstream edit.
-   */
+  private downstreamFrom: number | null = null;
+  private flushDownstream = debounce(() => {
+    const from = this.downstreamFrom;
+    this.downstreamFrom = null;
+    if (from !== null) this.rewriteCellsFrom(from);
+  }, 200);
+
+  private rewriteCells(from: number, to: number) {
+    this.editorSession.addFiles(
+      this.sources.slice(from, to).map((_, offset) => ({
+        name: cellFileName(from + offset),
+        content: joinLines(this.sources.slice(0, from + offset + 1)),
+      })),
+    );
+    for (let idx = from; idx < to; idx += 1) this.analyzeCell(idx);
+  }
+
   private rewriteCellsFrom(from: number) {
     this.editorSession.addFiles(
       this.sources.slice(from).map((_, offset) => ({
