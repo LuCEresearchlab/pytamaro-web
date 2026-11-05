@@ -534,6 +534,9 @@ export default function CodeEditor({
           renderLineHighlight: 'none',
           overviewRulerLanes: 0,
           scrollBeyondLastLine: false,
+          dropIntoEditor: {
+            enabled: false,
+          },
           scrollbar: {
             vertical: 'hidden',
             useShadows: false,
