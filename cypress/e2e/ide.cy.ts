@@ -27,7 +27,7 @@ describe('IDE', () => {
     dismissDataCollectionModal();
     waitForMonacoEditor();
     cy.get('[data-testid="new-file-button"]').click();
-    cy.get('[data-testid="file-tree"]')
+    cy.get('[data-testid="file-tree-dropzone"]')
       .find('input[type="text"]')
       .type('utils.py{enter}');
     cy.get('[data-testid="file-tree"]').should('contain.text', 'utils.py');

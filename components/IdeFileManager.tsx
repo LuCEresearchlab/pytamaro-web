@@ -1,4 +1,5 @@
 import {
+  Archive,
   CreateNewFolderOutlined,
   DeleteOutlined,
   DriveFileRenameOutline,
@@ -6,7 +7,7 @@ import {
   FolderOpen,
   InsertDriveFile,
   NoteAddOutlined,
-  UploadFile,
+  Unarchive,
 } from '@mui/icons-material';
 import {
   Box,
@@ -19,9 +20,17 @@ import {
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import { useConfirm } from 'material-ui-confirm';
-import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  DragEvent,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { isPythonFileName } from '../src/ideFiles';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
+import SidebarTitle from './sidebar/SidebarTitle';
 
 const FOLDER_PREFIX = 'dir:';
 
@@ -97,6 +106,31 @@ function folderItemIds(nodes: readonly FileTreeNode[]): string[] {
 
 function joinPath(parent: string, name: string): string {
   return parent.length === 0 ? name : `${parent}/${name}`;
+}
+
+/** The folder that contains the given path ('' for the workspace root). */
+function parentPath(path: string): string {
+  const index = path.lastIndexOf('/');
+  return index === -1 ? '' : path.slice(0, index);
+}
+
+/** Whether a drag carries files from the user's device (and not, say, text). */
+function isFileDrag(event: DragEvent<HTMLElement>): boolean {
+  return Array.from(event.dataTransfer.types).includes('Files');
+}
+
+/**
+ * The folder a drag is currently over. Folder rows are marked with their own
+ * path, file rows with the path of their parent folder, so dropping onto a
+ * file uploads next to it. Anywhere else means the workspace root ('').
+ */
+function dropFolderOf(target: EventTarget): string {
+  if (!(target instanceof Element)) {
+    return '';
+  }
+  return (
+    target.closest<HTMLElement>('[data-drop-folder]')?.dataset.dropFolder ?? ''
+  );
 }
 
 function InlineNameInput({
@@ -183,6 +217,16 @@ const HOVER_ACTIONS_SX = {
     { visibility: 'visible' },
 };
 
+/** Highlights the row of the folder that files are currently dragged over. */
+const DROP_TARGET_SX = {
+  '& > .MuiTreeItem-content': {
+    backgroundColor: 'action.hover',
+    outline: (theme: { palette: { primary: { main: string } } }) =>
+      `1px dashed ${theme.palette.primary.main}`,
+    outlineOffset: -1,
+  },
+};
+
 function ActionButton({
   title,
   onClick,
@@ -249,7 +293,7 @@ function RowLabel({
   );
 }
 
-export type IdeFileTreeProps = {
+export type IdeFileManagerProps = {
   fileNames: readonly string[];
   folderNames: readonly string[];
   activeFile: string;
@@ -260,15 +304,28 @@ export type IdeFileTreeProps = {
   onRenameFolder: (oldPath: string, newPath: string) => boolean;
   onDeleteFile: (path: string) => void;
   onDeleteFolder: (path: string) => void;
-  onUploadFile: () => void;
+  /**
+   * Called when files from the user's device are dropped onto the tree.
+   * `folder` is the path of the folder they were dropped on ('' for the root).
+   */
+  onUploadFiles: (files: File[], folder: string) => void;
+  /** Whether the workspace files have loaded; the tree is hidden until then. */
+  loaded: boolean;
+  /** Downloads all workspace files as a zip archive. */
+  onDownloadZip: () => void;
+  /** Imports files from a zip archive chosen by the user. */
+  onUploadZip: () => void;
 };
 
 /**
- * The files and folders of the IDE workspace. Files and folders can be created
- * inside any folder (through its hover actions) or at the root (through the
- * buttons under the tree).
+ * The file manager sidebar of the IDE. Files and folders can be created at the
+ * root through the header buttons or inside any folder (through its hover
+ * actions). Files from the user's device can be dragged onto the tree: dropping
+ * on a folder (or on a file inside it) uploads into that folder, dropping
+ * anywhere else uploads into the root. The header also downloads the workspace
+ * as a zip archive and imports one.
  */
-export default function IdeFileTree({
+export default function IdeFileManager({
   fileNames,
   folderNames,
   activeFile,
@@ -279,12 +336,17 @@ export default function IdeFileTree({
   onRenameFolder,
   onDeleteFile,
   onDeleteFolder,
-  onUploadFile,
-}: IdeFileTreeProps) {
+  onUploadFiles,
+  loaded,
+  onDownloadZip,
+  onUploadZip,
+}: IdeFileManagerProps) {
   const { t } = useLocalTranslation(['ide', 'common']);
   const confirm = useConfirm();
   const [edit, setEdit] = useState<TreeEdit>(null);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  /** The folder that files are being dragged over; null if there is no drag. */
+  const [dropTarget, setDropTarget] = useState<string | null>(null);
 
   const tree = useMemo(
     () => buildFileTree(fileNames, folderNames),
@@ -332,6 +394,47 @@ export default function IdeFileTree({
     });
   };
 
+  const handleDragOver = (event: DragEvent<HTMLElement>) => {
+    if (!isFileDrag(event)) {
+      return;
+    }
+    // Allows dropping here; also fires repeatedly, which keeps the highlight
+    // correct while the pointer moves between rows.
+    event.preventDefault();
+    const transfer = event.dataTransfer;
+    transfer.dropEffect = 'copy';
+    setDropTarget(dropFolderOf(event.target));
+  };
+
+  const handleDragLeave = (event: DragEvent<HTMLElement>) => {
+    // Moving between child elements also fires dragleave; only react when the
+    // pointer actually leaves the drop zone.
+    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+      setDropTarget(null);
+    }
+  };
+
+  const handleDrop = (event: DragEvent<HTMLElement>) => {
+    if (!isFileDrag(event)) {
+      return;
+    }
+    event.preventDefault();
+    const folder = dropFolderOf(event.target);
+    setDropTarget(null);
+    // Read the items synchronously; the DataTransfer is emptied after the
+    // event. Dropped directories are skipped, only plain files are uploaded.
+    const files = Array.from(event.dataTransfer.items)
+      .filter(
+        (item) =>
+          item.kind === 'file' && item.webkitGetAsEntry()?.isDirectory !== true,
+      )
+      .map((item) => item.getAsFile())
+      .filter((file): file is File => file !== null);
+    if (files.length > 0) {
+      onUploadFiles(files, folder);
+    }
+  };
+
   const renderCreateRow = (kind: 'file' | 'folder', parent: string) => (
     <TreeItem
       key={`__new-${kind}__`}
@@ -372,6 +475,7 @@ export default function IdeFileTree({
         itemId={path}
         slots={{ icon: fileIcon(path) }}
         sx={HOVER_ACTIONS_SX}
+        data-drop-folder={parentPath(path)}
         label={
           <RowLabel
             actionCount={2}
@@ -443,7 +547,8 @@ export default function IdeFileTree({
         key={itemId}
         itemId={itemId}
         slots={{ icon: expandedItems.includes(itemId) ? FolderOpen : Folder }}
-        sx={HOVER_ACTIONS_SX}
+        sx={[HOVER_ACTIONS_SX, dropTarget === node.path && DROP_TARGET_SX]}
+        data-drop-folder={node.path}
         label={
           <RowLabel
             actionCount={4}
@@ -507,38 +612,102 @@ export default function IdeFileTree({
   };
 
   return (
-    <>
-      <SimpleTreeView
-        selectedItems={activeFile}
-        expandedItems={expandedItems}
-        onExpandedItemsChange={(_, itemIds) => setExpandedItems(itemIds)}
-        onSelectedItemsChange={(_, itemId) => {
-          if (itemId !== null && !itemId.startsWith(FOLDER_PREFIX)) {
-            onOpenFile(itemId);
-          }
+    <Box
+      sx={{
+        height: '100%',
+        overflow: 'auto',
+        paddingX: 1,
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 0.5,
+          paddingX: 1,
+          paddingTop: 1,
         }}
-        data-testid='file-tree'
       >
-        {tree.map(renderNode)}
-        {createRowFor('')}
-      </SimpleTreeView>
-      <Stack direction='row' sx={{ marginTop: 1 }}>
-        <ActionButton
-          title={t('addEmptyFile')}
-          onClick={() => startCreate('file', '')}
+        <SidebarTitle sx={{ paddingBottom: 0 }}>
+          {t('fileManager')}
+        </SidebarTitle>
+        <Stack direction='row' sx={{ flexWrap: 'wrap' }}>
+          <Tooltip arrow title={t('addEmptyFile')}>
+            <IconButton
+              size='small'
+              aria-label={t('addEmptyFile')}
+              onClick={() => startCreate('file', '')}
+              data-testid='new-file-button'
+            >
+              <NoteAddOutlined fontSize='small' />
+            </IconButton>
+          </Tooltip>
+          <Tooltip arrow title={t('addFolder')}>
+            <IconButton
+              size='small'
+              aria-label={t('addFolder')}
+              onClick={() => startCreate('folder', '')}
+              data-testid='new-folder-button'
+            >
+              <CreateNewFolderOutlined fontSize='small' />
+            </IconButton>
+          </Tooltip>
+          <Tooltip arrow title={t('downloadFilesAsZip')}>
+            <IconButton
+              size='small'
+              aria-label={t('downloadFilesAsZip')}
+              onClick={onDownloadZip}
+            >
+              <Archive fontSize='small' />
+            </IconButton>
+          </Tooltip>
+          <Tooltip arrow title={t('uploadFilesFromZip')}>
+            <IconButton
+              size='small'
+              aria-label={t('uploadFilesFromZip')}
+              onClick={onUploadZip}
+            >
+              <Unarchive fontSize='small' />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      </Box>
+      {loaded && (
+        <Box
+          data-testid='file-tree-dropzone'
+          onDragEnter={handleDragOver}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          sx={{
+            borderRadius: 1,
+            // The whole zone is the target when files are dragged over the root.
+            outline: (theme) =>
+              dropTarget === ''
+                ? `1px dashed ${theme.palette.primary.main}`
+                : 'none',
+            outlineOffset: -1,
+            backgroundColor: dropTarget === '' ? 'action.hover' : 'transparent',
+          }}
         >
-          <NoteAddOutlined fontSize='small' data-testid='new-file-button' />
-        </ActionButton>
-        <ActionButton
-          title={t('addFolder')}
-          onClick={() => startCreate('folder', '')}
-        >
-          <CreateNewFolderOutlined fontSize='small' />
-        </ActionButton>
-        <ActionButton title={t('addFileFromDevice')} onClick={onUploadFile}>
-          <UploadFile fontSize='small' />
-        </ActionButton>
-      </Stack>
-    </>
+          <SimpleTreeView
+            selectedItems={activeFile}
+            expandedItems={expandedItems}
+            onExpandedItemsChange={(_, itemIds) => setExpandedItems(itemIds)}
+            onSelectedItemsChange={(_, itemId) => {
+              if (itemId !== null && !itemId.startsWith(FOLDER_PREFIX)) {
+                onOpenFile(itemId);
+              }
+            }}
+            data-testid='file-tree'
+          >
+            {tree.map(renderNode)}
+            {createRowFor('')}
+          </SimpleTreeView>
+        </Box>
+      )}
+    </Box>
   );
 }

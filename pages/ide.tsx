@@ -1,7 +1,5 @@
 import {
-  Archive,
   InsertDriveFile,
-  Unarchive,
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material';
@@ -18,14 +16,13 @@ import CustomSnackbar from '../components/CustomSnackbar';
 import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDialog';
 import DocumentationStripe from '../components/documentation/DocumentationStripe';
 import EditorTabs from '../components/EditorTabs';
-import IdeFileTree from '../components/IdeFileTree';
+import IdeFileManager from '../components/IdeFileManager';
 import ExecutionOutputArea from '../components/input_output/ExecutionOutputArea';
 import { OUTPUT_AREA_BACKGROUND_COLOR } from '../components/input_output/OutputArea';
 import LibrariesButton from '../components/navbar/LibrariesButton';
 import NavigationBar from '../components/navbar/NavigationBar';
 import ResetButton from '../components/navbar/ResetButton';
 import RunButton from '../components/RunButton';
-import SidebarTitle from '../components/sidebar/SidebarTitle';
 import StaleOutputBadge from '../components/StaleOutputBadge';
 import {
   baseName,
@@ -197,13 +194,17 @@ export default function Ide() {
     });
   };
 
-  const handleUpload = () =>
-    pickFile('', (file) => {
-      void file.arrayBuffer().then((buffer) => {
-        const bytes = new Uint8Array(buffer);
-        importFiles([fileFromBytes(file.name, bytes)], true);
-      });
-    });
+  const handleUploadFiles = (files: File[], folder: string) => {
+    void Promise.all(
+      files.map(async (file) => {
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        return fileFromBytes(
+          folder.length === 0 ? file.name : `${folder}/${file.name}`,
+          bytes,
+        );
+      }),
+    ).then((ideFiles) => importFiles(ideFiles, ideFiles.length === 1));
+  };
 
   const handleDownloadZip = () => {
     const files = fileNames.map((path) => ({
@@ -274,64 +275,22 @@ export default function Ide() {
         />
         <Group orientation='horizontal' style={{ flex: 1, minHeight: 0 }}>
           <Panel defaultSize='18%' minSize='8%' collapsible>
-            <Box
-              sx={{
-                height: '100%',
-                overflow: 'auto',
-                paddingX: 1,
-              }}
-            >
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                  gap: 0.5,
-                  paddingX: 1,
-                  paddingTop: 1,
-                }}
-              >
-                <SidebarTitle sx={{ paddingBottom: 0 }}>
-                  {tIde('fileManager')}
-                </SidebarTitle>
-                <Stack direction='row' sx={{ flexWrap: 'wrap' }}>
-                  <Tooltip arrow title={tIde('downloadFilesAsZip')}>
-                    <IconButton
-                      size='small'
-                      aria-label={tIde('downloadFilesAsZip')}
-                      onClick={handleDownloadZip}
-                    >
-                      <Archive fontSize='small' />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip arrow title={tIde('uploadFilesFromZip')}>
-                    <IconButton
-                      size='small'
-                      aria-label={tIde('uploadFilesFromZip')}
-                      onClick={handleUploadZip}
-                    >
-                      <Unarchive fontSize='small' />
-                    </IconButton>
-                  </Tooltip>
-                </Stack>
-              </Box>
-              {loaded && isHydrated && (
-                <IdeFileTree
-                  fileNames={fileNames}
-                  folderNames={folderNames}
-                  activeFile={activeFile}
-                  onOpenFile={openFile}
-                  onAddFile={addFile}
-                  onAddFolder={addFolder}
-                  onRenameFolder={renameFolder}
-                  onRenameFile={renameFile}
-                  onDeleteFile={deleteFile}
-                  onDeleteFolder={deleteFolder}
-                  onUploadFile={handleUpload}
-                />
-              )}
-            </Box>
+            <IdeFileManager
+              fileNames={fileNames}
+              folderNames={folderNames}
+              activeFile={activeFile}
+              onOpenFile={openFile}
+              onAddFile={addFile}
+              onAddFolder={addFolder}
+              onRenameFolder={renameFolder}
+              onRenameFile={renameFile}
+              onDeleteFile={deleteFile}
+              onDeleteFolder={deleteFolder}
+              onUploadFiles={handleUploadFiles}
+              loaded={loaded && isHydrated}
+              onDownloadZip={handleDownloadZip}
+              onUploadZip={handleUploadZip}
+            />
           </Panel>
           <Separator
             style={{
