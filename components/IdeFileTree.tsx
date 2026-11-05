@@ -110,7 +110,7 @@ function InlineNameInput({
   onSubmit: (name: string) => boolean;
   onCancel: () => void;
 }) {
-  const { t } = useLocalTranslation(['common']);
+  const { t } = useLocalTranslation(['ide']);
   const [name, setName] = useState(initialName);
   const [error, setError] = useState<string | null>(null);
 
@@ -281,7 +281,7 @@ export default function IdeFileTree({
   onDeleteFolder,
   onUploadFile,
 }: IdeFileTreeProps) {
-  const { t } = useLocalTranslation(['common']);
+  const { t } = useLocalTranslation(['ide', 'common']);
   const confirm = useConfirm();
   const [edit, setEdit] = useState<TreeEdit>(null);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
@@ -324,7 +324,7 @@ export default function IdeFileTree({
       title: t(`${prefix}AreYouSure`),
       description: t(`${prefix}Warning`, { name: path }),
       confirmationText: t(prefix),
-      cancellationText: t('confirmCancel'),
+      cancellationText: t('common:confirmCancel'),
     }).then(({ confirmed }) => {
       if (confirmed) {
         (isFolder ? onDeleteFolder : onDeleteFile)(path);

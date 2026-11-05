@@ -52,7 +52,7 @@ export default function BinaryFileView({
   content: Uint8Array | undefined;
   onDownload: () => void;
 }) {
-  const { t } = useLocalTranslation(['common']);
+  const { t } = useLocalTranslation(['ide']);
   const mime = imageType(name);
   const [url, setUrl] = useState<string | null>(null);
   const [view, setView] = useState<BinaryView>('preview');

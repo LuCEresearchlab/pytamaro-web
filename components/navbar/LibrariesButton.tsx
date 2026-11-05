@@ -21,7 +21,7 @@ import useIdeLibraries from '../../src/useIdeLibraries';
 import NavBarButton from './NavBarButton';
 
 export default function LibrariesButton() {
-  const { t } = useLocalTranslation();
+  const { t } = useLocalTranslation(['ide']);
   const {
     options,
     toggleLibrary,

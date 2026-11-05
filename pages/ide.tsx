@@ -60,6 +60,7 @@ function pickFile(accept: string, onFile: (file: File) => void) {
 
 export default function Ide() {
   const { t } = useLocalTranslation(['common']);
+  const { t: tIde } = useLocalTranslation(['ide']);
   const {
     workspace,
     loaded,
@@ -183,11 +184,11 @@ export default function Ide() {
     }
 
     confirm({
-      title: t('overwriteFilesAreYouSure'),
-      description: t('overwriteFilesWarning', {
+      title: tIde('overwriteFilesAreYouSure'),
+      description: tIde('overwriteFilesWarning', {
         names: conflictingNames.join(', '),
       }),
-      confirmationText: t('overwriteFiles'),
+      confirmationText: tIde('overwriteFiles'),
       cancellationText: t('confirmCancel'),
     }).then(({ confirmed }) => {
       if (confirmed) {
@@ -228,8 +229,8 @@ export default function Ide() {
   const handleReset = () => {
     confirm({
       title: t('resetAreYouSure'),
-      description: t('resetIdeWarning'),
-      confirmationText: t('resetIdeConfirm'),
+      description: tIde('resetIdeWarning'),
+      confirmationText: tIde('resetIdeConfirm'),
       cancellationText: t('confirmCancel'),
     }).then(({ confirmed }) => {
       if (confirmed) {
@@ -257,7 +258,7 @@ export default function Ide() {
           <ResetButton
             enabled={modified}
             onReset={handleReset}
-            tooltip={t('resetIde')}
+            tooltip={tIde('resetIde')}
           />
         </NavigationBar>
         <DataSharingPreferenceDialog />
@@ -265,7 +266,7 @@ export default function Ide() {
           visible={fileTransferError !== null}
           setVisible={() => setFileTransferError(null)}
           severity='error'
-          message={t(
+          message={tIde(
             fileTransferError === 'download'
               ? 'zipDownloadFailed'
               : 'zipImportFailed',
@@ -292,22 +293,22 @@ export default function Ide() {
                 }}
               >
                 <SidebarTitle sx={{ paddingBottom: 0 }}>
-                  {t('fileManager')}
+                  {tIde('fileManager')}
                 </SidebarTitle>
                 <Stack direction='row' sx={{ flexWrap: 'wrap' }}>
-                  <Tooltip arrow title={t('downloadFilesAsZip')}>
+                  <Tooltip arrow title={tIde('downloadFilesAsZip')}>
                     <IconButton
                       size='small'
-                      aria-label={t('downloadFilesAsZip')}
+                      aria-label={tIde('downloadFilesAsZip')}
                       onClick={handleDownloadZip}
                     >
                       <Archive fontSize='small' />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip arrow title={t('uploadFilesFromZip')}>
+                  <Tooltip arrow title={tIde('uploadFilesFromZip')}>
                     <IconButton
                       size='small'
-                      aria-label={t('uploadFilesFromZip')}
+                      aria-label={tIde('uploadFilesFromZip')}
                       onClick={handleUploadZip}
                     >
                       <Unarchive fontSize='small' />
@@ -417,10 +418,10 @@ export default function Ide() {
                             sx={{ fontSize: 56, opacity: 0.4 }}
                           />
                           <Typography variant='h6'>
-                            {t('noFileOpen')}
+                            {tIde('noFileOpen')}
                           </Typography>
                           <Typography variant='body2'>
-                            {t('noFileOpenHint')}
+                            {tIde('noFileOpenHint')}
                           </Typography>
                         </Stack>
                       )}
@@ -476,7 +477,7 @@ export default function Ide() {
                 {isPythonFile && outputShown && (
                   <>
                     <Separator
-                      aria-label={t('resizeOutput')}
+                      aria-label={tIde('resizeOutput')}
                       style={{
                         height: theme.spacing(0.25),
                         backgroundColor: theme.palette.divider,
@@ -532,7 +533,7 @@ export default function Ide() {
 export async function getStaticProps() {
   return {
     props: {
-      ...(await translationProps()),
+      ...(await translationProps(['ide'])),
     },
   };
 }

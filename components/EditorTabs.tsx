@@ -14,7 +14,7 @@ export default function EditorTabs({
   onSelect: (name: string) => void;
   onClose: (name: string) => void;
 }) {
-  const { t } = useLocalTranslation(['common']);
+  const { t } = useLocalTranslation(['ide']);
 
   return (
     <Box
