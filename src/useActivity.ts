@@ -10,7 +10,6 @@ import {
   useSyncExternalStore,
 } from 'react';
 import useSessionStorageState from 'use-session-storage-state';
-import { OutputAreaRef } from '../components/input_output/OutputArea';
 import type { ActivitySession } from './activitySession';
 import logAnalyticsEvent, { AnalyticsEventName } from './analyticsEvent';
 import {
@@ -35,6 +34,7 @@ import {
   activityVariantId,
 } from './schemas/activitySchema';
 import { EventName, storeDbEvent } from './storeDbEvent';
+import useInputRequests from './useInputRequests';
 
 function hasOutput(response: ExecutionResponse): boolean {
   return (
@@ -133,6 +133,16 @@ export function useActivity(
     );
     restart();
   }, [restart, setCodeExecutionStates]);
+
+  const showOutputArea = (idx: number) =>
+    setCodeExecutionStates((current) =>
+      produce(current, (draft) => {
+        if (draft[idx] !== undefined) {
+          draft[idx].outputAreaVisible = true;
+        }
+      }),
+    );
+  const { setOutputAreaRef, requestInput } = useInputRequests(showOutputArea);
 
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   const completed = !!variantMetadata?.completed;
@@ -314,7 +324,6 @@ export function useActivity(
     idx: number,
     executionUUID: string,
     pythonMode: PythonMode,
-    getOutputRef: (execIdx: number) => OutputAreaRef | null,
   ) => {
     if (executorState.type === 'loading') {
       // eslint-disable-next-line no-console
@@ -369,7 +378,7 @@ export function useActivity(
       pythonMode,
       newPartialExecutionResult,
       onActiveCellChange,
-      getOutputRef,
+      requestInput,
     );
 
     // Mark the "last" cell as complete.
@@ -444,6 +453,7 @@ export function useActivity(
     codeExecutionStates,
     completed,
     cellsModified,
+    setOutputAreaRef,
     handleInvalidateOutputsFrom,
     handleExecutionRequestEvent,
     handleExecute,

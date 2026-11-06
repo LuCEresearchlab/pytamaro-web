@@ -49,6 +49,19 @@ describe('IDE', () => {
       .contains('Hello, World!');
   });
 
+  it('should support interactive input', () => {
+    cy.visit(idePathname());
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    typeMonacoCode('print(input())');
+    cy.get('.run-button').first().click();
+    cy.get('[data-testid="output-area"]')
+      .find('[data-testid="input-area"]')
+      .should('be.visible')
+      .type('hello{enter}');
+    cy.get('[data-testid="output-area"]').should('contain.text', 'hello');
+  });
+
   it('should install and use additional Python libraries', () => {
     cy.visit(idePathname());
     dismissDataCollectionModal();

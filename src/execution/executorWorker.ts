@@ -518,10 +518,9 @@ class WorkerExecutor {
     // requests may be received out of order by the db
     let inputSeqNumber = 0;
     const stdin = () => {
-      // Send partial result before blocking for input
-      // (this signals that the output is up to date for the current execution,
-      // even if there was no output before the input request)
-      out.writeStdout('\u200B');
+      // Flush the output produced so far before blocking for input. This also
+      // gives the UI an execution response to render, so that the input field
+      // can be shown even if there was no output before the input request.
       // Not throttled: we want this to happen right now!
       sendPartialResult();
       const input = this.ffInputOnClient(executionMetadata, inputSeqNumber++);

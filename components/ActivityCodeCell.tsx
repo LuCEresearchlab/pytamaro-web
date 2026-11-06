@@ -9,7 +9,6 @@ import {
 } from '../src/schemas/activitySchema';
 import useReset from '../src/useReset';
 import CodeCell from './CodeCell';
-import { OutputAreaRef } from './input_output/OutputArea';
 import MoreOptionsButton from './MoreOptionsButton';
 import SaveToToolboxButton from './SaveToToolboxButton';
 
@@ -54,8 +53,6 @@ export default function ActivityCodeCell({
   platformConfig,
   activityResetCounter,
   runEnabled,
-  setOutputAreaRef,
-  getActivityOutputAreaRef,
 }: {
   activityState: LocalActivityState;
   activityVariant: ActivityVariant;
@@ -64,14 +61,10 @@ export default function ActivityCodeCell({
   platformConfig: PlatformConfiguration;
   activityResetCounter: number;
   runEnabled: boolean;
-  setOutputAreaRef: (
-    idx: number,
-    node: OutputAreaRef | null | undefined,
-  ) => void;
-  getActivityOutputAreaRef: (execIdx: number) => OutputAreaRef | null;
 }) {
   const {
     codeExecutionStates,
+    setOutputAreaRef,
     handleInvalidateOutputsFrom,
     handleExecutionRequestEvent,
     handleExecute,
@@ -109,12 +102,7 @@ export default function ActivityCodeCell({
           handleExecutionRequestEvent(cellIdx, executionUUID, pythonMode)
         }
         onExecutionRequested={(executionUUID) =>
-          handleExecute(
-            cellIdx,
-            executionUUID,
-            pythonMode,
-            getActivityOutputAreaRef,
-          )
+          handleExecute(cellIdx, executionUUID, pythonMode)
         }
         onRuntimeErrorDismissed={() => handleInvalidateOutputsFrom(cellIdx)}
         firstLineNumber={1 + precedingLines}

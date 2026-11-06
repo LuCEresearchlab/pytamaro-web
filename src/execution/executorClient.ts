@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/nextjs';
 import PQueue from 'p-queue';
-import { OutputAreaRef } from '../../components/input_output/OutputArea';
 import logAnalyticsEvent, { AnalyticsEventName } from '../analyticsEvent';
 import { ToolboxFunction } from '../localStorage/schema';
 import { EventName, storeDbEvent } from '../storeDbEvent';
@@ -66,6 +65,15 @@ function captureErrorWithSentry(error: unknown, tags: Record<string, unknown>) {
   });
 }
 
+export type InputRequester = (
+  cellIdx: number,
+  signal: AbortSignal,
+) => Promise<string>;
+
+const noInput: InputRequester = async () => {
+  throw new Error('This execution cannot request input');
+};
+
 /**
  * Handles the communication between:
  * 1. the worker and the UI, and
@@ -94,7 +102,8 @@ export class ExecutorClient {
   private readonly loadedLibraries: Set<string>;
 
   private activeCodeCell: number | null;
-  private getOutputAreaRef: (idx: number) => OutputAreaRef | null;
+  private requestInput: InputRequester;
+  private inputAbort: AbortController | null;
 
   static async init(
     delegate: ExecutorDelegate,
@@ -173,7 +182,8 @@ export class ExecutorClient {
         newState.type === 'executing' ? newState.activeCellIdx : null;
       setExecutorState(newState);
     };
-    this.getOutputAreaRef = () => null;
+    this.requestInput = noInput;
+    this.inputAbort = null;
 
     this.executorWorker.addEventListener(
       'message',
@@ -197,7 +207,7 @@ export class ExecutorClient {
       before: number | null,
       after: number,
     ) => void = () => {},
-    getOutputRef: (idx: number) => OutputAreaRef | null = () => null,
+    requestInput: InputRequester = noInput,
     fileNames: string[] = [],
     workspaceFiles: string[] | undefined = undefined,
   ): Promise<ExecutionResponse> {
@@ -213,8 +223,8 @@ export class ExecutorClient {
     const execution = async () => {
       // Reset active code cell in between runs
       this.setExecutorState({ type: 'available' });
-      // Set function to obtain output area ref for stdin
-      this.getOutputAreaRef = getOutputRef;
+      // Set the function that serves input requests
+      this.requestInput = requestInput;
       // Execute the code
       return new Promise<ExecutionResponse>((resolve) => {
         const resultsListener = (
@@ -304,7 +314,7 @@ export class ExecutorClient {
 
   interruptExecution(): void {
     this.interruptBuffer[0] = 2; // 2 for SIGINT
-    this.getActiveOutputAreaRef()?.deactivatePossibleInputField();
+    this.inputAbort?.abort();
     this.setExecutorState({ type: 'available' });
   }
 
@@ -327,12 +337,6 @@ export class ExecutorClient {
       // The packages may not be available (e.g., a network failure).
     }
     return client;
-  }
-
-  private getActiveOutputAreaRef(): OutputAreaRef | null {
-    return this.activeCodeCell === null
-      ? null
-      : this.getOutputAreaRef(this.activeCodeCell);
   }
 
   private sendInstallLibrariesRequest(libraries: string[]): Promise<void> {
@@ -543,30 +547,40 @@ export class ExecutorClient {
       });
   }
 
-  private handleDelegatedInput(uuid: string, data: InputRequestData): void {
-    const outputArea = this.getActiveOutputAreaRef();
-    if (outputArea === null) {
-      return;
-    }
-
-    outputArea.activateInputField();
-    outputArea
-      .getInput()
-      .then((value: string) => {
-        storeDbEvent(EventName.CodeExecutionInput, data.executionMetadata, {
-          executionUUID: data.executionMetadata.executionUUID,
-          seq: data.seq,
-          content: value,
-        });
-        logAnalyticsEvent(AnalyticsEventName.CodeExecutionInput, {});
-        const encoded = new Uint8Array(Buffer.from(value));
-        this.notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
-      })
-      .catch((err) => {
+  private async handleDelegatedInput(
+    uuid: string,
+    data: InputRequestData,
+  ): Promise<void> {
+    const cellIdx = this.activeCodeCell;
+    const abort = new AbortController();
+    this.inputAbort = abort;
+    try {
+      if (cellIdx === null) {
+        throw new Error('Input requested outside of a cell');
+      }
+      const value = await this.requestInput(cellIdx, abort.signal);
+      storeDbEvent(EventName.CodeExecutionInput, data.executionMetadata, {
+        executionUUID: data.executionMetadata.executionUUID,
+        seq: data.seq,
+        content: value,
+      });
+      logAnalyticsEvent(AnalyticsEventName.CodeExecutionInput, {});
+      const encoded = new Uint8Array(Buffer.from(value));
+      this.notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
+    } catch (err) {
+      if (abort.signal.aborted) {
+        // Interrupted: the worker is no longer waiting, so notifying it would
+        // spin forever in notifyWorkerUsingSyncBuffer. Just forget the request.
+        this.pendingResults.delete(uuid);
+      } else {
         captureErrorWithSentry(err, { procedure: 'input' });
         this.notifyWorkerResultFailure(uuid);
-      })
-      .finally(outputArea.deactivatePossibleInputField);
+      }
+    } finally {
+      if (this.inputAbort === abort) {
+        this.inputAbort = null;
+      }
+    }
   }
 
   private handleDelegatedSave(uuid: string, data: SaveRequestData): void {

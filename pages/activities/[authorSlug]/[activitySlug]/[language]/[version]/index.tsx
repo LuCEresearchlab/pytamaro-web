@@ -16,7 +16,6 @@ import ActivityFooter from '../../../../../../components/ActivityFooter';
 import ActivityResetButton from '../../../../../../components/ActivityResetButton';
 import DataSharingPreferenceDialog from '../../../../../../components/DataSharingPreferenceDialog';
 import GoToCurriculaBanner from '../../../../../../components/GoToCurriculaBanner';
-import { OutputAreaRef } from '../../../../../../components/input_output/OutputArea';
 import MarkdownCellComponent from '../../../../../../components/MarkdownCellComponent';
 import InfoButton from '../../../../../../components/navbar/InfoButton';
 import NavigationBar from '../../../../../../components/navbar/NavigationBar';
@@ -144,26 +143,6 @@ function NotebookCells({
     };
   }, []);
 
-  const outputAreaRefs = useRef<Map<number, OutputAreaRef | null> | null>(null);
-  const getOutputAreaRefs = () => {
-    if (outputAreaRefs.current === null) {
-      outputAreaRefs.current = new Map();
-    }
-    return outputAreaRefs.current;
-  };
-  const setOutputAreaRef = (
-    idx: number,
-    node: OutputAreaRef | null | undefined,
-  ) => {
-    const map = getOutputAreaRefs();
-    if (node !== undefined) {
-      map.set(idx, node);
-    } else {
-      map.delete(idx);
-    }
-  };
-  const getOutputAreaRef = (idx: number) => getOutputAreaRefs().get(idx)!;
-
   return (
     <Box ref={cellsRef} className='activity-content'>
       {cells.map((cell, idx) =>
@@ -184,8 +163,6 @@ function NotebookCells({
               extraPythonFiles={activity.extraPythonFiles}
               platformConfig={activity.platformConfig}
               activityResetCounter={resetCounter}
-              setOutputAreaRef={setOutputAreaRef}
-              getActivityOutputAreaRef={getOutputAreaRef}
               runEnabled={runEnabled}
             />
           </Container>

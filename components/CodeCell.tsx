@@ -74,7 +74,6 @@ export default function CodeCell({
   resetCounter: number;
   activitySession: ActivitySession;
   cellIdx: number;
-  getOutputAreaRef?: () => OutputAreaRef | null;
   setOutputAreaRef: (
     idx: number,
     node: OutputAreaRef | null | undefined,

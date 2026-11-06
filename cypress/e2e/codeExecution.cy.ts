@@ -73,4 +73,45 @@ describe('Code Execution', () => {
     cy.get('.run-button').first().click();
     cy.get('[data-testid="output-area"]').first().contains('1');
   });
+
+  it('should support interactive input over multiple cells', () => {
+    cy.visit(
+      activityVariantPathnameFromParts('luce', 'swiss-flag', 'en', 'v1'),
+    );
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    // First cell
+    typeMonacoCode('input("Cell 0")');
+    cy.get('.run-button').first().click();
+    cy.get('[data-testid="output-area"]').contains('Cell 0');
+    cy.get('[data-testid="output-area"]')
+      .find('[data-testid="input-area"]')
+      .should('be.visible');
+    // Stop the execution, a new re-execution should produce a usable input field again
+    cy.get('.run-button').first().click(); // stop
+    cy.get('.run-button').first().click(); // re-run
+    cy.get('[data-testid="output-area"]').contains('Cell 0');
+    cy.get('[data-testid="output-area"]')
+      .find('[data-testid="input-area"]')
+      .should('be.visible');
+    cy.get('[data-testid="input-area"]').type('first{enter}');
+    cy.get('[data-testid="output-area"]').first().contains('first');
+    // Second cell
+    typeMonacoCode('input("Cell 1")', { index: 1 });
+    cy.get('.run-button').eq(1).click();
+    // program re-runs from the beginning, two input requests progressively activated
+    cy.get('[data-testid="output-area"]').eq(0).contains('Cell 0');
+    cy.get('[data-testid="output-area"]')
+      .eq(0)
+      .find('[data-testid="input-area"]')
+      .should('be.visible');
+    cy.get('[data-testid="input-area"]').type('first{enter}');
+    cy.get('[data-testid="output-area"]').eq(1).contains('Cell 1');
+    cy.get('[data-testid="output-area"]')
+      .eq(1)
+      .find('[data-testid="input-area"]')
+      .should('be.visible');
+    cy.get('[data-testid="input-area"]').eq(1).type('second{enter}');
+    cy.get('[data-testid="output-area"]').eq(1).contains('second');
+  });
 });

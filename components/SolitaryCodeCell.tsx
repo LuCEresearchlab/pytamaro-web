@@ -8,7 +8,6 @@ import {
 import { type ActivityState } from '../src/useActivity';
 import CodeCell from './CodeCell';
 import SaveToToolboxButton from './SaveToToolboxButton';
-import { OutputAreaRef } from './input_output/OutputArea';
 
 export function singleCodeCell(source: string) {
   return [{ source, originalIndex: 0 }];
@@ -49,13 +48,9 @@ export default function SolitaryCodeCell({
   automaticEvaluation?: boolean;
   setAutomaticEvaluation?: (value: boolean) => void;
 }) {
-  const outputAreaRef = useRef<OutputAreaRef>(null);
-  const getOutputAreaRef = () => outputAreaRef.current;
-  const setOutputAreaRef = (node: OutputAreaRef | null | undefined) => {
-    outputAreaRef.current = node === undefined ? null : node;
-  };
   const {
     codeExecutionStates,
+    setOutputAreaRef,
     handleInvalidateOutputsFrom,
     handleResetSingleCellExecutionState,
     handleExecutionRequestEvent,
@@ -96,12 +91,7 @@ export default function SolitaryCodeCell({
         // Here we are not calling `handleExecutionRequestEvent` because we don't want to log the CodeExecution event
         // for *each* automatic evaluation (it would generate far too many events).
         // Call directly handleExecute() instead.
-        handleExecuteRef.current(
-          0,
-          executionUUID,
-          pythonMode,
-          () => outputAreaRef.current,
-        );
+        handleExecuteRef.current(0, executionUUID, pythonMode);
       }, AUTOMATIC_EXECUTION_DEBOUNCE_DELAY),
     [pythonMode],
   );
@@ -138,7 +128,7 @@ export default function SolitaryCodeCell({
       }}
       onExecutionRequested={(executionUUID) => {
         onExecutionRequest();
-        return handleExecute(0, executionUUID, pythonMode, getOutputAreaRef);
+        return handleExecute(0, executionUUID, pythonMode);
       }}
       onRuntimeErrorDismissed={() => handleInvalidateOutputsFrom(0)}
       onExecutionRequestEvent={(executionUUID) =>
@@ -164,8 +154,7 @@ export default function SolitaryCodeCell({
       resetCounter={resetCounter}
       activitySession={activitySession}
       cellIdx={0}
-      getOutputAreaRef={getOutputAreaRef}
-      setOutputAreaRef={(_, node) => setOutputAreaRef(node)}
+      setOutputAreaRef={setOutputAreaRef}
       pythonMode={pythonMode}
       elevation={elevation}
       automaticEvaluation={automaticEvaluation}

@@ -1,4 +1,4 @@
-import { useCallback, useContext, useRef, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import type { OutputAreaRef } from '../components/input_output/OutputArea';
 import {
   type ExecutionResponse,
@@ -13,6 +13,7 @@ import { isPythonFileName } from './ideFiles';
 import type { IdeWorkspace } from './ideWorkspace';
 import { extractMetadataForEvent } from './localStorage/schema';
 import useLocalProfile from './localStorage/useLocalProfile';
+import useInputRequests from './useInputRequests';
 
 /**
  * Runs a single IDE file, exposing the files of the workspace as imports.
@@ -35,7 +36,6 @@ export default function useIdeExecution(
   const [outputAreaVisible, setOutputAreaVisible] = useState(false);
   const [outputSynced, setOutputSynced] = useState(true);
   const [isWaitingForInput, setIsWaitingForInput] = useState(false);
-  const outputAreaRef = useRef<OutputAreaRef | null>(null);
 
   /** Marks the shown output as stale, e.g., after the file has been edited. */
   const markOutputStale = useCallback(() => {
@@ -51,11 +51,12 @@ export default function useIdeExecution(
     setIsWaitingForInput(false);
   }, []);
 
+  const showOutputArea = useCallback(() => setOutputAreaVisible(true), []);
+  const { setOutputAreaRef: setCellOutputAreaRef, requestInput } =
+    useInputRequests(showOutputArea);
   const setOutputAreaRef = useCallback(
-    (node: OutputAreaRef | null | undefined) => {
-      outputAreaRef.current = node ?? null;
-    },
-    [],
+    (node: OutputAreaRef | null | undefined) => setCellOutputAreaRef(0, node),
+    [setCellOutputAreaRef],
   );
 
   const run = useCallback(async () => {
@@ -99,7 +100,7 @@ export default function useIdeExecution(
           setOutputSynced(true);
         },
         () => {},
-        () => outputAreaRef.current,
+        requestInput,
         [activeFile],
         workspaceFileNames,
       );
@@ -123,6 +124,7 @@ export default function useIdeExecution(
     metadata,
     onWorkspaceChanges,
     restart,
+    requestInput,
     workspace,
   ]);
 
