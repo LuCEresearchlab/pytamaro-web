@@ -79,7 +79,6 @@ export default function useIdeExecution(
     const uuid = crypto.randomUUID();
     setExecutionUUID(uuid);
     setExecutionResponse(undefined);
-    setOutputAreaVisible(false);
     setOutputSynced(true);
     setIsWaitingForInput(false);
 

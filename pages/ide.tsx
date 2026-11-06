@@ -1,9 +1,5 @@
-import {
-  InsertDriveFile,
-  Visibility,
-  VisibilityOff,
-} from '@mui/icons-material';
-import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import { InsertDriveFile } from '@mui/icons-material';
+import { Box, Stack, Typography } from '@mui/material';
 import { saveAs } from 'file-saver';
 import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
@@ -98,7 +94,8 @@ export default function Ide() {
   const outputContentRef = useRef<HTMLDivElement>(null);
   const outputPanelRef = usePanelRef();
   // The output never leaves empty space below its content: the panel grows to
-  // the content's height, up to a fraction of the available space.
+  // the content's height, up to a fraction of the available space. It never
+  // shrinks automatically, so updating output does not make the panel jump.
   const [outputHeight, setOutputHeight] = useState(0);
 
   useLayoutEffect(() => {
@@ -109,7 +106,9 @@ export default function Ide() {
     const measure = () => {
       const contentHeight = content.offsetHeight;
       const groupHeight = outputGroupRef.current?.offsetHeight ?? contentHeight;
-      setOutputHeight(Math.min(contentHeight, groupHeight * 0.8));
+      setOutputHeight((currentHeight) =>
+        Math.min(groupHeight * 0.8, Math.max(currentHeight, contentHeight)),
+      );
     };
     measure();
     const observer = new ResizeObserver(measure);
@@ -394,6 +393,7 @@ export default function Ide() {
                           alignItems: 'center',
                           paddingX: 2,
                           paddingY: 1,
+                          backgroundColor: theme.palette.background.paper,
                         }}
                       >
                         <RunButton
@@ -406,31 +406,6 @@ export default function Ide() {
                           isWaitingForInput={execution.isWaitingForInput}
                           runCodeLabelKey='runCode'
                         />
-                        {execution.executionResponse !== undefined && (
-                          <Tooltip
-                            arrow
-                            title={t(
-                              execution.outputAreaVisible
-                                ? 'hideOutput'
-                                : 'showOutput',
-                            )}
-                          >
-                            <IconButton
-                              sx={{ marginLeft: 'auto' }}
-                              onClick={() =>
-                                execution.setOutputAreaVisible(
-                                  (visible) => !visible,
-                                )
-                              }
-                            >
-                              {execution.outputAreaVisible ? (
-                                <VisibilityOff />
-                              ) : (
-                                <Visibility />
-                              )}
-                            </IconButton>
-                          </Tooltip>
-                        )}
                       </Box>
                     )}
                   </Stack>
