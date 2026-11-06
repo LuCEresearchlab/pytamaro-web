@@ -1,9 +1,16 @@
-import { InsertDriveFile } from '@mui/icons-material';
+import { InsertDriveFile, PlayCircleFilled } from '@mui/icons-material';
 import { Box, Stack, Typography } from '@mui/material';
 import { saveAs } from 'file-saver';
 import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Group, Panel, Separator, usePanelRef } from 'react-resizable-panels';
 import BinaryFileView from '../components/BinaryFileView';
 import { NoOutputTip } from '../components/CodeCellTips';
@@ -20,6 +27,7 @@ import NavigationBar from '../components/navbar/NavigationBar';
 import ResetButton from '../components/navbar/ResetButton';
 import RunButton from '../components/RunButton';
 import StaleOutputBadge from '../components/StaleOutputBadge';
+import { toCustomDiagnostics } from '../src/editor/diagnostics';
 import {
   baseName,
   fileFromBytes,
@@ -85,6 +93,7 @@ export default function Ide() {
   );
   const isHydrated = useIsHydrated();
   const confirm = useConfirm();
+  const { run: runExecution, liveAnalysis } = execution;
   const isBinary = activeFile !== '' && workspace.isBinary(activeFile);
   const isPythonFile = !isBinary && isPythonFileName(activeFile);
   const outputShown =
@@ -127,6 +136,39 @@ export default function Ide() {
     });
     return () => cancelAnimationFrame(frame);
   }, [isPythonFile, outputHeight, outputPanelRef, outputShown]);
+
+  const handleExecutionRequest = useCallback(async () => {
+    const diagnostics = toCustomDiagnostics(
+      workspace.editorSession.diagnosticsForFile(activeFile),
+      liveAnalysis,
+    );
+    if (diagnostics.length === 0) {
+      return runExecution();
+    }
+    const { confirmed } = await confirm({
+      title: t('confirmExecutionWithErrors.title'),
+      description: t(
+        'confirmExecutionWithErrors.descriptionOnlyCurrentFile',
+        { count: diagnostics.length },
+      ),
+      confirmationText: t('confirmExecutionWithErrors.confirmationText'),
+      cancellationText: t('confirmExecutionWithErrors.cancellationText'),
+      confirmationButtonProps: {
+        endIcon: <PlayCircleFilled />,
+        variant: 'contained',
+      },
+    });
+    if (confirmed) {
+      return runExecution();
+    }
+  }, [
+    activeFile,
+    confirm,
+    liveAnalysis,
+    runExecution,
+    t,
+    workspace.editorSession,
+  ]);
 
   const [hoveredName, setHoveredName] = useState<PythonName | null>(null);
   const [fileTransferError, setFileTransferError] = useState<
@@ -344,7 +386,7 @@ export default function Ide() {
                             context={editorContext}
                             autoHeight={false}
                             onChange={execution.markOutputStale}
-                            onExecutionRequested={execution.run}
+                            onExecutionRequested={handleExecutionRequest}
                             executionAllowed={execution.runEnabled}
                             executionResponse={execution.executionResponse}
                             showRuntimeAnnotations={
@@ -398,7 +440,7 @@ export default function Ide() {
                       >
                         <RunButton
                           enabled={execution.runEnabled}
-                          onExecutionRequested={execution.run}
+                          onExecutionRequested={handleExecutionRequest}
                           executing={execution.executing}
                           isExecutingPreviousCell={false}
                           executionFinished={execution.executionFinished}

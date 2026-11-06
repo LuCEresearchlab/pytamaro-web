@@ -149,6 +149,7 @@ export default function useIdeExecution(
     executionError,
     executionResponse,
     outputAreaVisible,
+    liveAnalysis: metadata.liveAnalysis,
     setOutputAreaVisible,
     outputSynced,
     markOutputStale,
