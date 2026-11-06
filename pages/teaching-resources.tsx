@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import { Schema } from '@mui/icons-material';
 import AccountBalance from '@mui/icons-material/AccountBalance';
 import Hiking from '@mui/icons-material/Hiking';
@@ -7,7 +6,6 @@ import School from '@mui/icons-material/School';
 import Translate from '@mui/icons-material/Translate';
 import {
   Box,
-  Button,
   Card,
   CardActionArea,
   CardContent,
@@ -20,6 +18,7 @@ import {
 import Head from 'next/head';
 import Image from 'next/image';
 import NavigationBar from '../components/navbar/NavigationBar';
+import NewsletterForm from '../components/NewsletterForm';
 import PageTitle from '../components/PageTitle';
 import { translationProps } from '../src/serverSideTranslationProps';
 import {
@@ -44,7 +43,7 @@ export default function Teaching() {
             sx={{
               textAlign: 'center',
               fontSize: '1.2rem',
-              mb: 4,
+              mb: 6,
             }}
           >
             This page contains assorted resources to help you teach Python
@@ -65,37 +64,14 @@ export default function Teaching() {
             sx={{
               textAlign: 'center',
               fontSize: '1.2rem',
-              mb: 2,
-              mt: 4,
+              mt: 2,
             }}
           >
             Stay informed about new resources and updates?
           </Typography>
-          <Typography
-            sx={{
-              textAlign: 'center',
-              mb: 2,
-            }}
-          >
-            <Button
-              variant='contained'
-              size='large'
-              href='mailto:matthias.hauswirth@usi.ch?subject=Sign%20me%20up%20for%20the%20PyTamaro%20Newsletter&body=Dear%20Matthias,%0D%0A%0D%0AMy%20name%20is%20xxxxx.%0D%0A%0D%0AI%20am%20teaching%20xxxxx%20at%20xxxxx.%0D%0A%0D%0AI%20would%20like%20to%20subscribe%20to%20the%20Luce%20PyTamaro%20newsletter.%0D%0A%0D%0AThanks!'
-            >
-              Sign up for our newsletter
-            </Button>
-          </Typography>
-          <Typography
-            sx={{
-              textAlign: 'center',
-              fontSize: '0.8rem',
-              mb: 4,
-            }}
-          >
-            This button is just a mailto link. It will open your email client so
-            you can send us an email. This way we don't have to handle
-            personally identifiable information on this web site.
-          </Typography>
+          <Card elevation={4} sx={{ mt: 2, mb: 10 }}>
+            <NewsletterForm />
+          </Card>
           <Stack spacing={4}>
             <Card elevation={4}>
               <CardActionArea href='/tamarocards'>
