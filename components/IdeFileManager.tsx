@@ -262,6 +262,18 @@ function ActionButton({
   );
 }
 
+/** The width of one hover action: MUI's small `IconButton` with a small icon. */
+const ACTION_BUTTON_WIDTH = 30;
+
+/** Makes a row name use the remaining width and ellipsize instead of overflowing. */
+const ROW_NAME_SX = {
+  flexGrow: 1,
+  minWidth: 0,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+};
+
 /** A tree row: a label with actions that show up on hover. */
 function RowLabel({
   actions = undefined,
@@ -280,7 +292,15 @@ function RowLabel({
         alignItems: 'center',
         width: '100%',
         position: 'relative',
-        paddingRight: actions === undefined ? 0.5 : actionCount * 3.5,
+        paddingRight: 0.5,
+        // The actions are positioned absolutely. Reserve room for them only
+        // while they are shown (the row is hovered or has focus), so names can
+        // use the full width the rest of the time.
+        ...(actions !== undefined && {
+          '.MuiTreeItem-content:hover &, .MuiTreeItem-content:focus-within &': {
+            paddingRight: `${actionCount * ACTION_BUTTON_WIDTH}px`,
+          },
+        }),
       }}
     >
       {children}
@@ -567,16 +587,7 @@ export default function IdeFileManager({
                 onCancel={() => setEdit(null)}
               />
             ) : (
-              <Typography
-                variant='body2'
-                sx={{
-                  flexGrow: 1,
-                  minWidth: 0,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
+              <Typography variant='body2' sx={ROW_NAME_SX}>
                 {name}
               </Typography>
             )}
@@ -665,7 +676,9 @@ export default function IdeFileManager({
                 onCancel={() => setEdit(null)}
               />
             ) : (
-              <Typography variant='body2'>{node.name}</Typography>
+              <Typography variant='body2' sx={ROW_NAME_SX}>
+                {node.name}
+              </Typography>
             )}
           </RowLabel>
         }
