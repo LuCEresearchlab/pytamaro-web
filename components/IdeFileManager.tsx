@@ -722,16 +722,6 @@ export default function IdeFileManager({
               <NoteAddOutlined fontSize='small' />
             </IconButton>
           </Tooltip>
-          <Tooltip arrow title={t('addFolder')}>
-            <IconButton
-              size='small'
-              aria-label={t('addFolder')}
-              onClick={() => startCreate('folder', '')}
-              data-testid='new-folder-button'
-            >
-              <CreateNewFolderOutlined fontSize='small' />
-            </IconButton>
-          </Tooltip>
           <Tooltip arrow title={t('addFileFromDevice')}>
             <IconButton
               size='small'
@@ -740,6 +730,16 @@ export default function IdeFileManager({
               data-testid='upload-file-button'
             >
               <UploadFileOutlined fontSize='small' />
+            </IconButton>
+          </Tooltip>
+          <Tooltip arrow title={t('addFolder')}>
+            <IconButton
+              size='small'
+              aria-label={t('addFolder')}
+              onClick={() => startCreate('folder', '')}
+              data-testid='new-folder-button'
+            >
+              <CreateNewFolderOutlined fontSize='small' />
             </IconButton>
           </Tooltip>
           <Tooltip arrow title={t('downloadFilesAsZip')}>
