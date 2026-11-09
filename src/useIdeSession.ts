@@ -1,15 +1,17 @@
 import { isEqual } from 'lodash';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import { EditorSession } from './editorSession';
 import { toolboxFiles as generateToolboxFiles } from './execution/codeExecution';
 import type { WorkspaceChanges } from './execution/messageTypes';
-import {
-  decodeUtf8,
-  IdeFile,
-  normalizeWorkspacePath,
-  pathConflicts,
-  sameContent,
-} from './ideFiles';
+import { encodeText, sameBytes, viewKind } from './ideFileContent';
+import { IdeFile, normalizeWorkspacePath, pathConflicts } from './ideFiles';
 import { IdeFilesPersistence, StoredWorkspace } from './ideFilesPersistence';
 import { IdeWorkspace } from './ideWorkspace';
 import { ToolboxFunction } from './localStorage/schema';
@@ -20,7 +22,7 @@ const INITIAL_FILE_NAME = 'main.py';
 
 /** The files of a workspace that has never been used. */
 function initialFiles(): IdeFile[] {
-  return [{ path: INITIAL_FILE_NAME, content: '' }];
+  return [{ path: INITIAL_FILE_NAME, content: encodeText('') }];
 }
 
 /** Whether two file lists contain the same files with the same contents. */
@@ -31,7 +33,7 @@ function sameFiles(a: readonly IdeFile[], b: readonly IdeFile[]): boolean {
   const contentsByName = new Map(b.map((file) => [file.path, file.content]));
   return a.every((file) => {
     const content = contentsByName.get(file.path);
-    return content !== undefined && sameContent(content, file.content);
+    return content !== undefined && sameBytes(content, file.content);
   });
 }
 
@@ -80,7 +82,7 @@ function replaceWorkspace(
  *
  * The `IdeWorkspace` is the only owner of file contents; IndexedDB just mirrors
  * it. Unlike an activity, the IDE has no cells: every file is an independent
- * document, and files may be text or binary.
+ * document, and every file's content is stored as bytes.
  */
 export default function useIdeSession() {
   const { metadata, selectedIdeLibrariesIds: knownLibraries } =
@@ -119,9 +121,24 @@ export default function useIdeSession() {
   );
   // Folders created explicitly, so possibly empty.
   const [folderNames, setFolderNames] = useState<string[]>([]);
-  const [binaryFileNames, setBinaryFileNames] = useState<string[]>(() =>
-    workspace.files().filter((name) => workspace.isBinary(name)),
+  // The file tree marks non-text files, but the marker is derived from the
+  // current bytes on every render instead of being stored.
+  const getFileKinds = () =>
+    fileNames
+      .map((name) => {
+        const bytes = workspace.bytes(name);
+        return bytes === undefined ? '' : viewKind(name, bytes);
+      })
+      .join('\n');
+  const fileKinds = useSyncExternalStore(
+    workspace.subscribe,
+    getFileKinds,
+    getFileKinds,
   );
+  const binaryFileNames = useMemo(() => {
+    const kinds = fileKinds.split('\n');
+    return fileNames.filter((_, idx) => kinds[idx] !== 'text');
+  }, [fileNames, fileKinds]);
   // False until the stored files have been loaded into the workspace: the
   // editor must not create its model before that, since workspace writes
   // don't reach an already open model.
@@ -141,12 +158,6 @@ export default function useIdeSession() {
       );
       setFolderNames((prev) =>
         isEqual(prev, nextFolders) ? prev : nextFolders,
-      );
-      const nextBinaries = workspace
-        .files()
-        .filter((name) => workspace.isBinary(name));
-      setBinaryFileNames((prev) =>
-        isEqual(prev, nextBinaries) ? prev : nextBinaries,
       );
     };
 
@@ -305,7 +316,7 @@ export default function useIdeSession() {
   const addFile = useCallback(
     (
       name: string,
-      content: string | Uint8Array = '',
+      content: Uint8Array = new Uint8Array(0),
       {
         overwrite = false,
         open = true,
@@ -325,7 +336,7 @@ export default function useIdeSession() {
       if (!exists && pathConflicts(path, workspace.files())) {
         return false;
       }
-      workspace.setFile({ path, content });
+      workspace.setBytes(path, content);
       if (open) {
         openFile(path);
       }
@@ -427,17 +438,27 @@ export default function useIdeSession() {
   /** Applies the files that a Python run created, modified, or deleted. */
   const syncWorkspaceChanges = useCallback(
     (changes: WorkspaceChanges) => {
+      // Deletions first: a run may replace a file with a folder (or vice
+      // versa), and the new paths would otherwise conflict with the old ones.
+      changes.deleted.forEach((name) => {
+        workspace.removeFile(name);
+      });
       changes.changed.forEach(({ name, content }) => {
+        // Mid-run pushes and the final result overlap by design: applying the
+        // same change twice must not reset the editor model or the cursor.
+        const existing = workspace.bytes(name);
+        if (existing !== undefined && sameBytes(existing, content)) {
+          return;
+        }
         const otherNames = workspace.files().filter((path) => path !== name);
         if (pathConflicts(name, otherNames)) {
           return;
         }
-        const text = decodeUtf8(content);
-        workspace.setFile({ path: name, content: text ?? content });
+        workspace.setBytes(name, content);
       });
-      changes.deleted.forEach((name) => {
-        workspace.removeFile(name);
-      });
+      if (changes.folders !== undefined) {
+        workspace.setFolders(changes.folders);
+      }
     },
     [workspace],
   );

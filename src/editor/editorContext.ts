@@ -23,6 +23,13 @@ export interface EditorContext {
   detachModel(model: editor.ITextModel): void;
   /** Pushes an edit into the underlying session. */
   updateSource(source: string): void;
+  /**
+   * Whether a model change is currently caused by the session (storage, another
+   * tab, reset) rather than by the user. Such changes must not be written back.
+   */
+  isApplyingExternalUpdate?(): boolean;
+  /** Replaces a model's text without treating it as a user edit. */
+  applyModelText?(model: editor.ITextModel, text: string): void;
   /** Diagnostics for this document, with ranges relative to the model. */
   diagnostics(liveAnalysis: LiveAnalysisStatus): CustomDiagnostic[];
   /** The Python name under the cursor, if it can be resolved. */

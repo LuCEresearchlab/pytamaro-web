@@ -1,6 +1,7 @@
 import { debounce } from 'lodash';
 import { WRITE_DEBOUNCE_MS } from './codeCellsPersistence';
-import { IdeFile, isIdeFile, sameContent } from './ideFiles';
+import { sameBytes } from './ideFileContent';
+import { IdeFile, isIdeFile } from './ideFiles';
 
 const DATABASE_NAME = 'pytamaro-web-ide';
 const DATABASE_VERSION = 1;
@@ -172,7 +173,7 @@ export class IdeFilesPersistence {
       const previous = this.lastSaved.get(path);
       if (
         previous === undefined ||
-        !sameContent(previous.content, file.content)
+        !sameBytes(previous.content, file.content)
       ) {
         changed.push(file);
       }

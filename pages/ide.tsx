@@ -1,7 +1,6 @@
 import {
   Abc,
   ImageOutlined,
-  InsertDriveFile,
   Memory,
   PlayCircleFilled,
 } from '@mui/icons-material';
@@ -16,6 +15,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
 } from 'react';
 import { Group, Panel, Separator, usePanelRef } from 'react-resizable-panels';
 import BinaryFileView from '../components/BinaryFileView';
@@ -35,13 +35,8 @@ import ResetButton from '../components/navbar/ResetButton';
 import RunButton from '../components/RunButton';
 import StaleOutputBadge from '../components/StaleOutputBadge';
 import { toCustomDiagnostics } from '../src/editor/diagnostics';
-import {
-  baseName,
-  contentBytes,
-  fileFromBytes,
-  IdeFile,
-  isPythonFileName,
-} from '../src/ideFiles';
+import { filePreview, viewKind } from '../src/ideFileContent';
+import { baseName, IdeFile, isPythonFileName } from '../src/ideFiles';
 import { downloadFilesAsZip, readFilesFromZip } from '../src/ideFilesZip';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { playgroundActivityVariant } from '../src/playground';
@@ -102,22 +97,40 @@ export default function Ide() {
   const isHydrated = useIsHydrated();
   const confirm = useConfirm();
   const { run: runExecution, liveAnalysis } = execution;
-  const isBinary = activeFile !== '' && workspace.isBinary(activeFile);
-  const isPythonFile = !isBinary && isPythonFileName(activeFile);
-  const [showBytes, setShowBytes] = useState(false);
-  const activeFileContent =
-    activeFile === '' ? undefined : workspace.content(activeFile);
-  const activeFileBytes = useMemo(
-    () =>
-      activeFileContent === undefined
-        ? undefined
-        : contentBytes(activeFileContent),
-    [activeFileContent],
+
+  const getActiveKind = () => {
+    if (activeFile === '') {
+      return '';
+    }
+    const bytes = workspace.bytes(activeFile);
+    return bytes === undefined ? '' : viewKind(activeFile, bytes);
+  };
+  const activeKind = useSyncExternalStore(
+    workspace.subscribe,
+    getActiveKind,
+    getActiveKind,
   );
-  // The byte view is a per-file mode: switching file always shows the editor.
+  const isText = activeKind === 'text';
+  const activeFileBytes =
+    activeFile === '' ? undefined : workspace.bytes(activeFile);
+  const activePreview =
+    activeFileBytes === undefined
+      ? undefined
+      : filePreview(activeFile, activeFileBytes);
+  const isPreview = activePreview !== undefined;
+  const [viewMode, setViewMode] = useState<'text' | 'preview' | 'bytes' | null>(
+    null,
+  );
+  // The view is a per-file mode: switching file always shows the default view.
+  const view = viewMode ?? (isPreview ? 'preview' : 'text');
   useEffect(() => {
-    setShowBytes(false);
-  }, [activeFile, isBinary]);
+    setViewMode(null);
+  }, [activeFile, isText, isPreview]);
+  const showBinaryView = !isText || (isPreview && view === 'preview');
+  const isPythonFile =
+    activeFile !== '' &&
+    isPythonFileName(activeFile) &&
+    workspace.text(activeFile) !== undefined;
   const outputShown =
     execution.outputAreaVisible ||
     execution.executionResponse?.type === 'failure';
@@ -198,27 +211,25 @@ export default function Ide() {
 
   const editorContext = useMemo(
     () =>
-      activeFile !== '' && !isBinary
-        ? workspace.editorSession.editorContext(activeFile)
+      activeFile !== '' && isText
+        ? workspace.editorContext(activeFile)
         : undefined,
-    [workspace, activeFile, isBinary],
+    [workspace, activeFile, isText],
   );
 
   const downloadFile = (name: string) => {
-    const content = workspace.content(name);
+    const content = workspace.bytes(name);
     if (content === undefined) {
       return;
     }
     saveAs(
-      new Blob(
-        [typeof content === 'string' ? content : new Uint8Array(content)],
-        {
-          type:
-            content instanceof Uint8Array
-              ? 'application/octet-stream'
-              : 'text/plain',
-        },
-      ),
+      new Blob([new Uint8Array(content)], {
+        type:
+          filePreview(name, content)?.mimeType ??
+          (viewKind(name, content) === 'text'
+            ? 'text/plain;charset=utf-8'
+            : 'application/octet-stream'),
+      }),
       baseName(name),
     );
   };
@@ -261,10 +272,10 @@ export default function Ide() {
     void Promise.all(
       files.map(async (file) => {
         const bytes = new Uint8Array(await file.arrayBuffer());
-        return fileFromBytes(
-          folder.length === 0 ? file.name : `${folder}/${file.name}`,
-          bytes,
-        );
+        return {
+          path: folder.length === 0 ? file.name : `${folder}/${file.name}`,
+          content: bytes,
+        };
       }),
     ).then((ideFiles) => importFiles(ideFiles, ideFiles.length === 1));
   };
@@ -272,7 +283,7 @@ export default function Ide() {
   const handleDownloadZip = () => {
     const files = fileNames.map((path) => ({
       path,
-      content: workspace.content(path) ?? '',
+      content: workspace.bytes(path) ?? new Uint8Array(0),
     }));
     downloadFilesAsZip(files).catch(() => {
       setFileTransferError('download');
@@ -308,20 +319,24 @@ export default function Ide() {
     activeFile === ''
       ? undefined
       : {
-          value: showBytes ? 'bytes' : isBinary ? 'preview' : 'editor',
-          onChange: (value: string) => setShowBytes(value === 'bytes'),
+          value: view,
+          onChange: (nextView: string) =>
+            setViewMode(nextView as 'text' | 'preview' | 'bytes'),
           options: [
-            isBinary
-              ? {
-                  value: 'preview',
-                  label: tIde('binaryFilePreview'),
-                  icon: <ImageOutlined fontSize='small' />,
-                }
-              : {
-                  value: 'editor',
-                  label: tIde('viewAsCode'),
-                  icon: <Abc fontSize='small' />,
-                },
+            {
+              value: 'text',
+              label: tIde('viewAsText'),
+              icon: <Abc fontSize='small' />,
+            },
+            ...(isPreview
+              ? [
+                  {
+                    value: 'preview',
+                    label: tIde('binaryFilePreview'),
+                    icon: <ImageOutlined fontSize='small' />,
+                  },
+                ]
+              : []),
             {
               value: 'bytes',
               label: tIde('viewAsBytes'),
@@ -370,6 +385,7 @@ export default function Ide() {
               binaryFileNames={binaryFileNames}
               activeFile={activeFile}
               onOpenFile={openFile}
+              onDownloadFile={downloadFile}
               onAddFile={addFile}
               onAddFolder={addFolder}
               onRenameFolder={renameFolder}
@@ -400,7 +416,7 @@ export default function Ide() {
                   viewToggle={viewToggle}
                 />
               )}
-              {!showBytes && (
+              {view !== 'bytes' && (
                 <DocumentationStripe
                   analysisResult={analysisResult}
                   activityVariant={playgroundActivityVariant}
@@ -431,11 +447,15 @@ export default function Ide() {
                       {loaded &&
                         activeFile !== '' &&
                         editorContext !== undefined &&
-                        !showBytes && (
+                        view === 'text' && (
                           <CodeEditor
                             modelPath={activeFile}
                             context={editorContext}
                             autoHeight={false}
+                            readOnly={
+                              execution.executing &&
+                              execution.readOnlyFiles.has(activeFile)
+                            }
                             onChange={execution.markOutputStale}
                             onExecutionRequested={handleExecutionRequest}
                             executionAllowed={execution.runEnabled}
@@ -450,17 +470,17 @@ export default function Ide() {
                         )}
                       {loaded &&
                         activeFile !== '' &&
-                        !isBinary &&
-                        showBytes &&
+                        isText &&
+                        view === 'bytes' &&
                         activeFileBytes !== undefined && (
                           <BytesFileView bytes={activeFileBytes} />
                         )}
-                      {loaded && activeFile !== '' && isBinary && (
+                      {loaded && activeFile !== '' && showBinaryView && (
                         <BinaryFileView
                           name={activeFile}
-                          content={workspace.bytes(activeFile)}
-                          view={showBytes ? 'bytes' : 'preview'}
-                          onDownload={() => downloadFile(activeFile)}
+                          content={activeFileBytes}
+                          preview={activePreview}
+                          view={view}
                         />
                       )}
                       {loaded && activeFile === '' && (
@@ -475,9 +495,6 @@ export default function Ide() {
                             color: 'text.secondary',
                           }}
                         >
-                          <InsertDriveFile
-                            sx={{ fontSize: 56, opacity: 0.4 }}
-                          />
                           <Typography variant='h6'>
                             {tIde('noFileOpen')}
                           </Typography>

@@ -16,6 +16,7 @@ export enum MessageType {
   SET_ACTIVE_CELL = 'set_active_cell',
   INSTALL_LIBRARIES = 'install_libraries',
   LIBRARIES_INSTALLED = 'libraries_installed',
+  WORKSPACE_CHANGES = 'workspace_changes',
 }
 
 export type MessageData =
@@ -59,6 +60,12 @@ export type RunMessage = {
    * execution.
    */
   workspaceFiles?: string[];
+  /**
+   * Folders of the IDE workspace that are currently empty. They are created in
+   * the execution environment, so that the final scan can report whether the
+   * run deleted them.
+   */
+  workspaceFolders?: string[];
 };
 export type RunPythonFile = {
   name: string;
@@ -86,6 +93,12 @@ export type WorkspaceFileChange = {
 export type WorkspaceChanges = {
   changed: WorkspaceFileChange[];
   deleted: string[];
+  /**
+   * The complete set of empty folders in the execution environment. When
+   * present it replaces the explicit folders of the workspace, so folders that
+   * the run deleted (or made non-empty) are removed.
+   */
+  folders?: string[];
 };
 
 /* ==== Worker -> Client Messages ==== */
@@ -95,7 +108,8 @@ export type ExecutorWorkerMessage =
   | ResultMessage
   | ClientExecutionMessage
   | SetActiveCellMessage
-  | LibrariesInstalledMessage;
+  | LibrariesInstalledMessage
+  | WorkspaceChangesMessage;
 
 /**
  * Message sent by the executor to signal that it can now accept requests
@@ -193,4 +207,17 @@ export type LibrariesInstalledMessage = {
   type: MessageType.LIBRARIES_INSTALLED;
   uuid: string;
   error?: string;
+};
+
+/**
+ * Notification that a running program changed workspace files.
+ *
+ * These messages are delivered strictly before the `FINAL_RESULT` of the same
+ * run and are idempotent. The end-of-run reconciliation remains authoritative.
+ */
+export type WorkspaceChangesMessage = {
+  type: MessageType.WORKSPACE_CHANGES;
+  /** Ignore the message if it does not match the active run. */
+  executionUUID: string;
+  changes: WorkspaceChanges;
 };

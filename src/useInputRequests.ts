@@ -36,45 +36,40 @@ export default function useInputRequests(
     [],
   );
 
-  // Resolves once the output area of the cell is mounted. A listener whose
-  // caller gave up stays registered until the next mount, then removes itself.
-  const waitForOutputArea = useCallback(
-    (cellIdx: number) =>
-      new Promise<OutputAreaRef>((resolve) => {
-        const listener = () => {
-          const outputArea = outputAreas.current.get(cellIdx);
-          if (outputArea !== undefined) {
-            mountListeners.current.delete(listener);
-            resolve(outputArea);
-          }
-        };
-        mountListeners.current.add(listener);
-        listener();
-      }),
-    [],
-  );
-
-  const requestInput: InputRequester = useCallback(
-    async (cellIdx, signal) => {
-      const aborted = new Promise<never>((_, reject) => {
-        signal.addEventListener('abort', () => reject(signal.reason), {
-          once: true,
-        });
+  const requestInput: InputRequester = useCallback(async (cellIdx, signal) => {
+    const aborted = new Promise<never>((_, reject) => {
+      signal.addEventListener('abort', () => reject(signal.reason), {
+        once: true,
       });
-      showOutputAreaRef.current(cellIdx);
-      const outputArea = await Promise.race([
-        waitForOutputArea(cellIdx),
-        aborted,
-      ]);
-      outputArea.activateInputField();
-      try {
-        return await Promise.race([outputArea.getInput(), aborted]);
-      } finally {
-        outputArea.deactivatePossibleInputField();
-      }
-    },
-    [waitForOutputArea],
-  );
+    });
+
+    showOutputAreaRef.current(cellIdx);
+
+    let cleanupListener: (() => void) | undefined;
+
+    const inputSubmitted = new Promise<string>((resolve) => {
+      const attachToOutputArea = () => {
+        const area = outputAreas.current.get(cellIdx);
+        if (area) {
+          area.activateInputField();
+          area.getInput().then(resolve);
+        }
+      };
+
+      mountListeners.current.add(attachToOutputArea);
+      cleanupListener = () => mountListeners.current.delete(attachToOutputArea);
+
+      // Attach immediately if OutputArea is already mounted
+      attachToOutputArea();
+    });
+
+    try {
+      return await Promise.race([inputSubmitted, aborted]);
+    } finally {
+      cleanupListener?.();
+      outputAreas.current.get(cellIdx)?.deactivatePossibleInputField();
+    }
+  }, []);
 
   return { setOutputAreaRef, requestInput };
 }

@@ -426,6 +426,7 @@ export default function BytesFileView({ bytes }: { bytes: Uint8Array }) {
     <Box
       data-testid='bytes-file-view'
       sx={{
+        marginTop: 1,
         height: '100%',
         display: 'flex',
         flexDirection: 'column',

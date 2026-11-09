@@ -1,7 +1,7 @@
 import throttle from 'lodash/throttle';
 import { PyodideAPI } from 'pyodide';
 import { PyProxy, PythonError } from 'pyodide/ffi';
-import { contentBytes, sameContent } from '../ideFiles';
+import { encodeText, sameBytes } from '../ideFileContent';
 import { INPUT_BEGIN, INPUT_END } from '../ioMarkers';
 import { joinLines } from '../sourceUtils';
 import { ExecutionResponse } from './codeExecution';
@@ -18,7 +18,18 @@ import {
   WorkspaceChanges,
   WorkspaceFileChange,
 } from './messageTypes';
+import {
+  fileSignature,
+  type FileSignature,
+  ScanCache,
+  type ScanMode,
+} from './scanCache';
 import { PYODIDE_VERSION, PYTAMARO_VERSION } from './versions';
+import { WorkspaceObserver } from './workspaceObserver';
+import { isRunArtifact } from './workspacePaths';
+import type { WorkspaceEvent } from './workspaceReporter';
+import { WorkspaceReporter } from './workspaceReporter';
+import { FFI_SCAN_MIN_INTERVAL_MS } from './workspaceSyncConstants';
 
 const EXEC_BASE_PATH = '/run/py';
 const DRIVER_FILE_NAME = 'driver.py';
@@ -26,6 +37,7 @@ const DRIVER_FILE_NAME = 'driver.py';
 type ExecutionEnvironment = {
   code: string;
   workspaceBaseline: Map<string, Uint8Array>;
+  workspaceFolders: Set<string>;
   generatedFiles: Set<string>;
   collectWorkspaceChanges: boolean;
 };
@@ -132,6 +144,13 @@ class WorkerExecutor {
   private activeCellChanged: OnActiveCodeCellChangeListener | null;
   private pytamaroFfiSaveToWorkspace = false;
 
+  private readonly observer: WorkspaceObserver;
+  private activeEnvironment: ExecutionEnvironment | null = null;
+  private activeReporter: WorkspaceReporter | null = null;
+  private activeExecutionMetadata: ExecutionMetadata | null = null;
+  private lastFfiScan = 0;
+  private readonly scanCache = new ScanCache();
+
   static async init(
     worker: ThisWorker,
     data: InitMessage,
@@ -206,6 +225,8 @@ class WorkerExecutor {
         this.ffSaveOnClient(fileName, content),
       set_active_cell: (idx: number) => this.ffSetActiveCell(idx),
     });
+
+    this.observer = new WorkspaceObserver(this.pyodide.FS, EXEC_BASE_PATH);
   }
 
   async installLibraries(libraries: readonly string[]): Promise<void> {
@@ -227,12 +248,32 @@ class WorkerExecutor {
     executionMetadata: ExecutionMetadata,
     files: RunPythonFile[],
     workspaceFiles?: string[],
+    workspaceFolders?: string[],
   ): Promise<ResultMessage> {
     this.destroyLeftoverProxies();
 
     const out = this.executionSetupIO(executionMetadata);
-    const environment = this.executionSetupEnvironment(files, workspaceFiles);
+    const environment = this.executionSetupEnvironment(
+      files,
+      workspaceFiles,
+      workspaceFolders,
+    );
     this.pytamaroFfiSaveToWorkspace = environment.collectWorkspaceChanges;
+
+    this.activeEnvironment = environment;
+    this.activeExecutionMetadata = executionMetadata;
+    this.lastFfiScan = 0;
+    if (environment.collectWorkspaceChanges) {
+      // Setup is over: what is on disk now is exactly the baseline.
+      this.seedScanCache(environment);
+      // Created after setup: setup writes must never be reported (I8).
+      this.activeReporter = new WorkspaceReporter(
+        environment.workspaceBaseline,
+        environment.generatedFiles,
+        workspaceFolders,
+      );
+      this.observer.start((events) => this.onWorkspaceEvents(events));
+    }
 
     // New empty globals
     const globals = this.pyodide.toPy({});
@@ -270,10 +311,23 @@ class WorkerExecutor {
       }
 
       // Collect the files before destroying `globals`, since releasing it may
-      // trigger finalizers that write files.
-      workspaceChanges = this.collectWorkspaceChanges(environment);
+      // trigger finalizers that write files. This reconciliation compares the
+      // filesystem with the untouched baseline and is authoritative: it does
+      // not depend on any mid-run message having been delivered. The reporter
+      // also restores paths whose mid-run push was reverted by a later change.
+      const scan = this.collectWorkspaceChanges(environment, 'full');
+      workspaceChanges =
+        scan === undefined
+          ? undefined
+          : (this.activeReporter?.reconcile(scan) ?? scan);
     } finally {
-      // Cleanup
+      // Cleanup. Stop reporting before wiping the execution directory, so that
+      // the cleanup itself is not mistaken for workspace deletions.
+      this.observer.stop();
+      this.activeReporter = null;
+      this.activeExecutionMetadata = null;
+      this.activeEnvironment = null;
+      this.scanCache.clear();
       this.clearExecutionEnvironment();
       this.activeCellChanged = null;
       globals.destroy();
@@ -288,6 +342,78 @@ class WorkerExecutor {
     };
   }
 
+  /** Forwards hook events through the reporter and posts any novelty. */
+  private onWorkspaceEvents(events: WorkspaceEvent[]): void {
+    const reporter = this.activeReporter;
+    const metadata = this.activeExecutionMetadata;
+    if (reporter === null || metadata === null) {
+      return;
+    }
+    this.postWorkspaceChanges(reporter.ingest(events), metadata.executionUUID);
+  }
+
+  /**
+   * Scans the filesystem and pushes the changes the client does not know yet.
+   */
+  private pushWorkspaceChanges(environment: ExecutionEnvironment): void {
+    const reporter = this.activeReporter;
+    const metadata = this.activeExecutionMetadata;
+    if (reporter === null || metadata === null) {
+      return;
+    }
+    const scan = this.collectWorkspaceChanges(environment, 'incremental');
+    if (scan === undefined) {
+      return;
+    }
+    this.postWorkspaceChanges(
+      reporter.ingestScan(scan),
+      metadata.executionUUID,
+    );
+  }
+
+  private postWorkspaceChanges(
+    changes: WorkspaceChanges | null,
+    executionUUID: string,
+  ): void {
+    if (changes === null) {
+      return;
+    }
+    this.worker.postMessage({
+      type: MessageType.WORKSPACE_CHANGES,
+      executionUUID,
+      changes,
+    });
+  }
+
+  /**
+   * Makes pending writes visible before the worker blocks in an FFI call.
+   *
+   * Called for `input` (unthrottled scan) and for draw/size/save (throttled
+   * scan). The scan is incremental: it also reports files larger than the
+   * eager-copy cap, which the hooks never copy. It trusts size and mtime, so
+   * writes that leave no timestamp (an `mmap`-aliased write) show up only in
+   * the final reconciliation.
+   */
+  private flushWorkspaceBeforeBlocking(scan: 'always' | 'throttled'): void {
+    if (this.activeReporter === null) {
+      return;
+    }
+    try {
+      this.observer.flushDirty();
+      this.observer.flushFolders();
+      if (
+        this.activeEnvironment !== null &&
+        (scan === 'always' ||
+          Date.now() - this.lastFfiScan >= FFI_SCAN_MIN_INTERVAL_MS)
+      ) {
+        this.lastFfiScan = Date.now();
+        this.pushWorkspaceChanges(this.activeEnvironment);
+      }
+    } catch {
+      // Don't throw if this fails, the final reconciliation at the end of the run is authoritative.
+    }
+  }
+
   /**
    * Set up the execution environment.
    *
@@ -297,6 +423,7 @@ class WorkerExecutor {
   private executionSetupEnvironment(
     files: RunPythonFile[],
     workspaceFiles?: string[],
+    workspaceFolders?: string[],
   ): ExecutionEnvironment {
     const fs = this.pyodide.FS;
     this.clearExecutionEnvironment();
@@ -305,7 +432,14 @@ class WorkerExecutor {
     const collectWorkspaceChanges = workspaceFiles !== undefined;
     const workspaceNames = new Set(workspaceFiles ?? []);
     const workspaceBaseline = new Map<string, Uint8Array>();
+    const workspaceFolderNames = new Set(workspaceFolders ?? []);
     const generatedFiles = new Set<string>();
+
+    // Empty folders have no files to recreate them: seed them explicitly so
+    // that the final scan can tell whether the run deleted them.
+    workspaceFolderNames.forEach((folder) => {
+      fs.mkdirTree(`${EXEC_BASE_PATH}/${folder}`);
+    });
 
     let driverFile: RunPythonFile | null = null;
     for (const file of files) {
@@ -317,7 +451,11 @@ class WorkerExecutor {
       fs.mkdirTree(parentDirectory(target));
       fs.writeFile(target, file.content);
       if (collectWorkspaceChanges && workspaceNames.has(file.name)) {
-        workspaceBaseline.set(file.name, contentBytes(file.content));
+        const content =
+          typeof file.content === 'string'
+            ? encodeText(file.content)
+            : file.content;
+        workspaceBaseline.set(file.name, content);
       } else {
         generatedFiles.add(file.name);
       }
@@ -327,6 +465,7 @@ class WorkerExecutor {
       return {
         code: '',
         workspaceBaseline,
+        workspaceFolders: workspaceFolderNames,
         generatedFiles,
         collectWorkspaceChanges,
       };
@@ -365,9 +504,29 @@ class WorkerExecutor {
         driverCode,
       ]),
       workspaceBaseline,
+      workspaceFolders: workspaceFolderNames,
       generatedFiles,
       collectWorkspaceChanges,
     };
+  }
+
+  /**
+   * Remembers the signature of every baseline file, so that incremental scans
+   * can skip the ones the program has not touched.
+   */
+  private seedScanCache(environment: ExecutionEnvironment): void {
+    this.scanCache.clear();
+    const fs = this.pyodide.FS;
+    environment.workspaceBaseline.forEach((_bytes, name) => {
+      try {
+        const signature = fileSignature(fs.stat(`${EXEC_BASE_PATH}/${name}`));
+        if (signature !== undefined) {
+          this.scanCache.remember(name, signature);
+        }
+      } catch {
+        // Not seeded: the first incremental scan simply reads it.
+      }
+    });
   }
 
   /**
@@ -376,6 +535,7 @@ class WorkerExecutor {
    */
   private collectWorkspaceChanges(
     environment: ExecutionEnvironment,
+    mode: ScanMode = 'full',
   ): WorkspaceChanges | undefined {
     if (!environment.collectWorkspaceChanges) {
       return undefined;
@@ -383,18 +543,35 @@ class WorkerExecutor {
 
     try {
       const fs = this.pyodide.FS;
-      const { workspaceBaseline, generatedFiles } = environment;
+      const { workspaceBaseline, workspaceFolders, generatedFiles } =
+        environment;
       const changed: WorkspaceFileChange[] = [];
+      const folders: string[] = [];
       const seen = new Set<string>();
+      // Signatures of the files this scan read. They are committed to the
+      // cache only if the whole walk succeeds.
+      const read = new Map<string, FileSignature>();
+
+      const isReportedFolder = (relativePath: string): boolean =>
+        workspaceFolders.has(relativePath) || !isRunArtifact(relativePath);
 
       const walk = (directory: string, prefix: string): void => {
-        for (const name of fs.readdir(directory)) {
-          if (name === '.' || name === '..') {
-            continue;
+        const names = fs
+          .readdir(directory)
+          .filter((name) => name !== '.' && name !== '..');
+        if (names.length === 0) {
+          // Empty folders are the only explicit folders the workspace needs:
+          // folders with files are implied by those files.
+          if (prefix.length > 0 && isReportedFolder(prefix)) {
+            folders.push(prefix);
           }
+          return;
+        }
+        for (const name of names) {
           const fullPath = `${directory}/${name}`;
           const relativePath = prefix.length > 0 ? `${prefix}/${name}` : name;
-          if (fs.isDir(fs.stat(fullPath).mode)) {
+          const stat = fs.stat(fullPath);
+          if (fs.isDir(stat.mode)) {
             walk(fullPath, relativePath);
             continue;
           }
@@ -404,13 +581,26 @@ class WorkerExecutor {
           // report them as deleted.
           if (
             generatedFiles.has(relativePath) ||
-            (baseline === undefined && this.isRunArtifact(relativePath))
+            (baseline === undefined && isRunArtifact(relativePath))
           ) {
             continue;
           }
           seen.add(relativePath);
-          const bytes = fs.readFile(fullPath).slice();
-          if (baseline === undefined || !sameContent(baseline, bytes)) {
+          // `seen` is filled before the skip below: a file that is skipped
+          // still exists, and must not be reported as deleted.
+          const signature = fileSignature(stat);
+          if (
+            mode === 'incremental' &&
+            this.scanCache.isUnchanged(relativePath, signature)
+          ) {
+            continue;
+          }
+          // `readFile` returns a fresh array, so no extra `.slice()` copy.
+          const bytes = fs.readFile(fullPath);
+          if (signature !== undefined) {
+            read.set(relativePath, signature);
+          }
+          if (baseline === undefined || !sameBytes(baseline, bytes)) {
             changed.push({ name: relativePath, content: bytes });
           }
         }
@@ -418,28 +608,20 @@ class WorkerExecutor {
 
       walk(EXEC_BASE_PATH, '');
 
+      if (mode === 'incremental') {
+        this.scanCache.commit(read, seen);
+      }
       return {
         changed,
         deleted: Array.from(workspaceBaseline.keys()).filter(
           (name) => !seen.has(name),
         ),
+        folders: folders.sort((a, b) => a.localeCompare(b)),
       };
     } catch {
       // Never turn a snapshot failure into an execution failure.
       return { changed: [], deleted: [] };
     }
-  }
-
-  private isRunArtifact(path: string): boolean {
-    return (
-      path
-        .split('/')
-        .some(
-          (segment) => segment.startsWith('.') || segment === '__pycache__',
-        ) ||
-      path.endsWith('.pyc') ||
-      path.endsWith('.pyo')
-    );
   }
 
   /** Removes everything in the execution directory, if it exists. */
@@ -523,6 +705,9 @@ class WorkerExecutor {
       // can be shown even if there was no output before the input request.
       // Not throttled: we want this to happen right now!
       sendPartialResult();
+      // The program is about to block: report everything it has written so far
+      // so that the user sees it while deciding what to type.
+      this.flushWorkspaceBeforeBlocking('always');
       const input = this.ffInputOnClient(executionMetadata, inputSeqNumber++);
       // Add back to stdout (including the <enter>) so that the user can see
       // what they typed
@@ -646,6 +831,7 @@ class WorkerExecutor {
       : `${EXEC_BASE_PATH}/${fileName}`;
 
     this.pyodide.FS.writeFile(target, bytes);
+    this.flushWorkspaceBeforeBlocking('always');
   }
 
   private ffSetActiveCell(idx: number): void {
@@ -669,6 +855,10 @@ class WorkerExecutor {
     type: MessageType,
     data: MessageData,
   ): SharedArrayBuffer | null {
+    if (type !== MessageType.INPUT) {
+      // `input` has already flushed (and scanned) in `stdin`.
+      this.flushWorkspaceBeforeBlocking('throttled');
+    }
     const uuid = crypto.randomUUID();
     this.worker.postMessage({
       ...data,
@@ -754,6 +944,7 @@ addEventListener(
               data.executionMetadata,
               data.files,
               data.workspaceFiles,
+              data.workspaceFolders,
             ),
           );
         }

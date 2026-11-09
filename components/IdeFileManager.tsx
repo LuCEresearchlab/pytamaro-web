@@ -2,12 +2,14 @@ import {
   Archive,
   CreateNewFolderOutlined,
   DeleteOutlined,
+  Download,
   DriveFileRenameOutline,
   Folder,
   FolderOpen,
   InsertDriveFile,
   NoteAddOutlined,
   Unarchive,
+  UploadFileOutlined,
 } from '@mui/icons-material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import {
@@ -22,6 +24,7 @@ import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import { useConfirm } from 'material-ui-confirm';
 import {
+  ChangeEvent,
   DragEvent,
   ReactNode,
   useEffect,
@@ -285,7 +288,6 @@ function RowLabel({
         <Stack
           className='tree-actions'
           direction='row'
-          spacing={0.25}
           sx={{
             position: 'absolute',
             right: 0,
@@ -306,6 +308,7 @@ export type IdeFileManagerProps = {
   binaryFileNames: readonly string[];
   activeFile: string;
   onOpenFile: (path: string) => void;
+  onDownloadFile: (path: string) => void;
   onAddFile: (path: string) => boolean;
   onAddFolder: (path: string) => boolean;
   onRenameFile: (oldPath: string, newPath: string) => boolean;
@@ -339,6 +342,7 @@ export default function IdeFileManager({
   binaryFileNames,
   activeFile,
   onOpenFile,
+  onDownloadFile,
   onAddFile,
   onAddFolder,
   onRenameFile,
@@ -358,6 +362,10 @@ export default function IdeFileManager({
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   /** The folder that files are being dragged over; null if there is no drag. */
   const [dropTarget, setDropTarget] = useState<string | null>(null);
+  /** The file picker input, shared by all upload buttons. */
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  /** The folder into which the files chosen through the picker are uploaded. */
+  const uploadFolderRef = useRef('');
 
   const tree = useMemo(
     () => buildFileTree(fileNames, folderNames),
@@ -430,6 +438,13 @@ export default function IdeFileManager({
     }
   };
 
+  /** Uploads the files into `folder`, ignoring empty selections. */
+  const uploadFiles = (files: File[], folder: string) => {
+    if (files.length > 0) {
+      onUploadFiles(files, folder);
+    }
+  };
+
   const handleDrop = (event: DragEvent<HTMLElement>) => {
     if (!isFileDrag(event)) {
       return;
@@ -446,9 +461,20 @@ export default function IdeFileManager({
       )
       .map((item) => item.getAsFile())
       .filter((file): file is File => file !== null);
-    if (files.length > 0) {
-      onUploadFiles(files, folder);
-    }
+    uploadFiles(files, folder);
+  };
+
+  const pickFiles = (folder: string) => {
+    uploadFolderRef.current = folder;
+    fileInputRef.current?.click();
+  };
+
+  const handleFilesChosen = (event: ChangeEvent<HTMLInputElement>) => {
+    const input = event.currentTarget;
+    const files = Array.from(input.files ?? []);
+    // Reset so that choosing the same file again still triggers a change.
+    input.value = '';
+    uploadFiles(files, uploadFolderRef.current);
   };
 
   const renderCreateRow = (kind: 'file' | 'folder', parent: string) => (
@@ -497,10 +523,16 @@ export default function IdeFileManager({
         data-drop-folder={parentPath(path)}
         label={
           <RowLabel
-            actionCount={2}
+            actionCount={3}
             actions={
               isRenaming ? undefined : (
                 <>
+                  <ActionButton
+                    title={t('downloadFile')}
+                    onClick={() => onDownloadFile(path)}
+                  >
+                    <Download fontSize='small' />
+                  </ActionButton>
                   <ActionButton
                     title={t('renameFile')}
                     onClick={() => {
@@ -574,7 +606,7 @@ export default function IdeFileManager({
         data-drop-folder={node.path}
         label={
           <RowLabel
-            actionCount={4}
+            actionCount={5}
             actions={
               isRenaming ? undefined : (
                 <>
@@ -583,6 +615,12 @@ export default function IdeFileManager({
                     onClick={() => startCreate('file', node.path)}
                   >
                     <NoteAddOutlined fontSize='small' />
+                  </ActionButton>
+                  <ActionButton
+                    title={t('addFileFromDevice')}
+                    onClick={() => pickFiles(node.path)}
+                  >
+                    <UploadFileOutlined fontSize='small' />
                   </ActionButton>
                   <ActionButton
                     title={t('addFolder')}
@@ -681,6 +719,16 @@ export default function IdeFileManager({
               <CreateNewFolderOutlined fontSize='small' />
             </IconButton>
           </Tooltip>
+          <Tooltip arrow title={t('addFileFromDevice')}>
+            <IconButton
+              size='small'
+              aria-label={t('addFileFromDevice')}
+              onClick={() => pickFiles('')}
+              data-testid='upload-file-button'
+            >
+              <UploadFileOutlined fontSize='small' />
+            </IconButton>
+          </Tooltip>
           <Tooltip arrow title={t('downloadFilesAsZip')}>
             <IconButton
               size='small'
@@ -735,6 +783,13 @@ export default function IdeFileManager({
           </SimpleTreeView>
         </Box>
       )}
+      <input
+        ref={fileInputRef}
+        type='file'
+        multiple
+        hidden
+        onChange={handleFilesChosen}
+      />
     </Box>
   );
 }

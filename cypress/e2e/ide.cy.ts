@@ -132,4 +132,24 @@ describe('IDE', () => {
     cy.get('[data-testid="file-view-preview"]').click();
     cy.get('img[alt="out.png"]').should('be.visible');
   });
+
+  it('should show touched files already at input', () => {
+    cy.visit(idePathname());
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    typeMonacoCode('with open("f.txt", "w") as f: f.write("content")\ninput()');
+    cy.get('.run-button').first().click();
+    cy.get('[data-testid="file-tree"]').should('contain.text', 'f.txt');
+    cy.get('[data-testid="file-tree"]').contains('f.txt').click();
+    cy.get('.monaco-editor').contains('content');
+    // The output area is unmounted while a non-Python file is open. Going
+    // back to the Python file must restore the input field that is still
+    // waiting for input.
+    cy.get('[data-testid="editor-tabs"]').contains('main.py').click();
+    cy.get('[data-testid="output-area"]')
+      .find('[data-testid="input-area"]')
+      .should('be.visible')
+      .type('hello{enter}');
+    cy.get('[data-testid="output-area"]').should('contain.text', 'hello');
+  });
 });

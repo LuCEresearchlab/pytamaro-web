@@ -329,6 +329,8 @@ export class EditorSession {
         this.attachModel(model, { file: name, previousLines: 0 }),
       detachModel: (model) => this.detachModel(model),
       updateSource: (source) => this.setFileContent(name, source),
+      isApplyingExternalUpdate: () => this.applyingExternal,
+      applyModelText: (model, text) => this.setModelText(model, text),
       diagnostics: (liveAnalysis) =>
         toCustomDiagnostics(this.diagnosticsForFile(name), liveAnalysis),
       hoveredPythonName: (model, position) =>

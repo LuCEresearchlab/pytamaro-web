@@ -1,6 +1,6 @@
 import { saveAs } from 'file-saver';
 import JSZip from 'jszip';
-import { fileFromBytes, IdeFile } from './ideFiles';
+import { IdeFile } from './ideFiles';
 
 /** Downloads the given files as a zip archive. */
 export async function downloadFilesAsZip(
@@ -38,7 +38,7 @@ export async function readFilesFromZip(archive: File): Promise<IdeFile[]> {
     }
     seenPaths.add(path);
     const bytes = await entry.async('uint8array');
-    files.push(fileFromBytes(path, bytes));
+    files.push({ path, content: bytes });
   }
   return files;
 }

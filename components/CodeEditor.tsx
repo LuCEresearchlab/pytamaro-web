@@ -201,26 +201,34 @@ export default function CodeEditor({
       ? monacoInstance.Uri.parse(modelPath).toString()
       : null;
 
-  // `@monaco-editor/react` keeps one model per `path`, so switching from one
-  // file to another reuses its model instead of creating a new editor. This is
-  // what keeps tab switching flicker-free and preserves cursor, scroll and
-  // undo history, but a reused model may be stale: its file can have changed
-  // while it wasn't shown (e.g., edited in another browser tab, or deleted and
-  // created again). Bring it up to date before binding it to the session.
+  // Bring the editor's model up to date with the workspace before anything
+  // reads it. Monaco reuses the model, so it can be stale: the file may have
+  // changed while it wasn't shown (e.g., rewritten by a running program). On a
+  // file switch the child `<Editor>` swaps in that model before the `model`
+  // state catches up, and the effects below (notably the analysis one) would
+  // read its stale text and write it back to the workspace via `updateSource`,
+  // overwriting the newer bytes. So this uses `editorInstance.getModel()`
+  // rather than the lagging `model` state, and it must stay declared before
+  // those effects.
   useEffect(() => {
-    if (model === null || modelUri === null) {
+    if (editorInstance === null || modelUri === null) {
       return;
     }
-    // For one render after `modelPath` and `context` have switched, `model`
-    // may still be the previous file's model: only touch the matching one.
-    if (model.uri.toString() !== modelUri) {
+    // The editor may already show a different model than the `model` state
+    // (child effects run first), so use the live one.
+    const live = editorInstance.getModel();
+    if (live === null || live.uri.toString() !== modelUri) {
       return;
     }
     const source = context.currentSource();
-    if (model.getValue() !== source) {
-      model.setValue(source);
+    if (live.getValue() !== source) {
+      if (context.applyModelText !== undefined) {
+        context.applyModelText(live, source);
+      } else {
+        live.setValue(source);
+      }
     }
-  }, [model, modelUri, context]);
+  }, [editorInstance, model, modelUri, context]);
 
   // Bind this editor's model to its document in the session, so that the
   // session analyzes and persists every content change (and providers can find it).
@@ -510,6 +518,12 @@ export default function CodeEditor({
       return () => {};
     }
     const subscription = model.onDidChangeContent(() => {
+      // Workspace-driven updates (storage, another tab, a running program) must
+      // not be written back: doing so would turn Monaco's normalization (e.g.,
+      // line endings) into a byte change without any user edit.
+      if (context.isApplyingExternalUpdate?.() === true) {
+        return;
+      }
       const source = model.getValue();
       clearAnnotations();
       analyzeSource(source);
@@ -518,7 +532,7 @@ export default function CodeEditor({
     return () => {
       subscription.dispose();
     };
-  }, [model, clearAnnotations, analyzeSource]);
+  }, [model, clearAnnotations, analyzeSource, context]);
 
   const python = modelPath === undefined || isPythonFileName(modelPath);
   // Use an inexistent language if the file is not Python or the live analysis is completely disabled.

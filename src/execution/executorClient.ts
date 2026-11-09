@@ -18,6 +18,7 @@ import {
   RunPythonFile,
   SaveRequestData,
   SizeRequestData,
+  type WorkspaceChanges,
 } from './messageTypes';
 
 enum ResultStatus {
@@ -210,6 +211,8 @@ export class ExecutorClient {
     requestInput: InputRequester = noInput,
     fileNames: string[] = [],
     workspaceFiles: string[] | undefined = undefined,
+    workspaceFolders: string[] | undefined = undefined,
+    onWorkspaceChanges: (changes: WorkspaceChanges) => void = () => {},
   ): Promise<ExecutionResponse> {
     const files = cellsToFiles(
       sources,
@@ -252,6 +255,8 @@ export class ExecutorClient {
               activeCellIdx: newIdx,
             });
             onActiveCellChange(oldIdx, newIdx);
+          } else if (type === MessageType.WORKSPACE_CHANGES) {
+            onWorkspaceChanges(event.data.changes);
           } else if (type === MessageType.FINAL_RESULT) {
             // Final execution result
             const { result, workspaceChanges } = event.data;
@@ -277,6 +282,7 @@ export class ExecutorClient {
           executionMetadata,
           files,
           workspaceFiles,
+          workspaceFolders,
         });
       }).finally(() => {
         this.setExecutorState({ type: 'available' });
@@ -367,8 +373,11 @@ export class ExecutorClient {
   }
 
   private handleWorkerMessage(message: ExecutorWorkerMessage): void {
-    if (message.type === MessageType.LIBRARIES_INSTALLED) {
-      // Handled by the listener in sendInstallLibrariesRequest.
+    if (
+      message.type === MessageType.LIBRARIES_INSTALLED ||
+      message.type === MessageType.WORKSPACE_CHANGES
+    ) {
+      // Handled by the corresponding listener.
       return;
     }
     // In this listener, we only process execution requests (messages with an uuid).

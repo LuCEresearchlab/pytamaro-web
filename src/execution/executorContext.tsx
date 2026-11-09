@@ -14,7 +14,11 @@ import {
   type InputRequester,
 } from './executorClient';
 import { ExecutorDelegate } from './executorDelegate';
-import { ExecutionMetadata, RunPythonFile } from './messageTypes';
+import {
+  ExecutionMetadata,
+  RunPythonFile,
+  type WorkspaceChanges,
+} from './messageTypes';
 
 export interface IExecutor {
   executorState: ExecutorState;
@@ -30,6 +34,8 @@ export interface IExecutor {
     requestInput?: InputRequester,
     fileNames?: string[],
     workspaceFiles?: string[],
+    workspaceFolders?: string[],
+    onWorkspaceChanges?: (changes: WorkspaceChanges) => void,
   ) => Promise<ExecutionResponse>;
   interruptExecution: () => void;
   restart: () => Promise<void>;
@@ -71,6 +77,8 @@ export function ExecutorProvider({ children }: { children: ReactNode }) {
     requestInput?: InputRequester,
     fileNames: string[] = [],
     workspaceFiles: string[] | undefined = undefined,
+    workspaceFolders: string[] | undefined = undefined,
+    onWorkspaceChanges: (changes: WorkspaceChanges) => void = () => {},
   ) => {
     if (
       executorState.type !== 'available' ||
@@ -90,6 +98,8 @@ export function ExecutorProvider({ children }: { children: ReactNode }) {
       requestInput,
       fileNames,
       workspaceFiles,
+      workspaceFolders,
+      onWorkspaceChanges,
     );
   };
 
