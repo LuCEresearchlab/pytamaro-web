@@ -66,6 +66,7 @@ export default function EditorTabs({
             value={name}
             component='div'
             sx={{
+              minWidth: 0,
               minHeight: 36,
               textTransform: 'none',
               '&:not(:last-of-type)': {
