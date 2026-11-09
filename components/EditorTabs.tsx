@@ -74,8 +74,25 @@ export default function EditorTabs({
               },
             }}
             label={
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                {name}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  minWidth: 0,
+                  maxWidth: '100%',
+                }}
+              >
+                <Box
+                  component='span'
+                  sx={{
+                    minWidth: 0,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {name}
+                </Box>
                 <IconButton
                   size='small'
                   aria-label={t('closeFileTab', { name })}
@@ -83,7 +100,7 @@ export default function EditorTabs({
                     e.stopPropagation();
                     onClose(name);
                   }}
-                  sx={{ padding: 0, marginLeft: 1 }}
+                  sx={{ padding: 0, marginLeft: 1, flexShrink: 0 }}
                 >
                   <Close fontSize='inherit' />
                 </IconButton>
