@@ -1,18 +1,39 @@
 import { Close } from '@mui/icons-material';
-import { Box, IconButton, Tab, Tabs } from '@mui/material';
+import {
+  Box,
+  IconButton,
+  Tab,
+  Tabs,
+  ToggleButton,
+  ToggleButtonGroup,
+  Tooltip,
+} from '@mui/material';
+import type { ReactNode } from 'react';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import theme from '../src/theme';
+
+export type EditorViewToggle = {
+  value: string;
+  options: readonly {
+    value: string;
+    label: string;
+    icon: ReactNode;
+  }[];
+  onChange: (value: string) => void;
+};
 
 export default function EditorTabs({
   fileNames,
   activeFile,
   onSelect,
   onClose,
+  viewToggle = undefined,
 }: {
   fileNames: string[];
   activeFile: string;
   onSelect: (name: string) => void;
   onClose: (name: string) => void;
+  viewToggle?: EditorViewToggle;
 }) {
   const { t } = useLocalTranslation(['ide']);
 
@@ -30,6 +51,8 @@ export default function EditorTabs({
         variant='scrollable'
         scrollButtons='auto'
         sx={{
+          flex: 1,
+          minWidth: 0,
           minHeight: 36,
           '& .Mui-selected': {
             backgroundColor: theme.pytamaro.palette.background.light,
@@ -68,6 +91,32 @@ export default function EditorTabs({
           />
         ))}
       </Tabs>
+      {viewToggle !== undefined && (
+        <ToggleButtonGroup
+          exclusive
+          size='small'
+          value={viewToggle.value}
+          onChange={(_, nextView: string | null) => {
+            if (nextView !== null) {
+              viewToggle.onChange(nextView);
+            }
+          }}
+          data-testid='file-view-toggle'
+          sx={{ flex: '0 0 auto', marginX: 1 }}
+        >
+          {viewToggle.options.map(({ value, label, icon }) => (
+            <Tooltip key={value} arrow title={label}>
+              <ToggleButton
+                value={value}
+                aria-label={label}
+                data-testid={`file-view-${value}`}
+              >
+                {icon}
+              </ToggleButton>
+            </Tooltip>
+          ))}
+        </ToggleButtonGroup>
+      )}
     </Box>
   );
 }

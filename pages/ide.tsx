@@ -1,4 +1,10 @@
-import { InsertDriveFile, PlayCircleFilled } from '@mui/icons-material';
+import {
+  Abc,
+  ImageOutlined,
+  InsertDriveFile,
+  Memory,
+  PlayCircleFilled,
+} from '@mui/icons-material';
 import { Box, Stack, Typography } from '@mui/material';
 import { saveAs } from 'file-saver';
 import { useConfirm } from 'material-ui-confirm';
@@ -13,6 +19,7 @@ import {
 } from 'react';
 import { Group, Panel, Separator, usePanelRef } from 'react-resizable-panels';
 import BinaryFileView from '../components/BinaryFileView';
+import BytesFileView from '../components/BytesFileView';
 import { NoOutputTip } from '../components/CodeCellTips';
 import CodeEditor from '../components/CodeEditor';
 import CustomSnackbar from '../components/CustomSnackbar';
@@ -30,6 +37,7 @@ import StaleOutputBadge from '../components/StaleOutputBadge';
 import { toCustomDiagnostics } from '../src/editor/diagnostics';
 import {
   baseName,
+  contentBytes,
   fileFromBytes,
   IdeFile,
   isPythonFileName,
@@ -96,6 +104,20 @@ export default function Ide() {
   const { run: runExecution, liveAnalysis } = execution;
   const isBinary = activeFile !== '' && workspace.isBinary(activeFile);
   const isPythonFile = !isBinary && isPythonFileName(activeFile);
+  const [showBytes, setShowBytes] = useState(false);
+  const activeFileContent =
+    activeFile === '' ? undefined : workspace.content(activeFile);
+  const activeFileBytes = useMemo(
+    () =>
+      activeFileContent === undefined
+        ? undefined
+        : contentBytes(activeFileContent),
+    [activeFileContent],
+  );
+  // The byte view is a per-file mode: switching file always shows the editor.
+  useEffect(() => {
+    setShowBytes(false);
+  }, [activeFile, isBinary]);
   const outputShown =
     execution.outputAreaVisible ||
     execution.executionResponse?.type === 'failure';
@@ -147,10 +169,9 @@ export default function Ide() {
     }
     const { confirmed } = await confirm({
       title: t('confirmExecutionWithErrors.title'),
-      description: t(
-        'confirmExecutionWithErrors.descriptionOnlyCurrentFile',
-        { count: diagnostics.length },
-      ),
+      description: t('confirmExecutionWithErrors.descriptionOnlyCurrentFile', {
+        count: diagnostics.length,
+      }),
       confirmationText: t('confirmExecutionWithErrors.confirmationText'),
       cancellationText: t('confirmExecutionWithErrors.cancellationText'),
       confirmationButtonProps: {
@@ -283,6 +304,32 @@ export default function Ide() {
     });
   };
 
+  const viewToggle =
+    activeFile === ''
+      ? undefined
+      : {
+          value: showBytes ? 'bytes' : isBinary ? 'preview' : 'editor',
+          onChange: (value: string) => setShowBytes(value === 'bytes'),
+          options: [
+            isBinary
+              ? {
+                  value: 'preview',
+                  label: tIde('binaryFilePreview'),
+                  icon: <ImageOutlined fontSize='small' />,
+                }
+              : {
+                  value: 'editor',
+                  label: tIde('viewAsCode'),
+                  icon: <Abc fontSize='small' />,
+                },
+            {
+              value: 'bytes',
+              label: tIde('viewAsBytes'),
+              icon: <Memory fontSize='small' />,
+            },
+          ],
+        };
+
   return (
     <>
       <Head>
@@ -350,13 +397,16 @@ export default function Ide() {
                   activeFile={activeFile}
                   onSelect={openFile}
                   onClose={closeFile}
+                  viewToggle={viewToggle}
                 />
               )}
-              <DocumentationStripe
-                analysisResult={analysisResult}
-                activityVariant={playgroundActivityVariant}
-                hoveredName={hoveredName}
-              />
+              {!showBytes && (
+                <DocumentationStripe
+                  analysisResult={analysisResult}
+                  activityVariant={playgroundActivityVariant}
+                  hoveredName={hoveredName}
+                />
+              )}
               <Group
                 orientation='vertical'
                 elementRef={outputGroupRef}
@@ -380,7 +430,8 @@ export default function Ide() {
                     >
                       {loaded &&
                         activeFile !== '' &&
-                        editorContext !== undefined && (
+                        editorContext !== undefined &&
+                        !showBytes && (
                           <CodeEditor
                             modelPath={activeFile}
                             context={editorContext}
@@ -397,10 +448,18 @@ export default function Ide() {
                             setHoveredName={setHoveredName}
                           />
                         )}
+                      {loaded &&
+                        activeFile !== '' &&
+                        !isBinary &&
+                        showBytes &&
+                        activeFileBytes !== undefined && (
+                          <BytesFileView bytes={activeFileBytes} />
+                        )}
                       {loaded && activeFile !== '' && isBinary && (
                         <BinaryFileView
                           name={activeFile}
                           content={workspace.bytes(activeFile)}
+                          view={showBytes ? 'bytes' : 'preview'}
                           onDownload={() => downloadFile(activeFile)}
                         />
                       )}

@@ -1,22 +1,9 @@
-import {
-  DataObject,
-  Download,
-  ImageOutlined,
-  InsertDriveFile,
-} from '@mui/icons-material';
-import {
-  Box,
-  IconButton,
-  Stack,
-  ToggleButton,
-  ToggleButtonGroup,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Download, InsertDriveFile } from '@mui/icons-material';
+import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { baseName } from '../src/ideFiles';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import HexFileView from './HexFileView';
+import BytesFileView from './BytesFileView';
 
 /** Image formats that browsers display natively, by lowercase extension. */
 const IMAGE_TYPES: Record<string, string> = {
@@ -36,26 +23,27 @@ function imageType(name: string): string | undefined {
     : undefined;
 }
 
-type BinaryView = 'preview' | 'hex';
+type BinaryView = 'preview' | 'bytes';
 
 /**
  * Shows a non-editable file: an image preview (or a placeholder for other
- * formats), which can be toggled with a hex dump of the raw bytes. A download
+ * formats), or a byte view of the raw bytes, depending on `view`. A download
  * button is always offered. It fills its (positioned) parent.
  */
 export default function BinaryFileView({
   name,
   content,
+  view,
   onDownload,
 }: {
   name: string;
   content: Uint8Array | undefined;
+  view: BinaryView;
   onDownload: () => void;
 }) {
   const { t } = useLocalTranslation(['ide']);
   const mime = imageType(name);
   const [url, setUrl] = useState<string | null>(null);
-  const [view, setView] = useState<BinaryView>('preview');
 
   useEffect(() => {
     if (mime === undefined || content === undefined) {
@@ -99,36 +87,9 @@ export default function BinaryFileView({
             <Download fontSize='small' />
           </IconButton>
         </Tooltip>
-        <ToggleButtonGroup
-          exclusive
-          size='small'
-          value={view}
-          onChange={(_, nextView: BinaryView | null) => {
-            if (nextView !== null) {
-              setView(nextView);
-            }
-          }}
-        >
-          <ToggleButton
-            value='preview'
-            aria-label={t('binaryFilePreview')}
-            data-testid='binary-file-preview-toggle'
-          >
-            <ImageOutlined fontSize='small' sx={{ marginRight: 0.5 }} />
-            {t('binaryFilePreview')}
-          </ToggleButton>
-          <ToggleButton
-            value='hex'
-            aria-label={t('binaryFileHex')}
-            data-testid='binary-file-hex-toggle'
-          >
-            <DataObject fontSize='small' sx={{ marginRight: 0.5 }} />
-            {t('binaryFileHex')}
-          </ToggleButton>
-        </ToggleButtonGroup>
       </Stack>
       <Box sx={{ flex: 1, minHeight: 0, position: 'relative' }}>
-        {view === 'hex' ? (
+        {view === 'bytes' ? (
           content === undefined ? (
             <Stack
               sx={{
@@ -142,7 +103,7 @@ export default function BinaryFileView({
               <Typography variant='body2'>{t('binaryFileHint')}</Typography>
             </Stack>
           ) : (
-            <HexFileView bytes={content} />
+            <BytesFileView bytes={content} />
           )
         ) : (
           <Stack

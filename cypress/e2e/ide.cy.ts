@@ -22,6 +22,15 @@ describe('IDE', () => {
     cy.get('[data-testid="stderr"]').should('be.visible').contains('main.py');
   });
 
+  it('should show the bytes view of text files', () => {
+    cy.visit(idePathname());
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    typeMonacoCode('AÈ');
+    cy.get('[data-testid="file-view-bytes"]').click();
+    cy.get('[data-testid="bytes-file-view"]').should('contain.text', '41c388');
+  });
+
   it('should support running individually multiple files', () => {
     cy.visit(idePathname());
     dismissDataCollectionModal();
@@ -109,9 +118,12 @@ describe('IDE', () => {
     cy.get('[data-testid="file-tree"]').should('contain.text', 'out.png');
     cy.get('[data-testid="file-tree"]').contains('out.png').click();
     cy.get('img[alt="out.png"]').should('be.visible');
-    cy.get('[data-testid="binary-file-hex-toggle"]').click();
-    cy.get('[data-testid="hex-file-view"]').should('contain.text', '89504e47');
-    cy.get('[data-testid="binary-file-preview-toggle"]').click();
+    cy.get('[data-testid="file-view-bytes"]').click();
+    cy.get('[data-testid="bytes-file-view"]').should(
+      'contain.text',
+      '89504e47',
+    );
+    cy.get('[data-testid="file-view-preview"]').click();
     cy.get('img[alt="out.png"]').should('be.visible');
   });
 });
