@@ -9,7 +9,10 @@ import {
   useRef,
   useState,
 } from 'react';
-import { splitLinesWithoutPossibleTrailingNewline } from '../../src/sourceUtils';
+import {
+  splitLines,
+  splitLinesWithoutPossibleTrailingNewline,
+} from '../../src/sourceUtils';
 import theme from '../../src/theme';
 import { TopRightBadge } from '../TopRightBadge';
 import ImgElement from './ImgElement';
@@ -26,6 +29,10 @@ function isPngData(data: string) {
 
 export function isGifData(data: string) {
   return data.startsWith(dataURIPrefix('image/gif'));
+}
+
+function isImageData(data: string) {
+  return isPngData(data) || isGifData(data);
 }
 
 export const OUTPUT_AREA_BACKGROUND_COLOR = theme.palette.grey[100];
@@ -45,6 +52,9 @@ const EVAL_RESULT_STYLE: CSSProperties = {
   paddingRight: theme.spacing(1),
   boxSizing: 'border-box',
 };
+
+const PYTAMARO_DATA_URI_REGEX =
+  /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
 
 type OutputChunk = {
   content: string;
@@ -81,6 +91,10 @@ function parseEvalResultChunks(data: string): OutputChunk[] {
   return chunks.filter((chunk) => !isEmpty(chunk.content));
 }
 
+function splitGraphicsAndText(content: string): string[] {
+  return content.split(PYTAMARO_DATA_URI_REGEX).filter(negate(isEmpty));
+}
+
 export type OutputAreaRef = {
   getInput: () => Promise<string>;
   activateInputField: () => void;
@@ -106,19 +120,20 @@ export function OutputArea({
     undefined,
   );
   const [inputFieldActive, setInputFieldActive] = useState(false);
-  const pytamaroDataUriRegex =
-    /@@@PYTAMARO_DATA_URI_BEGIN@@@(.*?)@@@PYTAMARO_DATA_URI_END@@@/g;
+
   const inputArea = (
     <InputArea
       onSubmit={(result) => {
-        if (resolveInputPromiseRef.current) {
+        const resolve = resolveInputPromiseRef.current;
+        if (resolve) {
+          resolveInputPromiseRef.current = undefined;
           setInputFieldActive(false);
-          resolveInputPromiseRef.current(result);
+          resolve(result);
         }
       }}
     />
   );
-  const outputChunks = parseEvalResultChunks(data);
+
   useImperativeHandle(ref, () => {
     return {
       getInput() {
@@ -136,38 +151,60 @@ export function OutputArea({
       },
     };
   }, [setIsWaitingForInput]);
+
+  const outputChunks = parseEvalResultChunks(data).map((chunk) => ({
+    ...chunk,
+    parts: splitGraphicsAndText(chunk.content),
+  }));
+
+  // The active input is shown at the end of the output, on the last line of
+  // the last part if that is text. If there is no output, or the output ends
+  // with a graphic, there is no line to attach it to: render it on its own.
+  const lastChunk = outputChunks[outputChunks.length - 1];
+  const lastPart = lastChunk?.parts[lastChunk.parts.length - 1];
+  const inputAttachedToText =
+    inputFieldActive && lastPart !== undefined && !isImageData(lastPart);
+  const inputStandalone = inputFieldActive && !inputAttachedToText;
+
   return (
     <div data-testid='output-area' translate='no' style={sx}>
       {outputChunks.map((outputChunk, outputIdx, chunks) => {
-        const graphicOrTextChunks = outputChunk.content
-          .split(pytamaroDataUriRegex)
-          .filter(negate(isEmpty));
         const isLastOutputChunk = outputIdx === chunks.length - 1;
+        const { parts } = outputChunk;
 
         const renderedChunk = (
           <>
-            {graphicOrTextChunks.map((chunk, idx) =>
-              isPngData(chunk) || isGifData(chunk) ? (
-                <ImgElement
-                  key={`${outputIdx}-${idx}`}
-                  dataURI={chunk}
-                  disabled={disabled}
-                />
-              ) : (
+            {parts.map((part, idx) => {
+              if (isImageData(part)) {
+                return (
+                  <ImgElement
+                    key={`${outputIdx}-${idx}`}
+                    dataURI={part}
+                    disabled={disabled}
+                  />
+                );
+              }
+
+              const hasActiveInput =
+                inputAttachedToText &&
+                isLastOutputChunk &&
+                idx === parts.length - 1;
+              return (
                 <PreElement
                   key={`${outputIdx}-${idx}`}
-                  lines={splitLinesWithoutPossibleTrailingNewline(chunk)}
-                  style={preStyle}
-                  activeInput={
-                    isLastOutputChunk &&
-                    idx === graphicOrTextChunks.length - 1 &&
-                    inputFieldActive
-                      ? inputArea
-                      : undefined
+                  // Finished output drops its trailing newline (it only terminates the last line).
+                  // But a waiting input goes where the "cursor" is, at the end of the output, so keep
+                  // the newline.
+                  lines={
+                    hasActiveInput
+                      ? splitLines(part)
+                      : splitLinesWithoutPossibleTrailingNewline(part)
                   }
+                  style={preStyle}
+                  activeInput={hasActiveInput ? inputArea : undefined}
                 />
-              ),
-            )}
+              );
+            })}
           </>
         );
 
@@ -195,12 +232,9 @@ export function OutputArea({
           <div key={outputIdx}>{renderedChunk}</div>
         );
       })}
-      {
-        /* As a special case, render a lone input area if it is active and there is no other output */
-        inputFieldActive && outputChunks.length === 0 && (
-          <PreElement lines={[]} style={preStyle} activeInput={inputArea} />
-        )
-      }
+      {inputStandalone && (
+        <PreElement lines={[]} style={preStyle} activeInput={inputArea} />
+      )}
     </div>
   );
 }

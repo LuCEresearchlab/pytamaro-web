@@ -31,6 +31,25 @@ describe('IDE', () => {
     cy.get('[data-testid="bytes-file-view"]').should('contain.text', '41c388');
   });
 
+  it('should support interactive input', () => {
+    cy.visit(idePathname());
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    typeMonacoCode('input(); input()');
+    cy.get('.run-button').first().click();
+    cy.get('[data-testid="output-area"]')
+      .find('[data-testid="input-area"]')
+      .should('be.visible')
+      .type('hello{enter}');
+    cy.get('[data-testid="output-area"]').should('contain.text', 'hello');
+    cy.get('[data-testid="output-area"]')
+      .find('[data-testid="input-area"]')
+      .eq(1)
+      .should('be.visible')
+      .type('world{enter}');
+    cy.get('[data-testid="output-area"]').should('contain.text', 'world');
+  });
+
   it('should support running individually multiple files', () => {
     cy.visit(idePathname());
     dismissDataCollectionModal();
@@ -56,19 +75,6 @@ describe('IDE', () => {
     cy.get('[data-testid="output-area"]')
       .should('be.visible')
       .contains('Hello, World!');
-  });
-
-  it('should support interactive input', () => {
-    cy.visit(idePathname());
-    dismissDataCollectionModal();
-    waitForMonacoEditor();
-    typeMonacoCode('print(input())');
-    cy.get('.run-button').first().click();
-    cy.get('[data-testid="output-area"]')
-      .find('[data-testid="input-area"]')
-      .should('be.visible')
-      .type('hello{enter}');
-    cy.get('[data-testid="output-area"]').should('contain.text', 'hello');
   });
 
   it('should install and use additional Python libraries', () => {
