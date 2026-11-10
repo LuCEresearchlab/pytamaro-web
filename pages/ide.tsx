@@ -1,10 +1,4 @@
-import {
-  Abc,
-  ImageOutlined,
-  Memory,
-  PlayCircleFilled,
-  TableChartOutlined,
-} from '@mui/icons-material';
+import { Abc, Memory, PlayCircleFilled, Preview } from '@mui/icons-material';
 import { Box, Stack, Typography } from '@mui/material';
 import { saveAs } from 'file-saver';
 import { useConfirm } from 'material-ui-confirm';
@@ -19,8 +13,6 @@ import {
   useSyncExternalStore,
 } from 'react';
 import { Group, Panel, Separator, usePanelRef } from 'react-resizable-panels';
-import BinaryFileView from '../components/BinaryFileView';
-import BytesFileView from '../components/BytesFileView';
 import { NoOutputTip } from '../components/CodeCellTips';
 import CodeEditor from '../components/CodeEditor';
 import CustomSnackbar from '../components/CustomSnackbar';
@@ -33,6 +25,9 @@ import { OUTPUT_AREA_BACKGROUND_COLOR } from '../components/input_output/OutputA
 import LibrariesButton from '../components/navbar/LibrariesButton';
 import NavigationBar from '../components/navbar/NavigationBar';
 import ResetButton from '../components/navbar/ResetButton';
+import NonEditableFileView, {
+  type FileViewMode,
+} from '../components/NonEditableFileView';
 import RunButton from '../components/RunButton';
 import StaleOutputBadge from '../components/StaleOutputBadge';
 import { toCustomDiagnostics } from '../src/editor/diagnostics';
@@ -119,15 +114,12 @@ export default function Ide() {
       ? undefined
       : filePreview(activeFile, activeFileBytes);
   const isPreview = activePreview !== undefined;
-  const [viewMode, setViewMode] = useState<'text' | 'preview' | 'bytes' | null>(
-    null,
-  );
+  const [viewMode, setViewMode] = useState<FileViewMode | null>(null);
   // The view is a per-file mode: switching file always shows the default view.
-  const view = viewMode ?? (isPreview ? 'preview' : 'text');
+  const view: FileViewMode = viewMode ?? (isPreview ? 'preview' : 'text');
   useEffect(() => {
     setViewMode(null);
   }, [activeFile, isText, isPreview]);
-  const showBinaryView = !isText || (isPreview && view === 'preview');
   const isPythonFile =
     activeFile !== '' &&
     isPythonFileName(activeFile) &&
@@ -217,6 +209,17 @@ export default function Ide() {
         : undefined,
     [workspace, activeFile, isText],
   );
+
+  const hasActiveFile = loaded && activeFile !== '';
+  const isEditing = isText && view === 'text';
+  const showEditor = hasActiveFile && isEditing && editorContext !== undefined;
+  const showNonEditable = hasActiveFile && !isEditing;
+  const showNoFileOpen = loaded && activeFile === '';
+
+  const editorReadOnly =
+    execution.executing && execution.readOnlyFiles.has(activeFile);
+  const showRuntimeAnnotations =
+    execution.executionFinished && execution.outputSynced;
 
   const downloadFile = (name: string) => {
     const content = workspace.bytes(name);
@@ -321,8 +324,7 @@ export default function Ide() {
       ? undefined
       : {
           value: view,
-          onChange: (nextView: string) =>
-            setViewMode(nextView as 'text' | 'preview' | 'bytes'),
+          onChange: (nextView: string) => setViewMode(nextView as FileViewMode),
           options: [
             {
               value: 'text',
@@ -333,13 +335,8 @@ export default function Ide() {
               ? [
                   {
                     value: 'preview',
-                    label: tIde('binaryFilePreview'),
-                    icon:
-                      activePreview?.kind === 'csv' ? (
-                        <TableChartOutlined fontSize='small' />
-                      ) : (
-                        <ImageOutlined fontSize='small' />
-                      ),
+                    label: tIde('viewAsPreview'),
+                    icon: <Preview fontSize='small' />,
                   },
                 ]
               : []),
@@ -450,46 +447,30 @@ export default function Ide() {
                         backgroundColor: 'white',
                       }}
                     >
-                      {loaded &&
-                        activeFile !== '' &&
-                        editorContext !== undefined &&
-                        view === 'text' && (
-                          <CodeEditor
-                            modelPath={activeFile}
-                            context={editorContext}
-                            autoHeight={false}
-                            readOnly={
-                              execution.executing &&
-                              execution.readOnlyFiles.has(activeFile)
-                            }
-                            onChange={execution.markOutputStale}
-                            onExecutionRequested={handleExecutionRequest}
-                            executionAllowed={execution.runEnabled}
-                            executionResponse={execution.executionResponse}
-                            showRuntimeAnnotations={
-                              execution.executionFinished &&
-                              execution.outputSynced
-                            }
-                            onRuntimeErrorDismissed={execution.markOutputStale}
-                            setHoveredName={setHoveredName}
-                          />
-                        )}
-                      {loaded &&
-                        activeFile !== '' &&
-                        isText &&
-                        view === 'bytes' &&
-                        activeFileBytes !== undefined && (
-                          <BytesFileView bytes={activeFileBytes} />
-                        )}
-                      {loaded && activeFile !== '' && showBinaryView && (
-                        <BinaryFileView
+                      {showEditor && (
+                        <CodeEditor
+                          modelPath={activeFile}
+                          context={editorContext}
+                          autoHeight={false}
+                          readOnly={editorReadOnly}
+                          onChange={execution.markOutputStale}
+                          onExecutionRequested={handleExecutionRequest}
+                          executionAllowed={execution.runEnabled}
+                          executionResponse={execution.executionResponse}
+                          showRuntimeAnnotations={showRuntimeAnnotations}
+                          onRuntimeErrorDismissed={execution.markOutputStale}
+                          setHoveredName={setHoveredName}
+                        />
+                      )}
+                      {showNonEditable && (
+                        <NonEditableFileView
                           name={activeFile}
                           content={activeFileBytes}
                           preview={activePreview}
                           view={view}
                         />
                       )}
-                      {loaded && activeFile === '' && (
+                      {showNoFileOpen && (
                         <Stack
                           sx={{
                             height: '100%',

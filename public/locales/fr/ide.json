@@ -19,7 +19,7 @@
     "noFileOpen": "Aucun fichier ouvert",
     "noFileOpenHint": "Ouvrez un fichier depuis le gestionnaire de fichiers pour commencer à modifier, ou créez-en un nouveau.",
     "binaryFileHint": "Ce fichier ne contient pas de texte à afficher. Utilisez la vue octets pour inspecter son contenu.",
-    "binaryFilePreview": "Aperçu",
+    "viewAsPreview": "Aperçu",
     "csvSeparator": "Séparateur",
     "csvSeparatorComma": "Virgule",
     "csvSeparatorSemicolon": "Point-virgule",

@@ -19,7 +19,7 @@
     "noFileOpen": "No file open",
     "noFileOpenHint": "Open a file from the file manager to start editing, or create a new one.",
     "binaryFileHint": "This file doesn't contain text to display. Use the bytes view to inspect its contents.",
-    "binaryFilePreview": "Preview",
+    "viewAsPreview": "Preview",
     "csvSeparator": "Separator",
     "csvSeparatorComma": "Comma",
     "csvSeparatorSemicolon": "Semicolon",
