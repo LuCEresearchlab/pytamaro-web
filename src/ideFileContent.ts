@@ -83,12 +83,24 @@ function hasMagic(bytes: Uint8Array, format: ImageFormat): boolean {
  * raw bytes.
  */
 export type FilePreview = {
-  kind: 'image' | 'svg';
-  /** MIME type to use when rendering the content. */
+  kind: 'image' | 'svg' | 'csv';
+  /** MIME type to use when rendering or downloading the content. */
   mimeType: string;
 };
 
 const SVG_MIME_TYPE = 'image/svg+xml';
+const CSV_MIME_TYPE = 'text/csv;charset=utf-8';
+const TSV_MIME_TYPE = 'text/tab-separated-values;charset=utf-8';
+
+/** Whether the bytes are CSV/TSV: a small enough file with valid UTF-8 text. */
+function isDelimitedText(path: string, bytes: Uint8Array): boolean {
+  const extension = extensionOf(path);
+  return (
+    (extension === 'csv' || extension === 'tsv') &&
+    bytes.length <= MAX_EDITOR_BYTES &&
+    decodeText(bytes) !== undefined
+  );
+}
 
 /**
  * Whether the bytes are an SVG document. SVGs are text, so their extension is
@@ -122,6 +134,12 @@ function detectPreview(
   }
   if (isSvg(path, bytes)) {
     return { kind: 'svg', mimeType: SVG_MIME_TYPE };
+  }
+  if (isDelimitedText(path, bytes)) {
+    return {
+      kind: 'csv',
+      mimeType: extension === 'tsv' ? TSV_MIME_TYPE : CSV_MIME_TYPE,
+    };
   }
   return undefined;
 }

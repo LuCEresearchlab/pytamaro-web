@@ -51,6 +51,15 @@ export default function BinaryFileView({
           ) : (
             <BytesFileView bytes={content} />
           )
+        ) : view === 'preview' &&
+          preview !== undefined &&
+          content !== undefined ? (
+          <FilePreview
+            key={name}
+            name={baseName(name)}
+            content={content}
+            preview={preview}
+          />
         ) : (
           <Stack
             sx={{
@@ -65,21 +74,9 @@ export default function BinaryFileView({
               overflow: 'auto',
             }}
           >
-            {view === 'preview' &&
-            preview !== undefined &&
-            content !== undefined ? (
-              <FilePreview
-                name={baseName(name)}
-                content={content}
-                preview={preview}
-              />
-            ) : (
-              <>
-                <Typography variant='h6'>{baseName(name)}</Typography>
-                <InsertDriveFile sx={{ fontSize: 56, opacity: 0.4 }} />
-                <Typography variant='body2'>{t('binaryFileHint')}</Typography>
-              </>
-            )}
+            <Typography variant='h6'>{baseName(name)}</Typography>
+            <InsertDriveFile sx={{ fontSize: 56, opacity: 0.4 }} />
+            <Typography variant='body2'>{t('binaryFileHint')}</Typography>
           </Stack>
         )}
       </Box>

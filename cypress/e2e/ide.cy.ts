@@ -31,6 +31,44 @@ describe('IDE', () => {
     cy.get('[data-testid="bytes-file-view"]').should('contain.text', '41c388');
   });
 
+  it('should preview CSV files as a table', () => {
+    cy.visit(idePathname());
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    cy.get('[data-testid="new-file-button"]').click();
+    cy.get('[data-testid="file-tree-dropzone"]')
+      .find('input[type="text"]')
+      .type('data.csv{enter}');
+    // A CSV opens in preview mode, even before it has any content.
+    cy.get('[data-testid="csv-preview"]').should('be.visible');
+    // Edit the file as text, then switch back to the table preview.
+    cy.get('[data-testid="file-view-text"]').click();
+    waitForMonacoEditor();
+    typeMonacoCode('name;value\nalpha;1\nbeta;2');
+    cy.get('[data-testid="file-view-preview"]').click();
+    // The default separator is a comma, so the whole row is one column.
+    cy.get('[data-testid="csv-preview"]').within(() => {
+      cy.get('thead th').should('have.length', 1);
+      cy.get('thead th').should('have.text', 'name;value');
+    });
+    // Choosing the semicolon splits the row into the expected columns.
+    cy.get('[data-testid="csv-separator-select"]').click();
+    cy.get('li[data-value=";"]').click();
+    cy.get('[data-testid="csv-preview"]').within(() => {
+      cy.get('thead th').eq(0).should('have.text', 'name');
+      cy.get('thead th').eq(1).should('have.text', 'value');
+      cy.get('tbody tr').eq(0).find('td').eq(1).should('have.text', '1');
+      cy.get('tbody tr').eq(1).find('td').eq(1).should('have.text', '2');
+    });
+    // Without a header row, the first row becomes a regular body row.
+    cy.get('[data-testid="csv-header-toggle"]').click();
+    cy.get('[data-testid="csv-preview"]').within(() => {
+      cy.get('thead').should('not.exist');
+      cy.get('tbody tr').eq(0).find('td').eq(0).should('have.text', 'name');
+      cy.get('tbody tr').eq(0).find('td').eq(1).should('have.text', 'value');
+    });
+  });
+
   it('should support interactive input', () => {
     cy.visit(idePathname());
     dismissDataCollectionModal();

@@ -3,6 +3,7 @@ import {
   ImageOutlined,
   Memory,
   PlayCircleFilled,
+  TableChartOutlined,
 } from '@mui/icons-material';
 import { Box, Stack, Typography } from '@mui/material';
 import { saveAs } from 'file-saver';
@@ -333,7 +334,12 @@ export default function Ide() {
                   {
                     value: 'preview',
                     label: tIde('binaryFilePreview'),
-                    icon: <ImageOutlined fontSize='small' />,
+                    icon:
+                      activePreview?.kind === 'csv' ? (
+                        <TableChartOutlined fontSize='small' />
+                      ) : (
+                        <ImageOutlined fontSize='small' />
+                      ),
                   },
                 ]
               : []),
