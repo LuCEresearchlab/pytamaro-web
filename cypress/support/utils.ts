@@ -36,6 +36,8 @@ export function typeMonacoCode(
   }
   cy.get(selector).eq(index).type(code, {
     parseSpecialCharSequences,
+    // At least 1 millisecond delay per key, so that files updates inside ty's workspace generate different revisions.
+    delay: 1,
   });
   // Wait for the editor to contain the code
   cy.get(selector)
