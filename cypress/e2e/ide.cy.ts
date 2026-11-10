@@ -22,6 +22,29 @@ describe('IDE', () => {
     cy.get('[data-testid="stderr"]').should('be.visible').contains('main.py');
   });
 
+  it('should keep partially typed input when the output area is hidden and shown again', () => {
+    cy.visit(idePathname());
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    typeMonacoCode('input()');
+    cy.get('.run-button').first().click();
+    cy.get('[data-testid="output-area"]')
+      .find('[data-testid="input-area"]')
+      .should('be.visible')
+      .type('hello');
+    // Hide the output area without submitting the input.
+    cy.get('[data-testid="toggle-output-area"]').click();
+    cy.get('[data-testid="input-area"]').should('not.be.visible');
+    // Show it again: the partially typed input is still there.
+    cy.get('[data-testid="toggle-output-area"]').click();
+    cy.get('[data-testid="output-area"]')
+      .find('[data-testid="input-area"]')
+      .should('be.visible')
+      .and('have.text', 'hello')
+      .type('{enter}');
+    cy.get('[data-testid="output-area"]').should('contain.text', 'hello');
+  });
+
   it('should show the bytes view of text files', () => {
     cy.visit(idePathname());
     dismissDataCollectionModal();
@@ -69,7 +92,7 @@ describe('IDE', () => {
     });
   });
 
-  it('should support interactive input', () => {
+  it('should support multiple interactive inputs', () => {
     cy.visit(idePathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();

@@ -1,5 +1,12 @@
-import { Abc, Memory, PlayCircleFilled, Preview } from '@mui/icons-material';
-import { Box, Stack, Typography } from '@mui/material';
+import {
+  Abc,
+  Memory,
+  PlayCircleFilled,
+  Preview,
+  UnfoldLess,
+  UnfoldMore,
+} from '@mui/icons-material';
+import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import { saveAs } from 'file-saver';
 import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
@@ -34,6 +41,7 @@ import { toCustomDiagnostics } from '../src/editor/diagnostics';
 import { filePreview, viewKind } from '../src/ideFileContent';
 import { baseName, IdeFile, isPythonFileName } from '../src/ideFiles';
 import { downloadFilesAsZip, readFilesFromZip } from '../src/ideFilesZip';
+import { isMac } from '../src/keyboardUtils';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { playgroundActivityVariant } from '../src/playground';
 import { PythonName } from '../src/python-analyzer/python_analyzer';
@@ -56,6 +64,16 @@ function pickFile(accept: string, onFile: (file: File) => void) {
     }
   };
   input.click();
+}
+
+/** True for Cmd+J (macOS) or Ctrl+J (other platforms), on any keyboard layout. */
+function isToggleOutputShortcut(event: KeyboardEvent) {
+  const modifierPressed = isMac()
+    ? event.metaKey && !event.ctrlKey
+    : event.ctrlKey && !event.metaKey;
+  return (
+    modifierPressed && !event.shiftKey && !event.altKey && event.code === 'KeyJ'
+  );
 }
 
 export default function Ide() {
@@ -124,70 +142,144 @@ export default function Ide() {
     activeFile !== '' &&
     isPythonFileName(activeFile) &&
     workspace.text(activeFile) !== undefined;
-  const outputShown =
-    execution.outputAreaVisible ||
-    execution.executionResponse?.type === 'failure';
+  const outputAvailable =
+    execution.outputAreaVisible || execution.executionResponse !== undefined;
+  const [outputCollapsed, setOutputCollapsed] = useState(false);
+  const showOutput = isPythonFile && outputAvailable && !outputCollapsed;
+
+  const outputPanelRef = usePanelRef();
   const outputGroupRef = useRef<HTMLDivElement>(null);
   const outputContentRef = useRef<HTMLDivElement>(null);
-  const outputPanelRef = usePanelRef();
-  // The output never leaves empty space below its content: the panel grows to
-  // the content's height, up to a fraction of the available space. It never
-  // shrinks automatically, so updating output does not make the panel jump.
-  const [outputHeight, setOutputHeight] = useState(0);
 
+  // Height (px) that fits the output content. It only grows, so updating the
+  // output never makes the panel jump around.
+  const [fitHeight, setFitHeight] = useState(0);
+  // Height (px) the user chose by dragging. Once set, it wins over fitHeight
+  // and is restored when the output is expanded again.
+  const [userHeight, setUserHeight] = useState<number | null>(null);
+  const userResizingRef = useRef(false);
+  const draggedHeightRef = useRef<number | null>(null);
+
+  // Measure the content and remember the height that fits it.
   useLayoutEffect(() => {
     const content = outputContentRef.current;
-    if (!outputShown || content === null) {
+    if (!showOutput || content === null) {
       return;
     }
     const measure = () => {
       const contentHeight = content.offsetHeight;
       const groupHeight = outputGroupRef.current?.offsetHeight ?? contentHeight;
-      setOutputHeight((currentHeight) =>
-        Math.min(groupHeight * 0.8, Math.max(currentHeight, contentHeight)),
+      setFitHeight((current) =>
+        Math.min(groupHeight * 0.9, Math.max(current, contentHeight)),
       );
     };
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(content);
     return () => observer.disconnect();
-  }, [isPythonFile, outputShown]);
+  }, [showOutput]);
 
-  // Resizing in a frame, rather than during the layout effect, gives the group
-  // time to register the panel (which is mounted conditionally).
+  // Apply the fitted height, unless the user has chosen their own. Doing it in
+  // a frame gives the group time to register the conditionally mounted panel.
   useEffect(() => {
-    if (!isPythonFile || !outputShown || outputHeight === 0) {
+    if (
+      !showOutput ||
+      userHeight !== null ||
+      fitHeight === 0 ||
+      userResizingRef.current
+    ) {
       return;
     }
     const frame = requestAnimationFrame(() => {
-      outputPanelRef.current?.resize(outputHeight);
+      outputPanelRef.current?.resize(fitHeight);
     });
     return () => cancelAnimationFrame(frame);
-  }, [isPythonFile, outputHeight, outputPanelRef, outputShown]);
+  }, [showOutput, userHeight, fitHeight, outputPanelRef]);
+
+  // A size change only counts as the user's preference if it happens during a
+  // drag/keyboard gesture on the separator (not on mount or programmatic resize).
+  const startUserResize = () => {
+    userResizingRef.current = true;
+  };
+  const handleOutputResize = (size: { inPixels: number }) => {
+    if (userResizingRef.current) {
+      draggedHeightRef.current = size.inPixels;
+    }
+  };
+  const endUserResize = useCallback(() => {
+    if (!userResizingRef.current) {
+      return;
+    }
+    userResizingRef.current = false;
+    if (draggedHeightRef.current !== null) {
+      setUserHeight(draggedHeightRef.current);
+      draggedHeightRef.current = null;
+    }
+  }, []);
+
+  // Capture phase, so the gesture ends even if something stops propagation.
+  useEffect(() => {
+    window.addEventListener('pointerup', endUserResize, true);
+    window.addEventListener('pointercancel', endUserResize, true);
+    return () => {
+      window.removeEventListener('pointerup', endUserResize, true);
+      window.removeEventListener('pointercancel', endUserResize, true);
+    };
+  }, [endUserResize]);
+
+  // A new input request always reveals the output area, even if it was hidden.
+  useEffect(() => {
+    if (execution.isWaitingForInput) {
+      setOutputCollapsed(false);
+    }
+  }, [execution.isWaitingForInput]);
+
+  // Cmd/Ctrl+J toggles the output area. Capture phase, so it also works while
+  // the code editor has focus.
+  useEffect(() => {
+    if (!isPythonFile || !outputAvailable) {
+      return;
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.repeat || !isToggleOutputShortcut(event)) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      setOutputCollapsed((collapsed) => !collapsed);
+    };
+    window.addEventListener('keydown', onKeyDown, true);
+    return () => window.removeEventListener('keydown', onKeyDown, true);
+  }, [isPythonFile, outputAvailable]);
+
+  const shortcutLabel = isHydrated && isMac() ? '⌘J' : 'Ctrl+J';
 
   const handleExecutionRequest = useCallback(async () => {
     const diagnostics = toCustomDiagnostics(
       workspace.editorSession.diagnosticsForFile(activeFile),
       liveAnalysis,
     );
-    if (diagnostics.length === 0) {
-      return runExecution();
+    if (diagnostics.length > 0) {
+      const { confirmed } = await confirm({
+        title: t('confirmExecutionWithErrors.title'),
+        description: t(
+          'confirmExecutionWithErrors.descriptionOnlyCurrentFile',
+          {
+            count: diagnostics.length,
+          },
+        ),
+        confirmationText: t('confirmExecutionWithErrors.confirmationText'),
+        cancellationText: t('confirmExecutionWithErrors.cancellationText'),
+        confirmationButtonProps: {
+          endIcon: <PlayCircleFilled />,
+          variant: 'contained',
+        },
+      });
+      if (!confirmed) return;
     }
-    const { confirmed } = await confirm({
-      title: t('confirmExecutionWithErrors.title'),
-      description: t('confirmExecutionWithErrors.descriptionOnlyCurrentFile', {
-        count: diagnostics.length,
-      }),
-      confirmationText: t('confirmExecutionWithErrors.confirmationText'),
-      cancellationText: t('confirmExecutionWithErrors.cancellationText'),
-      confirmationButtonProps: {
-        endIcon: <PlayCircleFilled />,
-        variant: 'contained',
-      },
-    });
-    if (confirmed) {
-      return runExecution();
-    }
+    // Running always reveals the output area, even if it was collapsed before.
+    setOutputCollapsed(false);
+    return runExecution();
   }, [
     activeFile,
     confirm,
@@ -315,6 +407,8 @@ export default function Ide() {
       if (confirmed) {
         resetWorkspace();
         execution.resetExecution();
+        setUserHeight(null);
+        setFitHeight(0);
       }
     });
   };
@@ -496,6 +590,7 @@ export default function Ide() {
                         sx={{
                           display: 'flex',
                           alignItems: 'center',
+                          justifyContent: 'space-between',
                           paddingX: 2,
                           paddingY: 1,
                           backgroundColor: theme.palette.background.paper,
@@ -511,57 +606,105 @@ export default function Ide() {
                           isWaitingForInput={execution.isWaitingForInput}
                           runCodeLabelKey='runCode'
                         />
+                        {outputAvailable && (
+                          <Tooltip
+                            placement='left'
+                            arrow
+                            title={`${t(
+                              outputCollapsed ? 'showOutput' : 'hideOutput',
+                            )} (${shortcutLabel})`}
+                          >
+                            <IconButton
+                              aria-expanded={!outputCollapsed}
+                              aria-keyshortcuts='Control+J Meta+J'
+                              aria-label={t(
+                                outputCollapsed ? 'showOutput' : 'hideOutput',
+                              )}
+                              data-testid='toggle-output-area'
+                              onClick={() =>
+                                setOutputCollapsed((collapsed) => !collapsed)
+                              }
+                              size='small'
+                            >
+                              {outputCollapsed ? (
+                                <UnfoldMore />
+                              ) : (
+                                <UnfoldLess />
+                              )}
+                            </IconButton>
+                          </Tooltip>
+                        )}
                       </Box>
                     )}
                   </Stack>
                 </Panel>
-                {isPythonFile && outputShown && (
-                  <>
-                    <Separator
-                      aria-label={tIde('resizeOutput')}
-                      style={{
-                        height: theme.spacing(0.25),
+                {/* We use display instead of conditional rendering to avoid unmounting the output area and losing its state (e.g., active input) on collapse. */}
+                <Box sx={{ display: showOutput ? undefined : 'none' }}>
+                  <Separator
+                    aria-label={tIde('resizeOutput')}
+                    onPointerDown={startUserResize}
+                    onKeyDown={startUserResize}
+                    onKeyUp={endUserResize}
+                    onBlur={endUserResize}
+                    style={{
+                      height: '10px',
+                      margin: '-4px 0',
+                      position: 'relative',
+                      zIndex: 10,
+                      cursor: 'row-resize',
+                      touchAction: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: '100%',
+                        height: '2px',
                         backgroundColor: theme.palette.divider,
-                        cursor: 'row-resize',
+                        pointerEvents: 'none',
                       }}
                     />
-                    <Panel
-                      panelRef={outputPanelRef}
-                      defaultSize={outputHeight > 0 ? outputHeight : '30%'}
-                      minSize={20}
-                      maxSize='80%'
+                  </Separator>
+                  <Panel
+                    panelRef={outputPanelRef}
+                    defaultSize={
+                      userHeight ?? (fitHeight > 0 ? fitHeight : '30%')
+                    }
+                    minSize={'2rem'}
+                    maxSize='90%'
+                    onResize={handleOutputResize}
+                  >
+                    <Box
+                      sx={{
+                        height: '100%',
+                        overflow: 'auto',
+                        backgroundColor: OUTPUT_AREA_BACKGROUND_COLOR,
+                      }}
                     >
-                      <Box
-                        sx={{
-                          height: '100%',
-                          overflow: 'auto',
-                          backgroundColor: OUTPUT_AREA_BACKGROUND_COLOR,
-                        }}
-                      >
-                        <Box ref={outputContentRef}>
-                          {execution.finishedWithoutOutput && (
-                            <StaleOutputBadge hidden={execution.outputSynced}>
-                              <NoOutputTip
-                                dimmed={!execution.outputSynced}
-                                importedNames={analysisResult?.imported_names}
-                              />
-                            </StaleOutputBadge>
-                          )}
-                          {execution.executionResponse !== undefined && (
-                            <ExecutionOutputArea
-                              executionResponse={execution.executionResponse}
+                      <Box ref={outputContentRef}>
+                        {execution.finishedWithoutOutput && (
+                          <StaleOutputBadge hidden={execution.outputSynced}>
+                            <NoOutputTip
                               dimmed={!execution.outputSynced}
-                              setOutputAreaRef={execution.setOutputAreaRef}
-                              setIsWaitingForInput={
-                                execution.setIsWaitingForInput
-                              }
+                              importedNames={analysisResult?.imported_names}
                             />
-                          )}
-                        </Box>
+                          </StaleOutputBadge>
+                        )}
+                        {execution.executionResponse !== undefined && (
+                          <ExecutionOutputArea
+                            executionResponse={execution.executionResponse}
+                            dimmed={!execution.outputSynced}
+                            setOutputAreaRef={execution.setOutputAreaRef}
+                            setIsWaitingForInput={
+                              execution.setIsWaitingForInput
+                            }
+                          />
+                        )}
                       </Box>
-                    </Panel>
-                  </>
-                )}
+                    </Box>
+                  </Panel>
+                </Box>
               </Group>
             </Stack>
           </Panel>
