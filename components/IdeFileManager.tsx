@@ -380,11 +380,9 @@ function RowLabel({
                   setActionsOpen(!open);
                 }}
                 sx={{
-                  transition: animate(['background-color', 'color']),
+                  transition: animate(['color']),
                   ...(open && {
                     color: 'primary.main',
-                    backgroundColor: 'action.selected',
-                    '&:hover': { backgroundColor: 'action.selected' },
                   }),
                 }}
               >
