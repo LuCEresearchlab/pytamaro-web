@@ -14,7 +14,7 @@ import {
   splitLinesWithoutPossibleTrailingNewline,
 } from '../../src/sourceUtils';
 import theme from '../../src/theme';
-import { TopRightBadge } from '../TopRightBadge';
+import { OverhangingBadge } from '../OverhangingBadge';
 import ImgElement from './ImgElement';
 import InputArea from './InputArea';
 import PreElement from './PreElement';
@@ -210,7 +210,7 @@ export function OutputArea({
 
         return outputChunk.isEvalResult ? (
           <Box key={outputIdx} sx={{ width: '100%' }}>
-            <TopRightBadge
+            <OverhangingBadge
               sx={{
                 '& .MuiBadge-badge': {
                   top: theme.spacing(0.25),
@@ -226,7 +226,7 @@ export function OutputArea({
               <div className='eval-result-output' style={EVAL_RESULT_STYLE}>
                 {renderedChunk}
               </div>
-            </TopRightBadge>
+            </OverhangingBadge>
           </Box>
         ) : (
           <div key={outputIdx}>{renderedChunk}</div>

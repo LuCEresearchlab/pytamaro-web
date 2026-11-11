@@ -700,38 +700,52 @@ export default function Ide() {
                       minSize='2rem'
                       maxSize='90%'
                       onResize={handleOutputResize}
+                      // The stale-output badge overhangs the top edge of the
+                      // output area; let it escape the panel instead of being
+                      // clipped. The output area itself scrolls through its own
+                      // container below.
+                      style={{ overflow: 'visible' }}
                     >
-                      <Box
+                      <StaleOutputBadge
+                        hidden={execution.outputSynced}
+                        overhang='vertical'
                         sx={{
                           height: '100%',
-                          overflow: 'auto',
-                          backgroundColor: OUTPUT_AREA_BACKGROUND_COLOR,
+                          display: 'flex',
                           // Keeps the content mounted but hidden and unfocusable
                           // while the panel is collapsed.
                           visibility: showOutput ? 'visible' : 'hidden',
                         }}
                       >
-                        <Box ref={outputContentRef}>
-                          {execution.finishedWithoutOutput && (
-                            <StaleOutputBadge hidden={execution.outputSynced}>
+                        <Box
+                          sx={{
+                            flex: 1,
+                            minWidth: 0,
+                            minHeight: 0,
+                            overflow: 'auto',
+                            backgroundColor: OUTPUT_AREA_BACKGROUND_COLOR,
+                          }}
+                        >
+                          <Box ref={outputContentRef}>
+                            {execution.finishedWithoutOutput && (
                               <NoOutputTip
                                 dimmed={!execution.outputSynced}
                                 importedNames={analysisResult?.imported_names}
                               />
-                            </StaleOutputBadge>
-                          )}
-                          {execution.executionResponse !== undefined && (
-                            <ExecutionOutputArea
-                              executionResponse={execution.executionResponse}
-                              dimmed={!execution.outputSynced}
-                              setOutputAreaRef={execution.setOutputAreaRef}
-                              setIsWaitingForInput={
-                                execution.setIsWaitingForInput
-                              }
-                            />
-                          )}
+                            )}
+                            {execution.executionResponse !== undefined && (
+                              <ExecutionOutputArea
+                                executionResponse={execution.executionResponse}
+                                dimmed={!execution.outputSynced}
+                                setOutputAreaRef={execution.setOutputAreaRef}
+                                setIsWaitingForInput={
+                                  execution.setIsWaitingForInput
+                                }
+                              />
+                            )}
+                          </Box>
                         </Box>
-                      </Box>
+                      </StaleOutputBadge>
                     </Panel>
                   </>
                 )}
