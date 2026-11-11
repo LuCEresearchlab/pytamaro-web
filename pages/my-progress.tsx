@@ -1,4 +1,4 @@
-import Assignment from '@mui/icons-material/Assignment';
+import { PlayLesson } from '@mui/icons-material';
 import Construction from '@mui/icons-material/Construction';
 import Route from '@mui/icons-material/Route';
 import TipsAndUpdates from '@mui/icons-material/TipsAndUpdates';
@@ -117,7 +117,7 @@ export default function MyProgress({
             <Grid size={{ xs: 12, lg: 4 }}>
               <ResourceCard>
                 <CardIcon>
-                  <Assignment sx={{ fontSize: th.typography.h3.fontSize }} />
+                  <PlayLesson sx={{ fontSize: th.typography.h3.fontSize }} />
                 </CardIcon>
                 <CardHeader
                   title='My Activities'
