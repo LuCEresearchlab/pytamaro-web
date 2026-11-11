@@ -10,24 +10,32 @@ const { defaultLocale, locales } = config.i18n;
 export default function useLocalTranslation(namespaces: string[] = []) {
   const { i18n, t } = useTranslation(namespaces);
   const { metadata, setPlatformLocale } = useLocalProfile();
-  const setLocale = metadata.platformLocale;
+  const userPreferredLocale = metadata.platformLocale;
 
   useEffect(() => {
-    // Use locale from localStorage if it is set and available, otherwise
-    // figure out the best match based on the browser's locale.
-    const platformLocale =
-      setLocale !== null && locales.includes(setLocale)
-        ? setLocale
-        : match(navigator.languages, locales, defaultLocale);
+    let platformLocale = defaultLocale;
+    // Use locale from localStorage if it is set and available...
+    if (userPreferredLocale !== null && locales.includes(userPreferredLocale)) {
+      platformLocale = userPreferredLocale;
+    } else {
+      // ...otherwise, figure out the best match based on the browser's locale.
+      try {
+        const browserLocales =
+          navigator.languages.length > 0
+            ? [...navigator.languages]
+            : [navigator.language];
+        platformLocale = match(browserLocales, locales, defaultLocale);
+      } catch {
+        // Malformed locale tags (e.g. raw Accept-Language values from
+        // crawlers). Fall back to the default locale.
+      }
+    }
+
     // Manually set the locale in next-i18next.
     if (i18n.language !== platformLocale) {
       i18n.changeLanguage(platformLocale);
     }
-  }, [i18n, setLocale]);
+  }, [i18n, userPreferredLocale]);
 
-  return {
-    t,
-    i18n,
-    setPlatformLocale,
-  };
+  return { t, i18n, setPlatformLocale };
 }
