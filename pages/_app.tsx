@@ -33,6 +33,7 @@ import { ExecutorProvider } from '../src/execution/executorContext';
 function MyApp(props: AppProps) {
   const { Component, pageProps } = props;
   const [queryClient] = useState(() => new QueryClient());
+  const is404Page = pageProps.statusCode === 404;
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
     <AppCacheProvider {...props}>
@@ -62,7 +63,7 @@ function MyApp(props: AppProps) {
                   <Component // eslint-disable-next-line react/jsx-props-no-spreading
                     {...pageProps}
                   />
-                  <PageFooter />
+                  {!is404Page && <PageFooter />}
                 </QueryClientProvider>
               </Box>
             </ConfirmProvider>
