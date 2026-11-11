@@ -7,6 +7,7 @@ import {
   Folder,
   FolderOpen,
   InsertDriveFile,
+  MoreHoriz,
   NoteAddOutlined,
   Unarchive,
   UploadFileOutlined,
@@ -14,6 +15,7 @@ import {
 import DescriptionIcon from '@mui/icons-material/Description';
 import {
   Box,
+  ClickAwayListener,
   IconButton,
   Stack,
   TextField,
@@ -34,6 +36,7 @@ import {
 } from 'react';
 import { isPythonFileName } from '../src/ideFiles';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
+import theme from '../src/theme';
 import SidebarTitle from './sidebar/SidebarTitle';
 
 const FOLDER_PREFIX = 'dir:';
@@ -222,6 +225,7 @@ function fileIcon(name: string, binary: boolean) {
 
 const HOVER_ACTIONS_SX = {
   '& .tree-actions': { visibility: 'hidden' },
+  '& .MuiTreeItem-label': { overflow: 'visible' },
   // Only the row itself, not the children that a folder's root contains.
   '& > .MuiTreeItem-content:hover .tree-actions, & > .MuiTreeItem-content:focus-within .tree-actions':
     { visibility: 'visible' },
@@ -262,8 +266,8 @@ function ActionButton({
   );
 }
 
-/** The width of one hover action: MUI's small `IconButton` with a small icon. */
 const ACTION_BUTTON_WIDTH = 30;
+const ACTIONS_ANIMATION_MS = 180;
 
 /** Makes a row name use the remaining width and ellipsize instead of overflowing. */
 const ROW_NAME_SX = {
@@ -274,16 +278,38 @@ const ROW_NAME_SX = {
   whiteSpace: 'nowrap',
 };
 
-/** A tree row: a label with actions that show up on hover. */
+/** A tree row: a label whose actions are tucked behind a "more" button on hover. */
 function RowLabel({
   actions = undefined,
   actionCount,
+  moreActionsLabel = undefined,
+  closeActionsLabel = undefined,
   children,
 }: {
   actions?: ReactNode;
   actionCount: number;
+  moreActionsLabel?: string;
+  closeActionsLabel?: string;
   children: ReactNode;
 }) {
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const moreButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Rows have no actions while they are being renamed or created.
+  const hasActions = actions !== undefined;
+  const open = hasActions && actionsOpen;
+  const close = () => setActionsOpen(false);
+
+  const animate = (properties: string[], duration = ACTIONS_ANIMATION_MS) =>
+    theme.transitions.create(properties, { duration });
+
+  // The "more" button is always reserved while hovering; when open, the
+  // unfolded actions next to it are reserved as well.
+  const reservedSpace = {
+    paddingRight: `${(open ? actionCount + 1 : 1) * ACTION_BUTTON_WIDTH}px`,
+  };
+  const toggleLabel = open ? closeActionsLabel : moreActionsLabel;
+
   return (
     <Stack
       direction='row'
@@ -293,30 +319,118 @@ function RowLabel({
         width: '100%',
         position: 'relative',
         paddingRight: 0.5,
+        transition: animate(['padding-right']),
         // The actions are positioned absolutely. Reserve room for them only
-        // while they are shown (the row is hovered or has focus), so names can
-        // use the full width the rest of the time.
-        ...(actions !== undefined && {
-          '.MuiTreeItem-content:hover &, .MuiTreeItem-content:focus-within &': {
-            paddingRight: `${actionCount * ACTION_BUTTON_WIDTH}px`,
-          },
+        // while they are shown (the row is hovered, has focus, or is open), so
+        // names can use the full width the rest of the time.
+        ...(hasActions && {
+          ...(open && reservedSpace),
+          '.MuiTreeItem-content:hover &, .MuiTreeItem-content:focus-within &':
+            reservedSpace,
         }),
       }}
     >
       {children}
-      {actions !== undefined && (
-        <Stack
-          className='tree-actions'
-          direction='row'
-          sx={{
-            position: 'absolute',
-            right: 0,
-            top: '50%',
-            transform: 'translateY(-50%)',
-          }}
+      {hasActions && (
+        // Clicking elsewhere folds the actions away. The listener is only
+        // active while they are open.
+        <ClickAwayListener
+          onClickAway={close}
+          mouseEvent={open ? 'onPointerDown' : false}
+          touchEvent={false}
         >
-          {actions}
-        </Stack>
+          <Stack
+            className='tree-actions'
+            // The button comes first in the DOM so that Tab reaches it before
+            // the actions it opens, while it still sits to their right.
+            direction='row-reverse'
+            sx={{
+              position: 'absolute',
+              right: 0,
+              top: '50%',
+              transform: 'translateY(-50%)',
+            }}
+            // Keep the open actions visible even when the pointer leaves the
+            // row, which the hover styles would otherwise hide.
+            style={{ visibility: open ? 'visible' : undefined }}
+            // Nothing in here may reach the tree item and open the file.
+            onClick={(event) => event.stopPropagation()}
+            // Fold away when focus moves out of the actions.
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) {
+                close();
+              }
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape') {
+                moreButtonRef.current?.focus();
+                close();
+              }
+            }}
+          >
+            <Tooltip arrow title={toggleLabel}>
+              <IconButton
+                ref={moreButtonRef}
+                size='small'
+                aria-label={toggleLabel}
+                aria-expanded={open}
+                onClick={(event) => {
+                  // Safari doesn't focus buttons on click; Escape needs focus.
+                  event.currentTarget.focus();
+                  setActionsOpen(!open);
+                }}
+                sx={{
+                  transition: animate(['background-color', 'color']),
+                  ...(open && {
+                    color: 'primary.main',
+                    backgroundColor: 'action.selected',
+                    '&:hover': { backgroundColor: 'action.selected' },
+                  }),
+                }}
+              >
+                <MoreHoriz fontSize='small' />
+              </IconButton>
+            </Tooltip>
+            <Box
+              // Closed actions cannot be tabbed into.
+              inert={!open}
+              // Capturing lets the action itself run while the strip folds up.
+              onClickCapture={close}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                overflow: 'hidden',
+                width: open ? `${actionCount * ACTION_BUTTON_WIDTH}px` : 0,
+                opacity: open ? 1 : 0,
+                pointerEvents: open ? 'auto' : 'none',
+                transition: [
+                  animate(['width']),
+                  animate(['opacity'], open ? 140 : 80),
+                ].join(', '),
+                '& > *': {
+                  flexShrink: 0,
+                  opacity: open ? 1 : 0,
+                  transform: open ? 'none' : 'translateX(8px)',
+                  transition: animate(['opacity', 'transform']),
+                },
+                // Unfold from the button outwards, fold back inwards.
+                ...Object.fromEntries(
+                  Array.from({ length: actionCount }, (_, index) => [
+                    `& > *:nth-of-type(${index + 1})`,
+                    {
+                      transitionDelay: `${
+                        open ? (actionCount - 1 - index) * 20 : index * 10
+                      }ms`,
+                    },
+                  ]),
+                ),
+              }}
+            >
+              {actions}
+            </Box>
+          </Stack>
+        </ClickAwayListener>
       )}
     </Stack>
   );
@@ -544,6 +658,8 @@ export default function IdeFileManager({
         label={
           <RowLabel
             actionCount={3}
+            moreActionsLabel={t('moreActions')}
+            closeActionsLabel={t('closeActions')}
             actions={
               isRenaming ? undefined : (
                 <>
@@ -618,6 +734,8 @@ export default function IdeFileManager({
         label={
           <RowLabel
             actionCount={5}
+            moreActionsLabel={t('moreActions')}
+            closeActionsLabel={t('closeActions')}
             actions={
               isRenaming ? undefined : (
                 <>

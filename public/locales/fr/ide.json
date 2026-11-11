@@ -15,6 +15,8 @@
     "overwriteFilesWarning": "Les fichiers suivants existent déjà : {{names}}. Voulez-vous les remplacer par les fichiers importés ?",
     "overwriteFiles": "Écraser",
     "fileManager": "Gestionnaire de fichiers",
+    "moreActions": "Plus d'actions",
+    "closeActions": "Fermer les actions",
     "closeFileTab": "Fermer {{name}}",
     "noFileOpen": "Aucun fichier ouvert",
     "noFileOpenHint": "Ouvrez un fichier depuis le gestionnaire de fichiers pour commencer à modifier, ou créez-en un nouveau.",
