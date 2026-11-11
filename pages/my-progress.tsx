@@ -31,7 +31,7 @@ import { Activity } from '../src/schemas/activitySchema';
 import { Curriculum } from '../src/schemas/curriculumSchema';
 import { translationProps } from '../src/serverSideTranslationProps';
 import { toolboxDemoActivityVariant } from '../src/specialActivities';
-import th from '../src/theme';
+import theme from '../src/theme';
 import {
   activitiesByAuthorPathname,
   activityVariantPathname,
@@ -86,7 +86,7 @@ export default function MyProgress({
             <Grid size={{ xs: 12, lg: 4 }}>
               <ResourceCard>
                 <CardIcon>
-                  <Route sx={{ fontSize: th.typography.h3.fontSize }} />
+                  <Route sx={{ fontSize: theme.typography.h3.fontSize }} />
                 </CardIcon>
                 <CardHeader
                   title='My Curricula'
@@ -117,7 +117,7 @@ export default function MyProgress({
             <Grid size={{ xs: 12, lg: 4 }}>
               <ResourceCard>
                 <CardIcon>
-                  <PlayLesson sx={{ fontSize: th.typography.h3.fontSize }} />
+                  <PlayLesson sx={{ fontSize: theme.typography.h3.fontSize }} />
                 </CardIcon>
                 <CardHeader
                   title='My Activities'
@@ -154,7 +154,9 @@ export default function MyProgress({
             <Grid size={{ xs: 12, lg: 4 }}>
               <ResourceCard>
                 <CardIcon>
-                  <Construction sx={{ fontSize: th.typography.h3.fontSize }} />
+                  <Construction
+                    sx={{ fontSize: theme.typography.h3.fontSize }}
+                  />
                 </CardIcon>
                 <CardHeader
                   title='My Toolbox'
@@ -191,9 +193,16 @@ export default function MyProgress({
           </Grid>
           <Alert
             iconMapping={{
-              success: <TipsAndUpdates fontSize='inherit' />,
+              info: <TipsAndUpdates fontSize='inherit' />,
             }}
-            sx={{ my: 3, display: 'flex', '.MuiAlert-message': { pt: 0.5 } }}
+            severity='info'
+            sx={{
+              my: 3,
+              backgroundColor: theme.pytamaro.palette.background.light,
+              '& .MuiAlert-icon': {
+                pt: 1,
+              },
+            }}
           >
             <Typography
               component='span'
@@ -205,7 +214,6 @@ export default function MyProgress({
               your privacy settings?
             </Typography>
             <Button
-              color='success'
               variant='outlined'
               size='small'
               href={myDataPathname()}
