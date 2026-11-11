@@ -179,22 +179,35 @@ export default function Ide() {
     return () => observer.disconnect();
   }, [showOutput]);
 
-  // Apply the fitted height, unless the user has chosen their own. Doing it in
-  // a frame gives the group time to register the conditionally mounted panel.
+  // The panel stays mounted (so the output area keeps its state, e.g. a
+  // partially typed input) and is collapsed/expanded through the panel API.
+  // expand() restores the previous size; otherwise apply the fitted height,
+  // unless the user has chosen their own. Doing it in a frame gives the group
+  // time to register the conditionally mounted panel.
   useEffect(() => {
-    if (
-      !showOutput ||
-      userHeight !== null ||
-      fitHeight === 0 ||
-      userResizingRef.current
-    ) {
+    if (!outputAvailable) {
       return;
     }
     const frame = requestAnimationFrame(() => {
-      outputPanelRef.current?.resize(fitHeight);
+      const panel = outputPanelRef.current;
+      if (panel === null) {
+        return;
+      }
+      if (!showOutput) {
+        if (!panel.isCollapsed()) {
+          panel.collapse();
+        }
+        return;
+      }
+      if (panel.isCollapsed()) {
+        panel.expand();
+      }
+      if (userHeight === null && fitHeight > 0 && !userResizingRef.current) {
+        panel.resize(fitHeight);
+      }
     });
     return () => cancelAnimationFrame(frame);
-  }, [showOutput, userHeight, fitHeight, outputPanelRef]);
+  }, [outputAvailable, showOutput, userHeight, fitHeight, outputPanelRef]);
 
   // A size change only counts as the user's preference if it happens during a
   // drag/keyboard gesture on the separator (not on mount or programmatic resize).
@@ -202,7 +215,15 @@ export default function Ide() {
     userResizingRef.current = true;
   };
   const handleOutputResize = (size: { inPixels: number }) => {
-    if (userResizingRef.current) {
+    if (!userResizingRef.current) {
+      return;
+    }
+    if (size.inPixels === 0) {
+      // The user dragged the separator far enough to collapse the panel:
+      // keep the toggle button in sync, and don't remember a height of 0.
+      draggedHeightRef.current = null;
+      setOutputCollapsed(true);
+    } else {
       draggedHeightRef.current = size.inPixels;
     }
   };
@@ -638,73 +659,82 @@ export default function Ide() {
                     )}
                   </Stack>
                 </Panel>
-                {/* We use display instead of conditional rendering to avoid unmounting the output area and losing its state (e.g., active input) on collapse. */}
-                <Box sx={{ display: showOutput ? undefined : 'none' }}>
-                  <Separator
-                    aria-label={tIde('resizeOutput')}
-                    onPointerDown={startUserResize}
-                    onKeyDown={startUserResize}
-                    onKeyUp={endUserResize}
-                    onBlur={endUserResize}
-                    style={{
-                      height: '10px',
-                      margin: '-4px 0',
-                      position: 'relative',
-                      zIndex: 10,
-                      cursor: 'row-resize',
-                      touchAction: 'none',
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        width: '100%',
-                        height: '2px',
-                        backgroundColor: theme.palette.divider,
-                        pointerEvents: 'none',
-                      }}
-                    />
-                  </Separator>
-                  <Panel
-                    panelRef={outputPanelRef}
-                    defaultSize={
-                      userHeight ?? (fitHeight > 0 ? fitHeight : '30%')
-                    }
-                    minSize={'2rem'}
-                    maxSize='90%'
-                    onResize={handleOutputResize}
-                  >
-                    <Box
-                      sx={{
-                        height: '100%',
-                        overflow: 'auto',
-                        backgroundColor: OUTPUT_AREA_BACKGROUND_COLOR,
+                {/* Separator and Panel must be direct DOM children of Group. */}
+                {outputAvailable && (
+                  <>
+                    <Separator
+                      id='output-separator'
+                      aria-label={tIde('resizeOutput')}
+                      disabled={!showOutput}
+                      onPointerDown={startUserResize}
+                      onKeyDown={startUserResize}
+                      onKeyUp={endUserResize}
+                      onBlur={endUserResize}
+                      style={{
+                        height: '10px',
+                        margin: '-4px 0',
+                        position: 'relative',
+                        zIndex: 10,
+                        cursor: 'row-resize',
+                        touchAction: 'none',
+                        display: showOutput ? 'flex' : 'none',
+                        alignItems: 'center',
                       }}
                     >
-                      <Box ref={outputContentRef}>
-                        {execution.finishedWithoutOutput && (
-                          <StaleOutputBadge hidden={execution.outputSynced}>
-                            <NoOutputTip
+                      <Box
+                        sx={{
+                          width: '100%',
+                          height: '2px',
+                          backgroundColor: theme.palette.divider,
+                          pointerEvents: 'none',
+                        }}
+                      />
+                    </Separator>
+                    <Panel
+                      panelRef={outputPanelRef}
+                      collapsible
+                      collapsedSize={0}
+                      defaultSize={
+                        userHeight ?? (fitHeight > 0 ? fitHeight : '30%')
+                      }
+                      minSize='2rem'
+                      maxSize='90%'
+                      onResize={handleOutputResize}
+                    >
+                      <Box
+                        sx={{
+                          height: '100%',
+                          overflow: 'auto',
+                          backgroundColor: OUTPUT_AREA_BACKGROUND_COLOR,
+                          // Keeps the content mounted but hidden and unfocusable
+                          // while the panel is collapsed.
+                          visibility: showOutput ? 'visible' : 'hidden',
+                        }}
+                      >
+                        <Box ref={outputContentRef}>
+                          {execution.finishedWithoutOutput && (
+                            <StaleOutputBadge hidden={execution.outputSynced}>
+                              <NoOutputTip
+                                dimmed={!execution.outputSynced}
+                                importedNames={analysisResult?.imported_names}
+                              />
+                            </StaleOutputBadge>
+                          )}
+                          {execution.executionResponse !== undefined && (
+                            <ExecutionOutputArea
+                              executionResponse={execution.executionResponse}
                               dimmed={!execution.outputSynced}
-                              importedNames={analysisResult?.imported_names}
+                              setOutputAreaRef={execution.setOutputAreaRef}
+                              setIsWaitingForInput={
+                                execution.setIsWaitingForInput
+                              }
                             />
-                          </StaleOutputBadge>
-                        )}
-                        {execution.executionResponse !== undefined && (
-                          <ExecutionOutputArea
-                            executionResponse={execution.executionResponse}
-                            dimmed={!execution.outputSynced}
-                            setOutputAreaRef={execution.setOutputAreaRef}
-                            setIsWaitingForInput={
-                              execution.setIsWaitingForInput
-                            }
-                          />
-                        )}
+                          )}
+                        </Box>
                       </Box>
-                    </Box>
-                  </Panel>
-                </Box>
+                    </Panel>
+                  </>
+                )}
               </Group>
             </Stack>
           </Panel>

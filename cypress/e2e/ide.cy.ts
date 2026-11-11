@@ -45,6 +45,56 @@ describe('IDE', () => {
     cy.get('[data-testid="output-area"]').should('contain.text', 'hello');
   });
 
+  it('should let the user resize the output area by dragging the separator', () => {
+    cy.visit(idePathname());
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    typeMonacoCode('print("hello")');
+    cy.get('.run-button').first().click();
+    cy.get('[data-testid="output-area"]')
+      .should('be.visible')
+      .and('contain.text', 'hello');
+
+    const separator = '[data-testid="output-separator"]';
+    const dragDistance = 100;
+    const center = ($separator: JQuery<HTMLElement>) => {
+      const rect = $separator[0].getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+      };
+    };
+
+    cy.get(separator).then(($separator) => {
+      const { x, y } = center($separator);
+      const pointer = { pointerId: 1, pointerType: 'mouse', isPrimary: true };
+      cy.wrap($separator).trigger('pointerdown', {
+        ...pointer,
+        button: 0,
+        buttons: 1,
+        clientX: x,
+        clientY: y,
+      });
+      cy.document().trigger('pointermove', {
+        ...pointer,
+        buttons: 1,
+        clientX: x,
+        clientY: y - dragDistance,
+      });
+      cy.document().trigger('pointerup', {
+        ...pointer,
+        button: 0,
+        buttons: 0,
+        clientX: x,
+        clientY: y - dragDistance,
+      });
+      // Dragging up makes the output area taller, so the separator moves up.
+      cy.get(separator).should(($moved) => {
+        expect(center($moved).y).to.be.lessThan(y - dragDistance / 2);
+      });
+    });
+  });
+
   it('should show the bytes view of text files', () => {
     cy.visit(idePathname());
     dismissDataCollectionModal();
@@ -217,7 +267,7 @@ describe('IDE', () => {
     cy.get('[data-testid="file-tree"]').should('contain.text', 'f.txt');
     cy.get('[data-testid="file-tree"]').contains('f.txt').click();
     cy.get('.monaco-editor').contains('content');
-    // The output area is unmounted while a non-Python file is open. Going
+    // The output area is not visible while a non-Python file is open. Going
     // back to the Python file must restore the input field that is still
     // waiting for input.
     cy.get('[data-testid="editor-tabs"]').contains('main.py').click();
