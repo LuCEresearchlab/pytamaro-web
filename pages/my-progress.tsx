@@ -15,6 +15,7 @@ import {
   styled,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
+import { Trans } from 'next-i18next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { activityVariantStatus } from '../components/ActivityStatusBadge';
@@ -24,8 +25,8 @@ import {
   listActivitiesAllAuthors,
   listCurriculaAllAuthors,
 } from '../src/fs-content/authors';
-import { format } from '../src/internationalization';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { findStartedCurricula, findUserActivities } from '../src/progress';
 import { Activity } from '../src/schemas/activitySchema';
 import { Curriculum } from '../src/schemas/curriculumSchema';
@@ -62,6 +63,7 @@ export default function MyProgress({
   curricula: Curriculum[];
 }) {
   const { metadata } = useLocalProfile();
+  const { t } = useLocalTranslation(['myProgress', 'common']);
   const startedCurricula = findStartedCurricula(metadata.curricula, curricula);
   const userActivities = findUserActivities(metadata.activities, activities);
   const inProgressActivities = userActivities.filter(
@@ -76,12 +78,12 @@ export default function MyProgress({
   return (
     <div>
       <Head>
-        <title>My Progress - PyTamaro</title>
+        <title>{`${t('common:my-progress')} - PyTamaro`}</title>
       </Head>
       <Box>
         <NavigationBar />
         <Container maxWidth='lg'>
-          <PageTitle>My Progress</PageTitle>
+          <PageTitle>{t('common:my-progress')}</PageTitle>
           <Grid container spacing={2} sx={{ mb: 6 }}>
             <Grid size={{ xs: 12, lg: 4 }}>
               <ResourceCard>
@@ -89,7 +91,7 @@ export default function MyProgress({
                   <Route sx={{ fontSize: theme.typography.h3.fontSize }} />
                 </CardIcon>
                 <CardHeader
-                  title='My Curricula'
+                  title={t('myProgress:myCurricula')}
                   slotProps={{
                     title: { align: 'center' },
                   }}
@@ -97,18 +99,20 @@ export default function MyProgress({
                 <CardContent>
                   <Typography>
                     {startedCurricula.length === 0
-                      ? 'No curriculum started so far.'
-                      : `${format(startedCurricula.length, 'curriculum', 'curricula')} started.`}
+                      ? t('myProgress:noCurriculumStarted')
+                      : t('myProgress:curriculaStarted', {
+                          count: startedCurricula.length,
+                        })}
                   </Typography>
                 </CardContent>
                 <CardActions sx={{ marginTop: 'auto' }}>
                   {startedCurricula.length > 0 ? (
                     <Button onClick={() => router.push(myCurriculaPathname())}>
-                      See My Curricula
+                      {t('myProgress:seeMyCurricula')}
                     </Button>
                   ) : (
                     <Button onClick={() => router.push(curriculaPathname())}>
-                      Explore Curricula
+                      {t('myProgress:exploreCurricula')}
                     </Button>
                   )}
                 </CardActions>
@@ -120,7 +124,7 @@ export default function MyProgress({
                   <PlayLesson sx={{ fontSize: theme.typography.h3.fontSize }} />
                 </CardIcon>
                 <CardHeader
-                  title='My Activities'
+                  title={t('myProgress:myActivities')}
                   slotProps={{
                     title: { align: 'center' },
                   }}
@@ -129,15 +133,22 @@ export default function MyProgress({
                   <Typography>
                     {inProgressActivities.length === 0 &&
                     completedActivities.length === 0
-                      ? 'No activity started so far.'
-                      : `${format(inProgressActivities.length, 'activity', 'activities')} started and ${format(completedActivities.length, 'activity', 'activities')} completed.`}
+                      ? t('myProgress:noActivityStarted')
+                      : t('myProgress:activitiesProgress', {
+                          started: t('myProgress:activitiesStarted', {
+                            count: inProgressActivities.length,
+                          }),
+                          completed: t('myProgress:activitiesCompleted', {
+                            count: completedActivities.length,
+                          }),
+                        })}
                   </Typography>
                 </CardContent>
                 <CardActions sx={{ marginTop: 'auto' }}>
                   {inProgressActivities.length > 0 ||
                   completedActivities.length > 0 ? (
                     <Button onClick={() => router.push(myActivitiesPathname())}>
-                      See My Activities
+                      {t('myProgress:seeMyActivities')}
                     </Button>
                   ) : (
                     <Button
@@ -145,7 +156,7 @@ export default function MyProgress({
                         router.push(activitiesByAuthorPathname('luce'))
                       }
                     >
-                      Explore Activities
+                      {t('myProgress:exploreActivities')}
                     </Button>
                   )}
                 </CardActions>
@@ -159,7 +170,7 @@ export default function MyProgress({
                   />
                 </CardIcon>
                 <CardHeader
-                  title='My Toolbox'
+                  title={t('common:myToolbox')}
                   slotProps={{
                     title: { align: 'center' },
                   }}
@@ -167,14 +178,16 @@ export default function MyProgress({
                 <CardContent>
                   <Typography>
                     {metadata.toolbox.length === 0
-                      ? 'Toolbox still empty.'
-                      : `${format(metadata.toolbox.length, 'function', 'functions')} in the toolbox.`}
+                      ? t('myProgress:toolboxEmpty')
+                      : t('myProgress:toolboxCount', {
+                          count: metadata.toolbox.length,
+                        })}
                   </Typography>
                 </CardContent>
                 <CardActions sx={{ marginTop: 'auto' }}>
                   {metadata.toolbox.length > 0 ? (
                     <Button onClick={() => router.push(myToolboxPathname())}>
-                      See My Toolbox
+                      {t('myProgress:seeMyToolbox')}
                     </Button>
                   ) : (
                     <Button
@@ -184,7 +197,7 @@ export default function MyProgress({
                         )
                       }
                     >
-                      Learn How to Use the Toolbox
+                      {t('myProgress:learnToolbox')}
                     </Button>
                   )}
                 </CardActions>
@@ -210,8 +223,7 @@ export default function MyProgress({
                 mr: 2,
               }}
             >
-              Do you want to export or import all your data? Review or change
-              your privacy settings?
+              {t('myProgress:dataBanner')}
             </Typography>
             <Button
               variant='outlined'
@@ -219,7 +231,10 @@ export default function MyProgress({
               href={myDataPathname()}
               sx={{ whiteSpace: 'pre-wrap' }}
             >
-              Go To <span style={{ fontWeight: 'bold' }}>My Data</span>
+              <Trans
+                i18nKey='myProgress:goToMyData'
+                components={{ strong: <span style={{ fontWeight: 'bold' }} /> }}
+              />
             </Button>
           </Alert>
         </Container>
@@ -235,7 +250,7 @@ export async function getStaticProps() {
     props: {
       activities,
       curricula,
-      ...(await translationProps()),
+      ...(await translationProps(['myProgress'])),
     },
   };
 }
