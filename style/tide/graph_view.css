@@ -102,3 +102,52 @@
 #card_selection_pane [draggable='true'] {
   transform: translateZ(0);
 }
+
+.python_view_open.MuiIconButton-root {
+  opacity: 0;
+  transition: opacity 120ms ease-in;
+}
+
+.python_view_line:hover .python_view_open.MuiIconButton-root,
+.python_view_open.MuiIconButton-root:focus-visible {
+  opacity: 0.65;
+}
+
+.python_view_open.MuiIconButton-root:hover {
+  opacity: 1;
+}
+
+.python_view_line_expression .python_view_line_code {
+  border: 1px dashed transparent;
+}
+
+.python_view_line_expression:hover .python_view_line_code,
+.python_view_line_expression:focus-within .python_view_line_code {
+  border-color: var(--mui-palette-primary-main);
+}
+
+@media (hover: none) {
+  .python_view_open.MuiIconButton-root {
+    opacity: 0.65;
+  }
+
+  .python_view_line_expression .python_view_line_code {
+    border-color: var(--mui-palette-primary-main);
+  }
+}
+
+.python_view_token[data-node-id]:hover {
+  background-color: rgba(0, 139, 203, 0.18);
+}
+
+.react-flow__node.python_view_highlight .tamaro_card {
+  filter: drop-shadow(0 0 4px #000) drop-shadow(0 0 10px rgba(0, 0, 0, 0.7));
+  /* The error glow also uses `filter`, so add an independent ring that stays
+     visible even when the two highlights are on the same card. */
+  outline: 3px solid #000;
+  outline-offset: 3px;
+}
+
+.error_text_highlight.python_view_highlight {
+  filter: drop-shadow(0 0 3px #000) drop-shadow(0 0 8px rgba(0, 0, 0, 0.8));
+}

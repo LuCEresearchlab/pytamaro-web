@@ -48,6 +48,7 @@ import edge_type, { CustomEdgeLine } from './DynamicEdge';
 import { ErrorParagraph } from './ErrorParagraph';
 import { GraphOptions } from './GraphOptions';
 import NodeContextMenu from './NodeContextMenu';
+import PythonPanel from './PythonPanel';
 import TidePalette, { JudiciousModuleElement } from './TidePalette';
 
 import '@xyflow/react/dist/style.css';
@@ -554,6 +555,7 @@ export default function Tide() {
 
         <Background bgColor={theme.palette.grey[50]} gap={15} />
       </ReactFlow>
+      <PythonPanel />
     </Paper>
   );
 }

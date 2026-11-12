@@ -14,6 +14,13 @@
     },
     "emptyState": "Per iniziare, trascina qui una carta dalla palette",
     "documentationButton": "Mostra la documentazione",
+    "pythonPanel": {
+        "title": "Codice sorgente Python",
+        "show": "Mostra il codice Python",
+        "hide": "Nascondi il codice Python",
+        "hint": "Passa sopra un token per evidenziare la carta corrispondente.",
+        "openInEvaluator": "Apri nel valutatore"
+    },
     "graphOptions": {
         "importFromFile": "Importa da un file",
         "exportToFile": "Esporta in un file",

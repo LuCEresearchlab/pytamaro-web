@@ -14,6 +14,13 @@
     },
     "emptyState": "Ziehe zum Starten eine Karte aus der Palette hierher",
     "documentationButton": "Dokumentation anzeigen",
+    "pythonPanel": {
+        "title": "Python-Quellcode",
+        "show": "Python-Code anzeigen",
+        "hide": "Python-Code ausblenden",
+        "hint": "Fahre über ein Token, um die entsprechende Karte hervorzuheben.",
+        "openInEvaluator": "Im Auswerter öffnen"
+    },
     "graphOptions": {
         "importFromFile": "Aus Datei importieren",
         "exportToFile": "In Datei exportieren",

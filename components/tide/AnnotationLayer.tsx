@@ -208,6 +208,8 @@ export function createAnnotationComponents(
     annotation.kind === 'syntax-error' &&
     annotation.subkind === 'missing_parameter' ? (
       <div
+        data-missing-parameter-node={node_id}
+        data-missing-parameter-name={param}
         style={{
           position: 'absolute',
           transform: `translate(${target_position.x - 20}px, ${target_position.y}px) translate(-100%, -50%) translateY(-1px)`,
