@@ -1,6 +1,4 @@
-import Category from '@mui/icons-material/Category';
-import Schema from '@mui/icons-material/Schema';
-import Tune from '@mui/icons-material/Tune';
+import { Category, Style, Tune } from '@mui/icons-material';
 import { ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
 import { useEffect, useState } from 'react';
 import useLocalProfile from '../../src/localStorage/useLocalProfile';
@@ -69,7 +67,7 @@ export default function ConfigButtons({ available }: { available: string[] }) {
           arrow
         >
           <ToggleButton value={key}>
-            {key === SHOW_DIAGRAM_KEY && <Schema />}
+            {key === SHOW_DIAGRAM_KEY && <Style />}
             {key === SHOW_OPTIONAL_KEY && <Tune />}
             {key === SHOW_TYPES_KEY && <Category />}
           </ToggleButton>

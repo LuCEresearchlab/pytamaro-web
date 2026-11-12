@@ -114,7 +114,7 @@ export const changelogEntries = [
   },
   {
     date: '2024-09-05',
-    icon: 'Schema',
+    icon: 'Style',
     title: 'Tamaro Cards: Version 2',
     desc: (
       <span>
