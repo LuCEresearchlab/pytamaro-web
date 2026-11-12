@@ -2,6 +2,7 @@ import Assignment from '@mui/icons-material/Assignment';
 import TipsAndUpdates from '@mui/icons-material/TipsAndUpdates';
 import { Alert } from '@mui/material';
 import { Trans } from 'react-i18next';
+import { PythonMode } from '../src/execution/codeExecution';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { PythonName } from '../src/python-analyzer/python_analyzer';
 import theme from '../src/theme';
@@ -9,9 +10,11 @@ import theme from '../src/theme';
 export function NoOutputTip({
   dimmed,
   importedNames,
+  pythonMode = PythonMode.Exec,
 }: {
   dimmed: boolean;
   importedNames: PythonName[] | undefined;
+  pythonMode?: PythonMode;
 }) {
   const { t } = useLocalTranslation();
   const showGraphicNames: Record<string, string> = {
@@ -35,7 +38,7 @@ export function NoOutputTip({
       }}
     >
       <span>{t('noOutputTip')}</span>
-      {moduleName !== undefined && (
+      {moduleName !== undefined && pythonMode !== PythonMode.EvalLastExpr && (
         <span>
           {' '}
           <Trans

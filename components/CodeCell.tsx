@@ -270,6 +270,7 @@ export default function CodeCell({
               <NoOutputTip
                 dimmed={!outputSynced}
                 importedNames={analysisResult?.imported_names}
+                pythonMode={pythonMode}
               />
             </StaleOutputBadge>
           )}
