@@ -12,8 +12,9 @@
 
 .normal.graph_view {
   position: relative;
-  height: 70vh;
-  margin: 8px;
+  height: 75vh;
+  margin-left: 8px;
+  margin-right: 8px;
 }
 
 .fullscreen.graph_view {
