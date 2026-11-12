@@ -223,12 +223,15 @@ function fileIcon(name: string, binary: boolean) {
   return isPythonFileName(name) ? PythonFileIcon : DescriptionIcon;
 }
 
+const ACTIONS_VISIBLE_ROW = ':is(:hover, :focus-visible, :has(:focus-visible))';
+
 const HOVER_ACTIONS_SX = {
   '& .tree-actions': { visibility: 'hidden' },
   '& .MuiTreeItem-label': { overflow: 'visible' },
   // Only the row itself, not the children that a folder's root contains.
-  '& > .MuiTreeItem-content:hover .tree-actions, & > .MuiTreeItem-content:focus-within .tree-actions':
-    { visibility: 'visible' },
+  [`& > .MuiTreeItem-content${ACTIONS_VISIBLE_ROW} .tree-actions`]: {
+    visibility: 'visible',
+  },
 };
 
 /** Highlights the row of the folder that files are currently dragged over. */
@@ -321,12 +324,11 @@ function RowLabel({
         paddingRight: 0.5,
         transition: animate(['padding-right']),
         // The actions are positioned absolutely. Reserve room for them only
-        // while they are shown (the row is hovered, has focus, or is open), so
-        // names can use the full width the rest of the time.
+        // while they are shown (the row is hovered, has keyboard focus, or is
+        // open), so names can use the full width the rest of the time.
         ...(hasActions && {
           ...(open && reservedSpace),
-          '.MuiTreeItem-content:hover &, .MuiTreeItem-content:focus-within &':
-            reservedSpace,
+          [`.MuiTreeItem-content${ACTIONS_VISIBLE_ROW} &`]: reservedSpace,
         }),
       }}
     >
