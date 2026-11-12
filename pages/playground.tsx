@@ -9,7 +9,6 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
-import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
 import { useContext, useEffect, useState } from 'react';
 import ActivitiesStripe from '../components/ActivitiesStripe';
@@ -17,12 +16,12 @@ import DownloadCodeButton from '../components/CodeDownloadButton';
 import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDialog';
 import MoreOptionsButton from '../components/MoreOptionsButton';
 import NavigationBar from '../components/navbar/NavigationBar';
-import ResetButton from '../components/navbar/ResetButton';
 import PageTitle from '../components/PageTitle';
 import { ShareButton } from '../components/ShareButton';
 import CentralContent from '../components/sidebar/CentralContent';
 import Sidebar from '../components/sidebar/Sidebar';
 import ToolboxListSidebar from '../components/sidebar/ToolboxListSidebar';
+import SingleCellResetButton from '../components/SingleCellResetButton';
 import SolitaryCodeCell, {
   singleCodeCell,
 } from '../components/SolitaryCodeCell';
@@ -60,37 +59,6 @@ const FullWidthAlert = styled(Alert)<AlertProps>(() => ({
     width: '100%',
   },
 }));
-
-function PlaygroundReset({
-  activityState,
-  newReset,
-}: {
-  activityState: ActivityState;
-  newReset: () => void;
-}) {
-  const { handleResetAllCellsNoConfirm, cellsModified } = activityState;
-  const confirm = useConfirm();
-  const handleReset = () => {
-    confirm({
-      description:
-        'You are about to reset the playground to its initial state: this will delete all the code you have written. This action cannot be undone! ⚠️',
-      confirmationText: 'Ok, delete my code',
-    }).then(({ confirmed }) => {
-      if (confirmed) {
-        handleResetAllCellsNoConfirm();
-        newReset();
-      }
-    });
-  };
-
-  return (
-    <ResetButton
-      enabled={cellsModified}
-      onReset={handleReset}
-      tooltip='Reset Playground'
-    />
-  );
-}
 
 function PlaygroundCodeCell({
   activityState,
@@ -241,7 +209,12 @@ export default function Playground({
       </Head>
       <Box>
         <NavigationBar>
-          <PlaygroundReset activityState={activityState} newReset={newReset} />
+          <SingleCellResetButton
+            activityState={activityState}
+            newReset={newReset}
+            subject={t('resetSingleCellSubject.playground')}
+            tooltip={t('resetPlayground')}
+          />
         </NavigationBar>
         <DataSharingPreferenceDialog />
         <Grid container>

@@ -41,7 +41,7 @@
     "deleteFileAreYouSure": "Delete file?",
     "deleteFileWarning": "Are you sure you want to delete {{name}}? This cannot be undone.",
     "resetIde": "Reset IDE",
-    "resetIdeWarning": "You are about to reset the IDE to its initial state: this will delete all the files and code you have written. This action cannot be undone! ⚠️",
+    "resetIdeWarning": "You are about to reset the IDE to its initial state: this will delete all the files and code you have written. $t(common:resetCannotBeUndone)",
     "resetIdeConfirm": "OK, delete my files",
     "ideLibraries": {
         "button": "Libraries",

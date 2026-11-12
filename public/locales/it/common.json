@@ -41,8 +41,16 @@
     "contents": "Contenuto",
     "resetActivity": "Reset Attività",
     "resetAreYouSure": "Sei sicuro/a?",
-    "resetActivityWarning": "Stai per resettare l'intera attività, incluso tutto il codice che hai scritto. Questa azione non può essere annullata! ⚠️",
+    "resetCannotBeUndone": "Questa azione non può essere annullata! ⚠️",
+    "resetActivityWarning": "Stai per resettare l'intera attività, incluso tutto il codice che hai scritto. $t(resetCannotBeUndone)",
     "resetActivityConfirm": "OK, cancella il mio codice",
+    "resetEvaluator": "Reset Valutatore",
+    "resetPlayground": "Reset Playground",
+    "resetSingleCellWarning": "Stai per resettare {{subject}}: verrà eliminato tutto il codice che hai scritto. $t(resetCannotBeUndone)",
+    "resetSingleCellSubject": {
+        "evaluator": "il valutatore",
+        "playground": "il playground"
+    },
     "confirmCancel": "Annulla",
     "dataSharing": {
         "title": "Aiutaci a fare ricerca!",

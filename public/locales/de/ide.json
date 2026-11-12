@@ -41,7 +41,7 @@
     "deleteFileAreYouSure": "Datei löschen?",
     "deleteFileWarning": "Möchtest du {{name}} wirklich löschen? Dies kann nicht rückgängig gemacht werden.",
     "resetIde": "IDE zurücksetzen",
-    "resetIdeWarning": "Du bist dabei, die IDE auf ihren Ausgangszustand zurückzusetzen: Dabei werden alle Dateien und der gesamte von Dir geschriebene Code gelöscht. Diese Aktion kann nicht rückgängig gemacht werden! ⚠️",
+    "resetIdeWarning": "Du bist dabei, die IDE auf ihren Ausgangszustand zurückzusetzen: Dabei werden alle Dateien und der gesamte von Dir geschriebene Code gelöscht. $t(common:resetCannotBeUndone)",
     "resetIdeConfirm": "OK, meine Dateien löschen",
     "ideLibraries": {
         "button": "Bibliotheken",

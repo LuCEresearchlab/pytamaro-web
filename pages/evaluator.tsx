@@ -1,7 +1,6 @@
 import { Box, Container } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Head from 'next/head';
-import ActivityResetButton from '../components/ActivityResetButton';
 import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDialog';
 import NavigationBar from '../components/navbar/NavigationBar';
 import PageTitle from '../components/PageTitle';
@@ -10,6 +9,7 @@ import { ShareButton } from '../components/ShareButton';
 import CentralContent from '../components/sidebar/CentralContent';
 import Sidebar from '../components/sidebar/Sidebar';
 import ToolboxListSidebar from '../components/sidebar/ToolboxListSidebar';
+import SingleCellResetButton from '../components/SingleCellResetButton';
 import { emptySingleCell } from '../components/SolitaryCodeCell';
 import {
   urlWithCompressedCode,
@@ -47,10 +47,11 @@ export default function EvaluatorPage() {
       </Head>
       <Box>
         <NavigationBar>
-          <ActivityResetButton
+          <SingleCellResetButton
             activityState={activity}
-            activityVariant={evaluatorActivityVariant}
             newReset={newReset}
+            subject={t('resetSingleCellSubject.evaluator')}
+            tooltip={t('resetEvaluator')}
           />
         </NavigationBar>
         <DataSharingPreferenceDialog />

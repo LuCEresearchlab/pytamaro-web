@@ -41,7 +41,7 @@
     "deleteFileAreYouSure": "Supprimer le fichier ?",
     "deleteFileWarning": "Voulez-vous vraiment supprimer {{name}} ? Cette action est irréversible.",
     "resetIde": "Réinitialiser l'IDE",
-    "resetIdeWarning": "Vous êtes sur le point de réinitialiser l'IDE à son état initial : cela supprimera tous les fichiers et tout le code que vous avez écrit. Cette action ne peut pas être annulée ! ⚠️",
+    "resetIdeWarning": "Vous êtes sur le point de réinitialiser l'IDE à son état initial : cela supprimera tous les fichiers et tout le code que vous avez écrit. $t(common:resetCannotBeUndone)",
     "resetIdeConfirm": "OK, supprimer mes fichiers",
     "ideLibraries": {
         "button": "Bibliothèques",

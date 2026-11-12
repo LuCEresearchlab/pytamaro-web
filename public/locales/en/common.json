@@ -41,8 +41,16 @@
     "contents": "Contents",
     "resetActivity": "Reset Activity",
     "resetAreYouSure": "Are you sure?",
-    "resetActivityWarning": "You are about to reset the entire activity, including all the code you have written. This action cannot be undone! ⚠️",
+    "resetCannotBeUndone": "This action cannot be undone! ⚠️",
+    "resetActivityWarning": "You are about to reset the entire activity, including all the code you have written. $t(resetCannotBeUndone)",
     "resetActivityConfirm": "OK, delete my code",
+    "resetEvaluator": "Reset Evaluator",
+    "resetPlayground": "Reset Playground",
+    "resetSingleCellWarning": "You are about to reset {{subject}}: this will delete all the code you have written. $t(resetCannotBeUndone)",
+    "resetSingleCellSubject": {
+        "evaluator": "the evaluator",
+        "playground": "the playground"
+    },
     "confirmCancel": "Cancel",
     "dataSharing": {
         "title": "Help us do research!",

@@ -41,7 +41,7 @@
     "deleteFileAreYouSure": "Eliminare il file?",
     "deleteFileWarning": "Vuoi davvero eliminare {{name}}? Questa azione non può essere annullata.",
     "resetIde": "Reset IDE",
-    "resetIdeWarning": "Stai per resettare l'IDE allo stato iniziale: verranno eliminati tutti i file e tutto il codice che hai scritto. Questa azione non può essere annullata! ⚠️",
+    "resetIdeWarning": "Stai per resettare l'IDE allo stato iniziale: verranno eliminati tutti i file e tutto il codice che hai scritto. $t(common:resetCannotBeUndone)",
     "resetIdeConfirm": "OK, cancella i miei file",
     "ideLibraries": {
         "button": "Librerie",

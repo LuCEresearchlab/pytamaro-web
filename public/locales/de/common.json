@@ -41,8 +41,16 @@
     "contents": "Inhalt",
     "resetActivity": "Aktivität zurücksetzen",
     "resetAreYouSure": "Bist Du sicher?",
-    "resetActivityWarning": "Du bist dabei, die gesamte Aktivität zurückzusetzen, einschließlich des gesamten von Dir geschriebenen Codes. Diese Aktion kann nicht rückgängig gemacht werden! ⚠️",
+    "resetCannotBeUndone": "Diese Aktion kann nicht rückgängig gemacht werden! ⚠️",
+    "resetActivityWarning": "Du bist dabei, die gesamte Aktivität zurückzusetzen, einschließlich des gesamten von Dir geschriebenen Codes. $t(resetCannotBeUndone)",
     "resetActivityConfirm": "OK, ich will meinen Code löschen",
+    "resetEvaluator": "Auswerter zurücksetzen",
+    "resetPlayground": "Playground zurücksetzen",
+    "resetSingleCellWarning": "Du bist dabei, {{subject}} zurückzusetzen: Dabei wird der gesamte von Dir geschriebene Code gelöscht. $t(resetCannotBeUndone)",
+    "resetSingleCellSubject": {
+        "evaluator": "den Auswerter",
+        "playground": "den Playground"
+    },
     "confirmCancel": "Abbrechen",
     "dataSharing": {
         "title": "Hilf uns bei der Forschung!",
