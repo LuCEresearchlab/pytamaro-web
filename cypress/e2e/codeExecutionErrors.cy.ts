@@ -20,7 +20,7 @@ describe('Code Execution Errors', () => {
       .should('be.visible')
       .contains('Name');
     cy.get('.squiggly-error').should('be.visible');
-    cy.get('[data-testid="output-area"]').should('not.exist');
+    cy.get('[data-testid="output-area"]').should('be.empty');
     cy.get('[data-testid="stderr"]').should('be.visible').contains('NameError');
   });
 
