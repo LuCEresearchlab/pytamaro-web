@@ -6,6 +6,12 @@ export function waitForMonacoEditor() {
   cy.get('.monaco-editor').should('be.visible');
 }
 
+export function enableSemanticChecks() {
+  cy.get('.platform-settings').click();
+  cy.get('button').contains('Semantics').click();
+  cy.get('.platform-settings').click();
+}
+
 export function clearMonacoCode({
   index = 0,
   selector = '.monaco-editor',

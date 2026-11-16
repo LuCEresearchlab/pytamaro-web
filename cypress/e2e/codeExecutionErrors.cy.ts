@@ -5,6 +5,7 @@ import {
 
 import {
   dismissDataCollectionModal,
+  enableSemanticChecks,
   typeMonacoCode,
   waitForMonacoEditor,
 } from '../support/utils';
@@ -49,9 +50,7 @@ describe('Code Execution Errors', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();
-    cy.get('.platform-settings').click();
-    cy.get('button').contains('Semantics').click();
-    cy.get('.platform-settings').click();
+    enableSemanticChecks();
     typeMonacoCode('print(a)');
     cy.get('.squiggly-error').should('be.visible');
     cy.get('.monaco-editor-overlaymessage').should('not.exist');
@@ -73,9 +72,7 @@ describe('Code Execution Errors', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();
-    cy.get('.platform-settings').click();
-    cy.get('button').contains('Semantics').click();
-    cy.get('.platform-settings').click();
+    enableSemanticChecks();
     typeMonacoCode('1 + "a"');
     cy.get('.squiggly-error').should('be.visible');
     cy.get('.monaco-editor-overlaymessage').should('not.exist');
@@ -139,6 +136,48 @@ describe('Code Execution Errors', () => {
     cy.get('.run-button').first().click();
     cy.get('[data-testid="output-area"]').should('contain.text', 'out');
     cy.get('[data-testid="stderr"]').should('contain.text', 'err');
+  });
+
+  it('should analyze errors across cells, show a confirmation dialog, and attach runtime errors to the right cell', () => {
+    cy.visit(
+      activityVariantPathnameFromParts('luce', 'swiss-flag', 'en', 'v1'),
+    );
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    enableSemanticChecks();
+    typeMonacoCode('a = 1\nb = 2\nc = 3');
+    typeMonacoCode('print(zzz)', { index: 1 });
+    // The static diagnostic is only in the second cell.
+    cy.get('.monaco-editor').eq(0).find('.squiggly-error').should('not.exist');
+    cy.get('.monaco-editor')
+      .eq(1)
+      .find('.squiggly-error.analyzer-diagnostic')
+      .should('be.visible');
+    // Running a cell with errors asks for confirmation.
+    cy.get('.run-button').eq(1).click();
+    cy.contains('button', 'Run Program Anyway').should('be.visible').click();
+    // The runtime error widget is anchored to the second cell.
+    cy.get('.monaco-editor')
+      .eq(1)
+      .find('.monaco-editor-overlaymessage')
+      .should('be.visible')
+      .and('contain.text', 'Name');
+    // The runtime decoration must be on the second cell only.
+    cy.get('.monaco-editor')
+      .eq(1)
+      .find('.traceback-message')
+      .should('be.visible');
+    cy.get('.monaco-editor')
+      .eq(0)
+      .find('.monaco-editor-overlaymessage')
+      .should('not.exist');
+    // Defining the missing name in the first cell re-analyzes the second one,
+    // so its squiggle disappears automatically.
+    typeMonacoCode('zzz = 1', { index: 0 });
+    cy.get('.monaco-editor')
+      .eq(1)
+      .find('.squiggly-error.analyzer-diagnostic')
+      .should('not.exist');
   });
 
   it('should show the error when a cell calls a function from a previous cell that has an error', () => {
