@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { ProgramState } from '.';
 import { TamaroCard } from '../cards';
 import {
@@ -123,19 +122,18 @@ export default function code_created_phase<U, Tlocal, Timport>(
   ): TamaroCard<U, 'code_created'> {
     switch (exp.kind) {
       case 'function_use': {
-        const children = new Map(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (exp.children as any)
-            .entries()
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .map(([k, v]: any) => [k, expression_phase(v)]),
-        ) as Map<string, TamaroCard<U, 'code_created'>>;
+        const children = new Map<string, TamaroCard<U, 'code_created'>>(
+          Array.from(
+            exp.children,
+            ([k, v]): [string, TamaroCard<U, 'code_created'>] => [
+              k,
+              expression_phase(v),
+            ],
+          ),
+        );
 
         if ('error_phase' in exp) return { ...exp, children };
-        if (
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (children.values() as any).find((v: any) => 'error_phase' in v) as any
-        ) {
+        if (Array.from(children.values()).find((v) => 'error_phase' in v)) {
           throw new Error('Error should have been recorded previously');
         }
 

@@ -108,8 +108,7 @@ export default function type_checked_phase<U, Tlocal, Timport>(
 
         if ('error_phase' in exp) return { ...exp, children };
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if ((children.values() as any).find((v: any) => 'error_phase' in v)) {
+        if (Array.from(children.values()).find((v) => 'error_phase' in v)) {
           return {
             ...exp,
             children,
@@ -136,14 +135,15 @@ export default function type_checked_phase<U, Tlocal, Timport>(
         );
 
         const type_checked = Array.from(
-          parameters.keys().map((v): [ValueType, ValueType, string] => {
+          parameters.keys(),
+          (v): [ValueType, ValueType, string] => {
             const child_type = children.get(v)?.type;
             return [
               parameters.get(v)!,
               child_type != null ? child_type : false,
               v,
             ];
-          }),
+          },
         );
 
         const type_mismatch = type_checked.filter(

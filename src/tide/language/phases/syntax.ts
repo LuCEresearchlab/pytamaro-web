@@ -83,10 +83,9 @@ function dependencies_extraction<T>(
   if ('error_phase' in value) return [];
   switch (value.kind) {
     case 'function_use':
-      return value.children
-        .values()
-        .map(dependencies_extraction)
-        .toArray()
+      return Array.from(value.children.values(), (v) =>
+        dependencies_extraction(v),
+      )
         .flat()
         .concat(value.module === undefined ? [value.function_name] : []);
     case 'constant_use':
@@ -144,8 +143,14 @@ export default function syntax_checked_phase<U, TLocal, Timported>(
   ): TamaroCard<U, 'syntax_checked'> {
     switch (exp.kind) {
       case 'function_use': {
-        const children = new Map(
-          exp.children.entries().map(([k, v]) => [k, expression_phase(v)]),
+        const children = new Map<string, TamaroCard<U, 'syntax_checked'>>(
+          Array.from(
+            exp.children,
+            ([k, v]): [string, TamaroCard<U, 'syntax_checked'>] => [
+              k,
+              expression_phase(v),
+            ],
+          ),
         );
 
         if (!check_identifier_name(exp.function_name)) {
@@ -160,7 +165,7 @@ export default function syntax_checked_phase<U, TLocal, Timported>(
             },
           };
         }
-        if (children.values().find((v) => 'error_phase' in v)) {
+        if (Array.from(children.values()).find((v) => 'error_phase' in v)) {
           return {
             ...exp,
             children,

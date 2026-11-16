@@ -250,25 +250,24 @@ export default async function evaluated_phase<U, Tlocal, Timport>(
   ): Promise<TamaroCard<U, 'evaluated'>> {
     switch (exp.kind) {
       case 'function_use': {
-        const children = new Map(
+        const children = new Map<string, TamaroCard<U, 'evaluated'>>(
           await Promise.all(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (exp.children as any)
-              .entries()
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              .map(async ([k, v]: any) => [k, await expression_phase(v)]),
+            Array.from(
+              exp.children,
+              async ([k, v]): Promise<[string, TamaroCard<U, 'evaluated'>]> => [
+                k,
+                await expression_phase(v),
+              ],
+            ),
           ),
-        ) as Map<string, TamaroCard<U, 'evaluated'>>;
+        );
         if ('error_phase' in exp) return { ...exp, children };
 
         // Children errors can be introduced by this phase itself (a runtime
         // error in an argument, for example), so the invariant used by the
         // earlier phases does not hold here. Mark the card as a secondary
         // error instead of throwing: the child holds the actual error.
-        if (
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (children.values() as any).find((v: any) => 'error_phase' in v) as any
-        ) {
+        if (Array.from(children.values()).find((v) => 'error_phase' in v)) {
           return {
             ...exp,
             children,

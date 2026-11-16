@@ -182,13 +182,19 @@ export default function name_checked_phase<U, Tlocal, Timported>(
   ): TamaroCard<U, 'name_checked'> {
     switch (exp.kind) {
       case 'function_use': {
-        const children = new Map(
-          exp.children.entries().map(([k, v]) => [k, expression_phase(v)]),
+        const children = new Map<string, TamaroCard<U, 'name_checked'>>(
+          Array.from(
+            exp.children,
+            ([k, v]): [string, TamaroCard<U, 'name_checked'>] => [
+              k,
+              expression_phase(v),
+            ],
+          ),
         );
 
         if ('error_phase' in exp) return { ...exp, children };
 
-        if (children.values().find((v) => 'error_phase' in v)) {
+        if (Array.from(children.values()).find((v) => 'error_phase' in v)) {
           return {
             ...exp,
             children,

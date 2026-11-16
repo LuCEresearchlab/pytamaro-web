@@ -10,16 +10,11 @@ function dependencies_extraction<T>(
   if ('error_phase' in value) return [];
   switch (value.kind) {
     case 'function_use':
-      return (
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (value.children as any)
-          .values()
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .map((v: any) => (dependencies_extraction as any)(v) as string[])
-          .toArray()
-          .flat()
-          .concat(value.location)
-      );
+      return Array.from(value.children.values(), (v) =>
+        dependencies_extraction(v),
+      )
+        .flat()
+        .concat(value.location);
     case 'constant_use':
       return [value.location];
     case 'literal':
@@ -124,19 +119,18 @@ export default function code_element_phase<U, Tlocal, Timport>(
   ): TamaroCard<U, 'code_element'> {
     switch (exp.kind) {
       case 'function_use': {
-        const children = new Map(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (exp.children as any)
-            .entries()
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .map(([k, v]: any) => [k, expression_phase(v)]),
-        ) as Map<string, TamaroCard<U, 'code_element'>>;
+        const children = new Map<string, TamaroCard<U, 'code_element'>>(
+          Array.from(
+            exp.children,
+            ([k, v]): [string, TamaroCard<U, 'code_element'>] => [
+              k,
+              expression_phase(v),
+            ],
+          ),
+        );
 
         if ('error_phase' in exp) return { ...exp, children };
-        if (
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (children.values() as any).find((v: any) => 'error_phase' in v) as any
-        ) {
+        if (Array.from(children.values()).find((v) => 'error_phase' in v)) {
           throw new Error('Error should have been recorded previously');
         }
 
