@@ -50,6 +50,7 @@ export default function ActivityResetButton({
       enabled={cellsModified || metadataModified}
       onReset={handleGlobalReset}
       tooltip={t('resetActivity')}
+      testId='reset-activity'
     />
   );
 }
