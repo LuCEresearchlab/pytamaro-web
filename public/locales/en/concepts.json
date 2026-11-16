@@ -1,0 +1,66 @@
+{
+    "basic_comp": {
+        "title": "Basic Composition",
+        "description": "Using shapes and composing them in an elementary way"
+    },
+    "pin": {
+        "title": "Pin",
+        "description": "Using pinning positions to compose shapes"
+    },
+    "gap": {
+        "title": "Gap",
+        "description": "Using gaps to separate graphics"
+    },
+    "color_model": {
+        "title": "Color Model",
+        "description": "Producing colors using a color model (RGB/HSV/HSL)"
+    },
+    "fun_def": {
+        "title": "Function Definition",
+        "description": "Defining functions"
+    },
+    "list": {
+        "title": "List",
+        "description": "Using lists"
+    },
+    "cond": {
+        "title": "Conditional",
+        "description": "Using conditional computation (if/else statement or expression)"
+    },
+    "loop": {
+        "title": "Loop",
+        "description": "Using loops (for/while) to repeat computation"
+    },
+    "comprehension": {
+        "title": "Comprehension",
+        "description": "Using comprehensions to repeat computation"
+    },
+    "recursion": {
+        "title": "Recursion",
+        "description": "Using recursive computation"
+    },
+    "dict": {
+        "title": "Dictionary",
+        "description": "Using dictionaries"
+    },
+    "set": {
+        "title": "Set",
+        "description": "Using sets"
+    },
+    "tuple": {
+        "title": "Tuple",
+        "description": "Using tuples"
+    },
+    "dataclass": {
+        "title": "Data Class",
+        "description": "Using data classes"
+    },
+    "hof": {
+        "title": "Higher-Order Function",
+        "description": "Using higher order functions"
+    },
+    "toolbox": {
+        "title": "Toolbox",
+        "description": "Reusing code with the toolbox module"
+    }
+}

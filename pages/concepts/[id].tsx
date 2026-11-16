@@ -4,19 +4,27 @@ import ActivitiesGallery from '../../components/ActivitiesGallery';
 import NavigationBar from '../../components/navbar/NavigationBar';
 import { visibleActivities } from '../../src/fs-content/activities';
 import { listActivitiesAllAuthors } from '../../src/fs-content/authors';
+import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
 import { Concept, knownConcepts } from '../../src/schemas/activityConcepts';
 import { BasicActivity } from '../../src/schemas/activitySchema';
 import { translationProps } from '../../src/serverSideTranslationProps';
 import { conceptPathname } from '../../src/urlUtils';
 
 export default function ConceptPage({
+  id,
   concept,
   activities,
 }: {
+  id: string;
   concept: Concept;
   activities: BasicActivity[];
 }) {
-  const pageTitle = `${concept.title} - PyTamaro`;
+  const { t } = useLocalTranslation(['concepts']);
+  const title = t(`${id}.title`, { defaultValue: concept.title });
+  const description = t(`${id}.description`, {
+    defaultValue: concept.description,
+  });
+  const pageTitle = `${title} - PyTamaro`;
 
   return (
     <div>
@@ -33,7 +41,7 @@ export default function ConceptPage({
               marginY: 3,
             }}
           >
-            {concept.title}
+            {title}
           </Typography>
           <Typography
             variant='h6'
@@ -41,7 +49,7 @@ export default function ConceptPage({
               marginY: 3,
             }}
           >
-            {concept.description}
+            {description}
           </Typography>
           <Divider sx={{ my: 3 }} />
         </Container>
@@ -57,11 +65,12 @@ export async function getStaticProps(context: { params: { id: string } }) {
   const { id } = context.params;
   return {
     props: {
+      id,
       concept: knownConcepts[id],
       activities: visibleActivities(await listActivitiesAllAuthors()).filter(
         (activity) => activity.concepts.includes(id),
       ),
-      ...(await translationProps()),
+      ...(await translationProps(['concepts'])),
     },
   };
 }

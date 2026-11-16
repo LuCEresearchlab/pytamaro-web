@@ -102,7 +102,7 @@ export async function getStaticProps(context: {
       authorProfile: await getAuthorProfile(authorSlug),
       curricula: visibleCurricula(content.curricula),
       activities: visibleActivities(content.activities),
-      ...(await translationProps()),
+      ...(await translationProps(['concepts'])),
     },
   };
 }

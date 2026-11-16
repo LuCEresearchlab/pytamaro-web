@@ -25,9 +25,8 @@ import {
   listAuthorsWithContent,
   listCurriculaAllAuthors,
 } from '../../../../src/fs-content/authors';
-import getLanguageDisplayName, {
-  format,
-} from '../../../../src/internationalization';
+import getLanguageDisplayName from '../../../../src/internationalization';
+import useLocalTranslation from '../../../../src/localStorage/useLocalTranslation';
 import {
   Activity,
   BasicActivity,
@@ -54,6 +53,7 @@ export default function ActivityInfoPage({
   author: AuthorProfile;
   includingCurricula: Curriculum[];
 }) {
+  const { t } = useLocalTranslation(['activity']);
   const title = activity.slug;
   const pageTitle = `${title} - PyTamaro`;
 
@@ -91,7 +91,7 @@ export default function ActivityInfoPage({
                 activity.slug,
                 activity.previewImage.filename,
               )}
-              alt='Activity Image'
+              alt={t('activityImageAlt')}
               style={{
                 padding: '1rem',
                 objectFit: 'contain',
@@ -105,7 +105,7 @@ export default function ActivityInfoPage({
               marginBottom: 2,
             }}
           >
-            Author & License
+            {t('authorLicense')}
           </Typography>
           <ActivityAuthorInfo
             type='activity'
@@ -121,7 +121,7 @@ export default function ActivityInfoPage({
                   marginBottom: 2,
                 }}
               >
-                Concepts
+                {t('concepts')}
               </Typography>
               <ActivityConcepts concepts={activity.concepts} />
             </>
@@ -133,19 +133,17 @@ export default function ActivityInfoPage({
               marginBottom: 2,
             }}
           >
-            Languages
+            {t('languages')}
           </Typography>
           <Typography variant='body1'>
-            {`This activity is ${
-              activity.visibility === 'draft'
-                ? 'under development'
-                : 'available'
-            } in the following languages:`}
+            {activity.visibility === 'draft'
+              ? t('underDevelopmentInLanguages')
+              : t('availableInLanguages')}
           </Typography>
           <ul>
             {activity.languagesInfo.map((info) => (
               <li key={info.language}>
-                {activity.visibility !== 'draft' && (
+                {activity.visibility !== 'draft' ? (
                   <Link
                     href={activityVariantPathnameFromParts(
                       activity.authorSlug,
@@ -156,13 +154,15 @@ export default function ActivityInfoPage({
                   >
                     {info.title}
                   </Link>
+                ) : (
+                  <span>{info.title}</span>
                 )}
-                {activity.visibility === 'draft' && (
-                  <span>
-                    {info.title} ({getLanguageDisplayName(info.language)},
-                    latest version: {info.latestVersion})
-                  </span>
-                )}
+                <span>
+                  {` ${t('languageAndVersion', {
+                    language: getLanguageDisplayName(info.language),
+                    version: info.latestVersion,
+                  })}`}
+                </span>
               </li>
             ))}
           </ul>
@@ -175,7 +175,7 @@ export default function ActivityInfoPage({
                   marginBottom: 2,
                 }}
               >
-                Curricula
+                {t('curricula')}
               </Typography>
               <Typography
                 variant='body1'
@@ -183,7 +183,9 @@ export default function ActivityInfoPage({
                   marginBottom: 2,
                 }}
               >
-                {`${format(includingCurricula.length, 'curriculum includes', 'curricula include')} this activity:`}
+                {t('curriculaIncludingActivity', {
+                  count: includingCurricula.length,
+                })}
               </Typography>
               <CurriculaList curricula={includingCurricula} />
             </>
@@ -197,7 +199,7 @@ export default function ActivityInfoPage({
                   marginBottom: 2,
                 }}
               >
-                Uses
+                {t('uses')}
               </Typography>
               <Typography
                 variant='body1'
@@ -205,7 +207,7 @@ export default function ActivityInfoPage({
                   marginBottom: 3,
                 }}
               >
-                {`This activity has been used in ${format(visibleUses.length, 'course', 'courses')}:`}
+                {t('usedInCourses', { count: visibleUses.length })}
               </Typography>
               <Stack spacing={2}>
                 {visibleUses.map((use, idx) => (
@@ -233,12 +235,14 @@ export default function ActivityInfoPage({
                         {use.assignment}
                       </Typography>
                       <Typography variant='body2'>
-                        Instructors: {use.instructors.join(', ')}
+                        {t('instructors', {
+                          instructors: use.instructors.join(', '),
+                        })}
                       </Typography>
                     </CardContent>
                     <CardActions>
                       <Button href={use.url} target='_blank' size='small'>
-                        View Course
+                        {t('viewCourse')}
                       </Button>
                     </CardActions>
                   </Card>
@@ -275,7 +279,7 @@ export async function getStaticProps(context: {
       uses: activity.uses,
       derivedFrom: activity.derivedFrom,
       includingCurricula,
-      ...(await translationProps()),
+      ...(await translationProps(['activity', 'concepts'])),
     },
   };
 }

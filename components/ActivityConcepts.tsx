@@ -1,6 +1,7 @@
 import { Chip, Stack, Tooltip } from '@mui/material';
 import { Dictionary, sortBy } from 'lodash';
 import { useRouter } from 'next/router';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { knownConcepts } from '../src/schemas/activityConcepts';
 import { conceptPathname } from '../src/urlUtils';
 
@@ -14,6 +15,7 @@ export default function ActivityConcepts({
   small?: boolean;
 }) {
   const router = useRouter();
+  const { t } = useLocalTranslation(['concepts']);
   // Keep only known concepts
   const validConcepts = concepts.filter((concept) => concept in knownConcepts);
 
@@ -32,12 +34,20 @@ export default function ActivityConcepts({
       }}
     >
       {sortedConcepts.map((concept) => (
-        <Tooltip key={concept} title={knownConcepts[concept].description} arrow>
+        <Tooltip
+          key={concept}
+          title={t(`${concept}.description`, {
+            defaultValue: knownConcepts[concept].description,
+          })}
+          arrow
+        >
           <Chip
             size={small ? 'small' : 'medium'}
             variant={small ? 'outlined' : 'filled'}
             color='primary'
-            label={knownConcepts[concept].title}
+            label={t(`${concept}.title`, {
+              defaultValue: knownConcepts[concept].title,
+            })}
             onClick={() => {
               router.push(conceptPathname(concept));
             }}

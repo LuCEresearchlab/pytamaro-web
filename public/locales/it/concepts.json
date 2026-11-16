@@ -1,0 +1,66 @@
+{
+    "basic_comp": {
+        "title": "Composizione di base",
+        "description": "Usare forme e comporle in modo elementare"
+    },
+    "pin": {
+        "title": "Pin",
+        "description": "Usare le posizioni di pinning per comporre forme"
+    },
+    "gap": {
+        "title": "Gap",
+        "description": "Usare i gap per separare le grafiche"
+    },
+    "color_model": {
+        "title": "Modello di colore",
+        "description": "Produrre colori usando un modello di colore (RGB/HSV/HSL)"
+    },
+    "fun_def": {
+        "title": "Definizione di funzione",
+        "description": "Definire funzioni"
+    },
+    "list": {
+        "title": "Lista",
+        "description": "Usare le liste"
+    },
+    "cond": {
+        "title": "Condizionale",
+        "description": "Usare la computazione condizionale (statement o espressione if/else)"
+    },
+    "loop": {
+        "title": "Ciclo",
+        "description": "Usare i cicli (for/while) per ripetere la computazione"
+    },
+    "comprehension": {
+        "title": "List comprehension",
+        "description": "Usare le list comprehension per ripetere la computazione"
+    },
+    "recursion": {
+        "title": "Ricorsione",
+        "description": "Usare la computazione ricorsiva"
+    },
+    "dict": {
+        "title": "Dizionario",
+        "description": "Usare i dizionari"
+    },
+    "set": {
+        "title": "Insieme",
+        "description": "Usare gli insiemi"
+    },
+    "tuple": {
+        "title": "Tupla",
+        "description": "Usare le tuple"
+    },
+    "dataclass": {
+        "title": "Data class",
+        "description": "Usare le data class"
+    },
+    "hof": {
+        "title": "Funzione di ordine superiore",
+        "description": "Usare funzioni di ordine superiore"
+    },
+    "toolbox": {
+        "title": "Toolbox",
+        "description": "Riutilizzare il codice con il modulo toolbox"
+    }
+}

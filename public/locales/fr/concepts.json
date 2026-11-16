@@ -1,0 +1,66 @@
+{
+    "basic_comp": {
+        "title": "Composition de base",
+        "description": "Utiliser des formes et les composer de manière élémentaire"
+    },
+    "pin": {
+        "title": "Pin",
+        "description": "Utiliser des positions d'épinglage pour composer des formes"
+    },
+    "gap": {
+        "title": "Gap",
+        "description": "Utiliser des gaps pour séparer des graphiques"
+    },
+    "color_model": {
+        "title": "Modèle de couleur",
+        "description": "Produire des couleurs avec un modèle de couleur (RGB/HSV/HSL)"
+    },
+    "fun_def": {
+        "title": "Définition de fonction",
+        "description": "Définir des fonctions"
+    },
+    "list": {
+        "title": "Liste",
+        "description": "Utiliser des listes"
+    },
+    "cond": {
+        "title": "Conditionnel",
+        "description": "Utiliser un calcul conditionnel (instruction ou expression if/else)"
+    },
+    "loop": {
+        "title": "Boucle",
+        "description": "Utiliser des boucles (for/while) pour répéter un calcul"
+    },
+    "comprehension": {
+        "title": "Compréhension de liste",
+        "description": "Utiliser des compréhensions pour répéter un calcul"
+    },
+    "recursion": {
+        "title": "Récursion",
+        "description": "Utiliser un calcul récursif"
+    },
+    "dict": {
+        "title": "Dictionnaire",
+        "description": "Utiliser des dictionnaires"
+    },
+    "set": {
+        "title": "Ensemble",
+        "description": "Utiliser des ensembles"
+    },
+    "tuple": {
+        "title": "Tuple",
+        "description": "Utiliser des tuples"
+    },
+    "dataclass": {
+        "title": "Data Class",
+        "description": "Utiliser des data classes"
+    },
+    "hof": {
+        "title": "Fonction d'ordre supérieur",
+        "description": "Utiliser des fonctions d'ordre supérieur"
+    },
+    "toolbox": {
+        "title": "Toolbox",
+        "description": "Réutiliser du code avec le module toolbox"
+    }
+}

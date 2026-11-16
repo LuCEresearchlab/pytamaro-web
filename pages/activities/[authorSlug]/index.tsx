@@ -15,9 +15,8 @@ import {
   listActivitiesAllAuthors,
   listAuthorsProfiles,
 } from '../../../src/fs-content/authors';
-import capitalizedLocalizedLanguageDisplayName, {
-  format,
-} from '../../../src/internationalization';
+import capitalizedLocalizedLanguageDisplayName from '../../../src/internationalization';
+import useLocalTranslation from '../../../src/localStorage/useLocalTranslation';
 import { knownConcepts } from '../../../src/schemas/activityConcepts';
 import { BasicActivity } from '../../../src/schemas/activitySchema';
 import { AuthorProfile } from '../../../src/schemas/authorSchema';
@@ -38,6 +37,7 @@ export default function ActivitiesPage({
   activities: BasicActivity[];
   authorsProfiles: AuthorProfile[];
 }) {
+  const { t, i18n } = useLocalTranslation(['activity', 'concepts']);
   const authorOptions = authorsProfiles.map((author) => ({
     id: author.slug,
     label: author.name,
@@ -48,12 +48,14 @@ export default function ActivitiesPage({
   const conceptsFrequency = countBy(activities.flatMap((a) => a.concepts));
   const conceptsOptions = orderBy(
     Object.keys(knownConcepts),
-    (t) => conceptsFrequency[t],
+    (conceptId) => conceptsFrequency[conceptId],
     ['desc'],
-  ).map((concepts) => ({
-    id: concepts,
-    label: knownConcepts[concepts].title,
-    url: conceptPathname(concepts),
+  ).map((conceptId) => ({
+    id: conceptId,
+    label: t(`concepts:${conceptId}.title`, {
+      defaultValue: knownConcepts[conceptId].title,
+    }),
+    url: conceptPathname(conceptId),
   }));
 
   // Find languages used in any activity
@@ -79,7 +81,13 @@ export default function ActivitiesPage({
     Object.keys(knownConcepts),
   );
   const [compactView, setCompactView] = useState<CompactMode>('normal');
-  const [initialConcepts, setInitialConcepts] = useState(conceptsOptions);
+  const [selectedConceptIds, setSelectedConceptIds] = useState<string[]>(
+    Object.keys(knownConcepts),
+  );
+  const [conceptsFilterVersion, setConceptsFilterVersion] = useState(0);
+  const initialConcepts = conceptsOptions.filter((option) =>
+    selectedConceptIds.includes(option.id),
+  );
 
   useEffect(() => {
     setFilteredActivities(
@@ -104,7 +112,11 @@ export default function ActivitiesPage({
     <Stack spacing={2}>
       <NavigationBar>
         <NavBarButton
-          label={`Switch to ${compactView === 'normal' ? 'compact' : 'normal'} view`}
+          label={
+            compactView === 'normal'
+              ? t('switchToCompactView')
+              : t('switchToNormalView')
+          }
           onClick={(ev: React.MouseEvent<HTMLElement, MouseEvent>) => {
             setCompactView((current) => {
               if (current === 'normal') {
@@ -124,19 +136,22 @@ export default function ActivitiesPage({
       <Grid container spacing={2} sx={{ padding: 1 }}>
         <Grid size={{ xs: 12, lg: 6 }}>
           <SelectAll
-            key={Object.keys(initialConcepts).join()}
-            title='Concepts'
-            placeholder='Concept'
+            key={`${i18n.language}-${conceptsFilterVersion}`}
+            title={t('concepts')}
+            placeholder={t('concept')}
             options={conceptsOptions}
             initialSelection={initialConcepts}
-            onSelectionChange={setAllowedConcepts}
+            onSelectionChange={(selection) => {
+              setAllowedConcepts(selection);
+              setSelectedConceptIds(selection);
+            }}
             maxTagsShown={5}
           />
         </Grid>
         <Grid size={{ xs: 12, lg: 3 }}>
           <SelectAll
-            title='Authors'
-            placeholder='Author'
+            title={t('authors')}
+            placeholder={t('author')}
             options={authorOptions}
             initialSelection={authorOptions.filter(
               (author) => author.id === defaultAuthorSlug,
@@ -147,8 +162,8 @@ export default function ActivitiesPage({
         </Grid>
         <Grid size={{ xs: 12, lg: 3 }}>
           <SelectAll
-            title='Languages'
-            placeholder='Language'
+            title={t('languages')}
+            placeholder={t('language')}
             options={languageOptions}
             onSelectionChange={setAllowedLanguages}
             maxTagsShown={2}
@@ -169,7 +184,7 @@ export default function ActivitiesPage({
           paddingTop: 2,
         }}
       >
-        {`${format(filteredActivities.length, 'activity matches', 'activities match')} the search criteria`}
+        {t('activityMatches', { count: filteredActivities.length })}
       </Typography>
       {filteredActivities.length === 0 &&
         allowedConcepts.length > 0 &&
@@ -181,16 +196,17 @@ export default function ActivitiesPage({
             }}
           >
             <Typography gutterBottom>
-              Activities might not yet be tagged with the selected concepts!
+              {t('activitiesMaybeNotTagged')}
             </Typography>
             <Button
               variant='contained'
               onClick={() => {
-                setInitialConcepts([]);
+                setSelectedConceptIds([]);
                 setAllowedConcepts([]);
+                setConceptsFilterVersion((version) => version + 1);
               }}
             >
-              Remove filter on concepts
+              {t('removeConceptFilter')}
             </Button>
           </Box>
         )}
@@ -207,7 +223,7 @@ export async function getStaticProps(context: {
       defaultAuthorSlug: authorSlug,
       authorsProfiles: await listAuthorsProfiles(),
       activities: visibleActivities(await listActivitiesAllAuthors()),
-      ...(await translationProps()),
+      ...(await translationProps(['activity', 'concepts'])),
     },
   };
 }
