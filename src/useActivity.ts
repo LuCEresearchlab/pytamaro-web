@@ -7,6 +7,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useSyncExternalStore,
 } from 'react';
 import useSessionStorageState from 'use-session-storage-state';
@@ -118,9 +119,28 @@ export function useActivity(
       .fill(undefined)
       .map(initialCodeExecutionState);
 
-  const [codeExecutionStates, setCodeExecutionStates] = useSessionStorageState(
-    `pytamaro-web-executionv2-${variantId}`,
-    { defaultValue: initialCodeExecutionStates() },
+  const [storedCodeExecutionStates, setStoredCodeExecutionStates] =
+    useSessionStorageState(`pytamaro-web-executionv2-${variantId}`, {
+      defaultValue: initialCodeExecutionStates(),
+    });
+  const codeExecutionStatesRef = useRef(storedCodeExecutionStates);
+  useEffect(() => {
+    codeExecutionStatesRef.current = storedCodeExecutionStates;
+  }, [storedCodeExecutionStates]);
+  const setCodeExecutionStates = useCallback(
+    (update: SetStateAction<CodeCellExecutionState[]>) => {
+      const current = codeExecutionStatesRef.current;
+      const next = typeof update === 'function' ? update(current) : update;
+      if (Object.is(next, current)) {
+        // Avoid writing to session storage if the new value is the same as the old one.
+        // This is potentially expensive because it is called on every keystroke and
+        // the code execution states contain the base64-encoded PNGs, which can be large.
+        return;
+      }
+      codeExecutionStatesRef.current = next;
+      setStoredCodeExecutionStates(next);
+    },
+    [setStoredCodeExecutionStates],
   );
 
   const restartWorkerAndMarkExecutionAsStopped = useCallback(() => {
@@ -450,7 +470,7 @@ export function useActivity(
   return {
     activitySession,
     codeCells,
-    codeExecutionStates,
+    codeExecutionStates: storedCodeExecutionStates,
     completed,
     cellsModified,
     setOutputAreaRef,
