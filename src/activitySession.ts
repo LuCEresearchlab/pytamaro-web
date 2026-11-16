@@ -393,9 +393,7 @@ export class ActivitySession {
     let beforeCell = 0;
     let previousLines = 0;
     for (let idx = 0; idx <= cellIdx && idx < this.sources.length; idx += 1) {
-      if (idx < cellIdx) {
-        beforeCell = upToCell;
-      }
+      beforeCell = upToCell;
       upToCell += this.diagnosticsAt(idx, liveAnalysis, previousLines).length;
       previousLines += countLines(this.sources[idx] ?? '');
     }
