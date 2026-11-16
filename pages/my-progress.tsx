@@ -15,7 +15,7 @@ import {
   styled,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { Trans } from 'next-i18next';
+import { Trans } from 'next-i18next/pages';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { activityVariantStatus } from '../components/ActivityStatusBadge';

@@ -1,6 +1,6 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import { Button } from '@mui/material';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import downloadSourceCode from '../src/codeDownload';
 import useLocalToolbox from '../src/localStorage/useLocalToolbox';
 import type { ActivitySession } from '../src/activitySession';

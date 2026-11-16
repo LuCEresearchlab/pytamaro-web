@@ -1,7 +1,7 @@
 import { Monaco } from '@monaco-editor/react';
 import { escapeRegExp, sum } from 'lodash';
 import { type editor as EditorNamespace } from 'monaco-editor';
-import { TFunction } from 'next-i18next';
+import { TFunction } from 'next-i18next/pages';
 import { ErrorMessageWidget } from './editor/ErrorMessageWidget';
 import { runtimeErrorMessageCategory } from './editor/errors';
 import { ExecutionResponse } from './execution/codeExecution';

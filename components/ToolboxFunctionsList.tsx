@@ -1,6 +1,6 @@
 import { Button, Card, CardActions, Stack, Typography } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
-import { Trans } from 'next-i18next';
+import { Trans } from 'next-i18next/pages';
 import { useEffect, useState } from 'react';
 import logAnalyticsEvent, { AnalyticsEventName } from '../src/analyticsEvent';
 import { ToolboxFunction } from '../src/localStorage/schema';

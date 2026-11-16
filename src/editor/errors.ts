@@ -1,4 +1,4 @@
-import { TFunction } from 'next-i18next';
+import { TFunction } from 'next-i18next/pages';
 
 export function simplifyTypes(message: string) {
   // Ty supports IntLiteral, BooleanLiteral, StringLiteral, BytesLiteral, EnumLiteral.

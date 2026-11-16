@@ -1,5 +1,5 @@
 import { match } from '@formatjs/intl-localematcher';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import { useEffect } from 'react';
 import useLocalProfile from './useLocalProfile';
 

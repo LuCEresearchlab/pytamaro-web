@@ -1,6 +1,6 @@
 import { TipsAndUpdates } from '@mui/icons-material';
 import { Alert, Box } from '@mui/material';
-import { Trans } from 'next-i18next';
+import { Trans } from 'next-i18next/pages';
 import { useContext, useEffect, useState } from 'react';
 import { PythonMode } from '../src/execution/codeExecution';
 import { ExecutorContext } from '../src/execution/executorContext';

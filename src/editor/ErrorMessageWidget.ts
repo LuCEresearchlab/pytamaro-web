@@ -4,7 +4,7 @@ import type {
   IPosition,
   IRange,
 } from 'monaco-editor';
-import { TFunction } from 'next-i18next';
+import { TFunction } from 'next-i18next/pages';
 import { ERROR_MESSAGE_CLASSNAME } from '../../components/input_output/OutputArea';
 import { convertMarkdownCodeTagsToHTML } from '../basicMarkdown';
 import theme from '../theme';
