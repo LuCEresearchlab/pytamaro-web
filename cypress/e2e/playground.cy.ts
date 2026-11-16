@@ -1,5 +1,6 @@
 import {
   dismissDataCollectionModal,
+  setLiveAnalysis,
   typeMonacoCode,
   waitForMonacoEditor,
 } from '../support/utils';
@@ -62,5 +63,20 @@ describe('Playground Page', () => {
     const base64Code = Buffer.from(code).toString('base64');
     cy.visit(`/playground?code=${base64Code}`);
     cy.get('.monaco-editor').first().should('contain.text', code);
+  });
+
+  it('should drop Python highlighting when live analysis is set to None', () => {
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    const code = 'print("hello")';
+    typeMonacoCode(code);
+
+    // With syntax highlighting, the string literal has its own token class.
+    cy.get('.view-line .mtk26').should('exist');
+
+    // Switching the setting must take effect immediately, without a reload.
+    setLiveAnalysis('None');
+    cy.get('.view-line .mtk26').should('not.exist');
+    cy.get('.view-line').first().should('contain.text', code);
   });
 });

@@ -535,11 +535,14 @@ export default function CodeEditor({
   }, [model, clearAnnotations, analyzeSource, context]);
 
   const python = modelPath === undefined || isPythonFileName(modelPath);
-  // Use an inexistent language if the file is not Python or the live analysis is completely disabled.
-  // This way, Monaco doesn't use even the basic tokenizer for coloring Python.
-  const language =
-    !python || liveAnalysis === LiveAnalysisStatus.None
-      ? undefined
+  // Use an inexistent language if the live analysis is completely disabled.
+  // Passing `undefined` would leave the previous language (and therefore its
+  // highlighting) in place when switching the setting without a reload. This
+  // way, Monaco doesn't use even the basic tokenizer for coloring Python.
+  const language = !python
+    ? undefined
+    : liveAnalysis === LiveAnalysisStatus.None
+      ? 'python-none'
       : STRICT_PYTHON3_LANG_ID;
 
   return (

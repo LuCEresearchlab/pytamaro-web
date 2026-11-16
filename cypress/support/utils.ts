@@ -6,10 +6,14 @@ export function waitForMonacoEditor() {
   cy.get('.monaco-editor').should('be.visible');
 }
 
+export function setLiveAnalysis(label: string) {
+  cy.get('.platform-settings').click();
+  cy.get('button').contains(label).click();
+  cy.get('.platform-settings').click();
+}
+
 export function enableSemanticChecks() {
-  cy.get('.platform-settings').click();
-  cy.get('button').contains('Semantics').click();
-  cy.get('.platform-settings').click();
+  setLiveAnalysis('Syntax & Semantics');
 }
 
 export function clearMonacoCode({
