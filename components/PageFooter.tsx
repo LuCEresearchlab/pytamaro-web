@@ -57,10 +57,9 @@ export default function PageFooter() {
           {t('footer.privacyPolicy')}
         </Link>
         {' • '}
-        {t('footer.platformVersion', {
+        {`${t('footer.platformVersion', {
           version: process.env.PLATFORM_VERSION,
-        })}
-        {buildTimestamp !== undefined && ` (${buildTimestamp})`}
+        })}${buildTimestamp !== undefined ? ` (${buildTimestamp})` : ''}`}
       </Typography>
     </Container>
   );

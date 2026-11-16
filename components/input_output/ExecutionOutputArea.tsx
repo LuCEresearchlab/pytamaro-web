@@ -115,7 +115,7 @@ function PreviousCellsErrorAlert({
               });
           }}
         >
-          {t('goToError')}
+          <span>{t('goToError')}</span>
         </Button>
       }
     >

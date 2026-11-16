@@ -306,9 +306,11 @@ export default function SaveToToolboxDialog({
   return (
     <Dialog onClose={() => onClose()} open={open} maxWidth='md' fullWidth>
       <DialogTitle>
-        {replaceExistingFunction
-          ? t('toolbox.dialogTitleEdit')
-          : t('toolbox.dialogTitle')}
+        {replaceExistingFunction ? (
+          <span>{t('toolbox.dialogTitleEdit')}</span>
+        ) : (
+          <span>{t('toolbox.dialogTitle')}</span>
+        )}
         <IconButton
           aria-label='close'
           onClick={onClose}

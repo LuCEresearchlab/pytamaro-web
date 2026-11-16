@@ -2,6 +2,7 @@ import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 import prettier from 'eslint-config-prettier/flat';
 import pluginCypress from 'eslint-plugin-cypress';
+import reactGoogleTranslate from 'eslint-plugin-react-google-translate';
 
 import { defineConfig, globalIgnores } from 'eslint/config';
 
@@ -68,6 +69,7 @@ const eslintConfig = defineConfig([
     files: ['cypress/e2e/*.cy.ts'],
     extends: [pluginCypress.configs.recommended],
   },
+  [reactGoogleTranslate.configs.recommended]
 ]);
 
 export default eslintConfig;

@@ -69,6 +69,9 @@ function StatusIndicator({
       icon = <Done fontSize='large' color='success' />;
     }
   }
+  if (tooltipTitle === '') {
+    return icon;
+  }
   return (
     <Tooltip arrow title={tooltipTitle} placement='right'>
       {icon}
@@ -111,6 +114,29 @@ export default function RunButton({
   const stopLabel = t('stopExecution');
   const runLabel = t(runCodeLabelKey);
 
+  const button = (
+    // https://mui.com/material-ui/react-tooltip/#disabled-elements
+    <div>
+      <Button
+        onClick={executing ? interruptExecution : onExecutionRequested}
+        endIcon={executing ? <StopCircle /> : <PlayCircleFilled />}
+        variant='contained'
+        color={executing ? 'warning' : 'primary'}
+        disabled={!enabled}
+        className='run-button'
+      >
+        <span
+          style={{
+            // Keep the width constant even when the button rapidly changes between "Run" and "Stop"
+            minWidth: `${Math.max(stopLabel.length, runLabel.length)}ch`,
+          }}
+        >
+          {executing ? stopLabel : runLabel}
+        </span>
+      </Button>
+    </div>
+  );
+
   return (
     <Stack
       direction='row'
@@ -119,28 +145,13 @@ export default function RunButton({
         alignItems: 'center',
       }}
     >
-      <Tooltip arrow placement='left' title={tooltipMessage}>
-        {/* https://mui.com/material-ui/react-tooltip/#disabled-elements */}
-        <div>
-          <Button
-            onClick={executing ? interruptExecution : onExecutionRequested}
-            endIcon={executing ? <StopCircle /> : <PlayCircleFilled />}
-            variant='contained'
-            color={executing ? 'warning' : 'primary'}
-            disabled={!enabled}
-            className='run-button'
-          >
-            <span
-              style={{
-                // Keep the width constant even when the button rapidly changes between "Run" and "Stop"
-                minWidth: `${Math.max(stopLabel.length, runLabel.length)}ch`,
-              }}
-            >
-              {executing ? stopLabel : runLabel}
-            </span>
-          </Button>
-        </div>
-      </Tooltip>
+      {tooltipMessage !== undefined ? (
+        <Tooltip arrow placement='left' title={tooltipMessage}>
+          {button}
+        </Tooltip>
+      ) : (
+        button
+      )}
       <StatusIndicator
         executing={executing}
         isExecutingPreviousCell={isExecutingPreviousCell}

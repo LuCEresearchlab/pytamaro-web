@@ -9,7 +9,7 @@ import {
   Stack,
 } from '@mui/material';
 import { useConfirm } from 'material-ui-confirm';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import {
   isExecutionError,
   isExecutionFailed,
@@ -272,7 +272,7 @@ export default function CodeCell({
                   setAutomaticEvaluation={setAutomaticEvaluation}
                 />
               )}
-            {extraActions}
+            {React.Children.toArray(extraActions)}
           </Stack>
         </CardActions>
         <Box sx={{ marginTop: 1 }}>

@@ -40,7 +40,7 @@ export default function DownloadCodeButton({
         )
       }
     >
-      {t('downloadPythonSource')}
+      <span>{t('downloadPythonSource')}</span>
     </Button>
   );
 }

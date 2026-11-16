@@ -136,11 +136,11 @@ export default function ActivityInfoPage({
             Languages
           </Typography>
           <Typography variant='body1'>
-            This activity is
-            {activity.visibility === 'draft'
-              ? ' under development '
-              : '  available '}
-            in the following languages:
+            {`This activity is ${
+              activity.visibility === 'draft'
+                ? 'under development'
+                : 'available'
+            } in the following languages:`}
           </Typography>
           <ul>
             {activity.languagesInfo.map((info) => (
@@ -157,9 +157,12 @@ export default function ActivityInfoPage({
                     {info.title}
                   </Link>
                 )}
-                {activity.visibility === 'draft' && info.title} (
-                {getLanguageDisplayName(info.language)}, latest version:{' '}
-                {info.latestVersion})
+                {activity.visibility === 'draft' && (
+                  <span>
+                    {info.title} ({getLanguageDisplayName(info.language)},
+                    latest version: {info.latestVersion})
+                  </span>
+                )}
               </li>
             ))}
           </ul>

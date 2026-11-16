@@ -46,32 +46,34 @@ export default function AttributionInfo({
       </Typography>
       {parts.length > 0 && (
         <Typography>
-          {t(`${type}DerivedFrom`)}{' '}
-          {parts.map((part) => {
-            if (part.type === 'literal') {
-              return part.value;
-            }
-            let pathname;
-            if (type === 'activity') {
-              const variant = activityVariantFromId(part.value);
-              pathname = activityVariantPathname(variant);
-            } else {
-              const curriculum = curriculumFromId(part.value);
-              pathname = curriculumPathname(
-                curriculum.authorSlug,
-                curriculum.curriculumSlug,
+          <span>{`${t(`${type}DerivedFrom`)} `}</span>
+          <span>
+            {parts.map((part) => {
+              if (part.type === 'literal') {
+                return part.value;
+              }
+              let pathname;
+              if (type === 'activity') {
+                const variant = activityVariantFromId(part.value);
+                pathname = activityVariantPathname(variant);
+              } else {
+                const curriculum = curriculumFromId(part.value);
+                pathname = curriculumPathname(
+                  curriculum.authorSlug,
+                  curriculum.curriculumSlug,
+                );
+              }
+              return (
+                <Trans
+                  key={part.value}
+                  t={t}
+                  i18nKey={`${type}This`}
+                  components={{ a: <Link href={pathname} /> }}
+                />
               );
-            }
-            return (
-              <Trans
-                key={part.value}
-                t={t}
-                i18nKey={`${type}This`}
-                components={{ a: <Link href={pathname} /> }}
-              />
-            );
-          })}
-          .
+            })}
+          </span>
+          <span>.</span>
         </Typography>
       )}
     </>

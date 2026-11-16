@@ -37,7 +37,7 @@ export function ShareButton({
         onClick={copyTextToClipboard}
         data-testid='share-button'
       >
-        {t('share.action')}
+        <span>{t('share.action')}</span>
       </Button>
       <CustomSnackbar
         visible={snackbarVisible}

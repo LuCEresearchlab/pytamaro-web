@@ -88,14 +88,16 @@ export default function SettingsButton() {
                   fullWidth
                 >
                   <ToggleButton value={LiveAnalysisStatus.None}>
-                    <ReportOff sx={{ mr: 1 }} /> {t('noneAnalysis')}
+                    <ReportOff sx={{ mr: 1 }} />
+                    <span>{t('noneAnalysis')}</span>
                   </ToggleButton>
                   <ToggleButton value={LiveAnalysisStatus.Syntax}>
-                    <Report sx={{ mr: 1 }} /> {t('syntaxAnalysis')}
+                    <Report sx={{ mr: 1 }} />
+                    <span>{t('syntaxAnalysis')}</span>
                   </ToggleButton>
                   <ToggleButton value={LiveAnalysisStatus.SyntaxSemantics}>
-                    <PlaylistAddCheck sx={{ mr: 1 }} />{' '}
-                    {t('syntaxSemanticsAnalysis')}
+                    <PlaylistAddCheck sx={{ mr: 1 }} />
+                    <span>{t('syntaxSemanticsAnalysis')}</span>
                   </ToggleButton>
                 </ToggleButtonGroup>
               </Stack>

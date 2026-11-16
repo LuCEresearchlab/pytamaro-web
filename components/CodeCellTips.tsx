@@ -34,9 +34,9 @@ export function NoOutputTip({
         width: '100%',
       }}
     >
-      {t('noOutputTip')}
+      <span>{t('noOutputTip')}</span>
       {moduleName !== undefined && (
-        <>
+        <span>
           {' '}
           <Trans
             t={t}
@@ -44,7 +44,7 @@ export function NoOutputTip({
             values={{ apiName: showGraphicNames[moduleName] }}
             components={{ code: <code /> }}
           />
-        </>
+        </span>
       )}
     </Alert>
   );

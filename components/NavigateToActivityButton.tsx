@@ -98,21 +98,27 @@ export default function NavigateToActivity({
 
   const enabled = (isNext && completed) || !isNext;
 
-  return (
-    <Tooltip arrow title={enabled ? undefined : t('availableAfterCompleting')}>
-      <div>
-        <Button
-          loading={loading}
-          disabled={!enabled}
-          variant='contained'
-          color={isNext ? 'success' : 'warning'}
-          startIcon={isNext ? undefined : <ArrowBack />}
-          endIcon={isNext ? <ArrowForward /> : undefined}
-          onClick={handleClick}
-        >
-          <span>{message}</span>
-        </Button>
-      </div>
+  const button = (
+    <div>
+      <Button
+        loading={loading}
+        disabled={!enabled}
+        variant='contained'
+        color={isNext ? 'success' : 'warning'}
+        startIcon={isNext ? undefined : <ArrowBack />}
+        endIcon={isNext ? <ArrowForward /> : undefined}
+        onClick={handleClick}
+      >
+        <span>{message}</span>
+      </Button>
+    </div>
+  );
+
+  return enabled ? (
+    button
+  ) : (
+    <Tooltip arrow title={t('availableAfterCompleting')}>
+      {button}
     </Tooltip>
   );
 }
