@@ -110,6 +110,7 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
 
     if (isRuntimeError) {
       const closeIcon = document.createElement('span');
+      closeIcon.dataset.testid = 'dismiss-runtime-error';
       closeIcon.style.fontFamily = 'Material Icons';
       closeIcon.style.paddingRight = '4px';
       closeIcon.style.display = 'flex';

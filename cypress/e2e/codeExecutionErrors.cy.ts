@@ -38,6 +38,30 @@ describe('Code Execution Errors', () => {
     cy.get('.squiggly-error').should('not.exist');
   });
 
+  it('should hide annotations and mark the output stale when dismissing a runtime error', () => {
+    cy.visit(playgroundPathname());
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    typeMonacoCode('print(a)');
+    cy.get('.run-button').first().click();
+    cy.get('.monaco-editor-overlaymessage')
+      .should('be.visible')
+      .contains('Name');
+    cy.get('.squiggly-error').should('be.visible');
+    cy.get(
+      '.MuiBadge-badge:not(.MuiBadge-invisible) [data-testid="SyncProblemIcon"]',
+    ).should('not.exist');
+    cy.get('[data-testid="dismiss-runtime-error"]').click();
+    // Both the bubble and its squiggle disappear...
+    cy.get('.monaco-editor-overlaymessage').should('not.exist');
+    cy.get('.squiggly-error').should('not.exist');
+    // ...and the output is now stale (the error in the traceback is no longer reported in the editor,
+    // so in some sense the output is "out of sync").
+    cy.get(
+      '.MuiBadge-badge:not(.MuiBadge-invisible) [data-testid="SyncProblemIcon"]',
+    ).should('be.visible');
+  });
+
   it('should show parse errors even before running the code', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
