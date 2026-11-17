@@ -286,7 +286,7 @@ export class ActivitySession {
       this.modelMapping(cellIdx),
       (source) => this.updateSource(cellIdx, source),
     );
-    this.updateSource(cellIdx, model.getValue());
+    this.editorSession.setModelText(model, this.sources[cellIdx] ?? '');
   }
 
   detachModel(cellIdx: number, model?: editor.ITextModel) {
