@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import Link from 'next/link';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import useActivitySession from '../src/activitySession';
 import { ExecutorContext } from '../src/execution/executorContext';
 import { ToolboxFunction } from '../src/localStorage/schema';
@@ -42,6 +42,20 @@ export default function ToolboxFunctionCardContent({
   const activityVariant = toolboxActivityVariant(fn.name);
   const fnActivitySession = useActivitySession(singleCodeCell(fn.source));
   const activityState = useTemporaryActivity(usageCodeCells, activityVariant);
+  const usageSession = activityState.activitySession;
+
+  // The sessions are created once, but `fn` can be edited while this card is mounted.
+  // Keep their initial cells in sync with the current function.
+  useEffect(() => {
+    if (fnActivitySession.getInitialSource(0) !== fn.source) {
+      fnActivitySession.replaceInitialCodeCells(singleCodeCell(fn.source));
+    }
+  }, [fn.source, fnActivitySession]);
+  useEffect(() => {
+    if (usageSession.getInitialSource(0) !== fn.usage) {
+      usageSession.replaceInitialCodeCells(singleCodeCell(fn.usage));
+    }
+  }, [fn.usage, usageSession]);
   const originalActivityPathname = isPlaygroundVariant(fn.originalActivity)
     ? playgroundPathname()
     : activityVariantPathname(fn.originalActivity);
