@@ -1,3 +1,4 @@
+import { DATABASE_NAME } from '../../src/ideFilesPersistence';
 import { idePathname } from '../../src/urlUtils';
 import {
   dismissDataCollectionModal,
@@ -8,6 +9,12 @@ import {
 export {};
 
 describe('IDE', () => {
+  // The IDE saves its files in IndexedDB, which Cypress does not reset between
+  // tests: clear it so that every test starts from the initial workspace.
+  beforeEach(() => {
+    indexedDB.deleteDatabase(DATABASE_NAME);
+  });
+
   it('should run a single file', () => {
     cy.visit(idePathname());
     dismissDataCollectionModal();

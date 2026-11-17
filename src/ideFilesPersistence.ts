@@ -3,7 +3,7 @@ import { WRITE_DEBOUNCE_MS } from './codeCellsPersistence';
 import { sameBytes } from './ideFileContent';
 import { IdeFile, isIdeFile } from './ideFiles';
 
-const DATABASE_NAME = 'pytamaro-web-ide';
+export const DATABASE_NAME = 'pytamaro-web-ide';
 const DATABASE_VERSION = 1;
 const FILES_STORE = 'files';
 const CHANNEL_NAME = 'pytamaro-web-ide-files';
