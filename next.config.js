@@ -49,6 +49,12 @@ const nextConfig = {
   },
   // Cross-origin isolation is a required security policy to enable SharedArrayBuffer.
   // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer
+  // Important!
+  // Since Next.js 16.2, web workers are boostrapped from a separate chunk, which requires COEP.
+  // Until https://github.com/vercel/next.js/issues/92676 is resolved, the source regex below
+  // needs to be broad enough to cover also assets under /_next/static/.
+  // Another subtlety: we must not add `i18n` to this config,
+  // because it messes with the source regex to account for locale prefixes.
   async headers() {
     return [
       {
