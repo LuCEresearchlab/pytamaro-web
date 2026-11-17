@@ -14,10 +14,12 @@ import {
   mergeWorkspaceChanges,
 } from './execution/workspaceChanges';
 import { MAIN_BATCH_MS } from './execution/workspaceSyncConstants';
+import registerCodeExecutionEvent from './executionEvents';
 import { isPythonFileName } from './ideFiles';
 import type { IdeWorkspace } from './ideWorkspace';
 import { extractMetadataForEvent } from './localStorage/schema';
 import useLocalProfile from './localStorage/useLocalProfile';
+import { ideActivityVariant } from './specialActivities';
 import useInputRequests from './useInputRequests';
 
 function emptyWorkspaceFolders(workspace: IdeWorkspace): string[] {
@@ -146,84 +148,120 @@ export default function useIdeExecution(
     [setCellOutputAreaRef],
   );
 
-  const run = useCallback(async () => {
-    const source = isPythonFileName(activeFile)
-      ? workspace.text(activeFile)
-      : undefined;
-    if (source === undefined || executorState.type !== 'available') {
-      return;
-    }
-
-    const names = workspace.files();
-    const extraFiles = names
-      .filter((name) => name !== activeFile)
-      .flatMap((name) => {
-        const content = workspace.bytes(name);
+  const registerExecutionRequest = useCallback(
+    (executionUUID: string) => {
+      const source = isPythonFileName(activeFile)
+        ? workspace.text(activeFile)
+        : undefined;
+      if (source === undefined) {
+        return;
+      }
+      // Include in the recorded event as extra files for the Python execution
+      // all the workspace files that can be decoded as text
+      // (including the file being executed, to record its name/path).
+      // Files in a binary format are not captured.
+      const extraPythonFiles = workspace.files().flatMap((name) => {
+        const content = workspace.text(name);
         return content === undefined ? [] : [{ name, content }];
       });
-    const workspaceFileNames = names;
-    const workspaceFolders = emptyWorkspaceFolders(workspace);
+      registerCodeExecutionEvent({
+        metadata,
+        sources: [source],
+        initialSources: [''],
+        requestedCellSequenceNumber: 0,
+        toolboxFunctions: metadata.toolbox,
+        activityVariant: ideActivityVariant,
+        extraPythonFiles,
+        liveAnalysis: metadata.liveAnalysis,
+        executionUUID,
+        pythonMode: PythonMode.Exec,
+      });
+    },
+    [activeFile, metadata, workspace],
+  );
 
-    const uuid = crypto.randomUUID();
-    setExecutionUUID(uuid);
-    setExecutionResponse(undefined);
-    setOutputSynced(true);
-    setIsWaitingForInput(false);
-    setReadOnlyFiles(new Set());
-    try {
-      const response = await execute(
-        [source],
-        0,
-        metadata.toolbox,
-        extraFiles,
-        {
-          executionUUID: uuid,
-          ...extractMetadataForEvent(metadata),
-        },
-        PythonMode.Exec,
-        (_idx, partialResponse) => {
-          setExecutionResponse(partialResponse);
-          setOutputAreaVisible(true);
-          setOutputSynced(true);
-        },
-        () => {},
-        requestInput,
-        [activeFile],
-        workspaceFileNames,
-        workspaceFolders,
-        queueWorkspaceChanges,
-      );
-      // Apply changes before the authoritative final result, so the
-      // final state wins for any path that both touch.
-      flushWorkspaceChanges();
-      const { workspaceChanges, ...executionResult } = response;
-      if (workspaceChanges !== undefined) {
-        onWorkspaceChanges(workspaceChanges);
+  const run = useCallback(
+    async (requestedExecutionUUID: string) => {
+      const source = isPythonFileName(activeFile)
+        ? workspace.text(activeFile)
+        : undefined;
+      if (source === undefined || executorState.type !== 'available') {
+        return;
       }
-      setExecutionResponse(executionResult);
-      setOutputAreaVisible(true);
+
+      const names = workspace.files();
+      const extraFiles = names
+        .filter((name) => name !== activeFile)
+        .flatMap((name) => {
+          const content = workspace.bytes(name);
+          return content === undefined ? [] : [{ name, content }];
+        });
+      const workspaceFileNames = names;
+      const workspaceFolders = emptyWorkspaceFolders(workspace);
+
+      setExecutionUUID(requestedExecutionUUID);
+      setExecutionResponse(undefined);
       setOutputSynced(true);
-      if (response.type === 'failure') {
-        await restart();
+      setIsWaitingForInput(false);
+      setReadOnlyFiles(new Set());
+      try {
+        const response = await execute(
+          [source],
+          0,
+          metadata.toolbox,
+          extraFiles,
+          {
+            executionUUID: requestedExecutionUUID,
+            ...extractMetadataForEvent(metadata),
+          },
+          PythonMode.Exec,
+          (_idx, partialResponse) => {
+            setExecutionResponse(partialResponse);
+            setOutputAreaVisible(true);
+            setOutputSynced(true);
+          },
+          () => {},
+          requestInput,
+          [activeFile],
+          workspaceFileNames,
+          workspaceFolders,
+          queueWorkspaceChanges,
+        );
+        // Apply changes before the authoritative final result, so the
+        // final state wins for any path that both touch.
+        flushWorkspaceChanges();
+        const { workspaceChanges, ...executionResult } = response;
+        if (workspaceChanges !== undefined) {
+          onWorkspaceChanges(workspaceChanges);
+        }
+        setExecutionResponse(executionResult);
+        setOutputAreaVisible(true);
+        setOutputSynced(true);
+        if (response.type === 'failure') {
+          await restart();
+        }
+      } finally {
+        // A crashed, stopped or aborted run still keeps whatever it wrote.
+        flushWorkspaceChanges();
+        setExecutionUUID(undefined);
+        setReadOnlyFiles((current) =>
+          current.size === 0 ? current : new Set(),
+        );
       }
-    } finally {
-      // A crashed, stopped or aborted run still keeps whatever it wrote.
-      flushWorkspaceChanges();
-      setExecutionUUID(undefined);
-      setReadOnlyFiles((current) => (current.size === 0 ? current : new Set()));
-    }
-  }, [
-    activeFile,
-    execute,
-    executorState.type,
-    flushWorkspaceChanges,
-    metadata,
-    onWorkspaceChanges,
-    queueWorkspaceChanges,
-    restart,
-    requestInput,
-    workspace,
-  ]);
+    },
+    [
+      activeFile,
+      execute,
+      executorState.type,
+      flushWorkspaceChanges,
+      metadata,
+      onWorkspaceChanges,
+      queueWorkspaceChanges,
+      restart,
+      requestInput,
+      workspace,
+    ],
+  );
 
   const executing =
     executionUUID !== undefined && executorState.type === 'executing';
@@ -237,6 +275,7 @@ export default function useIdeExecution(
 
   return {
     run,
+    registerExecutionRequest,
     runEnabled:
       isPythonFileName(activeFile) &&
       workspace.text(activeFile) !== undefined &&

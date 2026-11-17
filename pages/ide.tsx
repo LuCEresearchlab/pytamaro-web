@@ -42,10 +42,12 @@ import { filePreview, viewKind } from '../src/ideFileContent';
 import { baseName, IdeFile, isPythonFileName } from '../src/ideFiles';
 import { downloadFilesAsZip, readFilesFromZip } from '../src/ideFilesZip';
 import { isMac } from '../src/keyboardUtils';
+import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { playgroundActivityVariant } from '../src/playground';
 import { PythonName } from '../src/python-analyzer/python_analyzer';
 import { translationProps } from '../src/serverSideTranslationProps';
+import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import theme from '../src/theme';
 import useEditorAnalysisResult from '../src/useEditorAnalysisResult';
 import useIdeExecution from '../src/useIdeExecution';
@@ -79,6 +81,7 @@ function isToggleOutputShortcut(event: KeyboardEvent) {
 export default function Ide() {
   const { t } = useLocalTranslation(['common']);
   const { t: tIde } = useLocalTranslation(['ide']);
+  const { metadata } = useLocalProfile();
   const {
     workspace,
     loaded,
@@ -110,7 +113,11 @@ export default function Ide() {
   );
   const isHydrated = useIsHydrated();
   const confirm = useConfirm();
-  const { run: runExecution, liveAnalysis } = execution;
+  const {
+    run: runExecution,
+    registerExecutionRequest,
+    liveAnalysis,
+  } = execution;
 
   const getActiveKind = () => {
     if (activeFile === '') {
@@ -276,6 +283,8 @@ export default function Ide() {
   const shortcutLabel = isHydrated && isMac() ? '⌘J' : 'Ctrl+J';
 
   const handleExecutionRequest = useCallback(async () => {
+    const executionUUID = crypto.randomUUID();
+    registerExecutionRequest(executionUUID);
     const diagnostics = toCustomDiagnostics(
       workspace.editorSession.diagnosticsForFile(activeFile),
       liveAnalysis,
@@ -296,15 +305,21 @@ export default function Ide() {
           variant: 'contained',
         },
       });
+      storeDbEvent(EventName.CodeExecutionErrorsWarning, metadata, {
+        executionUUID,
+        forced_execution: confirmed,
+      });
       if (!confirmed) return;
     }
     // Running always reveals the output area, even if it was collapsed before.
     setOutputCollapsed(false);
-    return runExecution();
+    return runExecution(executionUUID);
   }, [
     activeFile,
     confirm,
     liveAnalysis,
+    registerExecutionRequest,
+    metadata,
     runExecution,
     t,
     workspace.editorSession,

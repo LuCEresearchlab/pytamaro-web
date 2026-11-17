@@ -12,7 +12,6 @@ import {
 } from 'react';
 import useSessionStorageState from 'use-session-storage-state';
 import type { ActivitySession } from './activitySession';
-import logAnalyticsEvent, { AnalyticsEventName } from './analyticsEvent';
 import {
   ExecutionResponse,
   PythonMode,
@@ -20,7 +19,7 @@ import {
   isExecutionNominal,
 } from './execution/codeExecution';
 import { ExecutorContext } from './execution/executorContext';
-import { CLIENT_SIDE_EXECUTION_TAG } from './execution/versions';
+import registerCodeExecutionEvent from './executionEvents';
 import {
   CodeCellExecutionState,
   CodeCellState,
@@ -34,7 +33,6 @@ import {
   PythonFile,
   activityVariantId,
 } from './schemas/activitySchema';
-import { EventName, storeDbEvent } from './storeDbEvent';
 import useInputRequests from './useInputRequests';
 
 function hasOutput(response: ExecutionResponse): boolean {
@@ -323,10 +321,8 @@ export function useActivity(
   ) => {
     const sources = sourcesUpTo(idx);
     const toolboxFunctions = await retrieveToolboxSources(sources);
-    logAnalyticsEvent(AnalyticsEventName.CodeExecution, {
-      activity: variantId,
-    });
-    storeDbEvent(EventName.CodeExecution, metadata, {
+    registerCodeExecutionEvent({
+      metadata,
       sources,
       initialSources: initialCodeCells.map(sourceFromCell),
       requestedCellSequenceNumber: idx,
@@ -336,7 +332,6 @@ export function useActivity(
       liveAnalysis: metadata.liveAnalysis,
       executionUUID,
       pythonMode,
-      clientSideExecutionTag: CLIENT_SIDE_EXECUTION_TAG,
     });
   };
 

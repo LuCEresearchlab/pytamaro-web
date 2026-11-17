@@ -31,8 +31,9 @@ async function storeFile(
   table: string,
   name: string,
   source: string,
+  getSourceId: (source: string) => Promise<number>,
 ) {
-  const pSourceId = storeSource(sql, source);
+  const pSourceId = getSourceId(source);
   storeRowWithoutId(sql, table, {
     event_id,
     name,
@@ -46,9 +47,10 @@ async function storeCell(
   source: string,
   initial_source: string,
   cell_seq_number: number,
+  getSourceId: (source: string) => Promise<number>,
 ) {
-  const pSourceId = storeSource(sql, source);
-  const pInitialSourceId = storeSource(sql, initial_source);
+  const pSourceId = getSourceId(source);
+  const pInitialSourceId = getSourceId(initial_source);
   storeRowWithoutId(sql, 'code_execution_sources', {
     event_id,
     source_id: await pSourceId,
@@ -113,10 +115,28 @@ export default async function saveCodeExecutionEvent(
         executionUUID,
         pythonMode,
       );
+      // Keep track of source IDs to avoid duplicate inserts within the same transaction.
+      // This is especially useful for recording IDE execution, where the executed file's content is both in `sources` and in `extraPythonFiles`.
+      const sourceIds = new Map<string, Promise<number>>();
+      const getSourceId = (source: string) => {
+        let sourceId = sourceIds.get(source);
+        if (sourceId === undefined) {
+          sourceId = storeSource(sql, source);
+          sourceIds.set(source, sourceId);
+        }
+        return sourceId;
+      };
       await Promise.all(
         [
           sources.map(async (source, idx) =>
-            storeCell(sql, await pEventId, source, initial_sources[idx], idx),
+            storeCell(
+              sql,
+              await pEventId,
+              source,
+              initial_sources[idx],
+              idx,
+              getSourceId,
+            ),
           ),
           toolboxFunctions.map(async (fn) =>
             storeFile(
@@ -125,6 +145,7 @@ export default async function saveCodeExecutionEvent(
               TOOLBOX_FUNCTIONS_TABLE,
               fn.name,
               fn.source,
+              getSourceId,
             ),
           ),
           extraPythonFiles.map(async (file) =>
@@ -134,6 +155,7 @@ export default async function saveCodeExecutionEvent(
               EXTRA_PYTHON_FILES_TABLE,
               file.name,
               file.content,
+              getSourceId,
             ),
           ),
         ].flat(),

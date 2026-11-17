@@ -22,6 +22,13 @@ export const evaluatorActivityVariant = {
   version: 'v1',
 };
 
+export const ideActivityVariant: ActivityVariant = {
+  authorSlug: 'luce',
+  activitySlug: 'ide',
+  language: 'en',
+  version: 'v1',
+};
+
 export const toolboxDemoActivityVariant = {
   authorSlug: 'luce',
   activitySlug: 'learn-toolbox',
@@ -71,6 +78,7 @@ export function isSpecialActivity(variant: ActivityVariant) {
   const otherSpecialActivities = [
     rapidEvaluatorActivityVariant,
     evaluatorActivityVariant,
+    ideActivityVariant,
     toolboxDemoActivityVariant,
     printableGraphicActivityVariant,
     tamaroCardsPageActivityVariant,
