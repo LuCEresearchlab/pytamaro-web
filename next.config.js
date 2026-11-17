@@ -90,7 +90,7 @@ module.exports = nextConfig;
 
 // Injected content via Sentry wizard below
 
-const { withSentryConfig } = require('@sentry/nextjs');
+const { withSentryConfig } = require('@sentry/nextjs/config');
 
 module.exports = withSentryConfig(module.exports, {
   // For all available options, see:
@@ -116,7 +116,11 @@ module.exports = withSentryConfig(module.exports, {
   // tunnelRoute: "/monitoring",
 
   // Automatically tree-shake Sentry logger statements to reduce bundle size
-  disableLogger: true,
+  // (`disableLogger` was removed in @sentry/nextjs v11; this option works with
+  // both webpack and Turbopack)
+  bundleSizeOptimizations: {
+    excludeDebugStatements: true,
+  },
 
   // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
   // See the following for more information:
