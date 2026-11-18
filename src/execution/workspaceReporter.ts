@@ -21,7 +21,7 @@ function sameFolders(a: ReadonlySet<string>, b: readonly string[]): boolean {
  *
  * A mid-run message is advisory: dropping or losing one must only cost
  * timeliness, never data. The reporter therefore remembers what it has pushed
- * in its own `pushed` map and never touches the run's baseline (I3). The final
+ * in its own `pushed` map and never touches the run's baseline. The final
  * reconciliation still compares against the untouched baseline, so files whose
  * mid-run event was lost are reported then.
  *

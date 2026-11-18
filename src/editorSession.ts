@@ -65,8 +65,8 @@ type DocumentEntry = {
 
 /**
  * Tracks the open documents (Monaco text models) of an editing context and
- * exposes their analysis. Models are created by the editor component and
- * bound here through `attachModel`; this class never creates or disposes them.
+ * exposes their analysis. Models are created and disposed by the editor
+ * component; this class only binds them through `attachModel`.
  *
  * A document here is an open buffer (`ITextModel`), not a file: the headless
  * `PythonWorkspace` owns the files. Documents are keyed by file name, and one may
@@ -76,8 +76,7 @@ type DocumentEntry = {
  * analysis caches).
  *
  * `attachModel` lets a caller bind a model that it owns (e.g., a code cell
- * editor) to a file position. `openDocument` is for editors that let this
- * session create the models. Documents can be closed and renamed through the
+ * editor) to a file position. Documents can be closed and renamed through the
  * session, which keeps the workspace in sync.
  *
  * The session also exposes the multi-file workspace it is built on: callers
@@ -246,8 +245,7 @@ export class EditorSession {
   /**
    * Closes the document and removes its file from the workspace.
    *
-   * Models created by this session are disposed; models attached by a caller
-   * are only detached, since their owner is responsible for them.
+   * The model is only detached: its owner disposes it.
    */
   closeDocument(name: string): void {
     this.detachDocument(name);

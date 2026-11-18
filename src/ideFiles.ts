@@ -3,7 +3,8 @@
  * workspace (which may contain slashes).
  *
  * Whether the bytes are shown as text, as a preview, or as binary is a view
- * decision (see `ideFileContent.viewKind`), not a property of the file.
+ * decision (see `ideFileContent.viewKind` and `ideFileContent.filePreview`),
+ * not a property of the file.
  */
 export type IdeFile = {
   path: string;

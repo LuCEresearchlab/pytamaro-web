@@ -266,7 +266,7 @@ class WorkerExecutor {
     if (environment.collectWorkspaceChanges) {
       // Setup is over: what is on disk now is exactly the baseline.
       this.seedScanCache(environment);
-      // Created after setup: setup writes must never be reported (I8).
+      // Created after setup: setup writes must never be reported.
       this.activeReporter = new WorkspaceReporter(
         environment.workspaceBaseline,
         environment.generatedFiles,

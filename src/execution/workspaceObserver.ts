@@ -43,9 +43,9 @@ import {
  *   They use node fields and `FS.getPath(node)` only, after the original
  *   operation has restored the node to the tree.
  *
- * The self-test in `install` disables the hooks (`supported === false`) if the
- * close hook is not invoked, which degrades gracefully to scans at `input()`
- * and at the end of the run.
+ * The self-test in `install` only marks the hooks supported if it sees the
+ * close hook invoked; otherwise `start` reports nothing, which degrades
+ * gracefully to scans at `input()` and at the end of the run.
  */
 
 type FSType = PyodideAPI['FS'];
@@ -245,7 +245,8 @@ export class WorkspaceObserver {
   }
 
   private installDirNodeHooks(ops: MemfsNodeOps): void {
-    // Aliased so that the assignments are not to a parameter's property.
+    // Alias the parameter: `no-param-reassign` rejects assignments to its
+    // properties, but the hook must be installed in place.
     const dirNode = ops;
     const originalMknod = ops.mknod;
     dirNode.mknod = (parent, name, mode, dev) => {
@@ -365,7 +366,7 @@ export class WorkspaceObserver {
         this.emit([{ kind: 'put', name, content: new Uint8Array(0) }]);
       }
     } catch {
-      // A hook failure must never break the Python syscall.
+      // Ignored.
     }
   }
 
@@ -383,7 +384,7 @@ export class WorkspaceObserver {
         this.emit([{ kind: 'put', name, content }]);
       }
     } catch {
-      // Never throw into Python.
+      // Ignored.
     }
   }
 
@@ -410,7 +411,7 @@ export class WorkspaceObserver {
         this.emit([{ kind: 'put', name, content }]);
       }
     } catch {
-      // Never throw into Python.
+      // Ignored.
     }
   }
 
@@ -425,7 +426,7 @@ export class WorkspaceObserver {
         this.flushDirty();
       }
     } catch {
-      // Never throw into Python.
+      // Ignored.
     }
   }
 
@@ -443,7 +444,7 @@ export class WorkspaceObserver {
         this.emit([{ kind: 'remove', name: name_ }]);
       }
     } catch {
-      // Never throw into Python.
+      // Ignored.
     }
   }
 
@@ -514,7 +515,7 @@ export class WorkspaceObserver {
       });
       this.emit(events);
     } catch {
-      // Never throw into Python.
+      // Ignored.
     }
   }
 
@@ -550,7 +551,7 @@ export class WorkspaceObserver {
         this.flushFolders();
       }
     } catch {
-      // Never throw into Python.
+      // Ignored.
     }
   }
 

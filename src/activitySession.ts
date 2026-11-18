@@ -79,7 +79,7 @@ function sliceAnalysisFrom(
  * executing cell `i` executes all the cells before it. The editor session never
  * sees cells: this class composes the prefix files, maps Monaco models onto
  * them, and slices the file analysis per cell. Saving cells between visits is
- * delegated to an optional `CodeCellsPersistence`.
+ * delegated to an optional `LocalStorageCodeCells`.
  */
 export class ActivitySession {
   private editorSession: EditorSession;
@@ -651,8 +651,6 @@ export default function useActivitySession(
       activitySession.disconnect();
     };
   }, [activitySession]);
-
-  // Update the toolbox files in the analyzer whenever the toolbox changes.
 
   const { metadata } = useLocalProfile();
   const toolboxFunctions = useMemo(
