@@ -40,7 +40,7 @@ describe('Code Local Storage', () => {
     // Only one "out of sync" badge should be visible (the one of the second cell).
     cy.get('[data-testid="output-area"]').first().should('contain.text', 'A');
     cy.get(
-      '.MuiBadge-badge:not(.MuiBadge-invisible) [data-testid="SyncProblemIcon"]',
+      '.MuiBadge-badge:not(.MuiBadge-invisible) [data-testid="stale-output-icon"]',
     ).should('have.length', 1);
   });
 });

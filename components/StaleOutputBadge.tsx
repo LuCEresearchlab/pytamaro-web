@@ -25,7 +25,7 @@ export default function StaleOutputBadge({
       sx={sx}
       badgeContent={
         <Tooltip arrow title={t('staleOutput')}>
-          <SyncProblem />
+          <SyncProblem data-testid='stale-output-icon' />
         </Tooltip>
       }
       invisible={hidden}

@@ -55,7 +55,7 @@ describe('Activity Page', () => {
       .should('have.length', 1)
       .and('contain.text', 'B');
     cy.get(
-      '.MuiBadge-badge:not(.MuiBadge-invisible) [data-testid="SyncProblemIcon"]',
+      '.MuiBadge-badge:not(.MuiBadge-invisible) [data-testid="stale-output-icon"]',
     ).should('have.length', 1);
 
     // Reset the whole activity.

@@ -49,7 +49,7 @@ describe('Code Execution Errors', () => {
       .contains('Name');
     cy.get('.squiggly-error').should('be.visible');
     cy.get(
-      '.MuiBadge-badge:not(.MuiBadge-invisible) [data-testid="SyncProblemIcon"]',
+      '.MuiBadge-badge:not(.MuiBadge-invisible) [data-testid="stale-output-icon"]',
     ).should('not.exist');
     cy.get('[data-testid="dismiss-runtime-error"]').click();
     // Both the bubble and its squiggle disappear...
@@ -58,7 +58,7 @@ describe('Code Execution Errors', () => {
     // ...and the output is now stale (the error in the traceback is no longer reported in the editor,
     // so in some sense the output is "out of sync").
     cy.get(
-      '.MuiBadge-badge:not(.MuiBadge-invisible) [data-testid="SyncProblemIcon"]',
+      '.MuiBadge-badge:not(.MuiBadge-invisible) [data-testid="stale-output-icon"]',
     ).should('be.visible');
   });
 
