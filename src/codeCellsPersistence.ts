@@ -23,8 +23,15 @@ export class LocalStorageCodeCells {
   }
 
   load(): CodeCellState[] | null {
-    this.lastRaw = window.localStorage.getItem(this.key);
-    return this.parse(this.lastRaw);
+    try {
+      this.lastRaw = window.localStorage.getItem(this.key);
+      return this.parse(this.lastRaw);
+    } catch {
+      // Storage access can be denied (e.g., SecurityError). Treat the
+      // activity as having no saved cells and keep working in memory.
+      this.lastRaw = null;
+      return null;
+    }
   }
 
   save(cells: CodeCellState[]) {
