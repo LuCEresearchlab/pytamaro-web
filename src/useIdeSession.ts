@@ -8,7 +8,10 @@ import {
   useSyncExternalStore,
 } from 'react';
 import { EditorSession } from './editorSession';
-import { toolboxFiles as generateToolboxFiles } from './execution/codeExecution';
+import {
+  isReservedExecutionPath,
+  toolboxFiles as generateToolboxFiles,
+} from './execution/codeExecution';
 import type { WorkspaceChanges } from './execution/messageTypes';
 import { encodeText, sameBytes, viewKind } from './ideFileContent';
 import { IdeFile, normalizeWorkspacePath, pathConflicts } from './ideFiles';
@@ -288,6 +291,7 @@ export default function useIdeSession() {
       const target = normalizeWorkspacePath(newName);
       if (
         target === undefined ||
+        isReservedExecutionPath(target) ||
         target === oldName ||
         !workspace.hasFile(oldName)
       ) {
@@ -323,7 +327,7 @@ export default function useIdeSession() {
       }: { overwrite?: boolean; open?: boolean } = {},
     ) => {
       const path = normalizeWorkspacePath(name);
-      if (path === undefined) {
+      if (path === undefined || isReservedExecutionPath(path)) {
         return false;
       }
       const exists = workspace.hasFile(path);
@@ -354,6 +358,7 @@ export default function useIdeSession() {
       const path = normalizeWorkspacePath(name);
       if (
         path === undefined ||
+        isReservedExecutionPath(path) ||
         workspace
           .files()
           .some((file) => file === path || path.startsWith(`${file}/`))
@@ -376,6 +381,7 @@ export default function useIdeSession() {
       const prefix = `${oldPath}/`;
       if (
         target === undefined ||
+        isReservedExecutionPath(target) ||
         target === oldPath ||
         target.startsWith(prefix)
       ) {
@@ -444,6 +450,11 @@ export default function useIdeSession() {
         workspace.removeFile(name);
       });
       changes.changed.forEach(({ name, content }) => {
+        // Generated execution modules are not workspace files: persisting a
+        // file with one of their names would break subsequent runs.
+        if (isReservedExecutionPath(name)) {
+          return;
+        }
         // Mid-run pushes and the final result overlap by design: applying the
         // same change twice must not reset the editor model or the cursor.
         const existing = workspace.bytes(name);
@@ -457,7 +468,9 @@ export default function useIdeSession() {
         workspace.setBytes(name, content);
       });
       if (changes.folders !== undefined) {
-        workspace.setFolders(changes.folders);
+        workspace.setFolders(
+          changes.folders.filter((name) => !isReservedExecutionPath(name)),
+        );
       }
     },
     [workspace],

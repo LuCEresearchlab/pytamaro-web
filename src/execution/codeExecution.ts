@@ -72,6 +72,24 @@ export const DRIVER_FILE = 'driver';
 export const CELL_FILE = 'cell_';
 export const TOOLBOX_FILE = 'toolbox';
 
+/**
+ * Whether a workspace path collides with a module generated for execution.
+ *
+ * The driver and the toolbox modules are written at the root of the execution
+ * directory, next to the workspace files. Their names (and the whole
+ * `toolbox_` prefix, which is used for one module per toolbox function) are
+ * therefore reserved.
+ */
+export function isReservedExecutionPath(path: string): boolean {
+  const root = path.split('/')[0];
+  return (
+    root === `${DRIVER_FILE}.py` ||
+    root === `${TOOLBOX_FILE}.py` ||
+    root === TOOLBOX_FILE ||
+    root.startsWith(`${TOOLBOX_FILE}_`)
+  );
+}
+
 export interface BareboneToolboxFunction {
   name: string;
   source: string;

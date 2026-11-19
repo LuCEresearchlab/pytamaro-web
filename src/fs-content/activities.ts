@@ -1,11 +1,7 @@
 import { existsSync } from 'fs';
 import { readFile, readdir } from 'fs/promises';
 import path from 'path';
-import {
-  CELL_FILE,
-  DRIVER_FILE,
-  TOOLBOX_FILE,
-} from '../execution/codeExecution';
+import { CELL_FILE, isReservedExecutionPath } from '../execution/codeExecution';
 import {
   Activity,
   BasicActivity,
@@ -28,12 +24,10 @@ async function readPythonFiles(files: PythonFileInfo[], authorDir: string) {
     throw new Error('Non-unique destination path in extraPythonFiles');
   }
   // Ensure that destination paths are not reserved
-  const reservedFilenames = [DRIVER_FILE, TOOLBOX_FILE];
-  const reservedPaths = reservedFilenames.map((filename) => `${filename}.py`);
   if (
     destinationPaths.some(
       (destinationPath) =>
-        reservedPaths.includes(destinationPath) ||
+        isReservedExecutionPath(destinationPath) ||
         CELL_FILE_PATH_PATTERN.test(destinationPath),
     )
   ) {
