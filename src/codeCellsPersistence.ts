@@ -42,6 +42,7 @@ export class LocalStorageCodeCells {
       const cells = this.parse(event.newValue);
       if (event.newValue !== null && cells === null) return; // corrupt: ignore
       this.lastRaw = event.newValue;
+      this.write.cancel();
       onExternalChange(cells);
     };
     const onPageHide = () => this.flush();
