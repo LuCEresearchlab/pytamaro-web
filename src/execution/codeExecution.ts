@@ -77,7 +77,11 @@ export interface BareboneToolboxFunction {
   source: string;
 }
 
-function driverSource(cellFileNames: string[], pythonMode: PythonMode) {
+function driverSource(
+  cellFileNames: string[],
+  pythonMode: PythonMode,
+  scriptFileName?: string,
+) {
   // IMPORTANT, part 1:
   // the entire driver is wrapped in a single function so that `globals_dict`,
   // which contains the shared state between cells,
@@ -129,7 +133,8 @@ def print_eval_result(result):
 
 def main():
   try:
-    globals_dict = {}
+    globals_dict = {"__name__": "__main__"}
+    ${scriptFileName === undefined ? '' : 'globals_dict["__file__"] = ' + JSON.stringify(scriptFileName)}
     for path in Path(".").rglob("*.py"):
         try:
             text = path.read_text()
@@ -260,6 +265,7 @@ export function cellsToFiles(
       content: driverSource(
         Array.from({ length: idx + 1 }, (_, i) => nameOf(i)),
         pythonMode,
+        fileNames.length === 0 ? undefined : nameOf(idx), // fileName for IDE
       ),
     },
     ...sourceRunFiles,
