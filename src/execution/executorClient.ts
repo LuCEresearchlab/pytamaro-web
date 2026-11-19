@@ -142,7 +142,6 @@ export class ExecutorClient {
           interruptBuffer,
           setExecutorState,
         );
-        setExecutorState({ type: 'available' });
         resolve(client);
       };
 
@@ -321,7 +320,7 @@ export class ExecutorClient {
   interruptExecution(): void {
     this.interruptBuffer[0] = 2; // 2 for SIGINT
     this.inputAbort?.abort();
-    this.setExecutorState({ type: 'available' });
+    this.activeCodeCell = null;
   }
 
   async restartWorker(): Promise<ExecutorClient> {

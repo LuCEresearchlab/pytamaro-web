@@ -103,12 +103,20 @@ export function ExecutorProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const interruptExecution = () =>
-    executorClientRef?.current?.interruptExecution();
+  const interruptExecution = () => {
+    const client = executorClientRef.current;
+    if (client === null) {
+      return;
+    }
+    client.interruptExecution();
+    setExecutorState({ type: 'available' });
+  };
 
   const restart = useCallback(async () => {
     if (executorClientRef.current !== null) {
-      setExecutorClientRef(await executorClientRef.current.restartWorker());
+      const client = await executorClientRef.current.restartWorker();
+      setExecutorClientRef(client);
+      setExecutorState({ type: 'available' });
     }
   }, []);
 
