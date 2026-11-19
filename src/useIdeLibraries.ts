@@ -24,7 +24,7 @@ export default function useIdeLibraries() {
   const [installationFailed, setInstallationFailed] = useState(false);
 
   useEffect(() => {
-    if (!executorReady || pendingId !== null || selectedIds.length === 0) {
+    if (!executorReady || pendingId !== null) {
       return;
     }
     configureLibraries(selectedIds).catch(() => setInstallationFailed(true));
