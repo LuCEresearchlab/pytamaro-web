@@ -200,8 +200,19 @@ function expression_tree(
   }
 }
 
-/** Renders the expression tree as the tokens shown in the panel. */
-function python_tokens(node: PythonNode): PythonToken[] {
+/**
+ * Newline, indented with two spaces per depth level (to save horizontal space).
+ */
+const newline = (depth: number): PythonToken => ({
+  text: `\n${'  '.repeat(depth)}`,
+});
+
+/**
+ * Pretty-prints the expression tree as the tokens shown in the panel.
+ *
+ * Calls whose arguments are all atomic are kept on a single line.
+ */
+function pretty_python_tokens(node: PythonNode, depth = 0): PythonToken[] {
   switch (node.kind) {
     case 'text':
       return [{ text: node.text, node_id: node.node_id }];
@@ -216,28 +227,42 @@ function python_tokens(node: PythonNode): PythonToken[] {
       ];
     case 'call': {
       const tokens: PythonToken[] = [
-        ...python_tokens(node.name),
+        ...pretty_python_tokens(node.name, depth),
         { text: '(', node_id: node.node_id },
       ];
 
-      node.arguments.forEach((argument, index) => {
-        if (index > 0) {
-          tokens.push({ text: ',', node_id: node.node_id });
-          tokens.push({ text: ' ' });
-        }
-        tokens.push(...python_tokens(argument));
-      });
+      const has_non_atomic = node.arguments.some(
+        (argument) => argument.kind !== 'text' && argument.kind !== 'missing',
+      );
+
+      if (has_non_atomic) {
+        node.arguments.forEach((argument, index) => {
+          if (index > 0) tokens.push({ text: ',', node_id: node.node_id });
+          tokens.push(newline(depth + 1));
+          tokens.push(...pretty_python_tokens(argument, depth + 1));
+        });
+
+        tokens.push(newline(depth));
+      } else {
+        node.arguments.forEach((argument, index) => {
+          if (index > 0) {
+            tokens.push({ text: ',', node_id: node.node_id });
+            tokens.push({ text: ' ' });
+          }
+          tokens.push(...pretty_python_tokens(argument, depth));
+        });
+      }
 
       tokens.push({ text: ')', node_id: node.node_id });
       return tokens;
     }
     case 'definition':
       return [
-        ...python_tokens(node.name),
+        ...pretty_python_tokens(node.name, depth),
         { text: ' ' },
         { text: '=', node_id: node.node_id },
         { text: ' ' },
-        ...python_tokens(node.value),
+        ...pretty_python_tokens(node.value, depth),
       ];
   }
 }
@@ -286,7 +311,7 @@ export function build_python_view(
     };
 
     lines.push({
-      tokens: python_tokens(node),
+      tokens: pretty_python_tokens(node),
       root_id: definition.id,
       kind: 'definition',
       node,
@@ -303,7 +328,7 @@ export function build_python_view(
     );
 
     lines.push({
-      tokens: python_tokens(node),
+      tokens: pretty_python_tokens(node),
       root_id: expression.id,
       kind: 'expression',
       node,
@@ -311,21 +336,6 @@ export function build_python_view(
   });
 
   return lines;
-}
-
-function python_source(node: PythonNode): string {
-  switch (node.kind) {
-    case 'text':
-      return node.text;
-    case 'missing':
-      return '...';
-    case 'call':
-      return `${python_source(node.name)}(${node.arguments
-        .map((argument) => python_source(argument))
-        .join(', ')})`;
-    case 'definition':
-      return `${python_source(node.name)} = ${python_source(node.value)}`;
-  }
 }
 
 function walk(node: PythonNode, visit: (node: PythonNode) => void) {
@@ -397,7 +407,11 @@ export function build_python_source(
   const import_lines = Array.from(imports.entries()).map(
     ([module, names]) => `from ${module} import ${names.join(', ')}`,
   );
-  const code_lines = ordered.map((line) => python_source(line.node));
+  const code_lines = ordered.map((line) =>
+    pretty_python_tokens(line.node)
+      .map((token) => token.text)
+      .join(''),
+  );
 
   return [
     ...import_lines,
