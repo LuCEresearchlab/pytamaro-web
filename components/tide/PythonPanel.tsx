@@ -190,8 +190,6 @@ export default function PythonPanel() {
                 overflow: 'auto',
                 color: '#1b1b1b',
                 backgroundColor: '#f8fafc',
-                fontFamily: "'Fira Code Variable', monospace",
-                fontSize: '0.95rem',
                 lineHeight: 1.5,
                 whiteSpace: 'pre-wrap',
                 overflowWrap: 'anywhere',
@@ -208,7 +206,7 @@ export default function PythonPanel() {
                     minHeight: '1.5em',
                   }}
                 >
-                  <span
+                  <code
                     className='python_view_line_code'
                     style={{
                       flex:
@@ -240,7 +238,7 @@ export default function PythonPanel() {
                         </span>
                       );
                     })}
-                  </span>
+                  </code>
                   {line.kind === 'expression' && (
                     <Tooltip
                       arrow
