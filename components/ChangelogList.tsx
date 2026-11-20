@@ -12,6 +12,7 @@ import {
   activityVariantPathname,
   activityVariantPathnameFromParts,
   documentationElementPathname,
+  idePathname,
   playgroundPathname,
 } from '../src/urlUtils';
 import GenericMuiIcon from './GenericMuiIcon';
@@ -228,6 +229,27 @@ export const changelogEntries = [
     icon: 'PlayCircle',
     title: 'Python execution in the browser',
     desc: 'Python now runs directly in your browser thanks to Pyodide. This makes the execution faster and enables interactive input. The PyTamaro library has been updated to support this new mode.',
+    silent: true,
+  },
+  {
+    date: '2026-09-04',
+    icon: 'Code',
+    title: 'Evaluator',
+    desc: 'Evaluate expressions using the (Rapid) Evaluator. It offers a REPL-like experience: the last expression of your Python code is automatically evaluated and its result is clearly shown, distinct from the standard output.',
+    silent: true,
+  },
+  {
+    date: '2026-11-21',
+    icon: 'AccountTree',
+    title: 'IDE',
+    desc: (
+      <span>
+        The new <Link href={idePathname()}>IDE</Link> lets you work with
+        multiple files and folders in a full-screen environment. You can edit
+        files in tabs, run code with the output displayed below the editor,
+        preview graphics, and inspect the bytes underlying each file.
+      </span>
+    ),
     silent: true,
   },
 ];
