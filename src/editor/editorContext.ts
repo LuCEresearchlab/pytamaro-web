@@ -1,5 +1,5 @@
 import type { Monaco } from '@monaco-editor/react';
-import type { editor, Position } from 'monaco-editor';
+import type { editor, IRange, Position } from 'monaco-editor';
 import type { LiveAnalysisStatus } from '../localStorage/schema';
 import type { PythonName } from '../python-analyzer/python_analyzer';
 import type { CustomDiagnostic } from './diagnostics';
@@ -39,11 +39,11 @@ export interface EditorContext {
   ): PythonName | null;
   /** Subscribes to re-analysis; returns an unsubscribe function. */
   subscribeToAnalysis(listener: () => void): () => void;
-  /** Optional decoration for the last expression (eval-last-expression mode). */
-  evalExprDiagnostic?(
+  /** Optional range of the last expression (eval-last-expression mode). */
+  evalExprRange?(
     monaco: Monaco,
     editor: editor.IStandaloneCodeEditor,
-  ): editor.IModelDeltaDecoration | null;
+  ): IRange | null;
   /** Name of the file this document runs as; omitted for notebook cells. */
   runtimeFileName?: string;
 }

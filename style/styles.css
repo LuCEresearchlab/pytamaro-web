@@ -92,19 +92,21 @@ pre:has(code) {
   opacity: 0.2;
 }
 
-:is(
-  .eval-result-hint,
-  .eval-result-output,
-  .eval-result-code-decoration
-) {
+:is(.eval-result-hint, .eval-result-output) {
   border: 1px dashed var(--mui-palette-primary-main);
 }
 
-.evaluator:has(.eval-result-output:hover) :is(
-  .eval-result-hint,
-  .eval-result-output,
-  .eval-result-code-decoration
-) {
+.monaco-editor .eval-result-code-border {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px dashed var(--mui-palette-primary-main);
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.evaluator:has(.eval-result-output:hover)
+  :is(.eval-result-hint, .eval-result-output, .eval-result-code-border) {
   background-color: color-mix(
     in srgb,
     var(--mui-palette-primary-main) 25%,

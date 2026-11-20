@@ -1,6 +1,6 @@
 import type { Monaco } from '@monaco-editor/react';
 import { debounce, uniqBy } from 'lodash';
-import type { editor, Position } from 'monaco-editor';
+import type { editor, IRange, Position } from 'monaco-editor';
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { LocalStorageCodeCells } from './codeCellsPersistence';
 import {
@@ -341,8 +341,8 @@ export class ActivitySession {
           this.removeNewAnalysisResultListener(cellIdx, listener);
         };
       },
-      evalExprDiagnostic: (monacoInstance, editorInstance) =>
-        this.evalExprDiagnostics(monacoInstance, editorInstance, cellIdx),
+      evalExprRange: (monacoInstance, editorInstance) =>
+        this.evalExprRange(monacoInstance, editorInstance, cellIdx),
     };
   }
 
@@ -400,11 +400,11 @@ export class ActivitySession {
     return { upToCell, beforeCell };
   }
 
-  evalExprDiagnostics(
+  evalExprRange(
     monacoInstance: Monaco,
     editorInstance: editor.IStandaloneCodeEditor,
     cellIdx: number,
-  ): editor.IModelDeltaDecoration | null {
+  ): IRange | null {
     const analysisResult = this.getAnalysisResult(cellIdx);
     const model = editorInstance.getModel();
     if (!model || analysisResult?.last_expr_range === undefined) {
@@ -412,18 +412,12 @@ export class ActivitySession {
     }
     const { start, end } = analysisResult.last_expr_range;
     const previousLines = this.precedingLines(cellIdx);
-    return {
-      range: new monacoInstance.Range(
-        start.line - previousLines,
-        start.column,
-        end.line - previousLines,
-        end.column,
-      ),
-      options: {
-        className: 'eval-result-code-decoration',
-        isWholeLine: false,
-      },
-    };
+    return new monacoInstance.Range(
+      start.line - previousLines,
+      start.column,
+      end.line - previousLines,
+      end.column,
+    );
   }
 
   private diagnosticsForCell(

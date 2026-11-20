@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ErrorMessageWidget } from '../src/editor/ErrorMessageWidget';
 import type { CustomDiagnostic } from '../src/editor/diagnostics';
 import type { EditorContext } from '../src/editor/editorContext';
+import { EvalResultBorder } from '../src/editor/evalResultBorder';
 import { registerCustomProviders } from '../src/editor/providers';
 import { STRICT_PYTHON3_LANG_ID } from '../src/editor/strictPython3';
 import {
@@ -82,8 +83,7 @@ export default function CodeEditor({
     useRef<EditorNamespace.IEditorDecorationsCollection | null>(null);
   const hoveredStaticErrorDecorationRef =
     useRef<EditorNamespace.IEditorDecorationsCollection>(null);
-  const evalResultDecorationRef =
-    useRef<EditorNamespace.IEditorDecorationsCollection | null>(null);
+  const evalResultBorderRef = useRef<EvalResultBorder | null>(null);
   const customDiagnosticsRef = useRef<CustomDiagnostic[]>([]);
   const shownDiagnosticRef = useRef<CustomDiagnostic | null>(null);
 
@@ -174,9 +174,8 @@ export default function CodeEditor({
       // Remove possible collections of decorations
       runtimeDecorationsCollectionRef.current?.clear();
       runtimeDecorationsCollectionRef.current = null;
-      // Remove possible eval result decorations
-      evalResultDecorationRef.current?.clear();
-      evalResultDecorationRef.current = null;
+      // Remove the possible eval result border
+      evalResultBorderRef.current?.setRange(null);
       // Remove static error annotations
       clearStaticAnnotations();
     }
@@ -192,6 +191,20 @@ export default function CodeEditor({
     });
     return () => {
       subscription.dispose();
+    };
+  }, [editorInstance]);
+
+  useEffect(() => {
+    if (!editorInstance) {
+      return () => {};
+    }
+    const border = new EvalResultBorder(editorInstance);
+    evalResultBorderRef.current = border;
+    return () => {
+      border.dispose();
+      if (evalResultBorderRef.current === border) {
+        evalResultBorderRef.current = null;
+      }
     };
   }, [editorInstance]);
 
@@ -404,17 +417,11 @@ export default function CodeEditor({
     customDiagnosticsRef.current = diagnostics;
     staticDecorationsCollectionRef.current =
       editorInstance.createDecorationsCollection(diagnostics);
-    if (pythonMode === PythonMode.EvalLastExpr) {
-      const decoration = context.evalExprDiagnostic?.(
-        monacoInstance,
-        editorInstance,
-      );
-      if (decoration) {
-        evalResultDecorationRef.current?.clear();
-        evalResultDecorationRef.current =
-          editorInstance.createDecorationsCollection([decoration]);
-      }
-    }
+    evalResultBorderRef.current?.setRange(
+      pythonMode === PythonMode.EvalLastExpr
+        ? (context.evalExprRange?.(monacoInstance, editorInstance) ?? null)
+        : null,
+    );
   }, [
     editorInstance,
     monacoInstance,
