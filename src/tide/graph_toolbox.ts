@@ -9,7 +9,7 @@ import {
   TideNode,
   TideNodeMetadata,
 } from '../../components/tide/cards';
-import { isMac } from '../keyboardUtils';
+import { hasCmdModifier } from '../keyboardUtils';
 import { check_edge_looping, check_edge_typing } from './interactivity';
 import { TideJudiciousMetadata } from './judiciours_to_tide';
 import { Definition } from './language/definitions';
@@ -215,7 +215,7 @@ export function onDocumentKeyDown(
   {
     if (e.key === 'Escape') setFullscreen(false);
     if (e.key === 'F11') setFullscreen(true);
-    const modifierPressed = isMac() ? e.metaKey : e.ctrlKey;
+    const modifierPressed = hasCmdModifier() ? e.metaKey : e.ctrlKey;
     if (modifierPressed && e.key.toLowerCase() === 'z') {
       e.preventDefault();
       e.stopPropagation();

@@ -51,7 +51,7 @@ import { baseName, IdeFile, isPythonFileName } from '../src/ide/files';
 import useIdeExecution from '../src/ide/useIdeExecution';
 import useIdeSession from '../src/ide/useIdeSession';
 import { downloadFilesAsZip, readFilesFromZip } from '../src/ide/zip';
-import { isMac } from '../src/keyboardUtils';
+import { hasCmdModifier } from '../src/keyboardUtils';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { playgroundActivityVariant } from '../src/playground';
@@ -78,7 +78,7 @@ function pickFile(accept: string, onFile: (file: File) => void) {
 
 /** True for Cmd+J (macOS) or Ctrl+J (other platforms), on any keyboard layout. */
 function isToggleOutputShortcut(event: KeyboardEvent) {
-  const modifierPressed = isMac()
+  const modifierPressed = hasCmdModifier()
     ? event.metaKey && !event.ctrlKey
     : event.ctrlKey && !event.metaKey;
   return (
@@ -288,7 +288,7 @@ export default function Ide() {
     return () => window.removeEventListener('keydown', onKeyDown, true);
   }, [isPythonFile, outputAvailable]);
 
-  const shortcutLabel = isHydrated && isMac() ? '⌘J' : 'Ctrl+J';
+  const shortcutLabel = isHydrated && hasCmdModifier() ? '⌘J' : 'Ctrl+J';
 
   const handleExecutionRequest = useCallback(async () => {
     const executionUUID = crypto.randomUUID();
