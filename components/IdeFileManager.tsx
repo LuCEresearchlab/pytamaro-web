@@ -18,6 +18,7 @@ import {
   ClickAwayListener,
   IconButton,
   Stack,
+  SvgIcon,
   TextField,
   Tooltip,
   Typography,
@@ -37,6 +38,7 @@ import {
 import { isPythonFileName } from '../src/ide/files';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import theme from '../src/theme';
+import PythonSvg from './icons/PythonSvg';
 import SidebarTitle from './sidebar/SidebarTitle';
 
 const FOLDER_PREFIX = 'dir:';
@@ -206,12 +208,9 @@ function InlineNameInput({
 
 function PythonFileIcon() {
   return (
-    <Box
-      component='img'
-      src='/icons/python-logo.svg'
-      alt=''
-      sx={{ display: 'block', width: 18, height: 18 }}
-    />
+    <SvgIcon fontSize='small'>
+      <PythonSvg />
+    </SvgIcon>
   );
 }
 
