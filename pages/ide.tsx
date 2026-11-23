@@ -1,12 +1,19 @@
 import {
-  Abc,
-  Memory,
+  Code,
+  Note,
   PlayCircleFilled,
   Preview,
   UnfoldLess,
   UnfoldMore,
 } from '@mui/icons-material';
-import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import {
+  Box,
+  IconButton,
+  Stack,
+  SvgIcon,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { saveAs } from 'file-saver';
 import { useConfirm } from 'material-ui-confirm';
 import Head from 'next/head';
@@ -26,6 +33,7 @@ import CustomSnackbar from '../components/CustomSnackbar';
 import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDialog';
 import DocumentationStripe from '../components/documentation/DocumentationStripe';
 import EditorTabs from '../components/EditorTabs';
+import BinIconSvg from '../components/icons/BinIconSvg';
 import IdeFileManager from '../components/IdeFileManager';
 import ExecutionOutputArea from '../components/input_output/ExecutionOutputArea';
 import { OUTPUT_AREA_BACKGROUND_COLOR } from '../components/input_output/OutputArea';
@@ -459,7 +467,11 @@ export default function Ide() {
             {
               value: 'text',
               label: tIde('viewAsText'),
-              icon: <Abc fontSize='small' />,
+              icon: activeFile.endsWith('.py') ? (
+                <Code fontSize='small' />
+              ) : (
+                <Note fontSize='small' />
+              ),
             },
             ...(isPreview
               ? [
@@ -473,7 +485,11 @@ export default function Ide() {
             {
               value: 'bytes',
               label: tIde('viewAsBytes'),
-              icon: <Memory fontSize='small' />,
+              icon: (
+                <SvgIcon fontSize='small'>
+                  <BinIconSvg />
+                </SvgIcon>
+              ),
             },
           ],
         };

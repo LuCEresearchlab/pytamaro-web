@@ -1,4 +1,3 @@
-import { InstallDesktop } from '@mui/icons-material';
 import {
   Alert,
   Button,
@@ -13,11 +12,13 @@ import {
   FormControlLabel,
   FormGroup,
   Stack,
+  SvgIcon,
 } from '@mui/material';
 import { useState } from 'react';
 import { PREINSTALLED_IDE_LIBRARIES } from '../../src/ide/libraries';
 import useIdeLibraries from '../../src/ide/useIdeLibraries';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
+import EditBoxSvg from '../icons/EditBoxSvg';
 import NavBarButton from './NavBarButton';
 
 export default function LibrariesButton() {
@@ -44,7 +45,9 @@ export default function LibrariesButton() {
         testId='libraries-button'
         onClick={() => setOpen(true)}
       >
-        <InstallDesktop />
+        <SvgIcon>
+          <EditBoxSvg />
+        </SvgIcon>
       </NavBarButton>
       <Dialog open={open} onClose={handleClose} maxWidth='sm' fullWidth>
         <DialogTitle>{t('ideLibraries.title')}</DialogTitle>
