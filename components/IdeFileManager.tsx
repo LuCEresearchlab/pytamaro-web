@@ -732,30 +732,12 @@ export default function IdeFileManager({
         data-drop-folder={node.path}
         label={
           <RowLabel
-            actionCount={5}
+            actionCount={2}
             moreActionsLabel={t('moreActions')}
             closeActionsLabel={t('closeActions')}
             actions={
               isRenaming ? undefined : (
                 <>
-                  <ActionButton
-                    title={t('addEmptyFile')}
-                    onClick={() => startCreate('file', node.path)}
-                  >
-                    <NoteAddOutlined fontSize='small' />
-                  </ActionButton>
-                  <ActionButton
-                    title={t('addFileFromDevice')}
-                    onClick={() => pickFiles(node.path)}
-                  >
-                    <UploadFileOutlined fontSize='small' />
-                  </ActionButton>
-                  <ActionButton
-                    title={t('addFolder')}
-                    onClick={() => startCreate('folder', node.path)}
-                  >
-                    <CreateNewFolderOutlined fontSize='small' />
-                  </ActionButton>
                   <ActionButton
                     title={t('renameFolder')}
                     onClick={() => {
@@ -806,6 +788,15 @@ export default function IdeFileManager({
     );
   };
 
+  const [selectedFolder, setSelectedFolder] = useState('');
+  useEffect(() => {
+    if (activeFile.startsWith(FOLDER_PREFIX)) {
+      setSelectedFolder(activeFile);
+    } else {
+      setSelectedFolder(parentPath(activeFile));
+    }
+  }, [activeFile]);
+
   return (
     <Box
       sx={{
@@ -835,7 +826,7 @@ export default function IdeFileManager({
             <IconButton
               size='small'
               aria-label={t('addEmptyFile')}
-              onClick={() => startCreate('file', '')}
+              onClick={() => startCreate('file', selectedFolder)}
               data-testid='new-file-button'
             >
               <NoteAddOutlined fontSize='small' />
@@ -845,7 +836,7 @@ export default function IdeFileManager({
             <IconButton
               size='small'
               aria-label={t('addFileFromDevice')}
-              onClick={() => pickFiles('')}
+              onClick={() => pickFiles(selectedFolder)}
               data-testid='upload-file-button'
             >
               <UploadFileOutlined fontSize='small' />
@@ -855,7 +846,7 @@ export default function IdeFileManager({
             <IconButton
               size='small'
               aria-label={t('addFolder')}
-              onClick={() => startCreate('folder', '')}
+              onClick={() => startCreate('folder', selectedFolder)}
               data-testid='new-folder-button'
             >
               <CreateNewFolderOutlined fontSize='small' />
@@ -888,6 +879,7 @@ export default function IdeFileManager({
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
+          onClick={() => setSelectedFolder('')}
           sx={{
             flex: 1,
             borderRadius: 1,
@@ -904,10 +896,16 @@ export default function IdeFileManager({
             selectedItems={activeFile}
             expandedItems={expandedItems}
             onExpandedItemsChange={(_, itemIds) => setExpandedItems(itemIds)}
-            onSelectedItemsChange={(_, itemId) => {
-              if (itemId !== null && !itemId.startsWith(FOLDER_PREFIX)) {
+            onSelectedItemsChange={(e, itemId) => {
+              if (itemId === null) {
+                return;
+              }
+              if (itemId.startsWith(FOLDER_PREFIX)) {
+                setSelectedFolder(itemId.substring(FOLDER_PREFIX.length));
+              } else {
                 onOpenFile(itemId);
               }
+              e?.stopPropagation();
             }}
             data-testid='file-tree'
           >
