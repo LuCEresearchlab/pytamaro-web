@@ -28,7 +28,7 @@
     "description": "Consultez les instructions d'installation si vous préférez utiliser PyTamaro <strong>hors ligne</strong> dans votre IDE préféré."
   },
   "collaboration": "PyTamaro est une collaboration synergique entre <teachers>enseignants universitaires et scolaires</teachers>",
-  "openSource": "La bibliothèque est un projet open source hébergé sur <github>GitHub</github>",
+  "openSource": "Cette <platform>plateforme</platform> et la <library>bibliothèque</library> sont toutes deux des projets open source hébergés sur GitHub",
   "tooltips": {
     "variable": "Variable",
     "loop": "Boucle",

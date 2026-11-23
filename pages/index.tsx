@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { MenuBookOutlined, Translate } from '@mui/icons-material';
 import Download from '@mui/icons-material/Download';
+import GitHub from '@mui/icons-material/GitHub';
 import PlayCircle from '@mui/icons-material/PlayCircle';
 import Route from '@mui/icons-material/Route';
 import School from '@mui/icons-material/School';
@@ -759,46 +760,67 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
           </Grid>
         </Grid>
       </Container>
-      <Typography
-        variant='h6'
-        align='center'
-        gutterBottom
-        sx={{
-          mt: 8,
-          fontWeight: 'normal',
-          textWrap: 'balance',
-        }}
-      >
-        <Trans
-          i18nKey='home:collaboration'
-          components={{
-            teachers: (
-              <Link
-                href={`${aboutPathname()}#who`}
-                style={{ textDecoration: 'none' }}
-              />
-            ),
+      <Container maxWidth='md'>
+        <Box
+          sx={{
+            my: 4,
+            pt: { xs: 4, md: 5 },
+            textAlign: 'center',
           }}
-        />
-      </Typography>
-      <Typography
-        variant='h6'
-        align='center'
-        sx={{ fontWeight: 'normal' }}
-        gutterBottom
-      >
-        <Trans
-          i18nKey='home:openSource'
-          components={{
-            github: (
-              <Link
-                href='https://github.com/LuCEresearchlab/pytamaro'
-                style={{ textDecoration: 'none' }}
-              />
-            ),
-          }}
-        />
-      </Typography>
+        >
+          <Typography
+            variant='body1'
+            color='textSecondary'
+            sx={{ textWrap: 'balance', fontSize: '1.1rem' }}
+          >
+            <Trans
+              i18nKey='home:collaboration'
+              components={{
+                teachers: (
+                  <Link
+                    href={`${aboutPathname()}#who`}
+                    sx={{ fontWeight: 500 }}
+                  />
+                ),
+              }}
+            />
+          </Typography>
+          <Typography
+            variant='body1'
+            color='textSecondary'
+            sx={{ mt: 1, textWrap: 'balance', fontSize: '1.1rem' }}
+          >
+            <Trans
+              i18nKey='home:openSource'
+              components={{
+                platform: (
+                  <Link
+                    href='https://github.com/LuCEresearchlab/pytamaro-web'
+                    sx={{ fontWeight: 500 }}
+                  />
+                ),
+                library: (
+                  <Link
+                    href='https://github.com/LuCEresearchlab/pytamaro'
+                    sx={{ fontWeight: 500 }}
+                  />
+                ),
+              }}
+            />
+            <GitHub
+              titleAccess='GitHub'
+              sx={{
+                fontSize: '1.25rem',
+                verticalAlign: 'middle',
+                position: 'relative',
+                top: '-0.12em',
+                ml: 0.75,
+                color: 'text.secondary',
+              }}
+            />
+          </Typography>
+        </Box>
+      </Container>
     </div>
   );
 }

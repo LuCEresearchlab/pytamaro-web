@@ -28,7 +28,7 @@
     "description": "Installation instructions if you prefer to use PyTamaro <strong>offline</strong> in your favorite IDE."
   },
   "collaboration": "PyTamaro is a synergistic collaboration between <teachers>university and school teachers</teachers>",
-  "openSource": "The library is an open-source project hosted on <github>GitHub</github>",
+  "openSource": "Both this <platform>platform</platform> and the <library>library</library> are open-source projects hosted on GitHub",
   "tooltips": {
     "variable": "Variable",
     "loop": "Loop",
