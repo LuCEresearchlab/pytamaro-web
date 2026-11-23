@@ -15,6 +15,21 @@ Third-party components, fonts, media, and trademarks remain under their own term
 
 Content by authors (educational materials imported as git submodules in `data/*`) is private and thus not covered by this repository's license.
 
+## How do I set up a development environment to run the platform locally?
+
+<details>
+<summary>Expand</summary>
+
+1. Clone this repository `git clone git@github.com:LuCEresearchlab/pytamaro-web.git`
+1. Change directory to the newly cloned repository (e.g., `cd pytamaro-web`)
+1. (Optional) Clone the content submodules you have access to (e.g., `git submodule update --init data/luce`, or `git submodule update --init` to clone all of them).
+1. Install the dependencies of this project: `npm install`
+1. (Optional) Populate the `public` folder with notebooks-related assets: `npm run create-assets`
+1. Start the Next.js server: `npm run dev`
+1. Browse at [http://localhost:3000](http://localhost:3000)
+
+</details>
+
 ## I am a content author. How can I add my activities and curricula?
 
 <details>
@@ -63,21 +78,6 @@ In case of success, the reference to the submodule in this platform repository w
 (which will automatically trigger the redeployment of the entire platform with your updated content).
 In case of failure, an issue will be created in your repository with the log of the build failure ([example](https://github.com/LuCEresearchlab/pytamaro-web-luce/issues/94)).
 The entire process should take about 10 minutes.
-
-</details>
-
-## How do I set up a development environment to run the platform locally?
-
-<details>
-<summary>Expand</summary>
-
-1. Clone this repository `git clone git@github.com:LuCEresearchlab/pytamaro-web.git`
-1. Change directory to the newly cloned repository (e.g., `cd pytamaro-web`)
-1. Clone the submodules you have access to (e.g., `git submodule update --init data/luce`, or `git submodule update --init` to clone all of them)
-1. Install the dependencies of this project: `npm install`
-1. Populate the `public` folder with notebooks-related assets: `npm run create-assets`
-1. Start the Next.js server: `npm run dev`
-1. Browse at [http://localhost:3000](http://localhost:3000)
 
 </details>
 

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
+import { existsSync } from 'fs';
 import { readdir, readFile } from 'fs/promises';
 import { serialize } from 'next-mdx-remote/serialize';
 import path from 'path';
@@ -101,11 +102,11 @@ export async function readCurriculum(
 const curriculaListCache = new DataCache<Curriculum[]>();
 
 async function listCurriculaFromFS(authorSlug: string): Promise<Curriculum[]> {
-  const curriculumSlugs = (
-    await readdir(path.join(DATA_DIR, authorSlug, CURRICULA_DIR), {
-      withFileTypes: true,
-    })
-  )
+  const curriculaDir = path.join(DATA_DIR, authorSlug, CURRICULA_DIR);
+  if (!existsSync(curriculaDir)) {
+    return [];
+  }
+  const curriculumSlugs = (await readdir(curriculaDir, { withFileTypes: true }))
     .filter((item) => item.isFile())
     .filter((item) => !/^\./.test(item.name)) // skip hidden files
     .map((file) => file.name.replace(CURRICULUM_EXT, ''));

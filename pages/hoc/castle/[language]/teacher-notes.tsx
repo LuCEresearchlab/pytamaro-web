@@ -874,16 +874,21 @@ export async function getStaticProps({
     it: 'castello',
     de: 'burg',
   };
-  const curriculum = await getCurriculum(
-    authorSlug,
-    curriculumByLanguage[language],
-  );
-  return {
-    props: {
-      curriculum,
-      ...(await translationProps(['hourofcode'])),
-    },
-  };
+  try {
+    const curriculum = await getCurriculum(
+      authorSlug,
+      curriculumByLanguage[language],
+    );
+    return {
+      props: {
+        curriculum,
+        ...(await translationProps(['hourofcode'])),
+      },
+    };
+  } catch {
+    // 404 when the luce submodule is not available
+    return { notFound: true as const };
+  }
 }
 
 export async function getStaticPaths() {

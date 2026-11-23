@@ -31,8 +31,8 @@ export default function CurriculaPage({
   );
   // ... but keep 'luce' first
   const luceIndex = sorted.findIndex((author) => author.slug === 'luce');
-  const luce = sorted.splice(luceIndex, 1)[0];
-  const sortedAuthors = [luce, ...sorted];
+  const sortedAuthors =
+    luceIndex === -1 ? sorted : [sorted.splice(luceIndex, 1)[0], ...sorted];
 
   return (
     <div>

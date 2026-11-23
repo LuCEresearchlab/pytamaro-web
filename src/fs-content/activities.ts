@@ -1,3 +1,4 @@
+import { existsSync } from 'fs';
 import { readFile, readdir } from 'fs/promises';
 import path from 'path';
 import {
@@ -147,11 +148,11 @@ export async function findVersions(
 const activityListCache = new DataCache<Activity[]>();
 
 async function listActivitiesFromFS(authorSlug: string): Promise<Activity[]> {
-  const activitySlugs = (
-    await readdir(path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR), {
-      withFileTypes: true,
-    })
-  )
+  const activitiesDir = path.join(DATA_DIR, authorSlug, ACTIVITIES_DIR);
+  if (!existsSync(activitiesDir)) {
+    return [];
+  }
+  const activitySlugs = (await readdir(activitiesDir, { withFileTypes: true }))
     .filter((item) => item.isDirectory())
     .map((dir) => dir.name)
     .filter((name) => !/^\./.test(name)); // skip hidden directories starting with a '.', such as '.DS_Store'

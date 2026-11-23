@@ -495,12 +495,17 @@ export default function FinishHocCastlePage({
 }
 
 export async function getStaticProps() {
-  return {
-    props: {
-      finalActivity: await readActivity('luce-hoc', 'build-your-castle'),
-      ...(await translationProps(['hourofcode', 'activityfooter'])),
-    },
-  };
+  try {
+    return {
+      props: {
+        finalActivity: await readActivity('luce-hoc', 'build-your-castle'),
+        ...(await translationProps(['hourofcode', 'activityfooter'])),
+      },
+    };
+  } catch {
+    // 404 when the luce submodule is not available
+    return { notFound: true as const };
+  }
 }
 
 export async function getStaticPaths() {
