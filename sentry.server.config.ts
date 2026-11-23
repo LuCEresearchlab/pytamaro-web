@@ -4,11 +4,13 @@
 
 import * as Sentry from '@sentry/nextjs';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-process.env.NODE_ENV === 'production' &&
+const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN ?? '';
+
+if (process.env.NODE_ENV === 'production' && dsn !== '') {
   Sentry.init({
-    dsn: 'https://ed55fbd244354966bdb29c79cdc709bf@sentry.luce.si.usi.ch/1',
+    dsn,
 
     // Setting this option to true will print useful information to the console while you're setting up Sentry.
     debug: false,
   });
+}
