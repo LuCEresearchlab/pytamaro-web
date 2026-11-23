@@ -447,7 +447,7 @@ export class ActivitySession {
     this.analysisResults = [];
     this.flushDownstream.cancel();
     this.downstreamFrom = null;
-    this.rewriteCellsFrom(0);
+    this.rewriteCells(0);
     this.updateModelMappingsFrom(0);
   }
 
@@ -455,10 +455,10 @@ export class ActivitySession {
   private flushDownstream = debounce(() => {
     const from = this.downstreamFrom;
     this.downstreamFrom = null;
-    if (from !== null) this.rewriteCellsFrom(from);
+    if (from !== null) this.rewriteCells(from);
   }, 200);
 
-  private rewriteCells(from: number, to: number) {
+  private rewriteCells(from: number, to: number = this.sources.length) {
     this.editorSession.addFiles(
       this.sources.slice(from, to).map((_, offset) => ({
         name: cellFileName(from + offset),
@@ -466,18 +466,6 @@ export class ActivitySession {
       })),
     );
     for (let idx = from; idx < to; idx += 1) this.analyzeCell(idx);
-  }
-
-  private rewriteCellsFrom(from: number) {
-    this.editorSession.addFiles(
-      this.sources.slice(from).map((_, offset) => ({
-        name: cellFileName(from + offset),
-        content: joinLines(this.sources.slice(0, from + offset + 1)),
-      })),
-    );
-    for (let idx = from; idx < this.sources.length; idx += 1) {
-      this.analyzeCell(idx);
-    }
   }
 
   private analyzeCell(cellIdx: number) {
