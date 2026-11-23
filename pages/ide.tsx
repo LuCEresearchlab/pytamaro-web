@@ -1,14 +1,14 @@
 import {
   Code,
+  ExpandCircleDownOutlined,
   Note,
   PlayCircleFilled,
   Preview,
-  UnfoldLess,
-  UnfoldMore,
 } from '@mui/icons-material';
 import {
   Box,
   IconButton,
+  keyframes,
   Stack,
   SvgIcon,
   Tooltip,
@@ -494,6 +494,14 @@ export default function Ide() {
           ],
         };
 
+  const rotateShowHideOutput = outputCollapsed
+    ? keyframes`
+  0% { transform: rotate(0deg) }
+  100% { transform: rotate(180deg) }`
+    : keyframes`
+  0% { transform: rotate(180deg) }
+  100% { transform: rotate(0deg) }`;
+
   return (
     <>
       <Head>
@@ -678,11 +686,16 @@ export default function Ide() {
                               }
                               size='small'
                             >
-                              {outputCollapsed ? (
-                                <UnfoldMore />
-                              ) : (
-                                <UnfoldLess />
-                              )}
+                              <ExpandCircleDownOutlined
+                                sx={{
+                                  transform: `rotate(${outputCollapsed ? '180' : '0'}deg)`,
+                                  transition: (theme) =>
+                                    theme.transitions.create('transform', {
+                                      duration:
+                                        theme.transitions.duration.standard,
+                                    }),
+                                }}
+                              />
                             </IconButton>
                           </Tooltip>
                         )}
