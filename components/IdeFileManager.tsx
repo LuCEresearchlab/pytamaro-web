@@ -810,6 +810,8 @@ export default function IdeFileManager({
   return (
     <Box
       sx={{
+        display: 'flex',
+        flexDirection: 'column',
         height: '100%',
         overflow: 'auto',
         paddingX: 1,
@@ -888,6 +890,7 @@ export default function IdeFileManager({
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           sx={{
+            flex: 1,
             borderRadius: 1,
             // The whole zone is the target when files are dragged over the root.
             outline: (theme) =>
