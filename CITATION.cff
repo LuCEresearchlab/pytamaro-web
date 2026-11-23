@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: 'If you use the PyTamaro web platform, please cite the dissertation that describes it. The preferred citation is given below.'
+title: 'PyTamaro Web Platform'
+type: software
+authors:
+  - family-names: Chiodini
+    given-names: Luca
+    affiliation: 'Università della Svizzera italiana, Lugano, Switzerland'
+repository-code: 'https://github.com/LuCEresearchlab/pytamaro-web'
+url: 'https://pytamaro.si.usi.ch'
+license: MIT
+keywords:
+  - computer science education
+  - introductory programming
+  - programming education
+  - Python
+  - graphics
+  - PyTamaro
+preferred-citation:
+  type: thesis
+  title: 'Teaching Introductory Programming Using Graphics as a Domain'
+  authors:
+    - family-names: Chiodini
+      given-names: Luca
+  year: 2025
+  thesis-type: 'PhD thesis'
+  institution:
+    name: 'Università della Svizzera italiana'
+    city: Lugano
+    country: CH
+  department: 'Faculty of Informatics'
+  url: 'https://n2t.net/ark:/12658/srd1332702'
+  notes: 'Chapter 7, "PyTamaro Web Offers Programming Activities with PyTamaro", describes the design of this platform.'

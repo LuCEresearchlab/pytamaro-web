@@ -214,3 +214,30 @@ The documentation for the modules in the standard library is authored manually.
 The documentation for the PyTamaro modules can be generated automatically by running `python judicious_transformer.py` inside the `docs` folder of the [pytamaro repository](https://github.com/LuCEresearchlab/pytamaro) and copying the generated JSON files here (e.g., `cp _build/judicious/* ../../pytamaro-web/public/docs/`).
 
 </details>
+
+## I am an academic. How do I cite the platform?
+
+<details>
+<summary>Expand</summary>
+
+If you use the PyTamaro web platform, please cite the dissertation that describes it.
+Chapter 7, _PyTamaro Web Offers Programming Activities with PyTamaro_, covers the design of this platform:
+
+> Chiodini, Luca. _Teaching Introductory Programming Using Graphics as a Domain_.
+> PhD thesis, Università della Svizzera italiana, 2025.
+> [https://n2t.net/ark:/12658/srd1332702](https://n2t.net/ark:/12658/srd1332702)
+
+```bibtex
+@phdthesis{Chiodini2025,
+  author = {Chiodini, Luca},
+  title  = {Teaching Introductory Programming Using Graphics as a Domain},
+  school = {Università della Svizzera italiana},
+  year   = {2025},
+  type   = {PhD thesis},
+  url    = {https://n2t.net/ark:/12658/srd1332702},
+}
+```
+
+Machine-readable citation metadata is available in [CITATION.cff](CITATION.cff).
+
+</details>
