@@ -65,6 +65,13 @@ export default function EditorTabs({
             key={name}
             value={name}
             component='div'
+            onMouseUp={(e) => {
+              if (e.button === 1) {
+                // Auxiliary button (mouse wheel): close tab
+                e.stopPropagation();
+                onClose(name);
+              }
+            }}
             sx={{
               minWidth: 0,
               minHeight: 36,
