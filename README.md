@@ -8,6 +8,13 @@ The web platform is implemented using [Next.js](https://nextjs.org/).
 The actual content is stored in separate repositories, one for each author, which are imported as git submodules.
 Activities are created as [Jupyter notebooks](https://jupyter.org/).
 
+## License
+
+The source code is released under the [MIT License](LICENSE.md).
+Third-party components, fonts, media, and trademarks remain under their own terms; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+Content by authors (educational materials imported as git submodules in `data/*`) is private and thus not covered by this repository's license.
+
 ## I am a content author. How can I add my activities and curricula?
 
 <details>
