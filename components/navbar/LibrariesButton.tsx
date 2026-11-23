@@ -15,9 +15,9 @@ import {
   Stack,
 } from '@mui/material';
 import { useState } from 'react';
-import { PREINSTALLED_IDE_LIBRARIES } from '../../src/ideLibraries';
+import { PREINSTALLED_IDE_LIBRARIES } from '../../src/ide/libraries';
+import useIdeLibraries from '../../src/ide/useIdeLibraries';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
-import useIdeLibraries from '../../src/useIdeLibraries';
 import NavBarButton from './NavBarButton';
 
 export default function LibrariesButton() {

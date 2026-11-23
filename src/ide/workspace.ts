@@ -1,12 +1,12 @@
-import type { EditorContext } from './editor/editorContext';
-import type { EditorSession } from './editorSession';
+import type { EditorContext } from '../editor/editorContext';
+import type { EditorSession } from '../editorSession';
 import {
   decodeText,
   encodeText,
   MAX_EDITOR_BYTES,
   sameBytes,
-} from './ideFileContent';
-import { isPythonFileName, type IdeFile } from './ideFiles';
+} from './fileContent';
+import { isPythonFileName, type IdeFile } from './files';
 
 /**
  * A file's stored bytes and the lazily computed text view.

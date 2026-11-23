@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { parseCsv, type CsvSeparator } from '../src/csv';
-import { decodeText } from '../src/ideFileContent';
+import { decodeText } from '../src/ide/fileContent';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 
 const SEPARATORS: readonly { value: CsvSeparator; labelKey: string }[] = [

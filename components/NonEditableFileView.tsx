@@ -1,7 +1,7 @@
 import { InsertDriveFile } from '@mui/icons-material';
 import { Box, Stack, Typography } from '@mui/material';
-import type { FilePreview as FilePreviewInfo } from '../src/ideFileContent';
-import { baseName } from '../src/ideFiles';
+import type { FilePreview as FilePreviewInfo } from '../src/ide/fileContent';
+import { baseName } from '../src/ide/files';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import BytesFileView from './BytesFileView';
 import FilePreview from './FilePreview';

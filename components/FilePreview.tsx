@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
-import type { FilePreview as FilePreviewInfo } from '../src/ideFileContent';
+import type { FilePreview as FilePreviewInfo } from '../src/ide/fileContent';
 import CsvPreview from './CsvPreview';
 
 /**

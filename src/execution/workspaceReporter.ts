@@ -1,4 +1,4 @@
-import { sameBytes } from '../ideFileContent';
+import { sameBytes } from '../ide/fileContent';
 import type { WorkspaceChanges, WorkspaceFileChange } from './messageTypes';
 import { mergeWorkspaceChanges } from './workspaceChanges';
 import { isRunArtifact } from './workspacePaths';

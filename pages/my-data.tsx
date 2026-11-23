@@ -21,7 +21,7 @@ import ExportLocalStorageButton from '../components/ExportLocalStorageButton';
 import ImportLocalStorageButton from '../components/ImportLocalStorageButton';
 import NavigationBar from '../components/navbar/NavigationBar';
 import PageTitle from '../components/PageTitle';
-import { clearStoredIdeWorkspace } from '../src/ideFilesPersistence';
+import { clearStoredIdeWorkspace } from '../src/ide/filesPersistence';
 import getEntireLocalStorage, {
   clearEntireLocalStorage,
   replaceEntireLocalStorage,

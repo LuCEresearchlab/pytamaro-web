@@ -9,7 +9,7 @@ import type {
 } from 'monaco-editor';
 import { toCustomDiagnostics } from './editor/diagnostics';
 import type { EditorContext } from './editor/editorContext';
-import { isPythonFileName } from './ideFiles';
+import { isPythonFileName } from './ide/files';
 import type { ToolboxFunction } from './localStorage/schema';
 import {
   PythonName,

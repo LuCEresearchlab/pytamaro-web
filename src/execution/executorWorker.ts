@@ -1,7 +1,7 @@
 import throttle from 'lodash/throttle';
 import { PyodideAPI } from 'pyodide';
 import { PyProxy, PythonError } from 'pyodide/ffi';
-import { encodeText, sameBytes } from '../ideFileContent';
+import { encodeText, sameBytes } from '../ide/fileContent';
 import { INPUT_BEGIN, INPUT_END } from '../ioMarkers';
 import { joinLines } from '../sourceUtils';
 import { ExecutionResponse } from './codeExecution';
@@ -558,7 +558,7 @@ class WorkerExecutor {
       const walk = (directory: string, prefix: string): void => {
         const names = fs
           .readdir(directory)
-          .filter((name) => name !== '.' && name !== '..');
+          .filter((name: string) => name !== '.' && name !== '..');
         if (names.length === 0) {
           // Empty folders are the only explicit folders the workspace needs:
           // folders with files are implied by those files.

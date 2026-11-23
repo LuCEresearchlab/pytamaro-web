@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { ExecutorContext } from './execution/executorContext';
-import { OPTIONAL_IDE_LIBRARIES, type Library } from './ideLibraries';
-import useLocalProfile from './localStorage/useLocalProfile';
+import { ExecutorContext } from '../execution/executorContext';
+import useLocalProfile from '../localStorage/useLocalProfile';
+import { OPTIONAL_IDE_LIBRARIES, type Library } from './libraries';
 
 export type LibraryOption = {
   library: Library;

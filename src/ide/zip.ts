@@ -1,6 +1,6 @@
 import { saveAs } from 'file-saver';
 import JSZip from 'jszip';
-import { IdeFile } from './ideFiles';
+import { IdeFile } from './files';
 
 /** Downloads the given files as a zip archive. */
 export async function downloadFilesAsZip(

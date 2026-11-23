@@ -7,7 +7,7 @@ import {
   useMemo,
 } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
-import { isOptionalIdeLibrary } from '../ideLibraries';
+import { isOptionalIdeLibrary } from '../ide/libraries';
 import { ActivityVariant, activityVariantId } from '../schemas/activitySchema';
 import { Curriculum, curriculumToId } from '../schemas/curriculumSchema';
 import migrateToV10 from './migrations/v10';

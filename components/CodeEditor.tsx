@@ -16,7 +16,7 @@ import {
   RUN_CODE_CONDITION_KEY,
 } from '../src/editor/utils';
 import { ExecutionResponse, PythonMode } from '../src/execution/codeExecution';
-import { isPythonFileName } from '../src/ideFiles';
+import { isPythonFileName } from '../src/ide/files';
 import { LiveAnalysisStatus } from '../src/localStorage/schema';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';

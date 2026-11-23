@@ -1,7 +1,7 @@
 import { debounce } from 'lodash';
-import { WRITE_DEBOUNCE_MS } from './codeCellsPersistence';
-import { sameBytes } from './ideFileContent';
-import { IdeFile, isIdeFile } from './ideFiles';
+import { WRITE_DEBOUNCE_MS } from '../codeCellsPersistence';
+import { sameBytes } from './fileContent';
+import { IdeFile, isIdeFile } from './files';
 
 export const DATABASE_NAME = 'pytamaro-web-ide';
 const DATABASE_VERSION = 1;

@@ -7,19 +7,19 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react';
-import { EditorSession } from './editorSession';
+import { EditorSession } from '../editorSession';
 import {
-  isReservedExecutionPath,
   toolboxFiles as generateToolboxFiles,
-} from './execution/codeExecution';
-import type { WorkspaceChanges } from './execution/messageTypes';
-import { encodeText, sameBytes, viewKind } from './ideFileContent';
-import { IdeFile, normalizeWorkspacePath, pathConflicts } from './ideFiles';
-import { IdeFilesPersistence, StoredWorkspace } from './ideFilesPersistence';
-import { IdeWorkspace } from './ideWorkspace';
-import { ToolboxFunction } from './localStorage/schema';
-import useLocalProfile from './localStorage/useLocalProfile';
-import { PythonWorkspace } from './pythonWorkspace';
+  isReservedExecutionPath,
+} from '../execution/codeExecution';
+import type { WorkspaceChanges } from '../execution/messageTypes';
+import { ToolboxFunction } from '../localStorage/schema';
+import useLocalProfile from '../localStorage/useLocalProfile';
+import { PythonWorkspace } from '../pythonWorkspace';
+import { encodeText, sameBytes, viewKind } from './fileContent';
+import { IdeFile, normalizeWorkspacePath, pathConflicts } from './files';
+import { IdeFilesPersistence, StoredWorkspace } from './filesPersistence';
+import { IdeWorkspace } from './workspace';
 
 const INITIAL_FILE_NAME = 'main.py';
 

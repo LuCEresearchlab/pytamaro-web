@@ -1,26 +1,26 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import type { OutputAreaRef } from '../components/input_output/OutputArea';
+import type { OutputAreaRef } from '../../components/input_output/OutputArea';
 import {
   type ExecutionResponse,
   isExecutionError,
   isExecutionFailed,
   isExecutionNominal,
   PythonMode,
-} from './execution/codeExecution';
-import { ExecutorContext } from './execution/executorContext';
-import type { WorkspaceChanges } from './execution/messageTypes';
+} from '../execution/codeExecution';
+import { ExecutorContext } from '../execution/executorContext';
+import type { WorkspaceChanges } from '../execution/messageTypes';
 import {
   isEmptyWorkspaceChanges,
   mergeWorkspaceChanges,
-} from './execution/workspaceChanges';
-import { MAIN_BATCH_MS } from './execution/workspaceSyncConstants';
-import registerCodeExecutionEvent from './executionEvents';
-import { isPythonFileName } from './ideFiles';
-import type { IdeWorkspace } from './ideWorkspace';
-import { extractMetadataForEvent } from './localStorage/schema';
-import useLocalProfile from './localStorage/useLocalProfile';
-import { ideActivityVariant } from './specialActivities';
-import useInputRequests from './useInputRequests';
+} from '../execution/workspaceChanges';
+import { MAIN_BATCH_MS } from '../execution/workspaceSyncConstants';
+import registerCodeExecutionEvent from '../executionEvents';
+import { extractMetadataForEvent } from '../localStorage/schema';
+import useLocalProfile from '../localStorage/useLocalProfile';
+import { ideActivityVariant } from '../specialActivities';
+import useInputRequests from '../useInputRequests';
+import { isPythonFileName } from './files';
+import type { IdeWorkspace } from './workspace';
 
 function emptyWorkspaceFolders(workspace: IdeWorkspace): string[] {
   const folders = workspace.folders();

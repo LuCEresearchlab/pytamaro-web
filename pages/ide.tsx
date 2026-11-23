@@ -38,9 +38,11 @@ import NonEditableFileView, {
 import RunButton from '../components/RunButton';
 import StaleOutputBadge from '../components/StaleOutputBadge';
 import { toCustomDiagnostics } from '../src/editor/diagnostics';
-import { filePreview, viewKind } from '../src/ideFileContent';
-import { baseName, IdeFile, isPythonFileName } from '../src/ideFiles';
-import { downloadFilesAsZip, readFilesFromZip } from '../src/ideFilesZip';
+import { filePreview, viewKind } from '../src/ide/fileContent';
+import { baseName, IdeFile, isPythonFileName } from '../src/ide/files';
+import useIdeExecution from '../src/ide/useIdeExecution';
+import useIdeSession from '../src/ide/useIdeSession';
+import { downloadFilesAsZip, readFilesFromZip } from '../src/ide/zip';
 import { isMac } from '../src/keyboardUtils';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
@@ -50,8 +52,6 @@ import { translationProps } from '../src/serverSideTranslationProps';
 import { EventName, storeDbEvent } from '../src/storeDbEvent';
 import theme from '../src/theme';
 import useEditorAnalysisResult from '../src/useEditorAnalysisResult';
-import useIdeExecution from '../src/useIdeExecution';
-import useIdeSession from '../src/useIdeSession';
 import { useIsHydrated } from '../src/useIsHydrated';
 
 /** Opens the OS file picker and passes the chosen file, if any. */

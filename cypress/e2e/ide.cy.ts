@@ -1,4 +1,4 @@
-import { DATABASE_NAME } from '../../src/ideFilesPersistence';
+import { DATABASE_NAME } from '../../src/ide/filesPersistence';
 import { idePathname } from '../../src/urlUtils';
 import {
   dismissDataCollectionModal,

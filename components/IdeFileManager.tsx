@@ -34,7 +34,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { isPythonFileName } from '../src/ideFiles';
+import { isPythonFileName } from '../src/ide/files';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import theme from '../src/theme';
 import SidebarTitle from './sidebar/SidebarTitle';
