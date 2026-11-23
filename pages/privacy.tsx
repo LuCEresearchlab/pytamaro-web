@@ -30,7 +30,7 @@ export default function PrivacyPolicy() {
               marginY: margin,
             }}
           >
-            Last updated: March 24, 2023
+            Last updated: November 23, 2026
           </Typography>
           <Typography
             variant='body1'
@@ -231,16 +231,16 @@ export default function PrivacyPolicy() {
             </li>
             <li>
               <strong>Our Server. </strong>
-              When you click the button to run your source code, your code gets
-              shipped to our execution server, our server executes it and sends
-              back the result (e.g., the graphic produced by your code) to your
-              web browser. When our execution server receives your code, we do
-              not know who&apos;s code it is. We store the code we execute, and
-              the output it generates, for two reasons: (1) For performance
-              reasons. We cache code and its output to avoid re-executing the
-              same code over and over again. (2) For research purposes. We store
-              and analyze the solutions submitted to the specific activities to
-              better understand how people learn to program.
+              Your source code is executed locally in your web browser; it is
+              never sent to our servers for execution, and the output produced
+              by your code (e.g., a graphic) stays in your browser. We only
+              receive code-related data if you explicitly choose to share it
+              with us for research purposes. If you enable data sharing, we
+              store the source code you run, the initial state of the code
+              cells, any inputs you provide to your programs, and information
+              about the activity, so that we can study how people learn to
+              program. We do not store the output produced by your code, and we
+              do not know who wrote the code.
             </li>
           </ul>
           <Typography
@@ -336,14 +336,14 @@ export default function PrivacyPolicy() {
           </Typography>
           <ul>
             <li>
-              <strong>Source Code you submitted for execution.</strong> We are a
-              research group studying how people learn to program. For this
-              purpose, we study the code submitted for execution, as well as
-              trajectories taken through our activities. We do this to compute
-              statistics and to better understand the kind of mistakes and
-              solutions produced. We will publish the findings of our studies,
-              both as aggregate statistics, as well as concrete code fragements.
-              For any code fragments we publish, we will ensure that they do not
+              <strong>Source Code you executed.</strong> We are a research group
+              studying how people learn to program. If you enable anonymous data
+              sharing, we study the code you execute, as well as trajectories
+              taken through our activities. We do this to compute statistics and
+              to better understand the kind of mistakes and solutions produced.
+              We will publish the findings of our studies, both as aggregate
+              statistics, as well as concrete code fragments. For any code
+              fragments we publish, we will ensure that they do not
               inadvertently contain personally identifiable information. We also
               may share the collected code fragments with other legitimate
               researchers, inside or outside Switzerland, who will abide by the
@@ -477,9 +477,11 @@ export default function PrivacyPolicy() {
               marginY: margin,
             }}
           >
-            We do not store personally-identifiable data. The source code you
-            submit for execution and the corresponding output is encrypted via
-            SSL/TLS when transmitted between your browser and our servers.
+            We do not store personally-identifiable data. Your source code is
+            executed locally in your browser and is not sent to our servers for
+            execution. If you enable anonymous data sharing, the data you share
+            is encrypted via SSL/TLS when transmitted between your browser and
+            our servers.
           </Typography>
           <Typography
             variant='h4'
