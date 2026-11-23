@@ -49,5 +49,17 @@
         "description": "Select which Python libraries should be installed in the execution environment.",
         "close": "Close",
         "installationFailed": "Could not install the selected library."
+    },
+    "move": {
+        "action": "Move",
+        "title": "Move {{source}}",
+        "description": "Select where to move to:",
+        "abort": "Cancel",
+        "root": "Root folder",
+        "error": {
+            "failure": "Failed to move to \"{{destination}}\"",
+            "no_change": "Cannot move to its current location",
+            "itself": "Cannot move a folder inside of itself"
+        }
     }
 }

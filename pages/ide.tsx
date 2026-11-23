@@ -8,7 +8,6 @@ import {
 import {
   Box,
   IconButton,
-  keyframes,
   Stack,
   SvgIcon,
   Tooltip,
@@ -493,14 +492,6 @@ export default function Ide() {
             },
           ],
         };
-
-  const rotateShowHideOutput = outputCollapsed
-    ? keyframes`
-  0% { transform: rotate(0deg) }
-  100% { transform: rotate(180deg) }`
-    : keyframes`
-  0% { transform: rotate(180deg) }
-  100% { transform: rotate(0deg) }`;
 
   return (
     <>

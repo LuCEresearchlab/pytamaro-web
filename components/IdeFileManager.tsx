@@ -3,6 +3,7 @@ import {
   CreateNewFolderOutlined,
   DeleteOutlined,
   Download,
+  DriveFileMove,
   DriveFileRenameOutline,
   Folder,
   FolderOpen,
@@ -14,8 +15,15 @@ import {
 } from '@mui/icons-material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import {
+  Alert,
   Box,
+  Button,
   ClickAwayListener,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   IconButton,
   Stack,
   SvgIcon,
@@ -54,7 +62,7 @@ type TreeEdit =
   | null;
 
 /** Builds a folder tree from the flat, slash-separated paths of the workspace. */
-function buildFileTree(
+function buildFileForest(
   paths: readonly string[],
   emptyFolders: readonly string[],
 ): FileTreeNode[] {
@@ -105,12 +113,14 @@ function buildFileTree(
   return sortNodes(root);
 }
 
-function folderItemIds(nodes: readonly FileTreeNode[]): string[] {
+function folderItems(nodes: readonly FileTreeNode[]): FileTreeNode[] {
   return nodes.flatMap((node) =>
-    node.type === 'folder'
-      ? [`${FOLDER_PREFIX}${node.path}`, ...folderItemIds(node.children)]
-      : [],
+    node.type === 'folder' ? [node, ...folderItems(node.children)] : [],
   );
+}
+
+function folderItemIds(nodes: readonly FileTreeNode[]): string[] {
+  return folderItems(nodes).map((folder) => `${FOLDER_PREFIX}${folder.path}`);
 }
 
 function joinPath(parent: string, name: string): string {
@@ -435,6 +445,122 @@ function RowLabel({
   );
 }
 
+function MoveNodeButton(props: {
+  node: FileTreeNode;
+  forest: FileTreeNode[];
+  moveFile: (oldPath: string, newPath: string) => boolean;
+  moveFolder: (oldPath: string, newPath: string) => boolean;
+}) {
+  const { t } = useLocalTranslation(['ide']);
+
+  const [open, setOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [target, setTarget] = useState<string | null>(null);
+
+  const { node: source, forest } = props;
+
+  const handleClose = () => {
+    setOpen(false);
+    // Clear selection on close
+    setError(null);
+    setTarget(null);
+  };
+
+  const onItemSelected = (itemId: string | null) => {
+    if (itemId === null) {
+      setTarget(null);
+    } else {
+      const newTarget =
+        itemId.length === 0 ? source.name : `${itemId}/${source.name}`;
+
+      if (source.path === newTarget) {
+        // Cannot move to the current location
+        setError(t('move.error.no_change'));
+      } else if (
+        source.type === 'folder' &&
+        newTarget.startsWith(source.path)
+      ) {
+        // Cannot move a directory inside of itself
+        setError(t('move.error.itself'));
+      } else {
+        setError(null);
+        setTarget(newTarget);
+      }
+    }
+  };
+
+  const folders = ['', ...folderItems(forest).map((folder) => folder.path)];
+
+  const moveNode = () => {
+    if (target === null) {
+      return;
+    }
+    const moveFn = source.type === 'folder' ? props.moveFolder : props.moveFile;
+    if (moveFn(source.path, target)) {
+      setOpen(false);
+    } else {
+      setError(
+        t('move.error.failure').replace(
+          '{{destination}}',
+          target.length === 0 ? t('move.root') : target,
+        ),
+      );
+    }
+  };
+
+  const renderNode = (node: Extract<FileTreeNode, { type: 'folder' }>) => (
+    <TreeItem
+      key={`move_target_${node.path}`}
+      itemId={node.path}
+      label={node.name}
+    >
+      {node.children.filter((child) => child.type === 'folder').map(renderNode)}
+    </TreeItem>
+  );
+
+  return (
+    <>
+      <ActionButton title={t('move.action')} onClick={() => setOpen(true)}>
+        <DriveFileMove fontSize='small' />
+      </ActionButton>
+      <Dialog open={open} fullWidth onClose={handleClose}>
+        <DialogTitle>
+          {t('move.title').replace('{{source}}', source.name)}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>{t('move.description')}</DialogContentText>
+          <SimpleTreeView
+            expandedItems={folders}
+            onSelectedItemsChange={(_, itemId) => onItemSelected(itemId)}
+            slots={{
+              collapseIcon: FolderOpen,
+              endIcon: FolderOpen,
+            }}
+            sx={{
+              marginBottom: 2,
+            }}
+          >
+            <TreeItem key={`move_target_`} itemId={''} label={t('move.root')}>
+              {props.forest
+                .filter((node) => node.type === 'folder')
+                .map(renderNode)}
+            </TreeItem>
+          </SimpleTreeView>
+          {error === null ? <></> : <Alert severity='error'>{error}</Alert>}
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={() => setOpen(false)}>
+            {t('move.abort')}
+          </Button>
+          <Button onClick={() => moveNode()} disabled={error !== null}>
+            {t('move.action')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+}
+
 export type IdeFileManagerProps = {
   fileNames: readonly string[];
   folderNames: readonly string[];
@@ -500,11 +626,11 @@ export default function IdeFileManager({
   /** The folder into which the files chosen through the picker are uploaded. */
   const uploadFolderRef = useRef('');
 
-  const tree = useMemo(
-    () => buildFileTree(fileNames, folderNames),
+  const forest = useMemo(
+    () => buildFileForest(fileNames, folderNames),
     [fileNames, folderNames],
   );
-  const folderItems = useMemo(() => folderItemIds(tree), [tree]);
+  const folderItems = useMemo(() => folderItemIds(forest), [forest]);
   const binaryFiles = useMemo(
     () => new Set(binaryFileNames),
     [binaryFileNames],
@@ -677,6 +803,12 @@ export default function IdeFileManager({
                   >
                     <DriveFileRenameOutline fontSize='small' />
                   </ActionButton>
+                  <MoveNodeButton
+                    node={node}
+                    forest={forest}
+                    moveFile={onRenameFile}
+                    moveFolder={onRenameFolder}
+                  />
                   <ActionButton
                     title={t('deleteFile')}
                     onClick={() => askDelete(path, false)}
@@ -732,7 +864,7 @@ export default function IdeFileManager({
         data-drop-folder={node.path}
         label={
           <RowLabel
-            actionCount={2}
+            actionCount={3}
             moreActionsLabel={t('moreActions')}
             closeActionsLabel={t('closeActions')}
             actions={
@@ -747,6 +879,12 @@ export default function IdeFileManager({
                   >
                     <DriveFileRenameOutline fontSize='small' />
                   </ActionButton>
+                  <MoveNodeButton
+                    node={node}
+                    forest={forest}
+                    moveFile={onRenameFile}
+                    moveFolder={onRenameFolder}
+                  />
                   <ActionButton
                     title={t('deleteFolder')}
                     onClick={() => askDelete(node.path, true)}
@@ -909,7 +1047,7 @@ export default function IdeFileManager({
             }}
             data-testid='file-tree'
           >
-            {tree.map(renderNode)}
+            {forest.map(renderNode)}
             {createRowFor('')}
           </SimpleTreeView>
         </Box>

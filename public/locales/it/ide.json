@@ -49,5 +49,17 @@
         "description": "Seleziona quali librerie Python installare nell'ambiente di esecuzione.",
         "close": "Chiudi",
         "installationFailed": "Impossibile installare la libreria selezionata."
+    },
+    "move": {
+        "action": "Sposta",
+        "title": "Sposta {{source}}",
+        "description": "Seleziona dove spostare:",
+        "abort": "Annulla",
+        "root": "Cartella principale",
+        "error": {
+            "failure": "Spostamento in \"{{destination}}\" fallito",
+            "no_change": "Impossibile spostare nella posizione attuale",
+            "itself": "Impossibile spostare una cartella all'interno di se stessa"
+        }
     }
 }
