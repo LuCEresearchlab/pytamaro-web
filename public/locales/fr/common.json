@@ -51,6 +51,17 @@
         "evaluator": "l'évaluateur",
         "playground": "le terrain de jeu"
     },
+    "resetCellWarning": "Vous êtes sur le point de réinitialiser le code de cette cellule. Les autres cellules resteront inchangées. $t(resetCannotBeUndone)",
+    "resetCurriculumStatusWarning": "Vous êtes sur le point de réinitialiser le statut de ce curriculum. Cela n'affectera PAS les activités.",
+    "resetCurriculumStatusConfirm": "OK, réinitialiser le curriculum",
+    "deleteAllDataWarning": "Vous êtes sur le point de supprimer TOUTES les données. $t(resetCannotBeUndone)",
+    "deleteAllDataConfirm": "OK, tout supprimer",
+    "restartPythonEnvironmentWarning": "Vous êtes sur le point de redémarrer l'environnement Python. Toutes les exécutions de code en cours seront terminées.",
+    "restartPythonEnvironmentConfirm": "OK, redémarrer",
+    "replaceSharedCodeWarning": "Vous êtes sur le point de remplacer le code par un nouveau code !",
+    "replaceSharedCodeEvaluatorWarning": "Vous êtes sur le point de remplacer le code de l'évaluateur par un nouveau code !",
+    "replaceSharedCodePlaygroundWarning": "Vous êtes sur le point de remplacer le code de votre terrain de jeu par un nouveau code !",
+    "replaceSharedCodeConfirm": "OK, remplacer mon code",
     "confirmCancel": "Annuler",
     "dataSharing": {
         "title": "Aidez-nous dans la recherche !",

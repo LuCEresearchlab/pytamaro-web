@@ -51,6 +51,17 @@
         "evaluator": "the evaluator",
         "playground": "the playground"
     },
+    "resetCellWarning": "You are about to reset the code in this cell. Other cells will be left unchanged. $t(resetCannotBeUndone)",
+    "resetCurriculumStatusWarning": "You are about to reset the status of this curriculum. This will NOT affect the activities.",
+    "resetCurriculumStatusConfirm": "OK, reset the curriculum",
+    "deleteAllDataWarning": "You are about to delete ALL the data. $t(resetCannotBeUndone)",
+    "deleteAllDataConfirm": "OK, delete everything",
+    "restartPythonEnvironmentWarning": "You are about to restart the Python environment. All active code executions will be terminated.",
+    "restartPythonEnvironmentConfirm": "OK, restart",
+    "replaceSharedCodeWarning": "You are about to replace the code with new code!",
+    "replaceSharedCodeEvaluatorWarning": "You are about to replace the code in the evaluator with new code!",
+    "replaceSharedCodePlaygroundWarning": "You are about to replace the code in your playground with new code!",
+    "replaceSharedCodeConfirm": "OK, replace my code",
     "confirmCancel": "Cancel",
     "dataSharing": {
         "title": "Help us do research!",

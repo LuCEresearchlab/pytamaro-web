@@ -28,6 +28,7 @@ import {
   extractMetadataForEvent,
   getDefaultActivityVariantMetadata,
 } from './localStorage/schema';
+import useLocalTranslation from './localStorage/useLocalTranslation';
 import {
   ActivityVariant,
   PythonFile,
@@ -419,6 +420,7 @@ export function useActivity(
     );
   };
 
+  const { t } = useLocalTranslation(['common']);
   const confirm = useConfirm();
   const handleResetAllCellsNoConfirm = () => {
     activitySession.setCodeCells(initialCodeCells);
@@ -435,9 +437,10 @@ export function useActivity(
 
   const handleResetSingleCell = (idx: number, postReset: () => void) => {
     confirm({
-      description:
-        'You are about to reset the code in this cell. Other cells will be left unchanged. This action cannot be undone! ⚠️',
-      confirmationText: 'Ok, delete my code',
+      title: t('resetAreYouSure'),
+      description: t('resetCellWarning'),
+      confirmationText: t('resetActivityConfirm'),
+      cancellationText: t('confirmCancel'),
     }).then(({ confirmed }) => {
       if (confirmed) {
         activitySession.setCodeCells(
@@ -453,9 +456,10 @@ export function useActivity(
 
   const handleRestartPyodide = () =>
     confirm({
-      description:
-        'You are about to restart the Python environment. All active code executions will be terminated.',
-      confirmationText: 'Ok, restart',
+      title: t('resetAreYouSure'),
+      description: t('restartPythonEnvironmentWarning'),
+      confirmationText: t('restartPythonEnvironmentConfirm'),
+      cancellationText: t('confirmCancel'),
     }).then(({ confirmed }) => {
       if (confirmed) {
         restartWorkerAndMarkExecutionAsStopped();

@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useMemo } from 'react';
 import { singleCodeCell } from '../components/SolitaryCodeCell';
 import type { ActivitySession } from './activitySession';
+import useLocalTranslation from './localStorage/useLocalTranslation';
 
 /** Compresses `source` into the base64-encoded gzip used in URLs. */
 export async function compressCode(source: string): Promise<string> {
@@ -74,7 +75,7 @@ export function useSharedCodeFromQuery({
   activitySession,
   onReplace,
   allowUncompressedCode = false,
-  confirmDescription = 'You are about to replace the code with new code!',
+  confirmDescription,
 }: {
   activitySession: ActivitySession;
   onReplace: () => void;
@@ -82,6 +83,7 @@ export function useSharedCodeFromQuery({
   confirmDescription?: string;
 }) {
   const { query } = useRouter();
+  const { t } = useLocalTranslation(['common']);
   const confirm = useConfirm();
   const codeFromQuery = query?.code;
   const compressedCodeFromQuery = query?.c;
@@ -102,8 +104,10 @@ export function useSharedCodeFromQuery({
           replaceCode(queryCode);
         } else {
           confirm({
-            description: confirmDescription,
-            confirmationText: 'Ok, replace my code',
+            title: t('resetAreYouSure'),
+            description: confirmDescription ?? t('replaceSharedCodeWarning'),
+            confirmationText: t('replaceSharedCodeConfirm'),
+            cancellationText: t('confirmCancel'),
           }).then(({ confirmed }) => {
             if (confirmed) {
               replaceCode(queryCode);

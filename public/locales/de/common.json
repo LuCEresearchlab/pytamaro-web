@@ -51,6 +51,17 @@
         "evaluator": "den Auswerter",
         "playground": "den Playground"
     },
+    "resetCellWarning": "Du bist dabei, den Code in dieser Zelle zurückzusetzen. Andere Zellen bleiben unverändert. $t(resetCannotBeUndone)",
+    "resetCurriculumStatusWarning": "Du bist dabei, den Status dieses Curriculums zurückzusetzen. Dies betrifft NICHT die Aktivitäten.",
+    "resetCurriculumStatusConfirm": "OK, Curriculum zurücksetzen",
+    "deleteAllDataWarning": "Du bist dabei, ALLE Daten zu löschen. $t(resetCannotBeUndone)",
+    "deleteAllDataConfirm": "OK, alles löschen",
+    "restartPythonEnvironmentWarning": "Du bist dabei, die Python-Umgebung neu zu starten. Alle aktiven Code-Ausführungen werden beendet.",
+    "restartPythonEnvironmentConfirm": "OK, neu starten",
+    "replaceSharedCodeWarning": "Du bist dabei, den Code durch neuen Code zu ersetzen!",
+    "replaceSharedCodeEvaluatorWarning": "Du bist dabei, den Code im Auswerter durch neuen Code zu ersetzen!",
+    "replaceSharedCodePlaygroundWarning": "Du bist dabei, den Code in Deinem Playground durch neuen Code zu ersetzen!",
+    "replaceSharedCodeConfirm": "OK, meinen Code ersetzen",
     "confirmCancel": "Abbrechen",
     "dataSharing": {
         "title": "Hilf uns bei der Forschung!",

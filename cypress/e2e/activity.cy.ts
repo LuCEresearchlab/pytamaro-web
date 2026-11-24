@@ -45,7 +45,7 @@ describe('Activity Page', () => {
       .find('button[aria-label="more"]')
       .click();
     cy.contains('[role="menuitem"]', 'Reset Cell').click();
-    cy.get('[role="dialog"]').contains('button', 'Ok, delete my code').click();
+    cy.get('[role="dialog"]').contains('button', 'OK, delete my code').click();
     cy.get('.monaco-editor').eq(0).should('not.contain.text', codeFirstCell);
     cy.get('.monaco-editor').eq(0).contains(initialFirstCellCodeFragment);
     // The second cell keeps its code, but its output is now stale because the

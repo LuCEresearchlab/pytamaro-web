@@ -8,7 +8,7 @@
         "goal": "Programmiere Deine Burg"
     },
     "action": {
-        "confirm": "Ok",
+        "confirm": "OK",
         "cancel": "Abbrechen"
     },
     "age": {

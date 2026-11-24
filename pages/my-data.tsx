@@ -27,6 +27,7 @@ import getEntireLocalStorage, {
   replaceEntireLocalStorage,
 } from '../src/localStorage/entireLocalStorage';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { translationProps } from '../src/serverSideTranslationProps';
 import theme from '../src/theme';
 import { idePathname } from '../src/urlUtils';
@@ -35,6 +36,7 @@ export default function MyData() {
   const { metadata, setMetadata } = useLocalProfile();
 
   const [localStorageChanged, setLocalStorageChanged] = useState(0);
+  const { t } = useLocalTranslation(['common']);
   const confirm = useConfirm();
 
   const currentSharingPreference = metadata.allowSharingAnonData;
@@ -57,9 +59,9 @@ export default function MyData() {
 
   const handleGlobalReset = () => {
     confirm({
-      description:
-        'You are about to delete ALL the data. This action cannot be undone! ⚠️',
-      confirmationText: 'Ok, delete everything',
+      title: t('resetAreYouSure'),
+      description: t('deleteAllDataWarning'),
+      confirmationText: t('deleteAllDataConfirm'),
     }).then(async ({ confirmed }) => {
       if (confirmed) {
         // Local storage + session storage + IndexedDB (IDE)

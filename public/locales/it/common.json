@@ -51,6 +51,17 @@
         "evaluator": "il valutatore",
         "playground": "il playground"
     },
+    "resetCellWarning": "Stai per resettare il codice in questa cella. Le altre celle rimarranno invariate. $t(resetCannotBeUndone)",
+    "resetCurriculumStatusWarning": "Stai per resettare lo stato di questo curriculum. Questo NON influirà sulle attività.",
+    "resetCurriculumStatusConfirm": "OK, resetta il curriculum",
+    "deleteAllDataWarning": "Stai per eliminare TUTTI i dati. $t(resetCannotBeUndone)",
+    "deleteAllDataConfirm": "OK, elimina tutto",
+    "restartPythonEnvironmentWarning": "Stai per riavviare l'ambiente Python. Tutte le esecuzioni di codice attive verranno terminate.",
+    "restartPythonEnvironmentConfirm": "OK, riavvia",
+    "replaceSharedCodeWarning": "Stai per sostituire il codice con un nuovo codice!",
+    "replaceSharedCodeEvaluatorWarning": "Stai per sostituire il codice nel valutatore con un nuovo codice!",
+    "replaceSharedCodePlaygroundWarning": "Stai per sostituire il codice nel tuo playground con un nuovo codice!",
+    "replaceSharedCodeConfirm": "OK, sostituisci il mio codice",
     "confirmCancel": "Annulla",
     "dataSharing": {
         "title": "Aiutaci a fare ricerca!",

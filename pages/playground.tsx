@@ -78,13 +78,13 @@ function PlaygroundCodeCell({
     handleRestartPyodide,
     activitySession,
   } = activityState;
+  const { t } = useLocalTranslation(['common']);
 
   useSharedCodeFromQuery({
     activitySession,
     onReplace: newReset,
     allowUncompressedCode: true,
-    confirmDescription:
-      'You are about to replace the code in your playground with new code!',
+    confirmDescription: t('replaceSharedCodePlaygroundWarning'),
   });
   const updateQueryString = useSharedCodeUrlUpdater();
 

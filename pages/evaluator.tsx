@@ -33,8 +33,7 @@ export default function EvaluatorPage() {
   useSharedCodeFromQuery({
     activitySession: activity.activitySession,
     onReplace: newReset,
-    confirmDescription:
-      'You are about to replace the code in the evaluator with new code!',
+    confirmDescription: t('replaceSharedCodeEvaluatorWarning'),
   });
   const updateQueryString = useSharedCodeUrlUpdater();
 
