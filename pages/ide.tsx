@@ -45,6 +45,7 @@ import NonEditableFileView, {
 import RunButton from '../components/RunButton';
 import StaleOutputBadge from '../components/StaleOutputBadge';
 import { toCustomDiagnostics } from '../src/editor/diagnostics';
+import type { EditorSession } from '../src/editorSession';
 import { filePreview, viewKind } from '../src/ide/fileContent';
 import { baseName, IdeFile, isPythonFileName } from '../src/ide/files';
 import useIdeExecution from '../src/ide/useIdeExecution';
@@ -85,6 +86,43 @@ function isToggleOutputShortcut(event: KeyboardEvent) {
   );
 }
 
+function IdeDocumentationStripe({
+  editorSession,
+  fileName,
+  hoveredName,
+}: {
+  editorSession: EditorSession;
+  fileName: string;
+  hoveredName: PythonName | null;
+}) {
+  const analysisResult = useEditorAnalysisResult(editorSession, fileName);
+  return (
+    <DocumentationStripe
+      analysisResult={analysisResult}
+      activityVariant={playgroundActivityVariant}
+      hoveredName={hoveredName}
+    />
+  );
+}
+
+function IdeNoOutputTip({
+  editorSession,
+  fileName,
+  dimmed,
+}: {
+  editorSession: EditorSession;
+  fileName: string;
+  dimmed: boolean;
+}) {
+  const analysisResult = useEditorAnalysisResult(editorSession, fileName);
+  return (
+    <NoOutputTip
+      dimmed={dimmed}
+      importedNames={analysisResult?.imported_names}
+    />
+  );
+}
+
 export default function Ide() {
   const { t } = useLocalTranslation(['common']);
   const { t: tIde } = useLocalTranslation(['ide']);
@@ -113,10 +151,6 @@ export default function Ide() {
     workspace,
     activeFile,
     syncWorkspaceChanges,
-  );
-  const analysisResult = useEditorAnalysisResult(
-    workspace.editorSession,
-    activeFile,
   );
   const isHydrated = useIsHydrated();
   const confirm = useConfirm();
@@ -565,9 +599,9 @@ export default function Ide() {
                 />
               )}
               {view !== 'bytes' && (
-                <DocumentationStripe
-                  analysisResult={analysisResult}
-                  activityVariant={playgroundActivityVariant}
+                <IdeDocumentationStripe
+                  editorSession={workspace.editorSession}
+                  fileName={activeFile}
                   hoveredName={hoveredName}
                 />
               )}
@@ -763,9 +797,10 @@ export default function Ide() {
                         >
                           <Box ref={outputContentRef}>
                             {execution.finishedWithoutOutput && (
-                              <NoOutputTip
+                              <IdeNoOutputTip
+                                editorSession={workspace.editorSession}
+                                fileName={activeFile}
                                 dimmed={!execution.outputSynced}
-                                importedNames={analysisResult?.imported_names}
                               />
                             )}
                             {execution.executionResponse !== undefined && (
