@@ -14,7 +14,7 @@ import {
   TableRow,
 } from '@mui/material';
 import { useMemo, useState } from 'react';
-import { parseCsv, type CsvSeparator } from '../src/csv';
+import { guessSeparator, parseCsv, type CsvSeparator } from '../src/csv';
 import { decodeText } from '../src/ide/fileContent';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 
@@ -37,9 +37,7 @@ export default function CsvPreview({
   content: Uint8Array;
 }) {
   const { t } = useLocalTranslation(['ide']);
-  const defaultSeparator: CsvSeparator = name.toLowerCase().endsWith('.tsv')
-    ? '\t'
-    : ',';
+  const defaultSeparator: CsvSeparator = guessSeparator(name, content);
   const [separator, setSeparator] = useState<CsvSeparator>(defaultSeparator);
   const [hasHeader, setHasHeader] = useState(true);
   const rows = useMemo(

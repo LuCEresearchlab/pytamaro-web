@@ -124,27 +124,34 @@ describe('IDE', () => {
     // Edit the file as text, then switch back to the table preview.
     cy.get('[data-testid="file-view-text"]').click();
     waitForMonacoEditor();
-    typeMonacoCode('name;value\nalpha;1\nbeta;2');
+    typeMonacoCode('"item ""name"", or ""surname""";value\nalpha;1\nbeta;2');
     cy.get('[data-testid="file-view-preview"]').click();
-    // The default separator is a comma, so the whole row is one column.
+    // Should detect ; as separator automatically,
+    // ignoring the comma within the quoted field
     cy.get('[data-testid="csv-preview"]').within(() => {
-      cy.get('thead th').should('have.length', 1);
-      cy.get('thead th').should('have.text', 'name;value');
-    });
-    // Choosing the semicolon splits the row into the expected columns.
-    cy.get('[data-testid="csv-separator-select"]').click();
-    cy.get('li[data-value=";"]').click();
-    cy.get('[data-testid="csv-preview"]').within(() => {
-      cy.get('thead th').eq(0).should('have.text', 'name');
+      cy.get('thead th').eq(0).should('have.text', 'item "name", or "surname"');
       cy.get('thead th').eq(1).should('have.text', 'value');
       cy.get('tbody tr').eq(0).find('td').eq(1).should('have.text', '1');
       cy.get('tbody tr').eq(1).find('td').eq(1).should('have.text', '2');
     });
+    // Choosing the comma splits the row into a single column.
+    cy.get('[data-testid="csv-separator-select"]').click();
+    cy.get('li[data-value=","]').click();
+    cy.get('[data-testid="csv-preview"]').within(() => {
+      cy.get('thead th').should('have.length', 1);
+      cy.get('thead th').should('have.text', 'item "name", or "surname";value');
+    });
     // Without a header row, the first row becomes a regular body row.
+    cy.get('[data-testid="csv-separator-select"]').click();
+    cy.get('li[data-value=";"]').click();
     cy.get('[data-testid="csv-header-toggle"]').click();
     cy.get('[data-testid="csv-preview"]').within(() => {
       cy.get('thead').should('not.exist');
-      cy.get('tbody tr').eq(0).find('td').eq(0).should('have.text', 'name');
+      cy.get('tbody tr')
+        .eq(0)
+        .find('td')
+        .eq(0)
+        .should('have.text', 'item "name", or "surname"');
       cy.get('tbody tr').eq(0).find('td').eq(1).should('have.text', 'value');
     });
   });

@@ -2,6 +2,51 @@
 export type CsvSeparator = ',' | ';' | '\t';
 
 /**
+ * Guesses the separator for a CSV/TSV-like file.
+ */
+export function guessSeparator(
+  name: string,
+  content: Uint8Array,
+): CsvSeparator {
+  if (name.endsWith('.tsv')) {
+    return '\t';
+  }
+
+  let idx = 0;
+  let inQuotes = false;
+
+  while (idx < content.length) {
+    const byte = content[idx];
+    if (inQuotes) {
+      if (byte === 0x22) {
+        // Check for escaped quote ("")
+        if (idx + 1 < content.length && content[idx + 1] === 0x22) {
+          // Skip both quotes and stay in quoted field
+          idx += 2;
+          continue;
+        }
+        // Closing quote
+        inQuotes = false;
+      }
+    } else {
+      switch (byte) {
+        case 0x09: // \t
+          return '\t';
+        case 0x2c: // ,
+          return ',';
+        case 0x3b: // ;
+          return ';';
+        case 0x22: // "
+          inQuotes = true;
+          break;
+      }
+    }
+    idx += 1;
+  }
+  return ',';
+}
+
+/**
  * Parses separated values following the common RFC 4180 rules: fields may be
  * quoted, quoted fields may contain separators, line breaks, and escaped
  * quotes (`""`), and rows may end with CR, LF, or CRLF. A leading byte order
