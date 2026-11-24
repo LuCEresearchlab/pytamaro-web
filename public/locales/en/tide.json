@@ -1,8 +1,6 @@
 {
     "page": {
-        "title": "TIDE: An IDE for TamaroCards",
-        "previewAlert": "TIDE is currently available in early preview. If you encounter any error, send us feedback using the button at the top right of the page.",
-        "researchPaper": "Curious to know more about the design of TIDE? Read the research paper!"
+        "title": "TIDE: An IDE for TamaroCards"
     },
     "palette": {
         "title": "Cards Palette",

@@ -1,8 +1,6 @@
 {
     "page": {
-        "title": "TIDE : un IDE pour les TamaroCards",
-        "previewAlert": "TIDE est actuellement disponible en aperçu. Si vous rencontrez une erreur, envoyez-nous vos commentaires à l'aide du bouton en haut à droite de la page.",
-        "researchPaper": "Vous voulez en savoir plus sur la conception de TIDE ? Lisez l'article de recherche !"
+        "title": "TIDE : un IDE pour les TamaroCards"
     },
     "palette": {
         "title": "Palette de cartes",
