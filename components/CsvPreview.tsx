@@ -8,7 +8,9 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableFooter,
   TableHead,
+  TablePagination,
   TableRow,
 } from '@mui/material';
 import { useMemo, useState } from 'react';
@@ -51,6 +53,9 @@ export default function CsvPreview({
   );
   const headerRow = hasHeader ? rows[0] : undefined;
   const bodyRows = rows.slice(hasHeader ? 1 : 0);
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(100);
 
   return (
     <Box
@@ -154,7 +159,10 @@ export default function CsvPreview({
             </TableHead>
           )}
           <TableBody>
-            {bodyRows.map((row, rowIndex) => (
+            {(rowsPerPage > 0
+              ? bodyRows.slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+              : bodyRows
+            ).map((row, rowIndex) => (
               // Rows have no stable identity in a static preview.
               // eslint-disable-next-line react/no-array-index-key
               <TableRow key={rowIndex}>
@@ -166,6 +174,21 @@ export default function CsvPreview({
               </TableRow>
             ))}
           </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TablePagination
+                rowsPerPageOptions={[10, 100, 200, 500, 1000]}
+                count={bodyRows.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={(_, newPage) => setPage(newPage)}
+                onRowsPerPageChange={(e) => {
+                  setPage(0);
+                  setRowsPerPage(parseInt(e.target.value, 10));
+                }}
+              />
+            </TableRow>
+          </TableFooter>
         </Table>
       </TableContainer>
     </Box>
