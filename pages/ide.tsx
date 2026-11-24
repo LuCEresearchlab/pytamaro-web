@@ -1,7 +1,6 @@
 import {
-  Code,
   ExpandCircleDownOutlined,
-  Note,
+  Notes,
   PlayCircleFilled,
   Preview,
 } from '@mui/icons-material';
@@ -32,7 +31,7 @@ import CustomSnackbar from '../components/CustomSnackbar';
 import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDialog';
 import DocumentationStripe from '../components/documentation/DocumentationStripe';
 import EditorTabs from '../components/EditorTabs';
-import BinIconSvg from '../components/icons/BinIconSvg';
+import BinInspectIconSvg from '../components/icons/BinInspectIconSvg';
 import IdeFileManager from '../components/IdeFileManager';
 import ExecutionOutputArea from '../components/input_output/ExecutionOutputArea';
 import { OUTPUT_AREA_BACKGROUND_COLOR } from '../components/input_output/OutputArea';
@@ -500,11 +499,7 @@ export default function Ide() {
             {
               value: 'text',
               label: tIde('viewAsText'),
-              icon: activeFile.endsWith('.py') ? (
-                <Code fontSize='small' />
-              ) : (
-                <Note fontSize='small' />
-              ),
+              icon: <Notes fontSize='small' />,
             },
             ...(isPreview
               ? [
@@ -520,7 +515,7 @@ export default function Ide() {
               label: tIde('viewAsBytes'),
               icon: (
                 <SvgIcon fontSize='small'>
-                  <BinIconSvg />
+                  <BinInspectIconSvg />
                 </SvgIcon>
               ),
             },
