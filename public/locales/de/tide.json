@@ -1,8 +1,8 @@
 {
     "page": {
         "title": "TIDE: Eine IDE für TamaroCards",
-        "previewAlert": "TIDE ist derzeit als frühe Vorschau verfügbar. Wenn dir ein Fehler auffällt, sende uns bitte Feedback über die Schaltfläche oben rechts auf der Seite.",
-        "researchPaper": "Möchtest du mehr über das Design von TIDE erfahren? Lies das Forschungspapier!"
+        "previewAlert": "TIDE ist derzeit als frühe Vorschau verfügbar. Wenn Dir ein Fehler auffällt, sende uns bitte Feedback über die Schaltfläche oben rechts auf der Seite.",
+        "researchPaper": "Möchtest Du mehr über das Design von TIDE erfahren? Lies das Forschungspapier!"
     },
     "palette": {
         "title": "Kartenpalette",
@@ -28,8 +28,8 @@
         "showFullscreen": "TIDE im Vollbild anzeigen",
         "centerOnScreen": "Auf dem Bildschirm zentrieren",
         "resetTide": "TIDE zurücksetzen",
-        "resetConfirmTitle": "Bist du sicher?",
-        "resetConfirmDescription": "Du bist dabei, alles zu löschen, einschließlich aller Karten, die du hinzugefügt hast. Diese Aktion kann nicht rückgängig gemacht werden! ⚠️",
+        "resetConfirmTitle": "Bist Du sicher?",
+        "resetConfirmDescription": "Du bist dabei, alles zu löschen, einschließlich aller Karten, die Du hinzugefügt hast. Diese Aktion kann nicht rückgängig gemacht werden! ⚠️",
         "resetConfirm": "OK, alles löschen",
         "cancel": "Abbrechen",
         "importReadError": "Die Datei konnte nicht gelesen werden.",

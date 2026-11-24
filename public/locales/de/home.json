@@ -11,7 +11,7 @@
   },
   "curricula": {
     "title": "Von Lehrpersonen entwickelte Lernpfade",
-    "description": "Wähle einen Lernpfad für Anfänger oder Fortgeschrittene, der dich durch die Aktivitäten führt."
+    "description": "Wähle einen Lernpfad für Anfänger oder Fortgeschrittene, der Dich durch die Aktivitäten führt."
   },
   "curriculumImageAlt": "Illustration eines Lernpfads",
   "teachWith": "Unterrichte mit PyTamaro",
@@ -25,7 +25,7 @@
   },
   "offline": {
     "title": "Für die Offline-Nutzung installieren",
-    "description": "Hier findest du die Installationsanleitung, falls du PyTamaro lieber <strong>offline</strong> in deiner bevorzugten IDE verwendest."
+    "description": "Hier findest Du die Installationsanleitung, falls Du PyTamaro lieber <strong>offline</strong> in Deiner bevorzugten IDE verwendest."
   },
   "collaboration": "PyTamaro ist eine synergetische Zusammenarbeit zwischen <teachers>Hochschul- und Schullehrpersonen</teachers>",
   "openSource": "Sowohl diese <platform>Plattform</platform> als auch die <library>Bibliothek</library> sind Open-Source-Projekte auf GitHub",
