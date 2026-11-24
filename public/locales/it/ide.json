@@ -53,11 +53,10 @@
     "move": {
         "action": "Sposta",
         "title": "Sposta {{source}}",
-        "description": "Seleziona dove spostare:",
-        "abort": "Annulla",
+        "description": "Seleziona la destinazione:",
         "root": "Cartella principale",
         "error": {
-            "failure": "Spostamento in \"{{destination}}\" fallito",
+            "failure": "Impossibile spostare in \"{{destination}}\"",
             "no_change": "Impossibile spostare nella posizione attuale",
             "itself": "Impossibile spostare una cartella all'interno di se stessa"
         }

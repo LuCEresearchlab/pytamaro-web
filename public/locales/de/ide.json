@@ -49,5 +49,16 @@
         "description": "Wähle aus, welche Python-Bibliotheken in der Ausführungsumgebung installiert werden sollen.",
         "close": "Schließen",
         "installationFailed": "Die ausgewählte Bibliothek konnte nicht installiert werden."
+    },
+    "move": {
+        "action": "Verschieben",
+        "title": "{{source}} verschieben",
+        "description": "Wähle das Ziel aus:",
+        "root": "Stammordner",
+        "error": {
+            "failure": "Verschieben nach \"{{destination}}\" fehlgeschlagen",
+            "no_change": "Das Element kann nicht an seinen aktuellen Speicherort verschoben werden",
+            "itself": "Ein Ordner kann nicht in sich selbst verschoben werden"
+        }
     }
 }

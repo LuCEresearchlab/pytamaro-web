@@ -451,7 +451,7 @@ function MoveNodeButton(props: {
   moveFile: (oldPath: string, newPath: string) => boolean;
   moveFolder: (oldPath: string, newPath: string) => boolean;
 }) {
-  const { t } = useLocalTranslation(['ide']);
+  const { t } = useLocalTranslation(['ide', 'common']);
 
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -499,12 +499,7 @@ function MoveNodeButton(props: {
     if (moveFn(source.path, target)) {
       setOpen(false);
     } else {
-      setError(
-        t('move.error.failure').replace(
-          '{{destination}}',
-          target.length === 0 ? t('move.root') : target,
-        ),
-      );
+      setError(t('move.error.failure', { destination: target }));
     }
   };
 
@@ -524,9 +519,7 @@ function MoveNodeButton(props: {
         <DriveFileMove fontSize='small' />
       </ActionButton>
       <Dialog open={open} fullWidth onClose={handleClose}>
-        <DialogTitle>
-          {t('move.title').replace('{{source}}', source.name)}
-        </DialogTitle>
+        <DialogTitle>{t('move.title', { source: source.name })}</DialogTitle>
         <DialogContent>
           <DialogContentText>{t('move.description')}</DialogContentText>
           <SimpleTreeView
@@ -550,7 +543,7 @@ function MoveNodeButton(props: {
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={() => setOpen(false)}>
-            {t('move.abort')}
+            {t('common:confirmCancel')}
           </Button>
           <Button onClick={() => moveNode()} disabled={error !== null}>
             {t('move.action')}

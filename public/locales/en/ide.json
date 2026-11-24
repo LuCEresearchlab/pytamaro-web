@@ -53,13 +53,12 @@
     "move": {
         "action": "Move",
         "title": "Move {{source}}",
-        "description": "Select where to move to:",
-        "abort": "Cancel",
+        "description": "Select the destination:",
         "root": "Root folder",
         "error": {
-            "failure": "Failed to move to \"{{destination}}\"",
-            "no_change": "Cannot move to its current location",
-            "itself": "Cannot move a folder inside of itself"
+            "failure": "Could not move to \"{{destination}}\"",
+            "no_change": "Cannot move to the current location",
+            "itself": "Cannot move a folder into itself"
         }
     }
 }

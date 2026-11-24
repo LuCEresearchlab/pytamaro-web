@@ -49,5 +49,16 @@
         "description": "Sélectionnez les bibliothèques Python à installer dans l'environnement d'exécution.",
         "close": "Fermer",
         "installationFailed": "Impossible d'installer la bibliothèque sélectionnée."
+    },
+    "move": {
+        "action": "Déplacer",
+        "title": "Déplacer {{source}}",
+        "description": "Sélectionnez la destination :",
+        "root": "Dossier racine",
+        "error": {
+            "failure": "Impossible de déplacer vers \"{{destination}}\"",
+            "no_change": "Impossible de déplacer vers l'emplacement actuel",
+            "itself": "Impossible de déplacer un dossier dans lui-même"
+        }
     }
 }
