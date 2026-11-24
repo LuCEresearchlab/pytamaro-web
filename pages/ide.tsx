@@ -75,13 +75,19 @@ function pickFile(accept: string, onFile: (file: File) => void) {
   input.click();
 }
 
-/** True for Cmd+J (macOS) or Ctrl+J (other platforms), on any keyboard layout. */
-function isToggleOutputShortcut(event: KeyboardEvent) {
+/**
+ * True for Cmd+$expectedCode (macOS / iOS) or Ctrl+$expectedCode (other
+ * platforms), on any keyboard layout.
+ */
+function isKeyboardShortcut(expectedCode: string, event: KeyboardEvent) {
   const modifierPressed = hasCmdModifier()
     ? event.metaKey && !event.ctrlKey
     : event.ctrlKey && !event.metaKey;
   return (
-    modifierPressed && !event.shiftKey && !event.altKey && event.code === 'KeyJ'
+    modifierPressed &&
+    !event.shiftKey &&
+    !event.altKey &&
+    event.code === expectedCode
   );
 }
 
@@ -309,7 +315,7 @@ export default function Ide() {
       return;
     }
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.repeat || !isToggleOutputShortcut(event)) {
+      if (event.repeat || !isKeyboardShortcut('KeyJ', event)) {
         return;
       }
       event.preventDefault();
@@ -319,6 +325,26 @@ export default function Ide() {
     window.addEventListener('keydown', onKeyDown, true);
     return () => window.removeEventListener('keydown', onKeyDown, true);
   }, [isPythonFile, outputAvailable]);
+
+  // Cmd/Ctrl+B toggles the file manager area.
+  const sidebarPanelRef = usePanelRef();
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const ref = sidebarPanelRef.current;
+      if (event.repeat || !isKeyboardShortcut('KeyB', event) || ref === null) {
+        return;
+      }
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if (ref.isCollapsed()) {
+        ref.expand();
+      } else {
+        ref.collapse();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown, true);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [sidebarPanelRef]);
 
   const shortcutLabel = isHydrated && hasCmdModifier() ? '⌘J' : 'Ctrl+J';
 
@@ -555,7 +581,13 @@ export default function Ide() {
           )}
         />
         <Group orientation='horizontal' style={{ flex: 1, minHeight: 0 }}>
-          <Panel defaultSize='18%' minSize='8%' collapsible>
+          <Panel
+            panelRef={sidebarPanelRef}
+            defaultSize='18%'
+            minSize='8%'
+            collapsible
+            collapsedSize={0}
+          >
             <IdeFileManager
               fileNames={fileNames}
               folderNames={folderNames}
