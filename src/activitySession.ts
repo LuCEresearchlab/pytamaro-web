@@ -389,6 +389,9 @@ export class ActivitySession {
     cellIdx: number,
     liveAnalysis: LiveAnalysisStatus,
   ): { upToCell: number; beforeCell: number } {
+    if (this.downstreamFrom !== null && this.downstreamFrom <= cellIdx) {
+      this.flushDownstream.flush();
+    }
     let upToCell = 0;
     let beforeCell = 0;
     let previousLines = 0;
