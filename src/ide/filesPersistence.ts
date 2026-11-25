@@ -152,9 +152,8 @@ export class IdeFilesPersistence {
     const channel = new BroadcastChannel(CHANNEL_NAME);
     const listener = (event: MessageEvent) => {
       if ((event.data as { type?: unknown } | null)?.type === 'changed') {
-        this.debouncedWrite.cancel();
-        this.pending = null;
-        onChange();
+        // Write our own pending edits before reloading.
+        void this.flush().then(onChange);
       }
     };
     channel.addEventListener('message', listener);
