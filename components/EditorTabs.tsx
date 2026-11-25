@@ -1,6 +1,7 @@
 import { Close } from '@mui/icons-material';
 import {
   Box,
+  CircularProgress,
   IconButton,
   Tab,
   Tabs,
@@ -25,12 +26,14 @@ export type EditorViewToggle = {
 export default function EditorTabs({
   fileNames,
   activeFile,
+  runningFile,
   onSelect,
   onClose,
   viewToggle = undefined,
 }: {
   fileNames: string[];
   activeFile: string;
+  runningFile: string | null;
   onSelect: (name: string) => void;
   onClose: (name: string) => void;
   viewToggle?: EditorViewToggle;
@@ -66,7 +69,7 @@ export default function EditorTabs({
             value={name}
             component='div'
             onMouseUp={(e) => {
-              if (e.button === 1) {
+              if (e.button === 1 && runningFile !== name) {
                 // Auxiliary button (mouse wheel): close tab
                 e.stopPropagation();
                 onClose(name);
@@ -102,14 +105,26 @@ export default function EditorTabs({
                 </Box>
                 <IconButton
                   size='small'
-                  aria-label={t('closeFileTab', { name })}
+                  aria-label={
+                    name === runningFile
+                      ? t('activeFileTab', { name })
+                      : t('closeFileTab', { name })
+                  }
+                  disabled={name === runningFile}
                   onClick={(e) => {
                     e.stopPropagation();
                     onClose(name);
                   }}
                   sx={{ padding: 0, marginLeft: 1, flexShrink: 0 }}
                 >
-                  <Close fontSize='inherit' />
+                  {name === runningFile ? (
+                    <CircularProgress
+                      size={16}
+                      color={activeFile === name ? undefined : 'inherit'}
+                    />
+                  ) : (
+                    <Close fontSize='inherit' />
+                  )}
                 </IconButton>
               </Box>
             }

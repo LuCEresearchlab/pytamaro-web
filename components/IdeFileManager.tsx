@@ -38,11 +38,13 @@ import {
   ChangeEvent,
   DragEvent,
   ReactNode,
+  useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
+import { ExecutorContext } from '../src/execution/executorContext';
 import { isPythonFileName } from '../src/ide/files';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import theme from '../src/theme';
@@ -255,10 +257,12 @@ const DROP_TARGET_SX = {
 
 function ActionButton({
   title,
+  disabled,
   onClick,
   children,
 }: {
   title: string;
+  disabled: boolean;
   onClick: () => void;
   children: ReactNode;
 }) {
@@ -267,6 +271,7 @@ function ActionButton({
       <IconButton
         size='small'
         aria-label={title}
+        disabled={disabled}
         onClick={(event) => {
           event.stopPropagation();
           onClick();
@@ -296,12 +301,14 @@ function RowLabel({
   actionCount,
   moreActionsLabel = undefined,
   closeActionsLabel = undefined,
+  actionsDisabled = false,
   children,
 }: {
   actions?: ReactNode;
   actionCount: number;
   moreActionsLabel?: string;
   closeActionsLabel?: string;
+  actionsDisabled?: boolean;
   children: ReactNode;
 }) {
   const [actionsOpen, setActionsOpen] = useState(false);
@@ -385,6 +392,7 @@ function RowLabel({
                 size='small'
                 aria-label={toggleLabel}
                 aria-expanded={open}
+                disabled={actionsDisabled}
                 onClick={(event) => {
                   // Safari doesn't focus buttons on click; Escape needs focus.
                   event.currentTarget.focus();
@@ -445,19 +453,24 @@ function RowLabel({
   );
 }
 
-function MoveNodeButton(props: {
-  node: FileTreeNode;
+function MoveNodeButton({
+  source,
+  forest,
+  moveFile,
+  moveFolder,
+  disabled,
+}: {
+  source: FileTreeNode;
   forest: FileTreeNode[];
   moveFile: (oldPath: string, newPath: string) => boolean;
   moveFolder: (oldPath: string, newPath: string) => boolean;
+  disabled: boolean;
 }) {
   const { t } = useLocalTranslation(['ide', 'common']);
 
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [target, setTarget] = useState<string | null>(null);
-
-  const { node: source, forest } = props;
 
   const handleClose = () => {
     setOpen(false);
@@ -495,7 +508,7 @@ function MoveNodeButton(props: {
     if (target === null) {
       return;
     }
-    const moveFn = source.type === 'folder' ? props.moveFolder : props.moveFile;
+    const moveFn = source.type === 'folder' ? moveFolder : moveFile;
     if (moveFn(source.path, target)) {
       setOpen(false);
     } else {
@@ -515,10 +528,14 @@ function MoveNodeButton(props: {
 
   return (
     <>
-      <ActionButton title={t('move.action')} onClick={() => setOpen(true)}>
+      <ActionButton
+        title={t('move.action')}
+        disabled={disabled}
+        onClick={() => setOpen(true)}
+      >
         <DriveFileMove fontSize='small' />
       </ActionButton>
-      <Dialog open={open} fullWidth onClose={handleClose}>
+      <Dialog open={open && !disabled} fullWidth onClose={handleClose}>
         <DialogTitle>{t('move.title', { source: source.name })}</DialogTitle>
         <DialogContent>
           <DialogContentText>{t('move.description')}</DialogContentText>
@@ -534,9 +551,7 @@ function MoveNodeButton(props: {
             }}
           >
             <TreeItem key={`move_target_`} itemId={''} label={t('move.root')}>
-              {props.forest
-                .filter((node) => node.type === 'folder')
-                .map(renderNode)}
+              {forest.filter((node) => node.type === 'folder').map(renderNode)}
             </TreeItem>
           </SimpleTreeView>
           {error === null ? <></> : <Alert severity='error'>{error}</Alert>}
@@ -618,6 +633,15 @@ export default function IdeFileManager({
   const fileInputRef = useRef<HTMLInputElement>(null);
   /** The folder into which the files chosen through the picker are uploaded. */
   const uploadFolderRef = useRef('');
+
+  // Do not allow to edit the project workspace while we're running code.
+  const { executorState } = useContext(ExecutorContext);
+  const [workspaceActionsDisabled, setWorkspaceActionsDisabled] =
+    useState(true);
+  useEffect(
+    () => setWorkspaceActionsDisabled(executorState.type === 'executing'),
+    [executorState],
+  );
 
   const forest = useMemo(
     () => buildFileForest(fileNames, folderNames),
@@ -783,12 +807,14 @@ export default function IdeFileManager({
                 <>
                   <ActionButton
                     title={t('downloadFile')}
+                    disabled={workspaceActionsDisabled}
                     onClick={() => onDownloadFile(path)}
                   >
                     <Download fontSize='small' />
                   </ActionButton>
                   <ActionButton
                     title={t('renameFile')}
+                    disabled={workspaceActionsDisabled}
                     onClick={() => {
                       setDraftName(path);
                       setEdit({ mode: 'rename', path });
@@ -797,13 +823,15 @@ export default function IdeFileManager({
                     <DriveFileRenameOutline fontSize='small' />
                   </ActionButton>
                   <MoveNodeButton
-                    node={node}
+                    source={node}
                     forest={forest}
                     moveFile={onRenameFile}
                     moveFolder={onRenameFolder}
+                    disabled={workspaceActionsDisabled}
                   />
                   <ActionButton
                     title={t('deleteFile')}
+                    disabled={workspaceActionsDisabled}
                     onClick={() => askDelete(path, false)}
                   >
                     <DeleteOutlined fontSize='small' />
@@ -865,6 +893,7 @@ export default function IdeFileManager({
                 <>
                   <ActionButton
                     title={t('renameFolder')}
+                    disabled={workspaceActionsDisabled}
                     onClick={() => {
                       setDraftName(node.path);
                       setEdit({ mode: 'rename', path: node.path });
@@ -873,13 +902,15 @@ export default function IdeFileManager({
                     <DriveFileRenameOutline fontSize='small' />
                   </ActionButton>
                   <MoveNodeButton
-                    node={node}
+                    source={node}
+                    disabled={workspaceActionsDisabled}
                     forest={forest}
                     moveFile={onRenameFile}
                     moveFolder={onRenameFolder}
                   />
                   <ActionButton
                     title={t('deleteFolder')}
+                    disabled={workspaceActionsDisabled}
                     onClick={() => askDelete(node.path, true)}
                   >
                     <DeleteOutlined fontSize='small' />
@@ -957,6 +988,7 @@ export default function IdeFileManager({
             <IconButton
               size='small'
               aria-label={t('addEmptyFile')}
+              disabled={workspaceActionsDisabled}
               onClick={() => startCreate('file', selectedFolder)}
               data-testid='new-file-button'
             >
@@ -967,6 +999,7 @@ export default function IdeFileManager({
             <IconButton
               size='small'
               aria-label={t('addFileFromDevice')}
+              disabled={workspaceActionsDisabled}
               onClick={() => pickFiles(selectedFolder)}
               data-testid='upload-file-button'
             >
@@ -977,6 +1010,7 @@ export default function IdeFileManager({
             <IconButton
               size='small'
               aria-label={t('addFolder')}
+              disabled={workspaceActionsDisabled}
               onClick={() => startCreate('folder', selectedFolder)}
               data-testid='new-folder-button'
             >
@@ -987,6 +1021,7 @@ export default function IdeFileManager({
             <IconButton
               size='small'
               aria-label={t('downloadFilesAsZip')}
+              disabled={workspaceActionsDisabled}
               onClick={onDownloadZip}
             >
               <Archive fontSize='small' />
@@ -996,6 +1031,7 @@ export default function IdeFileManager({
             <IconButton
               size='small'
               aria-label={t('uploadFilesFromZip')}
+              disabled={workspaceActionsDisabled}
               onClick={onUploadZip}
             >
               <Unarchive fontSize='small' />

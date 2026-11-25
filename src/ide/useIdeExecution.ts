@@ -55,29 +55,8 @@ export default function useIdeExecution(
   const [outputAreaVisible, setOutputAreaVisible] = useState(false);
   const [outputSynced, setOutputSynced] = useState(true);
   const [isWaitingForInput, setIsWaitingForInput] = useState(false);
-  /**
-   * Files that the running program has written. They are read-only in the
-   * editor until the run ends, so that user edits cannot be silently
-   * overwritten by the next mid-run update.
-   */
-  const [readOnlyFiles, setReadOnlyFiles] = useState<ReadonlySet<string>>(
-    () => new Set(),
-  );
 
-  const lockFiles = useCallback((names: readonly string[]) => {
-    if (names.length === 0) {
-      return;
-    }
-    setReadOnlyFiles((current) => {
-      if (names.every((name) => current.has(name))) {
-        return current;
-      }
-      const next = new Set(current);
-      names.forEach((name) => next.add(name));
-      return next;
-    });
-  }, []);
-
+  const [lastRunFile, setLastRunFile] = useState<string | null>(null);
   /**
    * Mid-run workspace changes waiting to be applied. They are batched with a
    * timer (not `requestAnimationFrame`, which is paused in background tabs).
@@ -93,10 +72,9 @@ export default function useIdeExecution(
     const pending = pendingWorkspaceChanges.current;
     pendingWorkspaceChanges.current = null;
     if (pending !== null && !isEmptyWorkspaceChanges(pending)) {
-      lockFiles(pending.changed.map(({ name }) => name));
       onWorkspaceChanges(pending);
     }
-  }, [lockFiles, onWorkspaceChanges]);
+  }, [onWorkspaceChanges]);
 
   const queueWorkspaceChanges = useCallback(
     (changes: WorkspaceChanges) => {
@@ -137,7 +115,6 @@ export default function useIdeExecution(
     setOutputAreaVisible(false);
     setOutputSynced(true);
     setIsWaitingForInput(false);
-    setReadOnlyFiles(new Set());
   }, []);
 
   const showOutputArea = useCallback(() => setOutputAreaVisible(true), []);
@@ -203,7 +180,7 @@ export default function useIdeExecution(
       setExecutionResponse(undefined);
       setOutputSynced(true);
       setIsWaitingForInput(false);
-      setReadOnlyFiles(new Set());
+      setLastRunFile(activeFile);
       try {
         const response = await execute(
           [source],
@@ -244,9 +221,6 @@ export default function useIdeExecution(
         // A crashed, stopped or aborted run still keeps whatever it wrote.
         flushWorkspaceChanges();
         setExecutionUUID(undefined);
-        setReadOnlyFiles((current) =>
-          current.size === 0 ? current : new Set(),
-        );
       }
     },
     [
@@ -280,6 +254,7 @@ export default function useIdeExecution(
       isPythonFileName(activeFile) &&
       workspace.text(activeFile) !== undefined &&
       executorState.type !== 'loading',
+    runningFile: executionUUID !== undefined ? lastRunFile : null,
     executing,
     executionFinished,
     finishedWithoutOutput,
@@ -294,6 +269,5 @@ export default function useIdeExecution(
     isWaitingForInput,
     setIsWaitingForInput,
     setOutputAreaRef,
-    readOnlyFiles,
   };
 }

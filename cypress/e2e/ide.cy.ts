@@ -291,32 +291,4 @@ describe('IDE', () => {
       .type('hello{enter}');
     cy.get('[data-testid="output-area"]').should('contain.text', 'hello');
   });
-
-  it('should keep files created while the program is running', () => {
-    cy.visit(idePathname());
-    dismissDataCollectionModal();
-    waitForMonacoEditor();
-    typeMonacoCode('input()\nprint("done")');
-    cy.get('.run-button').first().click();
-    cy.get('[data-testid="output-area"]')
-      .find('[data-testid="input-area"]')
-      .should('be.visible');
-    // Create a file while the program is blocked on input.
-    cy.get('[data-testid="new-file-button"]').click();
-    cy.get('[data-testid="file-tree-dropzone"]')
-      .find('input[type="text"]')
-      .type('notes.txt{enter}');
-    cy.get('[data-testid="file-tree"]').should('contain.text', 'notes.txt');
-    // Go back to the running program and let it finish.
-    cy.get('[data-testid="editor-tabs"]').contains('main.py').click();
-    cy.get('[data-testid="output-area"]')
-      .find('[data-testid="input-area"]')
-      .should('be.visible')
-      .type('go{enter}');
-    cy.get('[data-testid="output-area"]').should('contain.text', 'done');
-    // Syncing the results of the run must not discard the new file.
-    cy.get('[data-testid="file-tree"]')
-      .should('contain.text', 'notes.txt')
-      .and('contain.text', 'main.py');
-  });
 });

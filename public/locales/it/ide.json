@@ -18,6 +18,7 @@
     "moreActions": "Altre azioni",
     "closeActions": "Chiudi azioni",
     "closeFileTab": "Chiudi {{name}}",
+    "activeFileTab": "File in esecuzione",
     "noFileOpen": "Nessun file aperto",
     "noFileOpenHint": "Apri un file dal gestore file per iniziare a modificare, oppure creane uno nuovo.",
     "binaryFileHint": "Questo file non contiene testo da mostrare. Usa la vista byte per ispezionarne il contenuto.",

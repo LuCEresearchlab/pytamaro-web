@@ -18,6 +18,7 @@
     "moreActions": "Plus d'actions",
     "closeActions": "Fermer les actions",
     "closeFileTab": "Fermer {{name}}",
+    "activeFileTab": "Fichier en cours d'exécution",
     "noFileOpen": "Aucun fichier ouvert",
     "noFileOpenHint": "Ouvrez un fichier depuis le gestionnaire de fichiers pour commencer à modifier, ou créez-en un nouveau.",
     "binaryFileHint": "Ce fichier ne contient pas de texte à afficher. Utilisez la vue octets pour inspecter son contenu.",

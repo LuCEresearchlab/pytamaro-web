@@ -18,6 +18,7 @@
     "moreActions": "Weitere Aktionen",
     "closeActions": "Aktionen schließen",
     "closeFileTab": "{{name}} schließen",
+    "activeFileTab": "Datei wird ausgeführt",
     "noFileOpen": "Keine Datei geöffnet",
     "noFileOpenHint": "Öffne eine Datei im Dateimanager, um mit dem Bearbeiten zu beginnen, oder erstelle eine neue.",
     "binaryFileHint": "Diese Datei enthält keinen Text, der angezeigt werden kann. Verwende die Byte-Ansicht, um ihren Inhalt zu untersuchen.",

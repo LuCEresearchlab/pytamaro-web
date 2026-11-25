@@ -410,8 +410,6 @@ export default function Ide() {
   const showNonEditable = hasActiveFile && !isEditing;
   const showNoFileOpen = loaded && activeFile === '';
 
-  const editorReadOnly =
-    execution.executing && execution.readOnlyFiles.has(activeFile);
   const showRuntimeAnnotations =
     execution.executionFinished && execution.outputSynced;
 
@@ -623,6 +621,7 @@ export default function Ide() {
                   onSelect={openFile}
                   onClose={closeFile}
                   viewToggle={viewToggle}
+                  runningFile={execution.runningFile}
                 />
               )}
               {view !== 'bytes' && (
@@ -658,7 +657,7 @@ export default function Ide() {
                           modelPath={activeFile}
                           context={editorContext}
                           autoHeight={false}
-                          readOnly={editorReadOnly}
+                          readOnly={execution.executing}
                           onChange={execution.markOutputStale}
                           onExecutionRequested={handleExecutionRequest}
                           executionAllowed={execution.runEnabled}
