@@ -112,6 +112,29 @@ function nicerTraceback(traceback: string) {
   const addKeyboardInterruptMessage = (s: string) =>
     s.replace(/^KeyboardInterrupt$/m, 'KeyboardInterrupt: execution stopped');
 
+  // Remove pyodide install hook messages
+  // Reference: https://github.com/pyodide/pyodide/blob/cdbe0aaa5838dd69cce92825405873ab757a1d80/src/py/_pyodide/_importhook.py#L223
+  const removeMicroPipInstallExtHookMessage = (s: string) =>
+    s.replace(
+      /^The module '(.+)' is included in the Pyodide distribution, but it is not installed\.\nYou can install it by calling:\n  await micropip.install\(\"\1"\) in Python, or\n  await pyodide.loadPackage\(\"\1\"\) in JavaScript\n?/m,
+      '',
+    );
+  const removeMicroPipInstallStdUnsupportedStdLibHookMessage = (s: string) =>
+    s.replace(
+      /^The module '(.+)' is removed from the Python standard library in the Pyodide distribution due to browser limitations.\n?/m,
+      "The standard module '$1' is unsupported on this platform.\n",
+    );
+  const removeMicroPipInstallStdOptionalLibHookMessage = (s: string) =>
+    s.replace(
+      /^The module '(.+)' is unvendored from the Python standard library in the Pyodide distribution\.\nYou can install it by calling:\n  await micropip.install\(\"\1"\) in Python, or\n  await pyodide.loadPackage\(\"\1\"\) in JavaScript\n?/m,
+      "The standard module '$1' is not available on this platform.\n",
+    );
+  const removeMicroPipSeeDetailsMessage = (s: string) =>
+    s.replace(
+      /^See https:\/\/pyodide\.org\/en\/stable\/usage\/loading-packages.html for more details\.\n?^/gm,
+      '',
+    );
+
   return [
     removePythonErrorColon,
     hideDriver,
@@ -120,6 +143,10 @@ function nicerTraceback(traceback: string) {
     shortenLibraryPaths,
     replaceEllipsis,
     addKeyboardInterruptMessage,
+    removeMicroPipInstallExtHookMessage,
+    removeMicroPipInstallStdUnsupportedStdLibHookMessage,
+    removeMicroPipInstallStdOptionalLibHookMessage,
+    removeMicroPipSeeDetailsMessage,
   ].reduce((acc, fn) => fn(acc), traceback);
 }
 
