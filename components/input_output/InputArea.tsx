@@ -29,6 +29,7 @@ export default function InputArea({
         title={t(editable ? 'inputHint.active' : 'inputHint.inactive')}
       >
         <pre
+          data-testid='input-area'
           ref={inputRef}
           style={{
             outline: 'none',

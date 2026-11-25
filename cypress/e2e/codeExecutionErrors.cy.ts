@@ -5,6 +5,8 @@ import {
 
 import {
   dismissDataCollectionModal,
+  enableSemanticChecks,
+  typeMonacoCode,
   waitForMonacoEditor,
 } from '../support/utils';
 
@@ -13,38 +15,58 @@ describe('Code Execution Errors', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();
-    cy.get('.monaco-editor').first().type('{selectall}{backspace}');
-    cy.get('.monaco-editor').first().type('print(a)');
+    typeMonacoCode('print(a)');
     cy.get('.run-button').first().click();
     cy.get('.monaco-editor-overlaymessage')
       .should('be.visible')
       .contains('Name');
     cy.get('.squiggly-error').should('be.visible');
-    cy.get('.output-area').should('not.exist');
-    cy.get('.stderr').should('be.visible').contains('NameError');
+    cy.get('[data-testid="output-area"]').should('be.empty');
+    cy.get('[data-testid="stderr"]').should('be.visible').contains('NameError');
   });
 
   it('should hide annotations when the code changes', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();
-    cy.get('.monaco-editor').first().type('{selectall}{backspace}');
-    cy.get('.monaco-editor').first().type('print(a)');
+    typeMonacoCode('print(a)');
     cy.get('.run-button').first().click();
     cy.get('.monaco-editor-overlaymessage').should('be.visible');
     cy.get('.squiggly-error').should('be.visible');
-    cy.get('.monaco-editor textarea:first').focus();
-    cy.get('.monaco-editor').first().type('{leftarrow}{backspace}');
+    typeMonacoCode('print()');
     cy.get('.monaco-editor-overlaymessage').should('not.exist');
     cy.get('.squiggly-error').should('not.exist');
+  });
+
+  it('should hide annotations and mark the output stale when dismissing a runtime error', () => {
+    cy.visit(playgroundPathname());
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    typeMonacoCode('print(a)');
+    cy.get('.run-button').first().click();
+    cy.get('.monaco-editor-overlaymessage')
+      .should('be.visible')
+      .contains('Name');
+    cy.get('.squiggly-error').should('be.visible');
+    cy.get(
+      '.MuiBadge-badge:not(.MuiBadge-invisible) [data-testid="stale-output-icon"]',
+    ).should('not.exist');
+    cy.get('[data-testid="dismiss-runtime-error"]').click();
+    // Both the bubble and its squiggle disappear...
+    cy.get('.monaco-editor-overlaymessage').should('not.exist');
+    cy.get('.squiggly-error').should('not.exist');
+    // ...and the output is now stale (the error in the traceback is no longer reported in the editor,
+    // so in some sense the output is "out of sync").
+    cy.get(
+      '.MuiBadge-badge:not(.MuiBadge-invisible) [data-testid="stale-output-icon"]',
+    ).should('be.visible');
   });
 
   it('should show parse errors even before running the code', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();
-    cy.get('.monaco-editor').first().type('{selectall}{backspace}');
-    cy.get('.monaco-editor').first().type('from');
+    typeMonacoCode('from');
     cy.get('.squiggly-error').should('be.visible');
   });
 
@@ -52,11 +74,8 @@ describe('Code Execution Errors', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();
-    cy.get('.platform-settings').click();
-    cy.get('button').contains('Semantics').click();
-    cy.get('.platform-settings').click();
-    cy.get('.monaco-editor').first().type('{selectall}{backspace}');
-    cy.get('.monaco-editor').first().type('print(a)');
+    enableSemanticChecks();
+    typeMonacoCode('print(a)');
     cy.get('.squiggly-error').should('be.visible');
     cy.get('.monaco-editor-overlaymessage').should('not.exist');
     cy.get('.squiggly-error')
@@ -77,11 +96,8 @@ describe('Code Execution Errors', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();
-    cy.get('.platform-settings').click();
-    cy.get('button').contains('Semantics').click();
-    cy.get('.platform-settings').click();
-    cy.get('.monaco-editor').first().type('{selectall}{backspace}');
-    cy.get('.monaco-editor').first().type('1 + "a"');
+    enableSemanticChecks();
+    typeMonacoCode('1 + "a"');
     cy.get('.squiggly-error').should('be.visible');
     cy.get('.monaco-editor-overlaymessage').should('not.exist');
     cy.get('.squiggly-error')
@@ -105,8 +121,7 @@ describe('Code Execution Errors', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();
-    cy.get('.monaco-editor').first().type('{selectall}{backspace}');
-    cy.get('.monaco-editor').first().type('def f(a): return a * a\nf("")');
+    typeMonacoCode('def f(a): return a * a\nf("")');
     cy.get('.run-button').first().click();
     cy.get('.squiggly-warning').should('be.visible');
     cy.get('.squiggly-warning').should('be.visible').should('have.length', 2);
@@ -118,10 +133,8 @@ describe('Code Execution Errors', () => {
     );
     dismissDataCollectionModal();
     waitForMonacoEditor();
-    cy.get('.monaco-editor').first().type('{selectall}{backspace}');
-    cy.get('.monaco-editor').first().type('print(a)');
-    cy.get('.monaco-editor').eq(1).type('{selectall}{backspace}');
-    cy.get('.monaco-editor').eq(1).type('print(b)');
+    typeMonacoCode('print(a)');
+    typeMonacoCode('print(b)', { index: 1 });
     cy.get('.run-button').eq(1).click();
     cy.get('.monaco-editor-overlaymessage').should('be.visible');
     cy.get('.monaco-editor')
@@ -143,15 +156,52 @@ describe('Code Execution Errors', () => {
     cy.visit(playgroundPathname());
     dismissDataCollectionModal();
     waitForMonacoEditor();
-    cy.get('.monaco-editor').first().type('{selectall}{backspace}');
-    cy.get('.monaco-editor')
-      .first()
-      .type(
-        'import sys{enter}{enter}print("out"){enter}print("err", file=sys.stderr)',
-      );
+    typeMonacoCode('import sys\n\nprint("out")\nprint("err", file=sys.stderr)');
     cy.get('.run-button').first().click();
-    cy.get('.output-area').should('contain.text', 'out');
-    cy.get('.stderr').should('contain.text', 'err');
+    cy.get('[data-testid="output-area"]').should('contain.text', 'out');
+    cy.get('[data-testid="stderr"]').should('contain.text', 'err');
+  });
+
+  it('should analyze errors across cells, show a confirmation dialog, and attach runtime errors to the right cell', () => {
+    cy.visit(
+      activityVariantPathnameFromParts('luce', 'swiss-flag', 'en', 'v1'),
+    );
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    enableSemanticChecks();
+    typeMonacoCode('a = 1\nb = 2\nc = 3');
+    typeMonacoCode('print(zzz)', { index: 1 });
+    // The static diagnostic is only in the second cell.
+    cy.get('.monaco-editor').eq(0).find('.squiggly-error').should('not.exist');
+    cy.get('.monaco-editor')
+      .eq(1)
+      .find('.squiggly-error.analyzer-diagnostic')
+      .should('be.visible');
+    // Running a cell with errors asks for confirmation.
+    cy.get('.run-button').eq(1).click();
+    cy.contains('button', 'Run Program Anyway').should('be.visible').click();
+    // The runtime error widget is anchored to the second cell.
+    cy.get('.monaco-editor')
+      .eq(1)
+      .find('.monaco-editor-overlaymessage')
+      .should('be.visible')
+      .and('contain.text', 'Name');
+    // The runtime decoration must be on the second cell only.
+    cy.get('.monaco-editor')
+      .eq(1)
+      .find('.traceback-message')
+      .should('be.visible');
+    cy.get('.monaco-editor')
+      .eq(0)
+      .find('.monaco-editor-overlaymessage')
+      .should('not.exist');
+    // Defining the missing name in the first cell re-analyzes the second one,
+    // so its squiggle disappears automatically.
+    typeMonacoCode('zzz = 1', { index: 0 });
+    cy.get('.monaco-editor')
+      .eq(1)
+      .find('.squiggly-error.analyzer-diagnostic')
+      .should('not.exist');
   });
 
   it('should show the error when a cell calls a function from a previous cell that has an error', () => {
@@ -160,14 +210,12 @@ describe('Code Execution Errors', () => {
     );
     dismissDataCollectionModal();
     waitForMonacoEditor();
-    cy.get('.monaco-editor').first().type('{selectall}{backspace}');
-    cy.get('.monaco-editor').first().type('def f(): print(a)');
-    cy.get('.monaco-editor').eq(1).type('{selectall}{backspace}');
-    cy.get('.monaco-editor').eq(1).type('f()');
+    typeMonacoCode('def f(): print(a)');
+    typeMonacoCode('f()', { index: 1 });
     cy.get('.run-button').eq(1).click();
     cy.get('.monaco-editor-overlaymessage')
       .should('be.visible')
       .contains('Name');
-    cy.get('.stderr').should('be.visible').contains('NameError');
+    cy.get('[data-testid="stderr"]').should('be.visible').contains('NameError');
   });
 });

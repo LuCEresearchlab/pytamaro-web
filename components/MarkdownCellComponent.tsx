@@ -2,18 +2,19 @@
 import { Box, Link, Stack } from '@mui/material';
 import { MDXRemote } from 'next-mdx-remote';
 import { ReactNode, useMemo } from 'react';
-import { COLORIZE_CLASSNAME } from '../src/monacoColorizer';
+import { COLORIZE_CLASSNAME } from '../src/editor/colorizer';
+import { STRICT_PYTHON3_LANG_ID } from '../src/editor/strictPython3';
+import type { FilesAnalysisResult } from '../src/pythonWorkspace';
 import {
   ActivityVariant,
   MarkdownCell,
   NotebookCell,
 } from '../src/schemas/activitySchema';
 import { activityAssetPathname } from '../src/urlUtils';
-import { FilesAnalysisResult } from '../src/usePythonAnalyzer';
 import InlineAPI from './documentation/InlineAPI';
-import { STRICT_PYTHON3_LANG_ID } from './editor/strictPython3';
 import ActivityLink from './markdown/ActivityLink';
 import DoNowBox from './markdown/DoNowBox';
+import ExternalVideo from './markdown/ExternalVideo';
 import TaskBox from './markdown/TaskBox';
 
 function imgSourceTransformer(
@@ -179,6 +180,28 @@ export default function MarkdownCellComponent({
           requireAnswer,
           children,
           activityVariant,
+        }),
+      ExternalVideo: ({
+        title,
+        url,
+        thumbnail,
+        children,
+      }: {
+        title: string;
+        url: string;
+        thumbnail: string;
+        children: ReactNode;
+      }) =>
+        ExternalVideo({
+          title,
+          url,
+          thumbnail: imgSourceTransformer(
+            thumbnail,
+            cell,
+            activityVariant.authorSlug,
+            activityVariant.activitySlug,
+          ),
+          children,
         }),
       Task: ({ children }: { children: ReactNode }) => TaskBox({ children }),
     }),

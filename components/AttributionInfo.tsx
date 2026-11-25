@@ -1,5 +1,5 @@
 import { Link, Typography } from '@mui/material';
-import { Trans } from 'next-i18next';
+import { Trans } from 'next-i18next/pages';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { activityVariantFromId } from '../src/schemas/activitySchema';
 import { AuthorProfile } from '../src/schemas/authorSchema';

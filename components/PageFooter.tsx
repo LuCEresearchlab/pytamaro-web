@@ -1,5 +1,5 @@
 import { Container, Link, Typography } from '@mui/material';
-import { Trans } from 'next-i18next';
+import { Trans } from 'next-i18next/pages';
 import Image from 'next/image';
 import NextLink from 'next/link';
 import PyTamaroLogo from '../public/PyTamaroLogo.png';

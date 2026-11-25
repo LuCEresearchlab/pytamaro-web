@@ -1429,6 +1429,24 @@ export class Workspace {
     }
     /**
      * @param {FileHandle} file_id
+     */
+    closeFile(file_id) {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            _assertClass(file_id, FileHandle);
+            var ptr0 = file_id.__destroy_into_raw();
+            wasm.workspace_closeFile(retptr, this.__wbg_ptr, ptr0);
+            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+            if (r1) {
+                throw takeObject(r0);
+            }
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
+     * @param {FileHandle} file_id
      * @param {Position} position
      * @returns {LocationLink[]}
      */
@@ -1552,6 +1570,35 @@ export class Workspace {
     }
     /**
      * @param {FileHandle} file_id
+     * @returns {string}
+     */
+    sourceText(file_id) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            _assertClass(file_id, FileHandle);
+            wasm.workspace_sourceText(retptr, this.__wbg_ptr, file_id.__wbg_ptr);
+            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
+            var r3 = getDataViewMemory0().getInt32(retptr + 4 * 3, true);
+            var ptr1 = r0;
+            var len1 = r1;
+            if (r3) {
+                ptr1 = 0; len1 = 0;
+                throw takeObject(r2);
+            }
+            deferred2_0 = ptr1;
+            deferred2_1 = len1;
+            return getStringFromWasm0(ptr1, len1);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+            wasm.__wbindgen_export4(deferred2_0, deferred2_1, 1);
+        }
+    }
+    /**
+     * @param {FileHandle} file_id
      * @param {string} contents
      */
     updateFile(file_id, contents) {
@@ -1624,6 +1671,28 @@ export function initWorkspace() {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         wasm.initWorkspace(retptr);
+        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
+        if (r2) {
+            throw takeObject(r1);
+        }
+        return Workspace.__wrap(r0);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+}
+
+/**
+ * @param {string[]} libraries
+ * @returns {Workspace}
+ */
+export function initWorkspaceWithLibraries(libraries) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArrayJsValueToWasm0(libraries, wasm.__wbindgen_export);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.initWorkspaceWithLibraries(retptr, ptr0, len0);
         var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
         var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
         var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);

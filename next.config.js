@@ -49,6 +49,12 @@ const nextConfig = {
   },
   // Cross-origin isolation is a required security policy to enable SharedArrayBuffer.
   // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer
+  // Important!
+  // Since Next.js 16.2, web workers are boostrapped from a separate chunk, which requires COEP.
+  // Until https://github.com/vercel/next.js/issues/92676 is resolved, the source regex below
+  // needs to be broad enough to cover also assets under /_next/static/.
+  // Another subtlety: we must not add `i18n` to this config,
+  // because it messes with the source regex to account for locale prefixes.
   async headers() {
     return [
       {
@@ -84,7 +90,7 @@ module.exports = nextConfig;
 
 // Injected content via Sentry wizard below
 
-const { withSentryConfig } = require('@sentry/nextjs');
+const { withSentryConfig } = require('@sentry/nextjs/config');
 
 module.exports = withSentryConfig(module.exports, {
   // For all available options, see:
@@ -110,7 +116,11 @@ module.exports = withSentryConfig(module.exports, {
   // tunnelRoute: "/monitoring",
 
   // Automatically tree-shake Sentry logger statements to reduce bundle size
-  disableLogger: true,
+  // (`disableLogger` was removed in @sentry/nextjs v11; this option works with
+  // both webpack and Turbopack)
+  bundleSizeOptimizations: {
+    excludeDebugStatements: true,
+  },
 
   // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
   // See the following for more information:

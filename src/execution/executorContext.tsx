@@ -1,11 +1,24 @@
-import { createContext, ReactNode, useEffect, useRef, useState } from 'react';
-import { OutputAreaRef } from '../../components/input_output/OutputArea';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { ToolboxFunction } from '../localStorage/schema';
-import { PythonFile } from '../schemas/activitySchema';
 import { ExecutionResponse, PythonMode } from './codeExecution';
-import { ExecutorClient, ExecutorState } from './executorClient';
+import {
+  ExecutorClient,
+  ExecutorState,
+  type InputRequester,
+} from './executorClient';
 import { ExecutorDelegate } from './executorDelegate';
-import { ExecutionMetadata } from './messageTypes';
+import {
+  ExecutionMetadata,
+  RunPythonFile,
+  type WorkspaceChanges,
+} from './messageTypes';
 
 export interface IExecutor {
   executorState: ExecutorState;
@@ -13,15 +26,20 @@ export interface IExecutor {
     sources: string[],
     idx: number,
     toolboxFunctions: ToolboxFunction[],
-    extraPythonFiles: PythonFile[],
+    extraPythonFiles: RunPythonFile[],
     executionMetadata: ExecutionMetadata,
     pythonMode: PythonMode,
     updateExecutionResult?: (idx: number, response: ExecutionResponse) => void,
     onActiveCellChange?: (before: number | null, after: number) => void,
-    getOutputRef?: (idx: number) => OutputAreaRef | null,
+    requestInput?: InputRequester,
+    fileNames?: string[],
+    workspaceFiles?: string[],
+    workspaceFolders?: string[],
+    onWorkspaceChanges?: (changes: WorkspaceChanges) => void,
   ) => Promise<ExecutionResponse>;
   interruptExecution: () => void;
   restart: () => Promise<void>;
+  configureLibraries: (libraries: readonly string[]) => Promise<void>;
 }
 
 export const ExecutorContext = createContext<IExecutor>({
@@ -32,6 +50,9 @@ export const ExecutorContext = createContext<IExecutor>({
     ),
   interruptExecution: () => {},
   restart: async () => {},
+  configureLibraries: async () => {
+    throw new Error('Pyodide Worker is not ready');
+  },
 });
 
 export function ExecutorProvider({ children }: { children: ReactNode }) {
@@ -48,12 +69,16 @@ export function ExecutorProvider({ children }: { children: ReactNode }) {
     sources: string[],
     idx: number,
     toolboxFunctions: ToolboxFunction[],
-    extraPythonFiles: PythonFile[],
+    extraPythonFiles: RunPythonFile[],
     executionMetadata: ExecutionMetadata,
     pythonMode: PythonMode,
     updateExecutionResult?: (idx: number, response: ExecutionResponse) => void,
     onActiveCellChange?: (before: number | null, after: number) => void,
-    getOutputRef?: (idx: number) => OutputAreaRef | null,
+    requestInput?: InputRequester,
+    fileNames: string[] = [],
+    workspaceFiles: string[] | undefined = undefined,
+    workspaceFolders: string[] | undefined = undefined,
+    onWorkspaceChanges: (changes: WorkspaceChanges) => void = () => {},
   ) => {
     if (
       executorState.type !== 'available' ||
@@ -70,18 +95,49 @@ export function ExecutorProvider({ children }: { children: ReactNode }) {
       pythonMode,
       updateExecutionResult ? updateExecutionResult : () => {},
       onActiveCellChange ? onActiveCellChange : () => {},
-      getOutputRef ? getOutputRef : () => null,
+      requestInput,
+      fileNames,
+      workspaceFiles,
+      workspaceFolders,
+      onWorkspaceChanges,
     );
   };
 
-  const interruptExecution = () =>
-    executorClientRef?.current?.interruptExecution();
-
-  const restart = async () => {
-    if (executorClientRef.current !== null) {
-      setExecutorClientRef(await executorClientRef.current.restartWorker());
+  const interruptExecution = () => {
+    const client = executorClientRef.current;
+    if (client === null) {
+      return;
     }
+    client.interruptExecution();
+    setExecutorState({ type: 'available' });
   };
+
+  const restart = useCallback(async () => {
+    if (executorClientRef.current !== null) {
+      const client = await executorClientRef.current.restartWorker();
+      setExecutorClientRef(client);
+      setExecutorState({ type: 'available' });
+    }
+  }, []);
+
+  const executorAvailable = executorState.type === 'available';
+
+  const configureLibraries = useCallback(
+    async (libraries: readonly string[]) => {
+      const client = executorClientRef.current;
+      if (!executorAvailable || client === null) {
+        throw new Error('Executor Worker is not (yet) available');
+      }
+      await client.configureLibraries(libraries);
+      if (client.hasStaleLibraries(libraries)) {
+        await restart();
+        // The restart swallows install errors. Retrying on the new client is
+        // a no-op on success and reports the failure otherwise.
+        await executorClientRef.current?.configureLibraries(libraries);
+      }
+    },
+    [executorAvailable, restart],
+  );
 
   useEffect(() => {
     if (
@@ -106,6 +162,7 @@ export function ExecutorProvider({ children }: { children: ReactNode }) {
         execute,
         interruptExecution,
         restart,
+        configureLibraries,
       }}
     >
       {children}

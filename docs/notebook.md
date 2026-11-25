@@ -86,6 +86,15 @@ Top-level special components that can be used to structure the activity (these n
   </Task>
   ```
 
+- `<ExternalVideo />` to render a thumbnail for a video that is going to be opened on a new tab on click. For youtube videos, to force a specific language (e.g., german) append the following query parameters at the end of the URL: `hl=de&persist_hl=1`. The `thumbnail` needs to be an activity assets image:     remember to add **add it to the resource path** to the `assets` array specified in the activity's `info.json` file.
+  ```
+  <ExternalVideo
+      title='Python Dictionaries: Grundlagen'
+      url='https://www.youtube.com/watch?v=NT95z5Nc3XY&hl=de&persist_hl=1'
+      thumbnail='thumb_video_dictionaries_basic.png'
+  />
+  ```
+
 Other special components:
 
 - Material UI's [Stack](https://mui.com/material-ui/react-stack/). For instance, you might want to display multiple images side by side with some spacing:

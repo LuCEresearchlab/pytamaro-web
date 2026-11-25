@@ -15,11 +15,20 @@ jobs:
         with:
           submodules: true
           token: ${{ secrets.PYTAMARO_WEB_TOKEN }}
+      # Same cache step as for lint, with a different key
+      - name: Cache Next.js build
+        uses: actions/cache@v5
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-build-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-build-${{ hashFiles('**/package-lock.json') }}-
       # Install npm dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
         uses: cypress-io/github-action@v7
         with:
+          install-command: npm ci --no-audit --no-fund --prefer-offline
           build: npm run build
           start: npm start
           browser: chrome

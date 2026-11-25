@@ -1,6 +1,6 @@
 import PlayArrow from '@mui/icons-material/PlayArrow';
 import { Box, Button, Container, Link, Typography } from '@mui/material';
-import { Trans } from 'next-i18next';
+import { Trans } from 'next-i18next/pages';
 import Head from 'next/head';
 import Image from 'next/image';
 import NextLink from 'next/link';

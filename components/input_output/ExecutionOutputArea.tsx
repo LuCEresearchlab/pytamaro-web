@@ -11,7 +11,7 @@ import {
   Stack,
   ToggleButton,
 } from '@mui/material';
-import { CSSProperties, useState } from 'react';
+import { CSSProperties, useCallback, useState } from 'react';
 import {
   ExecutionResponse,
   isExecutionError,
@@ -38,9 +38,10 @@ function StderrElement({ content }: { content: string }) {
 
   const { errorLines, userTracebackLines, libraryTracebackLines, collapsed } =
     processTraceback(content);
+  const { t } = useLocalTranslation();
 
   return (
-    <div className='stderr'>
+    <div data-testid='stderr'>
       <PreElement lines={userTracebackLines} />
       {collapsed && (
         <div>
@@ -55,7 +56,9 @@ function StderrElement({ content }: { content: string }) {
             }}
             size='small'
           >
-            {`${showAllStackFrames ? 'Hide' : 'Show All '} Stack Frames`}
+            {showAllStackFrames
+              ? t('hideStackFrames')
+              : t('showAllStackFrames')}
           </ToggleButton>
           <Collapse in={showAllStackFrames} timeout='auto' unmountOnExit>
             <PreElement lines={libraryTracebackLines} />
@@ -144,6 +147,14 @@ export default function ExecutionOutputArea({
   const errored = isExecutionError(executionResponse);
   const failed = isExecutionFailed(executionResponse);
   const { stdout, stderr } = executionResponse;
+  const [isWaitingForInput, setIsWaitingForInputLocal] = useState(false);
+  const handleSetIsWaitingForInput = useCallback(
+    (waiting: boolean) => {
+      setIsWaitingForInputLocal(waiting);
+      setIsWaitingForInput(waiting);
+    },
+    [setIsWaitingForInput],
+  );
   return (
     <Box
       sx={{
@@ -163,22 +174,28 @@ export default function ExecutionOutputArea({
         <PreviousCellsErrorAlert buttonDisabled={dimmed} />
       ) : (
         <Stack sx={{ width: 'fit-content', minWidth: '100%' }}>
-          {stdout.length > 0 && (
-            <Box
-              sx={{
-                paddingX: compact ? 2 : 3,
-                paddingY: 1,
-                backgroundColor: OUTPUT_AREA_BACKGROUND_COLOR,
-              }}
-            >
-              <OutputArea
-                data={stdout}
-                disabled={dimmed}
-                ref={setOutputAreaRef}
-                setIsWaitingForInput={setIsWaitingForInput}
-              />
-            </Box>
-          )}
+          {/*
+            Keep the output area mounted even when there is no output yet, so
+            that an input request can show its input field.
+          */}
+          <Box
+            sx={
+              stdout.length > 0 || isWaitingForInput
+                ? {
+                    paddingX: compact ? 2 : 3,
+                    paddingY: 1,
+                    backgroundColor: OUTPUT_AREA_BACKGROUND_COLOR,
+                  }
+                : {}
+            }
+          >
+            <OutputArea
+              data={stdout}
+              disabled={dimmed}
+              ref={setOutputAreaRef}
+              setIsWaitingForInput={handleSetIsWaitingForInput}
+            />
+          </Box>
           {stderr.length > 0 && (
             <Box
               sx={{

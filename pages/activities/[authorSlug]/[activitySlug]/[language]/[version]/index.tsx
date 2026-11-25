@@ -16,7 +16,6 @@ import ActivityFooter from '../../../../../../components/ActivityFooter';
 import ActivityResetButton from '../../../../../../components/ActivityResetButton';
 import DataSharingPreferenceDialog from '../../../../../../components/DataSharingPreferenceDialog';
 import GoToCurriculaBanner from '../../../../../../components/GoToCurriculaBanner';
-import { OutputAreaRef } from '../../../../../../components/input_output/OutputArea';
 import MarkdownCellComponent from '../../../../../../components/MarkdownCellComponent';
 import InfoButton from '../../../../../../components/navbar/InfoButton';
 import NavigationBar from '../../../../../../components/navbar/NavigationBar';
@@ -30,6 +29,7 @@ import TableOfContents from '../../../../../../components/sidebar/TableOfContent
 import ToolboxListSidebar from '../../../../../../components/sidebar/ToolboxListSidebar';
 import VariantSelector from '../../../../../../components/VariantSelector';
 import { findIncludingCurricula } from '../../../../../../src/curricula';
+import useMonacoColorizer from '../../../../../../src/editor/colorizer';
 import { ExecutorContext } from '../../../../../../src/execution/executorContext';
 import {
   findVersions,
@@ -41,8 +41,10 @@ import {
   listCurriculaAllAuthors,
 } from '../../../../../../src/fs-content/authors';
 import { CodeCellState } from '../../../../../../src/localStorage/schema';
+import useLocalActivity, {
+  type LocalActivityState,
+} from '../../../../../../src/localStorage/useLocalActivity';
 import useLocalProfile from '../../../../../../src/localStorage/useLocalProfile';
-import useMonacoColorizer from '../../../../../../src/monacoColorizer';
 import getNotebookContent from '../../../../../../src/notebook';
 import {
   Activity,
@@ -61,7 +63,6 @@ import { translationProps } from '../../../../../../src/serverSideTranslationPro
 import { isSpecialActivity } from '../../../../../../src/specialActivities';
 import { activityVariantPathnameFromParts } from '../../../../../../src/urlUtils';
 import useCurriculumFromQuery from '../../../../../../src/useCurriculumFromQuery';
-import usePythonAnalyzer from '../../../../../../src/usePythonAnalyzer';
 import useReset from '../../../../../../src/useReset';
 
 const userType = 'student';
@@ -100,7 +101,7 @@ function sanitizeImgs() {
 
 function NotebookCells({
   activity,
-  initialCodeCells,
+  activityState,
   activityVariant,
   cells,
   cellsRef,
@@ -109,7 +110,7 @@ function NotebookCells({
   runEnabled,
 }: {
   activity: Activity;
-  initialCodeCells: CodeCellState[];
+  activityState: LocalActivityState;
   activityVariant: ActivityVariant;
   cells: NotebookCell[];
   cellsRef: RefObject<HTMLDivElement | null>;
@@ -119,16 +120,10 @@ function NotebookCells({
 }) {
   const { metadata } = useLocalProfile();
   const { wideEditor } = metadata;
-  const pythonAnalyzer = usePythonAnalyzer(activity.extraPythonFiles);
+  const activitySession = activityState.activitySession;
   const extraPythonFilesAnalysisResults = useMemo(() => {
-    if (!pythonAnalyzer) {
-      return [];
-    }
-    return activity.extraPythonFiles.map((file) => ({
-      name: file.name,
-      analysisResult: pythonAnalyzer.analyzeExtraPythonFile(file),
-    }));
-  }, [pythonAnalyzer, activity.extraPythonFiles]);
+    return activitySession.analyzeExtraPythonFiles(activity.extraPythonFiles);
+  }, [activitySession, activity.extraPythonFiles]);
   useMonacoColorizer();
 
   useEffect(() => {
@@ -148,26 +143,6 @@ function NotebookCells({
     };
   }, []);
 
-  const outputAreaRefs = useRef<Map<number, OutputAreaRef | null> | null>(null);
-  const getOutputAreaRefs = () => {
-    if (outputAreaRefs.current === null) {
-      outputAreaRefs.current = new Map();
-    }
-    return outputAreaRefs.current;
-  };
-  const setOutputAreaRef = (
-    idx: number,
-    node: OutputAreaRef | null | undefined,
-  ) => {
-    const map = getOutputAreaRefs();
-    if (node !== undefined) {
-      map.set(idx, node);
-    } else {
-      map.delete(idx);
-    }
-  };
-  const getOutputAreaRef = (idx: number) => getOutputAreaRefs().get(idx)!;
-
   return (
     <Box ref={cellsRef} className='activity-content'>
       {cells.map((cell, idx) =>
@@ -182,15 +157,12 @@ function NotebookCells({
         ) : (
           <Container maxWidth={wideEditor ? false : 'md'} key={cell.id}>
             <ActivityCodeCell
+              activityState={activityState}
               activityVariant={activityVariant}
-              initialCodeCells={initialCodeCells}
               cellIdx={originalIdxToCodeCellIdx.get(idx) as number}
               extraPythonFiles={activity.extraPythonFiles}
               platformConfig={activity.platformConfig}
               activityResetCounter={resetCounter}
-              pythonAnalyzer={pythonAnalyzer}
-              setOutputAreaRef={setOutputAreaRef}
-              getActivityOutputAreaRef={getOutputAreaRef}
               runEnabled={runEnabled}
             />
           </Container>
@@ -233,6 +205,12 @@ export default function NotebookPage({
   const pageTitle = `${title} - PyTamaro`;
 
   const { resetCounter, newReset } = useReset();
+
+  const activityState = useLocalActivity(
+    initialCodeCells,
+    activityVariant,
+    activity.extraPythonFiles,
+  );
 
   const [headingsVersion, setHeadingsVersion] = useState(0);
   const [headingsReady, setHeadingsReady] = useState(false);
@@ -277,7 +255,7 @@ export default function NotebookPage({
       <Box>
         <NavigationBar>
           <ActivityResetButton
-            initialCodeCells={initialCodeCells}
+            activityState={activityState}
             activityVariant={activityVariant}
             newReset={newReset}
           />
@@ -315,7 +293,7 @@ export default function NotebookPage({
             </Container>
             <NotebookCells
               activity={activity}
-              initialCodeCells={initialCodeCells}
+              activityState={activityState}
               activityVariant={activityVariant}
               cells={cells}
               cellsRef={cellsRef}
@@ -326,8 +304,8 @@ export default function NotebookPage({
             <Container maxWidth='md'>
               {!isSpecialActivity(activityVariant) && (
                 <ActivityFooter
+                  activityState={activityState}
                   activityVariant={activityVariant}
-                  initialCodeCells={initialCodeCells}
                   author={author}
                   activity={activity}
                   curriculum={curriculum}

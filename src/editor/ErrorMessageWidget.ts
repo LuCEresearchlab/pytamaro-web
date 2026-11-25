@@ -4,10 +4,10 @@ import type {
   IPosition,
   IRange,
 } from 'monaco-editor';
-import { TFunction } from 'next-i18next';
-import { convertMarkdownCodeTagsToHTML } from '../../src/basicMarkdown';
-import theme from '../../src/theme';
-import { ERROR_MESSAGE_CLASSNAME } from '../input_output/OutputArea';
+import { TFunction } from 'next-i18next/pages';
+import { ERROR_MESSAGE_CLASSNAME } from '../../components/input_output/OutputArea';
+import { convertMarkdownCodeTagsToHTML } from '../basicMarkdown';
+import theme from '../theme';
 import { displayErrorCategory, ErrorCategory, simplifyTypes } from './errors';
 
 const STATIC_ERROR_MESSAGE_ID = 'static-error-message-widget';
@@ -110,6 +110,7 @@ export class ErrorMessageWidget implements EditorNamespace.IContentWidget {
 
     if (isRuntimeError) {
       const closeIcon = document.createElement('span');
+      closeIcon.dataset.testid = 'dismiss-runtime-error';
       closeIcon.style.fontFamily = 'Material Icons';
       closeIcon.style.paddingRight = '4px';
       closeIcon.style.display = 'flex';

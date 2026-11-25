@@ -215,11 +215,13 @@ export class Workspace {
      * Checks all open files
      */
     check(): Diagnostic[];
+    closeFile(file_id: FileHandle): void;
     gotoDeclaration(file_id: FileHandle, position: Position): LocationLink[];
     constructor(root: string, position_encoding: PositionEncoding, options: any);
     openFile(path: string, contents: string): FileHandle;
     semanticTokensInRange(file_id: FileHandle, range: Range): SemanticToken[];
     semanticTokens(file_id: FileHandle): SemanticToken[];
+    sourceText(file_id: FileHandle): string;
     updateFile(file_id: FileHandle, contents: string): void;
 }
 
@@ -239,5 +241,7 @@ export function findImportedNames(source: string): PythonName[];
 export function initLogging(level: LogLevel): void;
 
 export function initWorkspace(): Workspace;
+
+export function initWorkspaceWithLibraries(libraries: string[]): Workspace;
 
 export function run(): void;

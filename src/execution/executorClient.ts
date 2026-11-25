@@ -1,9 +1,7 @@
 import * as Sentry from '@sentry/nextjs';
 import PQueue from 'p-queue';
-import { OutputAreaRef } from '../../components/input_output/OutputArea';
 import logAnalyticsEvent, { AnalyticsEventName } from '../analyticsEvent';
 import { ToolboxFunction } from '../localStorage/schema';
-import { PythonFile } from '../schemas/activitySchema';
 import { EventName, storeDbEvent } from '../storeDbEvent';
 import { cellsToFiles, ExecutionResponse, PythonMode } from './codeExecution';
 import { ExecutorDelegate } from './executorDelegate';
@@ -17,8 +15,10 @@ import {
   ExecutorWorkerMessage,
   InputRequestData,
   MessageType,
+  RunPythonFile,
   SaveRequestData,
   SizeRequestData,
+  type WorkspaceChanges,
 } from './messageTypes';
 
 enum ResultStatus {
@@ -66,6 +66,15 @@ function captureErrorWithSentry(error: unknown, tags: Record<string, unknown>) {
   });
 }
 
+export type InputRequester = (
+  cellIdx: number,
+  signal: AbortSignal,
+) => Promise<string>;
+
+const noInput: InputRequester = async () => {
+  throw new Error('This execution cannot request input');
+};
+
 /**
  * Handles the communication between:
  * 1. the worker and the UI, and
@@ -85,8 +94,17 @@ export class ExecutorClient {
 
   private readonly executionQueue: PQueue;
 
+  /** The selection of libraries to restore when the worker restarts. */
+  private libraries: string[];
+  /**
+   * Libraries that the current worker has loaded. Pyodide cannot unload
+   * them, so they stay until the worker is replaced.
+   */
+  private readonly loadedLibraries: Set<string>;
+
   private activeCodeCell: number | null;
-  private getOutputAreaRef: (idx: number) => OutputAreaRef | null;
+  private requestInput: InputRequester;
+  private inputAbort: AbortController | null;
 
   static async init(
     delegate: ExecutorDelegate,
@@ -124,7 +142,6 @@ export class ExecutorClient {
           interruptBuffer,
           setExecutorState,
         );
-        setExecutorState({ type: 'available' });
         resolve(client);
       };
 
@@ -156,13 +173,17 @@ export class ExecutorClient {
 
     this.executionQueue = new PQueue({ concurrency: 1 });
 
+    this.libraries = [];
+    this.loadedLibraries = new Set();
+
     this.activeCodeCell = null;
     this.setExecutorState = (newState: ExecutorState) => {
       this.activeCodeCell =
         newState.type === 'executing' ? newState.activeCellIdx : null;
       setExecutorState(newState);
     };
-    this.getOutputAreaRef = () => null;
+    this.requestInput = noInput;
+    this.inputAbort = null;
 
     this.executorWorker.addEventListener(
       'message',
@@ -175,7 +196,7 @@ export class ExecutorClient {
     sources: string[],
     idx: number,
     toolboxFunctions: ToolboxFunction[],
-    extraPythonFiles: PythonFile[],
+    extraPythonFiles: RunPythonFile[],
     executionMetadata: ExecutionMetadata,
     pythonMode: PythonMode,
     updateExecutionResult: (
@@ -186,7 +207,11 @@ export class ExecutorClient {
       before: number | null,
       after: number,
     ) => void = () => {},
-    getOutputRef: (idx: number) => OutputAreaRef | null = () => null,
+    requestInput: InputRequester = noInput,
+    fileNames: string[] = [],
+    workspaceFiles: string[] | undefined = undefined,
+    workspaceFolders: string[] | undefined = undefined,
+    onWorkspaceChanges: (changes: WorkspaceChanges) => void = () => {},
   ): Promise<ExecutionResponse> {
     const files = cellsToFiles(
       sources,
@@ -194,13 +219,14 @@ export class ExecutorClient {
       toolboxFunctions,
       extraPythonFiles,
       pythonMode,
+      fileNames,
     );
 
     const execution = async () => {
       // Reset active code cell in between runs
       this.setExecutorState({ type: 'available' });
-      // Set function to obtain output area ref for stdin
-      this.getOutputAreaRef = getOutputRef;
+      // Set the function that serves input requests
+      this.requestInput = requestInput;
       // Execute the code
       return new Promise<ExecutionResponse>((resolve) => {
         const resultsListener = (
@@ -228,9 +254,11 @@ export class ExecutorClient {
               activeCellIdx: newIdx,
             });
             onActiveCellChange(oldIdx, newIdx);
+          } else if (type === MessageType.WORKSPACE_CHANGES) {
+            onWorkspaceChanges(event.data.changes);
           } else if (type === MessageType.FINAL_RESULT) {
             // Final execution result
-            const { result } = event.data;
+            const { result, workspaceChanges } = event.data;
             if (result.type === 'failure') {
               captureErrorWithSentry(event.data.pythonError, {
                 fatalError: true,
@@ -239,7 +267,11 @@ export class ExecutorClient {
 
             // Unsubscribe from further messages
             this.executorWorker.removeEventListener('message', resultsListener);
-            resolve(result);
+            resolve(
+              workspaceChanges === undefined
+                ? result
+                : { ...result, workspaceChanges },
+            );
           }
         };
 
@@ -248,6 +280,8 @@ export class ExecutorClient {
           type: MessageType.RUN,
           executionMetadata,
           files,
+          workspaceFiles,
+          workspaceFolders,
         });
       }).finally(() => {
         this.setExecutorState({ type: 'available' });
@@ -257,10 +291,36 @@ export class ExecutorClient {
     return (await this.executionQueue.add(execution)) as ExecutionResponse;
   }
 
+  /**
+   * Make the given libraries available in the Python environment.
+   *
+   * Idempotent: libraries that are already loaded are skipped. The selection is
+   * remembered, so that a restart of the worker (e.g., after a fatal error)
+   * installs the same libraries again, but only once the installation has
+   * succeeded; a failed attempt leaves the previous selection in place.
+   */
+  async configureLibraries(libraries: readonly string[]): Promise<void> {
+    const unique = Array.from(new Set(libraries));
+    const missing = unique.filter((id) => !this.loadedLibraries.has(id));
+    if (missing.length > 0) {
+      await this.executionQueue.add(() =>
+        this.sendInstallLibrariesRequest(missing),
+      );
+      missing.forEach((id) => this.loadedLibraries.add(id));
+    }
+    this.libraries = unique;
+  }
+
+  hasStaleLibraries(libraries: readonly string[]): boolean {
+    return Array.from(this.loadedLibraries).some(
+      (id) => !libraries.includes(id),
+    );
+  }
+
   interruptExecution(): void {
     this.interruptBuffer[0] = 2; // 2 for SIGINT
-    this.getActiveOutputAreaRef()?.deactivatePossibleInputField();
-    this.setExecutorState({ type: 'available' });
+    this.inputAbort?.abort();
+    this.activeCodeCell = null;
   }
 
   async restartWorker(): Promise<ExecutorClient> {
@@ -268,16 +328,57 @@ export class ExecutorClient {
     this.interruptExecution();
     this.pendingResults.clear();
     this.executorWorker.terminate();
-    return ExecutorClient.init(this.delegate, this.setExecutorState);
+    const client = await ExecutorClient.init(
+      this.delegate,
+      this.setExecutorState,
+    );
+    // Remember the selection even if installing it fails below, so that a
+    // later `configureLibraries` call retries the missing libraries.
+    client.libraries = this.libraries;
+
+    try {
+      await client.configureLibraries(this.libraries);
+    } catch {
+      // The packages may not be available (e.g., a network failure).
+    }
+    return client;
   }
 
-  private getActiveOutputAreaRef(): OutputAreaRef | null {
-    return this.activeCodeCell === null
-      ? null
-      : this.getOutputAreaRef(this.activeCodeCell);
+  private sendInstallLibrariesRequest(libraries: string[]): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const uuid = crypto.randomUUID();
+      const listener = (event: MessageEvent<ExecutorWorkerMessage>) => {
+        const { data } = event;
+        if (
+          data.type !== MessageType.LIBRARIES_INSTALLED ||
+          data.uuid !== uuid
+        ) {
+          return;
+        }
+        this.executorWorker.removeEventListener('message', listener);
+        if (data.error !== undefined) {
+          reject(new Error(data.error));
+        } else {
+          resolve();
+        }
+      };
+      this.executorWorker.addEventListener('message', listener);
+      this.executorWorker.postMessage({
+        type: MessageType.INSTALL_LIBRARIES,
+        uuid,
+        libraries,
+      });
+    });
   }
 
   private handleWorkerMessage(message: ExecutorWorkerMessage): void {
+    if (
+      message.type === MessageType.LIBRARIES_INSTALLED ||
+      message.type === MessageType.WORKSPACE_CHANGES
+    ) {
+      // Handled by the corresponding listener.
+      return;
+    }
     // In this listener, we only process execution requests (messages with an uuid).
     // Messages with the execution result are received by a specific listener in
     // sendExecutionRequestToWorkerAndWaitForResponse.
@@ -454,30 +555,40 @@ export class ExecutorClient {
       });
   }
 
-  private handleDelegatedInput(uuid: string, data: InputRequestData): void {
-    const outputArea = this.getActiveOutputAreaRef();
-    if (outputArea === null) {
-      return;
-    }
-
-    outputArea.activateInputField();
-    outputArea
-      .getInput()
-      .then((value: string) => {
-        storeDbEvent(EventName.CodeExecutionInput, data.executionMetadata, {
-          executionUUID: data.executionMetadata.executionUUID,
-          seq: data.seq,
-          content: value,
-        });
-        logAnalyticsEvent(AnalyticsEventName.CodeExecutionInput, {});
-        const encoded = new Uint8Array(Buffer.from(value));
-        this.notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
-      })
-      .catch((err) => {
+  private async handleDelegatedInput(
+    uuid: string,
+    data: InputRequestData,
+  ): Promise<void> {
+    const cellIdx = this.activeCodeCell;
+    const abort = new AbortController();
+    this.inputAbort = abort;
+    try {
+      if (cellIdx === null) {
+        throw new Error('Input requested outside of a cell');
+      }
+      const value = await this.requestInput(cellIdx, abort.signal);
+      storeDbEvent(EventName.CodeExecutionInput, data.executionMetadata, {
+        executionUUID: data.executionMetadata.executionUUID,
+        seq: data.seq,
+        content: value,
+      });
+      logAnalyticsEvent(AnalyticsEventName.CodeExecutionInput, {});
+      const encoded = new Uint8Array(Buffer.from(value));
+      this.notifyWorkerResultReady(uuid, encoded.byteLength, encoded);
+    } catch (err) {
+      if (abort.signal.aborted) {
+        // Interrupted: the worker is no longer waiting, so notifying it would
+        // spin forever in notifyWorkerUsingSyncBuffer. Just forget the request.
+        this.pendingResults.delete(uuid);
+      } else {
         captureErrorWithSentry(err, { procedure: 'input' });
         this.notifyWorkerResultFailure(uuid);
-      })
-      .finally(outputArea.deactivatePossibleInputField);
+      }
+    } finally {
+      if (this.inputAbort === abort) {
+        this.inputAbort = null;
+      }
+    }
   }
 
   private handleDelegatedSave(uuid: string, data: SaveRequestData): void {

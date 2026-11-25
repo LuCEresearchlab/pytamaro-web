@@ -7,7 +7,7 @@ import {
   DialogTitle,
   Link,
 } from '@mui/material';
-import { Trans } from 'next-i18next';
+import { Trans } from 'next-i18next/pages';
 import useLocalProfile from '../src/localStorage/useLocalProfile';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
 import { myDataPathname } from '../src/urlUtils';

@@ -14,6 +14,9 @@ export enum MessageType {
   INPUT = 'input',
   PARTIAL_RESULT = 'partial_result',
   SET_ACTIVE_CELL = 'set_active_cell',
+  INSTALL_LIBRARIES = 'install_libraries',
+  LIBRARIES_INSTALLED = 'libraries_installed',
+  WORKSPACE_CHANGES = 'workspace_changes',
 }
 
 export type MessageData =
@@ -29,7 +32,10 @@ export interface ExecutionMetadata extends MetadataForEvent {
 
 /* ==== Client -> Worker Messages ==== */
 
-export type ExecutorClientMessage = InitMessage | RunMessage;
+export type ExecutorClientMessage =
+  | InitMessage
+  | RunMessage
+  | InstallLibrariesMessage;
 
 /**
  * Initialization message.
@@ -48,10 +54,51 @@ export type RunMessage = {
   type: MessageType.RUN;
   files: RunPythonFile[];
   executionMetadata: ExecutionMetadata;
+  /**
+   * Names of the files that belong to the IDE workspace. When present, the
+   * worker reports which of them were created, modified, or deleted during the
+   * execution.
+   */
+  workspaceFiles?: string[];
+  /**
+   * Folders of the IDE workspace that are currently empty. They are created in
+   * the execution environment, so that the final scan can report whether the
+   * run deleted them.
+   */
+  workspaceFolders?: string[];
 };
 export type RunPythonFile = {
   name: string;
-  content: string;
+  content: string | Uint8Array;
+};
+
+/**
+ * "Install additional Python libraries" message.
+ */
+export type InstallLibrariesMessage = {
+  type: MessageType.INSTALL_LIBRARIES;
+  uuid: string;
+  libraries: string[];
+};
+/**
+ * A file of the IDE workspace whose content changed during an execution.
+ */
+export type WorkspaceFileChange = {
+  name: string;
+  content: Uint8Array;
+};
+/**
+ * The changes made by an execution to the files of the IDE workspace.
+ */
+export type WorkspaceChanges = {
+  changed: WorkspaceFileChange[];
+  deleted: string[];
+  /**
+   * The complete set of empty folders in the execution environment. When
+   * present it replaces the explicit folders of the workspace, so folders that
+   * the run deleted (or made non-empty) are removed.
+   */
+  folders?: string[];
 };
 
 /* ==== Worker -> Client Messages ==== */
@@ -60,7 +107,9 @@ export type ExecutorWorkerMessage =
   | ReadyMessage
   | ResultMessage
   | ClientExecutionMessage
-  | SetActiveCellMessage;
+  | SetActiveCellMessage
+  | LibrariesInstalledMessage
+  | WorkspaceChangesMessage;
 
 /**
  * Message sent by the executor to signal that it can now accept requests
@@ -77,6 +126,8 @@ export type ResultMessage = {
   executionMetadata: ExecutionMetadata;
   pythonError?: TransferablePythonError;
   result: ExecutionResponse;
+  /** Present when the run asked the worker to report workspace changes. */
+  workspaceChanges?: WorkspaceChanges;
 };
 export type TransferablePythonError = {
   columnNumber: number;
@@ -146,4 +197,27 @@ export type ClientExecutionResultRequestMessage = {
 export type SetActiveCellMessage = {
   type: MessageType.SET_ACTIVE_CELL;
   idx: number;
+};
+
+/**
+ * Message that signals the outcome of an "install additional Python libraries"
+ * request.
+ */
+export type LibrariesInstalledMessage = {
+  type: MessageType.LIBRARIES_INSTALLED;
+  uuid: string;
+  error?: string;
+};
+
+/**
+ * Notification that a running program changed workspace files.
+ *
+ * These messages are delivered strictly before the `FINAL_RESULT` of the same
+ * run and are idempotent. The end-of-run reconciliation remains authoritative.
+ */
+export type WorkspaceChangesMessage = {
+  type: MessageType.WORKSPACE_CHANGES;
+  /** Ignore the message if it does not match the active run. */
+  executionUUID: string;
+  changes: WorkspaceChanges;
 };

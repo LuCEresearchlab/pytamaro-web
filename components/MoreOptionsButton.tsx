@@ -5,20 +5,20 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { IconButton, ListItemIcon, Menu, MenuItem } from '@mui/material';
 import { useState } from 'react';
-import {
-  CodeCellExecutionState,
-  CodeCellState,
-} from '../src/localStorage/schema';
+import type { CodeCellExecutionState } from '../src/localStorage/schema';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
+import type { ActivitySession } from '../src/activitySession';
 
 export default function MoreOptionsButton({
-  codeCellState,
+  activitySession,
+  cellIdx,
   codeCellExecutionState,
   onShowHideOutput,
   onReset,
   onRestart,
 }: {
-  codeCellState: CodeCellState;
+  activitySession: ActivitySession;
+  cellIdx: number;
   codeCellExecutionState: CodeCellExecutionState;
   onShowHideOutput: () => void;
   onReset: () => void;
@@ -35,7 +35,7 @@ export default function MoreOptionsButton({
   };
   const handleCopy = () => {
     handleClose();
-    navigator.clipboard.writeText(codeCellState.source);
+    navigator.clipboard.writeText(activitySession.getSource(cellIdx));
   };
   const handleShowHideOutputArea = () => {
     handleClose();

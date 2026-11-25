@@ -1,7 +1,7 @@
 import { useDocumentationElements } from '../../src/documentation';
 import { PythonName } from '../../src/python-analyzer/python_analyzer';
-import { ActivityVariant } from '../../src/schemas/activitySchema';
-import { FilesAnalysisResult } from '../../src/usePythonAnalyzer';
+import type { FilesAnalysisResult } from '../../src/pythonWorkspace';
+import type { ActivityVariant } from '../../src/schemas/activitySchema';
 import DocElement from './DocElement';
 
 export default function InlineAPI({

@@ -1,87 +1,80 @@
 import Editor from '@monaco-editor/react';
-import { debounce } from 'lodash';
+import { debounce, isEqual } from 'lodash';
 import { type editor as EditorNamespace } from 'monaco-editor';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ExecutionResponse, PythonMode } from '../src/execution/codeExecution';
-import { LiveAnalysisStatus } from '../src/localStorage/schema';
-import useLocalProfile from '../src/localStorage/useLocalProfile';
-import useLocalToolbox from '../src/localStorage/useLocalToolbox';
-import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import {
-  moduleImportCompletionProvider,
-  pytamaroImportCompletionProvider,
-  toolboxImportCompletionProvider,
-} from '../src/monacoSuggestions';
-import { PythonName, TextRange } from '../src/python-analyzer/python_analyzer';
-import { addErrorAnnotationsFromExecution } from '../src/pythonTraceback';
-import scrollToAnchor from '../src/scrollToAnchor';
-import theme from '../src/theme';
-import {
-  CustomDiagnostic,
-  PythonAnalyzer,
-  retrievePythonAnalyzer,
-  storeCellIdx,
-  storePreviousLinesCount,
-  storePythonAnalyzer,
-} from '../src/usePythonAnalyzer';
-import { ErrorMessageWidget } from './editor/ErrorMessageWidget';
-import { STRICT_PYTHON3_LANG_ID } from './editor/strictPython3';
+import { ErrorMessageWidget } from '../src/editor/ErrorMessageWidget';
+import type { CustomDiagnostic } from '../src/editor/diagnostics';
+import type { EditorContext } from '../src/editor/editorContext';
+import { EvalResultBorder } from '../src/editor/evalResultBorder';
+import { registerCustomProviders } from '../src/editor/providers';
+import { STRICT_PYTHON3_LANG_ID } from '../src/editor/strictPython3';
 import {
   configureEditor,
   LUCE_THEME_NAME,
   MonacoForPyTamaro,
   registerPyTamaroLanguageAndTheme,
   RUN_CODE_CONDITION_KEY,
-} from './editor/utils';
+} from '../src/editor/utils';
+import { ExecutionResponse, PythonMode } from '../src/execution/codeExecution';
+import { isPythonFileName } from '../src/ide/files';
+import { LiveAnalysisStatus } from '../src/localStorage/schema';
+import useLocalProfile from '../src/localStorage/useLocalProfile';
+import useLocalTranslation from '../src/localStorage/useLocalTranslation';
+import { PythonName, TextRange } from '../src/python-analyzer/python_analyzer';
+import { addErrorAnnotationsFromExecution } from '../src/pythonTraceback';
+import scrollToAnchor from '../src/scrollToAnchor';
+import theme from '../src/theme';
 
 configureEditor();
 
 export default function CodeEditor({
-  initialSource,
-  currentSource,
   executionResponse = undefined,
   onChange = () => {},
   onExecutionRequested = undefined,
   executionAllowed = false,
   showRuntimeAnnotations = false,
+  onRuntimeErrorDismissed = undefined,
   firstLineNumber = 1,
   readOnly = false,
   resetCounter = 0,
-  pythonAnalyzer,
-  cellIdx,
+  context,
   setHoveredName = undefined,
   pythonMode = PythonMode.Exec,
+  autoHeight = true,
+  modelPath = undefined,
 }: {
-  initialSource: string;
-  currentSource: string;
   executionResponse?: ExecutionResponse;
   onChange?: (source: string) => void;
   onExecutionRequested?: () => void;
   executionAllowed?: boolean;
   showRuntimeAnnotations?: boolean;
+  onRuntimeErrorDismissed?: () => void;
   firstLineNumber?: number;
   readOnly?: boolean;
   resetCounter?: number;
-  pythonAnalyzer: PythonAnalyzer | null;
-  cellIdx: number;
+  context: EditorContext;
   setHoveredName?: (name: PythonName | null) => void;
   pythonMode?: PythonMode;
   evalExprRange?: TextRange | undefined;
+  autoHeight?: boolean;
+  modelPath?: string;
 }) {
-  const { list } = useLocalToolbox();
   const { metadata } = useLocalProfile();
   const { liveAnalysis } = metadata;
   const minimalistic = pythonMode === PythonMode.EvalLastExpr;
 
-  const monacoRef = useRef<MonacoForPyTamaro | null>(null);
-  const editorRef = useRef<EditorNamespace.IStandaloneCodeEditor | null>(null);
+  const currentSource = context.currentSource();
+
+  const [monacoInstance, setMonacoInstance] =
+    useState<MonacoForPyTamaro | null>(null);
+  const [editorInstance, setEditorInstance] =
+    useState<EditorNamespace.IStandaloneCodeEditor | null>(null);
+  const [model, setModel] = useState<EditorNamespace.ITextModel | null>(null);
+
   const containerRef = useRef<HTMLDivElement>(null);
 
-  let monacoInstance = monacoRef.current;
-  let editorInstance = editorRef.current;
   const [executionAllowedCondition, setExecutionAllowedCondition] =
     useState<EditorNamespace.IContextKey<boolean> | null>(null);
-  const toolboxFunctions = list();
   const runtimeErrorWidgetRef = useRef<ErrorMessageWidget | null>(null);
   const staticErrorWidgetRef = useRef<ErrorMessageWidget | null>(null);
   const runtimeDecorationsCollectionRef =
@@ -90,10 +83,17 @@ export default function CodeEditor({
     useRef<EditorNamespace.IEditorDecorationsCollection | null>(null);
   const hoveredStaticErrorDecorationRef =
     useRef<EditorNamespace.IEditorDecorationsCollection>(null);
-  const evalResultDecorationRef =
-    useRef<EditorNamespace.IEditorDecorationsCollection | null>(null);
+  const evalResultBorderRef = useRef<EvalResultBorder | null>(null);
   const customDiagnosticsRef = useRef<CustomDiagnostic[]>([]);
   const shownDiagnosticRef = useRef<CustomDiagnostic | null>(null);
+
+  // Keep the latest dismissal handler in a ref, so it doesn't force the
+  // runtime-error annotations to be recreated on every render (and so the
+  // widget always calls the most recent handler).
+  const onRuntimeErrorDismissedRef = useRef(onRuntimeErrorDismissed);
+  useEffect(() => {
+    onRuntimeErrorDismissedRef.current = onRuntimeErrorDismissed;
+  }, [onRuntimeErrorDismissed]);
 
   const { t } = useLocalTranslation();
 
@@ -101,10 +101,11 @@ export default function CodeEditor({
     editor: EditorNamespace.IStandaloneCodeEditor,
     monaco: MonacoForPyTamaro,
   ) => {
-    monacoRef.current = monacoInstance = monaco;
-    editorRef.current = editorInstance = editor;
+    setMonacoInstance(monaco);
+    setEditorInstance(editor);
 
     registerPyTamaroLanguageAndTheme(monaco);
+    registerCustomProviders(monaco);
 
     setExecutionAllowedCondition(
       editor.createContextKey(RUN_CODE_CONDITION_KEY, executionAllowed),
@@ -132,14 +133,16 @@ export default function CodeEditor({
         }
       }
     };
-    editor.onDidContentSizeChange(updateHeight);
-    // Manually trigger the first height update.
-    updateHeight({
-      contentHeight: editor.getContentHeight(),
-      contentHeightChanged: true,
-      contentWidth: editor.getContentWidth(),
-      contentWidthChanged: true,
-    });
+    if (autoHeight) {
+      editor.onDidContentSizeChange(updateHeight);
+      // Manually trigger the first height update.
+      updateHeight({
+        contentHeight: editor.getContentHeight(),
+        contentHeightChanged: true,
+        contentWidth: editor.getContentWidth(),
+        contentWidthChanged: true,
+      });
+    }
   };
 
   const clearStaticWidget = useCallback(() => {
@@ -171,35 +174,89 @@ export default function CodeEditor({
       // Remove possible collections of decorations
       runtimeDecorationsCollectionRef.current?.clear();
       runtimeDecorationsCollectionRef.current = null;
-      // Remove possible eval result decorations
-      evalResultDecorationRef.current?.clear();
-      evalResultDecorationRef.current = null;
+      // Remove the possible eval result border
+      evalResultBorderRef.current?.setRange(null);
       // Remove static error annotations
       clearStaticAnnotations();
     }
   }, [monacoInstance, editorInstance, clearStaticAnnotations]);
 
-  // Effects to update the previous lines count and the reference to the PythonAnalyzer
-  // stored inside the model (to be used, e.g., by the semantic tokens provider).
-  // If Monaco allowed registering the semantic tokens provider per editor instance, this terrible hack would not be necessary.
-  // Unfortunately, Monaco only allows registering the provider per language,
-  // so we need to inject stuff inside the model (which gets passed to the provider) to make it work correctly
-  // for all our cases with multiple editors and multiple analyzers (e.g., in the "SaveToToolbox" dialog).
   useEffect(() => {
-    if (editorInstance) {
-      storePreviousLinesCount(editorInstance, firstLineNumber - 1);
+    if (!editorInstance) {
+      return () => {};
     }
-  }, [firstLineNumber, editorInstance]);
+    setModel(editorInstance.getModel());
+    const subscription = editorInstance.onDidChangeModel(() => {
+      setModel(editorInstance.getModel());
+    });
+    return () => {
+      subscription.dispose();
+    };
+  }, [editorInstance]);
+
   useEffect(() => {
-    if (editorInstance && pythonAnalyzer) {
-      storePythonAnalyzer(editorInstance, pythonAnalyzer);
+    if (!editorInstance) {
+      return () => {};
     }
-  }, [editorInstance, pythonAnalyzer]);
+    const border = new EvalResultBorder(editorInstance);
+    evalResultBorderRef.current = border;
+    return () => {
+      border.dispose();
+      if (evalResultBorderRef.current === border) {
+        evalResultBorderRef.current = null;
+      }
+    };
+  }, [editorInstance]);
+
+  // URI of the model identified by `modelPath`, if the editor has a path.
+  const modelUri =
+    monacoInstance !== null && modelPath !== undefined
+      ? monacoInstance.Uri.parse(modelPath).toString()
+      : null;
+
+  // Bring the editor's model up to date with the workspace before anything
+  // reads it. Monaco reuses the model, so it can be stale: the file may have
+  // changed while it wasn't shown (e.g., rewritten by a running program). On a
+  // file switch the child `<Editor>` swaps in that model before the `model`
+  // state catches up, and the effects below (notably the analysis one) would
+  // read its stale text and write it back to the workspace via `updateSource`,
+  // overwriting the newer bytes. So this uses `editorInstance.getModel()`
+  // rather than the lagging `model` state, and it must stay declared before
+  // those effects.
   useEffect(() => {
-    if (editorInstance) {
-      storeCellIdx(editorInstance, cellIdx);
+    if (editorInstance === null || modelUri === null) {
+      return;
     }
-  }, [cellIdx, editorInstance]);
+    // The editor may already show a different model than the `model` state
+    // (child effects run first), so use the live one.
+    const live = editorInstance.getModel();
+    if (live === null || live.uri.toString() !== modelUri) {
+      return;
+    }
+    const source = context.currentSource();
+    if (live.getValue() !== source) {
+      if (context.applyModelText !== undefined) {
+        context.applyModelText(live, source);
+      } else {
+        live.setValue(source);
+      }
+    }
+  }, [editorInstance, model, modelUri, context]);
+
+  // Bind this editor's model to its document in the session, so that the
+  // session analyzes and persists every content change (and providers can find it).
+  useEffect(() => {
+    if (
+      model === null ||
+      (modelUri !== null && model.uri.toString() !== modelUri)
+    ) {
+      return () => {};
+    }
+    context.attachModel(model);
+    return () => {
+      context.detachModel(model);
+    };
+  }, [model, modelUri, context]);
 
   // Effect to update the condition that determines whether the code execution is allowed or not.
   useEffect(() => {
@@ -213,7 +270,7 @@ export default function CodeEditor({
     if (monacoInstance && editorInstance && onExecutionRequested) {
       const actionDisposer = editorInstance.addAction({
         id: 'code-execution',
-        label: 'Run Code Cell',
+        label: t('runCodeCell'),
         keybindings: [
           monacoInstance.KeyMod.CtrlCmd | monacoInstance.KeyCode.Enter,
         ],
@@ -228,52 +285,7 @@ export default function CodeEditor({
       };
     }
     return () => {};
-  }, [editorInstance, monacoInstance, onExecutionRequested]);
-
-  const toolboxFunctionsStatus = JSON.stringify(toolboxFunctions);
-
-  // Effect to register various providers (e.g, completion, semantic tokens).
-  useEffect(() => {
-    if (
-      monacoInstance &&
-      monacoInstance._pytamaroCustomProvidersRegistered !== true &&
-      pythonAnalyzer
-    ) {
-      const providers = [
-        toolboxImportCompletionProvider(monacoInstance, toolboxFunctions),
-        moduleImportCompletionProvider(monacoInstance),
-        pytamaroImportCompletionProvider(monacoInstance),
-      ];
-      const disposers = providers.map((provider) =>
-        monacoInstance?.languages.registerCompletionItemProvider(
-          STRICT_PYTHON3_LANG_ID,
-          provider,
-        ),
-      );
-      disposers.push(
-        monacoInstance.languages.registerDocumentRangeSemanticTokensProvider(
-          STRICT_PYTHON3_LANG_ID,
-          {
-            provideDocumentRangeSemanticTokens: (model, range) =>
-              retrievePythonAnalyzer(model).documentRangeSemanticTokens(
-                model,
-                range,
-              ),
-            getLegend: pythonAnalyzer.semanticTokensLegend,
-          },
-        ),
-      );
-
-      monacoInstance._pytamaroCustomProvidersRegistered = true;
-      return () => {
-        disposers.forEach((disposer) => disposer?.dispose());
-        if (monacoInstance)
-          monacoInstance._pytamaroCustomProvidersRegistered = false;
-      };
-    }
-    return () => {};
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [monacoInstance, pythonAnalyzer, toolboxFunctionsStatus]);
+  }, [editorInstance, monacoInstance, onExecutionRequested, t]);
 
   useEffect(() => {
     const handleMouseMoved = (e: EditorNamespace.IEditorMouseEvent) => {
@@ -282,10 +294,10 @@ export default function CodeEditor({
         e.target.type === monacoInstance?.editor.MouseTargetType.CONTENT_TEXT;
       const model = editorInstance?.getModel();
       if (setHoveredName !== undefined) {
-        if (!position || !model || !pythonAnalyzer || !mouseOverText) {
+        if (!position || !model || !mouseOverText) {
           setHoveredName(null);
         } else {
-          const hoveredName = pythonAnalyzer.hoveredPythonName(model, position);
+          const hoveredName = context.hoveredPythonName(model, position);
           setHoveredName(hoveredName);
         }
       }
@@ -369,7 +381,7 @@ export default function CodeEditor({
     monacoInstance,
     editorInstance,
     setHoveredName,
-    pythonAnalyzer,
+    context,
     clearStaticWidget,
     t,
   ]);
@@ -383,16 +395,86 @@ export default function CodeEditor({
     });
   }, [monacoInstance]);
 
+  // Read at reset time, so a new context doesn't trigger a reset by itself.
+  const contextRef = useRef(context);
+  useEffect(() => {
+    contextRef.current = context;
+  }, [context]);
+
+  // Effect to reset the editor when resetCounter changes.
+  useEffect(() => {
+    if (editorInstance && resetCounter > 0) {
+      editorInstance.setValue(contextRef.current.initialSource());
+    }
+  }, [editorInstance, contextRef, resetCounter]);
+
+  const addDiagnosticsFromAnalyzer = useCallback(() => {
+    if (!monacoInstance || !editorInstance) {
+      return;
+    }
+    clearStaticAnnotations();
+    const diagnostics = context.diagnostics(liveAnalysis);
+    customDiagnosticsRef.current = diagnostics;
+    staticDecorationsCollectionRef.current =
+      editorInstance.createDecorationsCollection(diagnostics);
+    evalResultBorderRef.current?.setRange(
+      pythonMode === PythonMode.EvalLastExpr
+        ? (context.evalExprRange?.(monacoInstance, editorInstance) ?? null)
+        : null,
+    );
+  }, [
+    editorInstance,
+    monacoInstance,
+    context,
+    liveAnalysis,
+    pythonMode,
+    clearStaticAnnotations,
+  ]);
+
+  // A document's diagnostics can depend on other documents (e.g., a name that
+  // is now defined in another cell or file), so redraw them when the session
+  // re-analyzes this document, not only when this editor's own content changes.
+  useEffect(() => {
+    const refreshDiagnostics = () => {
+      const diagnostics = context.diagnostics(liveAnalysis);
+      // Skip no-op redraws, so that a hover widget isn't dismissed by an
+      // unrelated edit that changed nothing here.
+      if (!isEqual(diagnostics, customDiagnosticsRef.current)) {
+        addDiagnosticsFromAnalyzer();
+      }
+    };
+    const unsubscribe = context.subscribeToAnalysis(refreshDiagnostics);
+    return unsubscribe;
+  }, [context, liveAnalysis, addDiagnosticsFromAnalyzer]);
+
+  const analyzeSource = useCallback(
+    (source: string) => {
+      // Idempotent: the session's own model listener may have already done
+      // this. Calling it here makes the diagnostics below independent of the
+      // order in which the two listeners fire.
+      context.updateSource(source);
+      addDiagnosticsFromAnalyzer();
+    },
+    [context, addDiagnosticsFromAnalyzer],
+  );
+
   const possiblyAddRuntimeErrorAnnotations = useCallback(() => {
     if (monacoInstance && editorInstance) {
       if (executionResponse?.type === 'error' && showRuntimeAnnotations) {
         clearAnnotations();
+        const onClose = () => {
+          clearAnnotations();
+          analyzeSource(editorInstance.getValue());
+          onRuntimeErrorDismissedRef.current?.();
+        };
         const annotations = addErrorAnnotationsFromExecution(
           monacoInstance,
           editorInstance,
           executionResponse,
           firstLineNumber,
           t,
+          context.runtimeFileName,
+          onClose,
         );
         if (annotations !== null) {
           const { widget, decorationsCollection } = annotations;
@@ -409,78 +491,9 @@ export default function CodeEditor({
     firstLineNumber,
     t,
     clearAnnotations,
+    analyzeSource,
+    context,
   ]);
-
-  // Effect to reset the editor when resetCounter changes.
-  useEffect(() => {
-    if (editorInstance && resetCounter > 0) {
-      editorInstance.setValue(initialSource);
-    }
-  }, [editorInstance, initialSource, resetCounter]);
-
-  const addDiagnosticsFromAnalyzer = useCallback(() => {
-    if (!monacoInstance || !editorInstance || !pythonAnalyzer) {
-      return;
-    }
-    const diagnostics = pythonAnalyzer.customDiagnostics(
-      monacoInstance,
-      cellIdx,
-      liveAnalysis,
-    );
-    const diagnosticsCurrentCell = diagnostics.filter(
-      (diag) => diag.range.startLineNumber >= firstLineNumber,
-    );
-    const diagnosticsCurrentCellAdjusted = diagnosticsCurrentCell.map(
-      (diag) => {
-        const previousLines = firstLineNumber - 1;
-        return {
-          ...diag,
-          range: new monacoInstance!.Range(
-            diag.range.startLineNumber - previousLines,
-            diag.range.startColumn,
-            diag.range.endLineNumber - previousLines,
-            diag.range.endColumn,
-          ),
-        };
-      },
-    );
-    customDiagnosticsRef.current = diagnosticsCurrentCellAdjusted;
-    staticDecorationsCollectionRef.current =
-      editorInstance.createDecorationsCollection(
-        diagnosticsCurrentCellAdjusted,
-      );
-    if (pythonMode === PythonMode.EvalLastExpr) {
-      const decoration = pythonAnalyzer?.evalExprDiagnostics(
-        monacoInstance,
-        editorInstance,
-        cellIdx,
-      );
-      if (decoration) {
-        evalResultDecorationRef.current?.clear();
-        evalResultDecorationRef.current =
-          editorInstance.createDecorationsCollection([decoration]);
-      }
-    }
-  }, [
-    editorInstance,
-    monacoInstance,
-    pythonAnalyzer,
-    cellIdx,
-    liveAnalysis,
-    firstLineNumber,
-    pythonMode,
-  ]);
-
-  const analyzeSource = useCallback(
-    (source: string) => {
-      if (!pythonAnalyzer) {
-        return;
-      }
-      pythonAnalyzer.updateSource(cellIdx, source);
-      addDiagnosticsFromAnalyzer();
-    },
-    [cellIdx, pythonAnalyzer, addDiagnosticsFromAnalyzer],
-  );
 
   // Effect to react to change in preferences for live analysis.
   // Trigger re-analysis of the current source.
@@ -493,34 +506,64 @@ export default function CodeEditor({
   }, [
     liveAnalysis,
     editorInstance,
+    model,
     analyzeSource,
     clearAnnotations,
     possiblyAddRuntimeErrorAnnotations,
   ]);
 
-  const handleSourceChanged = (newSource: string | undefined) => {
-    if (newSource !== undefined) {
-      clearAnnotations();
-      analyzeSource(newSource);
-      onChange(newSource);
-    }
-  };
+  // Keep the latest `onChange` in a ref, so the listener below doesn't have to
+  // be re-registered when the parent passes a new function.
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
-  // Use an inexistent language if live analysis is completely disabled.
-  // This way, Monaco doesn't use even the basic tokenizer for coloring Python.
-  const language =
-    liveAnalysis === LiveAnalysisStatus.None
+  // React to every content change of the model (typing, reset, external sync).
+  useEffect(() => {
+    if (!model) {
+      return () => {};
+    }
+    const subscription = model.onDidChangeContent(() => {
+      // Workspace-driven updates (storage, another tab, a running program) must
+      // not be written back: doing so would turn Monaco's normalization (e.g.,
+      // line endings) into a byte change without any user edit.
+      if (context.isApplyingExternalUpdate?.() === true) {
+        return;
+      }
+      const source = model.getValue();
+      clearAnnotations();
+      analyzeSource(source);
+      onChangeRef.current(source);
+    });
+    return () => {
+      subscription.dispose();
+    };
+  }, [model, clearAnnotations, analyzeSource, context]);
+
+  const python = modelPath === undefined || isPythonFileName(modelPath);
+  // Use an inexistent language if the live analysis is completely disabled.
+  // Passing `undefined` would leave the previous language (and therefore its
+  // highlighting) in place when switching the setting without a reload. This
+  // way, Monaco doesn't use even the basic tokenizer for coloring Python.
+  const language = !python
+    ? undefined
+    : liveAnalysis === LiveAnalysisStatus.None
       ? 'python-none'
       : STRICT_PYTHON3_LANG_ID;
 
   return (
-    <div ref={containerRef} translate='no'>
+    <div
+      ref={containerRef}
+      translate='no'
+      style={autoHeight ? undefined : { height: '100%' }}
+    >
       <Editor
         language={language}
+        path={modelPath}
         theme={LUCE_THEME_NAME}
         defaultValue={currentSource}
         onMount={handleEditorMount}
-        onChange={handleSourceChanged}
         options={{
           fontFamily: theme.pytamaro.monospaceFontFamily,
           fontSize: theme.pytamaro.monospaceFontSizeRatio * 16,
@@ -538,13 +581,21 @@ export default function CodeEditor({
             enabled: false,
           },
           scrollbar: {
-            vertical: 'hidden',
+            vertical: autoHeight ? 'hidden' : 'auto',
             useShadows: false,
             // https://github.com/microsoft/monaco-editor/issues/1853#issuecomment-610254053
             handleMouseWheel: true,
             alwaysConsumeMouseWheel: false,
           },
-          stickyScroll: { enabled: false }, // sticky scroll doesn't make sense with infinite height (there's no vertical scrolling)
+          // Sticky scroll only makes sense when the editor has its own
+          // vertical scrollbar (i.e., in the IDE).
+          stickyScroll: { enabled: !autoHeight },
+          // The IDE puts the editor in a container that clips its overflow, so
+          // otherwise content widgets (e.g., error bubbles) are cut off when
+          // they extend beyond the editor's box (e.g., above the first line or
+          // to the left of the first column). Fixed positioning lets them
+          // escape the container while keeping them inside the window.
+          fixedOverflowWidgets: !autoHeight,
           readOnly,
           'semanticHighlighting.enabled':
             liveAnalysis === LiveAnalysisStatus.SyntaxSemantics,

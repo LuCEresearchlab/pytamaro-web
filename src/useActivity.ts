@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { debounce, uniqBy } from 'lodash';
+import { uniqBy } from 'lodash';
 import { useConfirm } from 'material-ui-confirm';
 import {
   Dispatch,
@@ -7,10 +7,11 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
+  useSyncExternalStore,
 } from 'react';
 import useSessionStorageState from 'use-session-storage-state';
-import { OutputAreaRef } from '../components/input_output/OutputArea';
-import logAnalyticsEvent, { AnalyticsEventName } from './analyticsEvent';
+import type { ActivitySession } from './activitySession';
 import {
   ExecutionResponse,
   PythonMode,
@@ -18,7 +19,7 @@ import {
   isExecutionNominal,
 } from './execution/codeExecution';
 import { ExecutorContext } from './execution/executorContext';
-import { CLIENT_SIDE_EXECUTION_TAG } from './execution/versions';
+import registerCodeExecutionEvent from './executionEvents';
 import {
   CodeCellExecutionState,
   CodeCellState,
@@ -27,13 +28,13 @@ import {
   extractMetadataForEvent,
   getDefaultActivityVariantMetadata,
 } from './localStorage/schema';
-import useLocalToolbox from './localStorage/useLocalToolbox';
+import useLocalTranslation from './localStorage/useLocalTranslation';
 import {
   ActivityVariant,
   PythonFile,
   activityVariantId,
 } from './schemas/activitySchema';
-import { EventName, storeDbEvent } from './storeDbEvent';
+import useInputRequests from './useInputRequests';
 
 function hasOutput(response: ExecutionResponse): boolean {
   return (
@@ -86,22 +87,29 @@ export function sourceFromCell(cell: CodeCellState) {
 }
 
 export function useActivity(
-  initialCodeCells: CodeCellState[],
-  codeCells: CodeCellState[],
-  setCodeCells: Dispatch<SetStateAction<CodeCellState[]>>,
+  activitySession: ActivitySession,
   metadata: Metadata,
   setMetadata: Dispatch<SetStateAction<Metadata>>,
   activityVariant: ActivityVariant,
   extraPythonFiles: PythonFile[],
-  getExtraToolboxFunction: () => ToolboxFunction | undefined = () => undefined,
   postExecuteSingleCell: (
     idx: number,
     executionResponse: ExecutionResponse,
   ) => void = () => {},
 ) {
-  const { getFunction } = useLocalToolbox();
   const variantId = activityVariantId(activityVariant);
   const variantMetadata = metadata.activities.find((a) => a.id === variantId);
+
+  const codeCells = useSyncExternalStore(
+    activitySession.subscribe,
+    activitySession.getCodeCells,
+    activitySession.getCodeCells,
+  );
+  const initialCodeCells = useSyncExternalStore(
+    activitySession.subscribe,
+    activitySession.getInitialCodeCells,
+    activitySession.getInitialCodeCells,
+  );
 
   const { executorState, execute, restart } = useContext(ExecutorContext);
 
@@ -110,9 +118,28 @@ export function useActivity(
       .fill(undefined)
       .map(initialCodeExecutionState);
 
-  const [codeExecutionStates, setCodeExecutionStates] = useSessionStorageState(
-    `pytamaro-web-executionv2-${variantId}`,
-    { defaultValue: initialCodeExecutionStates() },
+  const [storedCodeExecutionStates, setStoredCodeExecutionStates] =
+    useSessionStorageState(`pytamaro-web-executionv2-${variantId}`, {
+      defaultValue: initialCodeExecutionStates(),
+    });
+  const codeExecutionStatesRef = useRef(storedCodeExecutionStates);
+  useEffect(() => {
+    codeExecutionStatesRef.current = storedCodeExecutionStates;
+  }, [storedCodeExecutionStates]);
+  const setCodeExecutionStates = useCallback(
+    (update: SetStateAction<CodeCellExecutionState[]>) => {
+      const current = codeExecutionStatesRef.current;
+      const next = typeof update === 'function' ? update(current) : update;
+      if (Object.is(next, current)) {
+        // Avoid writing to session storage if the new value is the same as the old one.
+        // This is potentially expensive because it is called on every keystroke and
+        // the code execution states contain the base64-encoded PNGs, which can be large.
+        return;
+      }
+      codeExecutionStatesRef.current = next;
+      setStoredCodeExecutionStates(next);
+    },
+    [setStoredCodeExecutionStates],
   );
 
   const restartWorkerAndMarkExecutionAsStopped = useCallback(() => {
@@ -125,6 +152,16 @@ export function useActivity(
     );
     restart();
   }, [restart, setCodeExecutionStates]);
+
+  const showOutputArea = (idx: number) =>
+    setCodeExecutionStates((current) =>
+      produce(current, (draft) => {
+        if (draft[idx] !== undefined) {
+          draft[idx].outputAreaVisible = true;
+        }
+      }),
+    );
+  const { setOutputAreaRef, requestInput } = useInputRequests(showOutputArea);
 
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   const completed = !!variantMetadata?.completed;
@@ -150,10 +187,10 @@ export function useActivity(
   }, [variantId, setMetadata]);
 
   useEffect(() => {
-    if (codeCells.length === 0 && !completed) {
+    if (activitySession.getCodeCells().length === 0 && !completed) {
       markAsCompleted();
     }
-  }, [codeCells, completed, markAsCompleted]);
+  }, [activitySession, completed, markAsCompleted]);
 
   const initialCodeCellsSerialized = JSON.stringify(initialCodeCells);
   const codeCellsSerialized = JSON.stringify(codeCells);
@@ -178,27 +215,19 @@ export function useActivity(
     );
   }, [codeCellsSerialized, initialCodeCellsSerialized, variantId, setMetadata]);
 
-  // Small debounce because this is potentially called on every keystroke.
-  // The setters persist data on Local/Session Storage
-  // and we don't want to write synchronously too often.
-  const handleSourceChanged = debounce((newSource: string, idx: number) => {
-    setCodeCells((currentCodeCells) =>
-      produce(currentCodeCells, (draft) => {
-        draft[idx].source = newSource;
-      }),
-    );
+  // For example after a source change,
+  // the output of all the cells from `idx` is (potentially) no longer in sync
+  const handleInvalidateOutputsFrom = (idx: number) => {
     setCodeExecutionStates((currentCodeExecutionStates) =>
       produce(currentCodeExecutionStates, (draft) => {
-        // Output of all the cells from `idx` is (potentially) no longer in sync
-        for (let i = idx; i < codeCells.length; i += 1) {
+        for (let i = idx; i < draft.length; i += 1) {
           draft[i].outputSynced = false;
         }
       }),
     );
-  }, 50);
+  };
 
-  const sourcesUpTo = (idx: number) =>
-    codeCells.slice(0, idx + 1).map(sourceFromCell);
+  const sourcesUpTo = (idx: number) => activitySession.getSourcesUpTo(idx);
 
   const executionPartiallyCompleted = (idx: number) => {
     setCodeExecutionStates((currentCodeExecutionStates) =>
@@ -224,7 +253,10 @@ export function useActivity(
           draft[idx].executionResponse = response;
           draft[idx].outputSynced = true;
           draft[idx].outputAreaVisible = hasOutput(response);
-          if (response.type === 'success' && idx === codeCells.length - 1) {
+          if (
+            response.type === 'success' &&
+            idx === activitySession.getCodeCells().length - 1
+          ) {
             // Mark the activity as completed when the last cell has been executed successfully.
             markAsCompleted();
           } else if (response.type === 'failure') {
@@ -268,43 +300,30 @@ export function useActivity(
     );
   };
 
-  const retrieveToolboxSources = async (idx: number, sources: string[]) => {
-    const extraToolboxFn = getExtraToolboxFunction();
-
-    const functionLookup = (name: string) => {
-      if (extraToolboxFn && extraToolboxFn.name === name) {
-        return extraToolboxFn;
-      }
-      return getFunction(name);
-    };
+  const retrieveToolboxSources = async (sources: string[]) => {
+    // The session already merges the extra functions with the saved toolbox
+    // (extras first), so analysis and execution see the same functions.
+    const toolboxFunctions = activitySession.getToolboxFunctions();
+    const functionLookup = (name: string) =>
+      toolboxFunctions.find((fn) => fn.name === name);
 
     const toolboxFunctionsByCell = await Promise.all(
       sources.map((source) =>
         transitivelyImportedToolboxFunctions(source, functionLookup),
       ),
     );
-    const toolboxFunctions = uniqBy(
-      toolboxFunctionsByCell.flat(),
-      (fn) => fn.name,
-    );
-    return toolboxFunctions;
+    return uniqBy(toolboxFunctionsByCell.flat(), (fn) => fn.name);
   };
 
   const handleExecutionRequestEvent = async (
     idx: number,
     executionUUID: string,
     pythonMode: PythonMode,
-    sourceIdxOverride?: string,
   ) => {
     const sources = sourcesUpTo(idx);
-    if (sourceIdxOverride !== undefined) {
-      sources[idx] = sourceIdxOverride;
-    }
-    const toolboxFunctions = await retrieveToolboxSources(idx, sources);
-    logAnalyticsEvent(AnalyticsEventName.CodeExecution, {
-      activity: variantId,
-    });
-    storeDbEvent(EventName.CodeExecution, metadata, {
+    const toolboxFunctions = await retrieveToolboxSources(sources);
+    registerCodeExecutionEvent({
+      metadata,
       sources,
       initialSources: initialCodeCells.map(sourceFromCell),
       requestedCellSequenceNumber: idx,
@@ -314,7 +333,6 @@ export function useActivity(
       liveAnalysis: metadata.liveAnalysis,
       executionUUID,
       pythonMode,
-      clientSideExecutionTag: CLIENT_SIDE_EXECUTION_TAG,
     });
   };
 
@@ -322,8 +340,6 @@ export function useActivity(
     idx: number,
     executionUUID: string,
     pythonMode: PythonMode,
-    getOutputRef: (execIdx: number) => OutputAreaRef | null,
-    sourceIdxOverride?: string,
   ) => {
     if (executorState.type === 'loading') {
       // eslint-disable-next-line no-console
@@ -339,10 +355,7 @@ export function useActivity(
     }
 
     const sources = sourcesUpTo(idx);
-    if (sourceIdxOverride !== undefined) {
-      sources[idx] = sourceIdxOverride;
-    }
-    const toolboxFunctions = await retrieveToolboxSources(idx, sources);
+    const toolboxFunctions = await retrieveToolboxSources(sources);
 
     // (Re-)Execute all cells from the first one to the current one, included.
     // Before starting, we mark the output of these cells as not synced.
@@ -381,7 +394,7 @@ export function useActivity(
       pythonMode,
       newPartialExecutionResult,
       onActiveCellChange,
-      getOutputRef,
+      requestInput,
     );
 
     // Mark the "last" cell as complete.
@@ -407,9 +420,10 @@ export function useActivity(
     );
   };
 
+  const { t } = useLocalTranslation(['common']);
   const confirm = useConfirm();
   const handleResetAllCellsNoConfirm = () => {
-    setCodeCells(initialCodeCells);
+    activitySession.setCodeCells(initialCodeCells);
     setCodeExecutionStates(initialCodeExecutionStates());
   };
 
@@ -423,13 +437,14 @@ export function useActivity(
 
   const handleResetSingleCell = (idx: number, postReset: () => void) => {
     confirm({
-      description:
-        'You are about to reset the code in this cell. Other cells will be left unchanged. This action cannot be undone! ⚠️',
-      confirmationText: 'Ok, delete my code',
+      title: t('resetAreYouSure'),
+      description: t('resetCellWarning'),
+      confirmationText: t('resetActivityConfirm'),
+      cancellationText: t('confirmCancel'),
     }).then(({ confirmed }) => {
       if (confirmed) {
-        setCodeCells((currentCodeCells) =>
-          produce(currentCodeCells, (draft) => {
+        activitySession.setCodeCells(
+          produce(activitySession.getCodeCells(), (draft) => {
             draft[idx] = initialCodeCells[idx];
           }),
         );
@@ -441,9 +456,10 @@ export function useActivity(
 
   const handleRestartPyodide = () =>
     confirm({
-      description:
-        'You are about to restart the Python environment. All active code executions will be terminated.',
-      confirmationText: 'Ok, restart',
+      title: t('resetAreYouSure'),
+      description: t('restartPythonEnvironmentWarning'),
+      confirmationText: t('restartPythonEnvironmentConfirm'),
+      cancellationText: t('confirmCancel'),
     }).then(({ confirmed }) => {
       if (confirmed) {
         restartWorkerAndMarkExecutionAsStopped();
@@ -451,13 +467,13 @@ export function useActivity(
     });
 
   return {
-    initialCodeCells,
+    activitySession,
     codeCells,
-    codeExecutionStates,
+    codeExecutionStates: storedCodeExecutionStates,
     completed,
     cellsModified,
-    sourcesUpTo,
-    handleSourceChanged,
+    setOutputAreaRef,
+    handleInvalidateOutputsFrom,
     handleExecutionRequestEvent,
     handleExecute,
     handleToggleOutputArea,
@@ -467,3 +483,5 @@ export function useActivity(
     handleRestartPyodide,
   };
 }
+
+export type ActivityState = ReturnType<typeof useActivity>;

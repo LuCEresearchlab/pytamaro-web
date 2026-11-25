@@ -1,9 +1,9 @@
 import { Monaco } from '@monaco-editor/react';
-import { sum } from 'lodash';
+import { escapeRegExp, sum } from 'lodash';
 import { type editor as EditorNamespace } from 'monaco-editor';
-import { TFunction } from 'next-i18next';
-import { ErrorMessageWidget } from '../components/editor/ErrorMessageWidget';
-import { runtimeErrorMessageCategory } from '../components/editor/errors';
+import { TFunction } from 'next-i18next/pages';
+import { ErrorMessageWidget } from './editor/ErrorMessageWidget';
+import { runtimeErrorMessageCategory } from './editor/errors';
 import { ExecutionResponse } from './execution/codeExecution';
 import { PYTHON_VERSION } from './execution/versions';
 import {
@@ -20,7 +20,12 @@ export const TRACEBACK_MESSAGE_DECORATION_CLASSNAME =
 
 const LIBRARY_PATH = '/lib/';
 
-const REGEX_TRACEBACK_CELL_FILE_LINE = / {2}File "cell_\d+\.py", line (\d+)/;
+/** Matches the frames of the user's own file: a notebook cell, or `fileName`. */
+function userFileLineRegex(fileName?: string): RegExp {
+  const pattern =
+    fileName === undefined ? 'cell_\\d+\\.py' : escapeRegExp(fileName);
+  return new RegExp(` {2}File "${pattern}", line (\\d+)`);
+}
 
 const REGEX_CARET_LINE = /^\s*~*\^+~*$/;
 
@@ -107,6 +112,29 @@ function nicerTraceback(traceback: string) {
   const addKeyboardInterruptMessage = (s: string) =>
     s.replace(/^KeyboardInterrupt$/m, 'KeyboardInterrupt: execution stopped');
 
+  // Remove pyodide install hook messages
+  // Reference: https://github.com/pyodide/pyodide/blob/cdbe0aaa5838dd69cce92825405873ab757a1d80/src/py/_pyodide/_importhook.py#L223
+  const removeMicroPipInstallExtHookMessage = (s: string) =>
+    s.replace(
+      /^The module '(.+)' is included in the Pyodide distribution, but it is not installed\.\nYou can install it by calling:\n  await micropip.install\(\"\1"\) in Python, or\n  await pyodide.loadPackage\(\"\1\"\) in JavaScript\n?/m,
+      '',
+    );
+  const removeMicroPipInstallStdUnsupportedStdLibHookMessage = (s: string) =>
+    s.replace(
+      /^The module '(.+)' is removed from the Python standard library in the Pyodide distribution due to browser limitations.\n?/m,
+      "The standard module '$1' is unsupported on this platform.\n",
+    );
+  const removeMicroPipInstallStdOptionalLibHookMessage = (s: string) =>
+    s.replace(
+      /^The module '(.+)' is unvendored from the Python standard library in the Pyodide distribution\.\nYou can install it by calling:\n  await micropip.install\(\"\1"\) in Python, or\n  await pyodide.loadPackage\(\"\1\"\) in JavaScript\n?/m,
+      "The standard module '$1' is not available on this platform.\n",
+    );
+  const removeMicroPipSeeDetailsMessage = (s: string) =>
+    s.replace(
+      /^See https:\/\/pyodide\.org\/en\/stable\/usage\/loading-packages.html for more details\.\n?^/gm,
+      '',
+    );
+
   return [
     removePythonErrorColon,
     hideDriver,
@@ -115,22 +143,28 @@ function nicerTraceback(traceback: string) {
     shortenLibraryPaths,
     replaceEllipsis,
     addKeyboardInterruptMessage,
+    removeMicroPipInstallExtHookMessage,
+    removeMicroPipInstallStdUnsupportedStdLibHookMessage,
+    removeMicroPipInstallStdOptionalLibHookMessage,
+    removeMicroPipSeeDetailsMessage,
   ].reduce((acc, fn) => fn(acc), traceback);
 }
 
 function lineNumOfErrorThisCell(
   traceback: string[],
   firstLineNumberOfThisCell: number,
+  fileName?: string,
 ): { idxInTraceback: number; lineNum: number } | undefined {
   if (traceback.length === 0) {
     return undefined;
   }
 
+  const regex = userFileLineRegex(fileName);
   // We need to find the least recent occurrence of the regex where the line
   // number is ≥ firstLineNumberOfThisCell.
   const candidates = traceback
     .map((line) => {
-      const match = line.match(REGEX_TRACEBACK_CELL_FILE_LINE);
+      const match = line.match(regex);
       if (match === null) {
         return null;
       }
@@ -144,38 +178,9 @@ function lineNumOfErrorThisCell(
   return candidates.length > 0 ? candidates[candidates.length - 1] : undefined;
 }
 
-function errorIsInUserCode(traceback: string[]): boolean {
-  return traceback.some(
-    (line) => line.match(REGEX_TRACEBACK_CELL_FILE_LINE) !== null,
-  );
-}
-
-function simulateModelChange(
-  monaco: Monaco,
-  model: EditorNamespace.ITextModel,
-) {
-  // We need a "real" change, otherwise Monaco will "optimize it away".
-  // However, we want to avoid using the drastic `editor.setValue(editor.getValue())`,
-  // because it forces a re-tokenization, causing visual glitches (e.g., highlighting, scrollbars).
-
-  // Alternative: add a space at the end, then remove it.
-  const lastPos = model.getFullModelRange().getEndPosition();
-  const lastRange = monaco.Range.fromPositions(lastPos, lastPos);
-  model.applyEdits([
-    {
-      range: lastRange,
-      text: ' ',
-    },
-  ]);
-  // Remove the space we just added (but as a separate edit, to ensure it is applied after the previous edit).
-  const newLastPos = model.getFullModelRange().getEndPosition();
-  const newLastRange = monaco.Range.fromPositions(lastPos, newLastPos);
-  model.applyEdits([
-    {
-      range: newLastRange,
-      text: '',
-    },
-  ]);
+function errorIsInUserCode(traceback: string[], fileName?: string): boolean {
+  const regex = userFileLineRegex(fileName);
+  return traceback.some((line) => line.match(regex) !== null);
 }
 
 /**
@@ -188,6 +193,8 @@ export function addErrorAnnotationsFromExecution(
   executionResponse: ExecutionResponse,
   firstLineNumber: number,
   t: TFunction,
+  fileName: string | undefined,
+  onClose: () => void,
 ): {
   widget: ErrorMessageWidget;
   decorationsCollection: EditorNamespace.IEditorDecorationsCollection;
@@ -197,6 +204,7 @@ export function addErrorAnnotationsFromExecution(
   const lineNumberInfo = lineNumOfErrorThisCell(
     tracebackLines,
     firstLineNumber,
+    fileName,
   );
   const model = editor.getModel();
   if (!model || lineNumberInfo === undefined) {
@@ -358,17 +366,7 @@ export function addErrorAnnotationsFromExecution(
     true,
     runtimeErrorMessageCategory(message),
     t,
-    () => {
-      // On close, *simulate a model change* so that
-      // (1) runtime annotations (decorations + widget) are removed
-      // (2) static analysis is re-run, possibly adding diagnostics
-      // (3) the execution response is marked as not synced and becomes grayed out
-      const model = editor.getModel();
-      if (!model) {
-        return;
-      }
-      simulateModelChange(monaco, model);
-    },
+    onClose,
   );
   return {
     widget,

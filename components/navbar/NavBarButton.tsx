@@ -6,11 +6,13 @@ export default function NavBarButton({
   label,
   onClick = undefined,
   disabled = false,
+  testId = undefined,
 }: {
   children: React.ReactNode;
   label: string;
   onClick?: IconButtonProps['onClick'];
   disabled?: boolean;
+  testId?: string;
 }) {
   // <div>s are necessary for Tooltip to work properly in all cases
   return (
@@ -18,6 +20,7 @@ export default function NavBarButton({
       <Tooltip arrow title={label}>
         <div>
           <IconButton
+            data-testid={testId}
             sx={{
               color: disabled
                 ? theme.palette.text.disabled

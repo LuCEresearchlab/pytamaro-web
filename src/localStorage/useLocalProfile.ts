@@ -1,8 +1,16 @@
 import produce from 'immer';
-import { Dispatch, SetStateAction } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+} from 'react';
 import useLocalStorageState from 'use-local-storage-state';
+import { isOptionalIdeLibrary } from '../ide/libraries';
 import { ActivityVariant, activityVariantId } from '../schemas/activitySchema';
 import { Curriculum, curriculumToId } from '../schemas/curriculumSchema';
+import migrateToV10 from './migrations/v10';
 import migrateToV2 from './migrations/v2';
 import migrateToV3 from './migrations/v3';
 import migrateToV4 from './migrations/v4';
@@ -19,7 +27,11 @@ import {
   getDefaultMetadata,
 } from './schema';
 
-function migrations(metadata: { dataModelVersion: string }): Metadata {
+/**
+ * Runs every migration needed to bring the given metadata up to the current version.
+ * If no migration, the same object is returned, so callers can compare references to determine if a migration happened.
+ */
+function migrateMetadata(metadata: { dataModelVersion: string }): Metadata {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const migrationForVersion: { [key: string]: (metadata: any) => any } = {
     1: migrateToV2,
@@ -30,29 +42,49 @@ function migrations(metadata: { dataModelVersion: string }): Metadata {
     6: migrateToV7,
     7: migrateToV8,
     8: migrateToV9,
+    9: migrateToV10,
   };
-  const possibleMigration = migrationForVersion[metadata.dataModelVersion];
+  const migrationFn = migrationForVersion[metadata.dataModelVersion];
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-  if (possibleMigration) {
-    return migrations(possibleMigration(metadata));
+  if (migrationFn) {
+    return migrateMetadata(migrationFn(metadata));
   }
   return metadata as Metadata;
 }
 
-function migrateIfNecessary(
-  metadata: { dataModelVersion: string },
-  setMetadata: Dispatch<SetStateAction<Metadata>>,
-) {
-  if (metadata.dataModelVersion !== getDefaultMetadata().dataModelVersion) {
-    setMetadata(migrations(metadata));
-  }
-}
-
 export default function useLocalProfile() {
-  const [metadata, setMetadata] = useLocalStorageState(METADATA_KEY, {
-    defaultValue: getDefaultMetadata(),
-  });
-  migrateIfNecessary(metadata, setMetadata);
+  const [storedMetadata, setStoredMetadata] = useLocalStorageState(
+    METADATA_KEY,
+    {
+      defaultValue: getDefaultMetadata(),
+    },
+  );
+
+  // Everything below reads from the migrated metadata, even on the very first render after a migration.
+  const metadata = useMemo(
+    () => migrateMetadata(storedMetadata),
+    [storedMetadata],
+  );
+
+  // Persist the migrated metadata as a side effect rather than during render.
+  // Once stored, `migrateMetadata` returns the same reference, so this stops.
+  useEffect(() => {
+    if (metadata !== storedMetadata) {
+      setStoredMetadata((previous) => migrateMetadata(previous));
+    }
+  }, [metadata, storedMetadata, setStoredMetadata]);
+
+  // Functional updates also start from migrated metadata, in case a setter
+  // runs before the persistence effect above has flushed.
+  const setMetadata = useCallback<Dispatch<SetStateAction<Metadata>>>(
+    (action) => {
+      setStoredMetadata((previous) => {
+        const current = migrateMetadata(previous);
+        return typeof action === 'function' ? action(current) : action;
+      });
+    },
+    [setStoredMetadata],
+  );
 
   const dataSharingAllowed = metadata.allowSharingAnonData === 'yes';
   const requestDataSharingPreference =
@@ -120,6 +152,11 @@ export default function useLocalProfile() {
     );
   };
 
+  const selectedIdeLibrariesIds = useMemo(
+    () => metadata.ideLibraries.filter(isOptionalIdeLibrary),
+    [metadata.ideLibraries],
+  );
+
   return {
     metadata,
     dataSharingAllowed,
@@ -133,5 +170,6 @@ export default function useLocalProfile() {
     setPlatformLocale,
     docsMetadata,
     setDocsMetadata,
+    selectedIdeLibrariesIds,
   };
 }

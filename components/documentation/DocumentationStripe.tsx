@@ -6,14 +6,14 @@ import { useCallback, useState } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import { useDocumentationElements } from '../../src/documentation';
 import useLocalTranslation from '../../src/localStorage/useLocalTranslation';
-import {
+import { PythonName } from '../../src/python-analyzer/python_analyzer';
+import type {
   AnalysisResult,
-  PythonName,
-} from '../../src/python-analyzer/python_analyzer';
-import { ActivityVariant } from '../../src/schemas/activitySchema';
+  FilesAnalysisResult,
+} from '../../src/pythonWorkspace';
+import type { ActivityVariant } from '../../src/schemas/activitySchema';
 import theme from '../../src/theme';
 import { visibleDefinedFunctions } from '../../src/useAnalysisResult';
-import { FilesAnalysisResult } from '../../src/usePythonAnalyzer';
 import DocElement from './DocElement';
 
 const COLLAPSED_HEIGHT = 1.5 * theme.typography.htmlFontSize;

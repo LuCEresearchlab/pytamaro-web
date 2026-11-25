@@ -9,9 +9,9 @@ import {
   CurriculumMetadata,
   DocsMetadata,
   LiveAnalysisStatus,
-  Metadata,
   ToolboxFunction,
 } from '../schema';
+import { MetadataV9 } from './v10';
 
 export interface MetadataV8 {
   dataModelVersion: string;
@@ -28,8 +28,8 @@ export interface MetadataV8 {
   wideEditor: boolean;
 }
 
-export default function migrateToV9(metadata: MetadataV8): Metadata {
-  const newMetadata: Metadata = {
+export default function migrateToV9(metadata: MetadataV8): MetadataV9 {
+  const newMetadata: MetadataV9 = {
     ...metadata,
     dataModelVersion: '9',
   };

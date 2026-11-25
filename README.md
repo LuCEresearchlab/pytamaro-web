@@ -178,6 +178,8 @@ Create a new file: `cypress/e2e/[filename].cy.ts`.
 
 Note: since `isolatedModules` is set, the file should contain some import or export (for example, start the file with `export {};`).
 
+Cypress end-to-end tests must be run with Chrome (not Electron!),
+because the platform requires cross-origin isolation (to enable `SharedArrayBuffer`, used by the client-side execution).
 </details>
 
 ## How is the platform being executed on the server?

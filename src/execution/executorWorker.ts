@@ -1,6 +1,7 @@
 import throttle from 'lodash/throttle';
 import { PyodideAPI } from 'pyodide';
 import { PyProxy, PythonError } from 'pyodide/ffi';
+import { encodeText, sameBytes } from '../ide/fileContent';
 import { INPUT_BEGIN, INPUT_END } from '../ioMarkers';
 import { joinLines } from '../sourceUtils';
 import { ExecutionResponse } from './codeExecution';
@@ -14,11 +15,38 @@ import {
   ResultMessage,
   RunPythonFile,
   TransferablePythonError,
+  WorkspaceChanges,
+  WorkspaceFileChange,
 } from './messageTypes';
+import {
+  fileSignature,
+  type FileSignature,
+  ScanCache,
+  type ScanMode,
+} from './scanCache';
 import { PYODIDE_VERSION, PYTAMARO_VERSION } from './versions';
+import { WorkspaceObserver } from './workspaceObserver';
+import { isRunArtifact } from './workspacePaths';
+import type { WorkspaceEvent } from './workspaceReporter';
+import { WorkspaceReporter } from './workspaceReporter';
+import { FFI_SCAN_MIN_INTERVAL_MS } from './workspaceSyncConstants';
 
 const EXEC_BASE_PATH = '/run/py';
 const DRIVER_FILE_NAME = 'driver.py';
+
+type ExecutionEnvironment = {
+  code: string;
+  workspaceBaseline: Map<string, Uint8Array>;
+  workspaceFolders: Set<string>;
+  generatedFiles: Set<string>;
+  collectWorkspaceChanges: boolean;
+};
+
+/** The directory that contains `path`, which must be absolute. */
+function parentDirectory(path: string): string {
+  const idx = path.lastIndexOf('/');
+  return idx <= 0 ? '/' : path.slice(0, idx);
+}
 
 type ThisWorker = typeof globalThis;
 type OnActiveCodeCellChangeListener = (idx: number) => void;
@@ -107,12 +135,21 @@ class WorkerExecutor {
   private readonly pyodide: PyodideAPI;
 
   private readonly remainingPyProxies: PyProxy[];
+  private readonly installedLibraries: Set<string>;
 
   private readonly decoder: TextDecoder;
   private readonly syncBuffer: Int32Array;
   private readonly resultLengthBuffer: Int32Array;
 
   private activeCellChanged: OnActiveCodeCellChangeListener | null;
+  private pytamaroFfiSaveToWorkspace = false;
+
+  private readonly observer: WorkspaceObserver;
+  private activeEnvironment: ExecutionEnvironment | null = null;
+  private activeReporter: WorkspaceReporter | null = null;
+  private activeExecutionMetadata: ExecutionMetadata | null = null;
+  private lastFfiScan = 0;
+  private readonly scanCache = new ScanCache();
 
   static async init(
     worker: ThisWorker,
@@ -161,6 +198,7 @@ class WorkerExecutor {
     this.pyodide = pyodide;
 
     this.remainingPyProxies = [];
+    this.installedLibraries = new Set();
 
     this.decoder = new TextDecoder('utf-8');
     this.syncBuffer = syncBuffer;
@@ -187,6 +225,21 @@ class WorkerExecutor {
         this.ffSaveOnClient(fileName, content),
       set_active_cell: (idx: number) => this.ffSetActiveCell(idx),
     });
+
+    this.observer = new WorkspaceObserver(this.pyodide.FS, EXEC_BASE_PATH);
+  }
+
+  async installLibraries(libraries: readonly string[]): Promise<void> {
+    const missing = Array.from(new Set(libraries)).filter(
+      (library) => !this.installedLibraries.has(library),
+    );
+    if (missing.length === 0) {
+      return;
+    }
+    await this.pyodide.loadPackage(missing, {
+      messageCallback: () => {},
+    });
+    missing.forEach((library) => this.installedLibraries.add(library));
   }
 
   /* ==== Code Execution ==== */
@@ -194,104 +247,406 @@ class WorkerExecutor {
   async run(
     executionMetadata: ExecutionMetadata,
     files: RunPythonFile[],
+    workspaceFiles?: string[],
+    workspaceFolders?: string[],
   ): Promise<ResultMessage> {
     this.destroyLeftoverProxies();
 
     const out = this.executionSetupIO(executionMetadata);
-    const driverCode = this.executionSetupEnvironment(files);
+    const environment = this.executionSetupEnvironment(
+      files,
+      workspaceFiles,
+      workspaceFolders,
+    );
+    this.pytamaroFfiSaveToWorkspace = environment.collectWorkspaceChanges;
+
+    this.activeEnvironment = environment;
+    this.activeExecutionMetadata = executionMetadata;
+    this.lastFfiScan = 0;
+    if (environment.collectWorkspaceChanges) {
+      // Setup is over: what is on disk now is exactly the baseline.
+      this.seedScanCache(environment);
+      // Created after setup: setup writes must never be reported.
+      this.activeReporter = new WorkspaceReporter(
+        environment.workspaceBaseline,
+        environment.generatedFiles,
+        workspaceFolders,
+      );
+      this.observer.start((events) => this.onWorkspaceEvents(events));
+    }
 
     // New empty globals
     const globals = this.pyodide.toPy({});
 
-    try {
-      await this.pyodide.runPython(driverCode, {
-        globals,
-        filename: DRIVER_FILE_NAME,
-      });
+    let result: ExecutionResponse;
+    let pythonError: TransferablePythonError | undefined;
+    let workspaceChanges: WorkspaceChanges | undefined;
 
-      return {
-        type: MessageType.FINAL_RESULT,
-        executionMetadata,
-        result: {
+    try {
+      try {
+        await this.pyodide.runPython(environment.code, {
+          globals,
+          filename: DRIVER_FILE_NAME,
+        });
+
+        result = {
           type: 'success',
           completed: true,
           stdout: out.getStdout(),
           stderr: out.getStderr(),
-        },
-      };
-    } catch (err) {
-      // Handle unhandled python exceptions
-      const pythonError = err as PythonError;
-      const transferableError = getTransferableError(pythonError);
-      const { isFatal } = transferableError;
+        };
+      } catch (err) {
+        // Handle unhandled python exceptions
+        const error = err as PythonError;
+        const transferableError = getTransferableError(error);
+        const { isFatal } = transferableError;
+        pythonError = isFatal ? transferableError : undefined;
 
-      return {
-        type: MessageType.FINAL_RESULT,
-        executionMetadata,
-        pythonError: isFatal ? transferableError : undefined,
-        result: {
+        result = {
           type: isFatal ? 'failure' : 'error',
           completed: true,
           stdout: out.getStdout(),
-          stderr: out.getStderr() + pythonError,
-        },
-      };
+          stderr: out.getStderr() + error,
+        };
+      }
+
+      // Collect the files before destroying `globals`, since releasing it may
+      // trigger finalizers that write files. This reconciliation compares the
+      // filesystem with the untouched baseline and is authoritative: it does
+      // not depend on any mid-run message having been delivered. The reporter
+      // also restores paths whose mid-run push was reverted by a later change.
+      const scan = this.collectWorkspaceChanges(environment, 'full');
+      workspaceChanges =
+        scan === undefined
+          ? undefined
+          : (this.activeReporter?.reconcile(scan) ?? scan);
     } finally {
-      // Cleanup
+      // Cleanup. Stop reporting before wiping the execution directory, so that
+      // the cleanup itself is not mistaken for workspace deletions.
+      this.observer.stop();
+      this.activeReporter = null;
+      this.activeExecutionMetadata = null;
+      this.activeEnvironment = null;
+      this.scanCache.clear();
+      this.clearExecutionEnvironment();
       this.activeCellChanged = null;
       globals.destroy();
+    }
+
+    return {
+      type: MessageType.FINAL_RESULT,
+      executionMetadata,
+      pythonError,
+      result,
+      workspaceChanges,
+    };
+  }
+
+  /** Forwards hook events through the reporter and posts any novelty. */
+  private onWorkspaceEvents(events: WorkspaceEvent[]): void {
+    const reporter = this.activeReporter;
+    const metadata = this.activeExecutionMetadata;
+    if (reporter === null || metadata === null) {
+      return;
+    }
+    this.postWorkspaceChanges(reporter.ingest(events), metadata.executionUUID);
+  }
+
+  /**
+   * Scans the filesystem and pushes the changes the client does not know yet.
+   */
+  private pushWorkspaceChanges(environment: ExecutionEnvironment): void {
+    const reporter = this.activeReporter;
+    const metadata = this.activeExecutionMetadata;
+    if (reporter === null || metadata === null) {
+      return;
+    }
+    const scan = this.collectWorkspaceChanges(environment, 'incremental');
+    if (scan === undefined) {
+      return;
+    }
+    this.postWorkspaceChanges(
+      reporter.ingestScan(scan),
+      metadata.executionUUID,
+    );
+  }
+
+  private postWorkspaceChanges(
+    changes: WorkspaceChanges | null,
+    executionUUID: string,
+  ): void {
+    if (changes === null) {
+      return;
+    }
+    this.worker.postMessage({
+      type: MessageType.WORKSPACE_CHANGES,
+      executionUUID,
+      changes,
+    });
+  }
+
+  /**
+   * Makes pending writes visible before the worker blocks in an FFI call.
+   *
+   * Called for `input` (unthrottled scan) and for draw/size/save (throttled
+   * scan). The scan is incremental: it also reports files larger than the
+   * eager-copy cap, which the hooks never copy. It trusts size and mtime, so
+   * writes that leave no timestamp (an `mmap`-aliased write) show up only in
+   * the final reconciliation.
+   */
+  private flushWorkspaceBeforeBlocking(scan: 'always' | 'throttled'): void {
+    if (this.activeReporter === null) {
+      return;
+    }
+    try {
+      this.observer.flushDirty();
+      this.observer.flushFolders();
+      if (
+        this.activeEnvironment !== null &&
+        (scan === 'always' ||
+          Date.now() - this.lastFfiScan >= FFI_SCAN_MIN_INTERVAL_MS)
+      ) {
+        this.lastFfiScan = Date.now();
+        this.pushWorkspaceChanges(this.activeEnvironment);
+      }
+    } catch {
+      // Don't throw if this fails, the final reconciliation at the end of the run is authoritative.
     }
   }
 
   /**
    * Set up the execution environment.
    *
-   * @returns The entry point code (a.k.a. the "driver") to run.
+   * @returns The entry point code (a.k.a. the "driver") to run, together with
+   * the information needed to detect the workspace files it changed.
    */
-  private executionSetupEnvironment(files: RunPythonFile[]): string {
+  private executionSetupEnvironment(
+    files: RunPythonFile[],
+    workspaceFiles?: string[],
+    workspaceFolders?: string[],
+  ): ExecutionEnvironment {
     const fs = this.pyodide.FS;
+    this.clearExecutionEnvironment();
     fs.mkdirTree(EXEC_BASE_PATH);
+
+    const collectWorkspaceChanges = workspaceFiles !== undefined;
+    const workspaceNames = new Set(workspaceFiles ?? []);
+    const workspaceBaseline = new Map<string, Uint8Array>();
+    const workspaceFolderNames = new Set(workspaceFolders ?? []);
+    const generatedFiles = new Set<string>();
+
+    // Empty folders have no files to recreate them: seed them explicitly so
+    // that the final scan can tell whether the run deleted them.
+    workspaceFolderNames.forEach((folder) => {
+      fs.mkdirTree(`${EXEC_BASE_PATH}/${folder}`);
+    });
 
     let driverFile: RunPythonFile | null = null;
     for (const file of files) {
       if (file.name === DRIVER_FILE_NAME) {
         driverFile = file;
+        continue;
+      }
+      const target = `${EXEC_BASE_PATH}/${file.name}`;
+      fs.mkdirTree(parentDirectory(target));
+      fs.writeFile(target, file.content);
+      if (collectWorkspaceChanges && workspaceNames.has(file.name)) {
+        const content =
+          typeof file.content === 'string'
+            ? encodeText(file.content)
+            : file.content;
+        workspaceBaseline.set(file.name, content);
       } else {
-        fs.writeFile(`${EXEC_BASE_PATH}/${file.name}`, file.content);
+        generatedFiles.add(file.name);
       }
     }
 
     if (driverFile == null) {
-      return 'pass';
+      return {
+        code: '',
+        workspaceBaseline,
+        workspaceFolders: workspaceFolderNames,
+        generatedFiles,
+        collectWorkspaceChanges,
+      };
     }
 
-    // CPython caches the modules that it loads, so we need to forcefully unload
-    // all files that we have just written to ensure that the execution always
-    // uses the proper up-to-date code.
-    const modulesToClear = files
-      .map((file) => file.name)
-      .filter((name) => name.endsWith('.py') && name !== DRIVER_FILE_NAME)
-      .map((name) => name.replaceAll('/', '.').replace(/\.py$/, ''));
+    const driverCode =
+      typeof driverFile.content === 'string'
+        ? driverFile.content
+        : new TextDecoder().decode(driverFile.content);
 
-    return joinLines([
-      // Clear cached modules
-      'import sys',
-      ...modulesToClear.flatMap((module) => [
-        `if '${module}' in sys.modules: `,
-        `  del sys.modules['${module}']`,
+    return {
+      code: joinLines([
+        'import importlib, os, sys',
+        // Set CWD to $basePath first, so that relative module paths below
+        // resolve against it.
+        `os.chdir('${EXEC_BASE_PATH}')`,
+        // CPython caches the modules that it loads. The execution directory is
+        // recreated on every run, but the cache is not: unload every module
+        // that was loaded from it, so that changed or deleted files are not
+        // served from the cache.
+        `base = os.path.abspath('${EXEC_BASE_PATH}') + os.sep`,
+        'for name, module in list(sys.modules.items()):',
+        '  paths = (getattr(module, "__file__", None), *(getattr(module, "__path__", None) or ()))',
+        '  if any(isinstance(p, str) and os.path.abspath(p).startswith(base) for p in paths):',
+        '    del sys.modules[name]',
+        'importlib.invalidate_caches()',
+        // Set max recursion depth.
+        // Note: this might be problematic for non-desktop devices.
+        // There are several limitations at play here, both from the JS and the
+        // wasm worlds. It could be that we'll have to decrease this number in the
+        // future. See: https://github.com/pyodide/pyodide/issues/5959
+        'sys.setrecursionlimit(2000)',
+        // Run code
+        driverCode,
       ]),
-      // Set max recursion depth.
-      // Note: this might be problematic for non-desktop devices.
-      // There are several limitations at play here, both from the JS and the
-      // wasm worlds. It could be that we'll have to decrease this number in the
-      // future. See: https://github.com/pyodide/pyodide/issues/5959
-      'sys.setrecursionlimit(2000)',
-      // Set CWD to $basePath
-      'import os',
-      `os.chdir('${EXEC_BASE_PATH}')`,
-      // Run code
-      driverFile.content,
-    ]);
+      workspaceBaseline,
+      workspaceFolders: workspaceFolderNames,
+      generatedFiles,
+      collectWorkspaceChanges,
+    };
+  }
+
+  /**
+   * Remembers the signature of every baseline file, so that incremental scans
+   * can skip the ones the program has not touched.
+   */
+  private seedScanCache(environment: ExecutionEnvironment): void {
+    this.scanCache.clear();
+    const fs = this.pyodide.FS;
+    environment.workspaceBaseline.forEach((_bytes, name) => {
+      try {
+        const signature = fileSignature(fs.stat(`${EXEC_BASE_PATH}/${name}`));
+        if (signature !== undefined) {
+          this.scanCache.remember(name, signature);
+        }
+      } catch {
+        // Not seeded: the first incremental scan simply reads it.
+      }
+    });
+  }
+
+  /**
+   * Collects the workspace files created, modified, or deleted by the run.
+   * Returns undefined when the run did not ask for workspace changes.
+   */
+  private collectWorkspaceChanges(
+    environment: ExecutionEnvironment,
+    mode: ScanMode = 'full',
+  ): WorkspaceChanges | undefined {
+    if (!environment.collectWorkspaceChanges) {
+      return undefined;
+    }
+
+    try {
+      const fs = this.pyodide.FS;
+      const { workspaceBaseline, workspaceFolders, generatedFiles } =
+        environment;
+      const changed: WorkspaceFileChange[] = [];
+      const folders: string[] = [];
+      const seen = new Set<string>();
+      // Signatures of the files this scan read. They are committed to the
+      // cache only if the whole walk succeeds.
+      const read = new Map<string, FileSignature>();
+
+      const isReportedFolder = (relativePath: string): boolean =>
+        workspaceFolders.has(relativePath) || !isRunArtifact(relativePath);
+
+      const walk = (directory: string, prefix: string): void => {
+        const names = fs
+          .readdir(directory)
+          .filter((name: string) => name !== '.' && name !== '..');
+        if (names.length === 0) {
+          // Empty folders are the only explicit folders the workspace needs:
+          // folders with files are implied by those files.
+          if (prefix.length > 0 && isReportedFolder(prefix)) {
+            folders.push(prefix);
+          }
+          return;
+        }
+        for (const name of names) {
+          const fullPath = `${directory}/${name}`;
+          const relativePath = prefix.length > 0 ? `${prefix}/${name}` : name;
+          const stat = fs.stat(fullPath);
+          if (fs.isDir(stat.mode)) {
+            walk(fullPath, relativePath);
+            continue;
+          }
+          const baseline = workspaceBaseline.get(relativePath);
+          // Files that were in the workspace are always tracked, even if they
+          // look like artifacts (e.g. an imported `.env`): skipping them would
+          // report them as deleted.
+          if (
+            generatedFiles.has(relativePath) ||
+            (baseline === undefined && isRunArtifact(relativePath))
+          ) {
+            continue;
+          }
+          seen.add(relativePath);
+          // `seen` is filled before the skip below: a file that is skipped
+          // still exists, and must not be reported as deleted.
+          const signature = fileSignature(stat);
+          if (
+            mode === 'incremental' &&
+            this.scanCache.isUnchanged(relativePath, signature)
+          ) {
+            continue;
+          }
+          // `readFile` returns a fresh array, so no extra `.slice()` copy.
+          const bytes = fs.readFile(fullPath);
+          if (signature !== undefined) {
+            read.set(relativePath, signature);
+          }
+          if (baseline === undefined || !sameBytes(baseline, bytes)) {
+            changed.push({ name: relativePath, content: bytes });
+          }
+        }
+      };
+
+      walk(EXEC_BASE_PATH, '');
+
+      if (mode === 'incremental') {
+        this.scanCache.commit(read, seen);
+      }
+      return {
+        changed,
+        deleted: Array.from(workspaceBaseline.keys()).filter(
+          (name) => !seen.has(name),
+        ),
+        folders: folders.sort((a, b) => a.localeCompare(b)),
+      };
+    } catch {
+      // Never turn a snapshot failure into an execution failure.
+      return { changed: [], deleted: [] };
+    }
+  }
+
+  /** Removes everything in the execution directory, if it exists. */
+  private clearExecutionEnvironment(): void {
+    const fs = this.pyodide.FS;
+    try {
+      fs.stat(EXEC_BASE_PATH);
+    } catch {
+      return;
+    }
+    this.removeTree(EXEC_BASE_PATH);
+  }
+
+  private removeTree(path: string): void {
+    const fs = this.pyodide.FS;
+    for (const name of fs.readdir(path)) {
+      if (name === '.' || name === '..') {
+        continue;
+      }
+      const child = `${path}/${name}`;
+      if (fs.isDir(fs.stat(child).mode)) {
+        this.removeTree(child);
+        fs.rmdir(child);
+      } else {
+        fs.unlink(child);
+      }
+    }
   }
 
   /**
@@ -343,12 +698,14 @@ class WorkerExecutor {
     // requests may be received out of order by the db
     let inputSeqNumber = 0;
     const stdin = () => {
-      // Send partial result before blocking for input
-      // (this signals that the output is up to date for the current execution,
-      // even if there was no output before the input request)
-      out.writeStdout('\u200B');
+      // Flush the output produced so far before blocking for input. This also
+      // gives the UI an execution response to render, so that the input field
+      // can be shown even if there was no output before the input request.
       // Not throttled: we want this to happen right now!
       sendPartialResult();
+      // The program is about to block: report everything it has written so far
+      // so that the user sees it while deciding what to type.
+      this.flushWorkspaceBeforeBlocking('always');
       const input = this.ffInputOnClient(executionMetadata, inputSeqNumber++);
       // Add back to stdout (including the <enter>) so that the user can see
       // what they typed
@@ -453,10 +810,26 @@ class WorkerExecutor {
   }
 
   private ffSaveOnClient(fileName: string, content: string): void {
+    if (this.pytamaroFfiSaveToWorkspace) {
+      this.saveInExecutionDirectory(fileName, content);
+      return;
+    }
     this.executeFFOnClient(MessageType.SAVE, {
       fileName,
       contentUri: content,
     });
+  }
+
+  private saveInExecutionDirectory(fileName: string, dataUri: string): void {
+    const payload = dataUri.slice(dataUri.indexOf(',') + 1);
+    const bytes = Uint8Array.from(atob(payload), (char) => char.charCodeAt(0));
+
+    const target = fileName.startsWith('/')
+      ? fileName
+      : `${EXEC_BASE_PATH}/${fileName}`;
+
+    this.pyodide.FS.writeFile(target, bytes);
+    this.flushWorkspaceBeforeBlocking('always');
   }
 
   private ffSetActiveCell(idx: number): void {
@@ -480,6 +853,10 @@ class WorkerExecutor {
     type: MessageType,
     data: MessageData,
   ): SharedArrayBuffer | null {
+    if (type !== MessageType.INPUT) {
+      // `input` has already flushed (and scanned) in `stdin`.
+      this.flushWorkspaceBeforeBlocking('throttled');
+    }
     const uuid = crypto.randomUUID();
     this.worker.postMessage({
       ...data,
@@ -561,8 +938,31 @@ addEventListener(
       case MessageType.RUN:
         if (executor !== null) {
           self.postMessage(
-            await executor.run(data.executionMetadata, data.files),
+            await executor.run(
+              data.executionMetadata,
+              data.files,
+              data.workspaceFiles,
+              data.workspaceFolders,
+            ),
           );
+        }
+        break;
+      case MessageType.INSTALL_LIBRARIES:
+        try {
+          if (executor === null) {
+            throw new Error('The Python environment is not ready');
+          }
+          await executor.installLibraries(data.libraries);
+          self.postMessage({
+            type: MessageType.LIBRARIES_INSTALLED,
+            uuid: data.uuid,
+          });
+        } catch (error) {
+          self.postMessage({
+            type: MessageType.LIBRARIES_INSTALLED,
+            uuid: data.uuid,
+            error: error instanceof Error ? error.message : String(error),
+          });
         }
         break;
     }

@@ -438,6 +438,23 @@ export function getHandleDiv(
   return undefined;
 }
 
+export function getMissingParameterDiv(
+  node: string,
+  parameter: string,
+): HTMLDivElement | undefined {
+  return typeof window !== 'undefined'
+    ? (Array.from(
+        document.querySelectorAll<HTMLDivElement>(
+          '[data-missing-parameter-node]',
+        ),
+      ).find(
+        (v) =>
+          v.dataset.missingParameterNode === node &&
+          v.dataset.missingParameterName === parameter,
+      ) as HTMLDivElement | undefined)
+    : undefined;
+}
+
 export function module_elements(judicious: JudiciousModule[]) {
   return judicious
     .map((module) =>

@@ -23,6 +23,7 @@ import {
 } from '../../../../src/fs-content/authors';
 import { getCurriculum } from '../../../../src/fs-content/curricula';
 import useLocalProfile from '../../../../src/localStorage/useLocalProfile';
+import useLocalTranslation from '../../../../src/localStorage/useLocalTranslation';
 import { AuthorProfile } from '../../../../src/schemas/authorSchema';
 import { Curriculum } from '../../../../src/schemas/curriculumSchema';
 import { translationProps } from '../../../../src/serverSideTranslationProps';
@@ -45,13 +46,14 @@ export default function CurriculumPage({
 
   const { width: mainContentWidth, ref: mainContentRef } = useResizeDetector();
 
+  const { t } = useLocalTranslation(['common']);
   const confirm = useConfirm();
 
   const handleReset = () => {
     confirm({
-      description:
-        'You are about to reset the status of this curriculum. This will NOT affect the activities.',
-      confirmationText: 'Ok, reset the curriculum',
+      title: t('resetAreYouSure'),
+      description: t('resetCurriculumStatusWarning'),
+      confirmationText: t('resetCurriculumStatusConfirm'),
     }).then(({ confirmed }) => {
       if (confirmed) {
         removeCurriculum(curriculum);

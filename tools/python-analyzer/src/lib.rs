@@ -22,7 +22,7 @@ use ruff_source_file::{LineIndex, OneIndexed, SourceLocation};
 use ruff_text_size::{Ranged, TextSize};
 use ty_ide::{NavigationTarget, NavigationTargets, RangedValue, goto_declaration};
 use ty_project::metadata::options::Options;
-use ty_project::watch::{ChangeEvent, ChangedKind, CreatedKind};
+use ty_project::watch::{ChangeEvent, ChangedKind, CreatedKind, DeletedKind};
 use ty_project::{CheckMode, ProjectMetadata};
 use ty_project::{Db, ProjectDatabase, SemanticDb as _};
 use ty_python_core::program::FallibleStrategy;
@@ -539,7 +539,44 @@ impl<'db> SourceOrderVisitor<'db> for FunctionsVisitor<'db> {
 
 #[wasm_bindgen(js_name = "initWorkspace")]
 pub fn init_workspace() -> Result<Workspace, Error> {
-    let options = js_sys::JSON::parse(TY_CONFIG)?;
+    init_workspace_with_libraries(Vec::new())
+}
+
+fn add_replace_imports_with_any(
+    config: &mut serde_json::Value,
+    libraries: &[String],
+) -> Result<(), Error> {
+    let invalid = |detail: &str| Error::new(&format!("Invalid analyzer configuration: {detail}"));
+
+    let patterns = config
+        .as_object_mut()
+        .ok_or_else(|| invalid("expected an object"))?
+        .entry("analysis")
+        .or_insert_with(|| serde_json::json!({}))
+        .as_object_mut()
+        .ok_or_else(|| invalid("`analysis` must be an object"))?
+        .entry("replace-imports-with-any")
+        .or_insert_with(|| serde_json::json!([]))
+        .as_array_mut()
+        .ok_or_else(|| invalid("`analysis.replace-imports-with-any` must be an array"))?;
+
+    for library in libraries {
+        let pattern = serde_json::Value::from(format!("{library}.**"));
+        if !patterns.contains(&pattern) {
+            patterns.push(pattern);
+        }
+    }
+    Ok(())
+}
+
+#[wasm_bindgen(js_name = "initWorkspaceWithLibraries")]
+pub fn init_workspace_with_libraries(libraries: Vec<String>) -> Result<Workspace, Error> {
+    let mut config: serde_json::Value = serde_json::from_str(TY_CONFIG)
+        .map_err(|error| Error::new(&format!("Invalid analyzer configuration: {error}")))?;
+    if !libraries.is_empty() {
+        add_replace_imports_with_any(&mut config, &libraries)?;
+    }
+    let options = js_sys::JSON::parse(&config.to_string())?;
     let mut workspace = Workspace::new("/", PositionEncoding::Utf16, options)?;
     install_pytamaro(&mut workspace)?;
     Ok(workspace)
@@ -721,6 +758,7 @@ impl Workspace {
         let options = Options::deserialize_with(
             ValueSource::Cli,
             serde_wasm_bindgen::Deserializer::from(options),
+            ty_python_semantic::default_lint_registry(),
         )
         .map_err(into_error)?;
 
@@ -754,6 +792,7 @@ impl Workspace {
         let options = Options::deserialize_with(
             ValueSource::Cli,
             serde_wasm_bindgen::Deserializer::from(options),
+            self.db.lint_registry(),
         )
         .map_err(into_error)?;
 
@@ -841,7 +880,6 @@ impl Workspace {
         Ok(())
     }
 
-    /*
     #[wasm_bindgen(js_name = "closeFile")]
     #[allow(
         clippy::needless_pass_by_value,
@@ -868,7 +906,6 @@ impl Workspace {
 
         Ok(())
     }
-    */
 
     /// Checks a single file.
     #[wasm_bindgen(js_name = "checkFile")]
@@ -903,6 +940,7 @@ impl Workspace {
 
         Ok(format!("{:#?}", parsed.tokens()))
     }
+    */
 
     #[wasm_bindgen(js_name = "sourceText")]
     pub fn source_text(&self, file_id: &FileHandle) -> Result<String, Error> {
@@ -911,6 +949,7 @@ impl Workspace {
         Ok(source_text.to_string())
     }
 
+    /*
     #[wasm_bindgen(js_name = "gotoTypeDefinition")]
     pub fn goto_type_definition(
         &self,

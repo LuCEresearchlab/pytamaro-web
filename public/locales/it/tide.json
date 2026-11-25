@@ -1,8 +1,6 @@
 {
     "page": {
-        "title": "TIDE: un IDE per TamaroCards",
-        "previewAlert": "TIDE è attualmente disponibile in anteprima. Se riscontri un errore, inviaci un feedback utilizzando il pulsante in alto a destra nella pagina.",
-        "researchPaper": "Vuoi saperne di più sul design di TIDE? Leggi il paper di ricerca!"
+        "title": "TIDE: un IDE per TamaroCards"
     },
     "palette": {
         "title": "Palette delle carte",
@@ -14,6 +12,13 @@
     },
     "emptyState": "Per iniziare, trascina qui una carta dalla palette",
     "documentationButton": "Mostra la documentazione",
+    "pythonPanel": {
+        "title": "Codice sorgente Python",
+        "show": "Mostra il codice Python",
+        "hide": "Nascondi il codice Python",
+        "hint": "Passa sopra un token per evidenziare la carta corrispondente.",
+        "openInEvaluator": "Apri nel valutatore"
+    },
     "graphOptions": {
         "importFromFile": "Importa da un file",
         "exportToFile": "Esporta in un file",

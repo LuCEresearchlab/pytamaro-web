@@ -7,6 +7,7 @@ export enum AnalyticsEventName {
   DeleteToolboxFunction = 'DeleteToolboxFunction',
   DoNowCompleted = 'DoNowCompleted',
   CodeExecutionInput = 'CodeExecutionInput',
+  ExternalVideo = 'ExternalVideo',
 }
 
 export default function logAnalyticsEvent(

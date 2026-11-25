@@ -8,7 +8,7 @@
         "goal": "Programmiere Deine Burg"
     },
     "action": {
-        "confirm": "Ok",
+        "confirm": "OK",
         "cancel": "Abbrechen"
     },
     "age": {
@@ -78,7 +78,7 @@
             "title": "Pair Programming",
             "desc": "Diese Stunde des Codes kann besonders gut mit Pair Programming durchgeführt werden, indem zwei Lernende gemeinsam an einem Computer arbeiten. Bei der Paarprogrammierung übernehmen die beiden Lernenden eines Paares normalerweise unterschiedliche Rollen: Der Fahrer sitzt an der Tastatur und schreibt den Code, und der Navigator prüft jede eingegebene Codezeile. Sie können die Lernenden bitten, die Rollen zwischen den einzelnen Aktivitäten zu wechseln (beachten Sie aber, dass die ersten paar Aktivitäten nicht viel Schreibarbeit erfordern)."
         },
-        "platform": {
+        "platforms": {
             "title": "Plattformen",
             "desc": "Wir haben dieses Tutorial mit den Browsern Firefox, Chrome, Safari und Edge und auf macOS, Windows, iOS, iPadOS und Android getestet. Es kann zwar auch auf Mobiltelefonen verwendet werden, wir empfehlen aber Geräte mit grösseren Bildschirmen und Tastaturen."
         },

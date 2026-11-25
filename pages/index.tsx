@@ -1,12 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
-import { MenuBookOutlined, Translate } from '@mui/icons-material';
+import { MenuBookOutlined, PlayLesson, Translate } from '@mui/icons-material';
 import Download from '@mui/icons-material/Download';
 import GitHub from '@mui/icons-material/GitHub';
 import PlayCircle from '@mui/icons-material/PlayCircle';
 import Route from '@mui/icons-material/Route';
 import School from '@mui/icons-material/School';
 import Science from '@mui/icons-material/Science';
-import TipsAndUpdates from '@mui/icons-material/TipsAndUpdates';
 import {
   Box,
   Button,
@@ -24,26 +23,28 @@ import {
 import Grid from '@mui/material/Grid';
 import anime from 'animejs';
 import { shuffle } from 'lodash';
-import { Trans } from 'next-i18next';
+import { Trans } from 'next-i18next/pages';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import ActivityCardMedia from '../components/ActivityCardMedia';
 import Carousel from '../components/Carousel';
 import DocElement from '../components/documentation/DocElement';
-import { STRICT_PYTHON3_LANG_ID } from '../components/editor/strictPython3';
 import ExecutionOutputArea from '../components/input_output/ExecutionOutputArea';
 import NavBarButton from '../components/navbar/NavBarButton';
 import NavigationBar from '../components/navbar/NavigationBar';
 import PlatformLanguageControl from '../components/navbar/PlatformLanguageControl';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/Popover';
 import { useDocumentationElements } from '../src/documentation';
+import useMonacoColorizer, {
+  COLORIZE_CLASSNAME,
+} from '../src/editor/colorizer';
+import { STRICT_PYTHON3_LANG_ID } from '../src/editor/strictPython3';
 import {
   basicActivities,
   listVisibleActivities,
 } from '../src/fs-content/activities';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import useMonacoColorizer, { COLORIZE_CLASSNAME } from '../src/monacoColorizer';
 import { playgroundActivityVariant } from '../src/playground';
 import { PythonName } from '../src/python-analyzer/python_analyzer';
 import { BasicActivity } from '../src/schemas/activitySchema';
@@ -556,7 +557,7 @@ export default function Home({ activities }: { activities: BasicActivity[] }) {
                 <CardHeader
                   title={t('home:activities.title')}
                   sx={{ pb: 0 }}
-                  avatar={<TipsAndUpdates color='primary' />}
+                  avatar={<PlayLesson color='primary' />}
                   slotProps={{
                     title: {
                       variant: 'h5',

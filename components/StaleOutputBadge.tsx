@@ -1,26 +1,36 @@
 import { SyncProblem } from '@mui/icons-material';
-import { Tooltip } from '@mui/material';
+import { SxProps, Theme, Tooltip } from '@mui/material';
 import useLocalTranslation from '../src/localStorage/useLocalTranslation';
-import { TopRightBadge } from './TopRightBadge';
+import {
+  OverhangingBadge,
+  VerticallyOverhangingBadge,
+} from './OverhangingBadge';
 
 export default function StaleOutputBadge({
   hidden,
   children,
+  overhang = 'both',
+  sx = {},
 }: {
   hidden: boolean;
   children: React.ReactNode;
+  overhang?: 'both' | 'vertical';
+  sx?: SxProps<Theme>;
 }) {
   const { t } = useLocalTranslation();
+  const Badge =
+    overhang === 'vertical' ? VerticallyOverhangingBadge : OverhangingBadge;
   return (
-    <TopRightBadge
+    <Badge
+      sx={sx}
       badgeContent={
         <Tooltip arrow title={t('staleOutput')}>
-          <SyncProblem />
+          <SyncProblem data-testid='stale-output-icon' />
         </Tooltip>
       }
       invisible={hidden}
     >
       {children}
-    </TopRightBadge>
+    </Badge>
   );
 }
