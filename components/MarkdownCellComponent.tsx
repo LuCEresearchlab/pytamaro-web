@@ -14,6 +14,7 @@ import { activityAssetPathname } from '../src/urlUtils';
 import InlineAPI from './documentation/InlineAPI';
 import ActivityLink from './markdown/ActivityLink';
 import DoNowBox from './markdown/DoNowBox';
+import ExternalVideo from './markdown/ExternalVideo';
 import TaskBox from './markdown/TaskBox';
 
 function imgSourceTransformer(
@@ -179,6 +180,28 @@ export default function MarkdownCellComponent({
           requireAnswer,
           children,
           activityVariant,
+        }),
+      ExternalVideo: ({
+        title,
+        url,
+        thumbnail,
+        children,
+      }: {
+        title: string;
+        url: string;
+        thumbnail: string;
+        children: ReactNode;
+      }) =>
+        ExternalVideo({
+          title,
+          url,
+          thumbnail: imgSourceTransformer(
+            thumbnail,
+            cell,
+            activityVariant.authorSlug,
+            activityVariant.activitySlug,
+          ),
+          children,
         }),
       Task: ({ children }: { children: ReactNode }) => TaskBox({ children }),
     }),
