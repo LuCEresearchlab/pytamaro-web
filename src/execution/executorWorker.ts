@@ -471,13 +471,6 @@ class WorkerExecutor {
       };
     }
 
-    // CPython caches the modules that it loads, so we need to forcefully unload
-    // all files that we have just written to ensure that the execution always
-    // uses the proper up-to-date code.
-    const modulesToClear = files
-      .map((file) => file.name)
-      .filter((name) => name.endsWith('.py') && name !== DRIVER_FILE_NAME)
-      .map((name) => name.replaceAll('/', '.').replace(/\.py$/, ''));
     const driverCode =
       typeof driverFile.content === 'string'
         ? driverFile.content
@@ -485,21 +478,26 @@ class WorkerExecutor {
 
     return {
       code: joinLines([
-        // Clear cached modules
-        'import sys',
-        ...modulesToClear.flatMap((module) => [
-          `if '${module}' in sys.modules: `,
-          `  del sys.modules['${module}']`,
-        ]),
+        'import importlib, os, sys',
+        // Set CWD to $basePath first, so that relative module paths below
+        // resolve against it.
+        `os.chdir('${EXEC_BASE_PATH}')`,
+        // CPython caches the modules that it loads. The execution directory is
+        // recreated on every run, but the cache is not: unload every module
+        // that was loaded from it, so that changed or deleted files are not
+        // served from the cache.
+        `base = os.path.abspath('${EXEC_BASE_PATH}') + os.sep`,
+        'for name, module in list(sys.modules.items()):',
+        '  paths = (getattr(module, "__file__", None), *(getattr(module, "__path__", None) or ()))',
+        '  if any(isinstance(p, str) and os.path.abspath(p).startswith(base) for p in paths):',
+        '    del sys.modules[name]',
+        'importlib.invalidate_caches()',
         // Set max recursion depth.
         // Note: this might be problematic for non-desktop devices.
         // There are several limitations at play here, both from the JS and the
         // wasm worlds. It could be that we'll have to decrease this number in the
         // future. See: https://github.com/pyodide/pyodide/issues/5959
         'sys.setrecursionlimit(2000)',
-        // Set CWD to $basePath
-        'import os',
-        `os.chdir('${EXEC_BASE_PATH}')`,
         // Run code
         driverCode,
       ]),

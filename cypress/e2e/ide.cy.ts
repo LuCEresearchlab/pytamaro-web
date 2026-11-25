@@ -291,4 +291,40 @@ describe('IDE', () => {
       .type('hello{enter}');
     cy.get('[data-testid="output-area"]').should('contain.text', 'hello');
   });
+
+  it('should not keep an imported module importable after its file is deleted', () => {
+    cy.visit(idePathname());
+    dismissDataCollectionModal();
+    waitForMonacoEditor();
+    // Create a module and import it from main.py, so that CPython caches it.
+    cy.get('[data-testid="new-file-button"]').click();
+    cy.get('[data-testid="file-tree-dropzone"]')
+      .find('input[type="text"]')
+      .type('utils.py{enter}');
+    cy.get('[data-testid="file-tree"]').contains('utils.py').click();
+    typeMonacoCode('def greet(): return "hello from utils"');
+    cy.get('[data-testid="editor-tabs"]').contains('main.py').click();
+    typeMonacoCode('from utils import greet\nprint(greet())');
+    cy.get('.run-button').first().click();
+    cy.get('[data-testid="output-area"]')
+      .should('be.visible')
+      .contains('hello from utils');
+
+    // Delete the module and run main.py again.
+    const utilsItem = () =>
+      cy
+        .get('[data-testid="file-tree"]')
+        .contains('utils.py')
+        .closest('[role="treeitem"]');
+    utilsItem().find('[aria-label="More actions"]').click({ force: true });
+    utilsItem().find('[aria-label="Delete file"]').click();
+    cy.get('[role="dialog"]').contains('button', 'Delete file').click();
+    cy.get('[data-testid="file-tree"]').should('not.contain.text', 'utils.py');
+
+    cy.get('.run-button').first().click();
+    // The module must not be served from CPython's cache.
+    cy.get('[data-testid="stderr"]')
+      .should('be.visible')
+      .contains('ModuleNotFoundError');
+  });
 });
