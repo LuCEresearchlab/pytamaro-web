@@ -32,7 +32,7 @@ import DataSharingPreferenceDialog from '../components/DataSharingPreferenceDial
 import DocumentationStripe from '../components/documentation/DocumentationStripe';
 import EditorTabs from '../components/EditorTabs';
 import BinInspectIconSvg from '../components/icons/BinInspectIconSvg';
-import IdeFileManager from '../components/IdeFileManager';
+import IdeFileManager from '../components/ide/fileTree/IdeFileManager';
 import ExecutionOutputArea from '../components/input_output/ExecutionOutputArea';
 import { OUTPUT_AREA_BACKGROUND_COLOR } from '../components/input_output/OutputArea';
 import LibrariesButton from '../components/navbar/LibrariesButton';
