@@ -333,6 +333,12 @@ function RowLabel({
     <Stack
       direction='row'
       spacing={1}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        if (hasActions && !actionsOpen) {
+          setActionsOpen(true);
+        }
+      }}
       sx={{
         alignItems: 'center',
         width: '100%',
