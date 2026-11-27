@@ -575,6 +575,222 @@ function MoveNodeButton({
   );
 }
 
+function FileRow({
+  node,
+  edit,
+  draftName,
+  onDraftNameChange,
+  onStartRename,
+  onClearEdit,
+  binaryFiles,
+  forest,
+  onDownloadFile,
+  onRenameFile,
+  onRenameFolder,
+  onOpenFile,
+  onDelete,
+  workspaceActionsDisabled,
+}: {
+  node: Extract<FileTreeNode, { type: 'file' }>;
+  edit: TreeEdit | null;
+  draftName: string;
+  onDraftNameChange: (name: string) => void;
+  onStartRename: (path: string) => void;
+  onClearEdit: () => void;
+  binaryFiles: Set<string>;
+  forest: FileTreeNode[];
+  onDownloadFile: (path: string) => void;
+  onRenameFile: (oldPath: string, newPath: string) => boolean;
+  onRenameFolder: (oldPath: string, newPath: string) => boolean;
+  onOpenFile: (path: string) => void;
+  onDelete: (path: string, isFolder: boolean) => void;
+  workspaceActionsDisabled: boolean;
+}) {
+  const { t } = useLocalTranslation(['ide', 'common']);
+  const { path, name } = node;
+  const isRenaming = edit?.mode === 'rename' && edit.path === path;
+  return (
+    <TreeItem
+      itemId={path}
+      slots={{
+        icon: fileIcon(isRenaming ? draftName : path, binaryFiles.has(path)),
+      }}
+      sx={HOVER_ACTIONS_SX}
+      data-drop-folder={parentPath(path)}
+      label={
+        <RowLabel
+          actionCount={3}
+          moreActionsLabel={t('moreActions')}
+          closeActionsLabel={t('closeActions')}
+          actions={
+            isRenaming ? undefined : (
+              <>
+                <ActionButton
+                  title={t('downloadFile')}
+                  disabled={workspaceActionsDisabled}
+                  onClick={() => onDownloadFile(path)}
+                >
+                  <Download fontSize='small' />
+                </ActionButton>
+                <ActionButton
+                  title={t('renameFile')}
+                  disabled={workspaceActionsDisabled}
+                  onClick={() => onStartRename(path)}
+                >
+                  <DriveFileRenameOutline fontSize='small' />
+                </ActionButton>
+                <MoveNodeButton
+                  source={node}
+                  forest={forest}
+                  moveFile={onRenameFile}
+                  moveFolder={onRenameFolder}
+                  disabled={workspaceActionsDisabled}
+                />
+                <ActionButton
+                  title={t('deleteFile')}
+                  disabled={workspaceActionsDisabled}
+                  onClick={() => onDelete(path, false)}
+                >
+                  <DeleteOutlined fontSize='small' />
+                </ActionButton>
+              </>
+            )
+          }
+        >
+          {isRenaming ? (
+            <InlineNameInput
+              initialName={path}
+              placeholder={t('fileName')}
+              onNameChange={onDraftNameChange}
+              onSubmit={(newPath) => {
+                if (newPath === path || onRenameFile(path, newPath)) {
+                  onClearEdit();
+                  return true;
+                }
+                return false;
+              }}
+              onCancel={onClearEdit}
+            />
+          ) : (
+            <Typography variant='body2' sx={ROW_NAME_SX}>
+              {name}
+            </Typography>
+          )}
+        </RowLabel>
+      }
+      onClick={() => {
+        if (!isRenaming) {
+          onOpenFile(path);
+        }
+      }}
+    />
+  );
+}
+
+function FolderRow({
+  node,
+  edit,
+  onDraftNameChange,
+  onStartRename,
+  onClearEdit,
+  forest,
+  onRenameFile,
+  onRenameFolder,
+  onDelete,
+  workspaceActionsDisabled,
+  expandedItems,
+  dropTarget,
+  createRowFor,
+  renderChild,
+}: {
+  node: Extract<FileTreeNode, { type: 'folder' }>;
+  edit: TreeEdit | null;
+  onDraftNameChange: (name: string) => void;
+  onStartRename: (path: string) => void;
+  onClearEdit: () => void;
+  forest: FileTreeNode[];
+  onRenameFile: (oldPath: string, newPath: string) => boolean;
+  onRenameFolder: (oldPath: string, newPath: string) => boolean;
+  onDelete: (path: string, isFolder: boolean) => void;
+  workspaceActionsDisabled: boolean;
+  expandedItems: string[];
+  dropTarget: string | null;
+  createRowFor: (parent: string) => ReactNode;
+  renderChild: (node: FileTreeNode) => ReactNode;
+}) {
+  const { t } = useLocalTranslation(['ide', 'common']);
+  const itemId = `${FOLDER_PREFIX}${node.path}`;
+  const isRenaming = edit?.mode === 'rename' && edit.path === node.path;
+  return (
+    <TreeItem
+      itemId={itemId}
+      slots={{ icon: expandedItems.includes(itemId) ? FolderOpen : Folder }}
+      sx={[HOVER_ACTIONS_SX, dropTarget === node.path && DROP_TARGET_SX]}
+      data-drop-folder={node.path}
+      label={
+        <RowLabel
+          actionCount={3}
+          moreActionsLabel={t('moreActions')}
+          closeActionsLabel={t('closeActions')}
+          actions={
+            isRenaming ? undefined : (
+              <>
+                <ActionButton
+                  title={t('renameFolder')}
+                  disabled={workspaceActionsDisabled}
+                  onClick={() => onStartRename(node.path)}
+                >
+                  <DriveFileRenameOutline fontSize='small' />
+                </ActionButton>
+                <MoveNodeButton
+                  source={node}
+                  disabled={workspaceActionsDisabled}
+                  forest={forest}
+                  moveFile={onRenameFile}
+                  moveFolder={onRenameFolder}
+                />
+                <ActionButton
+                  title={t('deleteFolder')}
+                  disabled={workspaceActionsDisabled}
+                  onClick={() => onDelete(node.path, true)}
+                >
+                  <DeleteOutlined fontSize='small' />
+                </ActionButton>
+              </>
+            )
+          }
+        >
+          {isRenaming ? (
+            <InlineNameInput
+              initialName={node.path}
+              placeholder={t('folderName')}
+              onNameChange={onDraftNameChange}
+              onSubmit={(newPath) => {
+                if (
+                  newPath === node.path ||
+                  onRenameFolder(node.path, newPath)
+                ) {
+                  onClearEdit();
+                  return true;
+                }
+                return false;
+              }}
+              onCancel={onClearEdit}
+            />
+          ) : (
+            <Typography variant='body2' sx={ROW_NAME_SX}>
+              {node.name}
+            </Typography>
+          )}
+        </RowLabel>
+      }
+    >
+      {createRowFor(node.path)}
+      {node.children.map(renderChild)}
+    </TreeItem>
+  );
+}
+
 export type IdeFileManagerProps = {
   fileNames: readonly string[];
   folderNames: readonly string[];
@@ -791,168 +1007,49 @@ export default function IdeFileManager({
       ? renderCreateRow(edit.kind, parent)
       : null;
 
-  const renderFile = (node: Extract<FileTreeNode, { type: 'file' }>) => {
-    const { path, name } = node;
-    const isRenaming = edit?.mode === 'rename' && edit.path === path;
-    return (
-      <TreeItem
-        key={path}
-        itemId={path}
-        slots={{
-          icon: fileIcon(isRenaming ? draftName : path, binaryFiles.has(path)),
-        }}
-        sx={HOVER_ACTIONS_SX}
-        data-drop-folder={parentPath(path)}
-        label={
-          <RowLabel
-            actionCount={3}
-            moreActionsLabel={t('moreActions')}
-            closeActionsLabel={t('closeActions')}
-            actions={
-              isRenaming ? undefined : (
-                <>
-                  <ActionButton
-                    title={t('downloadFile')}
-                    disabled={workspaceActionsDisabled}
-                    onClick={() => onDownloadFile(path)}
-                  >
-                    <Download fontSize='small' />
-                  </ActionButton>
-                  <ActionButton
-                    title={t('renameFile')}
-                    disabled={workspaceActionsDisabled}
-                    onClick={() => {
-                      setDraftName(path);
-                      setEdit({ mode: 'rename', path });
-                    }}
-                  >
-                    <DriveFileRenameOutline fontSize='small' />
-                  </ActionButton>
-                  <MoveNodeButton
-                    source={node}
-                    forest={forest}
-                    moveFile={onRenameFile}
-                    moveFolder={onRenameFolder}
-                    disabled={workspaceActionsDisabled}
-                  />
-                  <ActionButton
-                    title={t('deleteFile')}
-                    disabled={workspaceActionsDisabled}
-                    onClick={() => askDelete(path, false)}
-                  >
-                    <DeleteOutlined fontSize='small' />
-                  </ActionButton>
-                </>
-              )
-            }
-          >
-            {isRenaming ? (
-              <InlineNameInput
-                initialName={path}
-                placeholder={t('fileName')}
-                onNameChange={setDraftName}
-                onSubmit={(newPath) => {
-                  if (newPath === path || onRenameFile(path, newPath)) {
-                    setEdit(null);
-                    return true;
-                  }
-                  return false;
-                }}
-                onCancel={() => setEdit(null)}
-              />
-            ) : (
-              <Typography variant='body2' sx={ROW_NAME_SX}>
-                {name}
-              </Typography>
-            )}
-          </RowLabel>
-        }
-        onClick={() => {
-          if (!isRenaming) {
-            onOpenFile(path);
-          }
-        }}
-      />
-    );
-  };
-
   const renderNode = (node: FileTreeNode): ReactNode => {
-    if (node.type === 'file') {
-      return renderFile(node);
-    }
-    const itemId = `${FOLDER_PREFIX}${node.path}`;
-    const isRenaming = edit?.mode === 'rename' && edit.path === node.path;
-    return (
-      <TreeItem
-        key={itemId}
-        itemId={itemId}
-        slots={{ icon: expandedItems.includes(itemId) ? FolderOpen : Folder }}
-        sx={[HOVER_ACTIONS_SX, dropTarget === node.path && DROP_TARGET_SX]}
-        data-drop-folder={node.path}
-        label={
-          <RowLabel
-            actionCount={3}
-            moreActionsLabel={t('moreActions')}
-            closeActionsLabel={t('closeActions')}
-            actions={
-              isRenaming ? undefined : (
-                <>
-                  <ActionButton
-                    title={t('renameFolder')}
-                    disabled={workspaceActionsDisabled}
-                    onClick={() => {
-                      setDraftName(node.path);
-                      setEdit({ mode: 'rename', path: node.path });
-                    }}
-                  >
-                    <DriveFileRenameOutline fontSize='small' />
-                  </ActionButton>
-                  <MoveNodeButton
-                    source={node}
-                    disabled={workspaceActionsDisabled}
-                    forest={forest}
-                    moveFile={onRenameFile}
-                    moveFolder={onRenameFolder}
-                  />
-                  <ActionButton
-                    title={t('deleteFolder')}
-                    disabled={workspaceActionsDisabled}
-                    onClick={() => askDelete(node.path, true)}
-                  >
-                    <DeleteOutlined fontSize='small' />
-                  </ActionButton>
-                </>
-              )
-            }
-          >
-            {isRenaming ? (
-              <InlineNameInput
-                initialName={node.path}
-                placeholder={t('folderName')}
-                onNameChange={setDraftName}
-                onSubmit={(newPath) => {
-                  if (
-                    newPath === node.path ||
-                    onRenameFolder(node.path, newPath)
-                  ) {
-                    setEdit(null);
-                    return true;
-                  }
-                  return false;
-                }}
-                onCancel={() => setEdit(null)}
-              />
-            ) : (
-              <Typography variant='body2' sx={ROW_NAME_SX}>
-                {node.name}
-              </Typography>
-            )}
-          </RowLabel>
-        }
-      >
-        {createRowFor(node.path)}
-        {node.children.map(renderNode)}
-      </TreeItem>
+    return node.type === 'file' ? (
+      <FileRow
+        key={node.path}
+        node={node}
+        edit={edit}
+        draftName={draftName}
+        onDraftNameChange={setDraftName}
+        onStartRename={(path) => {
+          setDraftName(path);
+          setEdit({ mode: 'rename', path });
+        }}
+        onClearEdit={() => setEdit(null)}
+        binaryFiles={binaryFiles}
+        forest={forest}
+        onDownloadFile={onDownloadFile}
+        onRenameFile={onRenameFile}
+        onRenameFolder={onRenameFolder}
+        onOpenFile={onOpenFile}
+        onDelete={askDelete}
+        workspaceActionsDisabled={workspaceActionsDisabled}
+      />
+    ) : (
+      <FolderRow
+        key={`${FOLDER_PREFIX}${node.path}`}
+        node={node}
+        edit={edit}
+        onDraftNameChange={setDraftName}
+        onStartRename={(path) => {
+          setDraftName(path);
+          setEdit({ mode: 'rename', path });
+        }}
+        onClearEdit={() => setEdit(null)}
+        forest={forest}
+        onRenameFile={onRenameFile}
+        onRenameFolder={onRenameFolder}
+        onDelete={askDelete}
+        workspaceActionsDisabled={workspaceActionsDisabled}
+        expandedItems={expandedItems}
+        dropTarget={dropTarget}
+        createRowFor={createRowFor}
+        renderChild={renderNode}
+      />
     );
   };
 
